@@ -23,7 +23,7 @@ concurrency:
 jobs:
   run_swift_tests:
     name: Run SwiftPM tests
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 10
     steps:
       - uses: partout-io/action-prepare-xcode-build@master

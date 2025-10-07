@@ -18,7 +18,7 @@ concurrency:
 jobs:
   validate_codebase:
     name: Validate codebase
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 15
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
@@ -54,7 +54,7 @@ jobs:
       build: ${{ steps.app_version.outputs.build }}
   build_upload:
     name: Upload to App Store Connect
-    runs-on: macos-15
+    runs-on: macos-26
     needs: validate_codebase
     continue-on-error: true
     strategy:
@@ -140,7 +140,7 @@ jobs:
           bundle exec fastlane --env ${{ matrix.platform }} asc_review
   distribute_dmg:
     name: Distribute Mac .dmg
-    runs-on: macos-15
+    runs-on: macos-26
     needs: [validate_codebase]
     timeout-minutes: 30
     strategy:

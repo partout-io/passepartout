@@ -13,7 +13,7 @@ concurrency:
 jobs:
   all_tests:
     name: All tests
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 15
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
