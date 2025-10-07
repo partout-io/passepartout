@@ -1,5 +1,3 @@
-* OpenVPN: Fix wrong evaluation of default gateway
-* Add preference to enforce traffic through tunnel (#1555)
-* Drop accent color, inconsistent since recent OS updates
-* Fix tip only appearing after scrolling profile down
-* Fix onboarding alerts not appearing
+* Support Liquid Glass (#1563)
+* Fix link to GitHub Discussions
+* Omit update link in beta
