@@ -20,6 +20,8 @@ struct ProfilesLayoutPicker: View {
             layout.image
         }
         .pickerStyle(.inline)
+        // Workaround: https://stackoverflow.com/a/79676925/784615
+        .fixedSize()
     }
 }
 

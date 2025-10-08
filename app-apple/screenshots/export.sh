@@ -19,7 +19,7 @@ case $device in
 
   "iphone")
     xcplan="MainScreenshots"
-    xcdestination="name=iPhone 16 Pro Max"
+    xcdestination="name=iPhone 17 Pro Max"
     ;;
 
   "ipad")
