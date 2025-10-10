@@ -127,7 +127,7 @@ extension AppContext {
                 }
             }
         )
-        let registryCoder = registry.with(coder: dependencies.sharedProfileCoder)
+        let registryCoder = RegistryCoder(registry: registry)
 
         let tunnelIdentifier = BundleConfiguration.mainString(for: .tunnelId)
 #if targetEnvironment(simulator)
@@ -324,7 +324,6 @@ extension AppContext {
             migrationManager: migrationManager,
             onboardingManager: onboardingManager,
             preferencesManager: preferencesManager,
-            profileCoder: dependencies.sharedProfileCoder,
             profileManager: profileManager,
             registry: registry,
             sysexManager: sysexManager,

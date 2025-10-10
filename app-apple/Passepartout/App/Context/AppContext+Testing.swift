@@ -68,7 +68,6 @@ extension AppContext {
             kvManager: kvManager,
             migrationManager: migrationManager,
             preferencesManager: preferencesManager,
-            profileCoder: dependencies.sharedProfileCoder,
             profileManager: profileManager,
             registry: registry,
             sysexManager: nil,

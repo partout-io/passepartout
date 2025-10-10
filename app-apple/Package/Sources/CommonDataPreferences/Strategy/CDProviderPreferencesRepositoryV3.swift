@@ -18,7 +18,7 @@ extension CommonData {
 private final class CDProviderPreferencesRepositoryV3: ProviderPreferencesRepository {
     private nonisolated let context: NSManagedObjectContext
 
-    private let entity: CDProviderPreferencesV3
+    private nonisolated(unsafe) let entity: CDProviderPreferencesV3
 
     init(context: NSManagedObjectContext, providerId: ProviderID) throws {
         self.context = context

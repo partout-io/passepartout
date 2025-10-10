@@ -98,7 +98,8 @@ private extension ProviderView.OpenVPNCredentialsView {
         } catch {
             pp_log_g(.app, .error, "Unable to load OpenVPN credentials from options: \(error)")
         }
-        providerCustomization = provider.customization(for: OpenVPNModule.self)
+        let metadata = provider.metadata(for: OpenVPNModule.self)
+        providerCustomization = OpenVPN.ProviderCustomization(userInfo: metadata?.userInfo)
     }
 
     func saveCredentials() {

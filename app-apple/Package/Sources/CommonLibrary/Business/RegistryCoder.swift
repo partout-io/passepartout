@@ -8,29 +8,19 @@ import Foundation
 public final class RegistryCoder: ObservableObject, Sendable {
     private let registry: Registry
 
-    private let coder: ProfileCoder
-
-    public init(registry: Registry, coder: ProfileCoder) {
+    public init(registry: Registry) {
         self.registry = registry
-        self.coder = coder
     }
 
     public nonisolated func string(from profile: Profile) throws -> String {
-        try registry.encodedProfile(profile, with: coder)
+        try registry.encodedProfile(profile)
     }
 
     public nonisolated func profile(from string: String) throws -> Profile {
-        try registry.decodedProfile(from: string, with: coder)
+        try registry.decodedProfile(from: string)
     }
 
     public nonisolated func module(from string: String, object: Any?) throws -> Module {
         try registry.module(fromContents: string, object: object)
-    }
-}
-
-@MainActor
-extension Registry {
-    public func with(coder: ProfileCoder) -> RegistryCoder {
-        RegistryCoder(registry: self, coder: coder)
     }
 }

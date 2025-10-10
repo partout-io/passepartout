@@ -63,7 +63,6 @@ public final class AppContext: ObservableObject, Sendable {
         migrationManager: MigrationManager,
         onboardingManager: OnboardingManager? = nil,
         preferencesManager: PreferencesManager,
-        profileCoder: ProfileCoder,
         profileManager: ProfileManager,
         registry: Registry,
         sysexManager: SystemExtensionManager?,
@@ -84,7 +83,7 @@ public final class AppContext: ObservableObject, Sendable {
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
-        self.registryCoder = registry.with(coder: profileCoder)
+        self.registryCoder = RegistryCoder(registry: registry)
         self.sysexManager = sysexManager
         self.tunnel = tunnel
         self.versionChecker = versionChecker
