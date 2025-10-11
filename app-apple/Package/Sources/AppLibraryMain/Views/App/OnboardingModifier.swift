@@ -111,16 +111,7 @@ private extension OnboardingModifier {
     // 3.6.0
     func migrateProfilesToJSON() {
         Task {
-            for preview in profileManager.previews {
-                guard let profile = profileManager.profile(withId: preview.id) else {
-                    return
-                }
-                do {
-                    try await profileManager.save(profile, isLocal: true)
-                } catch {
-                    pp_log_g(.App.profiles, .error, "Unable to migrate profile \(preview.id) to JSON: \(error)")
-                }
-            }
+            await profileManager.resaveAllProfiles()
             advance()
         }
     }
