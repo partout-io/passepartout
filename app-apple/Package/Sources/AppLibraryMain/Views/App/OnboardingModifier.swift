@@ -75,28 +75,9 @@ private extension OnboardingModifier {
 
             Button(Strings.Onboarding.Community.dismiss, role: .cancel, action: advance)
         case .migrateV3_2_3:
-            Button(Strings.Global.Nouns.ok) {
-                Task {
-                    await apiManager.resetCacheForAllProviders()
-                    advance()
-                }
-            }
+            Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
         case .migrateV3_6_0:
-            Button(Strings.Global.Nouns.ok) {
-                Task {
-                    for preview in profileManager.previews {
-                        guard let profile = profileManager.profile(withId: preview.id) else {
-                            return
-                        }
-                        do {
-                            try await profileManager.save(profile, isLocal: true)
-                        } catch {
-                            pp_log_g(.App.profiles, .error, "Unable to migrate profile \(preview.id) to JSON: \(error)")
-                        }
-                    }
-                    advance()
-                }
-            }
+            Button(Strings.Global.Nouns.ok, action: migrateProfilesToJSON)
         default:
             EmptyView()
         }
@@ -113,6 +94,34 @@ private extension OnboardingModifier {
             Text(Strings.Onboarding.Migrate360.message)
         default:
             EmptyView()
+        }
+    }
+}
+
+private extension OnboardingModifier {
+
+    // 3.2.3
+    func resetProvidersCache() {
+        Task {
+            await apiManager.resetCacheForAllProviders()
+            advance()
+        }
+    }
+
+    // 3.6.0
+    func migrateProfilesToJSON() {
+        Task {
+            for preview in profileManager.previews {
+                guard let profile = profileManager.profile(withId: preview.id) else {
+                    return
+                }
+                do {
+                    try await profileManager.save(profile, isLocal: true)
+                } catch {
+                    pp_log_g(.App.profiles, .error, "Unable to migrate profile \(preview.id) to JSON: \(error)")
+                }
+            }
+            advance()
         }
     }
 }
