@@ -15,6 +15,8 @@ struct OnboardingManagerTests {
         #expect(OnboardingStep.doneV3.order == 2)
         #expect(OnboardingStep.migrateV3_2_3.order == 3)
         #expect(OnboardingStep.doneV3_2_3.order == 4)
+        #expect(OnboardingStep.migrateV3_6_0.order == 5)
+        #expect(OnboardingStep.doneV3_6_0.order == 6)
     }
 
     @Test
@@ -32,17 +34,17 @@ struct OnboardingManagerTests {
     }
 
     @Test
-    func givenMid_whenAdvanceFromV2_thenSkipsV322Migration() {
+    func givenMid_whenAdvanceFromV2_thenSkipsV323Migration() {
         let sut = OnboardingManager(initialStep: .first) // .migrateV3
         #expect(sut.step == .migrateV3)
         sut.advance() // .community
         sut.advance() // .doneV3
-        sut.advance() // .migrateV3_2_3 (skipped to .doneV3_2_3)
-        #expect(sut.step == .doneV3_2_3)
+        sut.advance() // .migrateV3_2_3 (skipped to .doneV3_6)
+        #expect(sut.step == .doneV3_6_0)
     }
 
     @Test
-    func givenMid_whenAdvanceFromV3_thenAdvancesToV322Migration() {
+    func givenMid_whenAdvanceFromV3_thenAdvancesToV323Migration() {
         let sut = OnboardingManager(initialStep: .doneV3)
         sut.advance()
         #expect(sut.step == .migrateV3_2_3)
@@ -52,9 +54,9 @@ struct OnboardingManagerTests {
 
     @Test
     func givenLast_whenAdvance_thenDoesNotAdvance() {
-        let sut = OnboardingManager(initialStep: .doneV3_2_3)
+        let sut = OnboardingManager(initialStep: .doneV3_6_0)
         #expect(sut.step == .last)
         sut.advance()
-        #expect(sut.step == .doneV3_2_3)
+        #expect(sut.step == .doneV3_6_0)
     }
 }
