@@ -67,8 +67,5 @@ private extension AppDelegate {
 extension NSWorkspace: @retroactive @unchecked Sendable {
 }
 
-extension NSRunningApplication: @unchecked Sendable {
-}
-
 extension NSWorkspace.OpenConfiguration: @retroactive @unchecked Sendable {
 }

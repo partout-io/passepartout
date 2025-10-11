@@ -11,9 +11,9 @@ extension ProfileAttributes {
             case excludedEndpoints
         }
 
-        private(set) var userInfo: [String: AnyHashable]
+        private(set) var userInfo: JSON
 
-        init(userInfo: [String: AnyHashable]?) {
+        init(userInfo: JSON?) {
             self.userInfo = userInfo ?? [:]
         }
 
@@ -46,10 +46,14 @@ extension ProfileAttributes {
 extension ProfileAttributes.ModulePreferences {
     var rawExcludedEndpoints: [String] {
         get {
-            userInfo[Key.excludedEndpoints.rawValue] as? [String] ?? []
+            userInfo[Key.excludedEndpoints.rawValue]?
+                .arrayValue?
+                .compactMap(\.stringValue) ?? []
         }
         set {
-            userInfo[Key.excludedEndpoints.rawValue] = newValue
+            userInfo[Key.excludedEndpoints.rawValue] = .array(newValue.map {
+                .string($0)
+            })
         }
     }
 }

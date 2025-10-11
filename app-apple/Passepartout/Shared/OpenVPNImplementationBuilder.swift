@@ -53,11 +53,7 @@ private extension OpenVPNImplementationBuilder {
             module: module,
             prng: PlatformPRNG(),
             dns: SimpleDNSResolver {
-                if distributionTarget.usesExperimentalPOSIXResolver {
-                    return POSIXDNSStrategy(hostname: $0)
-                } else {
-                    return CFDNSStrategy(hostname: $0)
-                }
+                POSIXDNSStrategy(hostname: $0)
             },
             options: options,
             cachesURL: cachesURL

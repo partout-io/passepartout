@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+#if !PARTOUT_MONOLITH
+import PartoutCore
+#endif
 
 extension JSON {
     public func localizedString(forKey key: String) -> String {

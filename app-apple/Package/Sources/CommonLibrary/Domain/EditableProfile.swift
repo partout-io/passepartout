@@ -17,7 +17,7 @@ public struct EditableProfile: MutableProfileType {
 
     public var behavior: ProfileBehavior?
 
-    public var userInfo: AnyHashable?
+    public var userInfo: JSON?
 
     public init(
         id: UUID = UUID(),
@@ -25,7 +25,7 @@ public struct EditableProfile: MutableProfileType {
         modules: [any ModuleBuilder] = [],
         activeModulesIds: Set<UUID> = [],
         behavior: ProfileBehavior? = nil,
-        userInfo: AnyHashable? = nil
+        userInfo: JSON? = nil
     ) {
         self.id = id
         self.name = name

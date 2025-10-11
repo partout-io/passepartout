@@ -4,19 +4,16 @@
 
 import Foundation
 
-// WARNING: upcast to [String: AnyHashable] relies on CodableProfileCoder
-// implementation returning JSONSerialization
-
-extension ProfileType where UserInfoType == AnyHashable {
+extension ProfileType where UserInfoType == JSON {
     public var attributes: ProfileAttributes {
-        ProfileAttributes(userInfo: userInfo as? [String: AnyHashable])
+        ProfileAttributes(userInfo: userInfo)
     }
 }
 
-extension MutableProfileType where UserInfoType == AnyHashable {
+extension MutableProfileType where UserInfoType == JSON {
     public var attributes: ProfileAttributes {
         get {
-            ProfileAttributes(userInfo: userInfo as? [String: AnyHashable])
+            ProfileAttributes(userInfo: userInfo)
         }
         set {
             userInfo = newValue.userInfo
@@ -37,9 +34,9 @@ public struct ProfileAttributes {
         case preferences
     }
 
-    private(set) var userInfo: [String: AnyHashable]
+    private(set) var userInfo: JSON
 
-    init(userInfo: [String: AnyHashable]?) {
+    init(userInfo: JSON?) {
         self.userInfo = userInfo ?? [:]
     }
 }
@@ -49,34 +46,40 @@ public struct ProfileAttributes {
 extension ProfileAttributes {
     public var fingerprint: UUID? {
         get {
-            guard let string = userInfo[Key.fingerprint.rawValue] as? String else {
+            guard let string = userInfo[Key.fingerprint.rawValue]?.stringValue else {
                 return nil
             }
             return UUID(uuidString: string)
         }
         set {
-            userInfo[Key.fingerprint.rawValue] = newValue?.uuidString
+            userInfo[Key.fingerprint.rawValue] = newValue.map {
+                .string($0.uuidString)
+            }
         }
     }
 
     public var lastUpdate: Date? {
         get {
-            guard let interval = userInfo[Key.lastUpdate.rawValue] as? TimeInterval else {
+            guard let interval = userInfo[Key.lastUpdate.rawValue]?.doubleValue else {
                 return nil
             }
             return Date(timeIntervalSinceReferenceDate: interval)
         }
         set {
-            userInfo[Key.lastUpdate.rawValue] = newValue?.timeIntervalSinceReferenceDate
+            userInfo[Key.lastUpdate.rawValue] = newValue.map {
+                .number($0.timeIntervalSinceReferenceDate)
+            }
         }
     }
 
     public var isAvailableForTV: Bool? {
         get {
-            userInfo[Key.isAvailableForTV.rawValue] as? Bool
+            userInfo[Key.isAvailableForTV.rawValue]?.boolValue
         }
         set {
-            userInfo[Key.isAvailableForTV.rawValue] = newValue
+            userInfo[Key.isAvailableForTV.rawValue] = newValue.map {
+                .bool($0)
+            }
         }
     }
 }
@@ -85,7 +88,7 @@ extension ProfileAttributes {
 
 extension ProfileAttributes {
     public func preferences(inModule moduleId: UUID) -> ModulePreferences {
-        ModulePreferences(userInfo: allPreferences[moduleId.uuidString] as? [String: AnyHashable])
+        ModulePreferences(userInfo: allPreferences[moduleId.uuidString])
     }
 
     public mutating func setPreferences(_ module: ModulePreferences, inModule moduleId: UUID) {
@@ -105,12 +108,12 @@ extension ProfileAttributes {
 }
 
 private extension ProfileAttributes {
-    var allPreferences: [String: AnyHashable] {
+    var allPreferences: [String: JSON] {
         get {
-            userInfo[Key.preferences.rawValue] as? [String: AnyHashable] ?? [:]
+            userInfo[Key.preferences.rawValue]?.objectValue ?? [:]
         }
         set {
-            userInfo[Key.preferences.rawValue] = newValue
+            userInfo[Key.preferences.rawValue] = .object(newValue)
         }
     }
 }

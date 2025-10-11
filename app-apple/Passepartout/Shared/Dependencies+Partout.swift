@@ -12,10 +12,6 @@ extension Dependencies {
         Self.sharedKVStore
     }
 
-    nonisolated var sharedProfileCoder: ProfileCoder {
-        Self.sharedProfileCoder
-    }
-
     nonisolated func newRegistry(
         distributionTarget: DistributionTarget,
         deviceId: String,
@@ -47,15 +43,13 @@ extension Dependencies {
                 ctx,
                 tunnelBundleIdentifier: BundleConfiguration.mainString(for: .tunnelId),
                 registry: registry,
-                coder: Self.sharedProfileCoder,
                 keychain: AppleKeychain(ctx, group: BundleConfiguration.mainString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: BundleConfiguration.mainString(for: .tunnelId),
-                registry: registry,
-                coder: Self.sharedProfileCoder
+                registry: registry
             )
         }
     }
@@ -85,6 +79,4 @@ private extension Dependencies {
         store: UserDefaultsStore(.standard),
         fallback: AppPreferenceValues()
     )
-
-    static nonisolated let sharedProfileCoder = CodableProfileCoder()
 }
