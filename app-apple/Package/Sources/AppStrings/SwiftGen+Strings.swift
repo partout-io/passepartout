@@ -739,6 +739,10 @@ public enum Strings {
       /// Version 3.2.3 changed the way providers are stored, make sure to upgrade all your devices to the latest version to use the new profiles.
       public static let message = Strings.tr("Localizable", "onboarding.migrate_3_2_3.message", fallback: "Version 3.2.3 changed the way providers are stored, make sure to upgrade all your devices to the latest version to use the new profiles.")
     }
+    public enum Migrate360 {
+      /// Version 3.6.0 changed the way profiles are stored, make sure to upgrade all your devices to the latest version to use the new profiles.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_6_0.message", fallback: "Version 3.6.0 changed the way profiles are stored, make sure to upgrade all your devices to the latest version to use the new profiles.")
+    }
   }
   public enum Placeholders {
     /// secret

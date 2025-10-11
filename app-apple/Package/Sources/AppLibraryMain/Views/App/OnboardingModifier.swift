@@ -16,6 +16,9 @@ struct OnboardingModifier: ViewModifier {
     @EnvironmentObject
     private var migrationManager: MigrationManager
 
+    @EnvironmentObject
+    private var profileManager: ProfileManager
+
     @Environment(\.isUITesting)
     private var isUITesting
 
@@ -71,7 +74,6 @@ private extension OnboardingModifier {
                 })
 
             Button(Strings.Onboarding.Community.dismiss, role: .cancel, action: advance)
-
         case .migrateV3_2_3:
             Button(Strings.Global.Nouns.ok) {
                 Task {
@@ -79,7 +81,22 @@ private extension OnboardingModifier {
                     advance()
                 }
             }
-
+        case .migrateV3_6_0:
+            Button(Strings.Global.Nouns.ok) {
+                Task {
+                    for preview in profileManager.previews {
+                        guard let profile = profileManager.profile(withId: preview.id) else {
+                            return
+                        }
+                        do {
+                            try await profileManager.save(profile, isLocal: true)
+                        } catch {
+                            pp_log_g(.App.profiles, .error, "Unable to migrate profile \(preview.id) to JSON: \(error)")
+                        }
+                    }
+                    advance()
+                }
+            }
         default:
             EmptyView()
         }
@@ -92,6 +109,8 @@ private extension OnboardingModifier {
             Text(Strings.Onboarding.Community.message(Strings.Unlocalized.appName))
         case .migrateV3_2_3:
             Text(Strings.Onboarding.Migrate323.message)
+        case .migrateV3_6_0:
+            Text(Strings.Onboarding.Migrate360.message)
         default:
             EmptyView()
         }
@@ -118,9 +137,7 @@ private extension OnboardingModifier {
                 return
             }
             modalRoute = .migrateProfiles
-        case .community:
-            isAlertPresented = true
-        case .migrateV3_2_3:
+        case .community, .migrateV3_2_3, .migrateV3_6_0:
             isAlertPresented = true
         default:
             if onboardingManager.step < .last {
