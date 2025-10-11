@@ -72,7 +72,6 @@ private extension OnboardingModifier {
                     advance()
                     return .systemAction
                 })
-
             Button(Strings.Onboarding.Community.dismiss, role: .cancel, action: advance)
         case .migrateV3_2_3:
             Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
