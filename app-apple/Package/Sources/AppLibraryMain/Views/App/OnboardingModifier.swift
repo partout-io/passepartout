@@ -56,7 +56,7 @@ private extension OnboardingModifier {
         switch item {
         case .community:
             return Strings.Unlocalized.reddit
-        case .migrateV3_2_3:
+        case .migrateV3_2_3, .migrateV3_6_0:
             return Strings.Global.Nouns.migration
         default:
             return ""
