@@ -91,7 +91,7 @@ private extension OnboardingModifier {
             ].joined(separator: " "))
         case .migrateV3_5_15:
             Text([
-                Strings.Onboarding.Migrate360.message,
+                Strings.Onboarding.Migrate3515.message,
                 Strings.Onboarding.Migrate.message
             ].joined(separator: " "))
         default:
