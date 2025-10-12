@@ -12,8 +12,12 @@ public final class OnboardingManager: ObservableObject {
     private let initialStep: OnboardingStep
 
     public private(set) var step: OnboardingStep {
+        willSet {
+            pp_log_g(.app, .info, "Current step: \(step)")
+        }
         didSet {
             kvManager?.set(step.rawValue, forUIPreference: .onboardingStep)
+            pp_log_g(.app, .info, "Next step: \(step)")
         }
     }
 
@@ -34,9 +38,7 @@ public final class OnboardingManager: ObservableObject {
     }
 
     public func advance() {
-        pp_log_g(.app, .info, "Current step: \(step)")
         step = step.nextStep
-        pp_log_g(.app, .info, "Next step: \(step)")
 
         // New installs or 2.x.x
         if initialStep < .doneV3 {
