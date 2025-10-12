@@ -13,11 +13,8 @@ final class CDProfileV3: NSManagedObject {
 
     @NSManaged var uuid: UUID?
     @NSManaged var name: String?
-    @NSManaged var encodedJSON: String?
+    @NSManaged var encoded: String?
     @NSManaged var isAvailableForTV: NSNumber?
     @NSManaged var lastUpdate: Date?
     @NSManaged var fingerprint: UUID?
-
-    @available(*, deprecated, renamed: "encodedJSON")
-    @NSManaged var encoded: String?
 }

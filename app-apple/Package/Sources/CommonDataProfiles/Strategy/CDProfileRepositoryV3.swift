@@ -44,11 +44,10 @@ private extension CommonData {
         _ cdEntity: CDProfileV3,
         registryCoder: RegistryCoder
     ) throws -> Profile? {
-        guard let encoded = cdEntity.encodedJSON ?? cdEntity.encoded else {
+        guard let encoded = cdEntity.encoded else {
             return nil
         }
-        let profile = try registryCoder.profile(from: encoded)
-        return profile
+        return try registryCoder.profile(from: encoded)
     }
 
     static func toMapper(
@@ -56,12 +55,12 @@ private extension CommonData {
         _ context: NSManagedObjectContext,
         registryCoder: RegistryCoder
     ) throws -> CDProfileV3 {
-        let encodedJSON = try registryCoder.string(from: profile)
+        let encoded = try registryCoder.string(from: profile)
 
         let cdProfile = CDProfileV3(context: context)
         cdProfile.uuid = profile.id
         cdProfile.name = profile.name
-        cdProfile.encodedJSON = encodedJSON
+        cdProfile.encoded = encoded
 
         // Redundant but convenient
         let attributes = profile.attributes
