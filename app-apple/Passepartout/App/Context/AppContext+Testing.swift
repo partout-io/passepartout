@@ -55,7 +55,6 @@ extension AppContext {
             interval: constants.tunnel.refreshInterval
         )
         let configManager = ConfigManager()
-        let migrationManager = MigrationManager()
         let preferencesManager = PreferencesManager()
         let webReceiverManager = WebReceiverManager()
         let versionChecker = VersionChecker()
@@ -66,7 +65,6 @@ extension AppContext {
             distributionTarget: Dependencies.distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            migrationManager: migrationManager,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

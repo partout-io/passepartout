@@ -22,8 +22,6 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let kvManager: KeyValueManager
 
-    public let migrationManager: MigrationManager
-
     public let onboardingManager: OnboardingManager
 
     public let preferencesManager: PreferencesManager
@@ -60,7 +58,6 @@ public final class AppContext: ObservableObject, Sendable {
         distributionTarget: DistributionTarget,
         iapManager: IAPManager,
         kvManager: KeyValueManager,
-        migrationManager: MigrationManager,
         onboardingManager: OnboardingManager? = nil,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
@@ -78,7 +75,6 @@ public final class AppContext: ObservableObject, Sendable {
         self.distributionTarget = distributionTarget
         self.iapManager = iapManager
         self.kvManager = kvManager
-        self.migrationManager = migrationManager
         self.onboardingManager = onboardingManager ?? OnboardingManager()
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager

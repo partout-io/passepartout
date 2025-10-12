@@ -54,13 +54,6 @@
         "identifier" : "CommonWebTests",
         "name" : "CommonWebTests"
       }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Package",
-        "identifier" : "CommonLegacyV2Tests",
-        "name" : "CommonLegacyV2Tests"
-      }
     }
   ],
   "version" : 1

@@ -20,19 +20,15 @@ struct AddProfileMenu: View {
     @Binding
     var isImporting: Bool
 
-    let onMigrateProfiles: () -> Void
-
     let onNewProfile: (EditableProfile) -> Void
 
     var body: some View {
         Menu {
             emptyProfileButton
             importProfileButton
-            Divider()
             if distributionTarget.supportsPaidFeatures {
-                providerProfileMenu
                 Divider()
-                migrateProfilesButton
+                providerProfileMenu
             }
         } label: {
             ThemeImage(.add)
@@ -76,12 +72,6 @@ private extension AddProfileMenu {
                 onNewProfile(copy)
             }
         )
-    }
-
-    var migrateProfilesButton: some View {
-        Button(action: onMigrateProfiles) {
-            ThemeImageLabel(Strings.Views.App.Toolbar.migrateProfiles.forMenu, .profileMigrate)
-        }
     }
 }
 

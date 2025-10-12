@@ -4,9 +4,8 @@
 
 import Foundation
 
-// order matters
+// Order matters
 public enum OnboardingStep: String, RawRepresentable, CaseIterable {
-    case migrateV3
     case community
     case doneV3
     case migrateV3_2_3

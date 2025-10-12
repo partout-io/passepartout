@@ -19,13 +19,9 @@
 		0E2BA91D2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
 		0E2BA91E2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
 		0E2BA91F2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
-		0E3FF4BA2CE3AFBC00BFF640 /* Profiles.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0E3FF4B72CE3AFBC00BFF640 /* Profiles.sqlite */; };
-		0E3FF4BB2CE3AFBC00BFF640 /* MigrationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3FF4B92CE3AFBC00BFF640 /* MigrationManagerTests.swift */; };
 		0E418AB52D074F0E00D33D47 /* ProviderServersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */; platformFilters = (ios, macos, ); };
 		0E46A7A22E2B9265009AC46C /* AppLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0E46A7A12E2B9265009AC46C /* AppLibrary */; };
-		0E46A7A42E2B9269009AC46C /* CommonLegacyV2 in Frameworks */ = {isa = PBXBuildFile; productRef = 0E46A7A32E2B9269009AC46C /* CommonLegacyV2 */; };
 		0E46A7A82E2B927B009AC46C /* AppAccessibility in Frameworks */ = {isa = PBXBuildFile; productRef = 0E46A7A72E2B927B009AC46C /* AppAccessibility */; };
-		0E46A7AC2E2B9292009AC46C /* CommonLegacyV2 in Frameworks */ = {isa = PBXBuildFile; productRef = 0E46A7AB2E2B9292009AC46C /* CommonLegacyV2 */; };
 		0E46A7AE2E2B9299009AC46C /* AppLibraryMain in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, macos, ); productRef = 0E46A7AD2E2B9299009AC46C /* AppLibraryMain */; };
 		0E46A7B02E2B929B009AC46C /* AppLibraryTV in Frameworks */ = {isa = PBXBuildFile; platformFilters = (tvos, ); productRef = 0E46A7AF2E2B929B009AC46C /* AppLibraryTV */; };
 		0E6EEEE32CF8CABA0076E2B0 /* AppContext+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */; };
@@ -141,8 +137,6 @@
 		0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppRelease+BusinessChanges.swift"; sourceTree = "<group>"; };
 		0E3DC7CF2D347FAA003F1C4B /* Demo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Demo.xcodeproj; sourceTree = "<group>"; };
 		0E3FF4AE2CE3AF6F00BFF640 /* PassepartoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PassepartoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E3FF4B72CE3AFBC00BFF640 /* Profiles.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Profiles.sqlite; sourceTree = "<group>"; };
-		0E3FF4B92CE3AFBC00BFF640 /* MigrationManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrationManagerTests.swift; sourceTree = "<group>"; };
 		0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderServersScreen.swift; sourceTree = "<group>"; };
 		0E5DFDDC2CDB8F9100F2DE70 /* Passepartout.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Passepartout.storekit; sourceTree = "<group>"; };
 		0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppContext+Testing.swift"; sourceTree = "<group>"; };
@@ -206,7 +200,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E46A7A42E2B9269009AC46C /* CommonLegacyV2 in Frameworks */,
 				0E46A7A22E2B9265009AC46C /* AppLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -241,7 +234,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E46A7AE2E2B9299009AC46C /* AppLibraryMain in Frameworks */,
-				0E46A7AC2E2B9292009AC46C /* CommonLegacyV2 in Frameworks */,
 				0E46A7B02E2B929B009AC46C /* AppLibraryTV in Frameworks */,
 				0E863ACB2E5470B0003EE577 /* PartoutLibrary in Frameworks */,
 			);
@@ -301,19 +293,9 @@
 		0E3FF4A92CE3AF4700BFF640 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				0E3FF4B82CE3AFBC00BFF640 /* Resources */,
 				0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */,
-				0E3FF4B92CE3AFBC00BFF640 /* MigrationManagerTests.swift */,
 			);
 			path = Tests;
-			sourceTree = "<group>";
-		};
-		0E3FF4B82CE3AFBC00BFF640 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				0E3FF4B72CE3AFBC00BFF640 /* Profiles.sqlite */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		0E418AB72D0752D100D33D47 /* TV */ = {
@@ -511,7 +493,6 @@
 			);
 			name = Passepartout;
 			packageProductDependencies = (
-				0E46A7AB2E2B9292009AC46C /* CommonLegacyV2 */,
 				0E46A7AD2E2B9299009AC46C /* AppLibraryMain */,
 				0E46A7AF2E2B929B009AC46C /* AppLibraryTV */,
 				0E863ACA2E5470B0003EE577 /* PartoutLibrary */,
@@ -729,7 +710,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E3FF4BA2CE3AFBC00BFF640 /* Profiles.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -841,7 +821,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EF9E1002CF4811000F4A7DA /* LocalizationTests.swift in Sources */,
-				0E3FF4BB2CE3AFBC00BFF640 /* MigrationManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1769,17 +1748,9 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = AppLibrary;
 		};
-		0E46A7A32E2B9269009AC46C /* CommonLegacyV2 */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CommonLegacyV2;
-		};
 		0E46A7A72E2B927B009AC46C /* AppAccessibility */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppAccessibility;
-		};
-		0E46A7AB2E2B9292009AC46C /* CommonLegacyV2 */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CommonLegacyV2;
 		};
 		0E46A7AD2E2B9299009AC46C /* AppLibraryMain */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -14,7 +14,6 @@ extension View {
             .environment(\.distributionTarget, context.distributionTarget)
             .environmentObject(context.iapManager)
             .environmentObject(context.kvManager)
-            .environmentObject(context.migrationManager)
             .environmentObject(context.onboardingManager)
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)

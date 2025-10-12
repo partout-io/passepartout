@@ -104,10 +104,6 @@ private struct ContainerModifier: ViewModifier {
             VStack(spacing: 16) {
                 Text(Strings.Views.App.Folders.noProfiles)
                     .themeEmptyMessage(fullScreen: false)
-
-                Button(Strings.Views.App.Folders.NoProfiles.migrate) {
-                    flow?.onMigrateProfiles()
-                }
             }
             VStack {
                 AppNotWorkingButton(tunnel: tunnel)
