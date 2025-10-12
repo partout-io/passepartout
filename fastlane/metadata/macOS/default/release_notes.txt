@@ -1,4 +1,3 @@
-* Support Liquid Glass (#1563)
-* Update OpenSSL to 3.5.4
-* Fix link to GitHub Discussions
-* Omit update link in beta
+* Delete v2 migration logic and views (#1566)
+* Update Partout for WireGuard IPv6 bug
+* Update Partout JSON encoding and DNS (#1565)
