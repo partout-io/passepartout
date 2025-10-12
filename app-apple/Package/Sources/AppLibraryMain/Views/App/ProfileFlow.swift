@@ -7,10 +7,6 @@ import Foundation
 
 struct ProfileFlow {
     let onEditProfile: (ProfilePreview) -> Void
-
     let onDeleteProfile: (ProfilePreview) -> Void
-
-    let onMigrateProfiles: () -> Void
-
     let connectionFlow: ConnectionFlow?
 }

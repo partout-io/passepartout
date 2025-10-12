@@ -14,9 +14,6 @@ struct OnboardingModifier: ViewModifier {
     private var onboardingManager: OnboardingManager
 
     @EnvironmentObject
-    private var migrationManager: MigrationManager
-
-    @EnvironmentObject
     private var profileManager: ProfileManager
 
     @Environment(\.isUITesting)
@@ -136,12 +133,6 @@ private extension OnboardingModifier {
 
     func performCurrentStep() {
         switch onboardingManager.step {
-        case .migrateV3:
-            guard migrationManager.hasMigratableProfiles else {
-                advance()
-                return
-            }
-            modalRoute = .migrateProfiles
         case .community, .migrateV3_2_3, .migrateV3_6_0:
             isAlertPresented = true
         default:

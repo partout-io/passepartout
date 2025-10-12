@@ -14,10 +14,6 @@
 		<string>$(CFG_IAP_BUNDLE_PREFIX)</string>
 		<key>keychainGroupId</key>
 		<string>$(CFG_KEYCHAIN_GROUP_ID)</string>
-		<key>legacyV2CloudKitId</key>
-		<string>$(CFG_LEGACY_V2_CLOUDKIT_ID)</string>
-		<key>legacyV2TVCloudKitId</key>
-		<string>$(CFG_LEGACY_V2_TV_CLOUDKIT_ID)</string>
 		<key>loginItemId</key>
 		<string>$(CFG_LOGIN_ITEM_ID)</string>
 		<key>tunnelId</key>

@@ -8,7 +8,6 @@ import CommonData
 import CommonDataPreferences
 import CommonDataProfiles
 import CommonDataProviders
-import CommonLegacyV2
 import CommonLibrary
 import CommonUtils
 #if os(tvOS)
@@ -190,36 +189,6 @@ extension AppContext {
             interval: constants.tunnel.refreshInterval
         )
 
-        let migrationManager: MigrationManager
-        if distributionTarget.supportsV2Migration {
-            migrationManager = {
-                let profileStrategy = ProfileV2MigrationStrategy(
-                    coreDataLogger: dependencies.coreDataLogger(),
-                    profilesContainer: .init(
-                        constants.containers.legacyV2,
-                        BundleConfiguration.mainString(for: .legacyV2CloudKitId)
-                    ),
-                    tvProfilesContainer: .init(
-                        constants.containers.legacyV2TV,
-                        BundleConfiguration.mainString(for: .legacyV2TVCloudKitId)
-                    )
-                )
-                let migrationSimulation: MigrationManager.Simulation?
-                if AppCommandLine.contains(.fakeMigration) {
-                    migrationSimulation = MigrationManager.Simulation(
-                        fakeProfiles: true,
-                        maxMigrationTime: 3.0,
-                        randomFailures: true
-                    )
-                } else {
-                    migrationSimulation = nil
-                }
-                return MigrationManager(profileStrategy: profileStrategy, simulation: migrationSimulation)
-            }()
-        } else {
-            migrationManager = MigrationManager()
-        }
-
         let onboardingManager = OnboardingManager(kvManager: kvManager)
         let preferencesManager = PreferencesManager()
 
@@ -321,7 +290,6 @@ extension AppContext {
             distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            migrationManager: migrationManager,
             onboardingManager: onboardingManager,
             preferencesManager: preferencesManager,
             profileManager: profileManager,

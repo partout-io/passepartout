@@ -26,8 +26,6 @@ struct AppToolbar: ToolbarContent, SizeClassProviding {
 
     let onSettings: () -> Void
 
-    let onMigrateProfiles: () -> Void
-
     let onNewProfile: (EditableProfile) -> Void
 
     var body: some ToolbarContent {
@@ -54,7 +52,6 @@ private extension AppToolbar {
             profileManager: profileManager,
             registry: registry,
             isImporting: $isImporting,
-            onMigrateProfiles: onMigrateProfiles,
             onNewProfile: onNewProfile
         )
     }
@@ -80,7 +77,6 @@ private extension AppToolbar {
                     layout: .constant(.list),
                     isImporting: .constant(false),
                     onSettings: {},
-                    onMigrateProfiles: {},
                     onNewProfile: { _ in }
                 )
             }

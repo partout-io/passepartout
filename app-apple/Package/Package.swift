@@ -43,10 +43,6 @@ let package = Package(
             targets: ["CommonIAP"]
         ),
         .library(
-            name: "CommonLegacyV2",
-            targets: ["CommonLegacyV2"]
-        ),
-        .library(
             name: "CommonLibrary",
             targets: ["CommonLibrary"]
         ),
@@ -159,13 +155,6 @@ let package = Package(
             dependencies: ["CommonUtils"]
         ),
         .target(
-            name: "CommonLegacyV2",
-            dependencies: ["CommonLibrary"],
-            resources: [
-                .process("Profiles.xcdatamodeld")
-            ]
-        ),
-        .target(
             name: "CommonLibrary",
             dependencies: [
                 "CommonIAP",
@@ -202,10 +191,6 @@ let package = Package(
         .testTarget(
             name: "AppLibraryMainTests",
             dependencies: ["AppLibraryMain"]
-        ),
-        .testTarget(
-            name: "CommonLegacyV2Tests",
-            dependencies: ["CommonLegacyV2"]
         ),
         .testTarget(
             name: "CommonLibraryTests",

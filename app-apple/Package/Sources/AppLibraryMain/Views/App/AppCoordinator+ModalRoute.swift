@@ -10,7 +10,6 @@ extension AppCoordinator {
         case editProfile
         case editProviderEntity(Profile, Bool, Module)
         case interactiveLogin
-        case migrateProfiles
         case settings
         case systemExtension
 
@@ -19,9 +18,8 @@ extension AppCoordinator {
             case .editProfile: return 1
             case .editProviderEntity: return 2
             case .interactiveLogin: return 3
-            case .migrateProfiles: return 4
-            case .settings: return 5
-            case .systemExtension: return 6
+            case .settings: return 4
+            case .systemExtension: return 5
             }
         }
 
@@ -51,8 +49,6 @@ private extension AppCoordinator.ModalRoute {
         switch self {
         case .interactiveLogin:
             return .custom(width: 500, height: 200)
-        case .migrateProfiles:
-            return .custom(width: 700, height: 400)
         case .systemExtension:
             return .small
         default:
@@ -61,21 +57,11 @@ private extension AppCoordinator.ModalRoute {
     }
 
     var isFixedWidth: Bool {
-        switch self {
-        case .migrateProfiles:
-            return true
-        default:
-            return false
-        }
+        false
     }
 
     var isFixedHeight: Bool {
-        switch self {
-        case .migrateProfiles:
-            return true
-        default:
-            return false
-        }
+        false
     }
 
     var isInteractive: Bool {

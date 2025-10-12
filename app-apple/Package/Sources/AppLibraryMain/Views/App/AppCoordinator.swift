@@ -124,9 +124,6 @@ extension AppCoordinator {
             flow: .init(
                 onEditProfile: onEditProfile,
                 onDeleteProfile: onDeleteProfile,
-                onMigrateProfiles: {
-                    modalRoute = .migrateProfiles
-                },
                 connectionFlow: .init(
                     onConnect: {
                         await onConnect($0, force: false)
@@ -149,14 +146,6 @@ extension AppCoordinator {
         return layout
     }
 
-    var migrateViewStyle: MigrateView.Style {
-#if os(iOS)
-        .list
-#else
-        .table
-#endif
-    }
-
     func toolbarContent() -> some ToolbarContent {
         AppToolbar(
             profileManager: profileManager,
@@ -165,9 +154,6 @@ extension AppCoordinator {
             isImporting: $isImporting,
             onSettings: {
                 present(.settings)
-            },
-            onMigrateProfiles: {
-                present(.migrateProfiles)
             },
             onNewProfile: onNewProfile
         )
@@ -211,13 +197,6 @@ extension AppCoordinator {
                 )
             }
             .presentationDetents([.medium])
-
-        case .migrateProfiles:
-            MigrateView(
-                style: migrateViewStyle,
-                profileManager: profileManager
-            )
-            .themeNavigationStack(closable: true, path: $migrationPath)
 
 #if os(macOS)
         case .systemExtension:

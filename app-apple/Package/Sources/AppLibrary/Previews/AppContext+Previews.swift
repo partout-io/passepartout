@@ -41,7 +41,6 @@ extension AppContext {
             repository: InMemoryAPIRepository(.global)
         )
         let configManager = ConfigManager()
-        let migrationManager = MigrationManager()
         let preferencesManager = PreferencesManager()
         let registry = Registry()
 
@@ -57,7 +56,6 @@ extension AppContext {
             distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            migrationManager: migrationManager,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
