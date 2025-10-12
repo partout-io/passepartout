@@ -8,10 +8,10 @@ import Foundation
 public enum OnboardingStep: String, RawRepresentable, CaseIterable {
     case community
     case doneV3
-    case migrateV3_2_3
+    case migrateV3_2_3 // ProviderModule
     case doneV3_2_3
-    case migrateV3_6_0
-    case doneV3_6_0
+    case migrateV3_5_15 // JSON profiles
+    case doneV3_5_15
 }
 
 extension OnboardingStep {

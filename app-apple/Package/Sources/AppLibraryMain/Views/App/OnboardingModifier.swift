@@ -53,7 +53,7 @@ private extension OnboardingModifier {
         switch item {
         case .community:
             return Strings.Unlocalized.reddit
-        case .migrateV3_2_3, .migrateV3_6_0:
+        case .migrateV3_2_3, .migrateV3_5_15:
             return Strings.Global.Nouns.migration
         default:
             return ""
@@ -72,7 +72,7 @@ private extension OnboardingModifier {
             Button(Strings.Onboarding.Community.dismiss, role: .cancel, action: advance)
         case .migrateV3_2_3:
             Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
-        case .migrateV3_6_0:
+        case .migrateV3_5_15:
             Button(Strings.Global.Nouns.ok, action: migrateProfilesToJSON)
         default:
             EmptyView()
@@ -89,7 +89,7 @@ private extension OnboardingModifier {
                 Strings.Onboarding.Migrate323.message,
                 Strings.Onboarding.Migrate.message
             ].joined(separator: " "))
-        case .migrateV3_6_0:
+        case .migrateV3_5_15:
             Text([
                 Strings.Onboarding.Migrate360.message,
                 Strings.Onboarding.Migrate.message
@@ -110,7 +110,7 @@ private extension OnboardingModifier {
         }
     }
 
-    // 3.6.0
+    // 3.5.15
     func migrateProfilesToJSON() {
         Task {
             await profileManager.resaveAllProfiles()
@@ -133,7 +133,7 @@ private extension OnboardingModifier {
 
     func performCurrentStep() {
         switch onboardingManager.step {
-        case .community, .migrateV3_2_3, .migrateV3_6_0:
+        case .community, .migrateV3_2_3, .migrateV3_5_15:
             isAlertPresented = true
         default:
             if onboardingManager.step < .last {

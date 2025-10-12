@@ -43,9 +43,9 @@ public final class OnboardingManager: ObservableObject {
         // New installs or 2.x.x
         if initialStep < .doneV3 {
             switch step {
-            case .migrateV3_2_3, .migrateV3_6_0:
-                // Skip steps about 3.2.3 providers or 3.6.0 profiles
-                step = .doneV3_6_0
+            case .migrateV3_2_3, .migrateV3_5_15:
+                // Skip steps about 3.2.3 providers or 3.5.15 profiles
+                step = .doneV3_5_15
             default:
                 break
             }

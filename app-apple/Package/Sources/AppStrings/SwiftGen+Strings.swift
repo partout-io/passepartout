@@ -743,9 +743,9 @@ public enum Strings {
       /// Version 3.2.3 changed the way providers are stored.
       public static let message = Strings.tr("Localizable", "onboarding.migrate_3_2_3.message", fallback: "Version 3.2.3 changed the way providers are stored.")
     }
-    public enum Migrate360 {
-      /// Version 3.6.0 changed the way profiles are stored.
-      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_6_0.message", fallback: "Version 3.6.0 changed the way profiles are stored.")
+    public enum Migrate3515 {
+      /// Version 3.5.15 changed the way profiles are stored.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_5_15.message", fallback: "Version 3.5.15 changed the way profiles are stored.")
     }
   }
   public enum Placeholders {
