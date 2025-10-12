@@ -11,10 +11,6 @@ public struct Constants: Decodable, Sendable {
         public let remote: String
 
         public let backup: String
-
-        public let legacyV2: String
-
-        public let legacyV2TV: String
     }
 
     public struct Websites: Decodable, Sendable {

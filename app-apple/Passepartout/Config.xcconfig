@@ -1,14 +1,14 @@
 MARKETING_VERSION = 3.6.0
 CURRENT_PROJECT_VERSION = 3937
 
-// tweak these based on app and team
+// Tweak these based on app and team
 CFG_APP_ID = com.algoritmico.ios.Passepartout
 CFG_APP_STORE_ID = 1433648537
 CFG_CLOUDKIT_ROOT = iCloud.com.algoritmico.Passepartout
 CFG_RAW_GROUP_ID = group.com.algoritmico.Passepartout
 CFG_TEAM_ID = DTDYD63ZX9
 
-// metadata
+// Metadata
 CFG_COPYRIGHT = Copyright © 2025 Davide De Rosa. All rights reserved.
 CFG_DISPLAY_NAME = Passepartout
 CFG_ENTITLEMENTS = Passepartout/App/App.entitlements
@@ -34,8 +34,6 @@ CFG_GROUP_ID[sdk=macosx*] = $(CFG_TEAM_ID).$(CFG_RAW_GROUP_ID)
 
 // CloudKit
 CFG_CLOUDKIT_ID = $(CFG_CLOUDKIT_ROOT).v3
-CFG_LEGACY_V2_CLOUDKIT_ID = $(CFG_CLOUDKIT_ROOT)
-CFG_LEGACY_V2_TV_CLOUDKIT_ID = $(CFG_CLOUDKIT_ROOT).Shared
 
 // StoreKit
 CFG_IAP_BUNDLE_PREFIX = $(CFG_APP_ID)

@@ -5,9 +5,7 @@
         "local": "Local",
         "remote": "Remote",
         "backup": "Backup",
-        "preferences": "Preferences-v3",
-        "legacyV2": "Profiles",
-        "legacyV2TV": "SharedProfiles"
+        "preferences": "Preferences-v3"
     },
     "websites": {
         "home": "https://passepartoutvpn.app",

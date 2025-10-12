@@ -39,10 +39,6 @@ extension DistributionTarget {
         self != .developerID
     }
 
-    public var supportsV2Migration: Bool {
-        self == .appStore
-    }
-
     public var usesExperimentalPOSIXResolver: Bool {
         self == .developerID
     }
