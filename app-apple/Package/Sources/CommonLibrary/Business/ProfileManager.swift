@@ -290,6 +290,19 @@ extension ProfileManager {
 
         try await save(copy)
     }
+
+    public func resaveAllProfiles() async {
+        for preview in previews {
+            guard let profile = profile(withId: preview.id) else {
+                continue
+            }
+            do {
+                try await save(profile, isLocal: true)
+            } catch {
+                pp_log_g(.App.profiles, .error, "Unable to re-save profile \(preview.id): \(error)")
+            }
+        }
+    }
 }
 
 // MARK: - Observation

@@ -47,8 +47,7 @@ private extension CommonData {
         guard let encoded = cdEntity.encoded else {
             return nil
         }
-        let profile = try registryCoder.profile(from: encoded)
-        return profile
+        return try registryCoder.profile(from: encoded)
     }
 
     static func toMapper(
@@ -63,7 +62,7 @@ private extension CommonData {
         cdProfile.name = profile.name
         cdProfile.encoded = encoded
 
-        // redundant but convenient
+        // Redundant but convenient
         let attributes = profile.attributes
         cdProfile.isAvailableForTV = attributes.isAvailableForTV.map(NSNumber.init(value:))
         cdProfile.lastUpdate = attributes.lastUpdate

@@ -233,7 +233,9 @@
 "onboarding.community.message" = "Did you know that %@ has a subreddit? Subscribe for updates or to discuss issues, features, new platforms or whatever you like.\n\nIt's also a great way to show you care about this project.";
 "onboarding.community.subscribe" = "Subscribe now";
 "onboarding.community.dismiss" = "No, thanks";
-"onboarding.migrate_3_2_3.message" = "Version 3.2.3 changed the way providers are stored, make sure to upgrade all your devices to the latest version to use the new profiles.";
+"onboarding.migrate_3_2_3.message" = "Version 3.2.3 changed the way providers are stored.";
+"onboarding.migrate_3_6_0.message" = "Version 3.6.0 changed the way profiles are stored.";
+"onboarding.migrate.message" = "Make sure to upgrade all your devices to the latest version to use the new profiles.";
 
 // MARK: - Entities
 

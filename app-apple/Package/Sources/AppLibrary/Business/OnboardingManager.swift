@@ -38,9 +38,15 @@ public final class OnboardingManager: ObservableObject {
         step = step.nextStep
         pp_log_g(.app, .info, "Next step: \(step)")
 
-        // skip step about 3.2.3 providers migration for new installs or 2.x.x
-        if initialStep < .doneV3 && step == .migrateV3_2_3 {
-            step = .doneV3_2_3
+        // New installs or 2.x.x
+        if initialStep < .doneV3 {
+            switch step {
+            case .migrateV3_2_3, .migrateV3_6_0:
+                // Skip steps about 3.2.3 providers or 3.6.0 profiles
+                step = .doneV3_6_0
+            default:
+                break
+            }
         }
     }
 }

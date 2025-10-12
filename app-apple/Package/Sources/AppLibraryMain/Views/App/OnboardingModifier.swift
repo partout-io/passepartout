@@ -16,6 +16,9 @@ struct OnboardingModifier: ViewModifier {
     @EnvironmentObject
     private var migrationManager: MigrationManager
 
+    @EnvironmentObject
+    private var profileManager: ProfileManager
+
     @Environment(\.isUITesting)
     private var isUITesting
 
@@ -53,7 +56,7 @@ private extension OnboardingModifier {
         switch item {
         case .community:
             return Strings.Unlocalized.reddit
-        case .migrateV3_2_3:
+        case .migrateV3_2_3, .migrateV3_6_0:
             return Strings.Global.Nouns.migration
         default:
             return ""
@@ -69,17 +72,11 @@ private extension OnboardingModifier {
                     advance()
                     return .systemAction
                 })
-
             Button(Strings.Onboarding.Community.dismiss, role: .cancel, action: advance)
-
         case .migrateV3_2_3:
-            Button(Strings.Global.Nouns.ok) {
-                Task {
-                    await apiManager.resetCacheForAllProviders()
-                    advance()
-                }
-            }
-
+            Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
+        case .migrateV3_6_0:
+            Button(Strings.Global.Nouns.ok, action: migrateProfilesToJSON)
         default:
             EmptyView()
         }
@@ -91,9 +88,36 @@ private extension OnboardingModifier {
         case .community:
             Text(Strings.Onboarding.Community.message(Strings.Unlocalized.appName))
         case .migrateV3_2_3:
-            Text(Strings.Onboarding.Migrate323.message)
+            Text([
+                Strings.Onboarding.Migrate323.message,
+                Strings.Onboarding.Migrate.message
+            ].joined(separator: " "))
+        case .migrateV3_6_0:
+            Text([
+                Strings.Onboarding.Migrate360.message,
+                Strings.Onboarding.Migrate.message
+            ].joined(separator: " "))
         default:
             EmptyView()
+        }
+    }
+}
+
+private extension OnboardingModifier {
+
+    // 3.2.3
+    func resetProvidersCache() {
+        Task {
+            await apiManager.resetCacheForAllProviders()
+            advance()
+        }
+    }
+
+    // 3.6.0
+    func migrateProfilesToJSON() {
+        Task {
+            await profileManager.resaveAllProfiles()
+            advance()
         }
     }
 }
@@ -118,9 +142,7 @@ private extension OnboardingModifier {
                 return
             }
             modalRoute = .migrateProfiles
-        case .community:
-            isAlertPresented = true
-        case .migrateV3_2_3:
+        case .community, .migrateV3_2_3, .migrateV3_6_0:
             isAlertPresented = true
         default:
             if onboardingManager.step < .last {

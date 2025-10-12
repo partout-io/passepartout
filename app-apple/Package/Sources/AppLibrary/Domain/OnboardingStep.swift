@@ -7,14 +7,12 @@ import Foundation
 // order matters
 public enum OnboardingStep: String, RawRepresentable, CaseIterable {
     case migrateV3
-
     case community
-
     case doneV3
-
     case migrateV3_2_3
-
     case doneV3_2_3
+    case migrateV3_6_0
+    case doneV3_6_0
 }
 
 extension OnboardingStep {

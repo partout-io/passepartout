@@ -735,9 +735,17 @@ public enum Strings {
       /// Subscribe now
       public static let subscribe = Strings.tr("Localizable", "onboarding.community.subscribe", fallback: "Subscribe now")
     }
+    public enum Migrate {
+      /// Make sure to upgrade all your devices to the latest version to use the new profiles.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate.message", fallback: "Make sure to upgrade all your devices to the latest version to use the new profiles.")
+    }
     public enum Migrate323 {
-      /// Version 3.2.3 changed the way providers are stored, make sure to upgrade all your devices to the latest version to use the new profiles.
-      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_2_3.message", fallback: "Version 3.2.3 changed the way providers are stored, make sure to upgrade all your devices to the latest version to use the new profiles.")
+      /// Version 3.2.3 changed the way providers are stored.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_2_3.message", fallback: "Version 3.2.3 changed the way providers are stored.")
+    }
+    public enum Migrate360 {
+      /// Version 3.6.0 changed the way profiles are stored.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_6_0.message", fallback: "Version 3.6.0 changed the way profiles are stored.")
     }
   }
   public enum Placeholders {

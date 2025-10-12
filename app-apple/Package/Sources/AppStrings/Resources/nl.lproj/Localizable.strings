@@ -261,7 +261,9 @@
 "onboarding.community.dismiss" = "Nee, bedankt";
 "onboarding.community.message" = "Wist je dat %@ een subreddit heeft? Abonneer je voor updates of om problemen, functies, nieuwe platforms of wat je maar wilt te bespreken.\n\nHet is ook een geweldige manier om te laten zien dat je om dit project geeft.";
 "onboarding.community.subscribe" = "Nu abonneren";
-"onboarding.migrate_3_2_3.message" = "Versie 3.2.3 heeft de manier waarop providers worden opgeslagen gewijzigd, zorg ervoor dat je al je apparaten bijwerkt naar de nieuwste versie om de nieuwe profielen te gebruiken.";
+"onboarding.migrate_3_2_3.message" = "Versie 3.2.3 heeft de manier waarop providers worden opgeslagen gewijzigd.";
+"onboarding.migrate_3_6_0.message" = "Versie 3.6.0 heeft de manier waarop profielen worden opgeslagen gewijzigd.";
+"onboarding.migrate.message" = "Zorg ervoor dat je al je apparaten bijwerkt naar de nieuwste versie om de nieuwe profielen te gebruiken.";
 "placeholders.on_demand.ssid" = "Mijn SSID";
 "placeholders.profile.name" = "Mijn profiel";
 "placeholders.secret" = "geheim";

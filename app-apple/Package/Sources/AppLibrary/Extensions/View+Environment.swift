@@ -17,6 +17,7 @@ extension View {
             .environmentObject(context.migrationManager)
             .environmentObject(context.onboardingManager)
             .environmentObject(context.preferencesManager)
+            .environmentObject(context.profileManager)
             .environmentObject(context.registryCoder)
             .environmentObject(context.versionChecker)
     }
