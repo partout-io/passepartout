@@ -261,7 +261,9 @@
 "onboarding.community.dismiss" = "Non, merci";
 "onboarding.community.message" = "Saviez-vous que %@ a un subreddit ? Abonnez-vous pour des mises à jour ou pour discuter des problèmes, fonctionnalités, nouvelles plateformes ou tout ce que vous voulez.\n\nC'est aussi un excellent moyen de montrer que vous vous souciez de ce projet.";
 "onboarding.community.subscribe" = "Abonnez-vous maintenant";
-"onboarding.migrate_3_2_3.message" = "La version 3.2.3 a modifié la manière dont les fournisseurs sont stockés, assurez-vous de mettre à jour tous vos appareils vers la dernière version pour utiliser les nouveaux profils.";
+"onboarding.migrate_3_2_3.message" = "La version 3.2.3 a modifié la façon dont les fournisseurs sont stockés.";
+"onboarding.migrate_3_6_0.message" = "La version 3.6.0 a modifié la façon dont les profils sont stockés.";
+"onboarding.migrate.message" = "Assurez-vous de mettre à jour tous vos appareils vers la dernière version pour utiliser les nouveaux profils.";
 "placeholders.on_demand.ssid" = "Mon SSID";
 "placeholders.profile.name" = "Mon profil";
 "placeholders.secret" = "secret";

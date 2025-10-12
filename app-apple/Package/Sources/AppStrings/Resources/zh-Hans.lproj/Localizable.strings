@@ -261,7 +261,9 @@
 "onboarding.community.dismiss" = "不，谢谢";
 "onboarding.community.message" = "您知道 %@ 有一个 subreddit 吗？订阅以获取更新或讨论问题、功能、新平台或其他内容。\n\n这也是表明您支持此项目的好方法。";
 "onboarding.community.subscribe" = "立即订阅";
-"onboarding.migrate_3_2_3.message" = "版本 3.2.3 更改了存储提供商的方式，请确保将所有设备更新到最新版本，以使用新的配置文件。";
+"onboarding.migrate_3_2_3.message" = "3.2.3 版本更改了提供商的存储方式。";
+"onboarding.migrate_3_6_0.message" = "3.6.0 版本更改了配置文件的存储方式。";
+"onboarding.migrate.message" = "请确保将所有设备升级到最新版本以使用新的配置文件。";
 "placeholders.on_demand.ssid" = "我的 SSID";
 "placeholders.profile.name" = "我的配置文件";
 "placeholders.secret" = "密钥";

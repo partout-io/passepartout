@@ -88,9 +88,15 @@ private extension OnboardingModifier {
         case .community:
             Text(Strings.Onboarding.Community.message(Strings.Unlocalized.appName))
         case .migrateV3_2_3:
-            Text(Strings.Onboarding.Migrate323.message)
+            Text([
+                Strings.Onboarding.Migrate323.message,
+                Strings.Onboarding.Migrate.message
+            ].joined(separator: " "))
         case .migrateV3_6_0:
-            Text(Strings.Onboarding.Migrate360.message)
+            Text([
+                Strings.Onboarding.Migrate360.message,
+                Strings.Onboarding.Migrate.message
+            ].joined(separator: " "))
         default:
             EmptyView()
         }

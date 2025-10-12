@@ -261,7 +261,9 @@
 "onboarding.community.dismiss" = "Nej, tack";
 "onboarding.community.message" = "Visste du att %@ har en subreddit? Prenumerera för att få uppdateringar eller för att diskutera problem, funktioner, nya plattformar eller vad du vill.\n\nDet är också ett bra sätt att visa att du bryr dig om det här projektet.";
 "onboarding.community.subscribe" = "Prenumerera nu";
-"onboarding.migrate_3_2_3.message" = "Version 3.2.3 har ändrat hur leverantörer lagras, se till att uppdatera alla dina enheter till den senaste versionen för att använda de nya profilerna.";
+"onboarding.migrate_3_2_3.message" = "Version 3.2.3 ändrade hur leverantörer lagras.";
+"onboarding.migrate_3_6_0.message" = "Version 3.6.0 ändrade hur profiler lagras.";
+"onboarding.migrate.message" = "Se till att uppdatera alla dina enheter till den senaste versionen för att använda de nya profilerna.";
 "placeholders.on_demand.ssid" = "Min SSID";
 "placeholders.profile.name" = "Min profil";
 "placeholders.secret" = "hemlighet";
