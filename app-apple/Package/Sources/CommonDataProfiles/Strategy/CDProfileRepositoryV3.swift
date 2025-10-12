@@ -44,7 +44,7 @@ private extension CommonData {
         _ cdEntity: CDProfileV3,
         registryCoder: RegistryCoder
     ) throws -> Profile? {
-        guard let encoded = cdEntity.encoded else {
+        guard let encoded = cdEntity.encodedJSON ?? cdEntity.encoded else {
             return nil
         }
         let profile = try registryCoder.profile(from: encoded)
@@ -56,14 +56,14 @@ private extension CommonData {
         _ context: NSManagedObjectContext,
         registryCoder: RegistryCoder
     ) throws -> CDProfileV3 {
-        let encoded = try registryCoder.string(from: profile)
+        let encodedJSON = try registryCoder.string(from: profile)
 
         let cdProfile = CDProfileV3(context: context)
         cdProfile.uuid = profile.id
         cdProfile.name = profile.name
-        cdProfile.encoded = encoded
+        cdProfile.encodedJSON = encodedJSON
 
-        // redundant but convenient
+        // Redundant but convenient
         let attributes = profile.attributes
         cdProfile.isAvailableForTV = attributes.isAvailableForTV.map(NSNumber.init(value:))
         cdProfile.lastUpdate = attributes.lastUpdate

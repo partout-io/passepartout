@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="23H222" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="24G90" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="CDProfileV3" representedClassName="CDProfileV3" elementID="CDProfile" versionHashModifier="1" syncable="YES">
         <attribute name="encoded" optional="YES" attributeType="String" allowsCloudEncryption="YES"/>
+        <attribute name="encodedJSON" optional="YES" attributeType="String"/>
         <attribute name="fingerprint" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isAvailableForTV" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
