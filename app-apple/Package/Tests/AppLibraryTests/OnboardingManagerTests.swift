@@ -10,34 +10,32 @@ import Testing
 struct OnboardingManagerTests {
     @Test
     func test_givenStep_whenOrder_thenIsExpected() {
-        #expect(OnboardingStep.migrateV3.order == 0)
-        #expect(OnboardingStep.community.order == 1)
-        #expect(OnboardingStep.doneV3.order == 2)
-        #expect(OnboardingStep.migrateV3_2_3.order == 3)
-        #expect(OnboardingStep.doneV3_2_3.order == 4)
-        #expect(OnboardingStep.migrateV3_6_0.order == 5)
-        #expect(OnboardingStep.doneV3_6_0.order == 6)
+        #expect(OnboardingStep.community.order == 0)
+        #expect(OnboardingStep.doneV3.order == 1)
+        #expect(OnboardingStep.migrateV3_2_3.order == 2)
+        #expect(OnboardingStep.doneV3_2_3.order == 3)
+        #expect(OnboardingStep.migrateV3_6_0.order == 4)
+        #expect(OnboardingStep.doneV3_6_0.order == 5)
     }
 
     @Test
     func givenNil_whenAdvance_thenAdvancesToNext() {
-        let sut = OnboardingManager() // .migrateV3
+        let sut = OnboardingManager() // .community
         sut.advance()
-        #expect(sut.step == .community)
+        #expect(sut.step == .doneV3)
     }
 
     @Test
     func givenMid_whenAdvance_thenAdvancesToNext() {
-        let sut = OnboardingManager(initialStep: .migrateV3)
+        let sut = OnboardingManager(initialStep: .migrateV3_2_3)
         sut.advance()
-        #expect(sut.step == .community)
+        #expect(sut.step == .doneV3_2_3)
     }
 
     @Test
     func givenMid_whenAdvanceFromV2_thenSkipsV323Migration() {
-        let sut = OnboardingManager(initialStep: .first) // .migrateV3
-        #expect(sut.step == .migrateV3)
-        sut.advance() // .community
+        let sut = OnboardingManager(initialStep: .first) // .community
+        #expect(sut.step == .community)
         sut.advance() // .doneV3
         sut.advance() // .migrateV3_2_3 (skipped to .doneV3_6)
         #expect(sut.step == .doneV3_6_0)
