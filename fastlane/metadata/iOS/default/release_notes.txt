@@ -1,3 +1,2 @@
 * Delete v2 migration logic and views (#1566)
-* Update Partout for WireGuard IPv6 bug
 * Update Partout JSON encoding and DNS (#1565)
