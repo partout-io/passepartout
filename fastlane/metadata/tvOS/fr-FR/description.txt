@@ -10,7 +10,7 @@ Passepartout est conçu avec transparence et respect de votre vie privée :
 
 OPEN SOURCE ET SOUTENU PAR LA COMMUNAUTÉ
 
-Passepartout est open source et évolue constamment grâce à l'aide de sa communauté. Consultez le projet sur GitHub : https://github.com/passepartoutvpn
+Passepartout est open source et évolue constamment grâce à l'aide de sa communauté. Consultez le projet sur GitHub : https://github.com/partout-io
 
 Prenez le contrôle de votre expérience VPN. Téléchargez Passepartout dès aujourd'hui et profitez d'une connectivité sécurisée, privée et sans effort sur votre Apple TV !
 

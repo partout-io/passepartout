@@ -10,7 +10,7 @@ Passepartout foi projetado com transparência e respeito à sua privacidade:
 
 CÓDIGO ABERTO E APOIADO PELA COMUNIDADE
 
-Passepartout é um projeto de código aberto que está em constante evolução graças ao apoio da comunidade. Confira o projeto no GitHub: https://github.com/passepartoutvpn
+Passepartout é um projeto de código aberto que está em constante evolução graças ao apoio da comunidade. Confira o projeto no GitHub: https://github.com/partout-io
 
 Assuma o controle da sua experiência VPN. Baixe Passepartout hoje e aproveite uma conectividade segura, privada e sem complicações no seu Apple TV!
 
