@@ -39,7 +39,7 @@ jobs:
           ls -R
       - name: Read app version
         run: |
-          version=`ci/version-number.sh`
+          version=`app-apple/ci/version-number.sh`
           echo "APP_VERSION=${version}" >> "$GITHUB_ENV"
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
