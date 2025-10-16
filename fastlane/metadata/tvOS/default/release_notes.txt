@@ -1,2 +1,1 @@
-* Delete v2 migration logic and views (#1566)
-* Update Partout JSON encoding and DNS (#1565)
+* WireGuard: Fix regression in DNS resolution
