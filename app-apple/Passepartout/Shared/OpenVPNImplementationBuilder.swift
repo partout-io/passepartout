@@ -20,9 +20,8 @@ struct OpenVPNImplementationBuilder: Sendable {
         OpenVPNModule.Implementation(
             importerBlock: { StandardOpenVPNParser() },
             connectionBlock: {
-                // FIXME: ###, Made redundant by configBlock?
-                let preferences = $0.options.userInfo as? AppPreferenceValues
-                if preferences?.isFlagEnabled(.ovpnCrossConnection) == true {
+                let configFlags = configBlock()
+                if configFlags.contains(.ovpnCrossConnection) {
                     return try crossConnection(with: $0, module: $1)
                 } else {
                     return try legacyConnection(with: $0, module: $1)

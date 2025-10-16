@@ -1,0 +1,3877 @@
+{
+  "servers": [
+    {
+      "id": 929966,
+      "created_at": "2018-09-03 07:58:14",
+      "updated_at": "2025-07-16 15:05:20",
+      "name": "Poland #128",
+      "station": "194.99.105.99",
+      "ipv6_station": "",
+      "hostname": "pl128.nordvpn.com",
+      "status": "online",
+      "load": 17,
+      "ips": [
+        {
+          "id": 1019456,
+          "created_at": "2023-07-14 07:40:33",
+          "updated_at": "2023-07-14 07:40:33",
+          "server_id": 929966,
+          "ip_id": 23702,
+          "type": "entry",
+          "ip": {
+            "id": 23702,
+            "ip": "194.99.105.99",
+            "version": 4
+          }
+        }
+      ],
+      "specifications": [
+        {
+          "id": 8,
+          "title": "Version",
+          "identifier": "version",
+          "values": [
+            {
+              "id": 257,
+              "value": "2.1.0"
+            }
+          ]
+        }
+      ],
+      "technologies": [
+        {
+          "id": 1,
+          "status": "online"
+        },
+        {
+          "id": 5,
+          "status": "online"
+        },
+        {
+          "id": 21,
+          "status": "online"
+        },
+        {
+          "id": 23,
+          "status": "online"
+        },
+        {
+          "id": 35,
+          "metadata": [
+            {
+              "name": "public_key",
+              "value": "kjAOzXQRVGpmQdqE2zPsITH8QHmFK83AAPktqWed9wM="
+            }
+          ],
+          "status": "online"
+        },
+        {
+          "id": 51,
+          "metadata": [
+            {
+              "name": "port",
+              "value": "8443"
+            }
+          ],
+          "status": "online"
+        }
+      ],
+      "group_ids": [
+        11,
+        15,
+        19
+      ],
+      "service_ids": [
+        1,
+        5
+      ],
+      "location_ids": [
+        367
+      ]
+    },
+    {
+      "id": 930119,
+      "created_at": "2018-09-05 10:55:12",
+      "updated_at": "2025-07-16 15:05:20",
+      "name": "Belgium #148",
+      "station": "82.102.19.137",
+      "ipv6_station": "",
+      "hostname": "be148.nordvpn.com",
+      "status": "online",
+      "load": 32,
+      "ips": [
+        {
+          "id": 1007771,
+          "created_at": "2023-07-11 10:43:36",
+          "updated_at": "2023-07-11 10:43:36",
+          "server_id": 930119,
+          "ip_id": 8685,
+          "type": "entry",
+          "ip": {
+            "id": 8685,
+            "ip": "82.102.19.137",
+            "version": 4
+          }
+        }
+      ],
+      "specifications": [
+        {
+          "id": 8,
+          "title": "Version",
+          "identifier": "version",
+          "values": [
+            {
+              "id": 257,
+              "value": "2.1.0"
+            }
+          ]
+        }
+      ],
+      "technologies": [
+        {
+          "id": 1,
+          "status": "online"
+        },
+        {
+          "id": 3,
+          "status": "online"
+        },
+        {
+          "id": 5,
+          "status": "online"
+        },
+        {
+          "id": 21,
+          "status": "online"
+        },
+        {
+          "id": 23,
+          "status": "online"
+        },
+        {
+          "id": 35,
+          "metadata": [
+            {
+              "name": "public_key",
+              "value": "VSa6XYcD279ahd3IuEiUH6VpXn0+h+kWrD4OcN1ExUs="
+            }
+          ],
+          "status": "online"
+        },
+        {
+          "id": 51,
+          "metadata": [
+            {
+              "name": "port",
+              "value": "8443"
+            }
+          ],
+          "status": "online"
+        }
+      ],
+      "group_ids": [
+        11,
+        15,
+        19
+      ],
+      "service_ids": [
+        1,
+        5
+      ],
+      "location_ids": [
+        3990
+      ]
+    },
+    {
+      "id": 930428,
+      "created_at": "2018-09-07 14:03:13",
+      "updated_at": "2025-07-16 15:05:20",
+      "name": "Hungary #48",
+      "station": "185.189.114.28",
+      "ipv6_station": "",
+      "hostname": "hu48.nordvpn.com",
+      "status": "online",
+      "load": 17,
+      "ips": [
+        {
+          "id": 1039253,
+          "created_at": "2023-07-19 09:32:10",
+          "updated_at": "2023-07-19 09:32:10",
+          "server_id": 930428,
+          "ip_id": 6811,
+          "type": "entry",
+          "ip": {
+            "id": 6811,
+            "ip": "185.189.114.28",
+            "version": 4
+          }
+        }
+      ],
+      "specifications": [
+        {
+          "id": 8,
+          "title": "Version",
+          "identifier": "version",
+          "values": [
+            {
+              "id": 257,
+              "value": "2.1.0"
+            }
+          ]
+        }
+      ],
+      "technologies": [
+        {
+          "id": 1,
+          "status": "online"
+        },
+        {
+          "id": 3,
+          "status": "online"
+        },
+        {
+          "id": 5,
+          "status": "online"
+        },
+        {
+          "id": 21,
+          "status": "online"
+        },
+        {
+          "id": 23,
+          "status": "online"
+        },
+        {
+          "id": 35,
+          "metadata": [
+            {
+              "name": "public_key",
+              "value": "3KWTCjpHlmXD3BroyAIFMN8ajr+ibShIl8OSUGgejXY="
+            }
+          ],
+          "status": "online"
+        },
+        {
+          "id": 51,
+          "metadata": [
+            {
+              "name": "port",
+              "value": "8443"
+            }
+          ],
+          "status": "online"
+        }
+      ],
+      "group_ids": [
+        11,
+        15,
+        19
+      ],
+      "service_ids": [
+        1,
+        5
+      ],
+      "location_ids": [
+        247
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": 11,
+      "created_at": "2017-06-13 13:43:00",
+      "updated_at": "2017-06-13 13:43:00",
+      "title": "Standard VPN servers",
+      "identifier": "legacy_standard",
+      "type": {
+        "id": 3,
+        "created_at": "2017-06-13 13:40:17",
+        "updated_at": "2017-06-13 13:40:23",
+        "title": "Legacy category",
+        "identifier": "legacy_group_category"
+      }
+    },
+    {
+      "id": 15,
+      "created_at": "2017-06-13 13:43:38",
+      "updated_at": "2017-06-13 13:43:38",
+      "title": "P2P",
+      "identifier": "legacy_p2p",
+      "type": {
+        "id": 3,
+        "created_at": "2017-06-13 13:40:17",
+        "updated_at": "2017-06-13 13:40:23",
+        "title": "Legacy category",
+        "identifier": "legacy_group_category"
+      }
+    },
+    {
+      "id": 19,
+      "created_at": "2017-10-27 14:17:17",
+      "updated_at": "2017-10-27 14:17:17",
+      "title": "Europe",
+      "identifier": "europe",
+      "type": {
+        "id": 5,
+        "created_at": "2017-10-27 14:16:30",
+        "updated_at": "2017-10-27 14:16:30",
+        "title": "Regions",
+        "identifier": "regions"
+      }
+    },
+    {
+      "id": 21,
+      "created_at": "2017-10-27 14:23:03",
+      "updated_at": "2017-10-30 08:09:48",
+      "title": "The Americas",
+      "identifier": "the_americas",
+      "type": {
+        "id": 5,
+        "created_at": "2017-10-27 14:16:30",
+        "updated_at": "2017-10-27 14:16:30",
+        "title": "Regions",
+        "identifier": "regions"
+      }
+    },
+    {
+      "id": 9,
+      "created_at": "2017-06-13 13:42:36",
+      "updated_at": "2018-08-22 12:54:48",
+      "title": "Dedicated IP",
+      "identifier": "legacy_dedicated_ip",
+      "type": {
+        "id": 3,
+        "created_at": "2017-06-13 13:40:17",
+        "updated_at": "2017-06-13 13:40:23",
+        "title": "Legacy category",
+        "identifier": "legacy_group_category"
+      }
+    },
+    {
+      "id": 23,
+      "created_at": "2017-10-27 14:23:51",
+      "updated_at": "2017-10-30 08:09:57",
+      "title": "Asia Pacific",
+      "identifier": "asia_pacific",
+      "type": {
+        "id": 5,
+        "created_at": "2017-10-27 14:16:30",
+        "updated_at": "2017-10-27 14:16:30",
+        "title": "Regions",
+        "identifier": "regions"
+      }
+    },
+    {
+      "id": 17,
+      "created_at": "2017-06-13 13:44:10",
+      "updated_at": "2017-06-13 13:44:10",
+      "title": "Obfuscated Servers",
+      "identifier": "legacy_obfuscated_servers",
+      "type": {
+        "id": 3,
+        "created_at": "2017-06-13 13:40:17",
+        "updated_at": "2017-06-13 13:40:23",
+        "title": "Legacy category",
+        "identifier": "legacy_group_category"
+      }
+    },
+    {
+      "id": 25,
+      "created_at": "2017-10-27 14:40:12",
+      "updated_at": "2017-10-30 08:10:20",
+      "title": "Africa, the Middle East and India",
+      "identifier": "africa_the_middle_east_and_india",
+      "type": {
+        "id": 5,
+        "created_at": "2017-10-27 14:16:30",
+        "updated_at": "2017-10-27 14:16:30",
+        "title": "Regions",
+        "identifier": "regions"
+      }
+    },
+    {
+      "id": 3,
+      "created_at": "2017-06-13 13:41:22",
+      "updated_at": "2017-11-06 10:16:14",
+      "title": "Onion Over VPN",
+      "identifier": "legacy_onion_over_vpn",
+      "type": {
+        "id": 3,
+        "created_at": "2017-06-13 13:40:17",
+        "updated_at": "2017-06-13 13:40:23",
+        "title": "Legacy category",
+        "identifier": "legacy_group_category"
+      }
+    },
+    {
+      "id": 1,
+      "created_at": "2017-06-13 13:41:00",
+      "updated_at": "2017-06-13 13:41:00",
+      "title": "Double VPN",
+      "identifier": "legacy_double_vpn",
+      "type": {
+        "id": 3,
+        "created_at": "2017-06-13 13:40:17",
+        "updated_at": "2017-06-13 13:40:23",
+        "title": "Legacy category",
+        "identifier": "legacy_group_category"
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "name": "VPN",
+      "identifier": "vpn",
+      "created_at": "2017-03-21 12:00:45",
+      "updated_at": "2017-05-25 13:12:31"
+    },
+    {
+      "id": 5,
+      "name": "Proxy",
+      "identifier": "proxy",
+      "created_at": "2017-05-29 19:38:30",
+      "updated_at": "2017-05-29 19:38:30"
+    }
+  ],
+  "locations": [
+    {
+      "id": 367,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 52.25,
+      "longitude": 21,
+      "country": {
+        "id": 174,
+        "name": "Poland",
+        "code": "PL",
+        "city": {
+          "id": 6863429,
+          "name": "Warsaw",
+          "latitude": 52.25,
+          "longitude": 21,
+          "dns_name": "warsaw",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3990,
+      "created_at": "2018-06-18 14:58:07",
+      "updated_at": "2018-06-18 14:58:07",
+      "latitude": 50.833333,
+      "longitude": 4.333333,
+      "country": {
+        "id": 21,
+        "name": "Belgium",
+        "code": "BE",
+        "city": {
+          "id": 654293,
+          "name": "Brussels",
+          "latitude": 50.833333,
+          "longitude": 4.333333,
+          "dns_name": "brussels",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 247,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 47.5,
+      "longitude": 19.083333,
+      "country": {
+        "id": 98,
+        "name": "Hungary",
+        "code": "HU",
+        "city": {
+          "id": 3348344,
+          "name": "Budapest",
+          "latitude": 47.5,
+          "longitude": 19.083333,
+          "dns_name": "budapest",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 51,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 34.0522222,
+      "longitude": -118.2427778,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8761958,
+          "name": "Los Angeles",
+          "latitude": 34.0522222,
+          "longitude": -118.2427778,
+          "dns_name": "los-angeles",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 205,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 48.2,
+      "longitude": 16.366667,
+      "country": {
+        "id": 14,
+        "name": "Austria",
+        "code": "AT",
+        "city": {
+          "id": 448799,
+          "name": "Vienna",
+          "latitude": 48.2,
+          "longitude": 16.366667,
+          "dns_name": "vienna",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 107,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 47.366667,
+      "longitude": 8.55,
+      "country": {
+        "id": 209,
+        "name": "Switzerland",
+        "code": "CH",
+        "city": {
+          "id": 1171814,
+          "name": "Zurich",
+          "latitude": 47.366667,
+          "longitude": 8.55,
+          "dns_name": "zurich",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 169,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 55.666667,
+      "longitude": 12.583333,
+      "country": {
+        "id": 58,
+        "name": "Denmark",
+        "code": "DK",
+        "city": {
+          "id": 2382515,
+          "name": "Copenhagen",
+          "latitude": 55.666667,
+          "longitude": 12.583333,
+          "dns_name": "copenhagen",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 97,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 59.916667,
+      "longitude": 10.75,
+      "country": {
+        "id": 163,
+        "name": "Norway",
+        "code": "NO",
+        "city": {
+          "id": 6127364,
+          "name": "Oslo",
+          "latitude": 59.916667,
+          "longitude": 10.75,
+          "dns_name": "oslo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 45,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 51.514125,
+      "longitude": -0.093689,
+      "country": {
+        "id": 227,
+        "name": "United Kingdom",
+        "code": "GB",
+        "city": {
+          "id": 2989907,
+          "name": "London",
+          "latitude": 51.514125,
+          "longitude": -0.093689,
+          "dns_name": "london",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 87,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 48.866667,
+      "longitude": 2.333333,
+      "country": {
+        "id": 74,
+        "name": "France",
+        "code": "FR",
+        "city": {
+          "id": 2886284,
+          "name": "Paris",
+          "latitude": 48.866667,
+          "longitude": 2.333333,
+          "dns_name": "paris",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 133,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 50.116667,
+      "longitude": 8.683333,
+      "country": {
+        "id": 81,
+        "name": "Germany",
+        "code": "DE",
+        "city": {
+          "id": 2215709,
+          "name": "Frankfurt",
+          "latitude": 50.116667,
+          "longitude": 8.683333,
+          "dns_name": "frankfurt",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 19,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 42.8863889,
+      "longitude": -78.8786111,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8963153,
+          "name": "Buffalo",
+          "latitude": 42.8863889,
+          "longitude": -78.8786111,
+          "dns_name": "buffalo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 79,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 32.7833333,
+      "longitude": -96.8,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9080300,
+          "name": "Dallas",
+          "latitude": 32.7833333,
+          "longitude": -96.8,
+          "dns_name": "dallas",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 52.35,
+      "longitude": 4.916667,
+      "country": {
+        "id": 153,
+        "name": "Netherlands",
+        "code": "NL",
+        "city": {
+          "id": 6076868,
+          "name": "Amsterdam",
+          "latitude": 52.35,
+          "longitude": 4.916667,
+          "dns_name": "amsterdam",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3984,
+      "created_at": "2018-06-18 14:45:14",
+      "updated_at": "2018-06-18 14:45:14",
+      "latitude": 35.685,
+      "longitude": 139.751389,
+      "country": {
+        "id": 108,
+        "name": "Japan",
+        "code": "JP",
+        "city": {
+          "id": 4633349,
+          "name": "Tokyo",
+          "latitude": 35.685,
+          "longitude": 139.751389,
+          "dns_name": "tokyo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 113,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 40.408566,
+      "longitude": -3.69222,
+      "country": {
+        "id": 202,
+        "name": "Spain",
+        "code": "ES",
+        "city": {
+          "id": 2619989,
+          "name": "Madrid",
+          "latitude": 40.408566,
+          "longitude": -3.69222,
+          "dns_name": "madrid",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3978,
+      "created_at": "2018-06-18 11:48:51",
+      "updated_at": "2018-06-18 11:48:51",
+      "latitude": 45.466667,
+      "longitude": 9.2,
+      "country": {
+        "id": 106,
+        "name": "Italy",
+        "code": "IT",
+        "city": {
+          "id": 4542737,
+          "name": "Milan",
+          "latitude": 45.466667,
+          "longitude": 9.2,
+          "dns_name": "milan",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 305,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 40.7141667,
+      "longitude": -74.0063889,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8971718,
+          "name": "New York",
+          "latitude": 40.7141667,
+          "longitude": -74.0063889,
+          "dns_name": "new-york",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 143,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 50.083333,
+      "longitude": 14.466667,
+      "country": {
+        "id": 57,
+        "name": "Czech Republic",
+        "code": "CZ",
+        "city": {
+          "id": 2144945,
+          "name": "Prague",
+          "latitude": 50.083333,
+          "longitude": 14.466667,
+          "dns_name": "prague",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 65,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 44.433333,
+      "longitude": 26.1,
+      "country": {
+        "id": 179,
+        "name": "Romania",
+        "code": "RO",
+        "city": {
+          "id": 6953096,
+          "name": "Bucharest",
+          "latitude": 44.433333,
+          "longitude": 26.1,
+          "dns_name": "bucharest",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 259,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 42.6833333,
+      "longitude": 23.3166667,
+      "country": {
+        "id": 33,
+        "name": "Bulgaria",
+        "code": "BG",
+        "city": {
+          "id": 777368,
+          "name": "Sofia",
+          "latitude": 42.6833333,
+          "longitude": 23.3166667,
+          "dns_name": "sofia",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 557,
+      "created_at": "2017-09-06 12:24:30",
+      "updated_at": "2017-09-06 12:24:30",
+      "latitude": 1.2930556,
+      "longitude": 103.8558333,
+      "country": {
+        "id": 195,
+        "name": "Singapore",
+        "code": "SG",
+        "city": {
+          "id": 7867982,
+          "name": "Singapore",
+          "latitude": 1.2930556,
+          "longitude": 103.8558333,
+          "dns_name": "singapore",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 369,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 39.7391667,
+      "longitude": -104.9841667,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8770934,
+          "name": "Denver",
+          "latitude": 39.7391667,
+          "longitude": -104.9841667,
+          "dns_name": "denver",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 291,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 47.6063889,
+      "longitude": -122.3308333,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9128402,
+          "name": "Seattle",
+          "latitude": 47.6063889,
+          "longitude": -122.3308333,
+          "dns_name": "seattle",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 341,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 33.7488889,
+      "longitude": -84.3880556,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8792429,
+          "name": "Atlanta",
+          "latitude": 33.7488889,
+          "longitude": -84.3880556,
+          "dns_name": "atlanta",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 125,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 53.3330556,
+      "longitude": -6.2488889,
+      "country": {
+        "id": 104,
+        "name": "Ireland",
+        "code": "IE",
+        "city": {
+          "id": 3939200,
+          "name": "Dublin",
+          "latitude": 53.3330556,
+          "longitude": -6.2488889,
+          "dns_name": "dublin",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 271,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 25.7738889,
+      "longitude": -80.1938889,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8787782,
+          "name": "Miami",
+          "latitude": 25.7738889,
+          "longitude": -80.1938889,
+          "dns_name": "miami",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3987,
+      "created_at": "2018-06-18 14:53:13",
+      "updated_at": "2018-06-18 14:53:13",
+      "latitude": -33.861481,
+      "longitude": 151.205475,
+      "country": {
+        "id": 13,
+        "name": "Australia",
+        "code": "AU",
+        "city": {
+          "id": 479570,
+          "name": "Sydney",
+          "latitude": -33.861481,
+          "longitude": 151.205475,
+          "dns_name": "sydney",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 519,
+      "created_at": "2017-07-07 10:48:20",
+      "updated_at": "2017-07-07 10:48:20",
+      "latitude": 44.818611,
+      "longitude": 20.468056,
+      "country": {
+        "id": 192,
+        "name": "Serbia",
+        "code": "RS",
+        "city": {
+          "id": 7030907,
+          "name": "Belgrade",
+          "latitude": 44.818611,
+          "longitude": 20.468056,
+          "dns_name": "belgrad",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 83,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 45.5,
+      "longitude": -73.583333,
+      "country": {
+        "id": 38,
+        "name": "Canada",
+        "code": "CA",
+        "city": {
+          "id": 1048463,
+          "name": "Montreal",
+          "latitude": 45.5,
+          "longitude": -73.583333,
+          "dns_name": "montreal",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 559,
+      "created_at": "2017-09-06 12:25:31",
+      "updated_at": "2017-09-06 12:25:31",
+      "latitude": 22.2833333,
+      "longitude": 114.15,
+      "country": {
+        "id": 97,
+        "name": "Hong Kong",
+        "code": "HK",
+        "city": {
+          "id": 3232931,
+          "name": "Hong Kong",
+          "latitude": 22.2833333,
+          "longitude": 114.15,
+          "dns_name": "hong-kong",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 215,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -37.813938,
+      "longitude": 144.963425,
+      "country": {
+        "id": 13,
+        "name": "Australia",
+        "code": "AU",
+        "city": {
+          "id": 470813,
+          "name": "Melbourne",
+          "latitude": -37.813938,
+          "longitude": 144.963425,
+          "dns_name": "melbourne",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 515,
+      "created_at": "2017-06-29 13:43:32",
+      "updated_at": "2017-06-29 13:43:32",
+      "latitude": -27.47101,
+      "longitude": 153.024292,
+      "country": {
+        "id": 13,
+        "name": "Australia",
+        "code": "AU",
+        "city": {
+          "id": 456494,
+          "name": "Brisbane",
+          "latitude": -27.47101,
+          "longitude": 153.024292,
+          "dns_name": "brisbane",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 371,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -31.95224,
+      "longitude": 115.861397,
+      "country": {
+        "id": 13,
+        "name": "Australia",
+        "code": "AU",
+        "city": {
+          "id": 475799,
+          "name": "Perth",
+          "latitude": -31.95224,
+          "longitude": 115.861397,
+          "dns_name": "perth",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 245,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 48.15,
+      "longitude": 17.1166667,
+      "country": {
+        "id": 196,
+        "name": "Slovakia",
+        "code": "SK",
+        "city": {
+          "id": 7884305,
+          "name": "Bratislava",
+          "latitude": 48.15,
+          "longitude": 17.1166667,
+          "dns_name": "bratislava",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 411,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -34.928661,
+      "longitude": 138.598633,
+      "country": {
+        "id": 13,
+        "name": "Australia",
+        "code": "AU",
+        "city": {
+          "id": 452717,
+          "name": "Adelaide",
+          "latitude": -34.928661,
+          "longitude": 138.598633,
+          "dns_name": "adelaide",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 17,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 41.85,
+      "longitude": -87.65,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8815352,
+          "name": "Chicago",
+          "latitude": 41.85,
+          "longitude": -87.65,
+          "dns_name": "chicago",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 95,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -36.866667,
+      "longitude": 174.766667,
+      "country": {
+        "id": 156,
+        "name": "New Zealand",
+        "code": "NZ",
+        "city": {
+          "id": 6144239,
+          "name": "Auckland",
+          "latitude": -36.866667,
+          "longitude": 174.766667,
+          "dns_name": "auckland",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 229,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 59.333333,
+      "longitude": 18.05,
+      "country": {
+        "id": 208,
+        "name": "Sweden",
+        "code": "SE",
+        "city": {
+          "id": 7852919,
+          "name": "Stockholm",
+          "latitude": 59.333333,
+          "longitude": 18.05,
+          "dns_name": "stockholm",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3669,
+      "created_at": "2018-01-12 09:26:44",
+      "updated_at": "2018-01-12 09:26:44",
+      "latitude": 25.258172,
+      "longitude": 55.304717,
+      "country": {
+        "id": 226,
+        "name": "United Arab Emirates",
+        "code": "AE",
+        "city": {
+          "id": 728,
+          "name": "Dubai",
+          "latitude": 25.258172,
+          "longitude": 55.304717,
+          "dns_name": "dubai",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4079,
+      "created_at": "2022-03-24 07:13:39",
+      "updated_at": "2022-03-24 07:13:39",
+      "latitude": -23.533333,
+      "longitude": -46.616667,
+      "country": {
+        "id": 30,
+        "name": "Brazil",
+        "code": "BR",
+        "city": {
+          "id": 890249,
+          "name": "Sao Paulo",
+          "latitude": -23.533333,
+          "longitude": -46.616667,
+          "dns_name": "sao-paulo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 21,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 38.7508333,
+      "longitude": -77.4755556,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9113744,
+          "name": "Manassas",
+          "latitude": 38.7508333,
+          "longitude": -77.4755556,
+          "dns_name": "manassas",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3619,
+      "created_at": "2018-01-09 13:35:52",
+      "updated_at": "2018-01-09 13:35:52",
+      "latitude": 35.2269444,
+      "longitude": -80.8433333,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8980922,
+          "name": "Charlotte",
+          "latitude": 35.2269444,
+          "longitude": -80.8433333,
+          "dns_name": "charlotte",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3993,
+      "created_at": "2018-06-18 15:03:59",
+      "updated_at": "2018-06-18 15:03:59",
+      "latitude": 38.716667,
+      "longitude": -9.133333,
+      "country": {
+        "id": 175,
+        "name": "Portugal",
+        "code": "PT",
+        "city": {
+          "id": 6906665,
+          "name": "Lisbon",
+          "latitude": 38.716667,
+          "longitude": -9.133333,
+          "dns_name": "lisbon",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 77,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 37.7698135,
+      "longitude": -122.4660005,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8766359,
+          "name": "San Francisco",
+          "latitude": 37.7698135,
+          "longitude": -122.4660005,
+          "dns_name": "san-francisco",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 263,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 33.4483333,
+      "longitude": -112.0733333,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8741960,
+          "name": "Phoenix",
+          "latitude": 33.4483333,
+          "longitude": -112.0733333,
+          "dns_name": "phoenix",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4061,
+      "created_at": "2021-04-13 13:03:39",
+      "updated_at": "2021-04-13 13:03:39",
+      "latitude": 43.285413,
+      "longitude": 5.37606,
+      "country": {
+        "id": 74,
+        "name": "France",
+        "code": "FR",
+        "city": {
+          "id": 2867102,
+          "name": "Marseille",
+          "latitude": 43.285413,
+          "longitude": 5.37606,
+          "dns_name": "marseille",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 269,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 43.666667,
+      "longitude": -79.416667,
+      "country": {
+        "id": 38,
+        "name": "Canada",
+        "code": "CA",
+        "city": {
+          "id": 1054250,
+          "name": "Toronto",
+          "latitude": 43.666667,
+          "longitude": -79.416667,
+          "dns_name": "toronto",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4073,
+      "created_at": "2022-03-22 11:39:15",
+      "updated_at": "2022-03-22 11:39:15",
+      "latitude": 50.433333,
+      "longitude": 30.516667,
+      "country": {
+        "id": 225,
+        "name": "Ukraine",
+        "code": "UA",
+        "city": {
+          "id": 8626766,
+          "name": "Kyiv",
+          "latitude": 50.433333,
+          "longitude": 30.516667,
+          "dns_name": "kyiv",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4066,
+      "created_at": "2021-07-20 13:58:26",
+      "updated_at": "2021-07-20 13:58:26",
+      "latitude": 54.6833333,
+      "longitude": 25.3166667,
+      "country": {
+        "id": 125,
+        "name": "Lithuania",
+        "code": "LT",
+        "city": {
+          "id": 5166932,
+          "name": "Vilnius",
+          "latitude": 54.6833333,
+          "longitude": 25.3166667,
+          "dns_name": "vilnius",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 1051,
+      "created_at": "2017-10-05 07:23:26",
+      "updated_at": "2017-10-05 07:23:26",
+      "latitude": 52.516667,
+      "longitude": 13.4,
+      "country": {
+        "id": 81,
+        "name": "Germany",
+        "code": "DE",
+        "city": {
+          "id": 2181458,
+          "name": "Berlin",
+          "latitude": 52.516667,
+          "longitude": 13.4,
+          "dns_name": "berlin",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 157,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 19.434167,
+      "longitude": -99.138611,
+      "country": {
+        "id": 140,
+        "name": "Mexico",
+        "code": "MX",
+        "city": {
+          "id": 5677037,
+          "name": "Mexico",
+          "latitude": 19.434167,
+          "longitude": -99.138611,
+          "dns_name": "mexico",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 391,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 41.018611,
+      "longitude": 28.964722,
+      "country": {
+        "id": 220,
+        "name": "Turkey",
+        "code": "TR",
+        "city": {
+          "id": 8401790,
+          "name": "Istanbul",
+          "latitude": 41.018611,
+          "longitude": 28.964722,
+          "dns_name": "istanbul",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 235,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 49.25,
+      "longitude": -123.133333,
+      "country": {
+        "id": 38,
+        "name": "Canada",
+        "code": "CA",
+        "city": {
+          "id": 1054610,
+          "name": "Vancouver",
+          "latitude": 49.25,
+          "longitude": -123.133333,
+          "dns_name": "vancouver",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4069,
+      "created_at": "2022-02-07 10:49:04",
+      "updated_at": "2022-02-07 10:49:04",
+      "latitude": 39.0997222,
+      "longitude": -94.5783333,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8930717,
+          "name": "Kansas City",
+          "latitude": 39.0997222,
+          "longitude": -94.5783333,
+          "dns_name": "kansas-city",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 399,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 53.5,
+      "longitude": -2.216667,
+      "country": {
+        "id": 227,
+        "name": "United Kingdom",
+        "code": "GB",
+        "city": {
+          "id": 2991110,
+          "name": "Manchester",
+          "latitude": 53.5,
+          "longitude": -2.216667,
+          "dns_name": "manchester",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4070,
+      "created_at": "2022-03-22 06:16:07",
+      "updated_at": "2022-03-22 06:16:07",
+      "latitude": 55.95,
+      "longitude": -3.2,
+      "country": {
+        "id": 227,
+        "name": "United Kingdom",
+        "code": "GB",
+        "city": {
+          "id": 2975852,
+          "name": "Edinburgh",
+          "latitude": 55.95,
+          "longitude": -3.2,
+          "dns_name": "edinburgh",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4082,
+      "created_at": "2022-04-04 11:55:29",
+      "updated_at": "2022-04-04 11:55:29",
+      "latitude": 55.833333,
+      "longitude": -4.25,
+      "country": {
+        "id": 227,
+        "name": "United Kingdom",
+        "code": "GB",
+        "city": {
+          "id": 2978888,
+          "name": "Glasgow",
+          "latitude": 55.833333,
+          "longitude": -4.25,
+          "dns_name": "glasgow",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 103,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 25.0391667,
+      "longitude": 121.525,
+      "country": {
+        "id": 211,
+        "name": "Taiwan",
+        "code": "TW",
+        "city": {
+          "id": 8544365,
+          "name": "Taipei",
+          "latitude": 25.0391667,
+          "longitude": 121.525,
+          "dns_name": "taipei",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 379,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 35.1666667,
+      "longitude": 33.3666667,
+      "country": {
+        "id": 56,
+        "name": "Cyprus",
+        "code": "CY",
+        "city": {
+          "id": 2099627,
+          "name": "Nicosia",
+          "latitude": 35.1666667,
+          "longitude": 33.3666667,
+          "dns_name": "nicosia",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 243,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 47.005556,
+      "longitude": 28.8575,
+      "country": {
+        "id": 142,
+        "name": "Moldova",
+        "code": "MD",
+        "city": {
+          "id": 5295179,
+          "name": "Chisinau",
+          "latitude": 47.005556,
+          "longitude": 28.8575,
+          "dns_name": "chisinau",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 123,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 32.066667,
+      "longitude": 34.766667,
+      "country": {
+        "id": 105,
+        "name": "Israel",
+        "code": "IL",
+        "city": {
+          "id": 3964220,
+          "name": "Tel Aviv",
+          "latitude": 32.066667,
+          "longitude": 34.766667,
+          "dns_name": "tel-aviv",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 409,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 46.0552778,
+      "longitude": 14.5144444,
+      "country": {
+        "id": 197,
+        "name": "Slovenia",
+        "code": "SI",
+        "city": {
+          "id": 7874306,
+          "name": "Ljubljana",
+          "latitude": 46.0552778,
+          "longitude": 14.5144444,
+          "dns_name": "ljubljana",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 127,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -6.174444,
+      "longitude": 106.829444,
+      "country": {
+        "id": 101,
+        "name": "Indonesia",
+        "code": "ID",
+        "city": {
+          "id": 3560288,
+          "name": "Jakarta",
+          "latitude": -6.174444,
+          "longitude": 106.829444,
+          "dns_name": "jakarta",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 25,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -26.205171,
+      "longitude": 28.049815,
+      "country": {
+        "id": 200,
+        "name": "South Africa",
+        "code": "ZA",
+        "city": {
+          "id": 9383693,
+          "name": "Johannesburg",
+          "latitude": -26.205171,
+          "longitude": 28.049815,
+          "dns_name": "johannesburg",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 179,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -34.5875,
+      "longitude": -58.6725,
+      "country": {
+        "id": 10,
+        "name": "Argentina",
+        "code": "AR",
+        "city": {
+          "id": 384866,
+          "name": "Buenos Aires",
+          "latitude": -34.5875,
+          "longitude": -58.6725,
+          "dns_name": "buenos-aires",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4091,
+      "created_at": "2022-12-08 13:31:21",
+      "updated_at": "2022-12-08 13:31:21",
+      "latitude": 34.6937,
+      "longitude": 135.5023,
+      "country": {
+        "id": 108,
+        "name": "Japan",
+        "code": "JP",
+        "city": {
+          "id": 4621847,
+          "name": "Osaka",
+          "latitude": 34.6937,
+          "longitude": 135.5023,
+          "dns_name": "osaka",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3981,
+      "created_at": "2018-06-18 11:56:15",
+      "updated_at": "2018-06-18 11:56:15",
+      "latitude": 60.175556,
+      "longitude": 24.934167,
+      "country": {
+        "id": 73,
+        "name": "Finland",
+        "code": "FI",
+        "city": {
+          "id": 2704343,
+          "name": "Helsinki",
+          "latitude": 60.175556,
+          "longitude": 24.934167,
+          "dns_name": "helsinki",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3969,
+      "created_at": "2018-06-04 10:20:38",
+      "updated_at": "2018-06-04 10:20:38",
+      "latitude": 4.649178,
+      "longitude": -74.062827,
+      "country": {
+        "id": 47,
+        "name": "Colombia",
+        "code": "CO",
+        "city": {
+          "id": 1980695,
+          "name": "Bogota",
+          "latitude": 4.649178,
+          "longitude": -74.062827,
+          "dns_name": "bogota",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3717,
+      "created_at": "2018-01-29 15:22:26",
+      "updated_at": "2018-01-29 15:22:26",
+      "latitude": 42,
+      "longitude": 21.4333333,
+      "country": {
+        "id": 128,
+        "name": "North Macedonia",
+        "code": "MK",
+        "city": {
+          "id": 5386019,
+          "name": "Skopje",
+          "latitude": 42,
+          "longitude": 21.4333333,
+          "dns_name": "skopje",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4094,
+      "created_at": "2023-05-10 08:32:49",
+      "updated_at": "2023-05-10 08:32:49",
+      "latitude": 41.8902,
+      "longitude": 12.4922,
+      "country": {
+        "id": 106,
+        "name": "Italy",
+        "code": "IT",
+        "city": {
+          "id": 4555808,
+          "name": "Rome",
+          "latitude": 41.8902,
+          "longitude": 12.4922,
+          "dns_name": "rome",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 159,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 37.9833333,
+      "longitude": 23.7333333,
+      "country": {
+        "id": 84,
+        "name": "Greece",
+        "code": "GR",
+        "city": {
+          "id": 3131903,
+          "name": "Athens",
+          "latitude": 37.9833333,
+          "longitude": 23.7333333,
+          "dns_name": "athens",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 407,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 38.6272222,
+      "longitude": -90.1977778,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8934551,
+          "name": "Saint Louis",
+          "latitude": 38.6272222,
+          "longitude": -90.1977778,
+          "dns_name": "saint-louis",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4100,
+      "created_at": "2023-08-22 12:34:34",
+      "updated_at": "2023-08-22 12:34:34",
+      "latitude": 41.398371,
+      "longitude": 2.1741,
+      "country": {
+        "id": 202,
+        "name": "Spain",
+        "code": "ES",
+        "city": {
+          "id": 2572757,
+          "name": "Barcelona",
+          "latitude": 41.398371,
+          "longitude": 2.1741,
+          "dns_name": "barcelona",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 521,
+      "created_at": "2017-07-10 09:57:20",
+      "updated_at": "2017-07-10 09:57:20",
+      "latitude": 41.725,
+      "longitude": 44.7908333,
+      "country": {
+        "id": 80,
+        "name": "Georgia",
+        "code": "GE",
+        "city": {
+          "id": 3032063,
+          "name": "Tbilisi",
+          "latitude": 41.725,
+          "longitude": 44.7908333,
+          "dns_name": "tbilisi",
+          "hub_score": -5
+        }
+      }
+    },
+    {
+      "id": 387,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 40.7608333,
+      "longitude": -111.8902778,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9097865,
+          "name": "Salt Lake City",
+          "latitude": 40.7608333,
+          "longitude": -111.8902778,
+          "dns_name": "salt-lake-city",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 61,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": -33.45,
+      "longitude": -70.666667,
+      "country": {
+        "id": 43,
+        "name": "Chile",
+        "code": "CL",
+        "city": {
+          "id": 1227092,
+          "name": "Santiago",
+          "latitude": -33.45,
+          "longitude": -70.666667,
+          "dns_name": "santiago",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 181,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 3.166667,
+      "longitude": 101.7,
+      "country": {
+        "id": 131,
+        "name": "Malaysia",
+        "code": "MY",
+        "city": {
+          "id": 5820143,
+          "name": "Kuala Lumpur",
+          "latitude": 3.166667,
+          "longitude": 101.7,
+          "dns_name": "kuala-lumpur",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 141,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 59.4338889,
+      "longitude": 24.7280556,
+      "country": {
+        "id": 68,
+        "name": "Estonia",
+        "code": "EE",
+        "city": {
+          "id": 2514182,
+          "name": "Tallinn",
+          "latitude": 59.4338889,
+          "longitude": 24.7280556,
+          "dns_name": "tallinn",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 329,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 41.3275,
+      "longitude": 19.8188889,
+      "country": {
+        "id": 2,
+        "name": "Albania",
+        "code": "AL",
+        "city": {
+          "id": 308615,
+          "name": "Tirana",
+          "latitude": 41.3275,
+          "longitude": 19.8188889,
+          "dns_name": "tirana",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4111,
+      "created_at": "2024-02-12 12:32:59",
+      "updated_at": "2024-02-12 12:32:59",
+      "latitude": 36.7630556,
+      "longitude": 3.0505556,
+      "country": {
+        "id": 3,
+        "name": "Algeria",
+        "code": "DZ",
+        "city": {
+          "id": 2438216,
+          "name": "Algiers",
+          "latitude": 36.7630556,
+          "longitude": 3.0505556,
+          "dns_name": "algiers",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4114,
+      "created_at": "2024-02-12 12:35:16",
+      "updated_at": "2024-02-12 12:35:16",
+      "latitude": 34.013784,
+      "longitude": -6.844268,
+      "country": {
+        "id": 147,
+        "name": "Morocco",
+        "code": "MA",
+        "city": {
+          "id": 5271254,
+          "name": "Rabat",
+          "latitude": 34.013784,
+          "longitude": -6.844268,
+          "dns_name": "rabat",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4117,
+      "created_at": "2024-02-12 15:02:09",
+      "updated_at": "2024-02-12 15:02:09",
+      "latitude": 5.55,
+      "longitude": -0.2166667,
+      "country": {
+        "id": 82,
+        "name": "Ghana",
+        "code": "GH",
+        "city": {
+          "id": 3040355,
+          "name": "Accra",
+          "latitude": 5.55,
+          "longitude": -0.2166667,
+          "dns_name": "accra",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4120,
+      "created_at": "2024-02-13 12:55:05",
+      "updated_at": "2024-02-13 12:55:05",
+      "latitude": -0.2166667,
+      "longitude": -78.5,
+      "country": {
+        "id": 63,
+        "name": "Ecuador",
+        "code": "EC",
+        "city": {
+          "id": 2485688,
+          "name": "Quito",
+          "latitude": -0.2166667,
+          "longitude": -78.5,
+          "dns_name": "quito",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4123,
+      "created_at": "2024-02-13 15:18:00",
+      "updated_at": "2024-02-13 15:18:00",
+      "latitude": 33.8719444,
+      "longitude": 35.5097222,
+      "country": {
+        "id": 120,
+        "name": "Lebanon",
+        "code": "LB",
+        "city": {
+          "id": 5022080,
+          "name": "Beirut",
+          "latitude": 33.8719444,
+          "longitude": 35.5097222,
+          "dns_name": "beirut",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4126,
+      "created_at": "2024-02-14 08:35:34",
+      "updated_at": "2024-02-14 08:35:34",
+      "latitude": 42.5,
+      "longitude": 1.5166667,
+      "country": {
+        "id": 5,
+        "name": "Andorra",
+        "code": "AD",
+        "city": {
+          "id": 20,
+          "name": "Andorra la Vella",
+          "latitude": 42.5,
+          "longitude": 1.5166667,
+          "dns_name": "andorra-la-vella",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 277,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 30.05,
+      "longitude": 31.25,
+      "country": {
+        "id": 64,
+        "name": "Egypt",
+        "code": "EG",
+        "city": {
+          "id": 2528003,
+          "name": "Cairo",
+          "latitude": 30.05,
+          "longitude": 31.25,
+          "dns_name": "cairo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4129,
+      "created_at": "2024-02-19 14:04:15",
+      "updated_at": "2024-02-19 14:04:15",
+      "latitude": 43.739722,
+      "longitude": 7.427222,
+      "country": {
+        "id": 143,
+        "name": "Monaco",
+        "code": "MC",
+        "city": {
+          "id": 5292332,
+          "name": "Monte Carlo",
+          "latitude": 43.739722,
+          "longitude": 7.427222,
+          "dns_name": "monte-carlo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4132,
+      "created_at": "2024-02-19 16:04:32",
+      "updated_at": "2024-02-19 16:04:32",
+      "latitude": 35.899722,
+      "longitude": 14.514722,
+      "country": {
+        "id": 134,
+        "name": "Malta",
+        "code": "MT",
+        "city": {
+          "id": 5554481,
+          "name": "Valletta",
+          "latitude": 35.899722,
+          "longitude": 14.514722,
+          "dns_name": "valletta",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4135,
+      "created_at": "2024-02-20 14:09:55",
+      "updated_at": "2024-02-20 14:09:55",
+      "latitude": -25.3,
+      "longitude": -57.633333,
+      "country": {
+        "id": 170,
+        "name": "Paraguay",
+        "code": "PY",
+        "city": {
+          "id": 9521890,
+          "name": "Asuncion",
+          "latitude": -25.3,
+          "longitude": -57.633333,
+          "dns_name": "asuncion",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4138,
+      "created_at": "2024-02-20 14:10:28",
+      "updated_at": "2024-02-20 14:10:28",
+      "latitude": -16.5,
+      "longitude": -68.15,
+      "country": {
+        "id": 26,
+        "name": "Bolivia",
+        "code": "BO",
+        "city": {
+          "id": 838514,
+          "name": "La Paz",
+          "latitude": -16.5,
+          "longitude": -68.15,
+          "dns_name": "la-paz",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4141,
+      "created_at": "2024-02-20 15:04:43",
+      "updated_at": "2024-02-20 15:04:43",
+      "latitude": 32.2941667,
+      "longitude": -64.7838889,
+      "country": {
+        "id": 24,
+        "name": "Bermuda",
+        "code": "BM",
+        "city": {
+          "id": 809078,
+          "name": "Hamilton",
+          "latitude": 32.2941667,
+          "longitude": -64.7838889,
+          "dns_name": "hamilton",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4147,
+      "created_at": "2024-02-23 05:40:35",
+      "updated_at": "2024-02-23 05:40:35",
+      "latitude": 4.8833333,
+      "longitude": 114.9333333,
+      "country": {
+        "id": 32,
+        "name": "Brunei Darussalam",
+        "code": "BN",
+        "city": {
+          "id": 809132,
+          "name": "Bandar Seri Begawan",
+          "latitude": 4.8833333,
+          "longitude": 114.9333333,
+          "dns_name": "bandar-seri-begawan",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4150,
+      "created_at": "2024-02-23 05:49:48",
+      "updated_at": "2024-02-23 05:49:48",
+      "latitude": -34.8580556,
+      "longitude": -56.1708333,
+      "country": {
+        "id": 230,
+        "name": "Uruguay",
+        "code": "UY",
+        "city": {
+          "id": 9150812,
+          "name": "Montevideo",
+          "latitude": -34.8580556,
+          "longitude": -56.1708333,
+          "dns_name": "montevideo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4153,
+      "created_at": "2024-02-23 11:06:50",
+      "updated_at": "2024-02-23 11:06:50",
+      "latitude": 6.9319444,
+      "longitude": 79.8477778,
+      "country": {
+        "id": 203,
+        "name": "Sri Lanka",
+        "code": "LK",
+        "city": {
+          "id": 5043197,
+          "name": "Colombo",
+          "latitude": 6.9319444,
+          "longitude": 79.8477778,
+          "dns_name": "colombo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4156,
+      "created_at": "2024-02-23 13:43:09",
+      "updated_at": "2024-02-23 13:43:09",
+      "latitude": 23.7230556,
+      "longitude": 90.4086111,
+      "country": {
+        "id": 18,
+        "name": "Bangladesh",
+        "code": "BD",
+        "city": {
+          "id": 594935,
+          "name": "Dhaka",
+          "latitude": 23.7230556,
+          "longitude": 90.4086111,
+          "dns_name": "dhaka",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4159,
+      "created_at": "2024-02-26 08:08:18",
+      "updated_at": "2024-02-26 08:08:18",
+      "latitude": 24.9056,
+      "longitude": 67.0822,
+      "country": {
+        "id": 165,
+        "name": "Pakistan",
+        "code": "PK",
+        "city": {
+          "id": 6600485,
+          "name": "Karachi",
+          "latitude": 24.9056,
+          "longitude": 67.0822,
+          "dns_name": "karachi",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4162,
+      "created_at": "2024-02-26 10:06:50",
+      "updated_at": "2024-02-26 10:06:50",
+      "latitude": 27.7166667,
+      "longitude": 85.3166667,
+      "country": {
+        "id": 152,
+        "name": "Nepal",
+        "code": "NP",
+        "city": {
+          "id": 6142175,
+          "name": "Kathmandu",
+          "latitude": 27.7166667,
+          "longitude": 85.3166667,
+          "dns_name": "kathmandu",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4165,
+      "created_at": "2024-02-27 13:20:07",
+      "updated_at": "2024-02-27 13:20:07",
+      "latitude": 19.7475,
+      "longitude": 96.115,
+      "country": {
+        "id": 149,
+        "name": "Myanmar",
+        "code": "MM",
+        "city": {
+          "id": 9521893,
+          "name": "Naypyidaw",
+          "latitude": 19.7475,
+          "longitude": 96.115,
+          "dns_name": "naypyidaw",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4168,
+      "created_at": "2024-02-27 14:00:15",
+      "updated_at": "2024-02-27 14:00:15",
+      "latitude": 14.6042,
+      "longitude": 120.9822,
+      "country": {
+        "id": 172,
+        "name": "Philippines",
+        "code": "PH",
+        "city": {
+          "id": 6391379,
+          "name": "Manila",
+          "latitude": 14.6042,
+          "longitude": 120.9822,
+          "dns_name": "manila",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4171,
+      "created_at": "2024-02-28 12:37:00",
+      "updated_at": "2024-02-28 12:37:00",
+      "latitude": 11.55,
+      "longitude": 104.9166667,
+      "country": {
+        "id": 36,
+        "name": "Cambodia",
+        "code": "KH",
+        "city": {
+          "id": 4658987,
+          "name": "Phnom Penh",
+          "latitude": 11.55,
+          "longitude": 104.9166667,
+          "dns_name": "phnom-penh",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4174,
+      "created_at": "2024-02-29 10:56:22",
+      "updated_at": "2024-02-29 10:56:22",
+      "latitude": 27.472222,
+      "longitude": 89.636111,
+      "country": {
+        "id": 25,
+        "name": "Bhutan",
+        "code": "BT",
+        "city": {
+          "id": 989699,
+          "name": "Thimphu",
+          "latitude": 27.472222,
+          "longitude": 89.636111,
+          "dns_name": "thimphu",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4177,
+      "created_at": "2024-02-29 13:51:26",
+      "updated_at": "2024-02-29 13:51:26",
+      "latitude": 47.9166667,
+      "longitude": 106.9166667,
+      "country": {
+        "id": 144,
+        "name": "Mongolia",
+        "code": "MN",
+        "city": {
+          "id": 5543669,
+          "name": "Ulaanbaatar",
+          "latitude": 47.9166667,
+          "longitude": 106.9166667,
+          "dns_name": "ulaanbaatar",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4180,
+      "created_at": "2024-02-29 13:55:52",
+      "updated_at": "2024-02-29 13:55:52",
+      "latitude": 17.966667,
+      "longitude": 102.6,
+      "country": {
+        "id": 118,
+        "name": "Lao People's Democratic Republic",
+        "code": "LA",
+        "city": {
+          "id": 5015876,
+          "name": "Vientiane",
+          "latitude": 17.966667,
+          "longitude": 102.6,
+          "dns_name": "vientiane",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 3729,
+      "created_at": "2018-03-08 14:33:13",
+      "updated_at": "2018-03-08 14:33:13",
+      "latitude": 40.395278,
+      "longitude": 49.882222,
+      "country": {
+        "id": 15,
+        "name": "Azerbaijan",
+        "code": "AZ",
+        "city": {
+          "id": 490037,
+          "name": "Baku",
+          "latitude": 40.395278,
+          "longitude": 49.882222,
+          "dns_name": "baku",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4183,
+      "created_at": "2024-03-01 06:47:33",
+      "updated_at": "2024-03-01 06:47:33",
+      "latitude": 40.1811111,
+      "longitude": 44.5136111,
+      "country": {
+        "id": 11,
+        "name": "Armenia",
+        "code": "AM",
+        "city": {
+          "id": 322385,
+          "name": "Yerevan",
+          "latitude": 40.1811111,
+          "longitude": 44.5136111,
+          "dns_name": "yerevan",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4186,
+      "created_at": "2024-03-01 10:25:03",
+      "updated_at": "2024-03-01 10:25:03",
+      "latitude": 42.441111,
+      "longitude": 19.263611,
+      "country": {
+        "id": 146,
+        "name": "Montenegro",
+        "code": "ME",
+        "city": {
+          "id": 5318561,
+          "name": "Podgorica",
+          "latitude": 42.441111,
+          "longitude": 19.263611,
+          "dns_name": "podgorica",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4189,
+      "created_at": "2024-03-01 11:49:31",
+      "updated_at": "2024-03-01 11:49:31",
+      "latitude": 10.5,
+      "longitude": -66.9166667,
+      "country": {
+        "id": 233,
+        "name": "Venezuela",
+        "code": "VE",
+        "city": {
+          "id": 9176843,
+          "name": "Caracas",
+          "latitude": 10.5,
+          "longitude": -66.9166667,
+          "dns_name": "caracas",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4192,
+      "created_at": "2024-03-01 12:39:08",
+      "updated_at": "2024-03-01 12:39:08",
+      "latitude": -1.2833333,
+      "longitude": 36.8166667,
+      "country": {
+        "id": 111,
+        "name": "Kenya",
+        "code": "KE",
+        "city": {
+          "id": 4646603,
+          "name": "Nairobi",
+          "latitude": -1.2833333,
+          "longitude": 36.8166667,
+          "dns_name": "nairobi",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4195,
+      "created_at": "2024-03-04 05:50:09",
+      "updated_at": "2024-03-04 05:50:09",
+      "latitude": 25.078056,
+      "longitude": -77.338611,
+      "country": {
+        "id": 16,
+        "name": "Bahamas",
+        "code": "BS",
+        "city": {
+          "id": 988382,
+          "name": "Nassau",
+          "latitude": 25.078056,
+          "longitude": -77.338611,
+          "dns_name": "nassau",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4198,
+      "created_at": "2024-03-04 10:18:35",
+      "updated_at": "2024-03-04 10:18:35",
+      "latitude": 47.1333333,
+      "longitude": 9.5166667,
+      "country": {
+        "id": 124,
+        "name": "Liechtenstein",
+        "code": "LI",
+        "city": {
+          "id": 5037212,
+          "name": "Vaduz",
+          "latitude": 47.1333333,
+          "longitude": 9.5166667,
+          "dns_name": "vaduz",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4201,
+      "created_at": "2024-03-04 10:31:50",
+      "updated_at": "2024-03-04 10:31:50",
+      "latitude": 17.25,
+      "longitude": -88.7666667,
+      "country": {
+        "id": 22,
+        "name": "Belize",
+        "code": "BZ",
+        "city": {
+          "id": 1037459,
+          "name": "Belmopan",
+          "latitude": 17.25,
+          "longitude": -88.7666667,
+          "dns_name": "belmopan",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4204,
+      "created_at": "2024-03-04 12:34:51",
+      "updated_at": "2024-03-04 12:34:51",
+      "latitude": 13.4741667,
+      "longitude": 144.7477778,
+      "country": {
+        "id": 88,
+        "name": "Guam",
+        "code": "GU",
+        "city": {
+          "id": 8808314,
+          "name": "Hagatna",
+          "latitude": 13.4741667,
+          "longitude": 144.7477778,
+          "dns_name": "hagatna",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4207,
+      "created_at": "2024-03-04 13:28:34",
+      "updated_at": "2024-03-04 13:28:34",
+      "latitude": 19.3,
+      "longitude": -81.3833333,
+      "country": {
+        "id": 40,
+        "name": "Cayman Islands",
+        "code": "KY",
+        "city": {
+          "id": 4922303,
+          "name": "George Town",
+          "latitude": 19.3,
+          "longitude": -81.3833333,
+          "dns_name": "george-town",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4210,
+      "created_at": "2024-03-04 15:36:34",
+      "updated_at": "2024-03-04 15:36:34",
+      "latitude": -9.4647222,
+      "longitude": 147.1925,
+      "country": {
+        "id": 169,
+        "name": "Papua New Guinea",
+        "code": "PG",
+        "city": {
+          "id": 6292406,
+          "name": "Port Moresby",
+          "latitude": -9.4647222,
+          "longitude": 147.1925,
+          "dns_name": "port-moresby",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4213,
+      "created_at": "2024-03-05 08:38:00",
+      "updated_at": "2024-03-05 08:38:00",
+      "latitude": 64.1833333,
+      "longitude": -51.75,
+      "country": {
+        "id": 85,
+        "name": "Greenland",
+        "code": "GL",
+        "city": {
+          "id": 3085001,
+          "name": "Nuuk",
+          "latitude": 64.1833333,
+          "longitude": -51.75,
+          "dns_name": "nuuk",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4216,
+      "created_at": "2024-03-05 09:38:37",
+      "updated_at": "2024-03-05 09:38:37",
+      "latitude": 14.621111,
+      "longitude": -90.526944,
+      "country": {
+        "id": 89,
+        "name": "Guatemala",
+        "code": "GT",
+        "city": {
+          "id": 3202463,
+          "name": "Guatemala City",
+          "latitude": 14.621111,
+          "longitude": -90.526944,
+          "dns_name": "guatemala-city",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4219,
+      "created_at": "2024-03-05 11:45:05",
+      "updated_at": "2024-03-05 11:45:05",
+      "latitude": 51.181111,
+      "longitude": 71.427778,
+      "country": {
+        "id": 110,
+        "name": "Kazakhstan",
+        "code": "KZ",
+        "city": {
+          "id": 4925732,
+          "name": "Astana",
+          "latitude": 51.181111,
+          "longitude": 71.427778,
+          "dns_name": "astana",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4222,
+      "created_at": "2024-03-05 13:50:06",
+      "updated_at": "2024-03-05 13:50:06",
+      "latitude": 18,
+      "longitude": -76.8,
+      "country": {
+        "id": 107,
+        "name": "Jamaica",
+        "code": "JM",
+        "city": {
+          "id": 4576328,
+          "name": "Kingston",
+          "latitude": 18,
+          "longitude": -76.8,
+          "dns_name": "kingston",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4225,
+      "created_at": "2024-03-05 14:39:58",
+      "updated_at": "2024-03-05 14:39:58",
+      "latitude": 41.3166667,
+      "longitude": 69.25,
+      "country": {
+        "id": 231,
+        "name": "Uzbekistan",
+        "code": "UZ",
+        "city": {
+          "id": 9166826,
+          "name": "Tashkent",
+          "latitude": 41.3166667,
+          "longitude": 69.25,
+          "dns_name": "tashkent",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4228,
+      "created_at": "2024-03-06 07:24:07",
+      "updated_at": "2024-03-06 07:24:07",
+      "latitude": 54.15,
+      "longitude": -4.483333,
+      "country": {
+        "id": 243,
+        "name": "Isle of Man",
+        "code": "IM",
+        "city": {
+          "id": 3965405,
+          "name": "Douglas",
+          "latitude": 54.15,
+          "longitude": -4.483333,
+          "dns_name": "douglas",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4031,
+      "created_at": "2019-01-09 09:35:14",
+      "updated_at": "2019-01-09 09:35:14",
+      "latitude": 8.9666667,
+      "longitude": -79.5333333,
+      "country": {
+        "id": 168,
+        "name": "Panama",
+        "code": "PA",
+        "city": {
+          "id": 6176273,
+          "name": "Panama City",
+          "latitude": 8.9666667,
+          "longitude": -79.5333333,
+          "dns_name": "panama-city",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4231,
+      "created_at": "2024-03-06 12:51:36",
+      "updated_at": "2024-03-06 12:51:36",
+      "latitude": 10.666667,
+      "longitude": -61.516667,
+      "country": {
+        "id": 218,
+        "name": "Trinidad and Tobago",
+        "code": "TT",
+        "city": {
+          "id": 9521887,
+          "name": "Port of Spain",
+          "latitude": 10.666667,
+          "longitude": -61.516667,
+          "dns_name": "port-of-spain",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4237,
+      "created_at": "2024-03-06 13:26:41",
+      "updated_at": "2024-03-06 13:26:41",
+      "latitude": 49.183333,
+      "longitude": -2.1,
+      "country": {
+        "id": 244,
+        "name": "Jersey",
+        "code": "JE",
+        "city": {
+          "id": 4572281,
+          "name": "Saint Helier",
+          "latitude": 49.183333,
+          "longitude": -2.1,
+          "dns_name": "saint-helier",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4240,
+      "created_at": "2024-03-07 06:16:00",
+      "updated_at": "2024-03-07 06:16:00",
+      "latitude": 18.406389,
+      "longitude": -66.063889,
+      "country": {
+        "id": 176,
+        "name": "Puerto Rico",
+        "code": "PR",
+        "city": {
+          "id": 9521884,
+          "name": "San Juan",
+          "latitude": 18.406389,
+          "longitude": -66.063889,
+          "dns_name": "san-juan",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4243,
+      "created_at": "2024-03-07 11:55:31",
+      "updated_at": "2024-03-07 11:55:31",
+      "latitude": 13.7086111,
+      "longitude": -89.2030556,
+      "country": {
+        "id": 65,
+        "name": "El Salvador",
+        "code": "SV",
+        "city": {
+          "id": 7990847,
+          "name": "San Salvador",
+          "latitude": 13.7086111,
+          "longitude": -89.2030556,
+          "dns_name": "san-salvador",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4246,
+      "created_at": "2024-03-07 12:23:04",
+      "updated_at": "2024-03-07 12:23:04",
+      "latitude": 18.4666667,
+      "longitude": -69.9,
+      "country": {
+        "id": 61,
+        "name": "Dominican Republic",
+        "code": "DO",
+        "city": {
+          "id": 2434841,
+          "name": "Santo Domingo",
+          "latitude": 18.4666667,
+          "longitude": -69.9,
+          "dns_name": "santo-domingo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4249,
+      "created_at": "2024-03-07 12:51:19",
+      "updated_at": "2024-03-07 12:51:19",
+      "latitude": 14.1,
+      "longitude": -87.2166667,
+      "country": {
+        "id": 96,
+        "name": "Honduras",
+        "code": "HN",
+        "city": {
+          "id": 3270551,
+          "name": "Tegucigalpa",
+          "latitude": 14.1,
+          "longitude": -87.2166667,
+          "dns_name": "tegucigalpa",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 283,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 21.033333,
+      "longitude": 105.85,
+      "country": {
+        "id": 234,
+        "name": "Vietnam",
+        "code": "VN",
+        "city": {
+          "id": 9270302,
+          "name": "Hanoi",
+          "latitude": 21.033333,
+          "longitude": 105.85,
+          "dns_name": "hanoi",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4252,
+      "created_at": "2024-04-05 09:54:52",
+      "updated_at": "2024-04-05 09:54:52",
+      "latitude": 10.75,
+      "longitude": 106.666667,
+      "country": {
+        "id": 234,
+        "name": "Vietnam",
+        "code": "VN",
+        "city": {
+          "id": 9271799,
+          "name": "Ho Chi Minh City",
+          "latitude": 10.75,
+          "longitude": 106.666667,
+          "dns_name": "ho-chi-minh-city",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 237,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 56.95,
+      "longitude": 24.1,
+      "country": {
+        "id": 119,
+        "name": "Latvia",
+        "code": "LV",
+        "city": {
+          "id": 5192828,
+          "name": "Riga",
+          "latitude": 56.95,
+          "longitude": 24.1,
+          "dns_name": "riga",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4040,
+      "created_at": "2019-02-04 11:36:01",
+      "updated_at": "2019-02-04 11:36:01",
+      "latitude": 18.975,
+      "longitude": 72.825833,
+      "country": {
+        "id": 100,
+        "name": "India",
+        "code": "IN",
+        "city": {
+          "id": 4041548,
+          "name": "Mumbai",
+          "latitude": 18.975,
+          "longitude": 72.825833,
+          "dns_name": "mumbai",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 357,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 13.753979,
+      "longitude": 100.501444,
+      "country": {
+        "id": 214,
+        "name": "Thailand",
+        "code": "TH",
+        "city": {
+          "id": 8121638,
+          "name": "Bangkok",
+          "latitude": 13.753979,
+          "longitude": 100.501444,
+          "dns_name": "bangkok",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 301,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 9.893385,
+      "longitude": -84.105407,
+      "country": {
+        "id": 52,
+        "name": "Costa Rica",
+        "code": "CR",
+        "city": {
+          "id": 2062994,
+          "name": "San Jose",
+          "latitude": 9.893385,
+          "longitude": -84.105407,
+          "dns_name": "san-jose",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4255,
+      "created_at": "2024-05-08 09:21:51",
+      "updated_at": "2024-05-08 09:21:51",
+      "latitude": 38.116667,
+      "longitude": 13.366667,
+      "country": {
+        "id": 106,
+        "name": "Italy",
+        "code": "IT",
+        "city": {
+          "id": 4548074,
+          "name": "Palermo",
+          "latitude": 38.116667,
+          "longitude": 13.366667,
+          "dns_name": "palermo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 187,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 37.5985,
+      "longitude": 126.9783,
+      "country": {
+        "id": 114,
+        "name": "South Korea",
+        "code": "KR",
+        "city": {
+          "id": 4879586,
+          "name": "Seoul",
+          "latitude": 37.5985,
+          "longitude": 126.9783,
+          "dns_name": "seoul",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4264,
+      "created_at": "2024-06-27 10:27:40",
+      "updated_at": "2024-06-27 10:27:40",
+      "latitude": 53.55,
+      "longitude": 10,
+      "country": {
+        "id": 81,
+        "name": "Germany",
+        "code": "DE",
+        "city": {
+          "id": 2234906,
+          "name": "Hamburg",
+          "latitude": 53.55,
+          "longitude": 10,
+          "dns_name": "hamburg",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4267,
+      "created_at": "2024-07-04 09:26:51",
+      "updated_at": "2024-07-04 09:26:51",
+      "latitude": 44.1711111,
+      "longitude": 17.6575,
+      "country": {
+        "id": 27,
+        "name": "Bosnia and Herzegovina",
+        "code": "BA",
+        "city": {
+          "id": 548462,
+          "name": "Novi Travnik",
+          "latitude": 44.1711111,
+          "longitude": 17.6575,
+          "dns_name": "novi-travnik",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 517,
+      "created_at": "2017-07-07 10:33:14",
+      "updated_at": "2017-07-07 10:33:14",
+      "latitude": 45.8,
+      "longitude": 16,
+      "country": {
+        "id": 54,
+        "name": "Croatia",
+        "code": "HR",
+        "city": {
+          "id": 3308120,
+          "name": "Zagreb",
+          "latitude": 45.8,
+          "longitude": 16,
+          "dns_name": "zagreb",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 255,
+      "created_at": "2017-06-15 14:06:47",
+      "updated_at": "2017-06-15 14:06:47",
+      "latitude": 64.15,
+      "longitude": -21.95,
+      "country": {
+        "id": 99,
+        "name": "Iceland",
+        "code": "IS",
+        "city": {
+          "id": 4509791,
+          "name": "Reykjavik",
+          "latitude": 64.15,
+          "longitude": -21.95,
+          "dns_name": "reykjavik",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4144,
+      "created_at": "2024-02-20 15:56:44",
+      "updated_at": "2024-02-20 15:56:44",
+      "latitude": -12.05,
+      "longitude": -77.05,
+      "country": {
+        "id": 171,
+        "name": "Peru",
+        "code": "PE",
+        "city": {
+          "id": 6222584,
+          "name": "Lima",
+          "latitude": -12.05,
+          "longitude": -77.05,
+          "dns_name": "lima",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4268,
+      "created_at": "2024-11-13 13:52:43",
+      "updated_at": "2024-11-13 13:52:43",
+      "latitude": 29.7630556,
+      "longitude": -95.3630556,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9083687,
+          "name": "Houston",
+          "latitude": 29.7630556,
+          "longitude": -95.3630556,
+          "dns_name": "houston",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4269,
+      "created_at": "2024-11-14 07:17:49",
+      "updated_at": "2024-11-14 07:17:49",
+      "latitude": 26.2030556,
+      "longitude": -98.2297222,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9086162,
+          "name": "McAllen",
+          "latitude": 26.2030556,
+          "longitude": -98.2297222,
+          "dns_name": "mcallen",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4234,
+      "created_at": "2024-03-06 13:07:52",
+      "updated_at": "2024-03-06 13:07:52",
+      "latitude": 6.453056,
+      "longitude": 3.395833,
+      "country": {
+        "id": 159,
+        "name": "Nigeria",
+        "code": "NG",
+        "city": {
+          "id": 6010328,
+          "name": "Lagos",
+          "latitude": 6.453056,
+          "longitude": 3.395833,
+          "dns_name": "lagos",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4270,
+      "created_at": "2024-12-06 12:30:12",
+      "updated_at": "2024-12-06 12:30:12",
+      "latitude": -8.836804,
+      "longitude": 13.233174,
+      "country": {
+        "id": 6,
+        "name": "Angola",
+        "code": "AO",
+        "city": {
+          "id": 351407,
+          "name": "Luanda",
+          "latitude": -8.836804,
+          "longitude": 13.233174,
+          "dns_name": "luanda",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4271,
+      "created_at": "2024-12-06 12:36:43",
+      "updated_at": "2024-12-06 12:36:43",
+      "latitude": -25.9652778,
+      "longitude": 32.5891667,
+      "country": {
+        "id": 148,
+        "name": "Mozambique",
+        "code": "MZ",
+        "city": {
+          "id": 5870336,
+          "name": "Maputo",
+          "latitude": -25.9652778,
+          "longitude": 32.5891667,
+          "dns_name": "maputo",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4272,
+      "created_at": "2024-12-11 13:52:13",
+      "updated_at": "2024-12-11 13:52:13",
+      "latitude": 42.3583333,
+      "longitude": -71.0602778,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8895305,
+          "name": "Boston",
+          "latitude": 42.3583333,
+          "longitude": -71.0602778,
+          "dns_name": "boston",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4273,
+      "created_at": "2024-12-16 12:59:27",
+      "updated_at": "2024-12-16 12:59:27",
+      "latitude": 26.2361111,
+      "longitude": 50.5830556,
+      "country": {
+        "id": 17,
+        "name": "Bahrain",
+        "code": "BH",
+        "city": {
+          "id": 789398,
+          "name": "Manama",
+          "latitude": 26.2361111,
+          "longitude": 50.5830556,
+          "dns_name": "manama",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4274,
+      "created_at": "2024-12-17 12:55:28",
+      "updated_at": "2024-12-17 12:55:28",
+      "latitude": 31.95,
+      "longitude": 35.933333,
+      "country": {
+        "id": 109,
+        "name": "Jordan",
+        "code": "JO",
+        "city": {
+          "id": 4581203,
+          "name": "Amman",
+          "latitude": 31.95,
+          "longitude": 35.933333,
+          "dns_name": "amman",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4275,
+      "created_at": "2024-12-18 06:39:52",
+      "updated_at": "2024-12-18 06:39:52",
+      "latitude": 29.3759,
+      "longitude": 47.9774,
+      "country": {
+        "id": 116,
+        "name": "Kuwait",
+        "code": "KW",
+        "city": {
+          "id": 9521894,
+          "name": "Kuwait City",
+          "latitude": 29.3759,
+          "longitude": 47.9774,
+          "dns_name": "kuwait-city",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4276,
+      "created_at": "2024-12-18 12:16:29",
+      "updated_at": "2024-12-18 12:16:29",
+      "latitude": 25.286667,
+      "longitude": 51.533333,
+      "country": {
+        "id": 177,
+        "name": "Qatar",
+        "code": "QA",
+        "city": {
+          "id": 6940529,
+          "name": "Doha",
+          "latitude": 25.286667,
+          "longitude": 51.533333,
+          "dns_name": "doha",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4277,
+      "created_at": "2024-12-18 14:34:38",
+      "updated_at": "2024-12-18 14:34:38",
+      "latitude": 14.6708333,
+      "longitude": -17.4380556,
+      "country": {
+        "id": 191,
+        "name": "Senegal",
+        "code": "SN",
+        "city": {
+          "id": 7924958,
+          "name": "Dakar",
+          "latitude": 14.6708333,
+          "longitude": -17.4380556,
+          "dns_name": "dakar",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4278,
+      "created_at": "2024-12-19 08:18:10",
+      "updated_at": "2024-12-19 08:18:10",
+      "latitude": 36.806112,
+      "longitude": 10.171078,
+      "country": {
+        "id": 219,
+        "name": "Tunisia",
+        "code": "TN",
+        "city": {
+          "id": 8295401,
+          "name": "Tunis",
+          "latitude": 36.806112,
+          "longitude": 10.171078,
+          "dns_name": "tunis",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4279,
+      "created_at": "2024-12-19 12:25:43",
+      "updated_at": "2024-12-19 12:25:43",
+      "latitude": 33.3386111,
+      "longitude": 44.3938889,
+      "country": {
+        "id": 103,
+        "name": "Iraq",
+        "code": "IQ",
+        "city": {
+          "id": 4093955,
+          "name": "Baghdad",
+          "latitude": 33.3386111,
+          "longitude": 44.3938889,
+          "dns_name": "baghdad",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4280,
+      "created_at": "2024-12-23 08:44:40",
+      "updated_at": "2024-12-23 08:44:40",
+      "latitude": 32.8925,
+      "longitude": 13.18,
+      "country": {
+        "id": 123,
+        "name": "Libyan Arab Jamahiriya",
+        "code": "LY",
+        "city": {
+          "id": 5206697,
+          "name": "Tripoli",
+          "latitude": 32.8925,
+          "longitude": 13.18,
+          "dns_name": "tripoli",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4281,
+      "created_at": "2024-12-23 12:26:56",
+      "updated_at": "2024-12-23 12:26:56",
+      "latitude": -1.9536111,
+      "longitude": 30.0605556,
+      "country": {
+        "id": 181,
+        "name": "Rwanda",
+        "code": "RW",
+        "city": {
+          "id": 7723910,
+          "name": "Kigali",
+          "latitude": -1.9536111,
+          "longitude": 30.0605556,
+          "dns_name": "kigali",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4282,
+      "created_at": "2024-12-27 08:22:52",
+      "updated_at": "2024-12-27 08:22:52",
+      "latitude": 18.0863889,
+      "longitude": -15.9752778,
+      "country": {
+        "id": 137,
+        "name": "Mauritania",
+        "code": "MR",
+        "city": {
+          "id": 5551598,
+          "name": "Nouakchott",
+          "latitude": 18.0863889,
+          "longitude": -15.9752778,
+          "dns_name": "nouakchott",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4284,
+      "created_at": "2024-12-31 12:12:08",
+      "updated_at": "2024-12-31 12:12:08",
+      "latitude": -11.7041667,
+      "longitude": 43.2402778,
+      "country": {
+        "id": 48,
+        "name": "Comoros",
+        "code": "KM",
+        "city": {
+          "id": 4698371,
+          "name": "Moroni",
+          "latitude": -11.7041667,
+          "longitude": 43.2402778,
+          "dns_name": "moroni",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4287,
+      "created_at": "2025-01-28 12:04:29",
+      "updated_at": "2025-01-28 12:04:29",
+      "latitude": 2.0666667,
+      "longitude": 45.3666667,
+      "country": {
+        "id": 199,
+        "name": "Somalia",
+        "code": "SO",
+        "city": {
+          "id": 7971170,
+          "name": "Mogadishu",
+          "latitude": 2.0666667,
+          "longitude": 45.3666667,
+          "dns_name": "mogadishu",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4288,
+      "created_at": "2025-01-29 12:30:52",
+      "updated_at": "2025-01-29 12:30:52",
+      "latitude": 34.516667,
+      "longitude": 69.183333,
+      "country": {
+        "id": 1,
+        "name": "Afghanistan",
+        "code": "AF",
+        "city": {
+          "id": 98270,
+          "name": "Kabul",
+          "latitude": 34.516667,
+          "longitude": 69.183333,
+          "dns_name": "kabul",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4085,
+      "created_at": "2022-08-03 13:46:09",
+      "updated_at": "2022-08-03 13:46:09",
+      "latitude": 49.6117,
+      "longitude": 6.13,
+      "country": {
+        "id": 126,
+        "name": "Luxembourg",
+        "code": "LU",
+        "city": {
+          "id": 9521876,
+          "name": "Luxembourg",
+          "latitude": 49.6117,
+          "longitude": 6.13,
+          "dns_name": "luxembourg",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4289,
+      "created_at": "2025-04-10 10:00:48",
+      "updated_at": "2025-04-10 10:00:48",
+      "latitude": 48.600381,
+      "longitude": 7.787355,
+      "country": {
+        "id": 74,
+        "name": "France",
+        "code": "FR",
+        "city": {
+          "id": 2929151,
+          "name": "Strasbourg",
+          "latitude": 48.600381,
+          "longitude": 7.787355,
+          "dns_name": "strasbourg",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4290,
+      "created_at": "2025-05-15 12:16:05",
+      "updated_at": "2025-05-15 12:16:05",
+      "latitude": 41.2586111,
+      "longitude": -95.9375,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 8943887,
+          "name": "Omaha",
+          "latitude": 41.2586111,
+          "longitude": -95.9375,
+          "dns_name": "omaha",
+          "hub_score": 0
+        }
+      }
+    },
+    {
+      "id": 4291,
+      "created_at": "2025-06-04 13:56:41",
+      "updated_at": "2025-06-04 13:56:41",
+      "latitude": 36.1658333,
+      "longitude": -86.7844444,
+      "country": {
+        "id": 228,
+        "name": "United States",
+        "code": "US",
+        "city": {
+          "id": 9071273,
+          "name": "Nashville",
+          "latitude": 36.1658333,
+          "longitude": -86.7844444,
+          "dns_name": "nashville",
+          "hub_score": 0
+        }
+      }
+    }
+  ],
+  "technologies": [
+    {
+      "id": 1,
+      "name": "IKEv2/IPSec",
+      "identifier": "ikev2",
+      "created_at": "2017-03-21 12:00:24",
+      "updated_at": "2017-09-05 14:20:16",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 5,
+      "name": "OpenVPN TCP",
+      "identifier": "openvpn_tcp",
+      "created_at": "2017-05-09 19:28:14",
+      "updated_at": "2017-05-09 19:28:14",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 21,
+      "name": "HTTP Proxy (SSL)",
+      "identifier": "proxy_ssl",
+      "created_at": "2017-10-02 12:45:14",
+      "updated_at": "2017-10-02 12:45:14",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 23,
+      "name": "HTTP CyberSec Proxy (SSL)",
+      "identifier": "proxy_ssl_cybersec",
+      "created_at": "2017-10-02 12:50:49",
+      "updated_at": "2017-10-02 12:50:49",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 35,
+      "name": "Wireguard",
+      "identifier": "wireguard_udp",
+      "created_at": "2019-02-14 14:08:43",
+      "updated_at": "2019-02-14 14:08:43",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 51,
+      "name": "NordWhisper",
+      "identifier": "nordwhisper",
+      "created_at": "2024-10-07 10:17:17",
+      "updated_at": "2024-10-07 10:17:17",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 3,
+      "name": "OpenVPN UDP",
+      "identifier": "openvpn_udp",
+      "created_at": "2017-05-04 08:03:24",
+      "updated_at": "2017-05-09 19:27:37",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 42,
+      "name": "OpenVPN UDP Dedicated",
+      "identifier": "openvpn_dedicated_udp",
+      "created_at": "2019-09-19 14:49:18",
+      "updated_at": "2019-09-19 14:49:18",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 45,
+      "name": "OpenVPN TCP Dedicated",
+      "identifier": "openvpn_dedicated_tcp",
+      "created_at": "2019-09-19 14:49:54",
+      "updated_at": "2019-09-19 14:49:54",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 15,
+      "name": "OpenVPN UDP Obfuscated",
+      "identifier": "openvpn_xor_udp",
+      "created_at": "2017-05-26 14:04:04",
+      "updated_at": "2017-11-07 08:37:53",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 17,
+      "name": "OpenVPN TCP Obfuscated",
+      "identifier": "openvpn_xor_tcp",
+      "created_at": "2017-05-26 14:04:27",
+      "updated_at": "2017-11-07 08:38:16",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    },
+    {
+      "id": 7,
+      "name": "Socks 5",
+      "identifier": "socks",
+      "created_at": "2017-05-09 19:28:57",
+      "updated_at": "2017-06-13 14:27:05",
+      "metadata": null,
+      "pivot": {
+        "technology_id": 0,
+        "server_id": 0,
+        "status": ""
+      }
+    }
+  ]
+}

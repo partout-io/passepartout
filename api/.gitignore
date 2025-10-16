@@ -1,0 +1,9 @@
+.DS_Store
+*.swp
+.env.secret*
+gen
+.bundle
+vendor
+node_modules
+cache/src
+**/*-large.json

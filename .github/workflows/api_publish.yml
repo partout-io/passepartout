@@ -1,0 +1,42 @@
+name: "API: Publish"
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "api/**"
+      - "app-shared/Sources/CommonProvidersAPI/JSON/**"
+  schedule:
+    - cron: '0 21 * * MON'
+  workflow_dispatch:
+
+jobs:
+  push_to_api:
+    name: Push to API
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    environment:
+      name: api
+      url: https://github.com/passepartoutvpn/api
+    defaults:
+      run:
+        working-directory: ./api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: "api/package-lock.json"
+      - run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Deploy
+        uses: tagus/git-deploy@v0.5.0
+        with:
+          changes: "api/src"
+          repository: git@github.com:passepartoutvpn/api.git
+          ssh_key: ${{ secrets.API_DEPLOY_KEY }}
+          name: api
+          email: providers@passepartoutvpn.app
+          branch: master

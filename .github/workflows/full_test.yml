@@ -3,9 +3,6 @@ name: Full Tests
 on:
   workflow_dispatch:
 
-env:
-  APPLE_ROOT: "app-apple"
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -20,13 +17,19 @@ jobs:
         with:
           access_token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-      - name: Use remote Core source
-        run: |
-          ci/use-partout-core-source.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: api/package-lock.json
       - name: Run App tests
-        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           ci/run-app-tests.sh
       - name: Run Partout tests
         run: |
           ci/run-partout-tests.sh
+      - name: Run API tests
+        working-directory: ./api
+        run: |
+          npm ci
+          npm test

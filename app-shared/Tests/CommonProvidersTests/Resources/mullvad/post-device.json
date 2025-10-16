@@ -1,0 +1,10 @@
+{
+    "id": "test_newPeerId",
+    "name": "glad gecko",
+    "pubkey": "test_newPublicKey",
+    "hijack_dns": false,
+    "created": "2025-03-10T17:56:20+00:00",
+    "ipv4_address": "10.10.10.10/32",
+    "ipv6_address": "fc00::10/128",
+    "ports": []
+}

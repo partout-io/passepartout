@@ -1,0 +1,680 @@
+{
+    "locations": {
+        "au-adl": {
+            "country": "Australia",
+            "city": "Adelaide",
+            "latitude": -34.92123,
+            "longitude": 138.599503
+        },
+        "nl-ams": {
+            "country": "Netherlands",
+            "city": "Amsterdam",
+            "latitude": 52.35,
+            "longitude": 4.916667
+        },
+        "us-qas": {
+            "country": "USA",
+            "city": "Ashburn, VA",
+            "latitude": 39.043757,
+            "longitude": -77.487442
+        },
+        "gr-ath": {
+            "country": "Greece",
+            "city": "Athens",
+            "latitude": 37.98381,
+            "longitude": 23.727539
+        },
+        "us-atl": {
+            "country": "USA",
+            "city": "Atlanta, GA",
+            "latitude": 33.753746,
+            "longitude": -84.38633
+        },
+        "nz-akl": {
+            "country": "New Zealand",
+            "city": "Auckland",
+            "latitude": -36.848461,
+            "longitude": 174.763336
+        },
+        "th-bkk": {
+            "country": "Thailand",
+            "city": "Bangkok",
+            "latitude": 13.756331,
+            "longitude": 100.501762
+        },
+        "es-bcn": {
+            "country": "Spain",
+            "city": "Barcelona",
+            "latitude": 41.385063,
+            "longitude": 2.173404
+        },
+        "rs-beg": {
+            "country": "Serbia",
+            "city": "Belgrade",
+            "latitude": 44.787197,
+            "longitude": 20.457273
+        },
+        "de-ber": {
+            "country": "Germany",
+            "city": "Berlin",
+            "latitude": 52.520008,
+            "longitude": 13.404954
+        },
+        "co-bog": {
+            "country": "Colombia",
+            "city": "Bogota",
+            "latitude": 4.624335,
+            "longitude": -74.063644
+        },
+        "fr-bod": {
+            "country": "France",
+            "city": "Bordeaux",
+            "latitude": 44.837788,
+            "longitude": -0.57918
+        },
+        "us-bos": {
+            "country": "USA",
+            "city": "Boston, MA",
+            "latitude": 42.361145,
+            "longitude": -71.057083
+        },
+        "sk-bts": {
+            "country": "Slovakia",
+            "city": "Bratislava",
+            "latitude": 48.148598,
+            "longitude": 17.107748
+        },
+        "au-bne": {
+            "country": "Australia",
+            "city": "Brisbane",
+            "latitude": -27.471,
+            "longitude": 153.0234
+        },
+        "be-bru": {
+            "country": "Belgium",
+            "city": "Brussels",
+            "latitude": 50.833333,
+            "longitude": 4.333333
+        },
+        "ro-buh": {
+            "country": "Romania",
+            "city": "Bucharest",
+            "latitude": 44.433333,
+            "longitude": 26.1
+        },
+        "hu-bud": {
+            "country": "Hungary",
+            "city": "Budapest",
+            "latitude": 47.5,
+            "longitude": 19.083333
+        },
+        "ca-yyc": {
+            "country": "Canada",
+            "city": "Calgary",
+            "latitude": 51.037007,
+            "longitude": -114.058315
+        },
+        "us-chi": {
+            "country": "USA",
+            "city": "Chicago, IL",
+            "latitude": 41.881832,
+            "longitude": -87.623177
+        },
+        "dk-cph": {
+            "country": "Denmark",
+            "city": "Copenhagen",
+            "latitude": 55.666667,
+            "longitude": 12.583333
+        },
+        "us-dal": {
+            "country": "USA",
+            "city": "Dallas, TX",
+            "latitude": 32.89748,
+            "longitude": -97.040443
+        },
+        "us-den": {
+            "country": "USA",
+            "city": "Denver, CO",
+            "latitude": 39.7392358,
+            "longitude": -104.990251
+        },
+        "us-det": {
+            "country": "USA",
+            "city": "Detroit, MI",
+            "latitude": 42.331389,
+            "longitude": -83.045833
+        },
+        "ie-dub": {
+            "country": "Ireland",
+            "city": "Dublin",
+            "latitude": 53.35014,
+            "longitude": -6.266155
+        },
+        "de-dus": {
+            "country": "Germany",
+            "city": "Dusseldorf",
+            "latitude": 51.233334,
+            "longitude": 6.783333
+        },
+        "de-fra": {
+            "country": "Germany",
+            "city": "Frankfurt",
+            "latitude": 50.110924,
+            "longitude": 8.682127
+        },
+        "gb-glw": {
+            "country": "UK",
+            "city": "Glasgow",
+            "latitude": 55.86515,
+            "longitude": -4.25763
+        },
+        "se-got": {
+            "country": "Sweden",
+            "city": "Gothenburg",
+            "latitude": 57.70887,
+            "longitude": 11.97456
+        },
+        "fi-hel": {
+            "country": "Finland",
+            "city": "Helsinki",
+            "latitude": 60.192059,
+            "longitude": 24.945831
+        },
+        "hk-hkg": {
+            "country": "Hong Kong",
+            "city": "Hong Kong",
+            "latitude": 22.2833333,
+            "longitude": 114.15
+        },
+        "us-hou": {
+            "country": "USA",
+            "city": "Houston, TX",
+            "latitude": 29.749907,
+            "longitude": -95.358421
+        },
+        "tr-ist": {
+            "country": "Turkey",
+            "city": "Istanbul",
+            "latitude": 41.00824,
+            "longitude": 28.978359
+        },
+        "id-jpu": {
+            "country": "Indonesia",
+            "city": "Jakarta",
+            "latitude": -6.17511,
+            "longitude": 106.865036
+        },
+        "za-jnb": {
+            "country": "South Africa",
+            "city": "Johannesburg",
+            "latitude": -26.195246,
+            "longitude": 28.034088
+        },
+        "my-kul": {
+            "country": "Malaysia",
+            "city": "Kuala Lumpur",
+            "latitude": 3.139003,
+            "longitude": 101.686852
+        },
+        "ua-iev": {
+            "country": "Ukraine",
+            "city": "Kyiv",
+            "latitude": 50.4501,
+            "longitude": 30.5234
+        },
+        "ng-los": {
+            "country": "Nigeria",
+            "city": "Lagos",
+            "latitude": 6.524379,
+            "longitude": 3.379206
+        },
+        "pe-lim": {
+            "country": "Peru",
+            "city": "Lima",
+            "latitude": -12.046373,
+            "longitude": -77.042755
+        },
+        "pt-lis": {
+            "country": "Portugal",
+            "city": "Lisbon",
+            "latitude": 38.736946,
+            "longitude": -9.142685
+        },
+        "si-lju": {
+            "country": "Slovenia",
+            "city": "Ljubljana",
+            "latitude": 46.0569,
+            "longitude": 14.5057
+        },
+        "gb-lon": {
+            "country": "UK",
+            "city": "London",
+            "latitude": 51.514125,
+            "longitude": -0.093689
+        },
+        "us-lax": {
+            "country": "USA",
+            "city": "Los Angeles, CA",
+            "latitude": 34.052235,
+            "longitude": -118.243683
+        },
+        "es-mad": {
+            "country": "Spain",
+            "city": "Madrid",
+            "latitude": 40.408566,
+            "longitude": -3.69222
+        },
+        "se-mma": {
+            "country": "Sweden",
+            "city": "Malmö",
+            "latitude": 55.607075,
+            "longitude": 13.002716
+        },
+        "gb-mnc": {
+            "country": "UK",
+            "city": "Manchester",
+            "latitude": 53.5,
+            "longitude": -2.216667
+        },
+        "ph-mnl": {
+            "country": "Philippines",
+            "city": "Manila",
+            "latitude": 14.599512,
+            "longitude": 120.984222
+        },
+        "fr-mrs": {
+            "country": "France",
+            "city": "Marseille",
+            "latitude": 43.29648,
+            "longitude": 5.38107
+        },
+        "us-txc": {
+            "country": "USA",
+            "city": "McAllen, TX",
+            "latitude": 26.203407,
+            "longitude": -98.230011
+        },
+        "au-mel": {
+            "country": "Australia",
+            "city": "Melbourne",
+            "latitude": -37.815018,
+            "longitude": 144.946014
+        },
+        "us-mia": {
+            "country": "USA",
+            "city": "Miami, FL",
+            "latitude": 25.761681,
+            "longitude": -80.191788
+        },
+        "it-mil": {
+            "country": "Italy",
+            "city": "Milan",
+            "latitude": 45.466667,
+            "longitude": 9.2
+        },
+        "ca-mtr": {
+            "country": "Canada",
+            "city": "Montreal",
+            "latitude": 45.5053,
+            "longitude": -73.5525
+        },
+        "us-nyc": {
+            "country": "USA",
+            "city": "New York, NY",
+            "latitude": 40.73061,
+            "longitude": -73.935242
+        },
+        "cy-nic": {
+            "country": "Cyprus",
+            "city": "Nicosia",
+            "latitude": 35.17025,
+            "longitude": 33.3587
+        },
+        "jp-osa": {
+            "country": "Japan",
+            "city": "Osaka",
+            "latitude": 34.672314,
+            "longitude": 135.484802
+        },
+        "no-osl": {
+            "country": "Norway",
+            "city": "Oslo",
+            "latitude": 59.916667,
+            "longitude": 10.75
+        },
+        "it-pmo": {
+            "country": "Italy",
+            "city": "Palermo",
+            "latitude": 38.115688,
+            "longitude": 13.361267
+        },
+        "fr-par": {
+            "country": "France",
+            "city": "Paris",
+            "latitude": 48.866667,
+            "longitude": 2.333333
+        },
+        "au-per": {
+            "country": "Australia",
+            "city": "Perth",
+            "latitude": -31.953512,
+            "longitude": 115.857048
+        },
+        "us-phx": {
+            "country": "USA",
+            "city": "Phoenix, AZ",
+            "latitude": 33.448376,
+            "longitude": -112.074036
+        },
+        "cz-prg": {
+            "country": "Czech Republic",
+            "city": "Prague",
+            "latitude": 50.083333,
+            "longitude": 14.466667
+        },
+        "mx-qro": {
+            "country": "Mexico",
+            "city": "Queretaro",
+            "latitude": 20.5927744,
+            "longitude": -100.3902245
+        },
+        "us-rag": {
+            "country": "USA",
+            "city": "Raleigh, NC",
+            "latitude": 35.787743,
+            "longitude": -78.644257
+        },
+        "us-slc": {
+            "country": "USA",
+            "city": "Salt Lake City, UT",
+            "latitude": 40.758701,
+            "longitude": -111.876183
+        },
+        "us-sjc": {
+            "country": "USA",
+            "city": "San Jose, CA",
+            "latitude": 37.3382082,
+            "longitude": -121.8863286
+        },
+        "cl-scl": {
+            "country": "Chile",
+            "city": "Santiago",
+            "latitude": -33.448891,
+            "longitude": -70.669266
+        },
+        "br-sao": {
+            "country": "Brazil",
+            "city": "Sao Paulo",
+            "latitude": -23.533773,
+            "longitude": -46.62529
+        },
+        "us-sea": {
+            "country": "USA",
+            "city": "Seattle, WA",
+            "latitude": 47.608013,
+            "longitude": -122.335167
+        },
+        "us-uyk": {
+            "country": "USA",
+            "city": "Secaucus, NJ",
+            "latitude": 40.789543,
+            "longitude": -74.0565
+        },
+        "sg-sin": {
+            "country": "Singapore",
+            "city": "Singapore",
+            "latitude": 1.2930556,
+            "longitude": 103.8558333
+        },
+        "bg-sof": {
+            "country": "Bulgaria",
+            "city": "Sofia",
+            "latitude": 42.6833333,
+            "longitude": 23.3166667
+        },
+        "no-svg": {
+            "country": "Norway",
+            "city": "Stavanger",
+            "latitude": 58.964432,
+            "longitude": 5.72625
+        },
+        "se-sto": {
+            "country": "Sweden",
+            "city": "Stockholm",
+            "latitude": 59.3289,
+            "longitude": 18.0649
+        },
+        "au-syd": {
+            "country": "Australia",
+            "city": "Sydney",
+            "latitude": -33.861481,
+            "longitude": 151.205475
+        },
+        "ee-tll": {
+            "country": "Estonia",
+            "city": "Tallinn",
+            "latitude": 59.436961,
+            "longitude": 24.753575
+        },
+        "il-tlv": {
+            "country": "Israel",
+            "city": "Tel Aviv",
+            "latitude": 32.0852999,
+            "longitude": 34.7817676
+        },
+        "al-tia": {
+            "country": "Albania",
+            "city": "Tirana",
+            "latitude": 41.327953,
+            "longitude": 19.819025
+        },
+        "jp-tyo": {
+            "country": "Japan",
+            "city": "Tokyo",
+            "latitude": 35.685,
+            "longitude": 139.751389
+        },
+        "ca-tor": {
+            "country": "Canada",
+            "city": "Toronto",
+            "latitude": 43.666667,
+            "longitude": -79.416667
+        },
+        "es-vlc": {
+            "country": "Spain",
+            "city": "Valencia",
+            "latitude": 39.466667,
+            "longitude": -0.375
+        },
+        "ca-van": {
+            "country": "Canada",
+            "city": "Vancouver",
+            "latitude": 49.25,
+            "longitude": -123.133333
+        },
+        "at-vie": {
+            "country": "Austria",
+            "city": "Vienna",
+            "latitude": 48.210033,
+            "longitude": 16.363449
+        },
+        "pl-waw": {
+            "country": "Poland",
+            "city": "Warsaw",
+            "latitude": 52.25,
+            "longitude": 21
+        },
+        "us-was": {
+            "country": "USA",
+            "city": "Washington DC",
+            "latitude": 38.889484,
+            "longitude": -77.035278
+        },
+        "hr-zag": {
+            "country": "Croatia",
+            "city": "Zagreb",
+            "latitude": 45.821,
+            "longitude": 15.973
+        },
+        "ch-zrh": {
+            "country": "Switzerland",
+            "city": "Zurich",
+            "latitude": 47.366667,
+            "longitude": 8.55
+        }
+    },
+    "openvpn": {
+        "relays": [
+            {
+                "hostname": "at-vie-ovpn-001",
+                "location": "at-vie",
+                "active": true,
+                "owned": false,
+                "provider": "M247",
+                "stboot": true,
+                "ipv4_addr_in": "146.70.116.194",
+                "include_in_country": true,
+                "weight": 100
+            },
+            {
+                "hostname": "bg-sof-ovpn-001",
+                "location": "bg-sof",
+                "active": true,
+                "owned": false,
+                "provider": "M247",
+                "stboot": true,
+                "ipv4_addr_in": "146.70.188.66",
+                "include_in_country": true,
+                "weight": 100
+            }
+        ],
+        "ports": [
+            {
+                "port": 1194,
+                "protocol": "udp"
+            },
+            {
+                "port": 1195,
+                "protocol": "udp"
+            },
+            {
+                "port": 1196,
+                "protocol": "udp"
+            },
+            {
+                "port": 1197,
+                "protocol": "udp"
+            },
+            {
+                "port": 1300,
+                "protocol": "udp"
+            },
+            {
+                "port": 1301,
+                "protocol": "udp"
+            },
+            {
+                "port": 1302,
+                "protocol": "udp"
+            },
+            {
+                "port": 443,
+                "protocol": "tcp"
+            },
+            {
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ]
+    },
+    "wireguard": {
+        "relays": [
+            {
+                "hostname": "al-tia-wg-001",
+                "location": "al-tia",
+                "active": true,
+                "owned": false,
+                "provider": "iRegister",
+                "stboot": true,
+                "ipv4_addr_in": "31.171.153.66",
+                "include_in_country": true,
+                "weight": 100,
+                "public_key": "bPfJDdgBXlY4w3ACs68zOMMhLUbbzktCKnLOFHqbxl4=",
+                "ipv6_addr_in": "2a04:27c0:0:3::f001"
+            },
+            {
+                "hostname": "de-ber-wg-003",
+                "location": "de-ber",
+                "active": true,
+                "owned": true,
+                "provider": "31173",
+                "stboot": true,
+                "ipv4_addr_in": "193.32.248.68",
+                "include_in_country": true,
+                "weight": 100,
+                "public_key": "USrMatdHiCL5AKdVMpHuYgWuMiK/GHPwRB3Xx00FhU0=",
+                "ipv6_addr_in": "2a03:1b20:b:f011::a03f"
+            },
+            {
+                "hostname": "de-ber-wg-004",
+                "location": "de-ber",
+                "active": true,
+                "owned": true,
+                "provider": "31173",
+                "stboot": true,
+                "ipv4_addr_in": "193.32.248.69",
+                "include_in_country": true,
+                "weight": 100,
+                "public_key": "6PchzRRxzeeHdNLyn3Nz0gmN7pUyjoZMpKmKzJRL4GM=",
+                "ipv6_addr_in": "2a03:1b20:b:f011::a04f"
+            },
+            {
+                "hostname": "za-jnb-wg-002",
+                "location": "za-jnb",
+                "active": true,
+                "owned": false,
+                "provider": "DataPacket",
+                "stboot": true,
+                "ipv4_addr_in": "154.47.30.143",
+                "include_in_country": true,
+                "weight": 100,
+                "public_key": "lTq6+yUYfYsXwBpj/u3LnYqpLhW8ZJXQQ19N/ybP2B8=",
+                "ipv6_addr_in": "2a02:6ea0:f207::f001"
+            }
+        ],
+        "port_ranges": [
+            [
+                53,
+                53
+            ],
+            [
+                123,
+                123
+            ],
+            [
+                443,
+                443
+            ],
+            [
+                4000,
+                33433
+            ],
+            [
+                33565,
+                51820
+            ],
+            [
+                52001,
+                60000
+            ]
+        ],
+        "shadowsocks_port_ranges": [
+            [
+                51900,
+                51949
+            ]
+        ],
+        "ipv4_gateway": "10.64.0.1",
+        "ipv6_gateway": "fc00:bbbb:bbbb:bb01::1"
+    }
+}

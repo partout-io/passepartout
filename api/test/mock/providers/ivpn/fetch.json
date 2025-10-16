@@ -1,0 +1,412 @@
+{
+    "wireguard": [
+        {
+            "gateway": "at.wg.ivpn.net",
+            "country_code": "AT",
+            "country": "Austria",
+            "city": "Vienna",
+            "latitude": 48.2,
+            "longitude": 16.3666,
+            "isp": "M247",
+            "hosts": [
+                {
+                    "hostname": "at1.wg.ivpn.net",
+                    "dns_name": "at1.gw.ivpn.net",
+                    "host": "185.244.212.69",
+                    "public_key": "83LUBnP97SFpnS0y1MpEAFcg8MIiQJgW1FRv/8Mc40g=",
+                    "local_ip": "172.16.0.1/12",
+                    "ipv6": {
+                        "local_ip": "fd00:4956:504e:ffff::/96"
+                    },
+                    "load": 28.86,
+                    "multihop_port": 25601,
+                    "v2ray": "146.70.146.226",
+                    "isp": "M247"
+                }
+            ]
+        }
+    ],
+    "openvpn": [
+        {
+            "gateway": "at.gw.ivpn.net",
+            "country_code": "AT",
+            "country": "Austria",
+            "city": "Vienna",
+            "latitude": 48.2,
+            "longitude": 16.3666,
+            "isp": "M247",
+            "hosts": [
+                {
+                    "hostname": "at1.gw.ivpn.net",
+                    "dns_name": "at1.gw.ivpn.net",
+                    "host": "185.244.212.66",
+                    "load": 28.86,
+                    "multihop_port": 25601,
+                    "obfs": {
+                        "obfs3_multihop_port": 25602,
+                        "obfs4_multihop_port": 25603,
+                        "obfs4_key": "75HhQC6n6ctp9Fa9wCvEnc6ip5FnEfuIGc+dVNLH4M15FjB/Ve6bI1b8lYFhk6T+4/HkDQ"
+                    },
+                    "v2ray": "146.70.146.226",
+                    "isp": "M247"
+                }
+            ]
+        },
+        {
+            "gateway": "au-nsw.gw.ivpn.net",
+            "country_code": "AU",
+            "country": "Australia",
+            "city": "Sydney",
+            "latitude": -33.92,
+            "longitude": 151.1852,
+            "isp": "M247",
+            "hosts": [
+                {
+                    "hostname": "au-nsw1.gw.ivpn.net",
+                    "dns_name": "au-nsw1.gw.ivpn.net",
+                    "host": "46.102.153.242",
+                    "load": 41.41,
+                    "multihop_port": 26601,
+                    "obfs": {
+                        "obfs3_multihop_port": 26602,
+                        "obfs4_multihop_port": 26603,
+                        "obfs4_key": "/rjoeDjduOFq1UvT332vhS398h1RP5hC3m7sDJKNSyJ6TO8mkcxWAYILw0i+bgS/3JD5YA"
+                    },
+                    "v2ray": "217.138.205.90",
+                    "isp": "M247"
+                },
+                {
+                    "hostname": "au-nsw2.gw.ivpn.net",
+                    "dns_name": "au-nsw2.gw.ivpn.net",
+                    "host": "146.70.78.74",
+                    "load": 82.37,
+                    "multihop_port": 27901,
+                    "obfs": {
+                        "obfs3_multihop_port": 27902,
+                        "obfs4_multihop_port": 27903,
+                        "obfs4_key": "qtdQ5krD9EQFR98xNo/v5cmGb10wqt0Om9pYMIHWQh4oz5xcAXj32rViEyN0bnkkhaZnBA"
+                    },
+                    "v2ray": "146.70.210.26",
+                    "isp": "M247"
+                }
+            ]
+        }
+    ],
+    "config": {
+        "antitracker": {
+            "default": {
+                "ip": "10.0.254.2",
+                "multihop-ip": "10.0.254.102"
+            },
+            "hardcore": {
+                "ip": "10.0.254.3",
+                "multihop-ip": "10.0.254.103"
+            }
+        },
+        "antitracker_plus": {
+            "DnsServers": [
+                {
+                    "Name": "Basic",
+                    "Description": "Basic",
+                    "Normal": "10.0.254.4",
+                    "Hardcore": "10.0.254.5"
+                },
+                {
+                    "Name": "Comprehensive",
+                    "Description": "Comprehensive",
+                    "Normal": "10.0.254.6",
+                    "Hardcore": "10.0.254.7"
+                },
+                {
+                    "Name": "Restrictive",
+                    "Description": "Restrictive",
+                    "Normal": "10.0.254.18",
+                    "Hardcore": "10.0.254.19"
+                },
+                {
+                    "Name": "Easylist",
+                    "Description": "EasyList + EasyPrivacy",
+                    "Normal": "10.0.254.14",
+                    "Hardcore": "10.0.254.15"
+                },
+                {
+                    "Name": "Oisdbig",
+                    "Description": "OISD Big",
+                    "Normal": "10.0.254.2",
+                    "Hardcore": "10.0.254.3"
+                },
+                {
+                    "Name": "Stevenblack",
+                    "Description": "Steven Black Unified + Ads + Malware",
+                    "Normal": "10.0.254.20",
+                    "Hardcore": "10.0.254.21"
+                },
+                {
+                    "Name": "Hagezilight",
+                    "Description": "Hagezi Light",
+                    "Normal": "10.0.254.22",
+                    "Hardcore": "10.0.254.23"
+                },
+                {
+                    "Name": "Hagezipro",
+                    "Description": "Hagezi Pro",
+                    "Normal": "10.0.254.10",
+                    "Hardcore": "10.0.254.11"
+                },
+                {
+                    "Name": "Hageziproplus",
+                    "Description": "Hagezi Pro++",
+                    "Normal": "10.0.254.24",
+                    "Hardcore": "10.0.254.25"
+                },
+                {
+                    "Name": "Hageziultimate",
+                    "Description": "Hagezi Ultimate",
+                    "Normal": "10.0.254.12",
+                    "Hardcore": "10.0.254.13"
+                }
+            ]
+        },
+        "api": {
+            "ips": [
+                "198.50.177.220",
+                "149.56.162.156",
+                "198.50.177.222",
+                "149.56.162.159",
+                "198.50.177.223"
+            ],
+            "ipv6s": [
+                "2607:5300:203:1735::8888",
+                "2607:5300:203:1735::8",
+                "2607:5300:203:1735:6580:7300:0:aaaa"
+            ]
+        },
+        "ports": {
+            "test": [
+                {
+                    "echoserver": "37.187.112.240"
+                }
+            ],
+            "openvpn": [
+                {
+                    "type": "UDP",
+                    "port": 53
+                },
+                {
+                    "type": "UDP",
+                    "port": 80
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 5500,
+                        "max": 19999
+                    }
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 60000,
+                        "max": 65000
+                    }
+                },
+                {
+                    "type": "UDP",
+                    "port": 123
+                },
+                {
+                    "type": "UDP",
+                    "port": 2049
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 50000,
+                        "max": 59999
+                    }
+                },
+                {
+                    "type": "UDP",
+                    "port": 2050
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 40000,
+                        "max": 49999
+                    }
+                },
+                {
+                    "type": "UDP",
+                    "port": 443
+                },
+                {
+                    "type": "UDP",
+                    "port": 1194
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 30000,
+                        "max": 39999
+                    }
+                },
+                {
+                    "type": "TCP",
+                    "port": 80
+                },
+                {
+                    "type": "TCP",
+                    "port": 443
+                },
+                {
+                    "type": "TCP",
+                    "port": 1194
+                },
+                {
+                    "type": "TCP",
+                    "port": 2049
+                },
+                {
+                    "type": "TCP",
+                    "port": 2050
+                },
+                {
+                    "type": "TCP",
+                    "port": 30587
+                },
+                {
+                    "type": "TCP",
+                    "port": 41893
+                },
+                {
+                    "type": "TCP",
+                    "port": 48574
+                },
+                {
+                    "type": "TCP",
+                    "port": 58237
+                },
+                {
+                    "type": "TCP",
+                    "range": {
+                        "min": 5500,
+                        "max": 19999
+                    }
+                },
+                {
+                    "type": "TCP",
+                    "range": {
+                        "min": 30000,
+                        "max": 65000
+                    }
+                }
+            ],
+            "wireguard": [
+                {
+                    "type": "UDP",
+                    "port": 53
+                },
+                {
+                    "type": "UDP",
+                    "port": 80
+                },
+                {
+                    "type": "UDP",
+                    "port": 123
+                },
+                {
+                    "type": "UDP",
+                    "port": 443
+                },
+                {
+                    "type": "UDP",
+                    "port": 500
+                },
+                {
+                    "type": "UDP",
+                    "port": 1194
+                },
+                {
+                    "type": "UDP",
+                    "port": 2049
+                },
+                {
+                    "type": "UDP",
+                    "port": 2050
+                },
+                {
+                    "type": "UDP",
+                    "port": 4500
+                },
+                {
+                    "type": "UDP",
+                    "port": 30587
+                },
+                {
+                    "type": "UDP",
+                    "port": 41893
+                },
+                {
+                    "type": "UDP",
+                    "port": 48574
+                },
+                {
+                    "type": "UDP",
+                    "port": 58237
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 5500,
+                        "max": 19999
+                    }
+                },
+                {
+                    "type": "UDP",
+                    "range": {
+                        "min": 30000,
+                        "max": 65000
+                    }
+                }
+            ],
+            "obfs3": {
+                "port": 5145
+            },
+            "obfs4": {
+                "port": 5146
+            },
+            "v2ray": {
+                "id": "27de860d-5601-412d-8b71-baa048a94b98",
+                "openvpn": [
+                    {
+                        "type": "UDP",
+                        "port": 20501
+                    },
+                    {
+                        "type": "UDP",
+                        "port": 20502
+                    },
+                    {
+                        "type": "UDP",
+                        "port": 20503
+                    },
+                    {
+                        "type": "UDP",
+                        "port": 20504
+                    },
+                    {
+                        "type": "TCP",
+                        "port": 1443
+                    }
+                ],
+                "wireguard": [
+                    {
+                        "type": "UDP",
+                        "port": 15351
+                    }
+                ]
+            }
+        }
+    }
+}

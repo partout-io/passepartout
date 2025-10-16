@@ -1,0 +1,72 @@
+[
+    {
+        "country": "Albania",
+        "countryCode": "AL",
+        "region": "Europe",
+        "regionCode": "EU",
+        "load": 16,
+        "createdAt": "2018-10-16T12:09:20+00:00",
+        "updatedAt": "2025-03-28T10:23:28+00:00",
+        "id": "4c333aa2-d08b-4d11-9073-61c351ce1c1e",
+        "coordinates": {
+            "longitude": 19.8188889,
+            "latitude": 41.3275
+        },
+        "type": "generic",
+        "location": "Tirana",
+        "connectionName": "al-tia.prod.surfshark.com",
+        "pubKey": "l8EOWPyzt/njrb74CADY4VOhns/TbUN6KFTbytHcFQw=",
+        "tags": [
+            "virtual"
+        ],
+        "transitCluster": null,
+        "flagUrl": "https://cdn.ss-cdn.com/assets/flags/AL.png"
+    },
+    {
+        "country": "Algeria",
+        "countryCode": "DZ",
+        "region": "Middle East and Africa",
+        "regionCode": "EA",
+        "load": 11,
+        "createdAt": "2021-09-22T10:32:53+00:00",
+        "updatedAt": "2025-03-28T10:30:14+00:00",
+        "id": "f8aa8d00-b011-4fd6-9e3b-22ab65ef23fb",
+        "coordinates": {
+            "longitude": 3.216667,
+            "latitude": 36.7
+        },
+        "type": "generic",
+        "location": "Algiers",
+        "connectionName": "dz-alg.prod.surfshark.com",
+        "pubKey": "KyFFiO8bY3wZGpxJf7aqEH3TrG+Jj4ZfNOyh2oS7ICU=",
+        "tags": [
+            "virtual",
+            "p2p"
+        ],
+        "transitCluster": null,
+        "flagUrl": "https://cdn.ss-cdn.com/assets/flags/DZ.png"
+    },
+    {
+        "country": "Vietnam",
+        "countryCode": "VN",
+        "region": "Asia Pacific",
+        "regionCode": "AP",
+        "load": 25,
+        "createdAt": "2018-10-16T12:09:19+00:00",
+        "updatedAt": "2025-03-28T10:25:54+00:00",
+        "id": "91c4f924-6149-45e1-847f-5920341f8a26",
+        "coordinates": {
+            "longitude": 106.6667,
+            "latitude": 10.75
+        },
+        "type": "generic",
+        "location": "Ho Chi Minh City",
+        "connectionName": "vn-hcm.prod.surfshark.com",
+        "pubKey": "Mioou38fh5H+3LWMpitLOWT3JaDGg2gXxqjl2eXkPFU=",
+        "tags": [
+            "virtual"
+        ],
+        "transitCluster": null,
+        "flagUrl": "https://cdn.ss-cdn.com/assets/flags/VN.png"
+    }
+]

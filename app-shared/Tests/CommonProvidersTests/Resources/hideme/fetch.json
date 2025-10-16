@@ -1,0 +1,35 @@
+[{
+  "id": 485,
+  "hostname": "al-v4.hideservers.net",
+  "flag": "al",
+  "displayName": "Albania",
+  "geo": {
+    "lat": 41.3271,
+    "lon": 19.8202,
+    "cityName": "Tirana",
+    "countryCode": "AL",
+    "continent": "EU"
+  },
+  "tags": [
+    "upgrade",
+    "no-ping"
+  ]
+},
+{
+  "id": 395,
+  "hostname": "ar-v4.hideservers.net",
+  "flag": "ar",
+  "displayName": "Argentina",
+  "geo": {
+    "lat": -34.6131,
+    "lon": -58.3772,
+    "cityName": "Buenos Aires",
+    "countryCode": "AR",
+    "continent": "SA"
+  },
+  "tags": [
+    "no-hop-in",
+    "upgrade",
+    "no-ping"
+  ]
+}]

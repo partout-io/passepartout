@@ -77,7 +77,7 @@ extension ProfileManager {
                             moduleBuilder = wgBuilder
                         }
 
-                        let module = try moduleBuilder.tryBuild()
+                        let module = try moduleBuilder.build()
                         builder.modules.append(module)
                     }
                     builder.activateAllModules()
@@ -86,7 +86,7 @@ extension ProfileManager {
                         builder.activeModulesIds.remove(onDemandIdIfDisabled)
                     }
 
-                    let profile = try builder.tryBuild()
+                    let profile = try builder.build()
                     try await manager.save(profile, isLocal: true, remotelyShared: parameters.isShared)
                 }
             } catch {
@@ -132,7 +132,7 @@ private extension ProfileManager {
         do {
             var cfgBuilder = OpenVPN.Configuration.Builder()
             cfgBuilder.ca = .init(pem: "...")
-            let cfg = try cfgBuilder.tryBuild(isClient: false)
+            let cfg = try cfgBuilder.build(isClient: false)
             let endpoints: [EndpointProtocol] = [.init(.udp, 1194)]
             let template = OpenVPNProviderTemplate(configuration: cfg, endpoints: endpoints)
             let templateData = try JSONEncoder().encode(template)

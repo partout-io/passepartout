@@ -39,11 +39,7 @@ jobs:
         working-directory: ${{ env.APPLE_ROOT }}
         run: |
           scripts/clean-translations.sh
-      - name: Use remote Core source
-        run: |
-          ci/use-partout-core-source.sh
       - name: Run App tests
-        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           ci/run-app-tests.sh
       - name: Run Partout tests
@@ -71,9 +67,6 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Use remote Core source
-        run: |
-          ci/use-partout-core-source.sh
       - name: Archive app
         working-directory: ${{ env.APPLE_ROOT }}
         run: |

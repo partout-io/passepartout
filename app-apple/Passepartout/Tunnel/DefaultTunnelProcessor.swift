@@ -23,10 +23,10 @@ extension DefaultTunnelProcessor: PacketTunnelProcessor {
                     preferences.isExcludedEndpoint($0)
                 }
 
-                let module = try moduleBuilder.tryBuild()
+                let module = try moduleBuilder.build()
                 builder.saveModule(module)
             }
-            return try builder.tryBuild()
+            return try builder.build()
         } catch {
             pp_log_id(profile.id, .app, .error, "Unable to process profile, revert to original: \(error)")
             return profile
