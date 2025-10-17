@@ -1,1 +1,1 @@
-* WireGuard: Fix regression in DNS resolution
+* WireGuard: Fix regression in default MTU
