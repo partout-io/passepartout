@@ -17,7 +17,7 @@ public struct AppRelease: Sendable {
 }
 
 extension OriginalPurchase {
-    public func isBefore(_ release: AppRelease) -> Bool {
+    public func isUntil(_ release: AppRelease) -> Bool {
         buildNumber <= release.build
     }
 }

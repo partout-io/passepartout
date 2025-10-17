@@ -31,14 +31,14 @@ extension Dependencies {
     nonisolated func productsAtBuild() -> BuildProducts<AppProduct> {
         { purchase in
 #if os(iOS)
-            if purchase.isBefore(.freemium) {
+            if purchase.isUntil(.freemium) {
                 return [.Essentials.iOS]
-            } else if purchase.isBefore(.v2) {
+            } else if purchase.isUntil(.v2) {
                 return [.Features.networkSettings]
             }
             return []
 #elseif os(macOS)
-            if purchase.isBefore(.v2) {
+            if purchase.isUntil(.v2) {
                 return [.Features.networkSettings]
             }
             return []
