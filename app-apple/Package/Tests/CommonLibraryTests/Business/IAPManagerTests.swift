@@ -20,7 +20,7 @@ final class IAPManagerTests: XCTestCase {
 }
 
 extension AppRelease {
-    static let target = AppRelease("older", on: "2020-04-04")
+    static let target = AppRelease("older", build: 1000)
 }
 
 // MARK: - Actions
@@ -93,10 +93,10 @@ extension IAPManagerTests {
 
     func test_givenBuildProducts_whenFutureRelease_thenFreeVersion() async {
         let reader = FakeAppReceiptReader()
-        let purchase = OriginalPurchase(buildNumber: 0, purchaseDate: .distantFuture)
+        let purchase = OriginalPurchase(buildNumber: .max, purchaseDate: .distantFuture)
         await reader.setReceipt(withPurchase: purchase, products: [])
         let sut = IAPManager(receiptReader: reader) { purchase in
-            if purchase.isBefore(.target) {
+            if purchase.isUntil(.target) {
                 return [.Features.appleTV]
             }
             return []
@@ -110,7 +110,7 @@ extension IAPManagerTests {
         let purchase = OriginalPurchase(buildNumber: 0, purchaseDate: .distantPast)
         await reader.setReceipt(withPurchase: purchase, products: [])
         let sut = IAPManager(receiptReader: reader) { purchase in
-            if purchase.isBefore(.target) {
+            if purchase.isUntil(.target) {
                 return [.Features.appleTV]
             }
             return []
