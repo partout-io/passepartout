@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
         with:
-          access_token: ${{ secrets.ACCESS_TOKEN }}
+          access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
       - uses: actions/setup-node@v4
         with:

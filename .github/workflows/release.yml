@@ -23,10 +23,10 @@ jobs:
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
         with:
-          access_token: ${{ secrets.ACCESS_TOKEN }}
+          access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-          certificates_url: ${{ vars.CERTIFICATES_URL }}
-          certificates_passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-url: ${{ vars.CERTIFICATES_URL }}
+          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}
@@ -60,10 +60,10 @@ jobs:
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
         with:
-          access_token: ${{ secrets.ACCESS_TOKEN }}
+          access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-          certificates_url: ${{ vars.CERTIFICATES_URL }}
-          certificates_passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-url: ${{ vars.CERTIFICATES_URL }}
+          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -149,10 +149,10 @@ jobs:
           ci/gpg-import.sh "$GPG_KEY"
       - uses: partout-io/action-prepare-xcode-build@master
         with:
-          access_token: ${{ secrets.ACCESS_TOKEN }}
+          access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-          certificates_url: ${{ vars.CERTIFICATES_URL }}
-          certificates_passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-url: ${{ vars.CERTIFICATES_URL }}
+          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
       - name: Notarize .dmg app
         working-directory: ${{ env.APPLE_ROOT }}
         env:
