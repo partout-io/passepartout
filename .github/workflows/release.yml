@@ -114,6 +114,7 @@ jobs:
     needs: [validate_codebase, build_upload]
     continue-on-error: true
     strategy:
+      max-parallel: 1 # Serial
       fail-fast: true
       matrix:
         platform: ["iOS", "macOS", "tvOS"]
