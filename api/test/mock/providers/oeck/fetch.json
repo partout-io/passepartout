@@ -1,0 +1,34 @@
+{
+    "countries": [
+        {
+            "name": "Australia",
+            "code": "au",
+            "cities": [
+                {
+                    "name": "Melbourne",
+                    "code": "mel",
+                    "relays": [
+                        {
+                            "ipv4_addr_in": "103.18.86.72",
+                            "hostname": "au-mel-001"
+                        },
+                        {
+                            "ipv4_addr_in": "103.18.86.73",
+                            "hostname": "au-mel-002"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sydney",
+                    "code": "syd",
+                    "relays": [
+                        {
+                            "ipv4_addr_in": "103.18.84.72",
+                            "hostname": "au-syd-001"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -57,7 +57,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let registry = dependencies.newRegistry(
             distributionTarget: distributionTarget,
             deviceId: preferences.deviceId ?? "MissingDeviceID",
-            configBlock: { preferences.configFlags }
+            configBlock: { preferences.enabledFlags(of: preferences.configFlags) }
         )
         pp_log_g(.app, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         CommonLibrary.assertMissingImplementations(with: registry)
@@ -157,19 +157,13 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             factoryOptions.usesNEUDP = preferences.isFlagEnabled(.neSocketUDP)
             factoryOptions.usesNETCP = preferences.isFlagEnabled(.neSocketTCP)
 
-            // OpenVPNImplementationBuilder will retrieve the
-            // preferences in the connectionBlock
-            var connectionOptions = ConnectionParameters.Options()
-            connectionOptions.userInfo = preferences
-
             fwd = try NEPTPForwarder(
                 ctx,
                 profile: processedProfile,
                 registry: registry,
                 controller: neTunnelController,
                 environment: environment,
-                factoryOptions: factoryOptions,
-                connectionOptions: connectionOptions
+                factoryOptions: factoryOptions
             )
             guard let fwd else {
                 fatalError("NEPTPForwarder nil without throwing error?")

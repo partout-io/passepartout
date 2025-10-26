@@ -13,9 +13,6 @@ on:
       - "**/*.sh"
       - "fastlane/**"
 
-env:
-  APPLE_ROOT: app-apple
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -30,7 +27,18 @@ jobs:
         with:
           access_token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-      - name: "Run tests"
-        working-directory: ${{ env.APPLE_ROOT }}
-        run: |
+      - run: |
           ci/run-app-tests.sh
+  run_api_tests:
+    name: Run Node.js API tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: |
+          ci/run-api-tests.sh

@@ -174,7 +174,6 @@
 		0EAEC8A62D05DB8D001AA50C /* DefaultAppProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAppProcessor.swift; sourceTree = "<group>"; };
 		0EAEC8A72D05DB8D001AA50C /* DefaultTunnelProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTunnelProcessor.swift; sourceTree = "<group>"; };
 		0EB08B972CA46F4900A02591 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AppPlist.strings; sourceTree = "<group>"; };
-		0EB2862D2E44A2B100A1CAA6 /* Package */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Package; sourceTree = SOURCE_ROOT; };
 		0EC066D02C7DC47600D88A94 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PassepartoutTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EC332C92B8A1808000B9C2F /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
@@ -191,6 +190,7 @@
 		0EDE56F02CABE42E0082D21C /* PassepartoutIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = PassepartoutIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EE662B42DC2BDDE00A4BB37 /* com.algoritmico.mac.Passepartout.Tunnel.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = com.algoritmico.mac.Passepartout.Tunnel.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EE8D7E02CD112C200F6600C /* App+tvOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App+tvOS.swift"; sourceTree = "<group>"; };
+		0EEE32C92EA1524E00EF98BB /* app-shared */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "app-shared"; path = "../app-shared"; sourceTree = SOURCE_ROOT; };
 		0EF74A772E2D774600AF7614 /* test-bundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-bundle.json"; sourceTree = "<group>"; };
 		0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -325,7 +325,7 @@
 				0ECD96172DC2738B009BD9F8 /* Config.mac.xcconfig */,
 				0E7D0EAD2CAEA47700A2F28D /* Passepartout.xctestplan */,
 				0E5DFDDC2CDB8F9100F2DE70 /* Passepartout.storekit */,
-				0EB2862D2E44A2B100A1CAA6 /* Package */,
+				0EEE32C92EA1524E00EF98BB /* app-shared */,
 				0E7E3D5A2B9345FD002BBDB4 /* App */,
 				0EDE56E82CABE40D0082D21C /* Intents */,
 				0E757F112CD0CFFC006E13E1 /* LoginItem */,
@@ -1203,8 +1203,6 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.algoritmico.ios.PassepartoutTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 			};
 			name = Debug;
 		};
@@ -1215,8 +1213,6 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.algoritmico.ios.PassepartoutTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 			};
 			name = Release;
 		};
@@ -1449,8 +1445,6 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.algoritmico.ios.PassepartoutTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 			};
 			name = ReleaseMac;
 		};

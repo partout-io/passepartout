@@ -2,7 +2,6 @@
 **/xcuserdata
 screenshots/html/*/0*.png
 screenshots/results/
-Package/Package.resolved
 build/
 dist/
 l10n/

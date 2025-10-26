@@ -18,12 +18,11 @@ struct WireGuardImplementationBuilder: Sendable {
             importerBlock: { newParser() },
             validatorBlock: { newParser() },
             connectionBlock: {
-                // FIXME: ###, Made redundant by configBlock?
-                let preferences = $0.options.userInfo as? AppPreferenceValues
+                let configFlags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
 
                 // Use new connection on manual preference or config flag
-                if preferences?.isFlagEnabled(.wgCrossConnection) == true {
+                if configFlags.contains(.wgCrossConnection) {
                     return try WireGuardConnection(ctx, parameters: $0, module: $1)
                 } else {
                     return try LegacyWireGuardConnection(ctx, parameters: $0, module: $1)

@@ -1,0 +1,126 @@
+[
+  {
+      "id": 485,
+      "hostname": "al-v4.hideservers.net",
+      "flag": "al",
+      "displayName": "Albania",
+      "geo": {
+          "lat": 41.3271,
+          "lon": 19.8202,
+          "cityName": "Tirana",
+          "countryCode": "AL",
+          "continent": "EU"
+      },
+      "tags": [
+          "upgrade",
+          "no-ping"
+      ]
+  },
+  {
+      "id": 395,
+      "hostname": "ar-v4.hideservers.net",
+      "flag": "ar",
+      "displayName": "Argentina",
+      "geo": {
+          "lat": -34.6131,
+          "lon": -58.3772,
+          "cityName": "Buenos Aires",
+          "countryCode": "AR",
+          "continent": "SA"
+      },
+      "tags": [
+          "no-hop-in",
+          "upgrade",
+          "no-ping"
+      ]
+  },
+  {
+      "id": 141,
+      "hostname": "at-v4.hideservers.net",
+      "flag": "at",
+      "displayName": "Austria",
+      "tags": [
+          "upgrade",
+          "no-ping",
+          "10g"
+      ],
+      "geo": {
+          "lat": 48.107,
+          "lon": 16.2847,
+          "cityName": "Vienna",
+          "countryCode": "AT",
+          "continent": "EU"
+      }
+  },
+  {
+      "id": 5,
+      "hostname": "au-v4.hideservers.net",
+      "flag": "au",
+      "displayName": "Australia",
+      "geo": {
+          "countryCode": "AU",
+          "continent": "OC"
+      },
+      "tags": [
+          "upgrade",
+          "non-p2p",
+          "no-ping",
+          "10g"
+      ],
+      "children": [
+          {
+              "id": 147,
+              "hostname": "melbourne-v4.hideservers.net",
+              "flag": "au",
+              "displayName": "Melbourne",
+              "tags": [
+                  "upgrade",
+                  "no-ping",
+                  "10g"
+              ],
+              "geo": {
+                  "lat": -37.8225,
+                  "lon": 144.915,
+                  "cityName": "Melbourne",
+                  "countryCode": "AU",
+                  "continent": "OC"
+              }
+          },
+          {
+              "id": 250,
+              "hostname": "perth-v4.hideservers.net",
+              "flag": "au",
+              "displayName": "Perth",
+              "tags": [
+                  "upgrade",
+                  "no-ping"
+              ],
+              "geo": {
+                  "lat": -31.9559,
+                  "lon": 115.795,
+                  "cityName": "Perth",
+                  "countryCode": "AU",
+                  "continent": "OC"
+              }
+          },
+          {
+              "id": 156,
+              "hostname": "sydney-v4.hideservers.net",
+              "flag": "au",
+              "displayName": "Sydney",
+              "tags": [
+                  "upgrade",
+                  "no-ping",
+                  "10g"
+              ],
+              "geo": {
+                  "lat": -33.9216,
+                  "lon": 151.188,
+                  "cityName": "Sydney",
+                  "countryCode": "AU",
+                  "continent": "OC"
+              }
+          }
+      ]
+  }
+]

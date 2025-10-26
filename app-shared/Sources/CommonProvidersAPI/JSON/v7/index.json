@@ -1,0 +1,110 @@
+{
+    "providers": [
+        {
+            "id": "hideme",
+            "description": "Hide.me",
+            "metadata": {
+                "OpenVPN": {}
+            }
+        },
+        {
+            "id": "ivpn",
+            "description": "IVPN",
+            "metadata": {
+                "OpenVPN": {
+                    "credentials": {
+                        "purpose": "web",
+                        "options": ["noPassword"]
+                    }
+                }
+            }
+        },
+        {
+            "id": "mullvad",
+            "description": "Mullvad",
+            "metadata": {
+                "OpenVPN": {
+                    "credentials": {
+                        "purpose": "web",
+                        "options": ["noPassword"]
+                    }
+                }
+            }
+        },
+        {
+            "id": "nordvpn",
+            "description": "NordVPN",
+            "metadata": {
+                "OpenVPN": {
+                    "credentials": {
+                        "purpose": "specific",
+                        "url": "https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/service-credentials/"
+                    }
+                }
+            }
+        },
+        {
+            "id": "oeck",
+            "description": "Oeck",
+            "metadata": {
+                "OpenVPN": {}
+            }
+        },
+        {
+            "id": "pia",
+            "description": "PIA",
+            "metadata": {
+                "OpenVPN": {}
+            }
+        },
+        {
+            "id": "surfshark",
+            "description": "SurfShark",
+            "metadata": {
+                "OpenVPN": {
+                    "credentials": {
+                        "purpose": "specific",
+                        "url": "https://my.surfshark.com/vpn/manual-setup/main"
+                    }
+                }
+            }
+        },
+        {
+            "id": "torguard",
+            "description": "TorGuard",
+            "metadata": {
+                "OpenVPN": {
+                    "credentials": {
+                        "purpose": "specific"
+                    }
+                }
+            }
+        },
+        {
+            "id": "tunnelbear",
+            "description": "TunnelBear",
+            "metadata": {
+                "OpenVPN": {}
+            }
+        },
+        {
+            "id": "vyprvpn",
+            "description": "VyprVPN",
+            "metadata": {
+                "OpenVPN": {}
+            }
+        },
+        {
+            "id": "windscribe",
+            "description": "Windscribe",
+            "metadata": {
+                "OpenVPN": {
+                    "credentials": {
+                        "purpose": "specific",
+                        "url": "https://windscribe.com/getconfig/openvpn"
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -18,13 +18,10 @@ extension Dependencies {
         configBlock: @escaping @Sendable () -> Set<ConfigFlag>
     ) -> Registry {
         Registry(
-            withKnown: true,
-            providerResolvers: {
-                var resolvers: [ProviderModuleResolver] = []
-                resolvers.append(OpenVPNProviderResolver(.global))
-                resolvers.append(WireGuardProviderResolver(.global, deviceId: deviceId))
-                return resolvers
-            }(),
+            providerResolvers: [
+                OpenVPNProviderResolver(.global),
+                WireGuardProviderResolver(.global, deviceId: deviceId)
+            ],
             allImplementations: [
                 OpenVPNImplementationBuilder(
                     distributionTarget: distributionTarget,

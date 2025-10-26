@@ -106,8 +106,8 @@ private extension Profile {
         try await providerModule.setRandomServer(using: heuristic, apiManager: apiManager)
 
         var newBuilder = builder()
-        newBuilder.saveModule(try providerModule.tryBuild())
-        return try newBuilder.tryBuild()
+        newBuilder.saveModule(try providerModule.build())
+        return try newBuilder.build()
     }
 }
 
@@ -118,7 +118,7 @@ private extension ProviderModule.Builder {
         guard let providerId, let providerModuleType, let entity else {
             return
         }
-        let module = try ProviderModule.Builder(providerId: providerId, providerModuleType: providerModuleType).tryBuild()
+        let module = try ProviderModule.Builder(providerId: providerId, providerModuleType: providerModuleType).build()
         let repo = try await apiManager.providerRepository(for: module)
         let providerManager = ProviderManager()
         try await providerManager.setRepository(repo, for: providerModuleType)
