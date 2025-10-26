@@ -1,1 +1,1 @@
-* WireGuard: Fix regression in default MTU
+* Update to Partout OSS (#1575)
