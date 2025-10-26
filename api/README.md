@@ -1,5 +1,5 @@
-[![Publish](https://github.com/passepartoutvpn/partout/actions/workflows/api_publish.yml/badge.svg)](https://github.com/passepartoutvpn/partout/actions/workflows/api_publish.yml)
-[![Cache](https://github.com/passepartoutvpn/partout/actions/workflows/api_cache.yml/badge.svg)](https://github.com/passepartoutvpn/partout/actions/workflows/api_cache.yml)
+[![Publish](https://github.com/partout-io/passepartout/actions/workflows/api_publish.yml/badge.svg)](https://github.com/partout-io/passepartout/actions/workflows/api_publish.yml)
+[![Cache](https://github.com/partout-io/passepartout/actions/workflows/api_cache.yml/badge.svg)](https://github.com/partout-io/passepartout/actions/workflows/api_cache.yml)
 
 # API
 
@@ -37,7 +37,7 @@ npm test
 
 ## New providers
 
-Perform the steps in the latest version in the `api` folder.
+Perform the steps in the latest version in the `src` folder.
 
 ### index.json
 
@@ -230,11 +230,11 @@ Returns a Base64 string from an IPv4 address. For example, use this for pre-reso
 
 Returns an object for the `tlsWrap` of an OpenVPN template configuration, given a strategy (`auth` or `crypt`) and the text of the static key without headers.
 
-[github-provider]: ../Sources/API/Provider.swift
-[github-provider-infrastructure]: ../Sources/API/ProviderInfrastructure.swift
-[github-provider-preset]: ../Sources/Providers/ProviderPreset.swift
-[github-provider-server]: ../Sources/Providers/ProviderServer.swift
-[github-provider-scripting-api]: ../Sources/Providers/ProviderScriptingAPI.swift
-[github-provider-script-result]: ../Sources/Providers/DefaultProviderScriptingAPI.swift
-[github-openvpn-template]: ../Sources/Partout/Providers/OpenVPN/OpenVPNProviderTemplate.swift
-[github-openvpn-configuration]: ../Sources/OpenVPN/Core/OpenVPN%2BConfiguration.swift
+[github-provider]: ../app-shared/Sources/CommonProvidersAPI/Provider.swift
+[github-provider-infrastructure]: ../app-shared/Sources/CommonProvidersAPI/ProviderInfrastructure.swift
+[github-provider-preset]: ../app-shared/Sources/CommonProvidersCore/ProviderPreset.swift
+[github-provider-server]: ../app-shared/Sources/CommonProvidersCore/ProviderServer.swift
+[github-provider-scripting-api]: ../app-shared/Sources/CommonProvidersCore/ProviderScriptingAPI.swift
+[github-provider-script-result]: ../app-shared/Sources/CommonProvidersCore/DefaultProviderScriptingAPI.swift
+[github-openvpn-template]: ../app-shared/Sources/CommonProviders/OpenVPN/OpenVPNProviderTemplate.swift
+[github-openvpn-configuration]: ../submodules/partout/Sources/PartoutOpenVPN/OpenVPN%2BConfiguration.swift
