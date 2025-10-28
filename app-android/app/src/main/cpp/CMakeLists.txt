@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Library versions
-set(PARTOUT_SHA1 a8de350e)
-set(SWIFT_VERSION 6.1)
+set(PARTOUT_SHA1 f92043ad)
+set(SWIFT_VERSION 6_2)
 set(JNI_DIR ${CMAKE_SOURCE_DIR}/libs)
 
 # Partout + Swift runtime libs (dynamic, will be loaded at runtime)
