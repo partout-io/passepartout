@@ -36,7 +36,6 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "build=$BUILD" >> $GITHUB_OUTPUT
       - name: Validate translations
-        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           scripts/clean-translations.sh
       - name: Run App tests
