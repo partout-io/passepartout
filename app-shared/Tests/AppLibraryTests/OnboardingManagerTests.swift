@@ -52,9 +52,9 @@ struct OnboardingManagerTests {
 
     @Test
     func givenLast_whenAdvance_thenDoesNotAdvance() {
-        let sut = OnboardingManager(initialStep: .doneV3_5_15)
+        let sut = OnboardingManager(initialStep: .doneV3_5_18)
         #expect(sut.step == .last)
         sut.advance()
-        #expect(sut.step == .doneV3_5_15)
+        #expect(sut.step == .doneV3_5_18)
     }
 }

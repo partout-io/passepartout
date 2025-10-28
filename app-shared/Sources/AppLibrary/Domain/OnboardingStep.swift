@@ -12,6 +12,8 @@ public enum OnboardingStep: String, RawRepresentable, CaseIterable {
     case doneV3_2_3
     case migrateV3_5_15 // JSON profiles
     case doneV3_5_15
+    case dropLZOCompression
+    case doneV3_5_18
 }
 
 extension OnboardingStep {

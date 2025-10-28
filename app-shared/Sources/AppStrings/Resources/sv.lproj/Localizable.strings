@@ -261,6 +261,7 @@
 "onboarding.community.dismiss" = "Nej, tack";
 "onboarding.community.message" = "Visste du att %@ har en subreddit? Prenumerera för att få uppdateringar eller för att diskutera problem, funktioner, nya plattformar eller vad du vill.\n\nDet är också ett bra sätt att visa att du bryr dig om det här projektet.";
 "onboarding.community.subscribe" = "Prenumerera nu";
+"onboarding.drop_lzo.message" = "Av säkerhetsskäl (speciellt VORACLE-sårbarheten) slutade OpenVPN stödja komprimering för flera år sedan. Från och med december 2025 kommer Passepartout också att ta bort stödet för LZO-komprimering. Om din OpenVPN-anslutning slutar fungera, se till att komprimering är inaktiverad på din server. De flesta offentliga VPN-leverantörer har redan gjort detta, så det är osannolikt att du påverkas.";
 "onboarding.migrate_3_2_3.message" = "Version 3.2.3 ändrade hur leverantörer lagras.";
 "onboarding.migrate_3_5_15.message" = "Version 3.5.15 ändrade hur profiler lagras.";
 "onboarding.migrate.message" = "Se till att uppdatera alla dina enheter till den senaste versionen för att använda de nya profilerna.";

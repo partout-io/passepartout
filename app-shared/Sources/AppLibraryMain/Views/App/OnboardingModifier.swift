@@ -55,6 +55,8 @@ private extension OnboardingModifier {
             return Strings.Unlocalized.reddit
         case .migrateV3_2_3, .migrateV3_5_15:
             return Strings.Global.Nouns.migration
+        case .dropLZOCompression:
+            return Strings.Global.Nouns.compression
         default:
             return ""
         }
@@ -74,6 +76,8 @@ private extension OnboardingModifier {
             Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
         case .migrateV3_5_15:
             Button(Strings.Global.Nouns.ok, action: migrateProfilesToJSON)
+        case .dropLZOCompression:
+            Button(Strings.Global.Nouns.ok, action: advance)
         default:
             EmptyView()
         }
@@ -94,6 +98,8 @@ private extension OnboardingModifier {
                 Strings.Onboarding.Migrate3515.message,
                 Strings.Onboarding.Migrate.message
             ].joined(separator: " "))
+        case .dropLZOCompression:
+            Text(Strings.Onboarding.DropLzo.message)
         default:
             EmptyView()
         }
@@ -133,7 +139,7 @@ private extension OnboardingModifier {
 
     func performCurrentStep() {
         switch onboardingManager.step {
-        case .community, .migrateV3_2_3, .migrateV3_5_15:
+        case .community, .migrateV3_2_3, .migrateV3_5_15, .dropLZOCompression:
             isAlertPresented = true
         default:
             if onboardingManager.step < .last {

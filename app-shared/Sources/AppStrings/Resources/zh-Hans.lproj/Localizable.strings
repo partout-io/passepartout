@@ -261,6 +261,7 @@
 "onboarding.community.dismiss" = "不，谢谢";
 "onboarding.community.message" = "您知道 %@ 有一个 subreddit 吗？订阅以获取更新或讨论问题、功能、新平台或其他内容。\n\n这也是表明您支持此项目的好方法。";
 "onboarding.community.subscribe" = "立即订阅";
+"onboarding.drop_lzo.message" = "出于安全考虑（尤其是 VORACLE 漏洞），OpenVPN 多年前已弃用压缩支持。从 2025 年 12 月起，Passepartout 也将移除对 LZO 压缩的支持。如果您的 OpenVPN 连接停止工作，请确保服务器上已禁用压缩。大多数公共 VPN 提供商已完成此操作，因此您不太可能受到影响。";
 "onboarding.migrate_3_2_3.message" = "3.2.3 版本更改了提供商的存储方式。";
 "onboarding.migrate_3_5_15.message" = "3.5.15 版本更改了配置文件的存储方式。";
 "onboarding.migrate.message" = "请确保将所有设备升级到最新版本以使用新的配置文件。";

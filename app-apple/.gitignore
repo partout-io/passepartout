@@ -4,7 +4,6 @@ screenshots/html/*/0*.png
 screenshots/results/
 build/
 dist/
-l10n/
 tmp/
 default.profraw
 .build

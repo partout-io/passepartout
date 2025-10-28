@@ -8,6 +8,7 @@ fastlane/**/review_information
 fastlane/**/trade_representative_contact_information
 build/
 dist/
+l10n/
 tmp/
 **/*secret*
 *.a
