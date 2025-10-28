@@ -261,6 +261,7 @@
 "onboarding.community.dismiss" = "Non, merci";
 "onboarding.community.message" = "Saviez-vous que %@ a un subreddit ? Abonnez-vous pour des mises à jour ou pour discuter des problèmes, fonctionnalités, nouvelles plateformes ou tout ce que vous voulez.\n\nC'est aussi un excellent moyen de montrer que vous vous souciez de ce projet.";
 "onboarding.community.subscribe" = "Abonnez-vous maintenant";
+"onboarding.drop_lzo.message" = "Pour des raisons de sécurité (notamment la vulnérabilité VORACLE), OpenVPN a supprimé la prise en charge de la compression il y a plusieurs années. À partir du mois prochain, Passepartout supprimera également la prise en charge de la compression LZO. Si votre connexion OpenVPN cesse de fonctionner, assurez-vous que la compression est désactivée sur votre serveur. La plupart des fournisseurs VPN publics l'ont déjà fait, il est donc peu probable que vous soyez concerné.";
 "onboarding.migrate_3_2_3.message" = "La version 3.2.3 a modifié la façon dont les fournisseurs sont stockés.";
 "onboarding.migrate_3_5_15.message" = "La version 3.5.15 a modifié la façon dont les profils sont stockés.";
 "onboarding.migrate.message" = "Assurez-vous de mettre à jour tous vos appareils vers la dernière version pour utiliser les nouveaux profils.";
