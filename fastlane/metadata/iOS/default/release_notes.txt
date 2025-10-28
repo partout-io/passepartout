@@ -1,1 +1,2 @@
-* Update to Partout OSS (#1575)
+* Update Partout with fixes to WireGuard
+* OpenVPN: Announce removal of LZO compression (#1577)
