@@ -261,7 +261,7 @@
 "onboarding.community.dismiss" = "Nee, bedankt";
 "onboarding.community.message" = "Wist je dat %@ een subreddit heeft? Abonneer je voor updates of om problemen, functies, nieuwe platforms of wat je maar wilt te bespreken.\n\nHet is ook een geweldige manier om te laten zien dat je om dit project geeft.";
 "onboarding.community.subscribe" = "Nu abonneren";
-"onboarding.drop_lzo.message" = "Om veiligheidsredenen (met name de VORACLE-kwetsbaarheid) heeft OpenVPN jaren geleden al compressieondersteuning afgeschaft. Vanaf volgende maand zal Passepartout ook de ondersteuning voor LZO-compressie verwijderen. Als je OpenVPN-verbinding stopt met werken, zorg er dan voor dat compressie is uitgeschakeld op je server. De meeste openbare VPN-providers hebben dit al gedaan, dus de kans is klein dat je wordt getroffen.";
+"onboarding.drop_lzo.message" = "Om veiligheidsredenen (met name de VORACLE-kwetsbaarheid) heeft OpenVPN jaren geleden al compressieondersteuning afgeschaft. Vanaf december 2025 zal Passepartout ook de ondersteuning voor LZO-compressie verwijderen. Als je OpenVPN-verbinding stopt met werken, zorg er dan voor dat compressie is uitgeschakeld op je server. De meeste openbare VPN-providers hebben dit al gedaan, dus de kans is klein dat je wordt getroffen.";
 "onboarding.migrate_3_2_3.message" = "Versie 3.2.3 heeft de manier waarop providers worden opgeslagen gewijzigd.";
 "onboarding.migrate_3_5_15.message" = "Versie 3.5.15 heeft de manier waarop profielen worden opgeslagen gewijzigd.";
 "onboarding.migrate.message" = "Zorg ervoor dat je al je apparaten bijwerkt naar de nieuwste versie om de nieuwe profielen te gebruiken.";

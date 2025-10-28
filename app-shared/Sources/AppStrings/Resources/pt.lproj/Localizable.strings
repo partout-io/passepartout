@@ -261,7 +261,7 @@
 "onboarding.community.dismiss" = "Não, obrigado";
 "onboarding.community.message" = "Você sabia que o %@ tem um subreddit? Inscreva-se para atualizações ou para discutir problemas, recursos, novas plataformas ou qualquer outra coisa que desejar.\n\nTambém é uma ótima maneira de mostrar que você se importa com este projeto.";
 "onboarding.community.subscribe" = "Inscreva-se agora";
-"onboarding.drop_lzo.message" = "Por questões de segurança (especificamente a vulnerabilidade VORACLE), o OpenVPN descontinuou o suporte à compactação há anos. A partir do próximo mês, o Passepartout também removerá o suporte à compactaão LZO. Se a sua conexão OpenVPN parar de funcionar, verifique se a compactação está desativada no seu servidor. A maioria dos provedores públicos de VPN já fez isso, portanto, é improvável que você seja afetado.";
+"onboarding.drop_lzo.message" = "Por questões de segurança (especificamente a vulnerabilidade VORACLE), o OpenVPN descontinuou o suporte à compactação há anos. A partir de dezembro de 2025, o Passepartout também removerá o suporte à compactaço LZO. Se a sua conexão OpenVPN parar de funcionar, verifique se a compactação está desativada no seu servidor. A maioria dos provedores públicos de VPN já fez isso, portanto, é improvável que você seja afetado.";
 "onboarding.migrate_3_2_3.message" = "A versão 3.2.3 alterou a forma como os provedores são armazenados.";
 "onboarding.migrate_3_5_15.message" = "A versão 3.5.15 alterou a forma como os perfis são armazenados.";
 "onboarding.migrate.message" = "Certifique-se de atualizar todos os seus dispositivos para a versão mais recente para usar os novos perfis.";
