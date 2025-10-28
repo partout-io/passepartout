@@ -735,6 +735,10 @@ public enum Strings {
       /// Subscribe now
       public static let subscribe = Strings.tr("Localizable", "onboarding.community.subscribe", fallback: "Subscribe now")
     }
+    public enum DropLzo {
+      /// Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting next month, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.
+      public static let message = Strings.tr("Localizable", "onboarding.drop_lzo.message", fallback: "Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting next month, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.")
+    }
     public enum Migrate {
       /// Make sure to upgrade all your devices to the latest version to use the new profiles.
       public static let message = Strings.tr("Localizable", "onboarding.migrate.message", fallback: "Make sure to upgrade all your devices to the latest version to use the new profiles.")
