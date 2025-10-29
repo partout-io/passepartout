@@ -27,7 +27,7 @@ popd
 
 rm -f $headers_path/partout.h
 rm -rf $cpp_path/libs/partout-*
-rm -rf $cpp_path/libs/swift*
+rm -rf $cpp_path/libs/swift-*
 
 libs_path="$cpp_path/libs/partout-${partout_sha1}/arm64-v8a"
 mkdir -p $libs_path
