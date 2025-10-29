@@ -1,9 +1,8 @@
 #!/bin/bash
 cwd=`dirname $0`
 source $cwd/env.sh
-
 if [ -z $ANDROID_NDK_ROOT ]; then
-    echo "Android NDK not found"
+    echo "Android NDK not found (missing \$ANDROID_NDK_ROOT)"
     exit 1
 fi
 
