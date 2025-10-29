@@ -1,10 +1,11 @@
 #!/bin/bash
+cwd=`dirname $0`
+source $cwd/env.sh
+
 if [ -z $ANDROID_NDK_ROOT ]; then
     echo "Android NDK not found"
     exit 1
 fi
-
-RUNTIME_ROOT=~/.swiftpm/swift-sdks/swift-6.2-RELEASE-android-0.1.artifactbundle/swift-android/swift-resources/usr/lib/swift-aarch64/android
 
 is_release=$1  # 1 for Release
 partout_path="../submodules/partout"
@@ -41,23 +42,23 @@ runtime_path="$cpp_path/libs/swift-${swift_version}/arm64-v8a"
 mkdir -p $runtime_path
 cp ${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so $runtime_path
 cp \
-    ${RUNTIME_ROOT}/libBlocksRuntime.so \
-    ${RUNTIME_ROOT}/libdispatch.so \
-    ${RUNTIME_ROOT}/libswift_math.so \
-    ${RUNTIME_ROOT}/libswift_Builtin_float.so \
-    ${RUNTIME_ROOT}/libswift_Concurrency.so \
-    ${RUNTIME_ROOT}/libswift_Differentiation.so \
-    ${RUNTIME_ROOT}/libswift_RegexParser.so \
-    ${RUNTIME_ROOT}/libswift_StringProcessing.so \
-    ${RUNTIME_ROOT}/libswift_Volatile.so \
-    ${RUNTIME_ROOT}/libswiftAndroid.so \
-    ${RUNTIME_ROOT}/libswiftCore.so \
-    ${RUNTIME_ROOT}/libswiftDispatch.so \
-    ${RUNTIME_ROOT}/libswiftRegexBuilder.so \
-    ${RUNTIME_ROOT}/libswiftSwiftOnoneSupport.so \
-    ${RUNTIME_ROOT}/libswiftSynchronization.so \
-    ${RUNTIME_ROOT}/libFoundation.so \
-    ${RUNTIME_ROOT}/libFoundationEssentials.so \
-    ${RUNTIME_ROOT}/libFoundationInternationalization.so \
-    ${RUNTIME_ROOT}/lib_FoundationICU.so \
+    ${sdk_runtime_root}/libBlocksRuntime.so \
+    ${sdk_runtime_root}/libdispatch.so \
+    ${sdk_runtime_root}/libswift_math.so \
+    ${sdk_runtime_root}/libswift_Builtin_float.so \
+    ${sdk_runtime_root}/libswift_Concurrency.so \
+    ${sdk_runtime_root}/libswift_Differentiation.so \
+    ${sdk_runtime_root}/libswift_RegexParser.so \
+    ${sdk_runtime_root}/libswift_StringProcessing.so \
+    ${sdk_runtime_root}/libswift_Volatile.so \
+    ${sdk_runtime_root}/libswiftAndroid.so \
+    ${sdk_runtime_root}/libswiftCore.so \
+    ${sdk_runtime_root}/libswiftDispatch.so \
+    ${sdk_runtime_root}/libswiftRegexBuilder.so \
+    ${sdk_runtime_root}/libswiftSwiftOnoneSupport.so \
+    ${sdk_runtime_root}/libswiftSynchronization.so \
+    ${sdk_runtime_root}/libFoundation.so \
+    ${sdk_runtime_root}/libFoundationEssentials.so \
+    ${sdk_runtime_root}/libFoundationInternationalization.so \
+    ${sdk_runtime_root}/lib_FoundationICU.so \
     $runtime_path
