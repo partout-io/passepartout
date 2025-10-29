@@ -56,4 +56,8 @@ cp \
     ${RUNTIME_ROOT}/libswiftRegexBuilder.so \
     ${RUNTIME_ROOT}/libswiftSwiftOnoneSupport.so \
     ${RUNTIME_ROOT}/libswiftSynchronization.so \
+    ${RUNTIME_ROOT}/libFoundation.so \
+    ${RUNTIME_ROOT}/libFoundationEssentials.so \
+    ${RUNTIME_ROOT}/libFoundationInternationalization.so \
+    ${RUNTIME_ROOT}/lib_FoundationICU.so \
     $runtime_path
