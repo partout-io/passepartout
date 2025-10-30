@@ -110,7 +110,7 @@ private extension ProfilesView {
                 do {
                     try webReceiverManager.start()
                 } catch {
-                    pp_log_g(.app, .error, "Unable to start web receiver: \(error)")
+                    pp_log_g(.App.core, .error, "Unable to start web receiver: \(error)")
                     errorHandler.handle(error)
                 }
             } else {

@@ -33,7 +33,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 startPreferences = try JSONDecoder()
                     .decode(AppPreferenceValues.self, from: encodedPreferences as Data)
             } catch {
-                pp_log_g(.app, .error, "Unable to decode startTunnel() preferences")
+                pp_log_g(.App.core, .error, "Unable to decode startTunnel() preferences")
                 startPreferences = nil
             }
         } else {
@@ -59,7 +59,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: { preferences.enabledFlags(of: preferences.configFlags) }
         )
-        pp_log_g(.app, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        pp_log_g(.App.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         CommonLibrary.assertMissingImplementations(with: registry)
 
         // Decode profile from NE provider
@@ -110,20 +110,20 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 }()
             )
         } catch {
-            pp_log(ctx, .app, .fault, "Unable to create NETunnelController: \(error)")
+            pp_log(ctx, .App.core, .fault, "Unable to create NETunnelController: \(error)")
             flushLogs()
             throw error
         }
 
-        pp_log(ctx, .app, .info, "Tunnel started with options: \(options?.description ?? "nil")")
+        pp_log(ctx, .App.core, .info, "Tunnel started with options: \(options?.description ?? "nil")")
         if let startPreferences {
-            pp_log(ctx, .app, .info, "\tDecoded preferences: \(startPreferences)")
+            pp_log(ctx, .App.core, .info, "\tDecoded preferences: \(startPreferences)")
         } else {
-            pp_log(ctx, .app, .info, "\tExisting preferences: \(preferences)")
+            pp_log(ctx, .App.core, .info, "\tExisting preferences: \(preferences)")
         }
         let configFlags = preferences.configFlags
-        pp_log(ctx, .app, .info, "\tActive config flags: \(configFlags)")
-        pp_log(ctx, .app, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+        pp_log(ctx, .App.core, .info, "\tActive config flags: \(configFlags)")
+        pp_log(ctx, .App.core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
 
         // Create IAPManager for receipt verification
         let iapManager = await MainActor.run {
@@ -171,12 +171,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
             // Check hold flag and hang the tunnel if set
             if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
-                pp_log(ctx, .app, .info, "Tunnel is on hold")
+                pp_log(ctx, .App.core, .info, "Tunnel is on hold")
                 guard options?[ExtendedTunnel.isManualKey] == true as NSNumber else {
-                    pp_log(ctx, .app, .error, "Tunnel was started non-interactively, hang here")
+                    pp_log(ctx, .App.core, .error, "Tunnel was started non-interactively, hang here")
                     return
                 }
-                pp_log(ctx, .app, .info, "Tunnel was started interactively, clear hold flag")
+                pp_log(ctx, .App.core, .info, "Tunnel was started interactively, clear hold flag")
                 environment.removeEnvironmentValue(forKey: TunnelEnvironmentKeys.holdFlag)
             }
 
@@ -221,7 +221,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 )
             }
         } catch {
-            pp_log(ctx, .app, .fault, "Unable to start tunnel: \(error)")
+            pp_log(ctx, .App.core, .fault, "Unable to start tunnel: \(error)")
             flushLogs()
             throw error
         }
@@ -266,7 +266,7 @@ private extension PacketTunnelProvider {
 private extension PacketTunnelProvider {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
-            pp_log_g(.app, .info, "Active tunnels: \(activeTunnels)")
+            pp_log_g(.App.core, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
@@ -278,7 +278,7 @@ private extension PacketTunnelProvider {
         guard Self.activeTunnels.isEmpty else {
             throw PartoutError(.App.multipleTunnels)
         }
-        pp_log_g(.app, .info, "Track context: \(profileId)")
+        pp_log_g(.App.core, .info, "Track context: \(profileId)")
         Self.activeTunnels.insert(profileId)
     }
 
@@ -286,7 +286,7 @@ private extension PacketTunnelProvider {
         guard let profileId = ctx?.profileId else {
             return
         }
-        pp_log_g(.app, .info, "Untrack context: \(profileId)")
+        pp_log_g(.App.core, .info, "Untrack context: \(profileId)")
         Self.activeTunnels.remove(profileId)
     }
 }

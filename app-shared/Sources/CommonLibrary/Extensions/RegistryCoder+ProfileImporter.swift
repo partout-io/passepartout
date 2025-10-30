@@ -23,7 +23,7 @@ extension RegistryCoder: ProfileImporter {
         do {
             return try profile(from: contents)
         } catch {
-            pp_log_g(.app, .debug, "Unable to decode profile for import: \(error)")
+            pp_log_g(.App.core, .debug, "Unable to decode profile for import: \(error)")
         }
 
         // fall back to parsing a single module

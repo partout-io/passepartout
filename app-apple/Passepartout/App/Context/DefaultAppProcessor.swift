@@ -68,17 +68,17 @@ extension DefaultAppProcessor: AppTunnelProcessor {
         do {
             if let builder = newProfile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
                let heuristic = builder.entity?.heuristic {
-                pp_log_g(.app, .info, "Apply connection heuristic: \(heuristic)")
+                pp_log_g(.App.core, .info, "Apply connection heuristic: \(heuristic)")
                 newProfile.activeProviderModule?.entity.map {
-                    pp_log_g(.app, .info, "\tOld server: \($0.server)")
+                    pp_log_g(.App.core, .info, "\tOld server: \($0.server)")
                 }
                 newProfile = try await profile.withNewServer(using: heuristic, apiManager: apiManager)
                 newProfile.activeProviderModule?.entity.map {
-                    pp_log_g(.app, .info, "\tNew server: \($0.server)")
+                    pp_log_g(.App.core, .info, "\tNew server: \($0.server)")
                 }
             }
         } catch {
-            pp_log_g(.app, .error, "Unable to pick new provider server: \(error)")
+            pp_log_g(.App.core, .error, "Unable to pick new provider server: \(error)")
         }
 
         // validate provider modules
@@ -86,7 +86,7 @@ extension DefaultAppProcessor: AppTunnelProcessor {
             _ = try registry.resolvedProfile(newProfile)
             return newProfile
         } catch {
-            pp_log_g(.app, .error, "Unable to inject provider modules: \(error)")
+            pp_log_g(.App.core, .error, "Unable to inject provider modules: \(error)")
             throw error
         }
     }

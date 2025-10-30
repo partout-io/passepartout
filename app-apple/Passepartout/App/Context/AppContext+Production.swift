@@ -108,12 +108,12 @@ extension AppContext {
 
         let deviceId = {
             if let existingId = kvManager.string(forAppPreference: .deviceId) {
-                pp_log_g(.app, .info, "Device ID: \(existingId)")
+                pp_log_g(.App.core, .info, "Device ID: \(existingId)")
                 return existingId
             }
             let newId = String.random(count: Constants.shared.deviceIdLength)
             kvManager.set(newId, forAppPreference: .deviceId)
-            pp_log_g(.app, .info, "Device ID (new): \(newId)")
+            pp_log_g(.App.core, .info, "Device ID (new): \(newId)")
             return newId
         }()
         let registry = dependencies.newRegistry(
@@ -216,7 +216,7 @@ extension AppContext {
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
 
                 do {
-                    pp_log(ctx, .app, .info, "\tRefresh remote sync (eligible=\(isEligibleForSharing), CloudKit=\(dependencies.isCloudKitEnabled))...")
+                    pp_log(ctx, .App.core, .info, "\tRefresh remote sync (eligible=\(isEligibleForSharing), CloudKit=\(dependencies.isCloudKitEnabled))...")
 
                     pp_log(ctx, .App.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
                     try await profileManager.observeRemote(repository: {
@@ -235,7 +235,7 @@ extension AppContext {
                 }
             }
 
-            pp_log(ctx, .app, .info, "\tRefresh modules preferences repository...")
+            pp_log(ctx, .App.core, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
                 try CommonData.cdModulePreferencesRepositoryV3(
                     context: remoteStore.context,
@@ -243,7 +243,7 @@ extension AppContext {
                 )
             }
 
-            pp_log(ctx, .app, .info, "\tRefresh providers preferences repository...")
+            pp_log(ctx, .App.core, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
                 try CommonData.cdProviderPreferencesRepositoryV3(
                     context: remoteStore.context,

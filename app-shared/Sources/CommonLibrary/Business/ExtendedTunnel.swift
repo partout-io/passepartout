@@ -46,12 +46,12 @@ public final class ExtendedTunnel: ObservableObject {
 
 extension ExtendedTunnel {
     public func install(_ profile: Profile) async throws {
-        pp_log_g(.app, .notice, "Install profile \(profile.id)...")
+        pp_log_g(.App.core, .notice, "Install profile \(profile.id)...")
         try await installAndConnect(false, with: profile, force: false)
     }
 
     public func connect(with profile: Profile, force: Bool = false) async throws {
-        pp_log_g(.app, .notice, "Connect to profile \(profile.id)...")
+        pp_log_g(.App.core, .notice, "Connect to profile \(profile.id)...")
         try await installAndConnect(true, with: profile, force: force)
     }
 
@@ -69,9 +69,9 @@ extension ExtendedTunnel {
 #if os(macOS)
         if let sysex {
             if sysex.currentResult == .success {
-                pp_log_g(.app, .info, "System Extension: already installed")
+                pp_log_g(.App.core, .info, "System Extension: already installed")
             } else {
-                pp_log_g(.app, .info, "System Extension: install...")
+                pp_log_g(.App.core, .info, "System Extension: install...")
                 do {
                     let result = try await sysex.install()
                     switch result {
@@ -80,9 +80,9 @@ extension ExtendedTunnel {
                     default:
                         throw AppError.systemExtension(result)
                     }
-                    pp_log_g(.app, .info, "System Extension: installation result is \(result)")
+                    pp_log_g(.App.core, .info, "System Extension: installation result is \(result)")
                 } catch {
-                    pp_log_g(.app, .error, "System Extension: installation error: \(error)")
+                    pp_log_g(.App.core, .error, "System Extension: installation error: \(error)")
                 }
             }
         }
@@ -97,7 +97,7 @@ extension ExtendedTunnel {
     }
 
     public func disconnect(from profileId: Profile.ID) async throws {
-        pp_log_g(.app, .notice, "Disconnect...")
+        pp_log_g(.App.core, .notice, "Disconnect...")
         try await tunnel.disconnect(from: profileId)
     }
 
@@ -183,7 +183,7 @@ private extension ExtendedTunnel {
             }
             for await newActiveProfiles in tunnel.activeProfilesStream.removeDuplicates() {
                 guard !Task.isCancelled else {
-                    pp_log_g(.app, .debug, "Cancelled ExtendedTunnel.tunnelSubscription")
+                    pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.tunnelSubscription")
                     break
                 }
                 objectWillChange.send()
@@ -201,7 +201,7 @@ private extension ExtendedTunnel {
                     return
                 }
                 guard !Task.isCancelled else {
-                    pp_log_g(.app, .debug, "Cancelled ExtendedTunnel.timerSubscription")
+                    pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.timerSubscription")
                     break
                 }
                 objectWillChange.send()

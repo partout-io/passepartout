@@ -96,7 +96,7 @@ private extension ProviderView.OpenVPNCredentialsView {
                 builder = credentials.builder()
             }
         } catch {
-            pp_log_g(.app, .error, "Unable to load OpenVPN credentials from options: \(error)")
+            pp_log_g(.App.core, .error, "Unable to load OpenVPN credentials from options: \(error)")
         }
         let metadata = provider.metadata(for: OpenVPNModule.self)
         providerCustomization = OpenVPN.ProviderCustomization(userInfo: metadata?.userInfo)
@@ -108,7 +108,7 @@ private extension ProviderView.OpenVPNCredentialsView {
             options.credentials = builder.build()
             try draft.module.setOptions(options, for: .openVPN)
         } catch {
-            pp_log_g(.app, .error, "Unable to store OpenVPN credentials to options: \(error)")
+            pp_log_g(.App.core, .error, "Unable to store OpenVPN credentials to options: \(error)")
         }
     }
 }

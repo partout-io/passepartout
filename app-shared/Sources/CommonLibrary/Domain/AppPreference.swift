@@ -63,7 +63,7 @@ extension AppPreferenceValues {
             do {
                 return try JSONDecoder().decode(Set<ConfigFlag>.self, from: configFlagsData)
             } catch {
-                pp_log_g(.app, .error, "Unable to decode config flags: \(error)")
+                pp_log_g(.App.core, .error, "Unable to decode config flags: \(error)")
                 return []
             }
         }
@@ -71,7 +71,7 @@ extension AppPreferenceValues {
             do {
                 configFlagsData = try JSONEncoder().encode(newValue)
             } catch {
-                pp_log_g(.app, .error, "Unable to encode config flags: \(error)")
+                pp_log_g(.App.core, .error, "Unable to encode config flags: \(error)")
             }
         }
     }
@@ -84,7 +84,7 @@ extension AppPreferenceValues {
             do {
                 return try JSONDecoder().decode(Experimental.self, from: experimentalData)
             } catch {
-                pp_log_g(.app, .error, "Unable to decode experimental: \(error)")
+                pp_log_g(.App.core, .error, "Unable to decode experimental: \(error)")
                 return Experimental()
             }
         }
@@ -92,7 +92,7 @@ extension AppPreferenceValues {
             do {
                 experimentalData = try JSONEncoder().encode(newValue)
             } catch {
-                pp_log_g(.app, .error, "Unable to encode experimental: \(error)")
+                pp_log_g(.App.core, .error, "Unable to encode experimental: \(error)")
             }
         }
     }

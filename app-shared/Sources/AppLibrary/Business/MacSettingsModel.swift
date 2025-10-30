@@ -35,7 +35,7 @@ public final class MacSettingsModel: ObservableObject {
                     try appService.unregister()
                 }
             } catch {
-                pp_log_g(.app, .error, "Unable to (un)register login item: \(error)")
+                pp_log_g(.App.core, .error, "Unable to (un)register login item: \(error)")
             }
         }
     }

@@ -58,28 +58,28 @@ public final class VersionChecker: ObservableObject {
             let lastCheckedInterval = kvManager.double(forAppPreference: .lastCheckedVersionDate)
             let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSinceReferenceDate: lastCheckedInterval) : .distantPast
 
-            pp_log_g(.app, .debug, "Version: checking for updates...")
+            pp_log_g(.App.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
             kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
             kvManager.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
-            pp_log_g(.app, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
+            pp_log_g(.App.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
             objectWillChange.send()
 
             if let latestRelease {
-                pp_log_g(.app, .info, "Version: new version available at \(latestRelease.url)")
+                pp_log_g(.App.core, .info, "Version: new version available at \(latestRelease.url)")
             } else {
-                pp_log_g(.app, .debug, "Version: current is latest version")
+                pp_log_g(.App.core, .debug, "Version: current is latest version")
             }
         } catch AppError.rateLimit {
-            pp_log_g(.app, .debug, "Version: rate limit")
+            pp_log_g(.App.core, .debug, "Version: rate limit")
         } catch AppError.unexpectedResponse {
             // save the check date regardless because the service call succeeded
             kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
 
-            pp_log_g(.app, .error, "Unable to check version: \(AppError.unexpectedResponse)")
+            pp_log_g(.App.core, .error, "Unable to check version: \(AppError.unexpectedResponse)")
         } catch {
-            pp_log_g(.app, .error, "Unable to check version: \(error)")
+            pp_log_g(.App.core, .error, "Unable to check version: \(error)")
         }
     }
 }

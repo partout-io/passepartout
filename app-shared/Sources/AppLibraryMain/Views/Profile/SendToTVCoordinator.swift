@@ -38,7 +38,7 @@ private extension SendToTVCoordinator {
             try await client.send(profile, to: url, passcode: passcode)
             isPresented = false
         } catch {
-            pp_log_g(.app, .error, "Unable to upload profile: \(error)")
+            pp_log_g(.App.core, .error, "Unable to upload profile: \(error)")
             throw error
         }
     }

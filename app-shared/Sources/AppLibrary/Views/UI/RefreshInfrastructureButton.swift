@@ -40,7 +40,7 @@ public struct RefreshInfrastructureButton<Label>: View where Label: View {
             loadLastUpdate()
         }
         .onChange(of: elapsed) {
-            pp_log_g(.app, .info, "Elapsed since last update of \(module.providerId): \($0)")
+            pp_log_g(.App.core, .info, "Elapsed since last update of \(module.providerId): \($0)")
         }
     }
 }

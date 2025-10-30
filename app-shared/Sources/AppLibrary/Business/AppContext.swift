@@ -117,7 +117,7 @@ extension AppContext {
 // invoked on internal events
 private extension AppContext {
     func onLaunch() async throws {
-        pp_log_g(.app, .notice, "Application did launch")
+        pp_log_g(.App.core, .notice, "Application did launch")
 
         pp_log_g(.App.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
@@ -177,10 +177,10 @@ private extension AppContext {
             .store(in: &subscriptions)
 
         do {
-            pp_log_g(.app, .info, "\tFetch providers index...")
+            pp_log_g(.App.core, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
-            pp_log_g(.app, .error, "\tUnable to fetch providers index: \(error)")
+            pp_log_g(.App.core, .error, "\tUnable to fetch providers index: \(error)")
         }
     }
 
@@ -192,7 +192,7 @@ private extension AppContext {
             return
         }
 
-        pp_log_g(.app, .notice, "Application did enter foreground")
+        pp_log_g(.App.core, .notice, "Application did enter foreground")
         pendingTask = Task {
             await reloadSystemExtension()
 
@@ -209,7 +209,7 @@ private extension AppContext {
     func onEligibleFeatures(_ features: Set<AppFeature>) async throws {
         try await waitForTasks()
 
-        pp_log_g(.app, .notice, "Application did update eligible features")
+        pp_log_g(.App.core, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -220,39 +220,39 @@ private extension AppContext {
     func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
         try await waitForTasks()
 
-        pp_log_g(.app, .notice, "Application did save profile (\(profile.id))")
+        pp_log_g(.App.core, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            pp_log_g(.app, .debug, "\tProfile \(profile.id) is new, do nothing")
+            pp_log_g(.App.core, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            pp_log_g(.app, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            pp_log_g(.App.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
         guard tunnel.isActiveProfile(withId: profile.id) else {
-            pp_log_g(.app, .debug, "\tProfile \(profile.id) is not current, do nothing")
+            pp_log_g(.App.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
             return
         }
         let status = tunnel.status(ofProfileId: profile.id)
         guard [.active, .activating].contains(status) else {
-            pp_log_g(.app, .debug, "\tConnection is not active (\(status)), do nothing")
+            pp_log_g(.App.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return
         }
 
         pendingTask = Task {
             do {
-                pp_log_g(.app, .info, "\tReconnect profile \(profile.id)")
+                pp_log_g(.App.core, .info, "\tReconnect profile \(profile.id)")
                 try await tunnel.disconnect(from: profile.id)
                 do {
                     try await tunnel.connect(with: profile)
                 } catch AppError.interactiveLogin {
-                    pp_log_g(.app, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                    pp_log_g(.App.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {
-                    pp_log_g(.app, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                    pp_log_g(.App.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
                 }
             } catch {
-                pp_log_g(.app, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+                pp_log_g(.App.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
             }
         }
         await pendingTask?.value
@@ -291,12 +291,12 @@ private extension AppContext {
         guard let sysexManager else {
             return
         }
-        pp_log_g(.app, .info, "System Extension: load current status...")
+        pp_log_g(.App.core, .info, "System Extension: load current status...")
         do {
             let result = try await sysexManager.load()
-            pp_log_g(.app, .info, "System Extension: load result is \(result)")
+            pp_log_g(.App.core, .info, "System Extension: load result is \(result)")
         } catch {
-            pp_log_g(.app, .error, "System Extension: load error: \(error)")
+            pp_log_g(.App.core, .error, "System Extension: load error: \(error)")
         }
     }
 
