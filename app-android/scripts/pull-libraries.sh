@@ -33,6 +33,7 @@ libs_path="$cpp_path/libs/partout-${partout_sha1}/arm64-v8a"
 mkdir -p $libs_path
 cp $partout_path/Sources/PartoutABI_C/include/partout.h $headers_path
 cp $partout_so_path/libpartout.so $libs_path
+cp $partout_vendors_path/openssl/lib/lib*.so $libs_path
 cp $partout_vendors_path/wg-go/lib/libwg-go.so $libs_path
 sed -E -i '' "s/set\(PARTOUT_SHA1 ([0-9a-f]+)\)/set(PARTOUT_SHA1 ${partout_sha1})/" $cpp_path/CMakeLists.txt
 
