@@ -13,11 +13,11 @@ public final class OnboardingManager: ObservableObject {
 
     public private(set) var step: OnboardingStep {
         willSet {
-            pp_log_g(.app, .info, "Current step: \(step)")
+            pp_log_g(.App.core, .info, "Current step: \(step)")
         }
         didSet {
             kvManager?.set(step.rawValue, forUIPreference: .onboardingStep)
-            pp_log_g(.app, .info, "Next step: \(step)")
+            pp_log_g(.App.core, .info, "Next step: \(step)")
         }
     }
 

@@ -42,16 +42,16 @@ public final class ConfigManager: ObservableObject {
             isPending = false
         }
         do {
-            pp_log_g(.app, .debug, "Config: refreshing bundle...")
+            pp_log_g(.App.core, .debug, "Config: refreshing bundle...")
             let newBundle = try await strategy.bundle()
             bundle = newBundle
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
-            pp_log_g(.app, .info, "Config: active flags = \(activeFlags)")
-            pp_log_g(.app, .debug, "Config: \(newBundle)")
+            pp_log_g(.App.core, .info, "Config: active flags = \(activeFlags)")
+            pp_log_g(.App.core, .debug, "Config: \(newBundle)")
         } catch AppError.rateLimit {
-            pp_log_g(.app, .debug, "Config: TTL")
+            pp_log_g(.App.core, .debug, "Config: TTL")
         } catch {
-            pp_log_g(.app, .error, "Unable to refresh config flags: \(error)")
+            pp_log_g(.App.core, .error, "Unable to refresh config flags: \(error)")
         }
     }
 

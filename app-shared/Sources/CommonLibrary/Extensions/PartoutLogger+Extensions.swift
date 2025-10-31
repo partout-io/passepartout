@@ -83,7 +83,7 @@ private extension PartoutLogger {
         appendLog(parameters.options.maxLevel, message: "")
 
         if let url = localLoggerURL {
-            pp_log(.global, .app, .debug, "Log to: \(url)")
+            pp_log(.global, .App.core, .debug, "Log to: \(url)")
         }
     }
 }
@@ -102,12 +102,12 @@ private extension PartoutLogger.Builder {
     mutating func configureLogging(to url: URL, parameters: Constants.Log, logsPrivateData: Bool) {
         assertsMissingLoggingCategory = true
         setOSLog(for: [
-            .app,
             .core,
             .os,
             .openvpn,
             .providers,
             .wireguard,
+            .App.core,
             .App.iap,
             .App.migration,
             .App.profiles,

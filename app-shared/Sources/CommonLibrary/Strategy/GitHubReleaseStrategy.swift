@@ -19,7 +19,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         if since > .distantPast {
             let elapsed = -since.timeIntervalSinceNow
             guard elapsed >= rateLimit else {
-                pp_log_g(.app, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
+                pp_log_g(.App.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
                 throw AppError.rateLimit
             }
         }
@@ -31,7 +31,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         let json = try JSONDecoder().decode(VersionJSON.self, from: result.0)
         let newVersion = json.name
         guard let semNew = SemanticVersion(newVersion) else {
-            pp_log_g(.app, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
+            pp_log_g(.App.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
             throw AppError.unexpectedResponse
         }
         return semNew

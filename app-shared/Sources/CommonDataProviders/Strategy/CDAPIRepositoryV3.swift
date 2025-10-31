@@ -190,7 +190,7 @@ extension CDAPIRepositoryV3: NSFetchedResultsControllerDelegate {
         let mapper = DomainMapper()
         providersSubject.send(entities.compactMap(mapper.provider(from:)))
         let cache = mapper.cache(from: entities)
-        pp_log_g(.app, .debug, "Cache metadata: \(cache)")
+        pp_log_g(.App.core, .debug, "Cache metadata: \(cache)")
         cacheSubject.send(cache)
     }
 }

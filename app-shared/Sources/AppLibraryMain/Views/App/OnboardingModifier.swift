@@ -128,7 +128,7 @@ private extension OnboardingModifier {
 private extension OnboardingModifier {
     func deferCurrentStep() {
         if isUITesting {
-            pp_log_g(.app, .info, "UI tests: skip onboarding")
+            pp_log_g(.App.core, .info, "UI tests: skip onboarding")
             return
         }
         Task {

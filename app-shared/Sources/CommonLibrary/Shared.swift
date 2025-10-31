@@ -6,9 +6,9 @@ import Foundation
 import Partout
 
 extension LoggerCategory {
-    public static let app = LoggerCategory(rawValue: "app")
-
     public enum App {
+        public static let core = LoggerCategory(rawValue: "app.core")
+
         public static let iap = LoggerCategory(rawValue: "app.iap")
 
         public static let migration = LoggerCategory(rawValue: "app.migration")

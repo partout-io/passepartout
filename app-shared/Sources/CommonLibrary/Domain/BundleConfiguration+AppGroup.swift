@@ -21,7 +21,7 @@ extension BundleConfiguration {
             do {
                 try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
             } catch {
-                pp_log_g(.app, .error, "Unable to create temporary directory \(baseURL): \(error)")
+                pp_log_g(.App.core, .error, "Unable to create temporary directory \(baseURL): \(error)")
             }
         }
         return baseURL.appending(path: Constants.shared.log.tunnelPath)
@@ -38,7 +38,7 @@ extension BundleConfiguration {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            pp_log_g(.app, .fault, "Unable to create group caches directory: \(error)")
+            pp_log_g(.App.core, .fault, "Unable to create group caches directory: \(error)")
         }
         return url
     }
@@ -48,7 +48,7 @@ extension BundleConfiguration {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            pp_log_g(.app, .fault, "Unable to create group documents directory: \(error)")
+            pp_log_g(.App.core, .fault, "Unable to create group documents directory: \(error)")
         }
         return url
     }
@@ -58,7 +58,7 @@ private extension BundleConfiguration {
     static var appGroupURL: URL {
         let groupId = mainString(for: .groupId)
         guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
-            pp_log_g(.app, .error, "Unable to access App Group container")
+            pp_log_g(.App.core, .error, "Unable to access App Group container")
             return FileManager.default.temporaryDirectory
         }
         return url
@@ -72,7 +72,7 @@ extension BundleConfiguration {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            pp_log_g(.app, .fault, "Unable to create user documents directory: \(error)")
+            pp_log_g(.App.core, .fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -81,7 +81,7 @@ extension BundleConfiguration {
         do {
             return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            pp_log_g(.app, .fault, "Unable to create user documents directory: \(error)")
+            pp_log_g(.App.core, .fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
