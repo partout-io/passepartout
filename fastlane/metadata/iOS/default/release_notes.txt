@@ -1,1 +1,3 @@
+* OpenVPN: Fix potential crash on peer verification
 * WireGuard: Improve recovery from unreachable network (#1581)
+* Fix potential crash on tunnel start (#1582)
