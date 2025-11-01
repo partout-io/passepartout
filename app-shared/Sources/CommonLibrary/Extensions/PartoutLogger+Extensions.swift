@@ -70,20 +70,21 @@ private extension PartoutLogger {
     }
 
     func logPreamble(parameters: Constants.Log) {
-        appendLog(parameters.options.maxLevel, message: "")
-        appendLog(parameters.options.maxLevel, message: "--- BEGIN ---")
-        appendLog(parameters.options.maxLevel, message: "")
+        let level = parameters.options.maxLevel
+        appendLog(level, message: "")
+        appendLog(level, message: "--- BEGIN ---")
+        appendLog(level, message: "")
 
         let systemInfo = SystemInformation()
-        appendLog(parameters.options.maxLevel, message: "App: \(BundleConfiguration.mainVersionString)")
-        appendLog(parameters.options.maxLevel, message: "OS: \(systemInfo.osString)")
+        appendLog(level, message: "App: \(BundleConfiguration.mainVersionString)")
+        appendLog(level, message: "OS: \(systemInfo.osString)")
         if let deviceString = systemInfo.deviceString {
-            appendLog(parameters.options.maxLevel, message: "Device: \(deviceString)")
+            appendLog(level, message: "Device: \(deviceString)")
         }
-        appendLog(parameters.options.maxLevel, message: "")
+        appendLog(level, message: "")
 
-        if let url = localLoggerURL {
-            pp_log(.global, .App.core, .debug, "Log to: \(url)")
+        if let localLoggerURL {
+            pp_log(.global, .App.core, .debug, "Log to: \(localLoggerURL)")
         }
     }
 }
