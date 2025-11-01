@@ -233,7 +233,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         fwd = nil
         flushLogs()
         await untrackContext()
-        ctx = nil
     }
 
     override func cancelTunnelWithError(_ error: (any Error)?) {
