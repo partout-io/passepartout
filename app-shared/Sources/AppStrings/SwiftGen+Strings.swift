@@ -1258,6 +1258,10 @@ public enum Strings {
         ///  (on-demand)
         public static let onDemandSuffix = Strings.tr("Localizable", "views.ui.connection_status.on_demand_suffix", fallback: " (on-demand)")
       }
+      public enum ModuleCopy {
+        /// Copy to
+        public static let title = Strings.tr("Localizable", "views.ui.module_copy.title", fallback: "Copy to")
+      }
       public enum PurchaseRequired {
         public enum Purchase {
           /// Purchase required
