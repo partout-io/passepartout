@@ -43,6 +43,7 @@ public struct ProfileSelectorMenu: View {
                     Button(newTitle) {
                         onSelect(nil)
                     }
+                    // XXX: Header renders bad on macOS
                     .themeSection(header: Strings.Views.App.Toolbar.NewProfile.empty)
                 }
             }
