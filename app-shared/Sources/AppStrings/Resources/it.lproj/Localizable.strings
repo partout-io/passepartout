@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Inquadra il QR con la fotocamera per aprire una pagina web dove caricare il tuo profilo. Assicurati di essere connesso alla stessa rete.";
 "views.tv.web_receiver.toggle" = "Attiva per importare un profilo locale sulla tua TV tramite browser web.";
 "views.ui.connection_status.on_demand_suffix" = " (on-demand)";
+"views.ui.module_copy.title" = "Copia in";
 "views.ui.purchase_required.purchase.help" = "Acquisto richiesto";
 "views.verification.message" = "Verifica";
 "views.version.extra" = "%@ è un progetto mantenuto da %@.\n\nIl codice sorgente è pubblicamente disponibile su GitHub sotto la licenza GPLv3, puoi trovare i link nella home page.";

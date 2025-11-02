@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Zeskanuj kod QR aparatem, aby otworzyć stronę internetową, na której możesz przesłać swój profil. Upewnij się, że jesteś połączony z tą samą siecią.";
 "views.tv.web_receiver.toggle" = "Przełącz, aby zaimportować lokalny profil na swój telewizor za pomocą przeglądarki internetowej.";
 "views.ui.connection_status.on_demand_suffix" = " (na żądanie)";
+"views.ui.module_copy.title" = "Kopiuj do";
 "views.ui.purchase_required.purchase.help" = "Wymagana zakup";
 "views.verification.message" = "Weryfikacja";
 "views.version.extra" = "%@ to projekt utrzymywany przez %@.\n\nKod źródłowy jest dostępny publicznie na GitHub pod licencją GPLv3. Linki można znaleźć na stronie głównej.";

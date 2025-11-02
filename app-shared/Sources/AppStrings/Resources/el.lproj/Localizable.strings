@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Σαρώστε το QR με την κάμερά σας για να ανοίξετε μια ιστοσελίδα όπου μπορείτε να ανεβάσετε το προφίλ σας. Βεβαιωθείτε ότι είστε συνδεδεμένοι στο ίδιο δίκτυο.";
 "views.tv.web_receiver.toggle" = "Εναλλαγή για εισαγωγή τοπικού προφίλ στην τηλεόρασή σου μέσω web browser.";
 "views.ui.connection_status.on_demand_suffix" = " (κατ' απαίτηση)";
+"views.ui.module_copy.title" = "Αντιγραφή σε";
 "views.ui.purchase_required.purchase.help" = "Απαιτείται αγορά";
 "views.verification.message" = "Επαλήθευση";
 "views.version.extra" = "Το %@ είναι ένα έργο που συντηρείται από τον/την %@.\n\nΟ πηγαίος κώδικας είναι διαθέσιμος δημόσια στο GitHub υπό την άδεια GPLv3. Μπορείτε να βρείτε τους συνδέσμους στην αρχική σελίδα.";
