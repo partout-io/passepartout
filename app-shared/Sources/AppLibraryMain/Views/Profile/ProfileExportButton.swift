@@ -27,9 +27,13 @@ struct ProfileExportButton: View {
         self.profile = profile
     }
 
-    init(editor: ProfileEditor) {
-        // FIXME: ###
-        profile = try! editor.profile.builder().build()
+    init?(editor: ProfileEditor) {
+        do {
+            profile = try editor.profile.builder().build()
+        } catch {
+            pp_log_g(.App.profiles, .error, "Unable to build profile from editor: \(error)")
+            return nil
+        }
     }
 
     var body: some View {
