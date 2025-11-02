@@ -28,7 +28,7 @@ public final class InteractiveManager: ObservableObject {
 
     public func complete() throws {
         isPresented = false
-        let newProfile = try editor.build()
+        let newProfile = try editor.buildAndUpdate()
         try onComplete?(newProfile)
     }
 }

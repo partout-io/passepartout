@@ -55,7 +55,7 @@ private extension CommonData {
         _ context: NSManagedObjectContext,
         registryCoder: RegistryCoder
     ) throws -> CDProfileV3 {
-        let encoded = try registryCoder.string(from: profile)
+        let encoded = try registryCoder.json(from: profile)
 
         let cdProfile = CDProfileV3(context: context)
         cdProfile.uuid = profile.id

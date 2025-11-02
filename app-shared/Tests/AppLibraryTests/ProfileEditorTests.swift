@@ -153,7 +153,7 @@ extension ProfileEditorTests {
         XCTAssertEqual(sut.activeModulesIds, [ovpn.id, wg.id])
         sut.toggleModule(withId: wg.id)
         XCTAssertEqual(sut.activeModulesIds, [ovpn.id])
-        XCTAssertThrowsError(try sut.build())
+        XCTAssertThrowsError(try sut.buildAndUpdate())
     }
 
     func test_givenModulesWithoutConnection_whenActiveIP_thenFailsToBuild() throws {
@@ -161,7 +161,7 @@ extension ProfileEditorTests {
         let sut = ProfileEditor(modules: [ip])
 
         XCTAssertEqual(sut.activeModulesIds, [ip.id])
-        XCTAssertThrowsError(try sut.build())
+        XCTAssertThrowsError(try sut.buildAndUpdate())
     }
 
     // MARK: Building
@@ -172,7 +172,7 @@ extension ProfileEditorTests {
         let sut = ProfileEditor(modules: [wg])
         sut.profile.name = "hello"
 
-        let profile = try sut.build()
+        let profile = try sut.buildAndUpdate()
         XCTAssertEqual(profile.name, "hello")
         XCTAssertTrue(profile.modules.first is WireGuardModule)
         XCTAssertEqual(profile.modules.first as? WireGuardModule, try wg.build())
@@ -181,13 +181,13 @@ extension ProfileEditorTests {
 
     func test_givenProfile_whenBuildWithEmptyName_thenFails() async throws {
         let sut = ProfileEditor(modules: [])
-        XCTAssertThrowsError(try sut.build())
+        XCTAssertThrowsError(try sut.buildAndUpdate())
     }
 
     func test_givenProfile_whenBuildWithMalformedModule_thenFails() async throws {
         let dns = DNSModule.Builder(protocolType: .https) // missing URL
         let sut = ProfileEditor(modules: [dns])
-        XCTAssertThrowsError(try sut.build())
+        XCTAssertThrowsError(try sut.buildAndUpdate())
     }
 
     // MARK: Saving

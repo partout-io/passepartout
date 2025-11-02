@@ -18,7 +18,7 @@ extension ProfileEditor {
         verifyingWith iapManager: IAPManager?,
         preferencesManager: PreferencesManager
     ) async throws -> Profile {
-        let profileToSave = try build(with: registry)
+        let profileToSave = try buildAndUpdate(with: registry)
 
         // verify profile (optional)
         if let iapManager, !iapManager.isBeta {

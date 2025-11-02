@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "复制";
 "global.actions.edit" = "编辑";
 "global.actions.enable" = "启用";
+"global.actions.export" = "导出";
 "global.actions.hide" = "隐藏";
 "global.actions.import" = "导入";
 "global.actions.purchase" = "购买";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "替代验证";
 "views.preferences.system_appearance" = "外观";
 "views.profile.alerts.purchase.buttons.ok" = "仍然保存";
+"views.profile.buttons.export" = "导出配置文件";
+"views.profile.buttons.share" = "分享配置文件";
 "views.profile.module_list.section.footer" = "点击模块以编辑其设置。可以拖动模块来确定优先级。";
 "views.profile.rows.add_module" = "添加模块";
 "views.profile.rows.delete_profile" = "删除配置文件";

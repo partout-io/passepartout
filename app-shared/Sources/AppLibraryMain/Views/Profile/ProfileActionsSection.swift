@@ -20,11 +20,15 @@ struct ProfileActionsSection: View {
     var body: some View {
 #if os(iOS)
         Section {
+            exportButton
+            shareButton
+        }
+        Section {
             UUIDText(uuid: profileId)
         }
         Section {
             removeContent()
-                .frame(maxWidth: .infinity, alignment: .center)
+                .themeActionButton()
         }
 #else
         if isExistingProfile {
@@ -46,6 +50,14 @@ private extension ProfileActionsSection {
 
     var uuidView: some View {
         UUIDText(uuid: profileId)
+    }
+
+    var exportButton: some View {
+        ProfileExportButton(editor: profileEditor)
+    }
+
+    var shareButton: some View {
+        ProfileShareButton(editor: profileEditor)
     }
 
     func removeContent() -> some View {

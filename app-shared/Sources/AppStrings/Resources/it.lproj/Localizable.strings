@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "Duplica";
 "global.actions.edit" = "Modifica";
 "global.actions.enable" = "Abilita";
+"global.actions.export" = "Esporta";
 "global.actions.hide" = "Nascondi";
 "global.actions.import" = "Importa";
 "global.actions.purchase" = "Acquista";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "Verifica alternativa";
 "views.preferences.system_appearance" = "Aspetto";
 "views.profile.alerts.purchase.buttons.ok" = "Salva comunque";
+"views.profile.buttons.export" = "Esporta profilo";
+"views.profile.buttons.share" = "Condividi profilo";
 "views.profile.module_list.section.footer" = "Tocca i moduli per modificarne le impostazioni. Possono essere trascinati per determinare la priorità.";
 "views.profile.rows.add_module" = "Aggiungi modulo";
 "views.profile.rows.delete_profile" = "Elimina profilo";

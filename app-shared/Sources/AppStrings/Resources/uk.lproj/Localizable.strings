@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "Дублювати";
 "global.actions.edit" = "Редагувати";
 "global.actions.enable" = "Увімкнути";
+"global.actions.export" = "Експортувати";
 "global.actions.hide" = "Приховати";
 "global.actions.import" = "Імпортувати";
 "global.actions.purchase" = "Купити";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "Альтернативна перевірка";
 "views.preferences.system_appearance" = "Зовнішній вигляд";
 "views.profile.alerts.purchase.buttons.ok" = "Зберегти все одно";
+"views.profile.buttons.export" = "Експортувати профіль";
+"views.profile.buttons.share" = "Поділитися профілем";
 "views.profile.module_list.section.footer" = "Торкніться модулів, щоб змінити їхні налаштування. Їх можна перетягувати для визначення пріоритету.";
 "views.profile.rows.add_module" = "Додати модуль";
 "views.profile.rows.delete_profile" = "Видалити профіль";

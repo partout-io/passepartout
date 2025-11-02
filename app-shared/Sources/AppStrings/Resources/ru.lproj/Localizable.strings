@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "Дублировать";
 "global.actions.edit" = "Редактировать";
 "global.actions.enable" = "Включить";
+"global.actions.export" = "Экспортировать";
 "global.actions.hide" = "Скрыть";
 "global.actions.import" = "Импорт";
 "global.actions.purchase" = "Купить";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "Альтернативная проверка";
 "views.preferences.system_appearance" = "Внешний вид";
 "views.profile.alerts.purchase.buttons.ok" = "Сохранить в любом случае";
+"views.profile.buttons.export" = "Экспортировать профиль";
+"views.profile.buttons.share" = "Поделиться профилем";
 "views.profile.module_list.section.footer" = "Нажмите на модули, чтобы изменить их настройки. Их можно перетаскивать для установки приоритета.";
 "views.profile.rows.add_module" = "Добавить модуль";
 "views.profile.rows.delete_profile" = "Удалить профиль";

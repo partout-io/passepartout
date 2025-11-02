@@ -234,6 +234,14 @@ extension View {
 
 #if !os(tvOS)
 extension View {
+    public func themeActionButton() -> some View {
+#if os(iOS)
+        frame(maxWidth: .infinity, alignment: .center)
+#else
+        self
+#endif
+    }
+
     public func themeGridCell() -> some View {
         modifier(ThemeGridCellModifier())
     }

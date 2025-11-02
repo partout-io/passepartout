@@ -39,6 +39,7 @@
 				<string>ovpn</string>
 				<string>conf</string>
 				<string>zip</string>
+				<string>json</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Extensions</string>

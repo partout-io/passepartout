@@ -65,6 +65,10 @@ extension ProfileSplitView {
 
     @ToolbarContentBuilder
     func toolbarContent() -> some ToolbarContent {
+        ToolbarItemGroup {
+            ProfileExportButton(editor: profileEditor)
+            ProfileShareButton(editor: profileEditor)
+        }
         ToolbarItem(placement: .cancellationAction) {
             Button(Strings.Global.Actions.cancel, role: .cancel) {
                 flow?.onCancelEditing()

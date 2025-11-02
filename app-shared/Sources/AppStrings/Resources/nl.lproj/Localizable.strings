@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "Dupliceren";
 "global.actions.edit" = "Bewerken";
 "global.actions.enable" = "Inschakelen";
+"global.actions.export" = "Exporteren";
 "global.actions.hide" = "Verbergen";
 "global.actions.import" = "Importeren";
 "global.actions.purchase" = "Aankopen";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "Alternatieve verificatie";
 "views.preferences.system_appearance" = "Uiterlijk";
 "views.profile.alerts.purchase.buttons.ok" = "Toch opslaan";
+"views.profile.buttons.export" = "Profiel exporteren";
+"views.profile.buttons.share" = "Profiel delen";
 "views.profile.module_list.section.footer" = "Tik op modules om hun instellingen te bewerken. Modules kunnen worden versleept om de prioriteit te bepalen.";
 "views.profile.rows.add_module" = "Module toevoegen";
 "views.profile.rows.delete_profile" = "Verwijder profiel";
