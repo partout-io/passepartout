@@ -17,23 +17,19 @@ struct ProfileExportButton: View {
 
     private let profile: Profile
 
-    private let inContextMenu: Bool
-
     @State
     private var viewModel = ViewModel()
 
     @StateObject
     private var errorHandler: ErrorHandler = .default()
 
-    init(profile: Profile, inContextMenu: Bool) {
+    init(profile: Profile) {
         self.profile = profile
-        self.inContextMenu = inContextMenu
     }
 
     init?(editor: ProfileEditor) {
         do {
             profile = try editor.profile.builder().build()
-            inContextMenu = false
         } catch {
             pp_log_g(.App.profiles, .error, "Unable to build profile from editor: \(error)")
             return nil
@@ -58,7 +54,7 @@ private extension ProfileExportButton {
 #if os(iOS)
         Text(Strings.Views.Profile.Buttons.export)
 #else
-        Text(inContextMenu ? Strings.Global.Actions.export : Strings.Global.Actions.export.withTrailingDots)
+        Text(Strings.Global.Actions.export.withTrailingDots)
 #endif
     }
 

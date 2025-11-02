@@ -37,12 +37,7 @@ struct ProfileContextMenu: View, Routable {
         if style == .installedProfile {
             HideActiveProfileButton()
         }
-        if let profile {
-            ProfileExportButton(profile: profile, inContextMenu: true)
-            ProfileShareButton(profile: profile, inContextMenu: true)
-        }
         if style == .containerContext {
-            Divider()
             profileDuplicateButton
             profileRemoveButton
         }

@@ -12,17 +12,13 @@ struct ProfileShareButton: View {
 
     private let profile: Profile
 
-    private let inContextMenu: Bool
-
-    init(profile: Profile, inContextMenu: Bool) {
+    init(profile: Profile) {
         self.profile = profile
-        self.inContextMenu = inContextMenu
     }
 
     init?(editor: ProfileEditor) {
         do {
             profile = try editor.profile.builder().build()
-            inContextMenu = false
         } catch {
             pp_log_g(.App.profiles, .error, "Unable to build profile from editor: \(error)")
             return nil
@@ -39,17 +35,11 @@ struct ProfileShareButton: View {
 }
 
 private extension ProfileShareButton {
-
-    @ViewBuilder
     func shareLabel() -> some View {
 #if os(iOS)
         Text(Strings.Views.Profile.Buttons.share)
 #else
-        if inContextMenu {
-            Text(Strings.Views.Profile.Buttons.share)
-        } else {
-            ThemeImage(.share)
-        }
+        ThemeImage(.share)
 #endif
     }
 
