@@ -65,7 +65,7 @@ extension ProfileEditor {
 
     public func writeToJSON(coder: RegistryCoder) throws -> String {
         let profile = try build(with: nil, updating: false)
-        return try coder.json(from: [profile])
+        return try coder.json(from: profile)
     }
 
     public func writeToURL(coder: RegistryCoder) throws -> URL {
