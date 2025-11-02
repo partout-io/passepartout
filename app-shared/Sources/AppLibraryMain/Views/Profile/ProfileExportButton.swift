@@ -15,7 +15,7 @@ struct ProfileExportButton: View {
     @EnvironmentObject
     private var registryCoder: RegistryCoder
 
-    let editor: ProfileEditor
+    private let profile: Profile
 
     @State
     private var viewModel = ViewModel()
@@ -23,13 +23,22 @@ struct ProfileExportButton: View {
     @StateObject
     private var errorHandler: ErrorHandler = .default()
 
+    init(profile: Profile) {
+        self.profile = profile
+    }
+
+    init(editor: ProfileEditor) {
+        // FIXME: ###
+        profile = try! editor.profile.builder().build()
+    }
+
     var body: some View {
         Button(action: exportProfiles, label: exportLabel)
             .fileExporter(
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(JSONFile.init(string:)),
                 contentType: .json,
-                defaultFilename: editor.defaultFilename,
+                defaultFilename: profile.defaultFilename,
                 onCompletion: { _ in }
             )
             .withErrorHandler(errorHandler)
@@ -47,7 +56,7 @@ private extension ProfileExportButton {
 
     func exportProfiles() {
         do {
-            viewModel.jsonString = try editor.writeToJSON(coder: registryCoder)
+            viewModel.jsonString = try profile.writeToJSON(coder: registryCoder)
             viewModel.isExporting = true
         } catch {
             errorHandler.handle(error)

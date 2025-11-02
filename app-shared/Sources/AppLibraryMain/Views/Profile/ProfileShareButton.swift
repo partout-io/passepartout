@@ -10,13 +10,21 @@ struct ProfileShareButton: View {
     @EnvironmentObject
     private var registryCoder: RegistryCoder
 
-    @ObservedObject
-    var editor: ProfileEditor
+    private let profile: Profile
+
+    init(profile: Profile) {
+        self.profile = profile
+    }
+
+    init(editor: ProfileEditor) {
+        // FIXME: ###
+        profile = try! editor.profile.builder().build()
+    }
 
     var body: some View {
         ShareLink(
             item: ProfileRepresentation(encoder: toURL),
-            preview: .init(editor.profile.name),
+            preview: .init(profile.name),
             label: shareLabel
         )
     }
@@ -33,12 +41,12 @@ private extension ProfileShareButton {
 
     func toURL() throws -> URL {
         do {
-            pp_log_g(.App.profiles, .debug, "Writing profile \(editor.profile.id) for sharing...")
-            let url = try editor.writeToURL(coder: registryCoder)
+            pp_log_g(.App.profiles, .debug, "Writing profile \(profile.id) for sharing...")
+            let url = try profile.writeToURL(coder: registryCoder)
             pp_log_g(.App.profiles, .debug, "Written profile to: \(url)")
             return url
         } catch {
-            pp_log_g(.App.profiles, .error, "Unable to write profile \(editor.profile.id): \(error)")
+            pp_log_g(.App.profiles, .error, "Unable to write profile \(profile.id): \(error)")
             throw error
         }
     }
