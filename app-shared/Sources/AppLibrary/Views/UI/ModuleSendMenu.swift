@@ -6,7 +6,7 @@ import CommonLibrary
 import CommonUtils
 import SwiftUI
 
-public struct ModuleCopyView: View {
+public struct ModuleSendMenu: View {
 
     @EnvironmentObject
     private var profileManager: ProfileManager
@@ -26,11 +26,11 @@ public struct ModuleCopyView: View {
 
     public var body: some View {
         ProfileSelectorMenu(Strings.Views.Ui.ModuleCopy.title, excluding: profileId) {
-            copyModule(to: $0)
+            sendModule(to: $0)
         }
     }
 
-    private func copyModule(to preview: ProfilePreview) {
+    private func sendModule(to preview: ProfilePreview) {
         Task {
             do {
                 guard let destination = profileManager.profile(withId: preview.id) else {

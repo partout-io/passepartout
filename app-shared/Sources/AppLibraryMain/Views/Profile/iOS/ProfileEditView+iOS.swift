@@ -117,7 +117,7 @@ private extension ProfileEditView {
             }
         }
         .contextMenu {
-            ModuleCopyView(
+            ModuleSendMenu(
                 profileId: profileEditor.profile.id,
                 module: module,
                 errorHandler: errorHandler

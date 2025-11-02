@@ -89,7 +89,7 @@ private extension ModuleListView {
             }
         }
         .contextMenu {
-            ModuleCopyView(
+            ModuleSendMenu(
                 profileId: profileEditor.profile.id,
                 module: module,
                 errorHandler: errorHandler
