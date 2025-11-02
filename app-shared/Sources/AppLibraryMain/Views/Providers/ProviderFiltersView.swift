@@ -26,7 +26,7 @@ struct ProviderFiltersView: View {
                 presetPicker
 #if os(iOS)
                 clearFiltersButton
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .themeActionButton()
 #else
                 HStack {
                     favoritesToggle

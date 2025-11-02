@@ -111,6 +111,9 @@
 "views.profile.send_tv.passcode.message" = "Enter the passcode";
 "views.profile.alerts.purchase.buttons.ok" = "Save anyway";
 
+"views.profile.buttons.share" = "Share Profile";
+"views.profile.buttons.export" = "Export Profile";
+
 "views.providers.module" = "Type";
 "views.providers.preset" = "Preset";
 "views.providers.preset.placeholder" = "Select server";
@@ -308,6 +311,7 @@
 "global.actions.duplicate" = "Duplicate";
 "global.actions.edit" = "Edit";
 "global.actions.enable" = "Enable";
+"global.actions.export" = "Export";
 "global.actions.hide" = "Hide";
 "global.actions.import" = "Import";
 "global.actions.purchase" = "Purchase";

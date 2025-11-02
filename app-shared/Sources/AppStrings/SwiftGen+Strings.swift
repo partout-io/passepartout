@@ -320,6 +320,8 @@ public enum Strings {
       public static let edit = Strings.tr("Localizable", "global.actions.edit", fallback: "Edit")
       /// Enable
       public static let enable = Strings.tr("Localizable", "global.actions.enable", fallback: "Enable")
+      /// Export
+      public static let export = Strings.tr("Localizable", "global.actions.export", fallback: "Export")
       /// Hide
       public static let hide = Strings.tr("Localizable", "global.actions.hide", fallback: "Hide")
       /// Import
@@ -1071,6 +1073,12 @@ public enum Strings {
             public static let ok = Strings.tr("Localizable", "views.profile.alerts.purchase.buttons.ok", fallback: "Save anyway")
           }
         }
+      }
+      public enum Buttons {
+        /// Export Profile
+        public static let export = Strings.tr("Localizable", "views.profile.buttons.export", fallback: "Export Profile")
+        /// Share Profile
+        public static let share = Strings.tr("Localizable", "views.profile.buttons.share", fallback: "Share Profile")
       }
       public enum ModuleList {
         public enum Section {

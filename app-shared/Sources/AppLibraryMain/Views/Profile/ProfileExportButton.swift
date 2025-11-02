@@ -1,0 +1,60 @@
+// SPDX-FileCopyrightText: 2025 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+import CommonLibrary
+import CommonUtils
+import SwiftUI
+
+struct ProfileExportButton: View {
+    private struct ViewModel: Equatable {
+        var jsonString: String?
+        var isLoading = false
+        var isExporting = false
+    }
+
+    @EnvironmentObject
+    private var registryCoder: RegistryCoder
+
+    let editor: ProfileEditor
+
+    @State
+    private var viewModel = ViewModel()
+
+    @StateObject
+    private var errorHandler: ErrorHandler = .default()
+
+    var body: some View {
+        Button(action: exportProfiles, label: exportLabel)
+            .fileExporter(
+                isPresented: $viewModel.isExporting,
+                document: viewModel.jsonString.map(JSONFile.init(string:)),
+                contentType: .json,
+                defaultFilename: editor.defaultFilename,
+                onCompletion: { _ in }
+            )
+            .disabled(viewModel.isLoading)
+            .withErrorHandler(errorHandler)
+    }
+}
+
+private extension ProfileExportButton {
+    func exportLabel() -> some View {
+#if os(iOS)
+        Text(Strings.Views.Profile.Buttons.export)
+#else
+        Text(Strings.Global.Actions.export.withTrailingDots)
+#endif
+    }
+
+    func exportProfiles() {
+        do {
+            viewModel.isLoading = true
+            viewModel.jsonString = try editor.writeToJSON(coder: registryCoder)
+            viewModel.isLoading = false
+            viewModel.isExporting = true
+        } catch {
+            errorHandler.handle(error)
+        }
+    }
+}
