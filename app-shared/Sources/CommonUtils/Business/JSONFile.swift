@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !os(tvOS)
+
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -24,3 +26,5 @@ public struct JSONFile: FileDocument {
         return FileWrapper(regularFileWithContents: data)
     }
 }
+
+#endif
