@@ -25,26 +25,41 @@ public struct ModuleSendMenu: View {
     }
 
     public var body: some View {
-        ProfileSelectorMenu(Strings.Views.Ui.ModuleCopy.title, excluding: profileId) {
-            sendModule(to: $0)
-        }
+        ProfileSelectorMenu(
+            Strings.Views.Ui.ModuleCopy.title,
+            withNewTitle: newProfileName,
+            excluding: profileId,
+            onSelect: sendModule(to:)
+        )
+    }
+}
+
+private extension ModuleSendMenu {
+    var newProfileName: String {
+        "\(module.moduleType.localizedDescription) \(Strings.Global.Nouns.copy)"
     }
 
-    private func sendModule(to preview: ProfilePreview) {
+    func sendModule(to preview: ProfilePreview?) {
         Task {
             do {
-                guard let destination = profileManager.profile(withId: preview.id) else {
-                    throw PartoutError(.notFound)
+                var destination: Profile.Builder
+                if let preview {
+                    guard let existingDestination = profileManager.profile(withId: preview.id) else {
+                        throw PartoutError(.notFound)
+                    }
+                    destination = existingDestination.builder()
+                } else {
+                    destination = Profile.Builder()
+                    destination.name = profileManager.firstUniqueName(from: newProfileName)
                 }
                 var moduleCopy = module
                 moduleCopy.id = UUID()
                 let builtModule = try moduleCopy.build()
 
-                var builder = destination.builder()
-                builder.modules.append(builtModule)
-                try await profileManager.save(builder.build())
+                destination.modules.append(builtModule)
+                try await profileManager.save(destination.build())
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to copy module to \(preview.id): \(error)")
+                pp_log_g(.App.profiles, .error, "Unable to copy module: \(error)")
                 errorHandler.handle(error)
             }
         }

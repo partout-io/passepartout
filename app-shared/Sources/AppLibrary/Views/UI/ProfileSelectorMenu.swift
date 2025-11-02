@@ -12,16 +12,20 @@ public struct ProfileSelectorMenu: View {
 
     private let title: String
 
+    private let newTitle: String?
+
     private let excludedProfileId: Profile.ID?
 
-    private let onSelect: (ProfilePreview) -> Void
+    private let onSelect: (ProfilePreview?) -> Void
 
     public init(
         _ title: String,
+        withNewTitle newTitle: String? = nil,
         excluding excludedProfileId: Profile.ID? = nil,
-        onSelect: @escaping (ProfilePreview) -> Void
+        onSelect: @escaping (ProfilePreview?) -> Void
     ) {
         self.title = title
+        self.newTitle = newTitle
         self.excludedProfileId = excludedProfileId
         self.onSelect = onSelect
     }
@@ -34,6 +38,13 @@ public struct ProfileSelectorMenu: View {
                         onSelect(profile)
                     }
                 }
+                if let newTitle {
+                    Divider()
+                    Button(newTitle) {
+                        onSelect(nil)
+                    }
+                    .themeSection(header: Strings.Views.App.Toolbar.NewProfile.empty)
+                }
             }
         }
     }
@@ -41,11 +52,16 @@ public struct ProfileSelectorMenu: View {
 
 private extension ProfileSelectorMenu {
     var previews: [ProfilePreview]? {
-        profileManager
+        let filtered = profileManager
             .previews
             .filter {
                 $0.id != excludedProfileId
             }
-            .nilIfEmpty
+        // If the list is empty and new profile selection is
+        // not allowed, return nil
+        guard !filtered.isEmpty || newTitle != nil else {
+            return nil
+        }
+        return filtered
     }
 }

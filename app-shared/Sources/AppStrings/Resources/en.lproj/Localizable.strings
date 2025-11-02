@@ -340,6 +340,7 @@
 "global.nouns.compression" = "Compression";
 "global.nouns.configuration" = "Configuration";
 "global.nouns.connection" = "Connection";
+"global.nouns.copy" = "Copy";
 "global.nouns.country" = "Country";
 "global.nouns.date" = "Date";
 "global.nouns.default" = "Default";

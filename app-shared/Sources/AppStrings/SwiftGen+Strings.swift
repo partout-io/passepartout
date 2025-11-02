@@ -368,6 +368,8 @@ public enum Strings {
       public static let configuration = Strings.tr("Localizable", "global.nouns.configuration", fallback: "Configuration")
       /// Connection
       public static let connection = Strings.tr("Localizable", "global.nouns.connection", fallback: "Connection")
+      /// Copy
+      public static let copy = Strings.tr("Localizable", "global.nouns.copy", fallback: "Copy")
       /// Country
       public static let country = Strings.tr("Localizable", "global.nouns.country", fallback: "Country")
       /// Date
