@@ -182,18 +182,22 @@ private extension ProfileEditor {
 // MARK: - Building
 
 extension ProfileEditor {
-    public func build() throws -> Profile {
-        try build(with: nil)
+    public func buildAndUpdate() throws -> Profile {
+        try buildAndUpdate(with: nil)
     }
 
-    public func build(with registry: Registry?) throws -> Profile {
+    public func buildAndUpdate(with registry: Registry?) throws -> Profile {
+        try build(with: registry, updating: true)
+    }
 
-        // add this check in the app, the library does not enforce it
+    public func build(with registry: Registry?, updating: Bool) throws -> Profile {
+
+        // Add this check in the app, the library does not enforce it
         guard !editableProfile.activeModulesIds.isEmpty else {
             throw PartoutError(.noActiveModules)
         }
 
-        // validate builders if implementation supports it
+        // Validate builders if implementation supports it
         try editableProfile.modules.forEach {
             guard let impl = registry?.implementation(for: $0) as? ModuleBuilderValidator else {
                 return
@@ -208,8 +212,10 @@ extension ProfileEditor {
         let builder = try editableProfile.builder()
         let profile = try builder.build()
 
-        // update local view
-        editableProfile.modules = profile.modulesBuilders()
+        // Update local view
+        if updating {
+            editableProfile.modules = profile.modulesBuilders()
+        }
 
         return profile
     }
