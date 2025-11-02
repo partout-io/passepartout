@@ -133,7 +133,8 @@
 
 "views.ui.connection_status.on_demand_suffix" = " (on-demand)";
 "views.ui.purchase_required.purchase.help" = "Purchase required";
-"views.ui.module_copy.title" = "Copy to";
+"views.ui.module_send.title" = "Copy to";
+"views.ui.module_send.new_profile_name" = "Copy of %@";
 
 "views.verification.message" = "Verifying...";
 
@@ -340,7 +341,6 @@
 "global.nouns.compression" = "Compression";
 "global.nouns.configuration" = "Configuration";
 "global.nouns.connection" = "Connection";
-"global.nouns.copy" = "Copy";
 "global.nouns.country" = "Country";
 "global.nouns.date" = "Date";
 "global.nouns.default" = "Default";

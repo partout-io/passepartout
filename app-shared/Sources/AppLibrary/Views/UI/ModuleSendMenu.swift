@@ -26,7 +26,7 @@ public struct ModuleSendMenu: View {
 
     public var body: some View {
         ProfileSelectorMenu(
-            Strings.Views.Ui.ModuleCopy.title,
+            Strings.Views.Ui.ModuleSend.title,
             withNewTitle: newProfileName,
             excluding: profileId,
             onSelect: sendModule(to:)
@@ -36,7 +36,7 @@ public struct ModuleSendMenu: View {
 
 private extension ModuleSendMenu {
     var newProfileName: String {
-        "\(module.moduleType.localizedDescription) \(Strings.Global.Nouns.copy)"
+        Strings.Views.Ui.ModuleSend.newProfileName(module.moduleType)
     }
 
     func sendModule(to preview: ProfilePreview?) {

@@ -368,8 +368,6 @@ public enum Strings {
       public static let configuration = Strings.tr("Localizable", "global.nouns.configuration", fallback: "Configuration")
       /// Connection
       public static let connection = Strings.tr("Localizable", "global.nouns.connection", fallback: "Connection")
-      /// Copy
-      public static let copy = Strings.tr("Localizable", "global.nouns.copy", fallback: "Copy")
       /// Country
       public static let country = Strings.tr("Localizable", "global.nouns.country", fallback: "Country")
       /// Date
@@ -1260,9 +1258,13 @@ public enum Strings {
         ///  (on-demand)
         public static let onDemandSuffix = Strings.tr("Localizable", "views.ui.connection_status.on_demand_suffix", fallback: " (on-demand)")
       }
-      public enum ModuleCopy {
+      public enum ModuleSend {
+        /// Copy of %@
+        public static func newProfileName(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "views.ui.module_send.new_profile_name", String(describing: p1), fallback: "Copy of %@")
+        }
         /// Copy to
-        public static let title = Strings.tr("Localizable", "views.ui.module_copy.title", fallback: "Copy to")
+        public static let title = Strings.tr("Localizable", "views.ui.module_send.title", fallback: "Copy to")
       }
       public enum PurchaseRequired {
         public enum Purchase {

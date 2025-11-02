@@ -399,7 +399,7 @@
 "views.tv.web_receiver.qr" = "使用相机扫描二维码以打开网页，上传您的配置文件。确保您连接到同一网络。";
 "views.tv.web_receiver.toggle" = "切换以通过网页浏览器将本地配置文件导入电视。";
 "views.ui.connection_status.on_demand_suffix" = "（按需）";
-"views.ui.module_copy.title" = "复制到";
+"views.ui.module_send.title" = "复制到";
 "views.ui.purchase_required.purchase.help" = "需要购买";
 "views.verification.message" = "验证";
 "views.version.extra" = "%@ 是由 %@ 维护的项目。\n\n源代码在 GitHub 上公开提供，遵循 GPLv3 许可协议，您可以在主页找到相关链接。";
