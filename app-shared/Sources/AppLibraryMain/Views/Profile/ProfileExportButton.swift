@@ -9,7 +9,6 @@ import SwiftUI
 struct ProfileExportButton: View {
     private struct ViewModel: Equatable {
         var jsonString: String?
-        var isLoading = false
         var isExporting = false
     }
 
@@ -33,7 +32,6 @@ struct ProfileExportButton: View {
                 defaultFilename: editor.defaultFilename,
                 onCompletion: { _ in }
             )
-            .disabled(viewModel.isLoading)
             .withErrorHandler(errorHandler)
     }
 }
@@ -49,9 +47,7 @@ private extension ProfileExportButton {
 
     func exportProfiles() {
         do {
-            viewModel.isLoading = true
             viewModel.jsonString = try editor.writeToJSON(coder: registryCoder)
-            viewModel.isLoading = false
             viewModel.isExporting = true
         } catch {
             errorHandler.handle(error)
