@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Scannez le QR avec votre caméra pour ouvrir une page web où télécharger votre profil. Assurez-vous d'être connecté au même réseau.";
 "views.tv.web_receiver.toggle" = "Basculez pour importer un profil local sur votre TV via un navigateur web.";
 "views.ui.connection_status.on_demand_suffix" = " (à la demande)";
+"views.ui.module_send.new_profile_name" = "Copie de %@";
 "views.ui.module_send.title" = "Copier vers";
 "views.ui.purchase_required.purchase.help" = "Achat requis";
 "views.verification.message" = "Vérification";

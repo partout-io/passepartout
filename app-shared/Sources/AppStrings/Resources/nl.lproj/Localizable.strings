@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Scan de QR-code met je camera om een webpagina te openen waar je je profiel kunt uploaden. Zorg dat je verbonden bent met hetzelfde netwerk.";
 "views.tv.web_receiver.toggle" = "Schakel om een lokaal profiel via een webbrowser op je TV te importeren.";
 "views.ui.connection_status.on_demand_suffix" = " (op aanvraag)";
+"views.ui.module_send.new_profile_name" = "Kopie van %@";
 "views.ui.module_send.title" = "Kopiëren naar";
 "views.ui.purchase_required.purchase.help" = "Aankoop vereist";
 "views.verification.message" = "Verifiëren";

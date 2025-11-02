@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Скануйте QR-код камерою, щоб відкрити веб-сторінку для завантаження вашого профілю. Переконайтеся, що ви підключені до тієї ж мережі.";
 "views.tv.web_receiver.toggle" = "Перемикач для імпорту локального профілю на телевізор через веб-браузер.";
 "views.ui.connection_status.on_demand_suffix" = " (за запитом)";
+"views.ui.module_send.new_profile_name" = "Копія %@";
 "views.ui.module_send.title" = "Скопіювати в";
 "views.ui.purchase_required.purchase.help" = "Потрібна покупка";
 "views.verification.message" = "Перевірка";

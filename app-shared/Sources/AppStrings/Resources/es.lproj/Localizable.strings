@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Escanea el código QR con tu cámara para abrir una página web donde subir tu perfil. Asegúrate de estar conectado a la misma red.";
 "views.tv.web_receiver.toggle" = "Activa para importar un perfil local a tu TV mediante un navegador web.";
 "views.ui.connection_status.on_demand_suffix" = " (a demanda)";
+"views.ui.module_send.new_profile_name" = "Copia de %@";
 "views.ui.module_send.title" = "Copiar a";
 "views.ui.purchase_required.purchase.help" = "Compra requerida";
 "views.verification.message" = "Verificación";

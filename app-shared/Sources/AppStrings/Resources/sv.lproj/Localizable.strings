@@ -399,6 +399,7 @@
 "views.tv.web_receiver.qr" = "Skanna QR-koden med din kamera för att öppna en webbsida där du kan ladda upp din profil. Se till att du är ansluten till samma nätverk.";
 "views.tv.web_receiver.toggle" = "Växla för att importera en lokal profil till din TV via en webbläsare.";
 "views.ui.connection_status.on_demand_suffix" = " (på begäran)";
+"views.ui.module_send.new_profile_name" = "Kopia av %@";
 "views.ui.module_send.title" = "Kopiera till";
 "views.ui.purchase_required.purchase.help" = "Köp krävs";
 "views.verification.message" = "Verifiering";
