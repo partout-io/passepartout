@@ -133,6 +133,8 @@
 
 "views.ui.connection_status.on_demand_suffix" = " (on-demand)";
 "views.ui.purchase_required.purchase.help" = "Purchase required";
+"views.ui.module_send.title" = "Copy to";
+"views.ui.module_send.new_profile_name" = "Copy of %@";
 
 "views.verification.message" = "Verifying...";
 

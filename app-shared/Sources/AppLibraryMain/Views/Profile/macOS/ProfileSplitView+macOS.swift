@@ -18,6 +18,9 @@ struct ProfileSplitView: View, Routable {
     @Binding
     var paywallReason: PaywallReason?
 
+    @ObservedObject
+    var errorHandler: ErrorHandler
+
     var flow: ProfileCoordinator.Flow?
 
     @State
@@ -37,6 +40,7 @@ struct ProfileSplitView: View, Routable {
                 selectedModuleId: $selectedModuleId,
                 errorModuleIds: $errorModuleIds,
                 paywallReason: $paywallReason,
+                errorHandler: errorHandler,
                 flow: flow
             )
             .navigationSplitViewColumnWidth(200)
@@ -125,7 +129,8 @@ private extension ProfileSplitView {
         profileManager: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
         moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
-        paywallReason: .constant(nil)
+        paywallReason: .constant(nil),
+        errorHandler: .default()
     )
     .withMockEnvironment()
 }

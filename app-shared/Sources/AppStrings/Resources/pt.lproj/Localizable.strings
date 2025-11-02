@@ -399,6 +399,8 @@
 "views.tv.web_receiver.qr" = "Escaneie o QR com sua câmera para abrir uma página web onde você pode enviar seu perfil. Certifique-se de que está conectado à mesma rede.";
 "views.tv.web_receiver.toggle" = "Alterne para importar um perfil local na sua TV via navegador web.";
 "views.ui.connection_status.on_demand_suffix" = " (sob demanda)";
+"views.ui.module_send.new_profile_name" = "Cópia de %@";
+"views.ui.module_send.title" = "Copiar para";
 "views.ui.purchase_required.purchase.help" = "Compra necessária";
 "views.verification.message" = "Verificação";
 "views.version.extra" = "%@ é um projeto mantido por %@.\n\nO código-fonte está disponível publicamente no GitHub sob a licença GPLv3, você pode encontrar os links na página inicial.";

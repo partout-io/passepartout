@@ -399,6 +399,8 @@
 "views.tv.web_receiver.qr" = "Scannen Sie den QR-Code mit Ihrer Kamera, um eine Webseite zu öffnen, auf der Sie Ihr Profil hochladen können. Stellen Sie sicher, dass Sie mit demselben Netzwerk verbunden sind.";
 "views.tv.web_receiver.toggle" = "Umschalten, um ein lokales Profil über einen Webbrowser auf deinen Fernseher zu importieren.";
 "views.ui.connection_status.on_demand_suffix" = " (auf Anfrage)";
+"views.ui.module_send.new_profile_name" = "Kopie von %@";
+"views.ui.module_send.title" = "Kopieren nach";
 "views.ui.purchase_required.purchase.help" = "Kauf erforderlich";
 "views.verification.message" = "Überprüfung";
 "views.version.extra" = "%@ ist ein Projekt, das von %@ gepflegt wird.\n\nDer Quellcode ist öffentlich auf GitHub unter der GPLv3-Lizenz verfügbar. Du findest die Links auf der Startseite.";

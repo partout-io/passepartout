@@ -74,6 +74,7 @@ private extension ProfileCoordinator {
             moduleViewFactory: moduleViewFactory,
             path: $path,
             paywallReason: $paywallReason,
+            errorHandler: errorHandler,
             flow: flow
         )
         .themeNavigationDetail()
@@ -84,6 +85,7 @@ private extension ProfileCoordinator {
             profileEditor: profileEditor,
             moduleViewFactory: moduleViewFactory,
             paywallReason: $paywallReason,
+            errorHandler: errorHandler,
             flow: flow
         )
 #endif

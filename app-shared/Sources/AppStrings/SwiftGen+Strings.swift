@@ -1258,6 +1258,14 @@ public enum Strings {
         ///  (on-demand)
         public static let onDemandSuffix = Strings.tr("Localizable", "views.ui.connection_status.on_demand_suffix", fallback: " (on-demand)")
       }
+      public enum ModuleSend {
+        /// Copy of %@
+        public static func newProfileName(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "views.ui.module_send.new_profile_name", String(describing: p1), fallback: "Copy of %@")
+        }
+        /// Copy to
+        public static let title = Strings.tr("Localizable", "views.ui.module_send.title", fallback: "Copy to")
+      }
       public enum PurchaseRequired {
         public enum Purchase {
           /// Purchase required

@@ -399,6 +399,8 @@
 "views.tv.web_receiver.qr" = "Отсканируйте QR-код камерой, чтобы открыть веб-страницу для загрузки вашего профиля. Убедитесь, что вы подключены к той же сети.";
 "views.tv.web_receiver.toggle" = "Переключите, чтобы импортировать локальный профиль на телевизор через веб-браузер.";
 "views.ui.connection_status.on_demand_suffix" = " (по требованию)";
+"views.ui.module_send.new_profile_name" = "Копия %@";
+"views.ui.module_send.title" = "Копировать в";
 "views.ui.purchase_required.purchase.help" = "Требуется покупка";
 "views.verification.message" = "Проверка";
 "views.version.extra" = "%@ — проект, поддерживаемый %@.\n\nИсходный код доступен на GitHub под лицензией GPLv3, ссылки можно найти на домашней странице.";
