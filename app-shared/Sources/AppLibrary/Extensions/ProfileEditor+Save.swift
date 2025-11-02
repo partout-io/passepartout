@@ -58,6 +58,27 @@ extension ProfileEditor {
     }
 }
 
+extension ProfileEditor {
+    public var defaultFilename: String {
+        profile.name.appending(".json")
+    }
+
+    public func writeToJSON(coder: RegistryCoder) throws -> String {
+        let profile = try build(with: nil, updating: false)
+        return try coder.json(from: [profile])
+    }
+
+    public func writeToURL(coder: RegistryCoder) throws -> URL {
+        let json = try writeToJSON(coder: coder)
+        let data = Data(json.utf8)
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(profile.id.uuidString)
+            .appendingPathExtension("json")
+        try data.write(to: url, options: .atomic)
+        return url
+    }
+}
+
 private extension ProfileEditor {
     var extraFeatures: Set<AppFeature> {
         var list: Set<AppFeature> = []
