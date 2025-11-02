@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "Duplicera";
 "global.actions.edit" = "Redigera";
 "global.actions.enable" = "Aktivera";
+"global.actions.export" = "Exportera";
 "global.actions.hide" = "Dölj";
 "global.actions.import" = "Importera";
 "global.actions.purchase" = "Köp";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "Alternativ verifiering";
 "views.preferences.system_appearance" = "Utseende";
 "views.profile.alerts.purchase.buttons.ok" = "Spara ändå";
+"views.profile.buttons.export" = "Exportera profil";
+"views.profile.buttons.share" = "Dela profil";
 "views.profile.module_list.section.footer" = "Tryck på moduler för att redigera inställningarna. Moduler kan dras för att bestämma prioritet.";
 "views.profile.rows.add_module" = "Lägg till modul";
 "views.profile.rows.delete_profile" = "Ta bort profil";

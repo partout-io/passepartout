@@ -105,6 +105,7 @@
 "global.actions.duplicate" = "Αντιγραφή";
 "global.actions.edit" = "Επεξεργασία";
 "global.actions.enable" = "Ενεργοποίηση";
+"global.actions.export" = "Εξαγωγή";
 "global.actions.hide" = "Απόκρυψη";
 "global.actions.import" = "Εισαγωγή";
 "global.actions.purchase" = "Αγορά";
@@ -347,6 +348,8 @@
 "views.preferences.relaxed_verification" = "Εναλλακτική επαλήθευση";
 "views.preferences.system_appearance" = "Εμφάνιση";
 "views.profile.alerts.purchase.buttons.ok" = "Αποθήκευση ούτως ή άλλως";
+"views.profile.buttons.export" = "Εξαγωγή προφίλ";
+"views.profile.buttons.share" = "Κοινή χρήση προφίλ";
 "views.profile.module_list.section.footer" = "Πατήστε σε ένα module για να επεξεργαστείτε τις ρυθμίσεις του. Τα modules μπορούν να μετακινηθούν για να καθορίσετε την προτεραιότητά τους.";
 "views.profile.rows.add_module" = "Προσθήκη μονάδας";
 "views.profile.rows.delete_profile" = "Διαγραφή προφίλ";
