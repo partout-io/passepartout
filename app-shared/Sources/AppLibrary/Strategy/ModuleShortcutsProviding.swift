@@ -8,8 +8,6 @@ import SwiftUI
 public protocol ModuleShortcutsProviding: ModuleBuilder {
     associatedtype ShortcutsContent: View
 
-    var id: UUID { get }
-
     var isVisible: Bool { get }
 
     @MainActor

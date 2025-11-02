@@ -36,11 +36,13 @@ public struct ModuleSendMenu: View {
                 guard let destination = profileManager.profile(withId: preview.id) else {
                     throw PartoutError(.notFound)
                 }
+                var moduleCopy = module
+                moduleCopy.id = UUID()
+                let builtModule = try moduleCopy.build()
+
                 var builder = destination.builder()
-                let builtModule = try module.build()
                 builder.modules.append(builtModule)
-                let newDestination = try builder.build()
-                try await profileManager.save(newDestination)
+                try await profileManager.save(builder.build())
             } catch {
                 pp_log_g(.App.profiles, .error, "Unable to copy module to \(preview.id): \(error)")
                 errorHandler.handle(error)

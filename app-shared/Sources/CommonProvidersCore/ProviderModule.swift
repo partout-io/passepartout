@@ -62,7 +62,7 @@ public struct ProviderModule: Module, BuildableType, Hashable, Codable {
 
 extension ProviderModule {
     public struct Builder: ModuleBuilder, Hashable, Sendable {
-        public let id: UniqueID
+        public var id: UniqueID
 
         public var providerId: ProviderID? {
             didSet {
