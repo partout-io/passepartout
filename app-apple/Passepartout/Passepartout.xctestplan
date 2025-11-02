@@ -14,23 +14,37 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Package",
-        "identifier" : "AppLibraryTests",
-        "name" : "AppLibraryTests"
+        "containerPath" : "container:..\/app-shared",
+        "identifier" : "CommonProvidersAPITests",
+        "name" : "CommonProvidersAPITests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:Package",
+        "containerPath" : "container:..\/app-shared",
         "identifier" : "CommonLibraryTests",
         "name" : "CommonLibraryTests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:Package",
-        "identifier" : "AppLibraryMainTests",
-        "name" : "AppLibraryMainTests"
+        "containerPath" : "container:..\/app-shared",
+        "identifier" : "CommonProvidersTests",
+        "name" : "CommonProvidersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/app-shared",
+        "identifier" : "CommonUtilsTests",
+        "name" : "CommonUtilsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/app-shared",
+        "identifier" : "AppLibraryTests",
+        "name" : "AppLibraryTests"
       }
     },
     {
@@ -43,14 +57,21 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Package",
-        "identifier" : "CommonUtilsTests",
-        "name" : "CommonUtilsTests"
+        "containerPath" : "container:..\/app-shared",
+        "identifier" : "CommonProvidersCoreTests",
+        "name" : "CommonProvidersCoreTests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:Package",
+        "containerPath" : "container:..\/app-shared",
+        "identifier" : "AppLibraryMainTests",
+        "name" : "AppLibraryMainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/app-shared",
         "identifier" : "CommonWebTests",
         "name" : "CommonWebTests"
       }
