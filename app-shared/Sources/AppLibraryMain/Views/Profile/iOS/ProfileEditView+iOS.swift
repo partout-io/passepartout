@@ -26,6 +26,9 @@ struct ProfileEditView: View, Routable {
     @Binding
     var paywallReason: PaywallReason?
 
+    @ObservedObject
+    var errorHandler: ErrorHandler
+
     var flow: ProfileCoordinator.Flow?
 
     @State
@@ -113,6 +116,13 @@ private extension ProfileEditView {
                 }
             }
         }
+        .contextMenu {
+            ModuleCopyView(
+                profileId: profileEditor.profile.id,
+                module: module,
+                errorHandler: errorHandler
+            )
+        }
     }
 
     var addModuleMenu: some View {
@@ -173,7 +183,8 @@ private extension ProfileEditView {
             profileEditor: ProfileEditor(profile: .newMockProfile()),
             moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
             path: .constant(NavigationPath()),
-            paywallReason: .constant(nil)
+            paywallReason: .constant(nil),
+            errorHandler: .default()
         )
     }
     .withMockEnvironment()

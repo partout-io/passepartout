@@ -33,6 +33,9 @@ struct ModuleListView: View, Routable {
     @Binding
     var paywallReason: PaywallReason?
 
+    @ObservedObject
+    var errorHandler: ErrorHandler
+
     var flow: ProfileCoordinator.Flow?
 
     var body: some View {
@@ -84,6 +87,13 @@ private extension ModuleListView {
                     EmptyView()
                 }
             }
+        }
+        .contextMenu {
+            ModuleCopyView(
+                profileId: profileEditor.profile.id,
+                module: module,
+                errorHandler: errorHandler
+            )
         }
     }
 
@@ -161,7 +171,8 @@ private extension ModuleListView {
         profileEditor: ProfileEditor(profile: .forPreviews),
         selectedModuleId: .constant(nil),
         errorModuleIds: .constant([]),
-        paywallReason: .constant(nil)
+        paywallReason: .constant(nil),
+        errorHandler: .default()
     )
     .withMockEnvironment()
 }
