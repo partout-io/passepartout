@@ -26,19 +26,19 @@ public struct ModuleCopyView: View {
 
     public var body: some View {
         ProfileSelectorView(Strings.Views.Ui.ModuleCopy.title, excluding: profileId) {
-            copyModule(module, to: $0)
+            copyModule(to: $0)
         }
     }
 
-    private func copyModule(_ moduleBuilder: any ModuleBuilder, to preview: ProfilePreview) {
+    private func copyModule(to preview: ProfilePreview) {
         Task {
             do {
                 guard let destination = profileManager.profile(withId: preview.id) else {
                     throw PartoutError(.notFound)
                 }
                 var builder = destination.builder()
-                let module = try moduleBuilder.build()
-                builder.modules.append(module)
+                let builtModule = try module.build()
+                builder.modules.append(builtModule)
                 let newDestination = try builder.build()
                 try await profileManager.save(newDestination)
             } catch {
