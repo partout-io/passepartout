@@ -25,7 +25,7 @@ public struct ModuleCopyView: View {
     }
 
     public var body: some View {
-        ProfileSelectorView(Strings.Views.Ui.ModuleCopy.title, excluding: profileId) {
+        ProfileSelectorMenu(Strings.Views.Ui.ModuleCopy.title, excluding: profileId) {
             copyModule(to: $0)
         }
     }

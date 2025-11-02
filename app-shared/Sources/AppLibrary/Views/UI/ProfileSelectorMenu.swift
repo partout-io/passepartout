@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-public struct ProfileSelectorView: View {
+public struct ProfileSelectorMenu: View {
 
     @EnvironmentObject
     private var profileManager: ProfileManager
@@ -39,7 +39,7 @@ public struct ProfileSelectorView: View {
     }
 }
 
-private extension ProfileSelectorView {
+private extension ProfileSelectorMenu {
     var previews: [ProfilePreview]? {
         profileManager
             .previews
