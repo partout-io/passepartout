@@ -30,10 +30,10 @@ struct RegistryTests {
         profileBuilder.modules.append(try WireGuardModule.Builder(configurationBuilder: wgBuilder).build())
         let profile = try profileBuilder.build()
 
-        let encoded = try sut.encodedProfile(profile)
+        let encoded = try sut.json(fromProfile: profile)
         print(encoded)
 
-        let decoded = try sut.decodedProfile(from: encoded)
+        let decoded = try sut.profile(fromJSON: encoded)
         #expect(profile == decoded)
     }
 }

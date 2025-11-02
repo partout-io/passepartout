@@ -12,12 +12,16 @@ public final class RegistryCoder: ObservableObject, Sendable {
         self.registry = registry
     }
 
-    public nonisolated func string(from profile: Profile) throws -> String {
-        try registry.encodedProfile(profile)
+    public nonisolated func json(from profile: Profile) throws -> String {
+        try registry.json(fromProfile: profile)
+    }
+
+    public nonisolated func json(from profiles: [Profile]) throws -> String {
+        try registry.json(fromProfiles: profiles)
     }
 
     public nonisolated func profile(from string: String) throws -> Profile {
-        try registry.decodedProfile(from: string)
+        try registry.compatibleProfile(fromString: string)
     }
 
     public nonisolated func module(from string: String, object: Any?) throws -> Module {

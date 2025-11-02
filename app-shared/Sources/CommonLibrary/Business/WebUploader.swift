@@ -21,7 +21,7 @@ public final class WebUploader: ObservableObject, Sendable {
 
     public func send(_ profile: Profile, to url: URL, passcode: String) async throws {
         pp_log_g(.App.core, .info, "WebUploader: sending to \(url) with passcode \(passcode)")
-        let encodedProfile = try registryCoder.string(from: profile)
+        let encodedProfile = try registryCoder.json(from: profile)
 
         var formBuilder = MultipartForm.Builder()
         formBuilder.fields["passcode"] = MultipartForm.Field(passcode)
