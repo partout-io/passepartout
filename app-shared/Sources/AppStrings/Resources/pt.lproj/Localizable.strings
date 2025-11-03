@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Toque nos módulos para editar suas configurações. Eles podem ser arrastados para definir a prioridade.";
 "views.profile.rows.add_module" = "Adicionar módulo";
 "views.profile.rows.delete_profile" = "Excluir perfil";
+"views.profile.rows.purchase_sharing_features" = "Desbloquear funcionalidades de compartilhamento";
 "views.profile.sections.name.footer" = "Use este nome para criar automações VPN no app Atalhos.";
 "views.profile.send_tv.form.message" = "Combine o URL encontrado em '%@ > %@' no seu %@, certificando-se de estar na mesma rede.";
 "views.profile.send_tv.passcode.message" = "Digite o código de acesso";

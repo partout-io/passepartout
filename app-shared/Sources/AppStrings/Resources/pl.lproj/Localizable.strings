@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Stuknij moduły, aby edytować ich ustawienia. Można je przeciągnąć, aby ustalić priorytet.";
 "views.profile.rows.add_module" = "Dodaj moduł";
 "views.profile.rows.delete_profile" = "Usuń profil";
+"views.profile.rows.purchase_sharing_features" = "Odblokuj funkcje udostępniania";
 "views.profile.sections.name.footer" = "Użyj tej nazwy, aby tworzyć automatyzacje VPN w aplikacji Skróty.";
 "views.profile.send_tv.form.message" = "Dopasuj adres URL znaleziony w '%@ > %@' na Twoim %@, upewniając się, że jesteś w tej samej sieci.";
 "views.profile.send_tv.passcode.message" = "Wprowadź kod dostępu";

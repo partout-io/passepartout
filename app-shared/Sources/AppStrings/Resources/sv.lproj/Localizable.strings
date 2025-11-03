@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Tryck på moduler för att redigera inställningarna. Moduler kan dras för att bestämma prioritet.";
 "views.profile.rows.add_module" = "Lägg till modul";
 "views.profile.rows.delete_profile" = "Ta bort profil";
+"views.profile.rows.purchase_sharing_features" = "Lås upp delningsfunktioner";
 "views.profile.sections.name.footer" = "Använd detta namn för att skapa VPN-automatiseringar i appen Genvägar.";
 "views.profile.send_tv.form.message" = "Matcha URL:en som finns i '%@ > %@' på din %@, se till att vara på samma nätverk.";
 "views.profile.send_tv.passcode.message" = "Ange åtkomstkoden";

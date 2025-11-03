@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Toca los módulos para editar su configuración. Se pueden arrastrar para establecer la prioridad.";
 "views.profile.rows.add_module" = "Añadir módulo";
 "views.profile.rows.delete_profile" = "Eliminar perfil";
+"views.profile.rows.purchase_sharing_features" = "Desbloquear funciones de compartición";
 "views.profile.sections.name.footer" = "Usa este nombre para crear automatizaciones VPN en la app Atajos.";
 "views.profile.send_tv.form.message" = "Haz coincidir la URL que se encuentra en '%@ > %@' en tu %@, asegurándote de estar en la misma red.";
 "views.profile.send_tv.passcode.message" = "Introduce el código de acceso";

@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Tocca i moduli per modificarne le impostazioni. Possono essere trascinati per determinare la priorità.";
 "views.profile.rows.add_module" = "Aggiungi modulo";
 "views.profile.rows.delete_profile" = "Elimina profilo";
+"views.profile.rows.purchase_sharing_features" = "Sblocca le funzionalità di condivisione";
 "views.profile.sections.name.footer" = "Usa questo nome per creare le automazioni VPN nell'app Comandi Rapidi.";
 "views.profile.send_tv.form.message" = "Abbina l'URL trovato in '%@ > %@' sul tuo %@, assicurandoti di essere sulla stessa rete.";
 "views.profile.send_tv.passcode.message" = "Inserisci il codice di accesso";

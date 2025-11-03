@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Tik op modules om hun instellingen te bewerken. Modules kunnen worden versleept om de prioriteit te bepalen.";
 "views.profile.rows.add_module" = "Module toevoegen";
 "views.profile.rows.delete_profile" = "Verwijder profiel";
+"views.profile.rows.purchase_sharing_features" = "Deelfuncties ontgrendelen";
 "views.profile.sections.name.footer" = "Gebruik deze naam om uw VPN-automatiseringen in de app Opdrachten te maken.";
 "views.profile.send_tv.form.message" = "Match de URL die te vinden is in '%@ > %@' op je %@, zorg ervoor dat je op hetzelfde netwerk bent.";
 "views.profile.send_tv.passcode.message" = "Voer de toegangscode in";

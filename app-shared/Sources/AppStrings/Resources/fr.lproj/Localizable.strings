@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Touchez les modules pour modifier leurs paramètres. Ils peuvent être glissés pour définir leur priorité.";
 "views.profile.rows.add_module" = "Ajouter un module";
 "views.profile.rows.delete_profile" = "Supprimer le profil";
+"views.profile.rows.purchase_sharing_features" = "Déverrouiller les fonctionnalités de partage";
 "views.profile.sections.name.footer" = "Utilisez ce nom pour créer vos automatisations VPN dans l'app Raccourcis.";
 "views.profile.send_tv.form.message" = "Faites correspondre l'URL trouvée dans '%@ > %@' sur votre %@, en vous assurant d'être sur le même réseau.";
 "views.profile.send_tv.passcode.message" = "Saisissez le code d'accès";

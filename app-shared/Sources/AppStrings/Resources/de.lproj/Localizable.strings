@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Tippen Sie auf Module, um ihre Einstellungen zu bearbeiten. Module können gezogen werden, um die Priorität festzulegen.";
 "views.profile.rows.add_module" = "Modul hinzufügen";
 "views.profile.rows.delete_profile" = "Profil löschen";
+"views.profile.rows.purchase_sharing_features" = "Freigabefunktionen freischalten";
 "views.profile.sections.name.footer" = "Verwenden Sie diesen Namen, um Ihre VPN-Automationen in der Kurzbefehle-App zu erstellen.";
 "views.profile.send_tv.form.message" = "Stimmen Sie die URL überein, die Sie unter '%@ > %@' auf Ihrem %@ finden, und stellen Sie sicher, dass Sie sich im selben Netzwerk befinden.";
 "views.profile.send_tv.passcode.message" = "Geben Sie den Zugangscode ein";

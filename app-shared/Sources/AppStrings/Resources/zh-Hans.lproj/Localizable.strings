@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "点击模块以编辑其设置。可以拖动模块来确定优先级。";
 "views.profile.rows.add_module" = "添加模块";
 "views.profile.rows.delete_profile" = "删除配置文件";
+"views.profile.rows.purchase_sharing_features" = "解锁共享功能";
 "views.profile.sections.name.footer" = "使用此名称在快捷指令应用中创建您的 VPN 自动化。";
 "views.profile.send_tv.form.message" = "匹配在您的%@上'%@ > %@'中找到的URL，确保在同一网络中。";
 "views.profile.send_tv.passcode.message" = "输入访问码";

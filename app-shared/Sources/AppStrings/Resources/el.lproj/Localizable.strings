@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Πατήστε σε ένα module για να επεξεργαστείτε τις ρυθμίσεις του. Τα modules μπορούν να μετακινηθούν για να καθορίσετε την προτεραιότητά τους.";
 "views.profile.rows.add_module" = "Προσθήκη μονάδας";
 "views.profile.rows.delete_profile" = "Διαγραφή προφίλ";
+"views.profile.rows.purchase_sharing_features" = "Ξεκλείδωμα δυνατοτήτων κοινής χρήσης";
 "views.profile.sections.name.footer" = "Χρησιμοποιήστε αυτό το όνομα για να δημιουργήσετε αυτοματισμούς VPN στην εφαρμογή Συντομεύσεις.";
 "views.profile.send_tv.form.message" = "Ταιριάξτε τη διεύθυνση URL που βρίσκεται στο '%@ > %@' στο %@ σας, φροντίζοντας να είστε στο ίδιο δίκτυο.";
 "views.profile.send_tv.passcode.message" = "Εισάγετε τον κωδικό πρόσβασης";

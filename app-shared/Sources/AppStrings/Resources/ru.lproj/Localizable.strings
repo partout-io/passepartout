@@ -357,6 +357,7 @@
 "views.profile.module_list.section.footer" = "Нажмите на модули, чтобы изменить их настройки. Их можно перетаскивать для установки приоритета.";
 "views.profile.rows.add_module" = "Добавить модуль";
 "views.profile.rows.delete_profile" = "Удалить профиль";
+"views.profile.rows.purchase_sharing_features" = "Разблокировать функции совместного использования";
 "views.profile.sections.name.footer" = "Используйте это имя для создания автоматизаций VPN в приложении Команды.";
 "views.profile.send_tv.form.message" = "Сопоставьте URL-адрес, найденный в '%@ > %@' на вашем %@, убедившись, что вы находитесь в той же сети.";
 "views.profile.send_tv.passcode.message" = "Введите код доступа";
