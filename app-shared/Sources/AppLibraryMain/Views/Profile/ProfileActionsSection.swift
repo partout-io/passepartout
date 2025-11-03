@@ -28,12 +28,10 @@ struct ProfileActionsSection: View {
         Section {
             exportButton
             shareButton
-            if !iapManager.isEligible(for: .sharing) {
-                purchaseSharingButton
-            }
+            purchaseSharingButton
         }
         Section {
-            UUIDText(uuid: profileId)
+            uuidView
         }
         Section {
             removeContent()
@@ -73,7 +71,8 @@ private extension ProfileActionsSection {
         PurchaseRequiredView(
             requiring: [.sharing],
             reason: $paywallReason,
-            title: Strings.Views.Profile.Rows.purchaseSharingFeatures
+            title: Strings.Views.Profile.Rows.purchaseSharingFeatures,
+            force: false
         )
     }
 
