@@ -67,10 +67,11 @@ extension PurchaseRequiredView where Content == Button<Text> {
     public init(
         requiring features: Set<AppFeature>,
         reason: Binding<PaywallReason?>,
-        title: String
+        title: String,
+        force: Bool = true
     ) {
         self.features = features
-        force = true
+        self.force = force
         content = {
             Button(title) {
                 reason.wrappedValue = .init(
