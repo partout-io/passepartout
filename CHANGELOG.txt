@@ -1,3 +1,6 @@
+* Import profile by text or QR (#1587)
+* OpenVPN: Fix crash on incomplete module
+* Reconnect on changes to "Enforce tunnel" (#1586)
 * WireGuard: Fix DNS resolution of multiple peers
 * Copy modules to other profiles from context menu (#1585)
 * Export or share profiles (#1584)
