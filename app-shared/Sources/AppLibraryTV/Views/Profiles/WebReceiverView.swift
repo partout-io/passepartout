@@ -74,7 +74,7 @@ private extension WebReceiverView {
                 let input: ProfileImporterInput = .contents(filename: file.name, data: file.contents)
 
                 // TODO: #1512, import encrypted OpenVPN profiles over the web
-                var profile = try registryCoder.profile(from: input, passphrase: nil)
+                var profile = try registryCoder.importedProfile(from: input, passphrase: nil)
                 pp_log_g(.App.web, .info, "Import uploaded profile: \(profile)")
 
                 var builder = profile.builder()

@@ -9,6 +9,8 @@ extension AppCoordinator {
     enum ModalRoute: Identifiable {
         case editProfile
         case editProviderEntity(Profile, Bool, Module)
+        case importProfileQR
+        case importProfileText
         case interactiveLogin
         case settings
         case systemExtension
@@ -17,9 +19,11 @@ extension AppCoordinator {
             switch self {
             case .editProfile: return 1
             case .editProviderEntity: return 2
-            case .interactiveLogin: return 3
-            case .settings: return 4
-            case .systemExtension: return 5
+            case .importProfileQR: return 3
+            case .importProfileText: return 4
+            case .interactiveLogin: return 5
+            case .settings: return 6
+            case .systemExtension: return 7
             }
         }
 

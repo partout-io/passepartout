@@ -99,7 +99,7 @@ private extension AppProfileImporter {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        let profile = try importer.profile(from: .file(url), passphrase: passphrase)
+        let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
         try await profileManager.save(profile)
     }
 }

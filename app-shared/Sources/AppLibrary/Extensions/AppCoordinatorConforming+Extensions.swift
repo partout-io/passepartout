@@ -35,4 +35,8 @@ extension AppCoordinatorConforming {
             onError(error, profile: profile)
         }
     }
+
+    public func onError(_ error: Error, profile: Profile) {
+        onError(error, title: profile.name)
+    }
 }
