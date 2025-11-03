@@ -185,7 +185,45 @@ extension AppCoordinator {
                     try await onSelectProviderEntity(with: $0, in: profile, force: force)
                 }
             )
-
+        case .importProfileQR:
+#if os(iOS)
+            QRScanView(
+                isAvailable: .constant(true),
+                onLoad: {
+                    if $0 != nil {
+                        modalRoute = .importProfileText
+                    }
+                },
+                onDetect: {
+                    importText($0)
+                    modalRoute = nil
+                }
+            )
+            .navigationTitle(Strings.Views.App.Toolbar.ImportQr.title)
+            .themeNavigationDetail()
+            .themeNavigationStack(closable: true)
+#else
+            // QR scanner shown on macOS?
+            EmptyView()
+#endif
+        case .importProfileText:
+            ThemeTextInputView(
+                Strings.Views.App.Toolbar.ImportText.title,
+                message: Strings.Views.App.Toolbar.ImportText.caption,
+                monospaced: true,
+                isPresented: Binding(presenting: $modalRoute) {
+                    switch $0 {
+                    case .importProfileText:
+                        return true
+                    default:
+                        return false
+                    }
+                },
+                onValidate: {
+                    !$0.isEmpty
+                },
+                onSubmit: importText
+            )
         case .interactiveLogin:
             InteractiveCoordinator(style: .modal, manager: interactiveManager) {
                 errorHandler.handle(
