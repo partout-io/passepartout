@@ -119,7 +119,7 @@ private struct SomeModule: Module {
 }
 
 extension SomeModule.Implementation: ProfileImporter {
-    func profile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {
+    func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {
         let importedModule: Module
         switch input {
         case .contents:
