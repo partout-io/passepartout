@@ -103,6 +103,7 @@
 "views.profile.sections.name.footer" = "Use this name to create your VPN automations from the Shortcuts app.";
 "views.profile.rows.add_module" = "Add module";
 "views.profile.rows.delete_profile" = "Delete profile";
+"views.profile.rows.purchase_sharing_features" = "Unlock sharing features";
 "views.profile.module_list.section.footer" = "Tap modules to edit their settings. Modules may be dragged to determine priority.";
 "views.profile.send_tv.title" = "Send to %@";
 "views.profile.send_tv.form.message" = "Match the URL found in '%@ > %@' on your %@, making sure to be on the same network.";
