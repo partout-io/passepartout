@@ -33,7 +33,8 @@ struct ProfileGeneralView: View {
             ProfileBehaviorSection(profileEditor: profileEditor)
             ProfileActionsSection(
                 profileManager: profileManager,
-                profileEditor: profileEditor
+                profileEditor: profileEditor,
+                paywallReason: $paywallReason
             )
         }
         .themeForm()

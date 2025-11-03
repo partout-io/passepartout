@@ -10,6 +10,9 @@ struct ProfileShareButton: View {
     @EnvironmentObject
     private var registryCoder: RegistryCoder
 
+    @EnvironmentObject
+    private var iapManager: IAPManager
+
     private let profile: Profile
 
     init(profile: Profile) {
@@ -32,6 +35,7 @@ struct ProfileShareButton: View {
             preview: .init(profile.name),
             label: shareLabel
         )
+        .disabled(!iapManager.isEligible(for: .sharing))
     }
 }
 

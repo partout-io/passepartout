@@ -14,6 +14,9 @@ struct ProfileActionsSection: View {
 
     let profileEditor: ProfileEditor
 
+    @Binding
+    var paywallReason: PaywallReason?
+
     @State
     private var isConfirmingDeletion = false
 
@@ -22,6 +25,10 @@ struct ProfileActionsSection: View {
         Section {
             exportButton
             shareButton
+            PurchaseRequiredView(
+                requiring: [.sharing],
+                reason: $paywallReason
+            )
         }
         Section {
             UUIDText(uuid: profileId)
