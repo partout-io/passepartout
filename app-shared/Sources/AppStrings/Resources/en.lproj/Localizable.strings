@@ -27,7 +27,10 @@
 "views.app.folders.no_profiles.migrate" = "Migrate old profiles...";
 "views.app.toolbar.new_profile.empty" = "Empty profile";
 "views.app.toolbar.new_profile.provider" = "Provider";
-"views.app.toolbar.import_profile" = "Import profile";
+"views.app.toolbar.import_file" = "Import file";
+"views.app.toolbar.import_qr.title" = "Import QR";
+"views.app.toolbar.import_text.title" = "Import text";
+"views.app.toolbar.import_text.caption" = "Paste your profile content below.";
 "views.app.toolbar.migrate_profiles" = "Migrate profiles";
 
 "views.app.profile_context.connect_to" = "Connect to";
@@ -410,6 +413,7 @@
 // MARK: Global (Placeholders)
 
 "placeholders.profile.name" = "My profile";
+"placeholders.profile.imported_name" = "Imported profile";
 "placeholders.on_demand.ssid" = "My SSID";
 "placeholders.username" = "username";
 "placeholders.secret" = "secret";

@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "Version 3.5.15 ändrade hur profiler lagras.";
 "onboarding.migrate.message" = "Se till att uppdatera alla dina enheter till den senaste versionen för att använda de nya profilerna.";
 "placeholders.on_demand.ssid" = "Min SSID";
+"placeholders.profile.imported_name" = "Importerad profil";
 "placeholders.profile.name" = "Min profil";
 "placeholders.secret" = "hemlighet";
 "placeholders.username" = "användarnamn";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "Tryck på listan för att ansluta";
 "views.app.profile_context.connect_to" = "Anslut till";
 "views.app.profile.no_modules" = "Inga aktiva moduler";
-"views.app.toolbar.import_profile" = "Importera profil";
+"views.app.toolbar.import_file" = "Importera fil";
+"views.app.toolbar.import_qr.title" = "Importera QR";
+"views.app.toolbar.import_text.caption" = "Klistra in innehållet i din profil nedan.";
+"views.app.toolbar.import_text.title" = "Importera text";
 "views.app.toolbar.migrate_profiles" = "Migrera profiler";
 "views.app.toolbar.new_profile.empty" = "Tom profil";
 "views.app.toolbar.new_profile.provider" = "Leverantör";

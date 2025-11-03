@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "3.5.15 版本更改了配置文件的存储方式。";
 "onboarding.migrate.message" = "请确保将所有设备升级到最新版本以使用新的配置文件。";
 "placeholders.on_demand.ssid" = "我的 SSID";
+"placeholders.profile.imported_name" = "已导入的配置文件";
 "placeholders.profile.name" = "我的配置文件";
 "placeholders.secret" = "密钥";
 "placeholders.username" = "用户名";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "点击列表连接";
 "views.app.profile_context.connect_to" = "连接到";
 "views.app.profile.no_modules" = "无激活模块";
-"views.app.toolbar.import_profile" = "导入配置文件";
+"views.app.toolbar.import_file" = "导入文件";
+"views.app.toolbar.import_qr.title" = "导入二维码";
+"views.app.toolbar.import_text.caption" = "在下方粘贴您的配置文件内容。";
+"views.app.toolbar.import_text.title" = "导入文本";
 "views.app.toolbar.migrate_profiles" = "迁移配置文件";
 "views.app.toolbar.new_profile.empty" = "空配置文件";
 "views.app.toolbar.new_profile.provider" = "提供商";

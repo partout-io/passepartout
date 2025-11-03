@@ -764,6 +764,8 @@ public enum Strings {
       public static let ssid = Strings.tr("Localizable", "placeholders.on_demand.ssid", fallback: "My SSID")
     }
     public enum Profile {
+      /// Imported profile
+      public static let importedName = Strings.tr("Localizable", "placeholders.profile.imported_name", fallback: "Imported profile")
       /// My profile
       public static let name = Strings.tr("Localizable", "placeholders.profile.name", fallback: "My profile")
     }
@@ -823,10 +825,20 @@ public enum Strings {
         public static let connectTo = Strings.tr("Localizable", "views.app.profile_context.connect_to", fallback: "Connect to")
       }
       public enum Toolbar {
-        /// Import profile
-        public static let importProfile = Strings.tr("Localizable", "views.app.toolbar.import_profile", fallback: "Import profile")
+        /// Import file
+        public static let importFile = Strings.tr("Localizable", "views.app.toolbar.import_file", fallback: "Import file")
         /// Migrate profiles
         public static let migrateProfiles = Strings.tr("Localizable", "views.app.toolbar.migrate_profiles", fallback: "Migrate profiles")
+        public enum ImportQr {
+          /// Import QR
+          public static let title = Strings.tr("Localizable", "views.app.toolbar.import_qr.title", fallback: "Import QR")
+        }
+        public enum ImportText {
+          /// Paste your profile content below.
+          public static let caption = Strings.tr("Localizable", "views.app.toolbar.import_text.caption", fallback: "Paste your profile content below.")
+          /// Import text
+          public static let title = Strings.tr("Localizable", "views.app.toolbar.import_text.title", fallback: "Import text")
+        }
         public enum NewProfile {
           /// Empty profile
           public static let empty = Strings.tr("Localizable", "views.app.toolbar.new_profile.empty", fallback: "Empty profile")

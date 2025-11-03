@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "Версія 3.5.15 змінила спосіб збереження профілів.";
 "onboarding.migrate.message" = "Переконайтеся, що всі ваші пристрої оновлені до останньої версії, щоб використовувати нові профілі.";
 "placeholders.on_demand.ssid" = "Мій SSID";
+"placeholders.profile.imported_name" = "Імпортований профіль";
 "placeholders.profile.name" = "Мій профіль";
 "placeholders.secret" = "секрет";
 "placeholders.username" = "ім'я користувача";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "Торкніться списку для підключення";
 "views.app.profile_context.connect_to" = "Підключитися до";
 "views.app.profile.no_modules" = "Немає активних модулів";
-"views.app.toolbar.import_profile" = "Імпортувати профіль";
+"views.app.toolbar.import_file" = "Імпортувати файл";
+"views.app.toolbar.import_qr.title" = "Імпортувати QR";
+"views.app.toolbar.import_text.caption" = "Вставте вміст свого профілю нижче.";
+"views.app.toolbar.import_text.title" = "Імпортувати текст";
 "views.app.toolbar.migrate_profiles" = "Перенести профілі";
 "views.app.toolbar.new_profile.empty" = "Порожній профіль";
 "views.app.toolbar.new_profile.provider" = "Постачальник";
