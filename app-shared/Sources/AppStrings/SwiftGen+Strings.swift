@@ -1075,10 +1075,10 @@ public enum Strings {
         }
       }
       public enum Buttons {
-        /// Export Profile
-        public static let export = Strings.tr("Localizable", "views.profile.buttons.export", fallback: "Export Profile")
-        /// Share Profile
-        public static let share = Strings.tr("Localizable", "views.profile.buttons.share", fallback: "Share Profile")
+        /// Export profile
+        public static let export = Strings.tr("Localizable", "views.profile.buttons.export", fallback: "Export profile")
+        /// Share profile
+        public static let share = Strings.tr("Localizable", "views.profile.buttons.share", fallback: "Share profile")
       }
       public enum ModuleList {
         public enum Section {

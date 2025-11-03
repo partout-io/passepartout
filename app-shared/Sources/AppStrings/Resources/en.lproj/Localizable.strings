@@ -112,8 +112,8 @@
 "views.profile.send_tv.passcode.message" = "Enter the passcode";
 "views.profile.alerts.purchase.buttons.ok" = "Save anyway";
 
-"views.profile.buttons.share" = "Share Profile";
-"views.profile.buttons.export" = "Export Profile";
+"views.profile.buttons.share" = "Share profile";
+"views.profile.buttons.export" = "Export profile";
 
 "views.providers.module" = "Type";
 "views.providers.preset" = "Preset";
