@@ -19,9 +19,9 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     let content: () -> Content
 
     public var body: some View {
-        content()
-            .opaque(force || !isEligible)
-            .if(!iapManager.isBeta)
+        if !iapManager.isBeta && (force || !isEligible) {
+            content()
+        }
     }
 }
 
