@@ -94,7 +94,7 @@
 "features.on_demand" = "Regras sob demanda";
 "features.providers" = "Todos os provedores";
 "features.routing" = "Roteamento Personalizado";
-"features.sharing" = "%@";
+"features.sharing" = "%@ e Compartilhamento";
 "global.actions.add" = "Adicionar";
 "global.actions.allow" = "Permitir";
 "global.actions.cancel" = "Cancelar";

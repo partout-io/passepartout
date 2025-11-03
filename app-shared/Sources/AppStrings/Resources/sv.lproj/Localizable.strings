@@ -94,7 +94,7 @@
 "features.on_demand" = "Regler på begäran";
 "features.providers" = "Alla leverantörer";
 "features.routing" = "Anpassad Ruttning";
-"features.sharing" = "%@";
+"features.sharing" = "%@ och Delning";
 "global.actions.add" = "Lägg till";
 "global.actions.allow" = "Tillåt";
 "global.actions.cancel" = "Avbryt";

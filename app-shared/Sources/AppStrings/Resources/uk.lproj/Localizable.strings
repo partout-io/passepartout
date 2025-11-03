@@ -94,7 +94,7 @@
 "features.on_demand" = "Правила за запитом";
 "features.providers" = "Усі постачальники";
 "features.routing" = "Індивідуальна маршрутизація";
-"features.sharing" = "%@";
+"features.sharing" = "%@ і Спільний доступ";
 "global.actions.add" = "Додати";
 "global.actions.allow" = "Дозволити";
 "global.actions.cancel" = "Скасувати";

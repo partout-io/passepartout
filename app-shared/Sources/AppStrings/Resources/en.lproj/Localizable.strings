@@ -291,7 +291,7 @@
 "features.on_demand" = "On-Demand Rules";
 "features.providers" = "All Providers";
 "features.routing" = "Custom Routing";
-"features.sharing" = "%@";
+"features.sharing" = "%@ and Sharing";
 
 // MARK: - Tips
 

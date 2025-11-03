@@ -94,7 +94,7 @@
 "features.on_demand" = "On-Demand Regeln";
 "features.providers" = "Alle Anbieter";
 "features.routing" = "Benutzerdefiniertes Routing";
-"features.sharing" = "%@";
+"features.sharing" = "%@ und Freigabe";
 "global.actions.add" = "Hinzufügen";
 "global.actions.allow" = "Erlauben";
 "global.actions.cancel" = "Abbrechen";

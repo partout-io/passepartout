@@ -293,9 +293,9 @@ public enum Strings {
     public static let providers = Strings.tr("Localizable", "features.providers", fallback: "All Providers")
     /// Custom Routing
     public static let routing = Strings.tr("Localizable", "features.routing", fallback: "Custom Routing")
-    /// %@
+    /// %@ and Sharing
     public static func sharing(_ p1: Any) -> String {
-      return Strings.tr("Localizable", "features.sharing", String(describing: p1), fallback: "%@")
+      return Strings.tr("Localizable", "features.sharing", String(describing: p1), fallback: "%@ and Sharing")
     }
   }
   public enum Global {

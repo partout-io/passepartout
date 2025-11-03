@@ -94,7 +94,7 @@
 "features.on_demand" = "Правила по требованию";
 "features.providers" = "Все поставщики";
 "features.routing" = "Пользовательская маршрутизация";
-"features.sharing" = "%@";
+"features.sharing" = "%@ и Совместное использование";
 "global.actions.add" = "Добавить";
 "global.actions.allow" = "Разрешить";
 "global.actions.cancel" = "Отмена";

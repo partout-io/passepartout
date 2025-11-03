@@ -94,7 +94,7 @@
 "features.on_demand" = "Reguły na żądanie";
 "features.providers" = "Wszyscy dostawcy";
 "features.routing" = "Niestandardowe trasowanie";
-"features.sharing" = "%@";
+"features.sharing" = "%@ i Udostępnianie";
 "global.actions.add" = "Dodaj";
 "global.actions.allow" = "Zezwól";
 "global.actions.cancel" = "Anuluj";
