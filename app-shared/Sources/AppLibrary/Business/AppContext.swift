@@ -327,6 +327,9 @@ extension Collection where Element == Profile.DiffResult {
             case .changedName:
                 // Do not reconnect on profile rename
                 return false
+            case .changedBehavior(let changes):
+                // Reconnect on changes to "Enforce tunnel"
+                return changes.contains(.includesAllNetworks)
             case .changedModules(let ids):
                 // Do not reconnect if only an on-demand module was changed
                 if ids.count == 1, let onlyID = ids.first,
