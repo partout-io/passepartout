@@ -32,7 +32,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
     private let webReceiverManager: WebReceiverManager
 
     @State
-    private var isImporting = false
+    private var isImportingFile = false
 
     @State
     private var paywallReason: PaywallReason?
@@ -119,7 +119,7 @@ extension AppCoordinator {
             profileManager: profileManager,
             tunnel: tunnel,
             registry: registry,
-            isImporting: $isImporting,
+            isImporting: $isImportingFile,
             errorHandler: errorHandler,
             flow: .init(
                 onEditProfile: onEditProfile,
@@ -151,7 +151,7 @@ extension AppCoordinator {
             profileManager: profileManager,
             registry: registry,
             layout: $layout,
-            isImporting: $isImporting,
+            importAction: importActionBinding,
             onSettings: {
                 present(.settings)
             },
@@ -167,7 +167,6 @@ extension AppCoordinator {
                 profileManager: profileManager,
                 tunnel: tunnel
             )
-
         case .editProfile:
             ProfileCoordinator(
                 profileManager: profileManager,
@@ -177,7 +176,6 @@ extension AppCoordinator {
                 path: $profilePath,
                 onDismiss: onDismiss
             )
-
         case .editProviderEntity(let profile, let force, let module):
             ProviderServerCoordinatorIfSupported(
                 module: module,
@@ -187,7 +185,45 @@ extension AppCoordinator {
                     try await onSelectProviderEntity(with: $0, in: profile, force: force)
                 }
             )
-
+        case .importProfileQR:
+#if os(iOS)
+            QRScanView(
+                isAvailable: .constant(true),
+                onLoad: {
+                    if $0 != nil {
+                        modalRoute = .importProfileText
+                    }
+                },
+                onDetect: {
+                    importText($0)
+                    modalRoute = nil
+                }
+            )
+            .navigationTitle(Strings.Views.App.Toolbar.ImportQr.title)
+            .themeNavigationDetail()
+            .themeNavigationStack(closable: true)
+#else
+            // QR scanner shown on macOS?
+            EmptyView()
+#endif
+        case .importProfileText:
+            ThemeTextInputView(
+                Strings.Views.App.Toolbar.ImportText.title,
+                message: Strings.Views.App.Toolbar.ImportText.caption,
+                monospaced: true,
+                isPresented: Binding(presenting: $modalRoute) {
+                    switch $0 {
+                    case .importProfileText:
+                        return true
+                    default:
+                        return false
+                    }
+                },
+                onValidate: {
+                    !$0.isEmpty
+                },
+                onSubmit: importText
+            )
         case .interactiveLogin:
             InteractiveCoordinator(style: .modal, manager: interactiveManager) {
                 errorHandler.handle(
@@ -197,15 +233,59 @@ extension AppCoordinator {
                 )
             }
             .presentationDetents([.medium])
-
 #if os(macOS)
         case .systemExtension:
             SystemExtensionView()
                 .themeNavigationStack(closable: true, closeTitle: Strings.Global.Nouns.ok)
 #endif
-
         default:
             EmptyView()
+        }
+    }
+
+    var importActionBinding: Binding<AddProfileMenu.Action?> {
+        Binding {
+            if isImportingFile {
+                return .importFile
+            }
+            switch modalRoute {
+            case .importProfileQR:
+                return .importQR
+            case .importProfileText:
+                return .importText
+            default:
+                return nil
+            }
+        } set: {
+            switch $0 {
+            case .importFile:
+                isImportingFile = true
+            case .importQR:
+                modalRoute = .importProfileQR
+            case .importText:
+                modalRoute = .importProfileText
+            default:
+                modalRoute = nil
+            }
+        }
+    }
+
+    func importText(_ text: String) {
+        Task {
+            do {
+                let filename = profileManager.firstUniqueName(
+                    from: Strings.Placeholders.Profile.importedName
+                )
+                let profile = try RegistryCoder(registry: registry)
+                    .importedProfile(
+                        from: .contents(filename: filename, data: text),
+                        passphrase: nil
+                    )
+                try await profileManager.save(profile)
+            } catch {
+                pp_log_g(.App.profiles, .error, "Unable to import text: \(error)")
+                errorHandler.handle(error, title: Strings.Global.Actions.import)
+            }
         }
     }
 }
@@ -286,14 +366,14 @@ extension AppCoordinator {
         }
     }
 
-    public func onError(_ error: Error, profile: Profile) {
+    public func onError(_ error: Error, title: String) {
         if case AppError.systemExtension(let result) = error, result != .success {
             modalRoute = .systemExtension
             return
         }
         errorHandler.handle(
             error,
-            title: profile.name,
+            title: title,
             message: Strings.Errors.App.tunnel
         )
     }

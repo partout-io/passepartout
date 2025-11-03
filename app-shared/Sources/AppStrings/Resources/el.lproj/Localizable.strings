@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "Η έκδοση 3.5.15 άλλαξε τον τρόπο αποθήκευσης των προφίλ.";
 "onboarding.migrate.message" = "Βεβαιωθείτε ότι έχετε ενημερώσει όλες τις συσκευές σας στην πιο πρόσφατη έκδοση για να χρησιμοποιήσετε τα νέα προφίλ.";
 "placeholders.on_demand.ssid" = "Το SSID μου";
+"placeholders.profile.imported_name" = "Εισαγόμενο προφίλ";
 "placeholders.profile.name" = "Το προφίλ μου";
 "placeholders.secret" = "μυστικό";
 "placeholders.username" = "όνομα χρήστη";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "Πατήστε στη λίστα για σύνδεση";
 "views.app.profile_context.connect_to" = "Σύνδεση με";
 "views.app.profile.no_modules" = "Δεν υπάρχουν ενεργές μονάδες";
-"views.app.toolbar.import_profile" = "Εισαγωγή προφίλ";
+"views.app.toolbar.import_file" = "Εισαγωγή αρχείου";
+"views.app.toolbar.import_qr.title" = "Εισαγωγή QR";
+"views.app.toolbar.import_text.caption" = "Επικολλήστε το περιεχόμενο του προφίλ σας παρακάτω.";
+"views.app.toolbar.import_text.title" = "Εισαγωγή κειμένου";
 "views.app.toolbar.migrate_profiles" = "Μεταφορά προφίλ";
 "views.app.toolbar.new_profile.empty" = "Κενό προφίλ";
 "views.app.toolbar.new_profile.provider" = "Πάροχος";

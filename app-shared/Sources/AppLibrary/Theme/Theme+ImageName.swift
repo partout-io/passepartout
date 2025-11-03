@@ -32,7 +32,9 @@ extension Theme {
         case navigate
         case pending
         case profileEdit
-        case profileImport
+        case profileImportFile
+        case profileImportQR
+        case profileImportText
         case profileMigrate
         case profileProvider
         case profilesGrid
@@ -90,7 +92,9 @@ extension Theme.ImageName {
             case .navigate: return "chevron.forward"
             case .pending: return "clock"
             case .profileEdit: return "square.and.pencil"
-            case .profileImport: return "square.and.arrow.down"
+            case .profileImportFile: return "square.and.arrow.down"
+            case .profileImportQR: return "qrcode"
+            case .profileImportText: return "text.page"
             case .profileMigrate: return "arrow.up.square"
             case .profileProvider: return "network"
             case .profilesGrid: return "square.grid.2x2"

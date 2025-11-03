@@ -6,6 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 struct AddProfileMenu: View {
+    enum Action {
+        case importFile
+        case importQR
+        case importText
+    }
 
     @EnvironmentObject
     private var apiManager: APIManager
@@ -18,14 +23,18 @@ struct AddProfileMenu: View {
     let registry: Registry
 
     @Binding
-    var isImporting: Bool
+    var importAction: Action?
 
     let onNewProfile: (EditableProfile) -> Void
 
     var body: some View {
         Menu {
             emptyProfileButton
-            importProfileButton
+            importFileButton
+#if os(iOS)
+            importQRButton
+#endif
+            importTextButton
             if distributionTarget.supportsPaidFeatures {
                 Divider()
                 providerProfileMenu
@@ -46,11 +55,27 @@ private extension AddProfileMenu {
         }
     }
 
-    var importProfileButton: some View {
+    var importFileButton: some View {
         Button {
-            isImporting = true
+            importAction = .importFile
         } label: {
-            ThemeImageLabel(Strings.Views.App.Toolbar.importProfile.forMenu, .profileImport)
+            ThemeImageLabel(Strings.Views.App.Toolbar.importFile.forMenu, .profileImportFile)
+        }
+    }
+
+    var importQRButton: some View {
+        Button {
+            importAction = .importQR
+        } label: {
+            ThemeImageLabel(Strings.Views.App.Toolbar.ImportQr.title.forMenu, .profileImportQR)
+        }
+    }
+
+    var importTextButton: some View {
+        Button {
+            importAction = .importText
+        } label: {
+            ThemeImageLabel(Strings.Views.App.Toolbar.ImportText.title.forMenu, .profileImportText)
         }
     }
 

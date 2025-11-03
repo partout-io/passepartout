@@ -22,7 +22,7 @@ struct AppToolbar: ToolbarContent, SizeClassProviding {
     var layout: ProfilesLayout
 
     @Binding
-    var isImporting: Bool
+    var importAction: AddProfileMenu.Action?
 
     let onSettings: () -> Void
 
@@ -51,7 +51,7 @@ private extension AppToolbar {
         AddProfileMenu(
             profileManager: profileManager,
             registry: registry,
-            isImporting: $isImporting,
+            importAction: $importAction,
             onNewProfile: onNewProfile
         )
     }
@@ -75,7 +75,7 @@ private extension AppToolbar {
                     profileManager: .forPreviews,
                     registry: Registry(),
                     layout: .constant(.list),
-                    isImporting: .constant(false),
+                    importAction: .constant(nil),
                     onSettings: {},
                     onNewProfile: { _ in }
                 )

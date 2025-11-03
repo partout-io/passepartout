@@ -45,6 +45,7 @@ public struct QRScanView: UIViewControllerRepresentable {
         let vc = QRScanViewController(
             onLoad: {
                 context.coordinator.didLoad(withError: $0)
+                onLoad($0)
             },
             onDetect: onDetect
         )

@@ -31,7 +31,7 @@ struct AppProfileImporterModifier: ViewModifier {
                 handleResult(.success($0))
             }
             .alert(
-                Strings.Views.App.Toolbar.importProfile,
+                Strings.Views.App.Toolbar.importFile,
                 isPresented: $importer.isPresentingPassphrase,
                 presenting: importer.nextURL,
                 actions: actions,
@@ -78,7 +78,7 @@ private extension AppProfileImporterModifier {
             } catch {
                 await errorHandler.handle(
                     error,
-                    title: Strings.Views.App.Toolbar.importProfile,
+                    title: Strings.Views.App.Toolbar.importFile,
                     message: Strings.Errors.App.import
                 )
             }

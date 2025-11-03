@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "Versie 3.5.15 heeft de manier waarop profielen worden opgeslagen gewijzigd.";
 "onboarding.migrate.message" = "Zorg ervoor dat je al je apparaten bijwerkt naar de nieuwste versie om de nieuwe profielen te gebruiken.";
 "placeholders.on_demand.ssid" = "Mijn SSID";
+"placeholders.profile.imported_name" = "Geïmporteerd profiel";
 "placeholders.profile.name" = "Mijn profiel";
 "placeholders.secret" = "geheim";
 "placeholders.username" = "gebruikersnaam";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "Tik op de lijst om verbinding te maken";
 "views.app.profile_context.connect_to" = "Verbinden met";
 "views.app.profile.no_modules" = "Geen actieve modules";
-"views.app.toolbar.import_profile" = "Profiel importeren";
+"views.app.toolbar.import_file" = "Bestand importeren";
+"views.app.toolbar.import_qr.title" = "QR importeren";
+"views.app.toolbar.import_text.caption" = "Plak hieronder de inhoud van je profiel.";
+"views.app.toolbar.import_text.title" = "Tekst importeren";
 "views.app.toolbar.migrate_profiles" = "Profielen migreren";
 "views.app.toolbar.new_profile.empty" = "Leeg profiel";
 "views.app.toolbar.new_profile.provider" = "Provider";

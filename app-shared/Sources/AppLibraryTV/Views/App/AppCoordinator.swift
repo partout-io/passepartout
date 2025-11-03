@@ -178,10 +178,10 @@ extension AppCoordinator {
         }
     }
 
-    public func onError(_ error: Error, profile: Profile) {
+    public func onError(_ error: Error, title: String) {
         errorHandler.handle(
             error,
-            title: profile.name,
+            title: title,
             message: Strings.Errors.App.tunnel
         )
     }

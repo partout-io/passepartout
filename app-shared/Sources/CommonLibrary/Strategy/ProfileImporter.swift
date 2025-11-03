@@ -11,5 +11,5 @@ public enum ProfileImporterInput {
 }
 
 public protocol ProfileImporter {
-    func profile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile
+    func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile
 }

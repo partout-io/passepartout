@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "Version 3.5.15 hat die Art und Weise geändert, wie Profile gespeichert werden.";
 "onboarding.migrate.message" = "Stellen Sie sicher, dass Sie alle Ihre Geräte auf die neueste Version aktualisieren, um die neuen Profile zu verwenden.";
 "placeholders.on_demand.ssid" = "Mein SSID";
+"placeholders.profile.imported_name" = "Importiertes Profil";
 "placeholders.profile.name" = "Mein Profil";
 "placeholders.secret" = "Geheimnis";
 "placeholders.username" = "Benutzername";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "Tippe auf die Liste, um dich zu verbinden";
 "views.app.profile_context.connect_to" = "Verbinden mit";
 "views.app.profile.no_modules" = "Keine aktiven Module";
-"views.app.toolbar.import_profile" = "Profil importieren";
+"views.app.toolbar.import_file" = "Datei importieren";
+"views.app.toolbar.import_qr.title" = "QR importieren";
+"views.app.toolbar.import_text.caption" = "Fügen Sie unten den Inhalt Ihres Profils ein.";
+"views.app.toolbar.import_text.title" = "Text importieren";
 "views.app.toolbar.migrate_profiles" = "Profile migrieren";
 "views.app.toolbar.new_profile.empty" = "Leeres Profil";
 "views.app.toolbar.new_profile.provider" = "Anbieter";

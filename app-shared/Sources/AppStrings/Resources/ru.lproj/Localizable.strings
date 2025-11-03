@@ -267,6 +267,7 @@
 "onboarding.migrate_3_5_15.message" = "Версия 3.5.15 изменила способ хранения профилей.";
 "onboarding.migrate.message" = "Убедитесь, что все ваши устройства обновлены до последней версии, чтобы использовать новые профили.";
 "placeholders.on_demand.ssid" = "Мой SSID";
+"placeholders.profile.imported_name" = "Импортированный профиль";
 "placeholders.profile.name" = "Мой профиль";
 "placeholders.secret" = "секрет";
 "placeholders.username" = "имя пользователя";
@@ -284,7 +285,10 @@
 "views.app.installed_profile.none.status" = "Нажмите на список для подключения";
 "views.app.profile_context.connect_to" = "Подключиться к";
 "views.app.profile.no_modules" = "Нет активных модулей";
-"views.app.toolbar.import_profile" = "Импортировать профиль";
+"views.app.toolbar.import_file" = "Импортировать файл";
+"views.app.toolbar.import_qr.title" = "Импортировать QR";
+"views.app.toolbar.import_text.caption" = "Вставьте содержимое вашего профиля ниже.";
+"views.app.toolbar.import_text.title" = "Импортировать текст";
 "views.app.toolbar.migrate_profiles" = "Миграция профилей";
 "views.app.toolbar.new_profile.empty" = "Пустой профиль";
 "views.app.toolbar.new_profile.provider" = "Поставщик";
