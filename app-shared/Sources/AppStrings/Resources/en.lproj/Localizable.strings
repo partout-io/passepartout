@@ -106,6 +106,7 @@
 "views.profile.sections.name.footer" = "Use this name to create your VPN automations from the Shortcuts app.";
 "views.profile.rows.add_module" = "Add module";
 "views.profile.rows.delete_profile" = "Delete profile";
+"views.profile.rows.purchase_sharing_features" = "Unlock sharing features";
 "views.profile.module_list.section.footer" = "Tap modules to edit their settings. Modules may be dragged to determine priority.";
 "views.profile.send_tv.title" = "Send to %@";
 "views.profile.send_tv.form.message" = "Match the URL found in '%@ > %@' on your %@, making sure to be on the same network.";
@@ -114,8 +115,8 @@
 "views.profile.send_tv.passcode.message" = "Enter the passcode";
 "views.profile.alerts.purchase.buttons.ok" = "Save anyway";
 
-"views.profile.buttons.share" = "Share Profile";
-"views.profile.buttons.export" = "Export Profile";
+"views.profile.buttons.share" = "Share profile";
+"views.profile.buttons.export" = "Export profile";
 
 "views.providers.module" = "Type";
 "views.providers.preset" = "Preset";
@@ -293,7 +294,7 @@
 "features.on_demand" = "On-Demand Rules";
 "features.providers" = "All Providers";
 "features.routing" = "Custom Routing";
-"features.sharing" = "%@";
+"features.sharing" = "%@ and Sharing";
 
 // MARK: - Tips
 

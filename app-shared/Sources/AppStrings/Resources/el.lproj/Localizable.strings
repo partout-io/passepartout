@@ -94,7 +94,7 @@
 "features.on_demand" = "Κανόνες κατ' απαίτηση";
 "features.providers" = "Όλοι οι πάροχοι";
 "features.routing" = "Προσαρμοσμένη Δρομολόγηση";
-"features.sharing" = "%@";
+"features.sharing" = "%@ και Κοινή χρήση";
 "global.actions.add" = "Προσθήκη";
 "global.actions.allow" = "Να επιτρέπεται";
 "global.actions.cancel" = "Ακύρωση";

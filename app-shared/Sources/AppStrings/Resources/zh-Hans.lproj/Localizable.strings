@@ -94,7 +94,7 @@
 "features.on_demand" = "按需规则";
 "features.providers" = "所有提供商";
 "features.routing" = "自定义路由";
-"features.sharing" = "%@";
+"features.sharing" = "%@ 与共享";
 "global.actions.add" = "添加";
 "global.actions.allow" = "允许";
 "global.actions.cancel" = "取消";

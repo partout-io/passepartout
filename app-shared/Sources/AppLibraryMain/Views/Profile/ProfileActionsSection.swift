@@ -7,12 +7,18 @@ import SwiftUI
 
 struct ProfileActionsSection: View {
 
+    @EnvironmentObject
+    private var iapManager: IAPManager
+
     @Environment(\.dismissProfile)
     private var dismissProfile
 
     let profileManager: ProfileManager
 
     let profileEditor: ProfileEditor
+
+    @Binding
+    var paywallReason: PaywallReason?
 
     @State
     private var isConfirmingDeletion = false
@@ -22,6 +28,9 @@ struct ProfileActionsSection: View {
         Section {
             exportButton
             shareButton
+            if !iapManager.isEligible(for: .sharing) {
+                purchaseSharingButton
+            }
         }
         Section {
             UUIDText(uuid: profileId)
@@ -58,6 +67,14 @@ private extension ProfileActionsSection {
 
     var shareButton: some View {
         ProfileShareButton(editor: profileEditor)
+    }
+
+    var purchaseSharingButton: some View {
+        PurchaseRequiredView(
+            requiring: [.sharing],
+            reason: $paywallReason,
+            title: Strings.Views.Profile.Rows.purchaseSharingFeatures
+        )
     }
 
     func removeContent() -> some View {

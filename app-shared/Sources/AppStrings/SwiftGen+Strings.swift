@@ -293,9 +293,9 @@ public enum Strings {
     public static let providers = Strings.tr("Localizable", "features.providers", fallback: "All Providers")
     /// Custom Routing
     public static let routing = Strings.tr("Localizable", "features.routing", fallback: "Custom Routing")
-    /// %@
+    /// %@ and Sharing
     public static func sharing(_ p1: Any) -> String {
-      return Strings.tr("Localizable", "features.sharing", String(describing: p1), fallback: "%@")
+      return Strings.tr("Localizable", "features.sharing", String(describing: p1), fallback: "%@ and Sharing")
     }
   }
   public enum Global {
@@ -1087,10 +1087,10 @@ public enum Strings {
         }
       }
       public enum Buttons {
-        /// Export Profile
-        public static let export = Strings.tr("Localizable", "views.profile.buttons.export", fallback: "Export Profile")
-        /// Share Profile
-        public static let share = Strings.tr("Localizable", "views.profile.buttons.share", fallback: "Share Profile")
+        /// Export profile
+        public static let export = Strings.tr("Localizable", "views.profile.buttons.export", fallback: "Export profile")
+        /// Share profile
+        public static let share = Strings.tr("Localizable", "views.profile.buttons.share", fallback: "Share profile")
       }
       public enum ModuleList {
         public enum Section {
@@ -1103,6 +1103,8 @@ public enum Strings {
         public static let addModule = Strings.tr("Localizable", "views.profile.rows.add_module", fallback: "Add module")
         /// Delete profile
         public static let deleteProfile = Strings.tr("Localizable", "views.profile.rows.delete_profile", fallback: "Delete profile")
+        /// Unlock sharing features
+        public static let purchaseSharingFeatures = Strings.tr("Localizable", "views.profile.rows.purchase_sharing_features", fallback: "Unlock sharing features")
       }
       public enum Sections {
         public enum Name {

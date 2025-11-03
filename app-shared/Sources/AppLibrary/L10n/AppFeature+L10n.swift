@@ -12,25 +12,18 @@ extension AppFeature: LocalizableEntity {
         switch self {
         case .appleTV:
             return V.appletv(Strings.Unlocalized.appleTV)
-
         case .dns:
             return V.dns
-
         case .httpProxy:
             return V.httpProxy
-
         case .onDemand:
             return V.onDemand
-
         case .otp:
             return Strings.Unlocalized.otp
-
         case .providers:
             return V.providers
-
         case .routing:
             return V.routing
-
         case .sharing:
             return V.sharing(Strings.Unlocalized.iCloud)
         }

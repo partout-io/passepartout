@@ -50,7 +50,8 @@ struct ProfileEditView: View, Routable {
             ProfileBehaviorSection(profileEditor: profileEditor)
             ProfileActionsSection(
                 profileManager: profileManager,
-                profileEditor: profileEditor
+                profileEditor: profileEditor,
+                paywallReason: $paywallReason
             )
         }
         .toolbar(content: toolbarContent)

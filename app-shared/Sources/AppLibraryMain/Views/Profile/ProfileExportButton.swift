@@ -15,6 +15,9 @@ struct ProfileExportButton: View {
     @EnvironmentObject
     private var registryCoder: RegistryCoder
 
+    @EnvironmentObject
+    private var iapManager: IAPManager
+
     private let profile: Profile
 
     @State
@@ -39,6 +42,7 @@ struct ProfileExportButton: View {
 
     var body: some View {
         Button(action: exportProfiles, label: exportLabel)
+            .disabled(!iapManager.isEligible(for: .sharing))
             .fileExporter(
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(JSONFile.init(string:)),

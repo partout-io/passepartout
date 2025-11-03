@@ -94,7 +94,7 @@
 "features.on_demand" = "Op aanvraag regels";
 "features.providers" = "Alle providers";
 "features.routing" = "Aangepaste routering";
-"features.sharing" = "%@";
+"features.sharing" = "%@ en Delen";
 "global.actions.add" = "Toevoegen";
 "global.actions.allow" = "Toestaan";
 "global.actions.cancel" = "Annuleren";
