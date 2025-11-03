@@ -11,6 +11,8 @@ public struct ThemeTextInputView: View {
 
     private let message: String?
 
+    private let monospaced: Bool
+
     @Binding
     private var isPresented: Bool
 
@@ -27,12 +29,14 @@ public struct ThemeTextInputView: View {
     public init(
         _ title: String,
         message: String? = nil,
+        monospaced: Bool = false,
         isPresented: Binding<Bool>,
         onValidate: (@MainActor (String) -> Bool)? = nil,
         onSubmit: @escaping @MainActor (String) -> Void
     ) {
         self.title = title
         self.message = message
+        self.monospaced = monospaced
         _isPresented = isPresented
         self.onValidate = onValidate
         self.onSubmit = onSubmit
@@ -47,6 +51,7 @@ public struct ThemeTextInputView: View {
                     .padding(.bottom)
             }
             TextEditor(text: $text)
+                .monospaced(monospaced)
                 .focused($isFocused)
                 .onAppear {
                     isFocused = true
