@@ -59,13 +59,13 @@ final class MockABI: ABIProtocol {
         fatalError()
     }
 
-    func profileDup(_ id: String) async throws -> UI.ProfileHeader {
+    func profileDup(_ id: UI.Identifier) async throws -> UI.ProfileHeader {
         // FIXME: ###
         postArea(PSPAreaProfile)
         fatalError()
     }
 
-    func profileDelete(_ id: String) async throws {
+    func profileDelete(_ id: UI.Identifier) async throws {
         // FIXME: ###
         postArea(PSPAreaProfile)
         fatalError()

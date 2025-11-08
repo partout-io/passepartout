@@ -13,9 +13,9 @@ public protocol ABIProtocol {
     func profileNew() async throws -> UI.ProfileHeader
     func profileImportText(_ text: String) async throws -> UI.ProfileHeader
     func profileUpdate(_ json: String) async throws -> UI.ProfileHeader
-    func profileDup(_ id: String) async throws -> UI.ProfileHeader
-    func profileDelete(_ id: String) async throws
+    func profileDup(_ id: UI.Identifier) async throws -> UI.ProfileHeader
+    func profileDelete(_ id: UI.Identifier) async throws
 
     func tunnelGetAll() -> [UI.Identifier: UI.TunnelStatus]
-    func tunnelSetEnabled(_ enabled: Bool, profileId: String)
+    func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
 }
