@@ -37,6 +37,9 @@ extension View {
 
     func withEnvironment(_ environment: AppEnvironment) -> some View {
         withEventsCallback(on: environment)
+            .environment(environment.configObserver)
+            .environment(environment.iapObserver)
+            .environment(environment.preferencesObserver)
             .environment(environment.profileObserver)
             .environment(environment.tunnelObserver)
     }
