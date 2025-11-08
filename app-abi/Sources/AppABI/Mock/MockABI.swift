@@ -15,7 +15,7 @@ final class MockABI: ABIProtocol {
         }
     }
 
-    private var statuses: [ProfileID: UI.TunnelStatus]
+    private var statuses: [UI.ProfileID: UI.TunnelStatus]
 
     init() {
         profiles = [
@@ -73,7 +73,7 @@ final class MockABI: ABIProtocol {
 
     // MARK: - Tunnel
 
-    func tunnelGetAll() -> [ProfileID: UI.TunnelStatus] {
+    func tunnelGetAll() -> [UI.ProfileID: UI.TunnelStatus] {
         statuses
     }
 

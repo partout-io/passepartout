@@ -9,7 +9,7 @@ import Observation
 
 @MainActor @Observable
 final class TunnelObserver {
-    private(set) var statuses: [ProfileID: UI.TunnelStatus]
+    private(set) var statuses: [UI.ProfileID: UI.TunnelStatus]
 
     init() {
         statuses = [:]
@@ -20,11 +20,11 @@ final class TunnelObserver {
         statuses = abi.tunnelGetAll()
     }
 
-    func status(for profileId: ProfileID) -> UI.TunnelStatus {
+    func status(for profileId: UI.ProfileID) -> UI.TunnelStatus {
         statuses[profileId] ?? .disconnected
     }
 
-    func setEnabled(_ enabled: Bool, profileId: ProfileID) {
+    func setEnabled(_ enabled: Bool, profileId: UI.ProfileID) {
         abi.tunnelSetEnabled(enabled, profileId: profileId)
     }
 

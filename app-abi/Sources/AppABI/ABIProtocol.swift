@@ -16,6 +16,6 @@ public protocol ABIProtocol {
     func profileDup(_ id: String) async throws -> UI.ProfileHeader
     func profileDelete(_ id: String) async throws
 
-    func tunnelGetAll() -> [ProfileID: UI.TunnelStatus]
+    func tunnelGetAll() -> [UI.ProfileID: UI.TunnelStatus]
     func tunnelSetEnabled(_ enabled: Bool, profileId: String)
 }

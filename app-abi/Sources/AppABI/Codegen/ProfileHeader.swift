@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public typealias ProfileID = String
-
 extension UI {
+    public typealias ProfileID = String
+
     public struct ProfileHeader: Identifiable, DTO, Comparable {
         public let id: ProfileID
         public let name: String
