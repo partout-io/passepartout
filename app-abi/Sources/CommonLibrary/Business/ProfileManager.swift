@@ -45,40 +45,40 @@ public final class ProfileManager: ObservableObject {
 
     // MARK: State
 
-    private var allProfiles: [Profile.ID: Profile] {
-        didSet {
-            didChange.send(.localProfiles)
-
-            reloadFilteredProfiles(with: searchSubject.value)
-            reloadRequiredFeatures()
-        }
-    }
-
-    private var allRemoteProfiles: [Profile.ID: Profile] {
-        didSet {
-            didChange.send(.remoteProfiles)
-        }
-    }
-
-    private var filteredProfiles: [Profile] {
-        didSet {
-            didChange.send(.filteredProfiles)
-        }
-    }
-
-    @Published
-    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
-
-    @Published
-    public var isRemoteImportingEnabled = false
-
-    private var waitingObservers: Set<Observer> {
-        didSet {
-            if isReady {
-                didChange.send(.ready)
-            }
-        }
-    }
+//    private var allProfiles: [Profile.ID: Profile] {
+//        didSet {
+//            didChange.send(.localProfiles)
+//
+//            reloadFilteredProfiles(with: searchSubject.value)
+//            reloadRequiredFeatures()
+//        }
+//    }
+//
+//    private var allRemoteProfiles: [Profile.ID: Profile] {
+//        didSet {
+//            didChange.send(.remoteProfiles)
+//        }
+//    }
+//
+//    private var filteredProfiles: [Profile] {
+//        didSet {
+//            didChange.send(.filteredProfiles)
+//        }
+//    }
+//
+//    @Published
+//    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
+//
+//    @Published
+//    public var isRemoteImportingEnabled = false
+//
+//    private var waitingObservers: Set<Observer> {
+//        didSet {
+//            if isReady {
+//                didChange.send(.ready)
+//            }
+//        }
+//    }
 
     // MARK: Publishers
 
