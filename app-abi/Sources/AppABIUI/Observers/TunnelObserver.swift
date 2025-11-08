@@ -7,7 +7,7 @@ import AppABI_C
 import Observation
 
 @MainActor @Observable
-final class TunnelObserver {
+final class TunnelObserver: ABIObserver {
     private(set) var statuses: [UI.Identifier: UI.TunnelStatus]
 
     init() {
@@ -27,7 +27,7 @@ final class TunnelObserver {
         abi.tunnelSetEnabled(enabled, profileId: profileId)
     }
 
-    func onUpdate() {
+    func onUpdate(_ event: psp_event) {
         print("onUpdate() called")
         refresh()
     }

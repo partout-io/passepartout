@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppABI
+import AppABI_C
 import Observation
 
 @MainActor @Observable
-final class IAPObserver {
+final class IAPObserver: ABIObserver {
+    func onUpdate(_ event: psp_event) {
+    }
 }
 
 // MARK: - Actions

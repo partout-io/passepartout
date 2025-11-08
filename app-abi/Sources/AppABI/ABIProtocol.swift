@@ -19,3 +19,8 @@ public protocol ABIProtocol {
     func tunnelGetAll() -> [UI.Identifier: UI.TunnelStatus]
     func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
 }
+
+@MainActor
+public protocol ABIObserver {
+    func onUpdate(_ event: psp_event)
+}

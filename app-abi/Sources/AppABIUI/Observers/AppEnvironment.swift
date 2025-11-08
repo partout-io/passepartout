@@ -61,9 +61,9 @@ private func abiCallback(opaqueEnvironment: UnsafeMutableRawPointer?, event: psp
     Task { @MainActor in
         switch event.area {
         case PSPAreaProfile:
-            env.profileObserver.onUpdate()
+            env.profileObserver.onUpdate(event)
         case PSPAreaTunnel:
-            env.tunnelObserver.onUpdate()
+            env.tunnelObserver.onUpdate(event)
         default:
             break
         }

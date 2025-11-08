@@ -5,10 +5,13 @@
 // FIXME: ###, KeyValueManager (rename PreferencesManager to something else)
 
 import AppABI
+import AppABI_C
 import Observation
 
 @MainActor @Observable
-final class PreferencesObserver {
+final class PreferencesObserver: ABIObserver {
+    func onUpdate(_ event: psp_event) {
+    }
 }
 
 // MARK: - State

@@ -4,11 +4,10 @@
 
 import AppABI
 import AppABI_C
-import Foundation
 import Observation
 
 @MainActor @Observable
-final class ProfileObserver {
+final class ProfileObserver: ABIObserver {
     private(set) var headers: [UI.ProfileHeader]
 
     init() {
@@ -26,9 +25,9 @@ final class ProfileObserver {
     }
 
     @discardableResult
-    func new(fromURL url: URL) async throws -> UI.ProfileHeader {
+    func new(fromURL url: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
-        //        let text = try String(contentsOf: url)
+//        let text = try String(contentsOf: url)
         let text = "{\"id\":\"imported-url\",\"name\":\"imported url\"}"
         return try await abi.profileImportText(text)
     }
@@ -40,7 +39,7 @@ final class ProfileObserver {
         return try await abi.profileImportText(text)
     }
 
-    func onUpdate() {
+    func onUpdate(_ event: psp_event) {
         print("onUpdate() called")
         refresh()
     }
