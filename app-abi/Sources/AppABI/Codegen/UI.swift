@@ -3,4 +3,5 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public enum UI {
+    public typealias Identifier = String
 }

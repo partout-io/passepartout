@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension UI {
-    public typealias ProfileID = String
-
     public struct ProfileHeader: Identifiable, DTO, Comparable {
-        public let id: ProfileID
+        public let id: Identifier
         public let name: String
         // flags: icloud, tv
 
