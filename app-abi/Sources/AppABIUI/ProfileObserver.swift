@@ -62,8 +62,8 @@ final class ProfileObserver {
     // MARK: - State
 
 //    public let didChange: PassthroughSubject<Event, Never>
-//    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
-//    public var isRemoteImportingEnabled = false
+//    @Published private var requiredFeatures: [Profile.ID: Set<AppFeature>]
+//    @Published public var isRemoteImportingEnabled = false
 //
 //    public var isReady: Bool
 //    public var hasProfiles: Bool
