@@ -5,13 +5,13 @@
 import CommonLibrary
 
 extension Profile {
-    var uiPreview: ProfileHeaderUI {
-        ProfileHeaderUI(id: id.uuidString, name: name)
+    var uiPreview: UI.ProfileHeader {
+        UI.ProfileHeader(id: id.uuidString, name: name)
     }
 }
 
 extension ProfilePreview {
-    var uiPreview: ProfileHeaderUI {
-        ProfileHeaderUI(id: id.uuidString, name: name)
+    var uiPreview: UI.ProfileHeader {
+        UI.ProfileHeader(id: id.uuidString, name: name)
     }
 }

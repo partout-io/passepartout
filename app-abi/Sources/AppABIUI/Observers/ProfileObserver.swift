@@ -9,7 +9,7 @@ import Observation
 
 @MainActor @Observable
 final class ProfileObserver {
-    private(set) var headers: [ProfileHeaderUI]
+    private(set) var headers: [UI.ProfileHeader]
 
     init() {
         headers = []
@@ -21,12 +21,12 @@ final class ProfileObserver {
     }
 
     @discardableResult
-    func new() async throws -> ProfileHeaderUI {
+    func new() async throws -> UI.ProfileHeader {
         try await abi.profileNew()
     }
 
     @discardableResult
-    func new(fromURL url: URL) async throws -> ProfileHeaderUI {
+    func new(fromURL url: URL) async throws -> UI.ProfileHeader {
         // FIXME: ###
         //        let text = try String(contentsOf: url)
         let text = "{\"id\":\"imported-url\",\"name\":\"imported url\"}"
@@ -34,7 +34,7 @@ final class ProfileObserver {
     }
 
     @discardableResult
-    func new(fromText text: String) async throws -> ProfileHeaderUI {
+    func new(fromText text: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
         let text = "{\"id\":\"imported-text\",\"name\":\"imported text\"}"
         return try await abi.profileImportText(text)

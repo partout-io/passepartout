@@ -9,13 +9,13 @@ import AppABI_C
 public protocol ABIProtocol {
     func initialize(eventContext: UnsafeMutableRawPointer?, eventCallback: psp_event_callback?)
 
-    func profileGetHeaders() -> [ProfileHeaderUI]
-    func profileNew() async throws -> ProfileHeaderUI
-    func profileImportText(_ text: String) async throws -> ProfileHeaderUI
-    func profileUpdate(_ json: String) async throws -> ProfileHeaderUI
-    func profileDup(_ id: String) async throws -> ProfileHeaderUI
+    func profileGetHeaders() -> [UI.ProfileHeader]
+    func profileNew() async throws -> UI.ProfileHeader
+    func profileImportText(_ text: String) async throws -> UI.ProfileHeader
+    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader
+    func profileDup(_ id: String) async throws -> UI.ProfileHeader
     func profileDelete(_ id: String) async throws
 
-    func tunnelGetAll() -> [ProfileID: TunnelStatusUI]
+    func tunnelGetAll() -> [ProfileID: UI.TunnelStatus]
     func tunnelSetEnabled(_ enabled: Bool, profileId: String)
 }

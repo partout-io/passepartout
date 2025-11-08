@@ -26,12 +26,12 @@ final class DefaultABI: ABIProtocol {
 
     // MARK: - Profiles
 
-    func profileGetHeaders() -> [ProfileHeaderUI] {
+    func profileGetHeaders() -> [UI.ProfileHeader] {
         profileManager.previews.map(\.uiPreview)
     }
 
     // FIXME: ###, name from args, or from internal constants?
-    func profileNew() async throws -> ProfileHeaderUI {
+    func profileNew() async throws -> UI.ProfileHeader {
         let name = profileManager.firstUniqueName(from: "lorem ipsum")
         let profile = try Profile.Builder(name: name).build()
         try await profileManager.save(profile)
@@ -39,20 +39,20 @@ final class DefaultABI: ABIProtocol {
         return profile.uiPreview
     }
 
-    func profileImportText(_ text: String) async throws -> ProfileHeaderUI {
+    func profileImportText(_ text: String) async throws -> UI.ProfileHeader {
         let profile = try registry.compatibleProfile(fromString: text)
         try await profileManager.save(profile)
         postArea(PSPAreaProfile)
         return profile.uiPreview
     }
 
-    func profileUpdate(_ json: String) async throws -> ProfileHeaderUI {
+    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
         postArea(PSPAreaProfile)
         fatalError()
     }
 
-    func profileDup(_ id: String) async throws -> ProfileHeaderUI {
+    func profileDup(_ id: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
         postArea(PSPAreaProfile)
         fatalError()
@@ -66,7 +66,7 @@ final class DefaultABI: ABIProtocol {
 
     // MARK: - Tunnel
 
-    func tunnelGetAll() -> [ProfileID : TunnelStatusUI] {
+    func tunnelGetAll() -> [ProfileID : UI.TunnelStatus] {
         // FIXME: ###
         [:]
     }

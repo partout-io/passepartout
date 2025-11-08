@@ -9,19 +9,19 @@ final class MockABI: ABIProtocol {
     private var eventContext: UnsafeMutableRawPointer?
     private var eventCallback: psp_event_callback?
 
-    private var profiles: [ProfileHeaderUI] {
+    private var profiles: [UI.ProfileHeader] {
         didSet {
             profiles.sort()
         }
     }
 
-    private var statuses: [ProfileID: TunnelStatusUI]
+    private var statuses: [ProfileID: UI.TunnelStatus]
 
     init() {
         profiles = [
-            ProfileHeaderUI(id: "1", name: "foo"),
-            ProfileHeaderUI(id: "2", name: "bar"),
-            ProfileHeaderUI(id: "3", name: "sum")
+            UI.ProfileHeader(id: "1", name: "foo"),
+            UI.ProfileHeader(id: "2", name: "bar"),
+            UI.ProfileHeader(id: "3", name: "sum")
         ]
         profiles.sort()
         statuses = [:]
@@ -34,32 +34,32 @@ final class MockABI: ABIProtocol {
 
     // MARK: - Profiles
 
-    func profileGetHeaders() -> [ProfileHeaderUI] {
+    func profileGetHeaders() -> [UI.ProfileHeader] {
         profiles
     }
 
-    func profileNew() async throws -> ProfileHeaderUI {
-        let dto = ProfileHeaderUI(id: "lorem-ipsum", name: "lorem ipsum")
+    func profileNew() async throws -> UI.ProfileHeader {
+        let dto = UI.ProfileHeader(id: "lorem-ipsum", name: "lorem ipsum")
         profiles.append(dto)
         postArea(PSPAreaProfile)
         return dto
     }
 
-    func profileImportText(_ text: String) async throws -> ProfileHeaderUI {
+    func profileImportText(_ text: String) async throws -> UI.ProfileHeader {
         // FIXME: ###, do not parse as DTO, parse with Registry
-        let dto = try ProfileHeaderUI(json: text)
+        let dto = try UI.ProfileHeader(json: text)
         profiles.append(dto)
         postArea(PSPAreaProfile)
         return dto
     }
 
-    func profileUpdate(_ json: String) async throws -> ProfileHeaderUI {
+    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
         postArea(PSPAreaProfile)
         fatalError()
     }
 
-    func profileDup(_ id: String) async throws -> ProfileHeaderUI {
+    func profileDup(_ id: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
         postArea(PSPAreaProfile)
         fatalError()
@@ -73,7 +73,7 @@ final class MockABI: ABIProtocol {
 
     // MARK: - Tunnel
 
-    func tunnelGetAll() -> [ProfileID: TunnelStatusUI] {
+    func tunnelGetAll() -> [ProfileID: UI.TunnelStatus] {
         statuses
     }
 
