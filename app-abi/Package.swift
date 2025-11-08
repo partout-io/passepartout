@@ -35,7 +35,8 @@ let package = Package(
             name: "AppABI",
             dependencies: [
                 "AppABI_C",
-                "CommonLibrary"
+//                "CommonLibrary",
+                "CommonUtils"
             ],
             exclude: ["Default"]
         ),
