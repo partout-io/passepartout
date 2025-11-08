@@ -2,4 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: ###, KeyValueManager
+// FIXME: ###, KeyValueManager (rename PreferencesManager to something else)
+
+// MARK: - State
+
+//public func contains(_ key: String) -> Bool
+//public func object<T>(forKey key: String) -> T?
+//public func set<T>(_ value: T?, forKey key: String)
+//public func removeObject(forKey key: String)
+//public subscript<T>(_ key: String) -> T?

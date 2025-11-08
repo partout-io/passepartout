@@ -3,3 +3,15 @@
 // SPDX-License-Identifier: GPL-3.0
 
 // FIXME: ###, ConfigManager
+
+// MARK: - Actions
+//
+//public func refreshBundle() async
+//
+// MARK: - State
+//
+//@Published private var bundle: ConfigBundle?
+//
+//public func isActive(_ flag: ConfigFlag) -> Bool
+//public func data(for flag: ConfigFlag) -> JSON?
+//public var activeFlags: Set<ConfigFlag>
