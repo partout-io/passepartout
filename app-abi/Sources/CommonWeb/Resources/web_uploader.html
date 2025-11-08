@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Passepartout — Upload</title>
+        <style type="text/css">
+            body {
+                font-family: sans-serif;
+                background-color: #515d71;
+                color: #fff;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            h1 {
+                color: #f0d192;
+            }
+
+            form {
+            }
+
+            label {
+                display: block;
+                margin-bottom: 1rem;
+            }
+
+            input {
+                width: 100%;
+                font-size: 1rem;
+                border: none;
+                box-sizing: border-box;
+                margin-bottom: 1rem;
+            }
+
+            input, #upload-file-label {
+                border-radius: 0.3rem;
+            }
+
+            input[type="text"] {
+                padding: 0.5rem;
+            }
+
+            #upload-file-box {
+                display: flex;
+                align-items: baseline;
+                gap: 0.5rem;
+            }
+
+            #upload-file {
+                display: none;
+            }
+
+            #upload-file-label {
+                cursor: pointer;
+                background-color: #ccc;
+                color: #000;
+                padding: 0.5rem 1rem;
+            }
+
+            #upload-file-name {
+            }
+
+            #upload-submit {
+                cursor: pointer;
+                background-color: #2563eb;
+                color: #fff;
+                font-weight: bold;
+                margin-top: 1rem;
+                padding: 0.75rem;
+                transition: background-color 0.2s ease-in-out;
+            }
+
+            #upload-submit:hover {
+                background-color: #1d4ed8;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Passepartout</h1>
+        <h2>#{web_uploader.title}</h2>
+        <form id="upload-form" method="POST" action="/" enctype="multipart/form-data">
+            <label for="upload-passcode">#{web_uploader.passcode.prompt}:</label>
+            <input id="upload-passcode" name="passcode" type="text" inputmode="numeric" /><br />
+            <label for="upload-file">#{web_uploader.file.prompt}:</label>
+            <div id="upload-file-box">
+                <input id="upload-file" name="file" type="file" />
+                <label id="upload-file-label" for="upload-file">#{web_uploader.file.browse}</label>
+                <span id="upload-file-name">#{web_uploader.file.no_selection}</span>
+            </div>
+            <input id="upload-submit" type="submit" value="#{web_uploader.submit}" /><br />
+        </form>
+        <script>
+            document.getElementById("upload-form").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const response = await fetch("/", {
+                    method: "POST",
+                    body: formData
+                });
+                if (response.status == 400) {
+                    alert("#{web_uploader.file.no_selection}!");
+                    return;
+                }
+                if (response.status == 403) {
+                    alert("#{web_uploader.errors.incorrect_passcode}");
+                    return;
+                }
+                if (!response.ok) {
+                    alert(`#{web_uploader.errors.generic}: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                alert("#{web_uploader.success}");
+                this.reset();
+                refreshUploadFilename();
+            });
+            document.getElementById("upload-passcode").addEventListener("input", function (e) {
+                e.target.value = e.target.value.toUpperCase();
+            });
+
+            function refreshUploadFilename() {
+                let uploadFileName = document.getElementById("upload-file-name");
+                uploadFileName.textContent = uploadFile.files.length ? uploadFile.files[0].name : "#{web_uploader.file.no_selection}";
+            }
+
+            let uploadFile = document.getElementById("upload-file");
+            uploadFile.addEventListener("change", function(e) {
+                refreshUploadFilename();
+            });
+        </script>
+    </body>
+</html>
