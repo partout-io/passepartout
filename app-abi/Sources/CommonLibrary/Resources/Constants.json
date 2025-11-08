@@ -1,0 +1,84 @@
+{
+    "bundleKey": "AppConfig",
+    "deviceIdLength": 64,
+    "containers": {
+        "local": "Local",
+        "remote": "Remote",
+        "backup": "Backup",
+        "preferences": "Preferences-v3"
+    },
+    "websites": {
+        "home": "https://passepartoutvpn.app",
+        "subreddit": "https://www.reddit.com/r/passepartout/",
+        "eula": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
+        "appStoreDownload": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
+        "macDownload": "https://passepartoutvpn.app/#app-mac",
+        "configTTL": 3600.0
+    },
+    "github": {
+        "discussions": "http://github.com/orgs/partout-io/discussions",
+        "issues": "https://github.com/partout-io/passepartout/issues",
+        "raw": "https://raw.githubusercontent.com/partout-io/passepartout",
+        "latestRelease": "https://api.github.com/repos/partout-io/passepartout/releases/latest"
+    },
+    "emails": {
+        "domain": "passepartoutvpn.app",
+        "recipients": {
+            "issues": "issues",
+            "beta": "beta"
+        }
+    },
+    "formats": {
+        "timestamp": "yyyy-MM-dd HH:mm:ss"
+    },
+    "tunnel": {
+        "profileTitleFormat": "Passepartout: %@",
+        "refreshInterval": 1.0,
+        "dnsFallbackServers": [
+            "1.1.1.1",
+            "1.0.0.1"
+        ],
+        "verification": {
+            "production": {
+                "delay": 120.0,
+                "interval": 21600.0,
+                "attempts": 3,
+                "retryInterval": 300.0
+            },
+            "beta": {
+                "delay": 600.0,
+                "interval": 600.0,
+                "attempts": 3,
+                "retryInterval": 10.0
+            }
+        }
+    },
+    "api": {
+        "timeoutInterval": 5.0,
+        "versionRateLimit": 86400.0,
+        "refreshInfrastructureRateLimit": 86400.0
+    },
+    "iap": {
+        "productsTimeoutInterval": 10.0,
+        "receiptInvalidationInterval": 600.0
+    },
+    "webReceiver": {
+        "port": 10000,
+        "passcodeLength": 6
+    },
+    "log": {
+        "appPath": "app.log",
+        "tunnelPath": "tunnel.log",
+        "sinceLast": 86400.0,
+        "options": {
+            "maxLevel": 3,
+            "maxSize": 500000,
+            "maxBufferedLines": 5000,
+            "maxAge": 86400.0
+        },
+        "formatter": {
+            "timestamp": "HH:mm:ss",
+            "message": "%@ - %@"
+        }
+    }
+}
