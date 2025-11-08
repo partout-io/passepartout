@@ -60,6 +60,9 @@ final class ProfileObserver: ABIObserver {
 
     // MARK: - State
 
+//    private var allProfiles: [Profile.ID: Profile]
+//    private var allRemoteProfiles: [Profile.ID: Profile]
+//    private var filteredProfiles: [Profile]
 //    public let didChange: PassthroughSubject<Event, Never>
 //    @Published private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 //    @Published public var isRemoteImportingEnabled = false
