@@ -10,17 +10,29 @@ import SwiftUI
 @MainActor
 final class AppEnvironment {
     static let forPreviews = AppEnvironment(
-        profileObserver: .forPreviews,
-        tunnelObserver: .forPreviews
+        configObserver: ConfigObserver(),
+        iapObserver: IAPObserver(),
+        preferencesObserver: PreferencesObserver(),
+        profileObserver: ProfileObserver(),
+        tunnelObserver: TunnelObserver()
     )
 
+    let configObserver: ConfigObserver
+    let iapObserver: IAPObserver
+    let preferencesObserver: PreferencesObserver
     let profileObserver: ProfileObserver
     let tunnelObserver: TunnelObserver
 
     private init(
+        configObserver: ConfigObserver,
+        iapObserver: IAPObserver,
+        preferencesObserver: PreferencesObserver,
         profileObserver: ProfileObserver,
         tunnelObserver: TunnelObserver
     ) {
+        self.configObserver = configObserver
+        self.iapObserver = iapObserver
+        self.preferencesObserver = preferencesObserver
         self.profileObserver = profileObserver
         self.tunnelObserver = tunnelObserver
     }
@@ -46,14 +58,6 @@ extension View {
     }
 }
 
-extension ProfileObserver {
-    static let forPreviews = ProfileObserver()
-}
-
-extension TunnelObserver {
-    static let forPreviews = TunnelObserver()
-}
-
 private func abiCallback(opaqueEnvironment: UnsafeMutableRawPointer?, event: psp_event) {
     guard let opaqueEnvironment else {
         fatalError("Missing AppEnvironment. Bad arguments to psp_initialize?")
@@ -68,5 +72,37 @@ private func abiCallback(opaqueEnvironment: UnsafeMutableRawPointer?, event: psp
         default:
             break
         }
+    }
+}
+
+// MARK: - Previews
+
+extension ConfigObserver {
+    static var forPreviews: ConfigObserver {
+        AppEnvironment.forPreviews.configObserver
+    }
+}
+
+extension IAPObserver {
+    static var forPreviews: IAPObserver {
+        AppEnvironment.forPreviews.iapObserver
+    }
+}
+
+extension PreferencesObserver {
+    static var forPreviews: PreferencesObserver {
+        AppEnvironment.forPreviews.preferencesObserver
+    }
+}
+
+extension ProfileObserver {
+    static var forPreviews: ProfileObserver {
+        AppEnvironment.forPreviews.profileObserver
+    }
+}
+
+extension TunnelObserver {
+    static var forPreviews: TunnelObserver {
+        AppEnvironment.forPreviews.tunnelObserver
     }
 }

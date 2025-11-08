@@ -2,6 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppABI
+import Observation
+
+@MainActor @Observable
+final class ConfigObserver {
+}
+
 // MARK: - Actions
 //
 //public func refreshBundle() async

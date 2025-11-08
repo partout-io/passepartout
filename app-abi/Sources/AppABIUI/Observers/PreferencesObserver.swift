@@ -4,6 +4,13 @@
 
 // FIXME: ###, KeyValueManager (rename PreferencesManager to something else)
 
+import AppABI
+import Observation
+
+@MainActor @Observable
+final class PreferencesObserver {
+}
+
 // MARK: - State
 
 //public func contains(_ key: String) -> Bool
