@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: ###, ConfigManager
-
 // MARK: - Actions
 //
 //public func refreshBundle() async
