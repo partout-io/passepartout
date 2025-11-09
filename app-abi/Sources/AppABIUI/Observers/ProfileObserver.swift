@@ -12,7 +12,7 @@ public final class ProfileObserver {
     // FIXME: ###, use UI.*
     private var localProfiles: [Profile.ID: Profile] { // FIXME: ###, expensive
         didSet {
-            reloadFilteredProfiles(with: searchSubject.value)
+            reloadHeaders(with: searchSubject.value)
         }
     }
     private var remoteProfileIds: Set<Profile.ID>
@@ -143,12 +143,12 @@ private extension ProfileObserver {
             // FIXME: ###, debounce
             for await term in searchSubject.subscribe() {
                 guard !Task.isCancelled else { return }
-                reloadFilteredProfiles(with: term)
+                reloadHeaders(with: term)
             }
         }
     }
 
-    func reloadFilteredProfiles(with search: String) {
+    func reloadHeaders(with search: String) {
         headers = localProfiles
             .values
             .filter {
