@@ -141,6 +141,7 @@ private extension ProfileObserver {
             guard let self else { return }
             // FIXME: ###, debounce
             for await term in searchSubject.subscribe() {
+                guard !Task.isCancelled else { return }
                 reloadFilteredProfiles(with: term)
             }
         }
