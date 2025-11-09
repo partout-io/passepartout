@@ -6,7 +6,7 @@ import Foundation
 
 // FIXME: ###, actor
 @MainActor
-public final class ProfileManager: ObservableObject {
+public final class ProfileManager {
     private enum Observer: CaseIterable {
         case local
         case remote
@@ -309,7 +309,8 @@ private extension ProfileManager {
 
 private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
-        objectWillChange.send()
+        // FIXME: ###, should be automatic in ProfileObserver
+//        objectWillChange.send()
         pp_log_g(.App.profiles, .info, "Reload local profiles: \(result.map(\.id))")
 
         let excludedIds = Set(result
@@ -342,7 +343,8 @@ private extension ProfileManager {
     }
 
     func reloadRemoteProfiles(_ result: [Profile]) {
-        objectWillChange.send()
+        // FIXME: ###, should be automatic in ProfileObserver
+//        objectWillChange.send()
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
         allRemoteProfiles = result.reduce(into: [:]) {
@@ -438,7 +440,8 @@ private extension ProfileManager {
     }
 
     func reloadFilteredProfiles(with search: String) {
-        objectWillChange.send()
+        // FIXME: ###, should be automatic in ProfileObserver
+//        objectWillChange.send()
         let filteredProfiles = allProfiles
             .values
             .filter {
