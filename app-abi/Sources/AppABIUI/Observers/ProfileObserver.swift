@@ -11,7 +11,7 @@ import Observation
 public final class ProfileObserver {
     // FIXME: ###, use UI.*
     public private(set) var headers: [UI.ProfileHeader]
-    private var localProfiles: [Profile.ID: Profile]
+    private var localProfiles: [Profile.ID: Profile] // FIXME: ###, expensive
     private var remoteProfileIds: Set<Profile.ID>
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 
@@ -35,6 +35,11 @@ public final class ProfileObserver {
 // MARK: - Actions
 
 extension ProfileObserver {
+    // To avoid dup/expensive tracking of localProfiles
+//    public func profile(withId profileId: Profile.ID) async -> Profile? {
+//        await profileManager.profile(withId: profileId)
+//    }
+
 //    public func search(byName name: String)
 //    public func reloadRequiredFeatures()
 //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
