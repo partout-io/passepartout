@@ -15,24 +15,25 @@ public final class ProfileObserver {
             reloadFilteredProfiles(with: searchSubject.value)
         }
     }
-    public private(set) var headers: [UI.ProfileHeader]
     private var remoteProfileIds: Set<Profile.ID>
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
     private let searchSubject: CurrentValueStream<String>
 
+    public private(set) var headers: [UI.ProfileHeader]
     public private(set) var isReady: Bool
-    public var isRemoteImportingEnabled = false
+    public var isRemoteImportingEnabled: Bool
 
     // FIXME: ###, wrap access to ProfileManager in ABI methods
     private var profileManager: ProfileManager!
 
     public init() {
-        headers = []
         localProfiles = [:]
         remoteProfileIds = []
         requiredFeatures = [:]
         searchSubject = CurrentValueStream("")
+        headers = []
         isReady = false
+        isRemoteImportingEnabled = false
 
         observeEvents()
     }
