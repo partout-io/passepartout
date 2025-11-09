@@ -210,8 +210,6 @@ extension ProfileManager {
 
 private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
-        // FIXME: ###, should be automatic in ProfileObserver
-//        objectWillChange.send()
         pp_log_g(.App.profiles, .info, "Reload local profiles: \(result.map(\.id))")
 
         let excludedIds = Set(result
@@ -244,8 +242,6 @@ private extension ProfileManager {
     }
 
     func reloadRemoteProfiles(_ result: [Profile]) {
-        // FIXME: ###, should be automatic in ProfileObserver
-//        objectWillChange.send()
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
         allRemoteProfiles = result.reduce(into: [:]) {
