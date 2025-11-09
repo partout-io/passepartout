@@ -235,9 +235,7 @@ private extension ProfileManager {
             }
         }
     }
-}
 
-private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
         // FIXME: ###, should be automatic in ProfileObserver
 //        objectWillChange.send()
