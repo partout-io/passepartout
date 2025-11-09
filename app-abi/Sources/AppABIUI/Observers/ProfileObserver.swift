@@ -71,9 +71,11 @@ extension ProfileObserver {
 //    public var isSearching: Bool {
 //        !searchSubject.value.isEmpty
 //    }
-//
-//    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool
-//
+
+    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
+        remoteProfileIds.contains(profileId)
+    }
+
 //    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
 
     public func onUpdate(_ event: psp_event) {
