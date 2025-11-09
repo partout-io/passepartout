@@ -10,20 +10,21 @@ import Observation
 @MainActor @Observable
 public final class ProfileObserver {
     // FIXME: ###, use UI.*
+    public private(set) var headers: [UI.ProfileHeader]
     private var allProfiles: [Profile.ID: Profile]
     private var allRemoteProfiles: [Profile.ID: Profile]
-    private var filteredProfiles: [Profile]
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 
     public private(set) var isReady: Bool
+    public var isRemoteImportingEnabled = false
 
     // FIXME: ###, wrap in ABI
     private var profileManager: ProfileManager!
 
     public init() {
+        headers = []
         allProfiles = [:]
         allRemoteProfiles = [:]
-        filteredProfiles = []
         requiredFeatures = [:]
         isReady = false
 
@@ -66,15 +67,7 @@ public final class ProfileObserver {
 
 extension ProfileObserver {
     public var hasProfiles: Bool {
-        !filteredProfiles.isEmpty
-    }
-
-    public var previews: [UI.ProfileHeader] {
-        // FIXME: ###, filter profile previews by processor in manager
-//        filteredProfiles.map {
-//            processor?.preview(from: $0) ?? ProfilePreview($0)
-//        }
-        filteredProfiles.map(\.uiPreview)
+        !headers.isEmpty
     }
 
     public func profile(withId profileId: Profile.ID) -> Profile? {
@@ -96,7 +89,6 @@ extension ProfileObserver {
 
 extension ProfileObserver: ABIObserver {
     public func refresh() {
-//        headers = abi.profileGetHeaders()
     }
 
     public func onUpdate(_ event: psp_event) {
@@ -114,6 +106,8 @@ private extension ProfileObserver {
                 switch event {
                 case .ready:
                     isReady = true
+                case .filteredPreviews(let previews):
+                    headers = previews.map(\.uiHeader)
                 default:
                     break
                 }

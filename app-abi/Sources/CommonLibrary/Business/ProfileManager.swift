@@ -4,72 +4,50 @@
 
 import Foundation
 
+// FIXME: ###, actor
 @MainActor
 public final class ProfileManager: ObservableObject {
     private enum Observer: CaseIterable {
         case local
-
         case remote
     }
 
     public enum Event: Equatable {
         case ready
-
         case save(Profile, previous: Profile?)
-
         case remove([Profile.ID])
-
         case localProfiles
-
-        case filteredProfiles
-
+        case filteredPreviews([ProfilePreview])
         case remoteProfiles
-
+        case requiredFeatures([Profile.ID: Set<AppFeature>])
         case startRemoteImport
-
         case stopRemoteImport
     }
 
     // MARK: Dependencies
 
     private let repository: ProfileRepository
-
     private let backupRepository: ProfileRepository?
-
     private var remoteRepository: ProfileRepository?
-
     private let mirrorsRemoteRepository: Bool
-
     private let processor: ProfileProcessor?
 
     // MARK: State
 
-//    private var allProfiles: [Profile.ID: Profile] {
-//        didSet {
-//            didChange.send(.localProfiles)
-//
-//            reloadFilteredProfiles(with: searchSubject.value)
-//            reloadRequiredFeatures()
-//        }
-//    }
-//
-//    private var allRemoteProfiles: [Profile.ID: Profile] {
-//        didSet {
-//            didChange.send(.remoteProfiles)
-//        }
-//    }
-//
-//    private var filteredProfiles: [Profile] {
-//        didSet {
-//            didChange.send(.filteredProfiles)
-//        }
-//    }
-//
-//    @Published
-//    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
-//
-//    @Published
-//    public var isRemoteImportingEnabled = false
+    private var allProfiles: [Profile.ID: Profile] {
+        didSet {
+            didChange.send(.localProfiles)
+
+            reloadFilteredProfiles(with: searchSubject.value)
+            reloadRequiredFeatures()
+        }
+    }
+
+    private var allRemoteProfiles: [Profile.ID: Profile] {
+        didSet {
+            didChange.send(.remoteProfiles)
+        }
+    }
 
     private var waitingObservers: Set<Observer> {
         didSet {
@@ -81,19 +59,14 @@ public final class ProfileManager: ObservableObject {
 
     // MARK: Publishers
 
-    public let didChange: PassthroughStream<Event>
-
+    public nonisolated let didChange: PassthroughStream<Event>
     private let searchSubject: CurrentValueStream<String>
-
     private var localSubscription: Task<Void, Never>?
-
     private var remoteSubscription: Task<Void, Never>?
-
     private var searchSubscription: Task<Void, Never>?
-
     private var remoteImportTask: Task<Void, Never>?
 
-    // for testing/previews
+    // For testing/previews
     public convenience init(profiles: [Profile]) {
         self.init(repository: InMemoryProfileRepository(profiles: profiles))
     }
@@ -110,6 +83,8 @@ public final class ProfileManager: ObservableObject {
         self.backupRepository = backupRepository
         self.mirrorsRemoteRepository = mirrorsRemoteRepository
 
+        allProfiles = [:]
+        allRemoteProfiles = [:]
         if readyAfterRemote {
             waitingObservers = [.local, .remote]
         } else {
@@ -129,17 +104,6 @@ extension ProfileManager {
     public var isReady: Bool {
         waitingObservers.isEmpty
     }
-
-    public var hasProfiles: Bool {
-        !filteredProfiles.isEmpty
-    }
-
-    public var previews: [ProfilePreview] {
-        filteredProfiles.map {
-            processor?.preview(from: $0) ?? ProfilePreview($0)
-        }
-    }
-
     public func profile(withId profileId: Profile.ID) -> Profile? {
         allProfiles[profileId]
     }
@@ -150,23 +114,6 @@ extension ProfileManager {
 
     public func search(byName name: String) {
         searchSubject.send(name)
-    }
-
-    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
-        requiredFeatures[profileId]
-    }
-
-    public func requiredFeatures(for allProfiles: [Profile.ID: Profile]) -> [Profile.ID: Set<AppFeature>] {
-        guard let processor else {
-            return [:]
-        }
-        return allProfiles.reduce(into: [:]) {
-            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
-                return
-            }
-            $0[$1.key] = ineligible
-        }
-//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
 }
 
@@ -287,14 +234,11 @@ extension ProfileManager {
     }
 
     public func resaveAllProfiles() async {
-        for preview in previews {
-            guard let profile = profile(withId: preview.id) else {
-                continue
-            }
+        for profile in allProfiles.values {
             do {
                 try await save(profile, isLocal: true)
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to re-save profile \(preview.id): \(error)")
+                pp_log_g(.App.profiles, .error, "Unable to re-save profile \(profile.id): \(error)")
             }
         }
     }
@@ -495,7 +439,7 @@ private extension ProfileManager {
 
     func reloadFilteredProfiles(with search: String) {
         objectWillChange.send()
-        filteredProfiles = allProfiles
+        let filteredProfiles = allProfiles
             .values
             .filter {
                 if !search.isEmpty {
@@ -505,6 +449,11 @@ private extension ProfileManager {
             }
             .sorted(by: Profile.sorting)
 
+        let filteredPreviews = filteredProfiles.map {
+            processor?.preview(from: $0) ?? ProfilePreview($0)
+        }
+        didChange.send(.filteredPreviews(filteredPreviews))
+
         pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
 
@@ -512,12 +461,13 @@ private extension ProfileManager {
         guard let processor else {
             return
         }
-        requiredFeatures = allProfiles.reduce(into: [:]) {
+        let requiredFeatures: [Profile.ID: Set<AppFeature>] = allProfiles.reduce(into: [:]) {
             guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
                 return
             }
             $0[$1.key] = ineligible
         }
+        didChange.send(.requiredFeatures(requiredFeatures))
         pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
 }
