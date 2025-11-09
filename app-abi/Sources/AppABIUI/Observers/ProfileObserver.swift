@@ -158,11 +158,24 @@ private extension ProfileObserver {
                 return true
             }
             .sorted(by: Profile.sorting)
-            .map(\.uiHeader)
+            .map {
+                $0.uiHeader(sharingFlags: sharingFlags(for: $0.id))
+            }
             // FIXME: ###, localized module types
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
 
 //        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
+    }
+
+    func sharingFlags(for profileId: Profile.ID) -> [UI.ProfileSharingFlag] {
+        if isRemotelyShared(profileWithId: profileId) {
+            if isAvailableForTV(profileWithId: profileId) {
+                return [.tv]
+            } else {
+                return [.shared]
+            }
+        }
+        return []
     }
 }
 

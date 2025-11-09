@@ -19,9 +19,9 @@ final class MockABI: ABIProtocol {
 
     init() {
         profiles = [
-            UI.ProfileHeader(id: "1", name: "foo", moduleTypes: []),
-            UI.ProfileHeader(id: "2", name: "bar", moduleTypes: []),
-            UI.ProfileHeader(id: "3", name: "sum", moduleTypes: [])
+            UI.ProfileHeader(id: "1", name: "foo"),
+            UI.ProfileHeader(id: "2", name: "bar"),
+            UI.ProfileHeader(id: "3", name: "sum")
         ]
         profiles.sort()
         statuses = [:]
@@ -39,7 +39,7 @@ final class MockABI: ABIProtocol {
     }
 
     func profileNew() async throws -> UI.ProfileHeader {
-        let dto = UI.ProfileHeader(id: "lorem-ipsum", name: "lorem ipsum", moduleTypes: [])
+        let dto = UI.ProfileHeader(id: "lorem-ipsum", name: "lorem ipsum")
         profiles.append(dto)
         postArea(PSPAreaProfile)
         return dto

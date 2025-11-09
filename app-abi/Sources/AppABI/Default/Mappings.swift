@@ -5,11 +5,13 @@
 import CommonLibrary
 
 extension Profile {
-    public var uiHeader: UI.ProfileHeader {
+    public func uiHeader(sharingFlags: [UI.ProfileSharingFlag]) -> UI.ProfileHeader {
         UI.ProfileHeader(
             id: id.uuidString,
             name: name,
-            moduleTypes: modules.map(\.moduleType.rawValue)
+            moduleTypes: modules.map(\.moduleType.rawValue),
+            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
+            sharingFlags: sharingFlags
         )
     }
 }
