@@ -62,6 +62,8 @@ public actor ProfileManager {
     private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
 
+    // MARK: - Init
+
     // For testing/previews
     public init(profiles: [Profile]) {
         self.init(repository: InMemoryProfileRepository(profiles: profiles))
