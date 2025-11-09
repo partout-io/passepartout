@@ -4,9 +4,7 @@
 
 import Foundation
 
-// FIXME: ###, actor
-@MainActor
-public final class ProfileManager {
+public actor ProfileManager {
     private enum Observer: CaseIterable {
         case local
         case remote
@@ -67,7 +65,7 @@ public final class ProfileManager {
     private var remoteImportTask: Task<Void, Never>?
 
     // For testing/previews
-    public convenience init(profiles: [Profile]) {
+    public init(profiles: [Profile]) {
         self.init(repository: InMemoryProfileRepository(profiles: profiles))
     }
 
@@ -94,7 +92,9 @@ public final class ProfileManager {
         didChange = PassthroughStream()
         searchSubject = CurrentValueStream("")
 
-        observeSearch()
+        Task {
+            await observeSearch()
+        }
     }
 }
 
@@ -252,18 +252,11 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadLocalProfiles(initialProfiles)
 
-//        localSubscription = repository
-//            .profilesPublisher
-//            .dropFirst()
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] in
-//                self?.reloadLocalProfiles($0)
-//            }
         let localRepository = repository
         localSubscription = Task { [weak self] in
             guard let self else { return }
             for await profiles in localRepository.profilesPublisher.dropFirst() {
-                reloadLocalProfiles(profiles)
+                await reloadLocalProfiles(profiles)
             }
         }
     }
@@ -274,17 +267,10 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadRemoteProfiles(initialProfiles)
 
-//        remoteSubscription = repository
-//            .profilesPublisher
-//            .dropFirst()
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] in
-//                self?.reloadRemoteProfiles($0)
-//            }
         remoteSubscription = Task { [weak self] in
             guard let self else { return }
             for await profiles in repository.profilesPublisher.dropFirst() {
-                reloadRemoteProfiles(profiles)
+                await reloadRemoteProfiles(profiles)
             }
         }
     }
@@ -292,16 +278,11 @@ extension ProfileManager {
 
 private extension ProfileManager {
     func observeSearch(debounce: Int = 200) {
-//        searchSubscription = searchSubject
-//            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
-//            .sink { [weak self] in
-//                self?.reloadFilteredProfiles(with: $0)
-//            }
         searchSubscription = Task { [weak self] in
             guard let self else { return }
             // FIXME: ###, debounce
             for await term in searchSubject.subscribe() {
-                reloadFilteredProfiles(with: term)
+                await reloadFilteredProfiles(with: term)
             }
         }
     }
@@ -400,7 +381,7 @@ private extension ProfileManager {
             }
             for remoteProfile in profiles {
                 do {
-                    guard await processor?.isIncluded(remoteProfile) ?? true else {
+                    guard processor?.isIncluded(remoteProfile) ?? true else {
                         pp_log_g(.App.profiles, .info, "Will delete non-included remote profile \(remoteProfile.id)")
                         idsToRemove.append(remoteProfile.id)
                         continue

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@MainActor
 public protocol ProfileProcessor: Sendable {
     func isIncluded(_ profile: Profile) -> Bool
 
