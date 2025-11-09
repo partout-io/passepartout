@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 
 @MainActor
@@ -71,26 +70,26 @@ public final class ProfileManager: ObservableObject {
 //
 //    @Published
 //    public var isRemoteImportingEnabled = false
-//
-//    private var waitingObservers: Set<Observer> {
-//        didSet {
-//            if isReady {
-//                didChange.send(.ready)
-//            }
-//        }
-//    }
+
+    private var waitingObservers: Set<Observer> {
+        didSet {
+            if isReady {
+                didChange.send(.ready)
+            }
+        }
+    }
 
     // MARK: Publishers
 
-    public let didChange: PassthroughSubject<Event, Never>
+    public let didChange: PassthroughStream<Event>
 
-    private let searchSubject: CurrentValueSubject<String, Never>
+    private let searchSubject: CurrentValueStream<String>
 
-    private var localSubscription: AnyCancellable?
+    private var localSubscription: Task<Void, Never>?
 
-    private var remoteSubscription: AnyCancellable?
+    private var remoteSubscription: Task<Void, Never>?
 
-    private var searchSubscription: AnyCancellable?
+    private var searchSubscription: Task<Void, Never>?
 
     private var remoteImportTask: Task<Void, Never>?
 
@@ -111,18 +110,14 @@ public final class ProfileManager: ObservableObject {
         self.backupRepository = backupRepository
         self.mirrorsRemoteRepository = mirrorsRemoteRepository
 
-        allProfiles = [:]
-        allRemoteProfiles = [:]
-        filteredProfiles = []
-        requiredFeatures = [:]
         if readyAfterRemote {
             waitingObservers = [.local, .remote]
         } else {
             waitingObservers = [.local]
         }
 
-        didChange = PassthroughSubject()
-        searchSubject = CurrentValueSubject("")
+        didChange = PassthroughStream()
+        searchSubject = CurrentValueStream("")
 
         observeSearch()
     }
@@ -161,18 +156,31 @@ extension ProfileManager {
         requiredFeatures[profileId]
     }
 
-    public func reloadRequiredFeatures() {
+    public func requiredFeatures(for allProfiles: [Profile.ID: Profile]) -> [Profile.ID: Set<AppFeature>] {
         guard let processor else {
-            return
+            return [:]
         }
-        requiredFeatures = allProfiles.reduce(into: [:]) {
+        return allProfiles.reduce(into: [:]) {
             guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
                 return
             }
             $0[$1.key] = ineligible
         }
-        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
+
+//    public func reloadRequiredFeatures() {
+//        guard let processor else {
+//            return
+//        }
+//        requiredFeatures = allProfiles.reduce(into: [:]) {
+//            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
+//                return
+//            }
+//            $0[$1.key] = ineligible
+//        }
+//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+//    }
 }
 
 // MARK: - Edit
@@ -313,13 +321,20 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadLocalProfiles(initialProfiles)
 
-        localSubscription = repository
-            .profilesPublisher
-            .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadLocalProfiles($0)
+//        localSubscription = repository
+//            .profilesPublisher
+//            .dropFirst()
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] in
+//                self?.reloadLocalProfiles($0)
+//            }
+        let localRepository = repository
+        localSubscription = Task { [weak self] in
+            guard let self else { return }
+            for await profiles in localRepository.profilesPublisher.dropFirst() {
+                reloadLocalProfiles(profiles)
             }
+        }
     }
 
     public func observeRemote(repository: ProfileRepository) async throws {
@@ -328,23 +343,36 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadRemoteProfiles(initialProfiles)
 
-        remoteSubscription = repository
-            .profilesPublisher
-            .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadRemoteProfiles($0)
+//        remoteSubscription = repository
+//            .profilesPublisher
+//            .dropFirst()
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] in
+//                self?.reloadRemoteProfiles($0)
+//            }
+        remoteSubscription = Task { [weak self] in
+            guard let self else { return }
+            for await profiles in repository.profilesPublisher.dropFirst() {
+                reloadRemoteProfiles(profiles)
             }
+        }
     }
 }
 
 private extension ProfileManager {
     func observeSearch(debounce: Int = 200) {
-        searchSubscription = searchSubject
-            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadFilteredProfiles(with: $0)
+//        searchSubscription = searchSubject
+//            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
+//            .sink { [weak self] in
+//                self?.reloadFilteredProfiles(with: $0)
+//            }
+        searchSubscription = Task { [weak self] in
+            guard let self else { return }
+            // FIXME: ###, debounce
+            for await term in searchSubject.subscribe() {
+                reloadFilteredProfiles(with: term)
             }
+        }
     }
 }
 

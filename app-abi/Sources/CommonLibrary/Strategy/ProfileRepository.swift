@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 
 public protocol ProfileRepository {
-    var profilesPublisher: AnyPublisher<[Profile], Never> { get }
+    var profilesPublisher: AsyncStream<[Profile]> { get }
 
     func fetchProfiles() async throws -> [Profile]
 

@@ -4,19 +4,31 @@
 
 import AppABI
 import AppABI_C
+import CommonLibrary
 import Observation
 
 @MainActor @Observable
-final class ProfileObserver {
-    private(set) var headers: [UI.ProfileHeader]
+public final class ProfileObserver {
+    // FIXME: ###, use UI.*
+    private var allProfiles: [Profile.ID: Profile]
+    private var allRemoteProfiles: [Profile.ID: Profile]
+    private var filteredProfiles: [Profile]
+    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 
-    init() {
-        headers = []
+    public private(set) var isReady: Bool
+
+    // FIXME: ###, wrap in ABI
+    private var profileManager: ProfileManager!
+
+    public init() {
+        allProfiles = [:]
+        allRemoteProfiles = [:]
+        filteredProfiles = []
+        requiredFeatures = [:]
+        isReady = false
+
+        observeEvents()
         refresh()
-    }
-
-    func refresh() {
-        headers = abi.profileGetHeaders()
     }
 
     // MARK: - Actions
@@ -52,10 +64,74 @@ final class ProfileObserver {
     //    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
 }
 
+extension ProfileObserver {
+    public var hasProfiles: Bool {
+        !filteredProfiles.isEmpty
+    }
+
+    public var previews: [UI.ProfileHeader] {
+        // FIXME: ###, filter profile previews by processor in manager
+//        filteredProfiles.map {
+//            processor?.preview(from: $0) ?? ProfilePreview($0)
+//        }
+        filteredProfiles.map(\.uiPreview)
+  }
+
+    public func profile(withId profileId: Profile.ID) -> Profile? {
+        allProfiles[profileId]
+    }
+
+    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
+        requiredFeatures[profileId]
+    }
+
+//    public var isSearching: Bool {
+//        !searchSubject.value.isEmpty
+//    }
+//
+//    public func search(byName name: String) {
+//        searchSubject.send(name)
+//    }
+
+//    public func reloadRequiredFeatures() {
+//        guard let processor else {
+//            return [:]
+//        }
+//        return allProfiles.reduce(into: [:]) {
+//            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
+//                return
+//            }
+//            $0[$1.key] = ineligible
+//        }
+//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+//    }
+}
+
 extension ProfileObserver: ABIObserver {
-    func onUpdate(_ event: psp_event) {
+    public func refresh() {
+//        headers = abi.profileGetHeaders()
+    }
+
+    public func onUpdate(_ event: psp_event) {
         print("onUpdate() called")
         refresh()
+    }
+}
+
+private extension ProfileObserver {
+    func observeEvents() {
+        Task { [weak self] in
+            guard let self else { return }
+            for await event in profileManager.didChange.subscribe() {
+                guard !Task.isCancelled else { return }
+                switch event {
+                case .ready:
+                    isReady = true
+                default:
+                    break
+                }
+            }
+        }
     }
 }
 

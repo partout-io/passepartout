@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 
 public final class InMemoryProfileRepository: ProfileRepository {
@@ -12,15 +11,15 @@ public final class InMemoryProfileRepository: ProfileRepository {
         }
     }
 
-    private let profilesSubject: CurrentValueSubject<[Profile], Never>
+    private let profilesSubject: CurrentValueStream<[Profile]>
 
     public init(profiles: [Profile] = []) {
         self.profiles = profiles
-        profilesSubject = CurrentValueSubject(profiles)
+        profilesSubject = CurrentValueStream(profiles)
     }
 
-    public var profilesPublisher: AnyPublisher<[Profile], Never> {
-        profilesSubject.eraseToAnyPublisher()
+    public var profilesPublisher: AsyncStream<[Profile]> {
+        profilesSubject.subscribe()
     }
 
     public func fetchProfiles() async throws -> [Profile] {
