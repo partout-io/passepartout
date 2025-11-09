@@ -6,12 +6,10 @@ import CommonLibrary
 
 extension Profile {
     public var uiHeader: UI.ProfileHeader {
-        UI.ProfileHeader(id: id.uuidString, name: name)
-    }
-}
-
-extension ProfilePreview {
-    public var uiHeader: UI.ProfileHeader {
-        UI.ProfileHeader(id: id.uuidString, name: name)
+        UI.ProfileHeader(
+            id: id.uuidString,
+            name: name,
+            moduleTypes: modules.map(\.moduleType.rawValue)
+        )
     }
 }

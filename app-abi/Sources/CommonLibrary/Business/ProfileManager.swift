@@ -16,8 +16,8 @@ public actor ProfileManager {
         case remove([Profile.ID])
         case localProfiles([Profile.ID: Profile])
         case remoteProfiles(Set<Profile.ID>)
-        case filteredPreviews([ProfilePreview])
         case requiredFeatures([Profile.ID: Set<AppFeature>])
+        case search(String?)
         case startRemoteImport
         case stopRemoteImport
     }
@@ -35,8 +35,6 @@ public actor ProfileManager {
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
             didChange.send(.localProfiles(allProfiles))
-
-            reloadFilteredProfiles(with: searchSubject.value)
             reloadRequiredFeatures()
         }
     }
@@ -58,10 +56,8 @@ public actor ProfileManager {
     // MARK: Publishers
 
     public nonisolated let didChange: PassthroughStream<Event>
-    private let searchSubject: CurrentValueStream<String>
     private var localSubscription: Task<Void, Never>?
     private var remoteSubscription: Task<Void, Never>?
-    private var searchSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
 
     // For testing/previews
@@ -90,11 +86,6 @@ public actor ProfileManager {
         }
 
         didChange = PassthroughStream()
-        searchSubject = CurrentValueStream("")
-
-        Task {
-            await observeSearch()
-        }
     }
 }
 
@@ -167,14 +158,6 @@ extension ProfileManager {
         }
     }
 
-    public var isSearching: Bool {
-        !searchSubject.value.isEmpty
-    }
-
-    public func search(byName name: String) {
-        searchSubject.send(name)
-    }
-
     public func eraseRemotelySharedProfiles() async throws {
         pp_log_g(.App.profiles, .notice, "Erase remotely shared profiles...")
         try await remoteRepository?.removeAllProfiles()
@@ -226,16 +209,6 @@ extension ProfileManager {
 // MARK: - Internals
 
 private extension ProfileManager {
-    func observeSearch(debounce: Int = 200) {
-        searchSubscription = Task { [weak self] in
-            guard let self else { return }
-            // FIXME: ###, debounce
-            for await term in searchSubject.subscribe() {
-                await reloadFilteredProfiles(with: term)
-            }
-        }
-    }
-
     func reloadLocalProfiles(_ result: [Profile]) {
         // FIXME: ###, should be automatic in ProfileObserver
 //        objectWillChange.send()
@@ -365,27 +338,6 @@ private extension ProfileManager {
         }
         await remoteImportTask?.value
         remoteImportTask = nil
-    }
-
-    func reloadFilteredProfiles(with search: String) {
-        // FIXME: ###, should be automatic in ProfileObserver
-//        objectWillChange.send()
-        let filteredProfiles = allProfiles
-            .values
-            .filter {
-                if !search.isEmpty {
-                    return $0.name.lowercased().contains(search.lowercased())
-                }
-                return true
-            }
-            .sorted(by: Profile.sorting)
-
-        let filteredPreviews = filteredProfiles.map {
-            processor?.preview(from: $0) ?? ProfilePreview($0)
-        }
-        didChange.send(.filteredPreviews(filteredPreviews))
-
-        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
 
     func reloadRequiredFeatures() {

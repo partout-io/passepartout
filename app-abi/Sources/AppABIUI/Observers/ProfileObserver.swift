@@ -11,9 +11,14 @@ import Observation
 public final class ProfileObserver {
     // FIXME: ###, use UI.*
     public private(set) var headers: [UI.ProfileHeader]
-    private var localProfiles: [Profile.ID: Profile] // FIXME: ###, expensive
+    private var localProfiles: [Profile.ID: Profile] { // FIXME: ###, expensive
+        didSet {
+            reloadFilteredProfiles(with: searchSubject.value)
+        }
+    }
     private var remoteProfileIds: Set<Profile.ID>
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
+    private let searchSubject: CurrentValueStream<String>
 
     public private(set) var isReady: Bool
     public var isRemoteImportingEnabled = false
@@ -26,6 +31,7 @@ public final class ProfileObserver {
         localProfiles = [:]
         remoteProfileIds = []
         requiredFeatures = [:]
+        searchSubject = CurrentValueStream("")
         isReady = false
 
         observeEvents()
@@ -51,6 +57,10 @@ extension ProfileObserver {
     //    public func resaveAllProfiles() async
     //    public func observeLocal() async throws
     //    public func observeRemote(repository: ProfileRepository) async throws
+
+    public func search(byName name: String) {
+        searchSubject.send(name)
+    }
 
     public func duplicate(profileWithId profileId: Profile.ID) async throws {
         guard let profile = localProfiles[profileId] else {
@@ -80,9 +90,9 @@ extension ProfileObserver {
         requiredFeatures[profileId]
     }
 
-//    public var isSearching: Bool {
-//        !searchSubject.value.isEmpty
-//    }
+    public var isSearching: Bool {
+        !searchSubject.value.isEmpty
+    }
 
     public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
         remoteProfileIds.contains(profileId)
@@ -124,8 +134,6 @@ private extension ProfileObserver {
                     localProfiles = profiles
                 case .remoteProfiles(let ids):
                     remoteProfileIds = ids
-                case .filteredPreviews(let previews):
-                    headers = previews.map(\.uiHeader)
                 case .requiredFeatures(let features):
                     requiredFeatures = features
                 default:
@@ -133,6 +141,32 @@ private extension ProfileObserver {
                 }
             }
         }
+        Task { [weak self] in
+            guard let self else { return }
+            // FIXME: ###, debounce
+            for await term in searchSubject.subscribe() {
+                reloadFilteredProfiles(with: term)
+            }
+        }
+    }
+
+    func reloadFilteredProfiles(with search: String) {
+        let filteredProfiles = localProfiles
+            .values
+            .filter {
+                if !search.isEmpty {
+                    return $0.name.lowercased().contains(search.lowercased())
+                }
+                return true
+            }
+            .sorted(by: Profile.sorting)
+
+        headers = filteredProfiles.map(\.uiHeader)
+        // FIXME: ###, localized preview
+//            processor?.preview(from: $0) ?? ProfilePreview($0)
+//        }
+
+//        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
 }
 

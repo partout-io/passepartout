@@ -6,6 +6,7 @@ extension UI {
     public struct ProfileHeader: Identifiable, DTO, Comparable {
         public let id: Identifier
         public let name: String
+        public let moduleTypes: [String]
         // flags: icloud, tv
 
         public static func < (lhs: Self, rhs: Self) -> Bool {
