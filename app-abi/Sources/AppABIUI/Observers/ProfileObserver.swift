@@ -148,7 +148,7 @@ private extension ProfileObserver {
     }
 
     func reloadFilteredProfiles(with search: String) {
-        let filteredProfiles = localProfiles
+        headers = localProfiles
             .values
             .filter {
                 if !search.isEmpty {
@@ -157,11 +157,9 @@ private extension ProfileObserver {
                 return true
             }
             .sorted(by: Profile.sorting)
-
-        headers = filteredProfiles.map(\.uiHeader)
-        // FIXME: ###, localized preview
+            .map(\.uiHeader)
+            // FIXME: ###, localized module types
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
-//        }
 
 //        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
