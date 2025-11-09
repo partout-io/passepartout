@@ -18,7 +18,7 @@ public final class ProfileObserver {
     public private(set) var isReady: Bool
     public var isRemoteImportingEnabled = false
 
-    // FIXME: ###, wrap in ABI
+    // FIXME: ###, wrap access to ProfileManager in ABI methods
     private var profileManager: ProfileManager!
 
     public init() {
@@ -29,41 +29,26 @@ public final class ProfileObserver {
         isReady = false
 
         observeEvents()
-        refresh()
     }
-
-    // MARK: - Actions
-
-    //    public func search(byName name: String)
-    //    public func reloadRequiredFeatures()
-    //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-    //    public func remove(withId profileId: Profile.ID) async
-    //    public func remove(withIds profileIds: [Profile.ID]) async
-    //    public func eraseRemotelySharedProfiles() async throws
-    //    public func firstUniqueName(from name: String) -> String
-    //    public func duplicate(profileWithId profileId: Profile.ID) async throws
-    //    public func resaveAllProfiles() async
-    //    public func observeLocal() async throws
-    //    public func observeRemote(repository: ProfileRepository) async throws
-
-    // MARK: - State
-
-    //    private var allProfiles: [Profile.ID: Profile]
-    //    private var allRemoteProfiles: [Profile.ID: Profile]
-    //    private var filteredProfiles: [Profile]
-    //    public let didChange: PassthroughSubject<Event, Never>
-    //    @Published private var requiredFeatures: [Profile.ID: Set<AppFeature>]
-    //    @Published public var isRemoteImportingEnabled = false
-    //
-    //    public var isReady: Bool
-    //    public var hasProfiles: Bool
-    //    public var previews: [ProfilePreview]
-    //    public func profile(withId profileId: Profile.ID) -> Profile?
-    //    public var isSearching: Bool
-    //    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>?
-    //    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool
-    //    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
 }
+
+// MARK: - Actions
+
+extension ProfileObserver {
+//    public func search(byName name: String)
+//    public func reloadRequiredFeatures()
+//    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
+//    public func remove(withId profileId: Profile.ID) async
+//    public func remove(withIds profileIds: [Profile.ID]) async
+//    public func eraseRemotelySharedProfiles() async throws
+//    public func firstUniqueName(from name: String) -> String
+//    public func duplicate(profileWithId profileId: Profile.ID) async throws
+//    public func resaveAllProfiles() async
+//    public func observeLocal() async throws
+//    public func observeRemote(repository: ProfileRepository) async throws
+}
+
+// MARK: - State
 
 extension ProfileObserver {
     public var hasProfiles: Bool {
@@ -82,18 +67,13 @@ extension ProfileObserver {
 //        !searchSubject.value.isEmpty
 //    }
 //
-//    public func search(byName name: String) {
-//        searchSubject.send(name)
-//    }
-}
-
-extension ProfileObserver: ABIObserver {
-    public func refresh() {
-    }
+//    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool
+//
+//    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
 
     public func onUpdate(_ event: psp_event) {
         print("onUpdate() called")
-        refresh()
+        // FIXME: ###, this will replace didChange.subscribe() after using ABI rather than ProfileManager
     }
 }
 
@@ -122,7 +102,8 @@ private extension ProfileObserver {
     }
 }
 
-// TODO: ###
+// MARK: - FIXME: ###
+
 extension ProfileObserver {
     @discardableResult
     func new() async throws -> UI.ProfileHeader {
