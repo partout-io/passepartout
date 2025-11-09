@@ -36,21 +36,33 @@ public final class ProfileObserver {
 
 extension ProfileObserver {
     // To avoid dup/expensive tracking of localProfiles
-//    public func profile(withId profileId: Profile.ID) async -> Profile? {
-//        await profileManager.profile(withId: profileId)
-//    }
+    //    public func profile(withId profileId: Profile.ID) async -> Profile? {
+    //        await profileManager.profile(withId: profileId)
+    //    }
 
-//    public func search(byName name: String)
-//    public func reloadRequiredFeatures()
-//    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-//    public func remove(withId profileId: Profile.ID) async
-//    public func remove(withIds profileIds: [Profile.ID]) async
-//    public func eraseRemotelySharedProfiles() async throws
-//    public func firstUniqueName(from name: String) -> String
-//    public func duplicate(profileWithId profileId: Profile.ID) async throws
-//    public func resaveAllProfiles() async
-//    public func observeLocal() async throws
-//    public func observeRemote(repository: ProfileRepository) async throws
+    //    public func search(byName name: String)
+    //    public func reloadRequiredFeatures()
+    //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
+    //    public func remove(withId profileId: Profile.ID) async
+    //    public func remove(withIds profileIds: [Profile.ID]) async
+    //    public func eraseRemotelySharedProfiles() async throws
+    //    public func firstUniqueName(from name: String) -> String
+    //    public func duplicate(profileWithId profileId: Profile.ID) async throws
+    //    public func resaveAllProfiles() async
+    //    public func observeLocal() async throws
+    //    public func observeRemote(repository: ProfileRepository) async throws
+
+    public func duplicate(profileWithId profileId: Profile.ID) async throws {
+        guard let profile = localProfiles[profileId] else {
+            return
+        }
+        var builder = profile.builder(withNewId: true)
+        builder.name = firstUniqueName(from: profile.name)
+        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
+        let copy = try builder.build()
+
+        try await profileManager.save(copy)
+    }
 }
 
 // MARK: - State
@@ -76,7 +88,22 @@ extension ProfileObserver {
         remoteProfileIds.contains(profileId)
     }
 
-//    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
+    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
+        profile(withId: profileId)?.attributes.isAvailableForTV == true
+    }
+
+    public func firstUniqueName(from name: String) -> String {
+        let allNames = Set(localProfiles.values.map(\.name))
+        var newName = name
+        var index = 1
+        while true {
+            if !allNames.contains(newName) {
+                return newName
+            }
+            newName = [name, index.description].joined(separator: ".")
+            index += 1
+        }
+    }
 
     public func onUpdate(_ event: psp_event) {
         print("onUpdate() called")

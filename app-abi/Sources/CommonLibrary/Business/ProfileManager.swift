@@ -49,7 +49,7 @@ public actor ProfileManager {
 
     private var waitingObservers: Set<Observer> {
         didSet {
-            if isReady {
+            if waitingObservers.isEmpty {
                 didChange.send(.ready)
             }
         }
@@ -98,16 +98,9 @@ public actor ProfileManager {
     }
 }
 
-// MARK: - View
+// MARK: - Actions
 
 extension ProfileManager {
-    public var isReady: Bool {
-        waitingObservers.isEmpty
-    }
-    public func profile(withId profileId: Profile.ID) -> Profile? {
-        allProfiles[profileId]
-    }
-
     public var isSearching: Bool {
         !searchSubject.value.isEmpty
     }
@@ -115,11 +108,7 @@ extension ProfileManager {
     public func search(byName name: String) {
         searchSubject.send(name)
     }
-}
 
-// MARK: - Edit
-
-extension ProfileManager {
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {
@@ -153,7 +142,7 @@ extension ProfileManager {
             throw error
         }
         if let remoteRepository {
-            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && isRemotelyShared(profileWithId: profile.id))
+            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && allRemoteProfiles.keys.contains(profile.id))
             let disableSharing = remotelyShared == false
             do {
                 if enableSharing {
@@ -185,52 +174,10 @@ extension ProfileManager {
             pp_log_g(.App.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }
     }
-}
-
-// MARK: - Remote/Attributes
-
-extension ProfileManager {
-    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
-        allRemoteProfiles.keys.contains(profileId)
-    }
-
-    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
-        profile(withId: profileId)?.attributes.isAvailableForTV == true
-    }
 
     public func eraseRemotelySharedProfiles() async throws {
         pp_log_g(.App.profiles, .notice, "Erase remotely shared profiles...")
         try await remoteRepository?.removeAllProfiles()
-    }
-}
-
-// MARK: - Shortcuts
-
-extension ProfileManager {
-    public func firstUniqueName(from name: String) -> String {
-        let allNames = Set(allProfiles.values.map(\.name))
-        var newName = name
-        var index = 1
-        while true {
-            if !allNames.contains(newName) {
-                return newName
-            }
-            newName = [name, index.description].joined(separator: ".")
-            index += 1
-        }
-    }
-
-    public func duplicate(profileWithId profileId: Profile.ID) async throws {
-        guard let profile = profile(withId: profileId) else {
-            return
-        }
-
-        var builder = profile.builder(withNewId: true)
-        builder.name = firstUniqueName(from: profile.name)
-        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
-        let copy = try builder.build()
-
-        try await save(copy)
     }
 
     public func resaveAllProfiles() async {
@@ -244,7 +191,7 @@ extension ProfileManager {
     }
 }
 
-// MARK: - Observation
+// MARK: Observation
 
 extension ProfileManager {
     public func observeLocal() async throws {
@@ -275,6 +222,8 @@ extension ProfileManager {
         }
     }
 }
+
+// MARK: - Internals
 
 private extension ProfileManager {
     func observeSearch(debounce: Int = 200) {
