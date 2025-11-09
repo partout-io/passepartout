@@ -168,19 +168,6 @@ extension ProfileManager {
         }
 //        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
-
-//    public func reloadRequiredFeatures() {
-//        guard let processor else {
-//            return
-//        }
-//        requiredFeatures = allProfiles.reduce(into: [:]) {
-//            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
-//                return
-//            }
-//            $0[$1.key] = ineligible
-//        }
-//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
-//    }
 }
 
 // MARK: - Edit
@@ -519,5 +506,18 @@ private extension ProfileManager {
             .sorted(by: Profile.sorting)
 
         pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
+    }
+
+    func reloadRequiredFeatures() {
+        guard let processor else {
+            return
+        }
+        requiredFeatures = allProfiles.reduce(into: [:]) {
+            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
+                return
+            }
+            $0[$1.key] = ineligible
+        }
+        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
 }

@@ -75,7 +75,7 @@ extension ProfileObserver {
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
 //        }
         filteredProfiles.map(\.uiPreview)
-  }
+    }
 
     public func profile(withId profileId: Profile.ID) -> Profile? {
         allProfiles[profileId]
@@ -91,19 +91,6 @@ extension ProfileObserver {
 //
 //    public func search(byName name: String) {
 //        searchSubject.send(name)
-//    }
-
-//    public func reloadRequiredFeatures() {
-//        guard let processor else {
-//            return [:]
-//        }
-//        return allProfiles.reduce(into: [:]) {
-//            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
-//                return
-//            }
-//            $0[$1.key] = ineligible
-//        }
-//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
 //    }
 }
 
