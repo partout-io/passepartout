@@ -151,16 +151,16 @@ private extension ProfileObserver {
     func reloadHeaders(with search: String) {
         headers = localProfiles
             .values
+            .map {
+                $0.uiHeader(sharingFlags: sharingFlags(for: $0.id))
+            }
             .filter {
                 if !search.isEmpty {
                     return $0.name.lowercased().contains(search.lowercased())
                 }
                 return true
             }
-            .sorted(by: Profile.sorting)
-            .map {
-                $0.uiHeader(sharingFlags: sharingFlags(for: $0.id))
-            }
+            .sorted()
             // FIXME: ###, localized module types
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
 

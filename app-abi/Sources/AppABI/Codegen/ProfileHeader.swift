@@ -25,7 +25,7 @@ extension UI {
         }
 
         public static func < (lhs: Self, rhs: Self) -> Bool {
-            lhs.name < rhs.name
+            lhs.name.lowercased() < rhs.name.lowercased()
         }
     }
 }
