@@ -7,7 +7,7 @@ import AppABI_C
 import Observation
 
 @MainActor @Observable
-final class ProfileObserver: ABIObserver {
+final class ProfileObserver {
     private(set) var headers: [UI.ProfileHeader]
 
     init() {
@@ -19,6 +19,48 @@ final class ProfileObserver: ABIObserver {
         headers = abi.profileGetHeaders()
     }
 
+    // MARK: - Actions
+
+    //    public func search(byName name: String)
+    //    public func reloadRequiredFeatures()
+    //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
+    //    public func remove(withId profileId: Profile.ID) async
+    //    public func remove(withIds profileIds: [Profile.ID]) async
+    //    public func eraseRemotelySharedProfiles() async throws
+    //    public func firstUniqueName(from name: String) -> String
+    //    public func duplicate(profileWithId profileId: Profile.ID) async throws
+    //    public func resaveAllProfiles() async
+    //    public func observeLocal() async throws
+    //    public func observeRemote(repository: ProfileRepository) async throws
+
+    // MARK: - State
+
+    //    private var allProfiles: [Profile.ID: Profile]
+    //    private var allRemoteProfiles: [Profile.ID: Profile]
+    //    private var filteredProfiles: [Profile]
+    //    public let didChange: PassthroughSubject<Event, Never>
+    //    @Published private var requiredFeatures: [Profile.ID: Set<AppFeature>]
+    //    @Published public var isRemoteImportingEnabled = false
+    //
+    //    public var isReady: Bool
+    //    public var hasProfiles: Bool
+    //    public var previews: [ProfilePreview]
+    //    public func profile(withId profileId: Profile.ID) -> Profile?
+    //    public var isSearching: Bool
+    //    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>?
+    //    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool
+    //    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
+}
+
+extension ProfileObserver: ABIObserver {
+    func onUpdate(_ event: psp_event) {
+        print("onUpdate() called")
+        refresh()
+    }
+}
+
+// TODO: ###
+extension ProfileObserver {
     @discardableResult
     func new() async throws -> UI.ProfileHeader {
         try await abi.profileNew()
@@ -27,7 +69,7 @@ final class ProfileObserver: ABIObserver {
     @discardableResult
     func new(fromURL url: String) async throws -> UI.ProfileHeader {
         // FIXME: ###
-//        let text = try String(contentsOf: url)
+        //        let text = try String(contentsOf: url)
         let text = "{\"id\":\"imported-url\",\"name\":\"imported url\"}"
         return try await abi.profileImportText(text)
     }
@@ -38,41 +80,4 @@ final class ProfileObserver: ABIObserver {
         let text = "{\"id\":\"imported-text\",\"name\":\"imported text\"}"
         return try await abi.profileImportText(text)
     }
-
-    func onUpdate(_ event: psp_event) {
-        print("onUpdate() called")
-        refresh()
-    }
-
-    // MARK: - Actions
-
-//    public func search(byName name: String)
-//    public func reloadRequiredFeatures()
-//    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-//    public func remove(withId profileId: Profile.ID) async
-//    public func remove(withIds profileIds: [Profile.ID]) async
-//    public func eraseRemotelySharedProfiles() async throws
-//    public func firstUniqueName(from name: String) -> String
-//    public func duplicate(profileWithId profileId: Profile.ID) async throws
-//    public func resaveAllProfiles() async
-//    public func observeLocal() async throws
-//    public func observeRemote(repository: ProfileRepository) async throws
-
-    // MARK: - State
-
-//    private var allProfiles: [Profile.ID: Profile]
-//    private var allRemoteProfiles: [Profile.ID: Profile]
-//    private var filteredProfiles: [Profile]
-//    public let didChange: PassthroughSubject<Event, Never>
-//    @Published private var requiredFeatures: [Profile.ID: Set<AppFeature>]
-//    @Published public var isRemoteImportingEnabled = false
-//
-//    public var isReady: Bool
-//    public var hasProfiles: Bool
-//    public var previews: [ProfilePreview]
-//    public func profile(withId profileId: Profile.ID) -> Profile?
-//    public var isSearching: Bool
-//    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>?
-//    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool
-//    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool
 }
