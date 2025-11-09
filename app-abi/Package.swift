@@ -14,10 +14,7 @@ let package = Package(
     products: [
         .library(
             name: "AppABI",
-            targets: [
-                "AppABI",
-                "AppABIUI"
-            ]
+            targets: ["AppABI"],
         ),
         .library(
             name: "CommonLibrary",
@@ -40,7 +37,7 @@ let package = Package(
             ],
             exclude: ["Default/DefaultABI.swift"]
         ),
-        .target(
+        .executableTarget(
             name: "AppABIUI",
             dependencies: ["AppABI"]
         ),

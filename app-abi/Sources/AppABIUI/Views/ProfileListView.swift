@@ -4,6 +4,24 @@
 
 import SwiftUI
 
+@main
+struct ABIApp: App {
+    init() {
+        // Make this a GUI process instead of CLI:
+        NSApplication.shared.setActivationPolicy(.regular)
+
+        // Bring window to front
+        NSApplication.shared.activate(ignoringOtherApps: true)
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ProfileListView()
+                .forPreviews()
+        }
+    }
+}
+
 struct ProfileListView: View {
     @Environment(ProfileObserver.self)
     private var profileObserver
