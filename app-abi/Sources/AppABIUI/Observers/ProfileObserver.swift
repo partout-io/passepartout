@@ -41,22 +41,18 @@ public final class ProfileObserver {
 // MARK: - Actions
 
 extension ProfileObserver {
-    // To avoid dup/expensive tracking of localProfiles
-    //    public func profile(withId profileId: Profile.ID) async -> Profile? {
-    //        await profileManager.profile(withId: profileId)
-    //    }
-
-    //    public func search(byName name: String)
-    //    public func reloadRequiredFeatures()
-    //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-    //    public func remove(withId profileId: Profile.ID) async
-    //    public func remove(withIds profileIds: [Profile.ID]) async
-    //    public func eraseRemotelySharedProfiles() async throws
-    //    public func firstUniqueName(from name: String) -> String
-    //    public func duplicate(profileWithId profileId: Profile.ID) async throws
-    //    public func resaveAllProfiles() async
-    //    public func observeLocal() async throws
-    //    public func observeRemote(repository: ProfileRepository) async throws
+//    // To avoid dup/expensive tracking of localProfiles
+//    public func profile(withId profileId: Profile.ID) async -> Profile? {
+//        await profileManager.profile(withId: profileId)
+//    }
+//
+//    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
+//    public func remove(withId profileId: Profile.ID) async
+//    public func remove(withIds profileIds: [Profile.ID]) async
+//    public func eraseRemotelySharedProfiles() async throws
+//    public func resaveAllProfiles() async
+//    public func observeLocal() async throws
+//    public func observeRemote(repository: ProfileRepository) async throws
 
     public func search(byName name: String) {
         searchSubject.send(name)
