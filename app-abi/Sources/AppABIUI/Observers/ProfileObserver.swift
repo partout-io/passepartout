@@ -11,8 +11,8 @@ import Observation
 public final class ProfileObserver {
     // FIXME: ###, use UI.*
     public private(set) var headers: [UI.ProfileHeader]
-    private var allProfiles: [Profile.ID: Profile]
-    private var allRemoteProfiles: [Profile.ID: Profile]
+    private var localProfiles: [Profile.ID: Profile]
+    private var remoteProfileIds: Set<Profile.ID>
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 
     public private(set) var isReady: Bool
@@ -23,8 +23,8 @@ public final class ProfileObserver {
 
     public init() {
         headers = []
-        allProfiles = [:]
-        allRemoteProfiles = [:]
+        localProfiles = [:]
+        remoteProfileIds = []
         requiredFeatures = [:]
         isReady = false
 
@@ -71,7 +71,7 @@ extension ProfileObserver {
     }
 
     public func profile(withId profileId: Profile.ID) -> Profile? {
-        allProfiles[profileId]
+        localProfiles[profileId]
     }
 
     public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
@@ -106,8 +106,14 @@ private extension ProfileObserver {
                 switch event {
                 case .ready:
                     isReady = true
+                case .localProfiles(let profiles):
+                    localProfiles = profiles
+                case .remoteProfiles(let ids):
+                    remoteProfileIds = ids
                 case .filteredPreviews(let previews):
                     headers = previews.map(\.uiHeader)
+                case .requiredFeatures(let features):
+                    requiredFeatures = features
                 default:
                     break
                 }

@@ -16,9 +16,9 @@ public final class ProfileManager: ObservableObject {
         case ready
         case save(Profile, previous: Profile?)
         case remove([Profile.ID])
-        case localProfiles
+        case localProfiles([Profile.ID: Profile])
+        case remoteProfiles(Set<Profile.ID>)
         case filteredPreviews([ProfilePreview])
-        case remoteProfiles
         case requiredFeatures([Profile.ID: Set<AppFeature>])
         case startRemoteImport
         case stopRemoteImport
@@ -36,7 +36,7 @@ public final class ProfileManager: ObservableObject {
 
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.localProfiles)
+            didChange.send(.localProfiles(allProfiles))
 
             reloadFilteredProfiles(with: searchSubject.value)
             reloadRequiredFeatures()
@@ -45,7 +45,7 @@ public final class ProfileManager: ObservableObject {
 
     private var allRemoteProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.remoteProfiles)
+            didChange.send(.remoteProfiles(Set(allRemoteProfiles.keys)))
         }
     }
 
