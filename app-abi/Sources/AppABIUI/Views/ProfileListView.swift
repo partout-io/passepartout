@@ -29,6 +29,9 @@ struct ProfileListView: View {
     @Environment(TunnelObserver.self)
     private var tunnelObserver
 
+    @State
+    private var search = ""
+
     var body: some View {
         List {
             profilesSection
@@ -37,6 +40,10 @@ struct ProfileListView: View {
             newProfileButton
             importURLButton
             importTextButton
+        }
+        .searchable(text: $search)
+        .onChange(of: search) { _, new in
+            profileObserver.search(byName: new)
         }
     }
 }

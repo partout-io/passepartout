@@ -32,6 +32,7 @@ public actor ProfileManager {
 
     // MARK: State
 
+    // FIXME: ###, probably overkill to retain full profiles
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
             didChange.send(.localProfiles(allProfiles))
@@ -39,6 +40,7 @@ public actor ProfileManager {
         }
     }
 
+    // FIXME: ###, probably overkill to retain full profiles
     private var allRemoteProfiles: [Profile.ID: Profile] {
         didSet {
             didChange.send(.remoteProfiles(Set(allRemoteProfiles.keys)))
