@@ -88,7 +88,7 @@ private extension ProfileListView {
         Button("Import text") {
             Task {
                 do {
-                    try await profileObserver.new(fromText: "")
+                    try await profileObserver.new(fromText: "text")
                 } catch {
                     print(error.localizedDescription)
                 }
