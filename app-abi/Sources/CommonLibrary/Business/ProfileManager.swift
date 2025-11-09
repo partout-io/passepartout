@@ -101,14 +101,6 @@ public actor ProfileManager {
 // MARK: - Actions
 
 extension ProfileManager {
-    public var isSearching: Bool {
-        !searchSubject.value.isEmpty
-    }
-
-    public func search(byName name: String) {
-        searchSubject.send(name)
-    }
-
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {
@@ -173,6 +165,14 @@ extension ProfileManager {
         } catch {
             pp_log_g(.App.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }
+    }
+
+    public var isSearching: Bool {
+        !searchSubject.value.isEmpty
+    }
+
+    public func search(byName name: String) {
+        searchSubject.send(name)
     }
 
     public func eraseRemotelySharedProfiles() async throws {
