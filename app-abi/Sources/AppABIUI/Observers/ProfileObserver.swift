@@ -10,12 +10,12 @@ import Observation
 @MainActor @Observable
 public final class ProfileObserver {
     // FIXME: ###, use UI.*
-    public private(set) var headers: [UI.ProfileHeader]
     private var localProfiles: [Profile.ID: Profile] { // FIXME: ###, expensive
         didSet {
             reloadFilteredProfiles(with: searchSubject.value)
         }
     }
+    public private(set) var headers: [UI.ProfileHeader]
     private var remoteProfileIds: Set<Profile.ID>
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
     private let searchSubject: CurrentValueStream<String>
