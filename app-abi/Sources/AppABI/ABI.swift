@@ -8,7 +8,7 @@ import AppABI_C
 public let abi: ABIProtocol = DefaultABI()
 
 @_cdecl("psp_initialize")
-public func _abi_initialize(eventContext: Any?, eventCallback: Any?) {
+public func _abi_initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?) {
     abi.initialize(eventContext: eventContext, eventCallback: eventCallback)
 }
 

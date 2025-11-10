@@ -7,9 +7,9 @@ import CommonLibrary
 
 // FIXME: ###, free psp_json after use
 final class DefaultABI: ABIProtocol {
-    typealias Callback = (Any?, UI.Event) -> Void
+    typealias Callback = (UnsafeRawPointer?, UI.Event) -> Void
 
-    private var eventContext: Any?
+    private var eventContext: UnsafeRawPointer?
     private var eventCallback: Callback?
 
     // FIXME: ###, business objects, this should map most of AppContext
@@ -23,7 +23,12 @@ final class DefaultABI: ABIProtocol {
         profileManager = ProfileManager(profiles: [])
     }
 
-    func initialize(eventContext: Any?, eventCallback: Any?) {
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?) {
+        if let eventCallback {
+            guard eventCallback is Callback else {
+                fatalError("Not a proper Callback type")
+            }
+        }
         self.eventContext = eventContext
         self.eventCallback = eventCallback as? Callback
     }

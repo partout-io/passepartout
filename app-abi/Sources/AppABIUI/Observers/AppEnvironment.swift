@@ -56,7 +56,7 @@ extension View {
 
 private func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: UI.Event) {
     guard let opaqueEnvironment else {
-        fatalError("Missing AppEnvironment. Bad arguments to psp_initialize?")
+        fatalError("Missing AppEnvironment. Bad arguments to abi.initialize?")
     }
     let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
     Task { @MainActor in
