@@ -18,7 +18,11 @@ public final class ProfileObserver {
             reloadHeaders(with: searchSubject.value)
         }
     }
-    private var remoteProfileIds: Set<UI.Identifier>
+    private var remoteProfileIds: Set<UI.Identifier> {
+        didSet {
+            reloadHeaders(with: searchSubject.value)
+        }
+    }
     private var requiredFeatures: [UI.Identifier: Set<UI.AppFeature>]
     public private(set) var headers: [UI.ProfileHeader]
     public private(set) var isReady: Bool
@@ -167,8 +171,6 @@ private extension ProfileObserver {
         headers = localProfiles
             .values
             .map(\.header)
-//                $0.header uiHeader(sharingFlags: sharingFlags(for: $0.header.id))
-//            }
             .filter {
                 if !search.isEmpty {
                     return $0.name.lowercased().contains(search.lowercased())
