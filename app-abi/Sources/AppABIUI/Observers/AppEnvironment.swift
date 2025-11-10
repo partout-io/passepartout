@@ -58,7 +58,8 @@ private func abiCallback(opaqueEnvironment: UnsafeMutableRawPointer?, event: psp
         fatalError("Missing AppEnvironment. Bad arguments to psp_initialize?")
     }
     let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
-    Task { @MainActor in
+//    Task { @MainActor in
+    DispatchQueue.main.sync {
         switch event.area {
         case PSPAreaProfile:
             env.profileObserver.onUpdate(event)

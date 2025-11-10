@@ -5,6 +5,13 @@
 import CommonLibrary
 
 extension Profile {
+    public var uiProfile: UI.Profile {
+        UI.Profile(
+            id: id.uuidString,
+            name: name
+        )
+    }
+
     public func uiHeader(sharingFlags: [UI.ProfileSharingFlag]) -> UI.ProfileHeader {
         UI.ProfileHeader(
             id: id.uuidString,
@@ -19,6 +26,12 @@ extension Profile {
 extension UI.Profile {
     public var partoutProfile: PartoutCore.Profile {
         // FIXME: ###, map for real
-        try! Profile.Builder().build()
+        guard let id = UUID(uuidString: id) else {
+            fatalError()
+        }
+        return try! Profile.Builder(
+            id: id,
+            name: name
+        ).build()
     }
 }

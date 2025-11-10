@@ -45,9 +45,11 @@ final class DefaultABI: ABIProtocol {
                     postArea(PSPAreaProfile, PSPEventTypeProfileReady)
 //                    isReady = true
                 case .localProfiles(let profiles):
-                    let object = ABIResult(profiles.mapValues {
-                        $0.uiHeader(sharingFlags: [])
-                    })
+                    let object = ABIResult(profiles.reduce(into: [:]) {
+                        // FIXME: ###, remote flags?
+//                        $0[$1.key.uuidString] = $1.value.uiHeader(sharingFlags: [])
+                        $0[$1.key.uuidString] = $1.value.uiProfile
+                  })
                     withUnsafePointer(to: object) {
                         self.postArea(PSPAreaProfile, PSPEventTypeProfileLocal, $0)
                     }

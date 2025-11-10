@@ -123,7 +123,7 @@ extension ProfileObserver {
             isReady = true
         case PSPEventTypeProfileLocal:
             localProfiles = result as? [UI.Identifier: UI.Profile] ?? [:]
-        case PSPEventTypeProfileRemote:
+      case PSPEventTypeProfileRemote:
             remoteProfileIds = result as? Set<UI.Identifier> ?? []
         case PSPEventTypeProfileRequiredFeatures:
             requiredFeatures = result as? [UI.Identifier: Set<UI.AppFeature>] ?? [:]
@@ -193,7 +193,7 @@ extension ProfileObserver {
 //        let text = try String(contentsOf: url)
 //        let text = "{\"id\":\"imported-url\",\"name\":\"imported url\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
 //        return try await abi.profileImportText(text)
-        let profile = UI.Profile(name: "new")
+        let profile = UI.Profile(name: url)
         try await abi.profileSave(profile)
         return profile.header
     }
