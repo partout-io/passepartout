@@ -103,7 +103,7 @@ private extension DefaultABI {
         switch event {
         case .ready:
             postEvent(.profiles(.ready))
-        case .profiles(let headers):
+        case .refresh(let headers):
             postEvent(.profiles(.refresh(headers)))
         default:
             break

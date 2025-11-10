@@ -15,7 +15,7 @@ public actor ProfileManager {
         case ready
         case save(Profile, previous: Profile?)
         case remove([UI.Identifier])
-        case profiles([UI.Identifier: UI.ProfileHeader])
+        case refresh([UI.Identifier: UI.ProfileHeader])
         case search(String?)
         case startRemoteImport
         case stopRemoteImport
@@ -34,13 +34,13 @@ public actor ProfileManager {
     // FIXME: ###, probably overkill to retain full profiles
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.profiles(computedProfileHeaders()))
+            didChange.send(.refresh(computedProfileHeaders()))
         }
     }
 
     private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-            didChange.send(.profiles(computedProfileHeaders()))
+            didChange.send(.refresh(computedProfileHeaders()))
         }
     }
 
