@@ -7,7 +7,7 @@ import CommonUI
 // FIXME: ###, use typealias for string IDs like ProfileID
 
 public protocol ABIProtocol {
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?)
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICallback?)
 
     func profileObserve() async throws
     func profileSave(_ profile: UI.Profile) async throws
@@ -21,6 +21,8 @@ public protocol ABIProtocol {
 //    func tunnelGetAll() -> [UI.Identifier: UI.TunnelStatus]
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
 }
+
+public typealias ABICallback = (UnsafeRawPointer?, UI.Event) -> Void
 
 #if canImport(Darwin)
 @MainActor

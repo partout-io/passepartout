@@ -8,8 +8,9 @@ import AppABI_C
 public let abi: ABIProtocol = DefaultABI()
 
 @_cdecl("psp_initialize")
-public func _abi_initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?) {
-    abi.initialize(eventContext: eventContext, eventCallback: eventCallback)
+public func _abi_initialize(eventContext: UnsafeRawPointer?, eventCallback: psp_event_callback?) {
+    // FIXME: ###, map UI.Event to psp_event
+//    abi.initialize(eventContext: eventContext, eventCallback: eventCallback)
 }
 
 // MARK: - Global
