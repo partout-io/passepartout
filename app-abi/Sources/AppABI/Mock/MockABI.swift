@@ -38,6 +38,10 @@ final class MockABI: ABIProtocol {
         profiles
     }
 
+    func profileSave(_ profile: UI.Profile) async throws {
+//        try await profileManager.save(profile.mappedToPartoutProfile)
+    }
+
     func profileNew() async throws -> UI.ProfileHeader {
         let dto = UI.ProfileHeader(id: "lorem-ipsum", name: "lorem ipsum")
         profiles.append(dto)

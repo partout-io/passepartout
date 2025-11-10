@@ -9,6 +9,7 @@ import AppABI_C
 public protocol ABIProtocol {
     func initialize(eventContext: UnsafeMutableRawPointer?, eventCallback: psp_event_callback?)
 
+    func profileSave(_ profile: UI.Profile) async throws
     func profileGetHeaders() -> [UI.ProfileHeader]
     func profileNew() async throws -> UI.ProfileHeader
     func profileImportText(_ text: String) async throws -> UI.ProfileHeader

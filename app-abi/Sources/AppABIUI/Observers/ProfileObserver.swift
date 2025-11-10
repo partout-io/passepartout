@@ -4,38 +4,39 @@
 
 import AppABI
 import AppABI_C
-import CommonLibrary
+import Combine
+import Dispatch
 import Observation
 
 @MainActor @Observable
 public final class ProfileObserver {
-    // FIXME: ###, wrap access to ProfileManager in ABI methods
-    private let profileManager: ProfileManager
+//    private let abi: ABIProtocol
 
-    // FIXME: ###, use UI.*
-    private var localProfiles: [Profile.ID: Profile] { // FIXME: ###, expensive
+    private var localProfiles: [UI.Identifier: UI.Profile] { // FIXME: ###, expensive
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
     }
-    private var remoteProfileIds: Set<Profile.ID>
-    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
-    private let searchSubject: CurrentValueStream<String>
-
+    private var remoteProfileIds: Set<UI.Identifier>
+    private var requiredFeatures: [UI.Identifier: Set<UI.AppFeature>]
     public private(set) var headers: [UI.ProfileHeader]
     public private(set) var isReady: Bool
     public var isRemoteImportingEnabled: Bool
 
-    public init(profileManager: ProfileManager = ProfileManager(profiles: [])) {
-        self.profileManager = profileManager
+    private let searchSubject: CurrentValueSubject<String, Never>
+    private var searchSubscription: AnyCancellable?
+
+    public init() {//abi: ABIProtocol) {
+//        self.abi = abi
 
         localProfiles = [:]
         remoteProfileIds = []
         requiredFeatures = [:]
-        searchSubject = CurrentValueStream("")
         headers = []
         isReady = false
         isRemoteImportingEnabled = false
+
+        searchSubject = CurrentValueSubject("")
 
         observeEvents()
     }
@@ -45,13 +46,13 @@ public final class ProfileObserver {
 
 extension ProfileObserver {
 //    // To avoid dup/expensive tracking of localProfiles
-//    public func profile(withId profileId: Profile.ID) async -> Profile? {
+//    public func profile(withId profileId: UI.Identifier) async -> Profile? {
 //        await profileManager.profile(withId: profileId)
 //    }
 //
 //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-//    public func remove(withId profileId: Profile.ID) async
-//    public func remove(withIds profileIds: [Profile.ID]) async
+//    public func remove(withId profileId: UI.Identifier) async
+//    public func remove(withIds profileIds: [UI.Identifier]) async
 //    public func eraseRemotelySharedProfiles() async throws
 //    public func resaveAllProfiles() async
 //    public func observeLocal() async throws
@@ -61,16 +62,14 @@ extension ProfileObserver {
         searchSubject.send(name)
     }
 
-    public func duplicate(profileWithId profileId: Profile.ID) async throws {
-        guard let profile = localProfiles[profileId] else {
+    public func duplicate(profileWithId profileId: UI.Identifier) async throws {
+        guard var profile = localProfiles[profileId] else {
             return
         }
-        var builder = profile.builder(withNewId: true)
-        builder.name = firstUniqueName(from: profile.name)
-        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
-        let copy = try builder.build()
-
-        try await profileManager.save(copy)
+        profile.renewId()
+        profile.name = firstUniqueName(from: profile.name)
+//        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
+        try await abi.profileSave(profile)
     }
 }
 
@@ -81,11 +80,11 @@ extension ProfileObserver {
         !headers.isEmpty
     }
 
-    public func profile(withId profileId: Profile.ID) -> Profile? {
+    public func profile(withId profileId: UI.Identifier) -> UI.Profile? {
         localProfiles[profileId]
     }
 
-    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
+    public func requiredFeatures(forProfileWithId profileId: UI.Identifier) -> Set<UI.AppFeature>? {
         requiredFeatures[profileId]
     }
 
@@ -93,13 +92,14 @@ extension ProfileObserver {
         !searchSubject.value.isEmpty
     }
 
-    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
+    public func isRemotelyShared(profileWithId profileId: UI.Identifier) -> Bool {
         remoteProfileIds.contains(profileId)
     }
 
-    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
-        profile(withId: profileId)?.attributes.isAvailableForTV == true
-    }
+    public func isAvailableForTV(profileWithId profileId: UI.Identifier) -> Bool {
+//        profile(withId: profileId)?.attributes.isAvailableForTV == true
+        profile(withId: profileId)?.sharingFlags.contains(.tv) == true
+  }
 
     public func firstUniqueName(from name: String) -> String {
         let allNames = Set(localProfiles.values.map(\.name))
@@ -121,44 +121,43 @@ extension ProfileObserver {
 }
 
 private extension ProfileObserver {
-    func observeEvents() {
+    func observeEvents(debounce: Int = 200) {
+        searchSubscription = searchSubject
+            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.reloadHeaders(with: $0)
+            }
         Task { [weak self] in
             guard let self else { return }
-            for await event in profileManager.didChange.subscribe() {
-                guard !Task.isCancelled else { return }
-                switch event {
-                case .ready:
-                    isReady = true
-                case .localProfiles(let profiles):
-                    localProfiles = profiles
-                case .remoteProfiles(let ids):
-                    remoteProfileIds = ids
-                case .requiredFeatures(let features):
-                    requiredFeatures = features
-                default:
-                    break
-                }
-            }
-        }
-        Task { [weak self] in
-            guard let self else { return }
-            // FIXME: ###, debounce
-            for await term in searchSubject.subscribe() {
-                guard !Task.isCancelled else { return }
-                reloadHeaders(with: term)
-            }
+            // FIXME: ###: observe via ABI onUpdate
+//            for await event in profileManager.didChange.subscribe() {
+//              guard !Task.isCancelled else { return }
+//                switch event {
+//                case .ready:
+//                    isReady = true
+//                case .localProfiles(let profiles):
+//                    localProfiles = profiles
+//                case .remoteProfiles(let ids):
+//                    remoteProfileIds = ids
+//                case .requiredFeatures(let features):
+//                    requiredFeatures = features
+//                default:
+//                    break
+//                }
+//            }
         }
         Task {
-            try await profileManager.observeLocal()
+            // FIXME: ###: observe via ABI
+//            try await profileManager.observeLocal()
         }
     }
 
     func reloadHeaders(with search: String) {
         headers = localProfiles
             .values
-            .map {
-                $0.uiHeader(sharingFlags: sharingFlags(for: $0.id))
-            }
+            .map(\.header)
+//                $0.header uiHeader(sharingFlags: sharingFlags(for: $0.header.id))
+//            }
             .filter {
                 if !search.isEmpty {
                     return $0.name.lowercased().contains(search.lowercased())
@@ -172,7 +171,7 @@ private extension ProfileObserver {
 //        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
 
-    func sharingFlags(for profileId: Profile.ID) -> [UI.ProfileSharingFlag] {
+    func sharingFlags(for profileId: UI.Identifier) -> [UI.ProfileSharingFlag] {
         if isRemotelyShared(profileWithId: profileId) {
             if isAvailableForTV(profileWithId: profileId) {
                 return [.tv]
@@ -190,9 +189,9 @@ extension ProfileObserver {
     @discardableResult
     func new() async throws -> UI.ProfileHeader {
 //        try await abi.profileNew()
-        let profile = try Profile.Builder(name: "new").build()
-        try await profileManager.save(profile)
-        return profile.uiHeader(sharingFlags: sharingFlags(for: profile.id))
+        let profile = UI.Profile(name: "new")
+        try await abi.profileSave(profile)
+        return profile.header
     }
 
     @discardableResult
@@ -201,9 +200,9 @@ extension ProfileObserver {
 //        let text = try String(contentsOf: url)
 //        let text = "{\"id\":\"imported-url\",\"name\":\"imported url\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
 //        return try await abi.profileImportText(text)
-        let profile = try Profile.Builder(name: url).build()
-        try await profileManager.save(profile)
-        return profile.uiHeader(sharingFlags: sharingFlags(for: profile.id))
+        let profile = UI.Profile(name: "new")
+        try await abi.profileSave(profile)
+        return profile.header
     }
 
     @discardableResult
@@ -211,8 +210,8 @@ extension ProfileObserver {
         // FIXME: ###
 //        let text = "{\"id\":\"imported-text\",\"name\":\"imported text\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
 //        return try await abi.profileImportText(text)
-        let profile = try Profile.Builder(name: text).build()
-        try await profileManager.save(profile)
-        return profile.uiHeader(sharingFlags: sharingFlags(for: profile.id))
+        let profile = UI.Profile(name: text)
+        try await abi.profileSave(profile)
+        return profile.header
     }
 }
