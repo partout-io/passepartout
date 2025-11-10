@@ -19,7 +19,7 @@ public final class ProfileObserver {
             reloadHeaders(with: searchSubject.value)
         }
     }
-    private var remoteProfileIds: Set<UI.Identifier> {
+    private var sharingFlags: [UI.Identifier: [UI.ProfileSharingFlag]] {
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
@@ -36,7 +36,7 @@ public final class ProfileObserver {
 //        self.abi = abi
 
         localProfiles = [:]
-        remoteProfileIds = []
+        sharingFlags = [:]
         requiredFeatures = [:]
         headers = []
         isReady = false
@@ -139,8 +139,8 @@ extension ProfileObserver: ABIObserver {
             isReady = true
         case .local(let profiles):
             localProfiles = profiles
-        case .remote(let ids):
-            remoteProfileIds = ids
+        case .remote(let flags):
+            sharingFlags = flags
         case .requiredFeatures(let features):
             requiredFeatures = features
         }

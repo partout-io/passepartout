@@ -12,7 +12,7 @@ extension UI {
     public enum ProfileEvent {
         case ready
         case local([Identifier: Profile])
-        case remote(Set<Identifier>)
+        case remote([Identifier: [ProfileSharingFlag]])
         case requiredFeatures([Identifier: Set<AppFeature>])
     }
 }

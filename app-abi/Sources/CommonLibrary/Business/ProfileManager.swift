@@ -16,7 +16,7 @@ public actor ProfileManager {
         case save(Profile, previous: Profile?)
         case remove([Profile.ID])
         case localProfiles([Profile.ID: Profile])
-        case remoteProfiles(Set<Profile.ID>)
+        case remoteProfiles([Profile.ID: [UI.ProfileSharingFlag]])
         case requiredFeatures([Profile.ID: Set<UI.AppFeature>])
         case search(String?)
         case startRemoteImport
@@ -41,10 +41,9 @@ public actor ProfileManager {
         }
     }
 
-    // FIXME: ###, probably overkill to retain full profiles
-    private var remoteProfileIds: Set<Profile.ID> {
+    private var allSharingFlags: [Profile.ID: [UI.ProfileSharingFlag]] {
         didSet {
-            didChange.send(.remoteProfiles(remoteProfileIds))
+            didChange.send(.remoteProfiles(allSharingFlags))
         }
     }
 
@@ -83,7 +82,7 @@ public actor ProfileManager {
         self.mirrorsRemoteRepository = mirrorsRemoteRepository
 
         allProfiles = [:]
-        remoteProfileIds = []
+        allSharingFlags = [:]
         if readyAfterRemote {
             waitingObservers = [.local, .remote]
         } else {
@@ -130,7 +129,7 @@ extension ProfileManager {
             throw error
         }
         if let remoteRepository {
-            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && remoteProfileIds.contains(profile.id))
+            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && allSharingFlags.keys.contains(profile.id))
             let disableSharing = remotelyShared == false
             do {
                 if enableSharing {
@@ -249,7 +248,9 @@ private extension ProfileManager {
     func reloadRemoteProfiles(_ result: [Profile]) {
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
-        remoteProfileIds = Set(result.map(\.id))
+        allSharingFlags = result.reduce(into: [:]) {
+            $0[$1.id] = sharingFlags(for: $1.id)
+        }
         if waitingObservers.contains(.remote) {
             waitingObservers.remove(.remote)
         }
@@ -283,7 +284,7 @@ private extension ProfileManager {
             pp_log_g(.App.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
 
-        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(remoteProfileIds)
+        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(allSharingFlags.keys)
         let mirrorsRemoteRepository = mirrorsRemoteRepository
 
         remoteImportTask = Task.detached { [weak self] in
@@ -340,7 +341,7 @@ private extension ProfileManager {
     }
 
     func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
-        remoteProfileIds.contains(profileId)
+        allSharingFlags[profileId]?.isEmpty == false
     }
 
     func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
