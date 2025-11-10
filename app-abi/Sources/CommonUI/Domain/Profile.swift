@@ -31,7 +31,7 @@ extension UI {
         }
     }
 
-    public struct Profile {
+    public struct Profile: Identifiable, Hashable, Sendable, DTO {
         public private(set) var id: Identifier
         public var name: String
         public let fingerprint: String

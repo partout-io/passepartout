@@ -14,10 +14,9 @@ public actor ProfileManager {
     public enum Event: Equatable {
         case ready
         case save(Profile, previous: Profile?)
-        case remove([Profile.ID])
-        case localProfiles([Profile.ID: Profile])
-        case remoteProfiles([Profile.ID: [UI.ProfileSharingFlag]])
-        case requiredFeatures([Profile.ID: Set<UI.AppFeature>])
+        case remove([UI.Identifier])
+        case profiles([UI.Identifier: UI.Profile])
+        case requiredFeatures([UI.Identifier: Set<UI.AppFeature>])
         case search(String?)
         case startRemoteImport
         case stopRemoteImport
@@ -36,14 +35,20 @@ public actor ProfileManager {
     // FIXME: ###, probably overkill to retain full profiles
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.localProfiles(allProfiles))
+            let computed = allProfiles.reduce(into: [:]) {
+                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: sharingFlags(for: $1.key))
+            }
+            didChange.send(.profiles(computed))
             reloadRequiredFeatures()
         }
     }
 
-    private var allSharingFlags: [Profile.ID: [UI.ProfileSharingFlag]] {
+    private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-            didChange.send(.remoteProfiles(allSharingFlags))
+            let computed = allProfiles.reduce(into: [:]) {
+                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: sharingFlags(for: $1.key))
+            }
+            didChange.send(.profiles(computed))
         }
     }
 
@@ -82,7 +87,7 @@ public actor ProfileManager {
         self.mirrorsRemoteRepository = mirrorsRemoteRepository
 
         allProfiles = [:]
-        allSharingFlags = [:]
+        remoteProfilesIds = []
         if readyAfterRemote {
             waitingObservers = [.local, .remote]
         } else {
@@ -129,7 +134,7 @@ extension ProfileManager {
             throw error
         }
         if let remoteRepository {
-            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && allSharingFlags.keys.contains(profile.id))
+            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && remoteProfilesIds.contains(profile.id))
             let disableSharing = remotelyShared == false
             do {
                 if enableSharing {
@@ -156,7 +161,7 @@ extension ProfileManager {
         do {
             try await repository.removeProfiles(withIds: profileIds)
             try? await remoteRepository?.removeProfiles(withIds: profileIds)
-            didChange.send(.remove(profileIds))
+            didChange.send(.remove(profileIds.map(\.uuidString)))
         } catch {
             pp_log_g(.App.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }
@@ -248,9 +253,7 @@ private extension ProfileManager {
     func reloadRemoteProfiles(_ result: [Profile]) {
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
-        allSharingFlags = result.reduce(into: [:]) {
-            $0[$1.id] = sharingFlags(for: $1.id)
-        }
+        remoteProfilesIds = Set(result.map(\.id))
         if waitingObservers.contains(.remote) {
             waitingObservers.remove(.remote)
         }
@@ -284,7 +287,7 @@ private extension ProfileManager {
             pp_log_g(.App.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
 
-        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(allSharingFlags.keys)
+        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(remoteProfilesIds)
         let mirrorsRemoteRepository = mirrorsRemoteRepository
 
         remoteImportTask = Task.detached { [weak self] in
@@ -341,7 +344,7 @@ private extension ProfileManager {
     }
 
     func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
-        allSharingFlags[profileId]?.isEmpty == false
+        remoteProfilesIds.contains(profileId)
     }
 
     func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
@@ -369,7 +372,9 @@ private extension ProfileManager {
             }
             $0[$1.key] = ineligible
         }
-        didChange.send(.requiredFeatures(requiredFeatures))
+        didChange.send(.requiredFeatures(requiredFeatures.reduce(into: [:]) {
+            $0[$1.key.uuidString] = $1.value
+        }))
         pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
 }

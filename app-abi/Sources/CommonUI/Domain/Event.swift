@@ -11,8 +11,7 @@ extension UI {
 
     public enum ProfileEvent {
         case ready
-        case local([Identifier: Profile])
-        case remote([Identifier: [ProfileSharingFlag]])
+        case refresh([Identifier: Profile])
         case requiredFeatures([Identifier: Set<AppFeature>])
     }
 }

@@ -97,23 +97,10 @@ private extension DefaultABI {
         switch event {
         case .ready:
             postEvent(.profiles(.ready))
-        case .localProfiles(let profiles):
-            let object = profiles.reduce(into: [:]) {
-                // FIXME: ###, attach sharingFlags from ProfileManager?
-                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: [])
-//                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: <#T##[UI.ProfileSharingFlag]#>)
-          }
-            postEvent(.profiles(.local(object)))
-        case .remoteProfiles(let ids):
-            let object = Set(ids.map(\.uuidString))
-            postEvent(.profiles(.remote(object)))
+        case .profiles(let profiles):
+            postEvent(.profiles(.refresh(profiles)))
         case .requiredFeatures(let features):
-            let object = features.reduce(into: [:]) {
-                $0[$1.key.uuidString] = Set($1.value.map {
-                    UI.AppFeature.init(rawValue: $0.rawValue)! // FIXME: ###, dedup AppFeature struct
-                })
-            }
-            postEvent(.profiles(.requiredFeatures(object)))
+            postEvent(.profiles(.requiredFeatures(features)))
         default:
             break
         }

@@ -14,12 +14,7 @@ import Observation
 public final class ProfileObserver {
 //    private let abi: ABIProtocol
 
-    private var localProfiles: [UI.Identifier: UI.Profile] { // FIXME: ###, expensive
-        didSet {
-            reloadHeaders(with: searchSubject.value)
-        }
-    }
-    private var sharingFlags: [UI.Identifier: [UI.ProfileSharingFlag]] {
+    private var localProfiles: [UI.Identifier: UI.Profile] {
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
@@ -36,7 +31,6 @@ public final class ProfileObserver {
 //        self.abi = abi
 
         localProfiles = [:]
-        sharingFlags = [:]
         requiredFeatures = [:]
         headers = []
         isReady = false
@@ -137,10 +131,8 @@ extension ProfileObserver: ABIObserver {
         switch profileEvent {
         case .ready:
             isReady = true
-        case .local(let profiles):
+        case .refresh(let profiles):
             localProfiles = profiles
-        case .remote(let flags):
-            sharingFlags = flags
         case .requiredFeatures(let features):
             requiredFeatures = features
         }
