@@ -16,7 +16,7 @@ final class TunnelObserver: ABIObserver {
     }
 
     func refresh() {
-        statuses = abi.tunnelGetAll()
+//        statuses = abi.tunnelGetAll()
     }
 
     func status(for profileId: UI.Identifier) -> UI.TunnelStatus {
@@ -24,7 +24,7 @@ final class TunnelObserver: ABIObserver {
     }
 
     func setEnabled(_ enabled: Bool, profileId: UI.Identifier) {
-        abi.tunnelSetEnabled(enabled, profileId: profileId)
+//        abi.tunnelSetEnabled(enabled, profileId: profileId)
     }
 
     func onUpdate(_ event: psp_event) {

@@ -8,13 +8,20 @@ import CommonUtils
 import SwiftUI
 
 extension AppEnvironment {
-    static let forPreviews = AppEnvironment(
-        configObserver: ConfigObserver(),
-        iapObserver: IAPObserver(),
-        preferencesObserver: PreferencesObserver(),
-        profileObserver: ProfileObserver(),
-        tunnelObserver: TunnelObserver()
-    )
+    static let forPreviews: AppEnvironment = {
+        let configObserver = ConfigObserver()
+        let iapObserver = IAPObserver()
+        let preferencesObserver = PreferencesObserver()
+        let profileObserver = ProfileObserver()
+        let tunnelObserver = TunnelObserver()
+        return AppEnvironment(
+            configObserver: configObserver,
+            iapObserver: iapObserver,
+            preferencesObserver: preferencesObserver,
+            profileObserver: profileObserver,
+            tunnelObserver: tunnelObserver
+        )
+    }()
 }
 
 extension ConfigObserver {

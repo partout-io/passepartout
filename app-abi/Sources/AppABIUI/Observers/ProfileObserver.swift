@@ -149,6 +149,7 @@ private extension ProfileObserver {
         Task {
             // FIXME: ###: observe via ABI
 //            try await profileManager.observeLocal()
+//            try await abi.profileObserveLocal()
         }
     }
 

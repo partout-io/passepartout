@@ -15,3 +15,10 @@ extension Profile {
         )
     }
 }
+
+extension UI.Profile {
+    public var partoutProfile: PartoutCore.Profile {
+        // FIXME: ###, map for real
+        try! Profile.Builder().build()
+    }
+}

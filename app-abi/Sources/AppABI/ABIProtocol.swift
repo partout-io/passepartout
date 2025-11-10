@@ -10,15 +10,16 @@ public protocol ABIProtocol {
     func initialize(eventContext: UnsafeMutableRawPointer?, eventCallback: psp_event_callback?)
 
     func profileSave(_ profile: UI.Profile) async throws
-    func profileGetHeaders() -> [UI.ProfileHeader]
-    func profileNew() async throws -> UI.ProfileHeader
-    func profileImportText(_ text: String) async throws -> UI.ProfileHeader
-    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader
-    func profileDup(_ id: UI.Identifier) async throws -> UI.ProfileHeader
-    func profileDelete(_ id: UI.Identifier) async throws
-
-    func tunnelGetAll() -> [UI.Identifier: UI.TunnelStatus]
-    func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
+//    func profileNew() async throws -> UI.ProfileHeader
+//    func profileImportText(_ text: String) async throws -> UI.ProfileHeader
+//    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader
+//    func profileDup(_ id: UI.Identifier) async throws -> UI.ProfileHeader
+//    func profileDelete(_ id: UI.Identifier) async throws
+//    func profileSave(_ json: String) async throws
+//    func profileObserveLocal()
+//
+//    func tunnelGetAll() -> [UI.Identifier: UI.TunnelStatus]
+//    func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
 }
 
 @MainActor
