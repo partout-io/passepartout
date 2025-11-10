@@ -26,7 +26,7 @@ public func _abi_last_error() -> psp_json? {
     nil
 }
 
-#if ABI_C
+#if USE_C_ABI
 
 @_cdecl("psp_initialize")
 public func _abi_initialize(eventContext: UnsafeRawPointer?, eventCallback: psp_event_callback?) {

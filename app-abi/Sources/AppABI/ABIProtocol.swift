@@ -8,7 +8,7 @@ import CommonUI
 // FIXME: ###, use typealias for string IDs like ProfileID
 
 public protocol ABIProtocol {
-#if !ABI_C
+#if !USE_C_ABI
     func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICallback?)
 #else
     func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICCallback?)
@@ -30,7 +30,7 @@ public protocol ABIProtocol {
 public typealias ABICallback = (UnsafeRawPointer?, UI.Event) -> Void
 public typealias ABICCallback = (UnsafeRawPointer?, psp_event) -> Void
 
-#if !ABI_C
+#if !USE_C_ABI
 @MainActor
 public protocol ABIObserver {
     func onUpdate(_ event: UI.Event)

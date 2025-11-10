@@ -7,7 +7,7 @@ import CommonLibrary
 
 // FIXME: ###, free psp_json after use
 final class DefaultABI: ABIProtocol {
-#if !ABI_C
+#if !USE_C_ABI
     typealias Callback = ABICallback
 #else
     typealias Callback = ABICCallback
@@ -110,7 +110,7 @@ private extension DefaultABI {
     }
 
     func postEvent(_ event: UI.Event) {
-#if !ABI_C
+#if !USE_C_ABI
         eventCallback?(eventContext, event)
 #else
         eventCallback?(eventContext, event.pspEvent)
