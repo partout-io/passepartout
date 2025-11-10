@@ -17,7 +17,6 @@ extension UI {
         public let fingerprint: String
         public let sharingFlags: [ProfileSharingFlag]
         public let requiredFeatures: Set<AppFeature>
-        // flags: icloud, tv
 
         public init(id: Identifier, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag], requiredFeatures: Set<AppFeature>) {
             self.id = id

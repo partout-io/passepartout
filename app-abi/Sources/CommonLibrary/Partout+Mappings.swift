@@ -30,7 +30,7 @@ extension Profile {
 }
 
 extension UI.Profile {
-    public var partoutProfile: PartoutCore.Profile {
+    public var partoutProfile: Profile {
         // FIXME: ###, map for real
         guard let id = UUID(uuidString: id) else {
             fatalError()
