@@ -69,10 +69,7 @@ let package = Package(
         ),
         .target(
             name: "CommonUI",
-            dependencies: [
-                "AppABI_C",
-                "CommonUtils"
-            ]
+            dependencies: ["AppABI_C"]
         ),
         .target(
             name: "CommonUtils"
