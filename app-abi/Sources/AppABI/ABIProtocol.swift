@@ -7,7 +7,7 @@ import AppABI_C
 // FIXME: ###, use typealias for string IDs like ProfileID
 
 public protocol ABIProtocol {
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?)
+    func initialize(eventContext: Any?, eventCallback: Any?)
 
     func profileSave(_ profile: UI.Profile) async throws
 //    func profileNew() async throws -> UI.ProfileHeader
