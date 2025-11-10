@@ -14,6 +14,8 @@ final class DefaultABI: ABIProtocol {
     private let registry: Registry
     private let profileManager: ProfileManager
 
+    private var profileEventTask: Task<Void, Never>?
+
     init() {
         registry = Registry()
         profileManager = ProfileManager(profiles: [])
@@ -29,6 +31,44 @@ final class DefaultABI: ABIProtocol {
     func profileSave(_ profile: UI.Profile) async throws {
         try await profileManager.save(profile.partoutProfile)
         postArea(PSPAreaProfile)
+    }
+
+    func profileObserveLocal() async throws {
+        try await profileManager.observeLocal()
+
+        profileEventTask = Task { [weak self] in
+            guard let self else { return }
+            for await event in profileManager.didChange.subscribe() {
+              guard !Task.isCancelled else { return }
+                switch event {
+                case .ready:
+                    postArea(PSPAreaProfile, PSPEventTypeProfileReady)
+//                    isReady = true
+                case .localProfiles(let profiles):
+                    let object = ABIResult(profiles.mapValues {
+                        $0.uiHeader(sharingFlags: [])
+                    })
+                    withUnsafePointer(to: object) {
+                        self.postArea(PSPAreaProfile, PSPEventTypeProfileLocal, $0)
+                    }
+//                    localProfiles = profiles
+                case .remoteProfiles(let ids):
+                    let object = ABIResult(ids.map(\.uuidString))
+                    withUnsafePointer(to: object) {
+                        self.postArea(PSPAreaProfile, PSPEventTypeProfileRemote, $0)
+                    }
+//                    remoteProfileIds = ids
+                case .requiredFeatures(let features):
+                    let object = ABIResult(features)
+                    withUnsafePointer(to: object) {
+                        self.postArea(PSPAreaProfile, PSPEventTypeProfileRequiredFeatures, $0)
+                    }
+//                    requiredFeatures = features
+                default:
+                    break
+                }
+            }
+        }
     }
 
 //    // FIXME: ###, name from args, or from internal constants?
@@ -80,7 +120,11 @@ final class DefaultABI: ABIProtocol {
 }
 
 private extension DefaultABI {
-    func postArea(_ area: psp_area) {
-        eventCallback?(eventContext, psp_event(area: area))
+    func postArea(
+        _ area: psp_area,
+        _ type: psp_event_type = PSPEventTypeNone,
+        _ object: UnsafeRawPointer? = nil
+    ) {
+        eventCallback?(eventContext, psp_event(area: area, type: type, object: object))
     }
 }

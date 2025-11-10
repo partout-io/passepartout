@@ -16,7 +16,7 @@ public protocol ABIProtocol {
 //    func profileDup(_ id: UI.Identifier) async throws -> UI.ProfileHeader
 //    func profileDelete(_ id: UI.Identifier) async throws
 //    func profileSave(_ json: String) async throws
-//    func profileObserveLocal()
+    func profileObserveLocal() async throws
 //
 //    func tunnelGetAll() -> [UI.Identifier: UI.TunnelStatus]
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
@@ -25,4 +25,12 @@ public protocol ABIProtocol {
 @MainActor
 public protocol ABIObserver {
     func onUpdate(_ event: psp_event)
+}
+
+public final class ABIResult {
+    public let value: Any
+
+    init(_ value: Any) {
+        self.value = value
+    }
 }

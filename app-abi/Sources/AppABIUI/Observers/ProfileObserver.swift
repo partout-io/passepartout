@@ -115,8 +115,21 @@ extension ProfileObserver {
     }
 
     public func onUpdate(_ event: psp_event) {
-        print("onUpdate() called")
-        // FIXME: ###, this will replace didChange.subscribe() after using ABI rather than ProfileManager
+        guard event.area == PSPAreaProfile else { return }
+        print("ProfileObserver.onUpdate()")
+        let result = event.object?.assumingMemoryBound(to: ABIResult.self).pointee.value
+        switch event.type {
+        case PSPEventTypeProfileReady:
+            isReady = true
+        case PSPEventTypeProfileLocal:
+            localProfiles = result as? [UI.Identifier: UI.Profile] ?? [:]
+        case PSPEventTypeProfileRemote:
+            remoteProfileIds = result as? Set<UI.Identifier> ?? []
+        case PSPEventTypeProfileRequiredFeatures:
+            requiredFeatures = result as? [UI.Identifier: Set<UI.AppFeature>] ?? [:]
+        default:
+            break
+        }
     }
 }
 
@@ -127,29 +140,8 @@ private extension ProfileObserver {
             .sink { [weak self] in
                 self?.reloadHeaders(with: $0)
             }
-        Task { [weak self] in
-            guard let self else { return }
-            // FIXME: ###: observe via ABI onUpdate
-//            for await event in profileManager.didChange.subscribe() {
-//              guard !Task.isCancelled else { return }
-//                switch event {
-//                case .ready:
-//                    isReady = true
-//                case .localProfiles(let profiles):
-//                    localProfiles = profiles
-//                case .remoteProfiles(let ids):
-//                    remoteProfileIds = ids
-//                case .requiredFeatures(let features):
-//                    requiredFeatures = features
-//                default:
-//                    break
-//                }
-//            }
-        }
         Task {
-            // FIXME: ###: observe via ABI
-//            try await profileManager.observeLocal()
-//            try await abi.profileObserveLocal()
+            try await abi.profileObserveLocal()
         }
     }
 

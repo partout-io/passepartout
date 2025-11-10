@@ -30,8 +30,17 @@ typedef enum {
     PSPAreaProfile = 1,
     PSPAreaTunnel = 2
 } psp_area;
+typedef enum {
+    PSPEventTypeNone,
+    PSPEventTypeProfileReady,
+    PSPEventTypeProfileLocal,
+    PSPEventTypeProfileRemote,
+    PSPEventTypeProfileRequiredFeatures
+} psp_event_type;
 typedef struct {
     psp_area area;
+    psp_event_type type;
+    const void *object;
 } psp_event;
 typedef void (*psp_event_callback)(void *, psp_event);
 
