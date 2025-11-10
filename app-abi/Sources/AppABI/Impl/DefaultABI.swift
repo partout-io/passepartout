@@ -30,10 +30,6 @@ final class DefaultABI: ABIProtocol {
 
     // MARK: - Profiles
 
-    func profileSave(_ profile: UI.Profile) async throws {
-        try await profileManager.save(profile.partoutProfile)
-    }
-
     func profileObserveLocal() async throws {
         try await profileManager.observeLocal()
 
@@ -44,6 +40,10 @@ final class DefaultABI: ABIProtocol {
                 dispatch(event)
             }
         }
+    }
+
+    func profileSave(_ profile: UI.Profile) async throws {
+        try await profileManager.save(profile.partoutProfile)
     }
 
 //    // FIXME: ###, name from args, or from internal constants?
