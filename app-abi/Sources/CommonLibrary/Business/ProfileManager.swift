@@ -42,9 +42,9 @@ public actor ProfileManager {
     }
 
     // FIXME: ###, probably overkill to retain full profiles
-    private var allRemoteProfiles: [Profile.ID: Profile] {
+    private var remoteProfileIds: Set<Profile.ID> {
         didSet {
-            didChange.send(.remoteProfiles(Set(allRemoteProfiles.keys)))
+            didChange.send(.remoteProfiles(remoteProfileIds))
         }
     }
 
@@ -83,7 +83,7 @@ public actor ProfileManager {
         self.mirrorsRemoteRepository = mirrorsRemoteRepository
 
         allProfiles = [:]
-        allRemoteProfiles = [:]
+        remoteProfileIds = []
         if readyAfterRemote {
             waitingObservers = [.local, .remote]
         } else {
@@ -130,7 +130,7 @@ extension ProfileManager {
             throw error
         }
         if let remoteRepository {
-            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && allRemoteProfiles.keys.contains(profile.id))
+            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && remoteProfileIds.contains(profile.id))
             let disableSharing = remotelyShared == false
             do {
                 if enableSharing {
@@ -249,9 +249,7 @@ private extension ProfileManager {
     func reloadRemoteProfiles(_ result: [Profile]) {
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
-        allRemoteProfiles = result.reduce(into: [:]) {
-            $0[$1.id] = $1
-        }
+        remoteProfileIds = Set(result.map(\.id))
         if waitingObservers.contains(.remote) {
             waitingObservers.remove(.remote)
         }
@@ -285,7 +283,7 @@ private extension ProfileManager {
             pp_log_g(.App.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
 
-        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(Set(allRemoteProfiles.keys))
+        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(remoteProfileIds)
         let mirrorsRemoteRepository = mirrorsRemoteRepository
 
         remoteImportTask = Task.detached { [weak self] in
