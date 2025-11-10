@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension UI {
-    public enum AppFeature: String, CaseIterable {
+    public enum AppFeature: String, CaseIterable, Codable, Sendable {
         case appleTV
 
         case dns

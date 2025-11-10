@@ -10,20 +10,28 @@ extension UI {
         case tv
     }
 
-    public struct ProfileHeader: Identifiable, Comparable, Sendable, DTO {
-        public let id: Identifier
+    public struct ProfileHeader: Identifiable, Hashable, Comparable, Sendable, DTO {
+        public private(set) var id: Identifier
         public let name: String
         public let moduleTypes: [String]
         public let fingerprint: String
         public let sharingFlags: [ProfileSharingFlag]
+        public let requiredFeatures: Set<AppFeature>
         // flags: icloud, tv
 
-        public init(id: Identifier, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag]) {
+        public init(id: Identifier, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag], requiredFeatures: Set<AppFeature>) {
             self.id = id
             self.name = name
             self.moduleTypes = moduleTypes
             self.fingerprint = fingerprint
             self.sharingFlags = sharingFlags
+            self.requiredFeatures = requiredFeatures
+        }
+
+        public func withNewId() -> Self {
+            var copy = self
+            copy.id = UUID().uuidString
+            return copy
         }
 
         public static func < (lhs: Self, rhs: Self) -> Bool {
@@ -32,35 +40,18 @@ extension UI {
     }
 
     public struct Profile: Identifiable, Hashable, Sendable, DTO {
-        public private(set) var id: Identifier
-        public var name: String
-        public let fingerprint: String
-        public let sharingFlags: [ProfileSharingFlag]
+        public private(set) var header: ProfileHeader
 
-        public init(
-            id: Identifier = UUID().uuidString,
-            name: String,
-            fingerprint: String = UUID().uuidString,
-            sharingFlags: [ProfileSharingFlag] = []
-        ) {
-            self.id = id
-            self.name = name
-            self.fingerprint = fingerprint
-            self.sharingFlags = sharingFlags
+        public var id: Identifier {
+            header.id
+        }
+
+        public init(header: ProfileHeader) {
+            self.header = header
         }
 
         public mutating func renewId() {
-            id = UUID().uuidString
-        }
-
-        public var header: ProfileHeader {
-            ProfileHeader(
-                id: id,
-                name: name,
-                moduleTypes: [], // FIXME: ###, after mapping modules
-                fingerprint: fingerprint,
-                sharingFlags: sharingFlags
-            )
+            header = header.withNewId()
         }
     }
 }

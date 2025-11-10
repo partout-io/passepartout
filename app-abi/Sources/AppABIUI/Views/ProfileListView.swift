@@ -32,7 +32,7 @@ struct ProfileListView: View {
 
 private extension ProfileListView {
     var profilesSection: some View {
-        ForEach(profileObserver.headers) { profile in
+        ForEach(profileObserver.filteredHeaders) { profile in
             HStack {
                 Text(profile.name)
                 Spacer()

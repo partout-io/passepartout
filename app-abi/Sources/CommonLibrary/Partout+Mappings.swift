@@ -5,22 +5,26 @@
 import CommonUI
 
 extension Profile {
-    public func uiProfile(sharingFlags: [UI.ProfileSharingFlag]) -> UI.Profile {
-        UI.Profile(
-            id: id.uuidString,
-            name: name,
-            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
-            sharingFlags: sharingFlags
-        )
-    }
+//    public func uiProfile(sharingFlags: [UI.ProfileSharingFlag]) -> UI.Profile {
+//        UI.Profile(
+//            id: id.uuidString,
+//            name: name,
+//            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
+//            sharingFlags: sharingFlags
+//        )
+//    }
 
-    public func uiHeader(sharingFlags: [UI.ProfileSharingFlag]) -> UI.ProfileHeader {
+    public func uiHeader(
+        sharingFlags: [UI.ProfileSharingFlag],
+        requiredFeatures: Set<UI.AppFeature>
+    ) -> UI.ProfileHeader {
         UI.ProfileHeader(
             id: id.uuidString,
             name: name,
             moduleTypes: modules.map(\.moduleType.rawValue),
             fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
-            sharingFlags: sharingFlags
+            sharingFlags: sharingFlags,
+            requiredFeatures: requiredFeatures
         )
     }
 }
@@ -33,7 +37,7 @@ extension UI.Profile {
         }
         return try! Profile.Builder(
             id: id,
-            name: name
+            name: header.name
         ).build()
     }
 }

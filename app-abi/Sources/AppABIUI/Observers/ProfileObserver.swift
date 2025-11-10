@@ -14,13 +14,12 @@ import Observation
 public final class ProfileObserver {
 //    private let abi: ABIProtocol
 
-    private var localProfiles: [UI.Identifier: UI.Profile] {
+    private var allHeaders: [UI.Identifier: UI.ProfileHeader] {
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
     }
-    private var requiredFeatures: [UI.Identifier: Set<UI.AppFeature>]
-    public private(set) var headers: [UI.ProfileHeader]
+    public private(set) var filteredHeaders: [UI.ProfileHeader]
     public private(set) var isReady: Bool
     public var isRemoteImportingEnabled: Bool
 
@@ -30,9 +29,8 @@ public final class ProfileObserver {
     public init() {//abi: ABIProtocol) {
 //        self.abi = abi
 
-        localProfiles = [:]
-        requiredFeatures = [:]
-        headers = []
+        allHeaders = [:]
+        filteredHeaders = []
         isReady = false
         isRemoteImportingEnabled = false
 
@@ -80,30 +78,30 @@ extension ProfileObserver {
         searchSubject.send(name)
     }
 
-    public func duplicate(profileWithId profileId: UI.Identifier) async throws {
-        guard var profile = localProfiles[profileId] else {
-            return
-        }
-        profile.renewId()
-        profile.name = firstUniqueName(from: profile.name)
-//        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
-        try await abi.profileSave(profile)
-    }
+//    public func duplicate(profileWithId profileId: UI.Identifier) async throws {
+//        guard var profile = localProfiles[profileId] else {
+//            return
+//        }
+//        profile.renewId()
+//        profile.name = firstUniqueName(from: profile.name)
+////        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
+//        try await abi.profileSave(profile)
+//    }
 }
 
 // MARK: - State
 
 extension ProfileObserver: ABIObserver {
     public var hasProfiles: Bool {
-        !headers.isEmpty
+        !filteredHeaders.isEmpty
     }
 
-    public func profile(withId profileId: UI.Identifier) -> UI.Profile? {
-        localProfiles[profileId]
-    }
+//    public func profile(withId profileId: UI.Identifier) -> UI.Profile? {
+//        localProfiles[profileId]
+//    }
 
     public func requiredFeatures(forProfileWithId profileId: UI.Identifier) -> Set<UI.AppFeature>? {
-        requiredFeatures[profileId]
+        allHeaders[profileId]?.requiredFeatures
     }
 
     public var isSearching: Bool {
@@ -111,7 +109,7 @@ extension ProfileObserver: ABIObserver {
     }
 
     public func firstUniqueName(from name: String) -> String {
-        let allNames = Set(localProfiles.values.map(\.name))
+        let allNames = Set(allHeaders.values.map(\.name))
         var newName = name
         var index = 1
         while true {
@@ -131,10 +129,8 @@ extension ProfileObserver: ABIObserver {
         switch profileEvent {
         case .ready:
             isReady = true
-        case .refresh(let profiles):
-            localProfiles = profiles
-        case .requiredFeatures(let features):
-            requiredFeatures = features
+        case .refresh(let headers):
+            allHeaders = headers
         }
     }
 }
@@ -152,8 +148,8 @@ private extension ProfileObserver {
     }
 
     func reloadHeaders(with search: String) {
-        headers = localProfiles
-            .map(\.value.header)
+        filteredHeaders = allHeaders
+            .map(\.value)
             .filter {
                 if !search.isEmpty {
                     return $0.name.lowercased().contains(search.lowercased())

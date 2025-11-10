@@ -15,8 +15,7 @@ public actor ProfileManager {
         case ready
         case save(Profile, previous: Profile?)
         case remove([UI.Identifier])
-        case profiles([UI.Identifier: UI.Profile])
-        case requiredFeatures([UI.Identifier: Set<UI.AppFeature>])
+        case profiles([UI.Identifier: UI.ProfileHeader])
         case search(String?)
         case startRemoteImport
         case stopRemoteImport
@@ -35,20 +34,13 @@ public actor ProfileManager {
     // FIXME: ###, probably overkill to retain full profiles
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            let computed = allProfiles.reduce(into: [:]) {
-                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: sharingFlags(for: $1.key))
-            }
-            didChange.send(.profiles(computed))
-            reloadRequiredFeatures()
+            didChange.send(.profiles(computedProfileHeaders()))
         }
     }
 
     private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-            let computed = allProfiles.reduce(into: [:]) {
-                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: sharingFlags(for: $1.key))
-            }
-            didChange.send(.profiles(computed))
+            didChange.send(.profiles(computedProfileHeaders()))
         }
     }
 
@@ -362,19 +354,19 @@ private extension ProfileManager {
         return []
     }
 
-    func reloadRequiredFeatures() {
-        guard let processor else {
-            return
-        }
-        let requiredFeatures: [Profile.ID: Set<UI.AppFeature>] = allProfiles.reduce(into: [:]) {
-            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
-                return
+    func computedProfileHeaders() -> [UI.Identifier: UI.ProfileHeader] {
+        allProfiles.reduce(into: [:]) {
+            let requiredFeatures: Set<UI.AppFeature>
+            if let ineligible = processor?.requiredFeatures($1.value), !ineligible.isEmpty {
+                requiredFeatures = ineligible
+            } else {
+                requiredFeatures = []
             }
-            $0[$1.key] = ineligible
+            $0[$1.key.uuidString] = $1.value.uiHeader(
+                sharingFlags: sharingFlags(for: $1.key),
+                requiredFeatures: requiredFeatures
+            )
         }
-        didChange.send(.requiredFeatures(requiredFeatures.reduce(into: [:]) {
-            $0[$1.key.uuidString] = $1.value
-        }))
-        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
     }
 }

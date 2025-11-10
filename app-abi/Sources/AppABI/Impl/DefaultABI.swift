@@ -103,10 +103,8 @@ private extension DefaultABI {
         switch event {
         case .ready:
             postEvent(.profiles(.ready))
-        case .profiles(let profiles):
-            postEvent(.profiles(.refresh(profiles)))
-        case .requiredFeatures(let features):
-            postEvent(.profiles(.requiredFeatures(features)))
+        case .profiles(let headers):
+            postEvent(.profiles(.refresh(headers)))
         default:
             break
         }

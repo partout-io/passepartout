@@ -11,8 +11,7 @@ extension UI {
 
     public enum ProfileEvent {
         case ready
-        case refresh([Identifier: Profile])
-        case requiredFeatures([Identifier: Set<AppFeature>])
+        case refresh([Identifier: ProfileHeader])
     }
 }
 #endif
