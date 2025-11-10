@@ -6,6 +6,7 @@ import AppABI
 import AppABI_C
 import Combine
 import Dispatch
+import Foundation
 import Observation
 
 @MainActor @Observable
@@ -57,6 +58,27 @@ extension ProfileObserver {
 //    public func resaveAllProfiles() async
 //    public func observeLocal() async throws
 //    public func observeRemote(repository: ProfileRepository) async throws
+
+    @discardableResult
+    public func new() async throws -> UI.ProfileHeader {
+        let name = firstUniqueName(from: "lorem ipsum")
+        return try await abi.profileNew(named: name)
+    }
+
+    @discardableResult
+    public func new(fromURL url: URL) async throws -> UI.ProfileHeader {
+        // FIXME: ###
+//        let text = try String(contentsOf: url)
+        let text = "{\"id\":\"imported-url\",\"name\":\"imported url\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
+        return try await abi.profileImportText(text)
+    }
+
+    @discardableResult
+    public func new(fromText text: String) async throws -> UI.ProfileHeader {
+        // FIXME: ###
+        let text = "{\"id\":\"imported-text\",\"name\":\"imported text\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
+        return try await abi.profileImportText(text)
+    }
 
     public func search(byName name: String) {
         searchSubject.send(name)
@@ -172,38 +194,5 @@ private extension ProfileObserver {
             }
         }
         return []
-    }
-}
-
-// MARK: - FIXME: ###
-
-extension ProfileObserver {
-    @discardableResult
-    func new() async throws -> UI.ProfileHeader {
-//        try await abi.profileNew()
-        let profile = UI.Profile(name: "new")
-        try await abi.profileSave(profile)
-        return profile.header
-    }
-
-    @discardableResult
-    func new(fromURL url: String) async throws -> UI.ProfileHeader {
-        // FIXME: ###
-//        let text = try String(contentsOf: url)
-//        let text = "{\"id\":\"imported-url\",\"name\":\"imported url\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
-//        return try await abi.profileImportText(text)
-        let profile = UI.Profile(name: url)
-        try await abi.profileSave(profile)
-        return profile.header
-    }
-
-    @discardableResult
-    func new(fromText text: String) async throws -> UI.ProfileHeader {
-        // FIXME: ###
-//        let text = "{\"id\":\"imported-text\",\"name\":\"imported text\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
-//        return try await abi.profileImportText(text)
-        let profile = UI.Profile(name: text)
-        try await abi.profileSave(profile)
-        return profile.header
     }
 }

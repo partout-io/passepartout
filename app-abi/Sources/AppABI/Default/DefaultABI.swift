@@ -47,21 +47,18 @@ final class DefaultABI: ABIProtocol {
     }
 
 //    // FIXME: ###, name from args, or from internal constants?
-//    func profileNew() async throws -> UI.ProfileHeader {
-//        let name = profileManager.firstUniqueName(from: "lorem ipsum")
-//        let profile = try Profile.Builder(name: name).build()
-//        try await profileManager.save(profile)
-//        postArea(PSPAreaProfile)
-//        return profile.uiPreview
-//    }
-//
-//    func profileImportText(_ text: String) async throws -> UI.ProfileHeader {
-//        let profile = try registry.compatibleProfile(fromString: text)
-//        try await profileManager.save(profile)
-//        postArea(PSPAreaProfile)
-//        return profile.uiPreview
-//    }
-//
+    func profileNew(named name: String) async throws -> UI.ProfileHeader {
+        let profile = try Profile.Builder(name: name).build()
+        try await profileManager.save(profile)
+        return profile.uiHeader(sharingFlags: [])
+    }
+
+    func profileImportText(_ text: String) async throws -> UI.ProfileHeader {
+        let profile = try registry.compatibleProfile(fromString: text)
+        try await profileManager.save(profile)
+        return profile.uiHeader(sharingFlags: [])
+    }
+
 //    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader {
 //        // FIXME: ###
 //        postArea(PSPAreaProfile)

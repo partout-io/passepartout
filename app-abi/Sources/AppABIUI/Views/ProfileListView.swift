@@ -65,7 +65,7 @@ private extension ProfileListView {
                     guard let url = URL(string: "https://") else {
                         fatalError()
                     }
-                    try await profileObserver.new(fromURL: url.absoluteString)
+                    try await profileObserver.new(fromURL: url)
                 } catch {
                     print(error.localizedDescription)
                 }

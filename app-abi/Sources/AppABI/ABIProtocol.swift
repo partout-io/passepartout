@@ -10,8 +10,8 @@ public protocol ABIProtocol {
     func initialize(eventContext: Any?, eventCallback: Any?)
 
     func profileSave(_ profile: UI.Profile) async throws
-//    func profileNew() async throws -> UI.ProfileHeader
-//    func profileImportText(_ text: String) async throws -> UI.ProfileHeader
+    func profileNew(named name: String) async throws -> UI.ProfileHeader
+    func profileImportText(_ text: String) async throws -> UI.ProfileHeader
 //    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader
 //    func profileDup(_ id: UI.Identifier) async throws -> UI.ProfileHeader
 //    func profileDelete(_ id: UI.Identifier) async throws
