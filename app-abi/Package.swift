@@ -33,6 +33,7 @@ let package = Package(
             dependencies: [
                 "AppABI_C",
                 "CommonLibrary",
+                "CommonUI",
                 "CommonUtils"
             ]
         ),
@@ -41,15 +42,10 @@ let package = Package(
             dependencies: ["AppABI"]
         ),
         .target(
-            name: "CommonIAP",
-            dependencies: ["CommonUtils"]
-        ),
-        .target(
             name: "CommonLibrary",
             dependencies: [
-                "CommonIAP",
                 "CommonProviders",
-                "CommonUtils",
+                "CommonUI",
                 "partout"
             ],
             resources: [
@@ -70,6 +66,13 @@ let package = Package(
         .target(
             name: "CommonProvidersCore",
             dependencies: ["partout"]
+        ),
+        .target(
+            name: "CommonUI",
+            dependencies: [
+                "AppABI_C",
+                "CommonUtils"
+            ]
         ),
         .target(
             name: "CommonUtils"

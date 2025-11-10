@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@_exported import CommonIAP
 @_exported import CommonProviders
+@_exported import CommonUI
 @_exported import Partout
 
 public enum CommonLibrary {
@@ -20,10 +20,10 @@ public enum CommonLibrary {
                 }
 
                 // AppFeatureRequiring
-                guard builder is any AppFeatureRequiring else {
+                guard builder is any UI.AppFeatureRequiring else {
                     fatalError("\(moduleType): #1 is not AppFeatureRequiring")
                 }
-                guard moduleBuilder is any AppFeatureRequiring else {
+                guard moduleBuilder is any UI.AppFeatureRequiring else {
                     fatalError("\(moduleType): #2 is not AppFeatureRequiring")
                 }
             } catch {

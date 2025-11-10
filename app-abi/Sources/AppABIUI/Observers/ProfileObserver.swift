@@ -5,6 +5,7 @@
 import AppABI
 import AppABI_C
 import Combine
+import CommonUI
 import Dispatch
 import Foundation
 import Observation
@@ -115,15 +116,6 @@ extension ProfileObserver: ABIObserver {
         !searchSubject.value.isEmpty
     }
 
-    public func isRemotelyShared(profileWithId profileId: UI.Identifier) -> Bool {
-        remoteProfileIds.contains(profileId)
-    }
-
-    public func isAvailableForTV(profileWithId profileId: UI.Identifier) -> Bool {
-//        profile(withId: profileId)?.attributes.isAvailableForTV == true
-        profile(withId: profileId)?.sharingFlags.contains(.tv) == true
-  }
-
     public func firstUniqueName(from name: String) -> String {
         let allNames = Set(localProfiles.values.map(\.name))
         var newName = name
@@ -181,16 +173,5 @@ private extension ProfileObserver {
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
 
 //        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
-    }
-
-    func sharingFlags(for profileId: UI.Identifier) -> [UI.ProfileSharingFlag] {
-        if isRemotelyShared(profileWithId: profileId) {
-            if isAvailableForTV(profileWithId: profileId) {
-                return [.tv]
-            } else {
-                return [.shared]
-            }
-        }
-        return []
     }
 }

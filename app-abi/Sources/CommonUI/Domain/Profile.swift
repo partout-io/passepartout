@@ -18,7 +18,7 @@ extension UI {
         public let sharingFlags: [ProfileSharingFlag]
         // flags: icloud, tv
 
-        init(id: Identifier, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag]) {
+        public init(id: Identifier, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag]) {
             self.id = id
             self.name = name
             self.moduleTypes = moduleTypes

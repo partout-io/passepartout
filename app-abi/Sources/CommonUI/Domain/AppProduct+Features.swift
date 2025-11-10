@@ -2,11 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
-extension AppProduct {
+extension UI.AppProduct {
     public enum Essentials {
-        static let all: [AppProduct] = [
+        static let all: [UI.AppProduct] = [
             .Essentials.iOS_macOS,
             .Essentials.iOS,
             .Essentials.macOS
@@ -14,7 +12,7 @@ extension AppProduct {
     }
 
     public enum Features {
-        static let all: [AppProduct] = [
+        static let all: [UI.AppProduct] = [
             .Features.allProviders,
             .Features.appleTV,
             .Features.networkSettings,
@@ -23,7 +21,7 @@ extension AppProduct {
     }
 
     public enum Complete {
-        static let all: [AppProduct] = [
+        static let all: [UI.AppProduct] = [
             .Complete.OneTime.lifetime,
             .Complete.Recurring.monthly,
             .Complete.Recurring.yearly
@@ -43,35 +41,35 @@ extension AppProduct {
 
 // MARK: - Current
 
-extension AppProduct.Essentials {
+extension UI.AppProduct.Essentials {
 
     // TODO: #128/notes, "Essentials" (Core) iOS/macOS/tvOS bundle (< Complete)
 //    public static let allPlatforms = AppProduct(featureId: "essentials")
 
-    public static let iOS_macOS = AppProduct(featureId: "full_multi_version")
+    public static let iOS_macOS = UI.AppProduct(featureId: "full_multi_version")
 
-    public static let iOS = AppProduct(featureId: "full_version")
+    public static let iOS = UI.AppProduct(featureId: "full_version")
 
-    public static let macOS = AppProduct(featureId: "full_mac_version")
+    public static let macOS = UI.AppProduct(featureId: "full_mac_version")
 }
 
-extension AppProduct.Features {
-    public static let appleTV = AppProduct(featureId: "appletv")
+extension UI.AppProduct.Features {
+    public static let appleTV = UI.AppProduct(featureId: "appletv")
 }
 
-extension AppProduct.Complete {
+extension UI.AppProduct.Complete {
     public enum Recurring {
-        public static let monthly = AppProduct(featureId: "full.monthly")
+        public static let monthly = UI.AppProduct(featureId: "full.monthly")
 
-        public static let yearly = AppProduct(featureId: "full.yearly")
+        public static let yearly = UI.AppProduct(featureId: "full.yearly")
     }
 
     public enum OneTime {
-        public static let lifetime = AppProduct(featureId: "full.lifetime")
+        public static let lifetime = UI.AppProduct(featureId: "full.lifetime")
     }
 }
 
-extension AppProduct {
+extension UI.AppProduct {
     public var isComplete: Bool {
         switch self {
         case .Complete.Recurring.yearly,
@@ -106,10 +104,10 @@ extension AppProduct {
 
 // MARK: - Discontinued
 
-extension AppProduct.Features {
-    public static let allProviders = AppProduct(featureId: "all_providers")
+extension UI.AppProduct.Features {
+    public static let allProviders = UI.AppProduct(featureId: "all_providers")
 
-    public static let networkSettings = AppProduct(featureId: "network_settings")
+    public static let networkSettings = UI.AppProduct(featureId: "network_settings")
 
-    public static let trustedNetworks = AppProduct(featureId: "trusted_networks")
+    public static let trustedNetworks = UI.AppProduct(featureId: "trusted_networks")
 }

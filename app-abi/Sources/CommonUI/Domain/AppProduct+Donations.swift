@@ -2,23 +2,21 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
-extension AppProduct {
+extension UI.AppProduct {
     public enum Donations {
-        public static let tiny = AppProduct(donationId: "Tiny")
+        public static let tiny = UI.AppProduct(donationId: "Tiny")
 
-        public static let small = AppProduct(donationId: "Small")
+        public static let small = UI.AppProduct(donationId: "Small")
 
-        public static let medium = AppProduct(donationId: "Medium")
+        public static let medium = UI.AppProduct(donationId: "Medium")
 
-        public static let big = AppProduct(donationId: "Big")
+        public static let big = UI.AppProduct(donationId: "Big")
 
-        public static let huge = AppProduct(donationId: "Huge")
+        public static let huge = UI.AppProduct(donationId: "Huge")
 
-        public static let maxi = AppProduct(donationId: "Maxi")
+        public static let maxi = UI.AppProduct(donationId: "Maxi")
 
-        public static let all: [AppProduct] = [
+        public static let all: [UI.AppProduct] = [
             .Donations.maxi,
             .Donations.huge,
             .Donations.big,

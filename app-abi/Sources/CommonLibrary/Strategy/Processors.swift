@@ -4,7 +4,7 @@
 
 public protocol ProfileProcessor: Sendable {
     func isIncluded(_ profile: Profile) -> Bool
-    func requiredFeatures(_ profile: Profile) -> Set<AppFeature>?
+    func requiredFeatures(_ profile: Profile) -> Set<UI.AppFeature>?
     func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder
 }
 

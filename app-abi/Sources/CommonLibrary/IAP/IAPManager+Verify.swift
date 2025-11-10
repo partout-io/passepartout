@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension IAPManager {
-    public func verify(_ profile: Profile, extra: Set<AppFeature>? = nil) throws {
+    public func verify(_ profile: Profile, extra: Set<UI.AppFeature>? = nil) throws {
         var features = profile.features
         extra?.forEach {
             features.insert($0)
@@ -11,7 +11,7 @@ extension IAPManager {
         try verify(features)
     }
 
-    public func verify(_ features: Set<AppFeature>) throws {
+    public func verify(_ features: Set<UI.AppFeature>) throws {
 #if os(tvOS)
         guard isEligible(for: .appleTV) else {
             throw AppError.ineligibleProfile(features.union([.appleTV]))

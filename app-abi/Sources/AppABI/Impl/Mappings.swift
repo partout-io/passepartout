@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonUI
 
 extension Profile {
-    public var uiProfile: UI.Profile {
+    public func uiProfile(sharingFlags: [UI.ProfileSharingFlag]) -> UI.Profile {
         UI.Profile(
             id: id.uuidString,
-            name: name
+            name: name,
+            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
+            sharingFlags: sharingFlags
         )
     }
 

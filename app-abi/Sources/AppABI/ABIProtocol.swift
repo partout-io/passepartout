@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppABI_C
+import CommonUI
 
 // FIXME: ###, use typealias for string IDs like ProfileID
 
@@ -23,20 +23,6 @@ public protocol ABIProtocol {
 }
 
 #if canImport(Darwin)
-extension UI {
-    public enum Event {
-        case profiles(ProfileEvent)
-        case tunnel
-    }
-
-    public enum ProfileEvent {
-        case ready
-        case local([Identifier: Profile])
-        case remote(Set<Identifier>)
-        case requiredFeatures([Identifier: Set<AppFeature>])
-    }
-}
-
 @MainActor
 public protocol ABIObserver {
     func onUpdate(_ event: UI.Event)
@@ -47,6 +33,7 @@ public protocol ABIObserver {
     func onUpdate(_ event: psp_event)
 }
 
+@MainActor
 public final class ABIResult {
     public let value: Any
 

@@ -4,6 +4,7 @@
 
 import AppABI
 import AppABI_C
+import CommonUI
 import Observation
 
 @MainActor @Observable

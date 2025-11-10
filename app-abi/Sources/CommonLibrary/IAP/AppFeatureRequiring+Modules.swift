@@ -4,26 +4,26 @@
 
 import Foundation
 
-extension DNSModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+extension DNSModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
         [.dns]
     }
 }
 
-extension HTTPProxyModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+extension HTTPProxyModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
         [.httpProxy]
     }
 }
 
-extension IPModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+extension IPModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
         [.routing]
     }
 }
 
-extension OnDemandModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+extension OnDemandModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
         guard policy != .any else {
             return []
         }
@@ -35,9 +35,9 @@ extension OnDemandModule.Builder: AppFeatureRequiring {
     }
 }
 
-extension OpenVPNModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
-        var list: Set<AppFeature> = []
+extension OpenVPNModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
+        var list: Set<UI.AppFeature> = []
         if isInteractive, let otpMethod = credentials?.otpMethod, otpMethod != .none {
             list.insert(.otp)
         }
@@ -45,9 +45,9 @@ extension OpenVPNModule.Builder: AppFeatureRequiring {
     }
 }
 
-extension ProviderModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
-        var list: Set<AppFeature> = []
+extension ProviderModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
+        var list: Set<UI.AppFeature> = []
         providerId?.features.forEach {
             list.insert($0)
         }
@@ -55,8 +55,8 @@ extension ProviderModule.Builder: AppFeatureRequiring {
     }
 }
 
-extension WireGuardModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+extension WireGuardModule.Builder: UI.AppFeatureRequiring {
+    public var features: Set<UI.AppFeature> {
         []
     }
 }

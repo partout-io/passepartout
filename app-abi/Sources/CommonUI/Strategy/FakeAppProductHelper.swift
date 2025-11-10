@@ -6,10 +6,10 @@ import Combine
 import CommonUtils
 import Foundation
 
-public actor FakeAppProductHelper: AppProductHelper {
+public actor FakeAppProductHelper: UI.AppProductHelper {
     private let purchase: OriginalPurchase
 
-    public private(set) var products: [AppProduct: InAppProduct]
+    public private(set) var products: [UI.AppProduct: InAppProduct]
 
     public nonisolated let receiptReader: FakeAppReceiptReader
 
@@ -31,8 +31,8 @@ public actor FakeAppProductHelper: AppProductHelper {
         didUpdateSubject.eraseToAnyPublisher()
     }
 
-    public func fetchProducts(timeout: TimeInterval) async throws -> [AppProduct: InAppProduct] {
-        products = AppProduct.all.reduce(into: [:]) {
+    public func fetchProducts(timeout: TimeInterval) async throws -> [UI.AppProduct: InAppProduct] {
+        products = UI.AppProduct.all.reduce(into: [:]) {
             $0[$1] = $1.asFakeIAP
         }
         await receiptReader.setReceipt(withPurchase: purchase, identifiers: [])
@@ -51,7 +51,7 @@ public actor FakeAppProductHelper: AppProductHelper {
     }
 }
 
-extension AppProduct {
+extension UI.AppProduct {
     public var asFakeIAP: InAppProduct {
         InAppProduct(
             productIdentifier: rawValue,

@@ -5,18 +5,18 @@
 import CommonUtils
 import Foundation
 
-public actor FakeAppReceiptReader: AppReceiptReader {
+public actor FakeAppReceiptReader: UI.AppReceiptReader {
     private var localReceipt: InAppReceipt?
 
     public init(receipt localReceipt: InAppReceipt? = nil) {
         self.localReceipt = localReceipt
     }
 
-    public func setReceipt(withBuild build: Int, products: Set<AppProduct>, cancelledProducts: Set<AppProduct> = []) {
+    public func setReceipt(withBuild build: Int, products: Set<UI.AppProduct>, cancelledProducts: Set<UI.AppProduct> = []) {
         setReceipt(withPurchase: OriginalPurchase(buildNumber: build), products: products, cancelledProducts: cancelledProducts)
     }
 
-    public func setReceipt(withPurchase purchase: OriginalPurchase, products: Set<AppProduct>, cancelledProducts: Set<AppProduct> = []) {
+    public func setReceipt(withPurchase purchase: OriginalPurchase, products: Set<UI.AppProduct>, cancelledProducts: Set<UI.AppProduct> = []) {
         setReceipt(
             withPurchase: purchase,
             identifiers: Set(products.map(\.rawValue)),
@@ -39,7 +39,7 @@ public actor FakeAppReceiptReader: AppReceiptReader {
         })
     }
 
-    public func receipt(at userLevel: AppUserLevel) async -> InAppReceipt? {
+    public func receipt(at userLevel: UI.AppUserLevel) async -> InAppReceipt? {
         localReceipt
     }
 
@@ -50,7 +50,7 @@ public actor FakeAppReceiptReader: AppReceiptReader {
 
 extension FakeAppReceiptReader {
     public func addPurchase(
-        with product: AppProduct,
+        with product: UI.AppProduct,
         expirationDate: Date? = nil,
         cancellationDate: Date? = nil
     ) async {

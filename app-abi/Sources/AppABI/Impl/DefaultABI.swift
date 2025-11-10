@@ -99,9 +99,9 @@ private extension DefaultABI {
             postEvent(.profiles(.ready))
         case .localProfiles(let profiles):
             let object = profiles.reduce(into: [:]) {
-                // FIXME: ###, remote flags?
-//                $0[$1.key.uuidString] = $1.value.uiHeader(sharingFlags: [])
-                $0[$1.key.uuidString] = $1.value.uiProfile
+                // FIXME: ###, attach sharingFlags from ProfileManager?
+                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: [])
+//                $0[$1.key.uuidString] = $1.value.uiProfile(sharingFlags: <#T##[UI.ProfileSharingFlag]#>)
           }
             postEvent(.profiles(.local(object)))
         case .remoteProfiles(let ids):

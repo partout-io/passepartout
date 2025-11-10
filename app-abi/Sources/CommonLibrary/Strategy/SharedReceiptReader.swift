@@ -4,7 +4,7 @@
 
 import CommonUtils
 
-public actor SharedReceiptReader: AppReceiptReader {
+public actor SharedReceiptReader: UI.AppReceiptReader {
     private let reader: InAppReceiptReader
 
     private var pendingTask: Task<InAppReceipt?, Never>?
@@ -13,7 +13,7 @@ public actor SharedReceiptReader: AppReceiptReader {
         self.reader = reader
     }
 
-    public func receipt(at userLevel: AppUserLevel) async -> InAppReceipt? {
+    public func receipt(at userLevel: UI.AppUserLevel) async -> InAppReceipt? {
         if let pendingTask {
             _ = await pendingTask.value
         }
@@ -31,7 +31,7 @@ public actor SharedReceiptReader: AppReceiptReader {
 }
 
 private extension SharedReceiptReader {
-    func asyncReceipt(at userLevel: AppUserLevel) async -> InAppReceipt? {
+    func asyncReceipt(at userLevel: UI.AppUserLevel) async -> InAppReceipt? {
         pp_log_g(.App.iap, .info, "\tParse receipt for user level \(userLevel)")
         pp_log_g(.App.iap, .info, "\tRead receipt")
         return await reader.receipt()

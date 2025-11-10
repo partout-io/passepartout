@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension AppProduct: AppFeatureProviding {
-    public var features: [AppFeature] {
+extension UI.AppProduct: UI.AppFeatureProviding {
+    public var features: [UI.AppFeature] {
         switch self {
 
         // MARK: Current
 
         case .Essentials.iOS_macOS:
-            return Array(AppFeature.essentialFeatures)
+            return Array(UI.AppFeature.essentialFeatures)
 
         case .Essentials.iOS:
 #if os(iOS) || os(tvOS)
@@ -19,7 +19,7 @@ extension AppProduct: AppFeatureProviding {
 #endif
         case .Essentials.macOS:
 #if os(macOS) || os(tvOS)
-            return AppProduct.Essentials.iOS_macOS.features
+            return UI.AppProduct.Essentials.iOS_macOS.features
 #else
             return []
 #endif
@@ -27,7 +27,7 @@ extension AppProduct: AppFeatureProviding {
             return [.appleTV, .sharing]
 
         case .Complete.OneTime.lifetime, .Complete.Recurring.monthly, .Complete.Recurring.yearly:
-            return AppFeature.allCases
+            return UI.AppFeature.allCases
 
         // MARK: Discontinued
 

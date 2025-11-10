@@ -12,7 +12,7 @@ public enum AppError: Error {
 
     case emptyProfileName
 
-    case ineligibleProfile(Set<AppFeature>)
+    case ineligibleProfile(Set<UI.AppFeature>)
 
     case interactiveLogin
 
@@ -38,7 +38,7 @@ public enum AppError: Error {
 
     case verificationReceiptIsLoading
 
-    case verificationRequiredFeatures(Set<AppFeature>)
+    case verificationRequiredFeatures(Set<UI.AppFeature>)
 
     case webReceiver(Error? = nil)
 

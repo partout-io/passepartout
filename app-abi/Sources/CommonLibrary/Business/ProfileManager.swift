@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonUI
 import Foundation
 
 public actor ProfileManager {
@@ -16,7 +17,7 @@ public actor ProfileManager {
         case remove([Profile.ID])
         case localProfiles([Profile.ID: Profile])
         case remoteProfiles(Set<Profile.ID>)
-        case requiredFeatures([Profile.ID: Set<AppFeature>])
+        case requiredFeatures([Profile.ID: Set<UI.AppFeature>])
         case search(String?)
         case startRemoteImport
         case stopRemoteImport
@@ -340,11 +341,30 @@ private extension ProfileManager {
         remoteImportTask = nil
     }
 
+    func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
+        remoteProfileIds.contains(profileId)
+    }
+
+    func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
+        allProfiles[profileId]?.attributes.isAvailableForTV == true
+  }
+
+    func sharingFlags(for profileId: Profile.ID) -> [UI.ProfileSharingFlag] {
+        if isRemotelyShared(profileWithId: profileId) {
+            if isAvailableForTV(profileWithId: profileId) {
+                return [.tv]
+            } else {
+                return [.shared]
+            }
+        }
+        return []
+    }
+
     func reloadRequiredFeatures() {
         guard let processor else {
             return
         }
-        let requiredFeatures: [Profile.ID: Set<AppFeature>] = allProfiles.reduce(into: [:]) {
+        let requiredFeatures: [Profile.ID: Set<UI.AppFeature>] = allProfiles.reduce(into: [:]) {
             guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
                 return
             }
