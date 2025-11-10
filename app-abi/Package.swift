@@ -34,9 +34,7 @@ let package = Package(
                 "AppABI_C",
                 "CommonLibrary",
                 "CommonUtils"
-            ],
-//            exclude: ["Default/DefaultABI.swift"]
-            exclude: ["Mock"]
+            ]
         ),
         .executableTarget(
             name: "AppABIUI",
