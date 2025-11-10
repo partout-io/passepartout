@@ -35,8 +35,9 @@ final class DefaultABI: ABIProtocol {
 
     // MARK: - Profiles
 
-    func profileObserveLocal() async throws {
+    func profileObserve() async throws {
         try await profileManager.observeLocal()
+        try await profileManager.observeRemote(repository: InMemoryProfileRepository())
 
         profileEventTask = Task { [weak self] in
             guard let self else { return }
@@ -59,7 +60,7 @@ final class DefaultABI: ABIProtocol {
 
     func profileImportText(_ text: String) async throws {
         let profile = try registry.compatibleProfile(fromString: text)
-        try await profileManager.save(profile)
+        try await profileManager.save(profile, remotelyShared: true)
     }
 
 //    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader {

@@ -147,7 +147,7 @@ private extension ProfileObserver {
                 self?.reloadHeaders(with: $0)
             }
         Task {
-            try await abi.profileObserveLocal()
+            try await abi.profileObserve()
         }
     }
 

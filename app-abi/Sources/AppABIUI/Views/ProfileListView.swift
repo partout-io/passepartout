@@ -37,6 +37,11 @@ private extension ProfileListView {
                 Text(profile.name)
                 Spacer()
                 Text(tunnelObserver.status(for: profile.id).rawValue)
+                if profile.sharingFlags.contains(.tv) {
+                    Text("TV")
+                } else if profile.sharingFlags.contains(.shared) {
+                    Text("SH")
+                }
                 Toggle("", isOn: Binding {
                     tunnelObserver.status(for: profile.id) == .connected
                 } set: {
