@@ -23,7 +23,7 @@ extension UI {
 }
 
 extension UI.AppFeature {
-    public static let essentialFeatures: Set<UI.AppFeature> = [
+    public static let essentialFeatures: Set<Self> = [
         .dns,
         .httpProxy,
         .onDemand,
