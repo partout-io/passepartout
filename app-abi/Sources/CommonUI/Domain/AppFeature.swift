@@ -5,19 +5,12 @@
 extension UI {
     public enum AppFeature: String, CaseIterable, Codable, Sendable {
         case appleTV
-
         case dns
-
         case httpProxy
-
         case onDemand
-
         case otp
-
         case providers
-
         case routing
-
         case sharing
     }
 }
