@@ -59,25 +59,22 @@ extension ProfileObserver {
 //    public func observeLocal() async throws
 //    public func observeRemote(repository: ProfileRepository) async throws
 
-    @discardableResult
-    public func new() async throws -> UI.ProfileHeader {
+    public func new() async throws {
         let name = firstUniqueName(from: "lorem ipsum")
-        return try await abi.profileNew(named: name)
+        try await abi.profileNew(named: name)
     }
 
-    @discardableResult
-    public func new(fromURL url: URL) async throws -> UI.ProfileHeader {
+    public func new(fromURL url: URL) async throws {
         // FIXME: ###
 //        let text = try String(contentsOf: url)
         let text = "{\"id\":\"imported-url\",\"name\":\"imported url\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
-        return try await abi.profileImportText(text)
+        try await abi.profileImportText(text)
     }
 
-    @discardableResult
-    public func new(fromText text: String) async throws -> UI.ProfileHeader {
+    public func new(fromText text: String) async throws {
         // FIXME: ###
         let text = "{\"id\":\"imported-text\",\"name\":\"imported text\",\"moduleTypes\":[],\"fingerprint\":\"\",\"sharingFlags\":[]}"
-        return try await abi.profileImportText(text)
+        try await abi.profileImportText(text)
     }
 
     public func search(byName name: String) {

@@ -47,16 +47,14 @@ final class DefaultABI: ABIProtocol {
     }
 
 //    // FIXME: ###, name from args, or from internal constants?
-    func profileNew(named name: String) async throws -> UI.ProfileHeader {
+    func profileNew(named name: String) async throws {
         let profile = try Profile.Builder(name: name).build()
         try await profileManager.save(profile)
-        return profile.uiHeader(sharingFlags: [])
     }
 
-    func profileImportText(_ text: String) async throws -> UI.ProfileHeader {
+    func profileImportText(_ text: String) async throws {
         let profile = try registry.compatibleProfile(fromString: text)
         try await profileManager.save(profile)
-        return profile.uiHeader(sharingFlags: [])
     }
 
 //    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader {
