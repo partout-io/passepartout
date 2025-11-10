@@ -27,7 +27,7 @@ final class TunnelObserver: ABIObserver {
 //        abi.tunnelSetEnabled(enabled, profileId: profileId)
     }
 
-    func onUpdate(_ event: psp_event) {
+    func onUpdate(_ event: UI.Event) {
         print("onUpdate() called")
         refresh()
     }

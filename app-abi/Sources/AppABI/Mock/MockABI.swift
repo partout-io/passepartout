@@ -6,7 +6,7 @@ import AppABI_C
 
 // FIXME: ###, free psp_json after use
 final class MockABI: ABIProtocol {
-    private var eventContext: UnsafeMutableRawPointer?
+    private var eventContext: UnsafeRawPointer?
     private var eventCallback: psp_event_callback?
 
     private var profiles: [UI.ProfileHeader] {
@@ -27,7 +27,7 @@ final class MockABI: ABIProtocol {
         statuses = [:]
     }
 
-    func initialize(eventContext: UnsafeMutableRawPointer?, eventCallback: psp_event_callback?) {
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?) {
         self.eventContext = eventContext
         self.eventCallback = eventCallback
     }

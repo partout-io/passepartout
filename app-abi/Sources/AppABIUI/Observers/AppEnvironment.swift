@@ -53,21 +53,19 @@ extension View {
     }
 }
 
-private func abiCallback(opaqueEnvironment: UnsafeMutableRawPointer?, event: psp_event) {
+private func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: UI.Event) {
     guard let opaqueEnvironment else {
         fatalError("Missing AppEnvironment. Bad arguments to psp_initialize?")
     }
     let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
-//    Task { @MainActor in
+    Task { @MainActor in
     // FIXME: ###, sync to keep event.object lifetime in scope
-    DispatchQueue.main.sync {
-        switch event.area {
-        case PSPAreaProfile:
+//    DispatchQueue.main.sync {
+        switch event {
+        case .profiles:
             env.profileObserver.onUpdate(event)
-        case PSPAreaTunnel:
+        case .tunnel:
             env.tunnelObserver.onUpdate(event)
-        default:
-            break
         }
     }
 }

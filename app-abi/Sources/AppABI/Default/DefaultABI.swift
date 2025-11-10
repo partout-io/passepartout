@@ -7,8 +7,10 @@ import CommonLibrary
 
 // FIXME: ###, free psp_json after use
 final class DefaultABI: ABIProtocol {
-    private var eventContext: UnsafeMutableRawPointer?
-    private var eventCallback: psp_event_callback?
+    typealias Callback = (UnsafeRawPointer?, UI.Event) -> Void
+
+    private var eventContext: UnsafeRawPointer?
+    private var eventCallback: ((UnsafeRawPointer?, UI.Event) -> Void)?
 
     // FIXME: ###, business objects, this should map most of AppContext
     private let registry: Registry
@@ -21,16 +23,15 @@ final class DefaultABI: ABIProtocol {
         profileManager = ProfileManager(profiles: [])
     }
 
-    func initialize(eventContext: UnsafeMutableRawPointer?, eventCallback: psp_event_callback?) {
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?) {
         self.eventContext = eventContext
-        self.eventCallback = eventCallback
+        self.eventCallback = eventCallback as? Callback
     }
 
     // MARK: - Profiles
 
     func profileSave(_ profile: UI.Profile) async throws {
         try await profileManager.save(profile.partoutProfile)
-        postArea(PSPAreaProfile)
     }
 
     func profileObserveLocal() async throws {
@@ -39,36 +40,8 @@ final class DefaultABI: ABIProtocol {
         profileEventTask = Task { [weak self] in
             guard let self else { return }
             for await event in profileManager.didChange.subscribe() {
-              guard !Task.isCancelled else { return }
-                switch event {
-                case .ready:
-                    postArea(PSPAreaProfile, PSPEventTypeProfileReady)
-//                    isReady = true
-                case .localProfiles(let profiles):
-                    let object = ABIResult(profiles.reduce(into: [:]) {
-                        // FIXME: ###, remote flags?
-//                        $0[$1.key.uuidString] = $1.value.uiHeader(sharingFlags: [])
-                        $0[$1.key.uuidString] = $1.value.uiProfile
-                  })
-                    withUnsafePointer(to: object) {
-                        self.postArea(PSPAreaProfile, PSPEventTypeProfileLocal, $0)
-                    }
-//                    localProfiles = profiles
-                case .remoteProfiles(let ids):
-                    let object = ABIResult(ids.map(\.uuidString))
-                    withUnsafePointer(to: object) {
-                        self.postArea(PSPAreaProfile, PSPEventTypeProfileRemote, $0)
-                    }
-//                    remoteProfileIds = ids
-                case .requiredFeatures(let features):
-                    let object = ABIResult(features)
-                    withUnsafePointer(to: object) {
-                        self.postArea(PSPAreaProfile, PSPEventTypeProfileRequiredFeatures, $0)
-                    }
-//                    requiredFeatures = features
-                default:
-                    break
-                }
+                guard !Task.isCancelled else { return }
+                dispatch(event)
             }
         }
     }
@@ -121,7 +94,73 @@ final class DefaultABI: ABIProtocol {
 //    }
 }
 
+// MARK: - Events
+
 private extension DefaultABI {
+#if canImport(Darwin)
+    func dispatch(_ event: ProfileManager.Event) {
+        switch event {
+        case .ready:
+            postEvent(.profiles(.ready))
+        case .localProfiles(let profiles):
+            let object = profiles.reduce(into: [:]) {
+                // FIXME: ###, remote flags?
+//                $0[$1.key.uuidString] = $1.value.uiHeader(sharingFlags: [])
+                $0[$1.key.uuidString] = $1.value.uiProfile
+          }
+            postEvent(.profiles(.local(object)))
+        case .remoteProfiles(let ids):
+            let object = Set(ids.map(\.uuidString))
+            postEvent(.profiles(.remote(object)))
+        case .requiredFeatures(let features):
+            let object = features.reduce(into: [:]) {
+                $0[$1.key.uuidString] = Set($1.value.map {
+                    UI.AppFeature.init(rawValue: $0.rawValue)! // FIXME: ###, dedup AppFeature struct
+                })
+            }
+            postEvent(.profiles(.requiredFeatures(object)))
+        default:
+            break
+        }
+    }
+
+    func postEvent(_ event: UI.Event) {
+        eventCallback?(eventContext, event)
+    }
+#else
+    // FIXME: ###
+    func dispatch(_ event: ProfileManager.Event) {
+        switch event {
+        case .ready:
+            postArea(PSPAreaProfile, PSPEventTypeProfileReady)
+//                    isReady = true
+        case .localProfiles(let profiles):
+            let object = ABIResult(profiles.reduce(into: [:]) {
+                // FIXME: ###, remote flags?
+//                        $0[$1.key.uuidString] = $1.value.uiHeader(sharingFlags: [])
+                $0[$1.key.uuidString] = $1.value.uiProfile
+          })
+            withUnsafePointer(to: object) {
+                self.postArea(PSPAreaProfile, PSPEventTypeProfileLocal, $0)
+            }
+//                    localProfiles = profiles
+        case .remoteProfiles(let ids):
+            let object = ABIResult(ids.map(\.uuidString))
+            withUnsafePointer(to: object) {
+                self.postArea(PSPAreaProfile, PSPEventTypeProfileRemote, $0)
+            }
+//                    remoteProfileIds = ids
+        case .requiredFeatures(let features):
+            let object = ABIResult(features)
+            withUnsafePointer(to: object) {
+                self.postArea(PSPAreaProfile, PSPEventTypeProfileRequiredFeatures, $0)
+            }
+//                    requiredFeatures = features
+        default:
+            break
+        }
+    }
+
     func postArea(
         _ area: psp_area,
         _ type: psp_event_type = PSPEventTypeNone,
@@ -129,4 +168,5 @@ private extension DefaultABI {
     ) {
         eventCallback?(eventContext, psp_event(area: area, type: type, object: object))
     }
+#endif
 }

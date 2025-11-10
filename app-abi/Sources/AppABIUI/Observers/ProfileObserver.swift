@@ -75,7 +75,7 @@ extension ProfileObserver {
 
 // MARK: - State
 
-extension ProfileObserver {
+extension ProfileObserver: ABIObserver {
     public var hasProfiles: Bool {
         !headers.isEmpty
     }
@@ -114,21 +114,20 @@ extension ProfileObserver {
         }
     }
 
-    public func onUpdate(_ event: psp_event) {
-        guard event.area == PSPAreaProfile else { return }
+    public func onUpdate(_ event: UI.Event) {
+        guard case .profiles(let profileEvent) = event else {
+            return
+        }
         print("ProfileObserver.onUpdate()")
-        let result = event.object?.assumingMemoryBound(to: ABIResult.self).pointee.value
-        switch event.type {
-        case PSPEventTypeProfileReady:
+        switch profileEvent {
+        case .ready:
             isReady = true
-        case PSPEventTypeProfileLocal:
-            localProfiles = result as? [UI.Identifier: UI.Profile] ?? [:]
-      case PSPEventTypeProfileRemote:
-            remoteProfileIds = result as? Set<UI.Identifier> ?? []
-        case PSPEventTypeProfileRequiredFeatures:
-            requiredFeatures = result as? [UI.Identifier: Set<UI.AppFeature>] ?? [:]
-        default:
-            break
+        case .local(let profiles):
+            localProfiles = profiles
+        case .remote(let ids):
+            remoteProfileIds = ids
+        case .requiredFeatures(let features):
+            requiredFeatures = features
         }
     }
 }

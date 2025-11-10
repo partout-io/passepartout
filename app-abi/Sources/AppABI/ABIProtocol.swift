@@ -7,7 +7,7 @@ import AppABI_C
 // FIXME: ###, use typealias for string IDs like ProfileID
 
 public protocol ABIProtocol {
-    func initialize(eventContext: UnsafeMutableRawPointer?, eventCallback: psp_event_callback?)
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: Any?)
 
     func profileSave(_ profile: UI.Profile) async throws
 //    func profileNew() async throws -> UI.ProfileHeader
@@ -22,6 +22,26 @@ public protocol ABIProtocol {
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: UI.Identifier)
 }
 
+#if canImport(Darwin)
+extension UI {
+    public enum Event {
+        case profiles(ProfileEvent)
+        case tunnel
+    }
+
+    public enum ProfileEvent {
+        case ready
+        case local([Identifier: Profile])
+        case remote(Set<Identifier>)
+        case requiredFeatures([Identifier: Set<AppFeature>])
+    }
+}
+
+@MainActor
+public protocol ABIObserver {
+    func onUpdate(_ event: UI.Event)
+}
+#else
 @MainActor
 public protocol ABIObserver {
     func onUpdate(_ event: psp_event)
@@ -34,3 +54,4 @@ public final class ABIResult {
         self.value = value
     }
 }
+#endif

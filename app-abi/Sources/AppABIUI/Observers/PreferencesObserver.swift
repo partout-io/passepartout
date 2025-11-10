@@ -10,7 +10,7 @@ import Observation
 
 @MainActor @Observable
 final class PreferencesObserver: ABIObserver {
-    func onUpdate(_ event: psp_event) {
+    func onUpdate(_ event: UI.Event) {
     }
 }
 
