@@ -169,8 +169,7 @@ private extension ProfileObserver {
 
     func reloadHeaders(with search: String) {
         headers = localProfiles
-            .values
-            .map(\.header)
+            .map(\.value.header)
             .filter {
                 if !search.isEmpty {
                     return $0.name.lowercased().contains(search.lowercased())
