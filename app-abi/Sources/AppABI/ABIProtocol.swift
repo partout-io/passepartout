@@ -2,12 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppABI_C
 import CommonUI
 
 // FIXME: ###, use typealias for string IDs like ProfileID
 
 public protocol ABIProtocol {
+#if !ABI_C
     func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICallback?)
+#else
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICCallback?)
+#endif
 
     func profileObserve() async throws
     func profileSave(_ profile: UI.Profile) async throws
@@ -23,8 +28,9 @@ public protocol ABIProtocol {
 }
 
 public typealias ABICallback = (UnsafeRawPointer?, UI.Event) -> Void
+public typealias ABICCallback = (UnsafeRawPointer?, psp_event) -> Void
 
-#if canImport(Darwin)
+#if !ABI_C
 @MainActor
 public protocol ABIObserver {
     func onUpdate(_ event: UI.Event)

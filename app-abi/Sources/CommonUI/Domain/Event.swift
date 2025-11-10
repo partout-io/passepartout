@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if canImport(Darwin)
 extension UI {
     public enum Event {
         case profiles(ProfileEvent)
@@ -14,4 +13,3 @@ extension UI {
         case refresh([Identifier: ProfileHeader])
     }
 }
-#endif

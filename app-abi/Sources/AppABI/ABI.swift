@@ -7,12 +7,6 @@ import AppABI_C
 //public let abi: ABIProtocol = MockABI()
 public let abi: ABIProtocol = DefaultABI()
 
-@_cdecl("psp_initialize")
-public func _abi_initialize(eventContext: UnsafeRawPointer?, eventCallback: psp_event_callback?) {
-    // FIXME: ###, map UI.Event to psp_event
-//    abi.initialize(eventContext: eventContext, eventCallback: eventCallback)
-}
-
 // MARK: - Global
 
 @_cdecl("psp_json_new")
@@ -30,6 +24,13 @@ public func _abi_json_free(json: psp_json?) {
 @_cdecl("psp_last_error")
 public func _abi_last_error() -> psp_json? {
     nil
+}
+
+#if ABI_C
+
+@_cdecl("psp_initialize")
+public func _abi_initialize(eventContext: UnsafeRawPointer?, eventCallback: psp_event_callback?) {
+    abi.initialize(eventContext: eventContext, eventCallback: eventCallback)
 }
 
 // MARK: - Profiles
@@ -124,3 +125,5 @@ public func _abi_last_error() -> psp_json? {
 //    guard let profileId else { fatalError() }
 //    abi.tunnelSetEnabled(isEnabled, profileId: String(cString: profileId))
 //}
+
+#endif
