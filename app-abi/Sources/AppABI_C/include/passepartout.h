@@ -40,7 +40,7 @@ typedef enum {
 typedef struct {
     psp_area area;
     psp_event_type type;
-    const void *object;
+    const void *object; // FIXME: ###, use psp_json here (optional)
 } psp_event;
 typedef void (*psp_event_callback)(void *, psp_event);
 
