@@ -59,6 +59,7 @@ private func abiCallback(opaqueEnvironment: UnsafeMutableRawPointer?, event: psp
     }
     let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
 //    Task { @MainActor in
+    // FIXME: ###, sync to keep event.object lifetime in scope
     DispatchQueue.main.sync {
         switch event.area {
         case PSPAreaProfile:
