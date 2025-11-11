@@ -33,12 +33,12 @@ extension Profile {
 }
 
 extension ABI.Profile {
-    public var partoutProfile: Profile {
+    public func partoutProfile() throws -> Profile {
         // FIXME: ###, map for real
         guard let id = UUID(uuidString: id) else {
-            fatalError()
+            throw CancellationError()
         }
-        return try! Profile.Builder(
+        return try Profile.Builder(
             id: id,
             name: header.name
         ).build()

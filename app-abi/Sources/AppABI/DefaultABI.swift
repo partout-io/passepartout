@@ -56,7 +56,8 @@ final class DefaultABI: ABIProtocol {
 
     // FIXME: ###, .partoutProfile mapping is bs
     func profileSave(_ profile: ABI.Profile) async throws {
-        try await profileManager.save(profile.partoutProfile)
+        let partoutProfile = try profile.partoutProfile()
+        try await profileManager.save(partoutProfile)
     }
 
     // FIXME: ###, name from args, or from internal constants?
