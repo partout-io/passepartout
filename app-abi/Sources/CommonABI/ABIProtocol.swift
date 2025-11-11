@@ -14,7 +14,6 @@ public typealias ABICallbackEvent = psp_event
 
 public protocol ABIProtocol {
     typealias EventCallback = (UnsafeRawPointer?, ABICallbackEvent) -> Void
-
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?)
 
 //    func profile(withId id: ABI.Identifier) async -> ABI.Profile?
