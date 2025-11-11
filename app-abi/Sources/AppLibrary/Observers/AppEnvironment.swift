@@ -60,8 +60,6 @@ private func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: ABI.Event)
     }
     let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
     Task { @MainActor in
-    // FIXME: ###, sync to keep event.object lifetime in scope
-//    DispatchQueue.main.sync {
         switch event {
         case .profiles:
             env.profileObserver.onUpdate(event)
