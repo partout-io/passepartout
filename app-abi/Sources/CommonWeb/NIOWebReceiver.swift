@@ -188,7 +188,7 @@ private extension NIOWebReceiver {
     }
 }
 
-private extension UInt32 {
+private extension ABInt32 {
     var isPrivateNetwork: Bool {
         // 10.0.0.0/8
         if (self & 0xFF000000) == 0x0A000000 { return true }

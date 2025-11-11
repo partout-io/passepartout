@@ -4,10 +4,10 @@
 
 import CommonUtils
 
-extension UI {
+extension ABI {
     public protocol AppProductHelper: InAppHelper where ProductType == AppProduct {
     }
 }
 
-extension StoreKitHelper: UI.AppProductHelper where ProductType == UI.AppProduct {
+extension StoreKitHelper: ABI.AppProductHelper where ProductType == ABI.AppProduct {
 }

@@ -54,7 +54,7 @@ extension View {
     }
 }
 
-private func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: UI.Event) {
+private func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: ABI.Event) {
     guard let opaqueEnvironment else {
         fatalError("Missing AppEnvironment. Bad arguments to abi.initialize?")
     }

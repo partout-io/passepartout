@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension ProviderID: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
+extension ProviderID: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         self != .oeck ? [.providers] : []
     }
 }

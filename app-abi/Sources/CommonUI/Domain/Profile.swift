@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension UI {
+extension ABI {
     public enum ProfileSharingFlag: String, Codable, Sendable {
         case shared
         case tv

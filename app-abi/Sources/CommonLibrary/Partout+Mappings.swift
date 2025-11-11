@@ -5,8 +5,8 @@
 import CommonUI
 
 extension Profile {
-//    public func uiProfile(sharingFlags: [UI.ProfileSharingFlag]) -> UI.Profile {
-//        UI.Profile(
+//    public func uiProfile(sharingFlags: [ABI.ProfileSharingFlag]) -> ABI.Profile {
+//        ABI.Profile(
 //            id: id.uuidString,
 //            name: name,
 //            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
@@ -15,10 +15,10 @@ extension Profile {
 //    }
 
     public func uiHeader(
-        sharingFlags: [UI.ProfileSharingFlag],
-        requiredFeatures: Set<UI.AppFeature>
-    ) -> UI.ProfileHeader {
-        UI.ProfileHeader(
+        sharingFlags: [ABI.ProfileSharingFlag],
+        requiredFeatures: Set<ABI.AppFeature>
+    ) -> ABI.ProfileHeader {
+        ABI.ProfileHeader(
             id: id.uuidString,
             name: name,
             moduleTypes: modules.map(\.moduleType.rawValue),
@@ -29,7 +29,7 @@ extension Profile {
     }
 }
 
-extension UI.Profile {
+extension ABI.Profile {
     public var partoutProfile: Profile {
         // FIXME: ###, map for real
         guard let id = UUID(uuidString: id) else {

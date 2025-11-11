@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI {
+extension ABI {
     public enum AppFeature: String, CaseIterable, Codable, Sendable {
         case appleTV
         case dns
@@ -15,7 +15,7 @@ extension UI {
     }
 }
 
-extension UI.AppFeature {
+extension ABI.AppFeature {
     public static let essentialFeatures: Set<Self> = [
         .dns,
         .httpProxy,
@@ -31,13 +31,13 @@ extension UI.AppFeature {
     }
 }
 
-extension UI.AppFeature: Identifiable {
+extension ABI.AppFeature: Identifiable {
     public var id: String {
         rawValue
     }
 }
 
-extension UI.AppFeature: CustomDebugStringConvertible {
+extension ABI.AppFeature: CustomDebugStringConvertible {
     public var debugDescription: String {
         rawValue
     }

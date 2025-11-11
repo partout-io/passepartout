@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI.AppUserLevel: UI.AppFeatureProviding {
-    public var features: [UI.AppFeature] {
+extension ABI.AppUserLevel: ABI.AppFeatureProviding {
+    public var features: [ABI.AppFeature] {
         switch self {
         case .beta:
             return [
@@ -13,10 +13,10 @@ extension UI.AppUserLevel: UI.AppFeatureProviding {
             ]
 
         case .essentials:
-            return UI.AppProduct.Essentials.iOS_macOS.features
+            return ABI.AppProduct.Essentials.iOS_macOS.features
 
         case .complete:
-            return UI.AppFeature.allCases
+            return ABI.AppFeature.allCases
 
         default:
             return []

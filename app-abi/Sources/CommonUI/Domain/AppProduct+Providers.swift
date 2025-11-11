@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI.AppProduct {
+extension ABI.AppProduct {
     static let providerPrefix = "views.providers."
 }

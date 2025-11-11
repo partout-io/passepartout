@@ -9,7 +9,7 @@ import Observation
 
 @MainActor @Observable
 final class ConfigObserver: ABIObserver {
-    func onUpdate(_ event: UI.Event) {
+    func onUpdate(_ event: ABI.Event) {
     }
 }
 

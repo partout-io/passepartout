@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI {
+extension ABI {
     public struct AppRelease: Sendable {
         private let name: String
 

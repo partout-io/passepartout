@@ -4,7 +4,7 @@
 
 import CommonUtils
 
-extension UI {
+extension ABI {
     public protocol AppReceiptReader {
         func receipt(at userLevel: AppUserLevel) async -> InAppReceipt?
 

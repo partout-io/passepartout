@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI {
+extension ABI {
     public struct AppProduct: RawRepresentable, Hashable, Sendable {
         public let rawValue: String
 
@@ -16,13 +16,13 @@ extension UI {
     }
 }
 
-extension UI.AppProduct {
+extension ABI.AppProduct {
     public static var all: [Self] {
         Features.all + Essentials.all + Complete.all + Donations.all
     }
 }
 
-extension UI.AppProduct: CustomDebugStringConvertible {
+extension ABI.AppProduct: CustomDebugStringConvertible {
     public var debugDescription: String {
         rawValue
     }

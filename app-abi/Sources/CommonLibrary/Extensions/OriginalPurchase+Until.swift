@@ -6,7 +6,7 @@ import CommonUI
 import CommonUtils
 
 extension OriginalPurchase {
-    public func isUntil(_ release: UI.AppRelease) -> Bool {
+    public func isUntil(_ release: ABI.AppRelease) -> Bool {
         buildNumber <= release.build
     }
 }

@@ -14,8 +14,8 @@ public actor ProfileManager {
     public enum Event: Equatable {
         case ready
         case save(Profile, previous: Profile?)
-        case remove([UI.Identifier])
-        case refresh([UI.Identifier: UI.ProfileHeader])
+        case remove([ABI.Identifier])
+        case refresh([ABI.Identifier: ABI.ProfileHeader])
         case search(String?)
         case startRemoteImport
         case stopRemoteImport
@@ -343,7 +343,7 @@ private extension ProfileManager {
         allProfiles[profileId]?.attributes.isAvailableForTV == true
   }
 
-    func sharingFlags(for profileId: Profile.ID) -> [UI.ProfileSharingFlag] {
+    func sharingFlags(for profileId: Profile.ID) -> [ABI.ProfileSharingFlag] {
         if isRemotelyShared(profileWithId: profileId) {
             if isAvailableForTV(profileWithId: profileId) {
                 return [.tv]
@@ -354,9 +354,9 @@ private extension ProfileManager {
         return []
     }
 
-    func computedProfileHeaders() -> [UI.Identifier: UI.ProfileHeader] {
+    func computedProfileHeaders() -> [ABI.Identifier: ABI.ProfileHeader] {
         allProfiles.reduce(into: [:]) {
-            let requiredFeatures: Set<UI.AppFeature>
+            let requiredFeatures: Set<ABI.AppFeature>
             if let ineligible = processor?.requiredFeatures($1.value), !ineligible.isEmpty {
                 requiredFeatures = ineligible
             } else {

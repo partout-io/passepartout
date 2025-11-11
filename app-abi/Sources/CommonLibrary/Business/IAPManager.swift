@@ -8,17 +8,17 @@ import Foundation
 
 @MainActor
 public final class IAPManager: ObservableObject {
-    private let customUserLevel: UI.AppUserLevel?
+    private let customUserLevel: ABI.AppUserLevel?
 
-    private let inAppHelper: any UI.AppProductHelper
+    private let inAppHelper: any ABI.AppProductHelper
 
-    private let receiptReader: UI.AppReceiptReader
+    private let receiptReader: ABI.AppReceiptReader
 
     private let betaChecker: BetaChecker
 
-    private let unrestrictedFeatures: Set<UI.AppFeature>
+    private let unrestrictedFeatures: Set<ABI.AppFeature>
 
-    private let productsAtBuild: BuildProducts<UI.AppProduct>?
+    private let productsAtBuild: BuildProducts<ABI.AppProduct>?
 
     @Published
     public var isEnabled = true {
@@ -27,14 +27,14 @@ public final class IAPManager: ObservableObject {
         }
     }
 
-    private(set) var userLevel: UI.AppUserLevel
+    private(set) var userLevel: ABI.AppUserLevel
 
     public private(set) var originalPurchase: OriginalPurchase?
 
-    public private(set) var purchasedProducts: Set<UI.AppProduct>
+    public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
     @Published
-    public private(set) var eligibleFeatures: Set<UI.AppFeature>
+    public private(set) var eligibleFeatures: Set<ABI.AppFeature>
 
     @Published
     private var pendingReceiptTask: Task<Void, Never>?
@@ -42,12 +42,12 @@ public final class IAPManager: ObservableObject {
     private var subscriptions: Set<AnyCancellable>
 
     public init(
-        customUserLevel: UI.AppUserLevel? = nil,
-        inAppHelper: any UI.AppProductHelper,
-        receiptReader: UI.AppReceiptReader,
+        customUserLevel: ABI.AppUserLevel? = nil,
+        inAppHelper: any ABI.AppProductHelper,
+        receiptReader: ABI.AppReceiptReader,
         betaChecker: BetaChecker,
-        unrestrictedFeatures: Set<UI.AppFeature> = [],
-        productsAtBuild: BuildProducts<UI.AppProduct>? = nil
+        unrestrictedFeatures: Set<ABI.AppFeature> = [],
+        productsAtBuild: BuildProducts<ABI.AppProduct>? = nil
     ) {
         self.customUserLevel = customUserLevel
         self.inAppHelper = inAppHelper
@@ -77,7 +77,7 @@ extension IAPManager {
         await reloadReceipt()
     }
 
-    public func purchasableProducts(for products: [UI.AppProduct]) async throws -> [InAppProduct] {
+    public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [InAppProduct] {
         guard isEnabled else {
             return []
         }
@@ -139,11 +139,11 @@ extension IAPManager {
         userLevel.isBeta
     }
 
-    public func isEligible(for feature: UI.AppFeature) -> Bool {
+    public func isEligible(for feature: ABI.AppFeature) -> Bool {
         eligibleFeatures.contains(feature)
     }
 
-    public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == UI.AppFeature {
+    public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == ABI.AppFeature {
         if features.isEmpty {
             return true
         }
@@ -152,7 +152,7 @@ extension IAPManager {
 
     public var isEligibleForComplete: Bool {
         let rawProducts = purchasedProducts.compactMap {
-            UI.AppProduct(rawValue: $0.rawValue)
+            ABI.AppProduct(rawValue: $0.rawValue)
         }
 
         //
@@ -184,7 +184,7 @@ extension IAPManager {
     }
 
     public func didPurchase(_ purchasable: InAppProduct) -> Bool {
-        guard let product = UI.AppProduct(rawValue: purchasable.productIdentifier) else {
+        guard let product = ABI.AppProduct(rawValue: purchasable.productIdentifier) else {
             return false
         }
         return purchasedProducts.contains(product)
@@ -204,8 +204,8 @@ private extension IAPManager {
         pp_log_g(.App.iap, .notice, "Start reloading in-app receipt...")
 
         var originalPurchase: OriginalPurchase?
-        var purchasedProducts: Set<UI.AppProduct> = []
-        var eligibleFeatures: Set<UI.AppFeature> = []
+        var purchasedProducts: Set<ABI.AppProduct> = []
+        var eligibleFeatures: Set<ABI.AppFeature> = []
 
         if let receipt = await receiptReader.receipt(at: userLevel) {
             originalPurchase = receipt.originalPurchase
@@ -224,11 +224,11 @@ private extension IAPManager {
             if let iapReceipts = receipt.purchaseReceipts {
                 pp_log_g(.App.iap, .info, "Process in-app purchase receipts...")
 
-                let products: [UI.AppProduct] = iapReceipts.compactMap {
+                let products: [ABI.AppProduct] = iapReceipts.compactMap {
                     guard let pid = $0.productIdentifier else {
                         return nil
                     }
-                    guard let product = UI.AppProduct(rawValue: pid) else {
+                    guard let product = ABI.AppProduct(rawValue: pid) else {
                         pp_log_g(.App.iap, .debug, "\tDiscard unknown product identifier: \(pid)")
                         return nil
                     }

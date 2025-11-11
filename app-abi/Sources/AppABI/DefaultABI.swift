@@ -48,7 +48,7 @@ final class DefaultABI: ABIProtocol {
     }
 
     // FIXME: ###, .partoutProfile mapping is bs
-    func profileSave(_ profile: UI.Profile) async throws {
+    func profileSave(_ profile: ABI.Profile) async throws {
         try await profileManager.save(profile.partoutProfile)
     }
 
@@ -63,13 +63,13 @@ final class DefaultABI: ABIProtocol {
         try await profileManager.save(profile, remotelyShared: true)
     }
 
-//    func profileUpdate(_ json: String) async throws -> UI.ProfileHeader {
+//    func profileUpdate(_ json: String) async throws -> ABI.ProfileHeader {
 //        // FIXME: ###
 //        postArea(PSPAreaProfile)
 //        fatalError()
 //    }
 //
-//    func profileDup(_ id: String) async throws -> UI.ProfileHeader {
+//    func profileDup(_ id: String) async throws -> ABI.ProfileHeader {
 //        // FIXME: ###
 //        postArea(PSPAreaProfile)
 //        fatalError()
@@ -83,7 +83,7 @@ final class DefaultABI: ABIProtocol {
 
 //    // MARK: - Tunnel
 //
-//    func tunnelGetAll() -> [ProfileID : UI.TunnelStatus] {
+//    func tunnelGetAll() -> [ProfileID : ABI.TunnelStatus] {
 //        // FIXME: ###
 //        [:]
 //    }
@@ -109,7 +109,7 @@ private extension DefaultABI {
         }
     }
 
-    func postEvent(_ event: UI.Event) {
+    func postEvent(_ event: ABI.Event) {
 #if !USE_C_ABI
         eventCallback?(eventContext, event)
 #else
@@ -118,7 +118,7 @@ private extension DefaultABI {
     }
 }
 
-//extension UI.Event {
+//extension ABI.Event {
 //    // FIXME: ###
 //    var pspEvent: psp_event {
 //        switch self {

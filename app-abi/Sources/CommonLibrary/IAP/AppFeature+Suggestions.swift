@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI.AppFeature {
+extension ABI.AppFeature {
 
     // some non-essential features can only be purchased individually
     // here we suggest the products entitling for such features
-    public var nonEssentialProducts: Set<UI.AppProduct> {
+    public var nonEssentialProducts: Set<ABI.AppProduct> {
         switch self {
         case .appleTV:
             return [.Features.appleTV]

@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI {
+extension ABI {
     public typealias Identifier = String
 }

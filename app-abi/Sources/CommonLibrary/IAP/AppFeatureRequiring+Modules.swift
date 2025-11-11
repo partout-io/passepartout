@@ -4,26 +4,26 @@
 
 import Foundation
 
-extension DNSModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
+extension DNSModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         [.dns]
     }
 }
 
-extension HTTPProxyModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
+extension HTTPProxyModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         [.httpProxy]
     }
 }
 
-extension IPModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
+extension IPModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         [.routing]
     }
 }
 
-extension OnDemandModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
+extension OnDemandModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         guard policy != .any else {
             return []
         }
@@ -35,9 +35,9 @@ extension OnDemandModule.Builder: UI.AppFeatureRequiring {
     }
 }
 
-extension OpenVPNModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
-        var list: Set<UI.AppFeature> = []
+extension OpenVPNModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
+        var list: Set<ABI.AppFeature> = []
         if isInteractive, let otpMethod = credentials?.otpMethod, otpMethod != .none {
             list.insert(.otp)
         }
@@ -45,9 +45,9 @@ extension OpenVPNModule.Builder: UI.AppFeatureRequiring {
     }
 }
 
-extension ProviderModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
-        var list: Set<UI.AppFeature> = []
+extension ProviderModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
+        var list: Set<ABI.AppFeature> = []
         providerId?.features.forEach {
             list.insert($0)
         }
@@ -55,8 +55,8 @@ extension ProviderModule.Builder: UI.AppFeatureRequiring {
     }
 }
 
-extension WireGuardModule.Builder: UI.AppFeatureRequiring {
-    public var features: Set<UI.AppFeature> {
+extension WireGuardModule.Builder: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         []
     }
 }

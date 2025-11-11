@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension UI {
+extension ABI {
     public enum AppUserLevel: Int, Sendable {
         case undefined = -1
 
@@ -16,7 +16,7 @@ extension UI {
     }
 }
 
-extension UI.AppUserLevel {
+extension ABI.AppUserLevel {
     public var isBeta: Bool {
         self == .beta
     }

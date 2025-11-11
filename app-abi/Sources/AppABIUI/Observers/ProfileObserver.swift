@@ -14,12 +14,12 @@ import Observation
 public final class ProfileObserver {
 //    private let abi: ABIProtocol
 
-    private var allHeaders: [UI.Identifier: UI.ProfileHeader] {
+    private var allHeaders: [ABI.Identifier: ABI.ProfileHeader] {
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
     }
-    public private(set) var filteredHeaders: [UI.ProfileHeader]
+    public private(set) var filteredHeaders: [ABI.ProfileHeader]
     public private(set) var isReady: Bool
     public var isRemoteImportingEnabled: Bool
 
@@ -44,13 +44,13 @@ public final class ProfileObserver {
 
 extension ProfileObserver {
 //    // To avoid dup/expensive tracking of localProfiles
-//    public func profile(withId profileId: UI.Identifier) async -> Profile? {
+//    public func profile(withId profileId: ABI.Identifier) async -> Profile? {
 //        await profileManager.profile(withId: profileId)
 //    }
 //
 //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-//    public func remove(withId profileId: UI.Identifier) async
-//    public func remove(withIds profileIds: [UI.Identifier]) async
+//    public func remove(withId profileId: ABI.Identifier) async
+//    public func remove(withIds profileIds: [ABI.Identifier]) async
 //    public func eraseRemotelySharedProfiles() async throws
 //    public func resaveAllProfiles() async
 //    public func observeLocal() async throws
@@ -78,7 +78,7 @@ extension ProfileObserver {
         searchSubject.send(name)
     }
 
-//    public func duplicate(profileWithId profileId: UI.Identifier) async throws {
+//    public func duplicate(profileWithId profileId: ABI.Identifier) async throws {
 //        guard var profile = localProfiles[profileId] else {
 //            return
 //        }
@@ -96,11 +96,11 @@ extension ProfileObserver: ABIObserver {
         !filteredHeaders.isEmpty
     }
 
-//    public func profile(withId profileId: UI.Identifier) -> UI.Profile? {
+//    public func profile(withId profileId: ABI.Identifier) -> ABI.Profile? {
 //        localProfiles[profileId]
 //    }
 
-    public func requiredFeatures(forProfileWithId profileId: UI.Identifier) -> Set<UI.AppFeature>? {
+    public func requiredFeatures(forProfileWithId profileId: ABI.Identifier) -> Set<ABI.AppFeature>? {
         allHeaders[profileId]?.requiredFeatures
     }
 
@@ -121,7 +121,7 @@ extension ProfileObserver: ABIObserver {
         }
     }
 
-    public func onUpdate(_ event: UI.Event) {
+    public func onUpdate(_ event: ABI.Event) {
         guard case .profiles(let profileEvent) = event else {
             return
         }
