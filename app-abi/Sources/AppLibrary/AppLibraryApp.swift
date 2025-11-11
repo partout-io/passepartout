@@ -5,7 +5,7 @@
 import SwiftUI
 
 @main
-struct ABIApp: App {
+struct AppLibraryApp: App {
     init() {
         NSApplication.shared.setActivationPolicy(.regular)
         NSApplication.shared.activate(ignoringOtherApps: true)
