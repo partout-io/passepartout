@@ -13,6 +13,7 @@ public enum DTO {
         }
         return try JSONDecoder().decode(D.self, from: data)
     }
+
     public static func encoded<E>(_ value: E) throws -> psp_json where E: Encodable {
         let data = try JSONEncoder().encode(value)
         guard let json = String(data: data, encoding: .utf8) else {
