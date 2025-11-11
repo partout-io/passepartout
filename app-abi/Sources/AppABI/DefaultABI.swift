@@ -6,8 +6,11 @@ import CommonABI_C
 import CommonABI
 import CommonLibrary
 
-//public let abi: ABIProtocol = MockABI()
-public let abi: ABIProtocol = DefaultABI()
+extension ABI {
+    public static var `default`: ABIProtocol {
+        DefaultABI()
+    }
+}
 
 // FIXME: ###, free psp_json after use
 final class DefaultABI: ABIProtocol {
@@ -28,15 +31,11 @@ final class DefaultABI: ABIProtocol {
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?) {
         eventContext = context
         eventCallback = callback
-    }
 
-    // MARK: - Profiles
-
-    // FIXME: ###, this should be done in initialization
-    func profileObserve() async throws {
-        try await profileManager.observeLocal()
-        try await profileManager.observeRemote(repository: InMemoryProfileRepository())
-
+        Task {
+            try await profileManager.observeLocal()
+            try await profileManager.observeRemote(repository: InMemoryProfileRepository())
+        }
         profileEventTask = Task { [weak self] in
             guard let self else { return }
             for await event in profileManager.didChange.subscribe() {
@@ -45,6 +44,12 @@ final class DefaultABI: ABIProtocol {
             }
         }
     }
+
+    // MARK: - Profiles
+
+//    func profile(withId id: ABI.Identifier) async -> ABI.Profile? {
+//        profileManager.profile(withId: id).uiProfile
+//    }
 
     // FIXME: ###, .partoutProfile mapping is bs
     func profileSave(_ profile: ABI.Profile) async throws {
@@ -63,11 +68,12 @@ final class DefaultABI: ABIProtocol {
     }
 
 //    func profileDup(_ id: String) async throws -> ABI.ProfileHeader {
+//        profileManager.du
 //        // FIXME: ###
 //        postArea(PSPAreaProfile)
 //        fatalError()
 //    }
-//
+
     func profileDelete(_ id: ABI.Identifier) async {
         guard let uuid = UUID(uuidString: id) else {
             preconditionFailure()

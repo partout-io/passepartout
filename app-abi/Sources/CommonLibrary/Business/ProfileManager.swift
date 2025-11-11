@@ -31,7 +31,7 @@ public actor ProfileManager {
 
     // MARK: State
 
-    // FIXME: ###, probably overkill to retain full profiles
+    // FIXME: ###, probably overkill to retain full profiles, only get them on request
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
             didChange.send(.refresh(computedProfileHeaders()))
@@ -172,6 +172,14 @@ extension ProfileManager {
                 pp_log_g(.App.profiles, .error, "Unable to re-save profile \(profile.id): \(error)")
             }
         }
+    }
+}
+
+// MARK: State
+
+extension ProfileManager {
+    public func profile(withId profileId: Profile.ID) -> Profile? {
+        allProfiles[profileId]
     }
 }
 

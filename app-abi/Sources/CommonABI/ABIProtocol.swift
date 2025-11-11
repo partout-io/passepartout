@@ -15,7 +15,7 @@ public protocol ABIProtocol {
 
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?)
 
-    func profileObserve() async throws
+//    func profile(withId id: ABI.Identifier) async -> ABI.Profile?
     func profileSave(_ profile: ABI.Profile) async throws
     func profileNew(named name: String) async throws
     func profileImportText(_ text: String) async throws

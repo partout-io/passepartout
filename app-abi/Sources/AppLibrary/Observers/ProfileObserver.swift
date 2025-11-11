@@ -12,7 +12,7 @@ import Observation
 
 @MainActor @Observable
 public final class ProfileObserver {
-//    private let abi: ABIProtocol
+    private let abi: ABIProtocol
 
     private var allHeaders: [ABI.Identifier: ABI.ProfileHeader] {
         didSet {
@@ -26,8 +26,8 @@ public final class ProfileObserver {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init() {//abi: ABIProtocol) {
-//        self.abi = abi
+    public init(abi: ABIProtocol) {
+        self.abi = abi
 
         allHeaders = [:]
         filteredHeaders = []
@@ -142,9 +142,6 @@ private extension ProfileObserver {
             .sink { [weak self] in
                 self?.reloadHeaders(with: $0)
             }
-        Task {
-            try await abi.profileObserve()
-        }
     }
 
     func reloadHeaders(with search: String) {

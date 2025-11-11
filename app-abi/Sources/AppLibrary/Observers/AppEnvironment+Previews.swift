@@ -3,18 +3,24 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppABI
+import CommonABI
 import CommonABI_C
 import CommonUtils
 import SwiftUI
 
 extension AppEnvironment {
     static let forPreviews: AppEnvironment = {
+        let abi = ABI.default
+        //let abi = ABI.forPreviews
+        //let abi = ABI.forTesting
+
         let configObserver = ConfigObserver()
         let iapObserver = IAPObserver()
         let preferencesObserver = PreferencesObserver()
-        let profileObserver = ProfileObserver()
+        let profileObserver = ProfileObserver(abi: abi)
         let tunnelObserver = TunnelObserver()
         return AppEnvironment(
+            abi: abi,
             configObserver: configObserver,
             iapObserver: iapObserver,
             preferencesObserver: preferencesObserver,

@@ -17,6 +17,7 @@ final class AppEnvironment {
     let tunnelObserver: TunnelObserver
 
     init(
+        abi: ABIProtocol,
         configObserver: ConfigObserver,
         iapObserver: IAPObserver,
         preferencesObserver: PreferencesObserver,
@@ -28,6 +29,24 @@ final class AppEnvironment {
         self.preferencesObserver = preferencesObserver
         self.profileObserver = profileObserver
         self.tunnelObserver = tunnelObserver
+
+        let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
+        abi.registerEvents(context: opaqueEnvironment, callback: Self.abiCallback)
+    }
+
+    private static func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: ABI.Event) {
+        guard let opaqueEnvironment else {
+            fatalError("Missing AppEnvironment. Bad arguments to abi.initialize?")
+        }
+        let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
+        Task { @MainActor in
+            switch event {
+            case .profiles:
+                env.profileObserver.onUpdate(event)
+            case .tunnel:
+                env.tunnelObserver.onUpdate(event)
+            }
+        }
     }
 }
 
@@ -37,34 +56,11 @@ extension View {
     }
 
     func withEnvironment(_ environment: AppEnvironment) -> some View {
-        withEventsCallback(on: environment)
+        self
             .environment(environment.configObserver)
             .environment(environment.iapObserver)
             .environment(environment.preferencesObserver)
             .environment(environment.profileObserver)
             .environment(environment.tunnelObserver)
-    }
-
-    // This should rather be done in AppDelegate to ensure early initialization
-    private func withEventsCallback(on environment: AppEnvironment) -> some View {
-        onLoad {
-            let opaqueEnvironment = Unmanaged.passRetained(environment).toOpaque()
-            abi.registerEvents(context: opaqueEnvironment, callback: abiCallback)
-        }
-    }
-}
-
-private func abiCallback(opaqueEnvironment: UnsafeRawPointer?, event: ABI.Event) {
-    guard let opaqueEnvironment else {
-        fatalError("Missing AppEnvironment. Bad arguments to abi.initialize?")
-    }
-    let env = Unmanaged<AppEnvironment>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
-    Task { @MainActor in
-        switch event {
-        case .profiles:
-            env.profileObserver.onUpdate(event)
-        case .tunnel:
-            env.tunnelObserver.onUpdate(event)
-        }
     }
 }
