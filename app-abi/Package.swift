@@ -38,7 +38,7 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "AppABIUI",
+            name: "AppLibrary",
             dependencies: ["AppABI"]
         ),
         .target(
