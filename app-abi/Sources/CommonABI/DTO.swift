@@ -5,30 +5,18 @@
 import CommonABI_C
 import Foundation
 
-public protocol DTO: Codable {
-    init(json: psp_json) throws
-    func encoded() throws -> psp_json
-}
-
-extension DTO {
-    public init(json: psp_json) throws {
+public enum DTO {
+    public static func decoded<D>(_ json: psp_json) throws -> D where D: Decodable {
         guard let data = String(cString: json).data(using: .utf8) else {
             throw CancellationError()
         }
-        self = try JSONDecoder().decode(Self.self, from: data)
+        return try JSONDecoder().decode(D.self, from: data)
     }
-
-    public func encoded() throws -> psp_json {
-        let data = try JSONEncoder().encode(self)
+    public static func encoded<E>(_ value: E) throws -> psp_json where E: Encodable {
+        let data = try JSONEncoder().encode(value)
         guard let json = String(data: data, encoding: .utf8) else {
             throw CancellationError()
         }
         return psp_json_new(json)
     }
-}
-
-extension Array: DTO where Element: DTO {
-}
-
-extension Dictionary: DTO where Key == String, Value: DTO {
 }

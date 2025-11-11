@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public enum TunnelStatus: String, DTO {
+    public enum TunnelStatus: String, Codable {
         case disconnected
         case connecting
         case connected

@@ -10,7 +10,7 @@ extension ABI {
         case tv
     }
 
-    public struct ProfileHeader: Identifiable, Hashable, Comparable, Sendable, DTO {
+    public struct ProfileHeader: Identifiable, Hashable, Comparable, Sendable {
         public private(set) var id: Identifier
         public let name: String
         public let moduleTypes: [String]
@@ -38,7 +38,7 @@ extension ABI {
         }
     }
 
-    public struct Profile: Identifiable, Hashable, Sendable, DTO {
+    public struct Profile: Identifiable, Hashable, Sendable {
         public private(set) var header: ProfileHeader
 
         public var id: Identifier {
