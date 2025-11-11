@@ -11,12 +11,6 @@ public let abi: ABIProtocol = DefaultABI()
 
 // FIXME: ###, free psp_json after use
 final class DefaultABI: ABIProtocol {
-#if !USE_C_ABI
-    typealias EventCallback = ABIEventCallback
-#else
-    typealias EventCallback = ABICEventCallback
-#endif
-
     private var eventContext: UnsafeRawPointer?
     private var eventCallback: EventCallback?
 
@@ -31,13 +25,14 @@ final class DefaultABI: ABIProtocol {
         profileManager = ProfileManager(profiles: [])
     }
 
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: EventCallback?) {
-        self.eventContext = eventContext
-        self.eventCallback = eventCallback
+    func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?) {
+        eventContext = context
+        eventCallback = callback
     }
 
     // MARK: - Profiles
 
+    // FIXME: ###, this should be done in initialization
     func profileObserve() async throws {
         try await profileManager.observeLocal()
         try await profileManager.observeRemote(repository: InMemoryProfileRepository())
@@ -67,23 +62,18 @@ final class DefaultABI: ABIProtocol {
         try await profileManager.save(profile, remotelyShared: true)
     }
 
-//    func profileUpdate(_ json: String) async throws -> ABI.ProfileHeader {
-//        // FIXME: ###
-//        postArea(PSPAreaProfile)
-//        fatalError()
-//    }
-//
 //    func profileDup(_ id: String) async throws -> ABI.ProfileHeader {
 //        // FIXME: ###
 //        postArea(PSPAreaProfile)
 //        fatalError()
 //    }
 //
-//    func profileDelete(_ id: String) async throws {
-//        // FIXME: ###
-//        postArea(PSPAreaProfile)
-//        fatalError()
-//    }
+    func profileDelete(_ id: ABI.Identifier) async {
+        guard let uuid = UUID(uuidString: id) else {
+            preconditionFailure()
+        }
+        await profileManager.remove(withId: uuid)
+    }
 
 //    // MARK: - Tunnel
 //

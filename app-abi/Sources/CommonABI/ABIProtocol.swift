@@ -8,20 +8,20 @@ import CommonABI_C
 
 public protocol ABIProtocol {
 #if !USE_C_ABI
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABIEventCallback?)
+    typealias EventCallback = ABIEventCallback
 #else
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABIEventCCallback?)
+    typealias EventCallback = ABICEventCallback
 #endif
+
+    func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?)
 
     func profileObserve() async throws
     func profileSave(_ profile: ABI.Profile) async throws
     func profileNew(named name: String) async throws
     func profileImportText(_ text: String) async throws
-//    func profileUpdate(_ json: String) async throws -> ABI.ProfileHeader
 //    func profileDup(_ id: ABI.Identifier) async throws -> ABI.ProfileHeader
-//    func profileDelete(_ id: ABI.Identifier) async throws
-//    func profileSave(_ json: String) async throws
-//
+    func profileDelete(_ id: ABI.Identifier) async
+
 //    func tunnelGetAll() -> [ABI.Identifier: ABI.TunnelStatus]
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: ABI.Identifier)
 }

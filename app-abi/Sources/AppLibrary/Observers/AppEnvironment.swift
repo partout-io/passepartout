@@ -49,7 +49,7 @@ extension View {
     private func withEventsCallback(on environment: AppEnvironment) -> some View {
         onLoad {
             let opaqueEnvironment = Unmanaged.passRetained(environment).toOpaque()
-            abi.initialize(eventContext: opaqueEnvironment, eventCallback: abiCallback)
+            abi.registerEvents(context: opaqueEnvironment, callback: abiCallback)
         }
     }
 }
