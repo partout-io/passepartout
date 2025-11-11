@@ -5,7 +5,7 @@
 import AppABI
 import AppABI_C
 import Combine
-import CommonUI
+import CommonABI
 import Dispatch
 import Foundation
 import Observation

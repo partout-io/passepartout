@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonUI
+import CommonABI
 
 extension Profile {
 //    public func uiProfile(sharingFlags: [ABI.ProfileSharingFlag]) -> ABI.Profile {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @_exported import CommonProviders
-@_exported import CommonUI
+@_exported import CommonABI
 @_exported import Partout
 
 public enum CommonLibrary {
