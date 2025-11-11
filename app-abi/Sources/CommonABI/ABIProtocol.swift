@@ -8,9 +8,9 @@ import CommonABI_C
 
 public protocol ABIProtocol {
 #if !USE_C_ABI
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICallback?)
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABIEventCallback?)
 #else
-    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABICCallback?)
+    func initialize(eventContext: UnsafeRawPointer?, eventCallback: ABIEventCCallback?)
 #endif
 
     func profileObserve() async throws
@@ -26,26 +26,14 @@ public protocol ABIProtocol {
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: ABI.Identifier)
 }
 
-public typealias ABICallback = (UnsafeRawPointer?, ABI.Event) -> Void
-public typealias ABICCallback = (UnsafeRawPointer?, psp_event) -> Void
+public typealias ABIEventCallback = (UnsafeRawPointer?, ABI.Event) -> Void
+public typealias ABIEventCCallback = (UnsafeRawPointer?, psp_event) -> Void
 
+@MainActor
+public protocol ABIObserver {
 #if !USE_C_ABI
-@MainActor
-public protocol ABIObserver {
     func onUpdate(_ event: ABI.Event)
-}
 #else
-@MainActor
-public protocol ABIObserver {
     func onUpdate(_ event: psp_event)
-}
-
-@MainActor
-public final class ABIResult {
-    public let value: Any
-
-    init(_ value: Any) {
-        self.value = value
-    }
-}
 #endif
+}
