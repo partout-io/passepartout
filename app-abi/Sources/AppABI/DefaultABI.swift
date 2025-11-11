@@ -47,9 +47,12 @@ final class DefaultABI: ABIProtocol {
 
     // MARK: - Profiles
 
-//    func profile(withId id: ABI.Identifier) async -> ABI.Profile? {
-//        profileManager.profile(withId: id).uiProfile
-//    }
+    func profile(withId id: ABI.Identifier) async -> ABI.Profile? {
+        guard let profileId = UUID(uuidString: id) else {
+            preconditionFailure()
+        }
+        return await profileManager.profile(withId: profileId)
+    }
 
     // FIXME: ###, .partoutProfile mapping is bs
     func profileSave(_ profile: ABI.Profile) async throws {
@@ -75,10 +78,10 @@ final class DefaultABI: ABIProtocol {
 //    }
 
     func profileDelete(_ id: ABI.Identifier) async {
-        guard let uuid = UUID(uuidString: id) else {
+        guard let profileId = UUID(uuidString: id) else {
             preconditionFailure()
         }
-        await profileManager.remove(withId: uuid)
+        await profileManager.remove(withId: profileId)
     }
 
 //    // MARK: - Tunnel

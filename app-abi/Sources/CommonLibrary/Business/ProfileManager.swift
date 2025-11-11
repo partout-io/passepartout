@@ -178,8 +178,12 @@ extension ProfileManager {
 // MARK: State
 
 extension ProfileManager {
-    public func profile(withId profileId: Profile.ID) -> Profile? {
-        allProfiles[profileId]
+    public func profile(withId profileId: Profile.ID) -> ABI.Profile? {
+        guard let profile = allProfiles[profileId] else { return nil }
+        return profile.uiProfile(
+            sharingFlags: sharingFlags(for: profileId),
+            requiredFeatures: requiredFeatures(for: profile)
+        )
     }
 }
 
@@ -362,17 +366,18 @@ private extension ProfileManager {
         return []
     }
 
+    func requiredFeatures(for profile: Profile) -> Set<ABI.AppFeature> {
+        guard let ineligible = processor?.requiredFeatures(profile), !ineligible.isEmpty else {
+            return []
+        }
+        return ineligible
+    }
+
     func computedProfileHeaders() -> [ABI.Identifier: ABI.ProfileHeader] {
         allProfiles.reduce(into: [:]) {
-            let requiredFeatures: Set<ABI.AppFeature>
-            if let ineligible = processor?.requiredFeatures($1.value), !ineligible.isEmpty {
-                requiredFeatures = ineligible
-            } else {
-                requiredFeatures = []
-            }
             $0[$1.key.uuidString] = $1.value.uiHeader(
                 sharingFlags: sharingFlags(for: $1.key),
-                requiredFeatures: requiredFeatures
+                requiredFeatures: requiredFeatures(for: $1.value)
             )
         }
 //        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")

@@ -5,15 +5,6 @@
 import CommonABI
 
 extension Profile {
-//    public func uiProfile(sharingFlags: [ABI.ProfileSharingFlag]) -> ABI.Profile {
-//        ABI.Profile(
-//            id: id.uuidString,
-//            name: name,
-//            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
-//            sharingFlags: sharingFlags
-//        )
-//    }
-
     public func uiHeader(
         sharingFlags: [ABI.ProfileSharingFlag],
         requiredFeatures: Set<ABI.AppFeature>
@@ -25,6 +16,18 @@ extension Profile {
             fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
             sharingFlags: sharingFlags,
             requiredFeatures: requiredFeatures
+        )
+    }
+
+    public func uiProfile(
+        sharingFlags: [ABI.ProfileSharingFlag],
+        requiredFeatures: Set<ABI.AppFeature>
+    ) -> ABI.Profile {
+        ABI.Profile(
+            header: uiHeader(
+                sharingFlags: sharingFlags,
+                requiredFeatures: requiredFeatures
+            )
         )
     }
 }
