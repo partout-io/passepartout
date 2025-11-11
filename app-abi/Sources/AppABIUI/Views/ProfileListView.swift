@@ -36,6 +36,7 @@ private extension ProfileListView {
             HStack {
                 Text(profile.name)
                 Spacer()
+                // FIXME: ###, could mix tunnel status into ProfileHeader
                 Text(tunnelObserver.status(for: profile.id).rawValue)
                 if profile.sharingFlags.contains(.tv) {
                     Text("TV")
