@@ -26,14 +26,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "AppABI_C",
-        ),
-        .target(
             name: "AppABI",
             dependencies: [
-                "AppABI_C",
-                "CommonLibrary",
                 "CommonABI",
+                "CommonLibrary",
                 "CommonUtils"
             ]
         ),
@@ -42,10 +38,18 @@ let package = Package(
             dependencies: ["AppABI"]
         ),
         .target(
+            name: "CommonABI",
+            dependencies: ["CommonABI_C"]
+        ),
+        .target(
+            name: "CommonABI_C",
+        ),
+        .target(
             name: "CommonLibrary",
             dependencies: [
-                "CommonProviders",
                 "CommonABI",
+                "CommonProviders",
+                "CommonUtils",
                 "partout"
             ],
             resources: [
@@ -66,10 +70,6 @@ let package = Package(
         .target(
             name: "CommonProvidersCore",
             dependencies: ["partout"]
-        ),
-        .target(
-            name: "CommonABI",
-            dependencies: ["AppABI_C"]
         ),
         .target(
             name: "CommonUtils"

@@ -5,7 +5,7 @@
 // FIXME: ###, KeyValueManager (rename PreferencesManager to something else)
 
 import AppABI
-import AppABI_C
+import CommonABI_C
 import CommonABI
 import Observation
 

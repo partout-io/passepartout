@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppABI_C
-import CommonABI
+import CommonABI_C
 
 // FIXME: ###, use typealias for string IDs like ProfileID
 

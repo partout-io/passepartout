@@ -2,10 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppABI_C
-
-//public let abi: ABIProtocol = MockABI()
-public let abi: ABIProtocol = DefaultABI()
+import CommonABI_C
 
 // MARK: - Global
 

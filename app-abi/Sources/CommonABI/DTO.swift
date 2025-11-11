@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppABI_C
+import CommonABI_C
 import Foundation
 
 public protocol DTO: Codable {

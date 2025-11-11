@@ -2,8 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppABI_C
+import CommonABI_C
+import CommonABI
 import CommonLibrary
+
+//public let abi: ABIProtocol = MockABI()
+public let abi: ABIProtocol = DefaultABI()
 
 // FIXME: ###, free psp_json after use
 final class DefaultABI: ABIProtocol {

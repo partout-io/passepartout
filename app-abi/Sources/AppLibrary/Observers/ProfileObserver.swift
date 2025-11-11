@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppABI
-import AppABI_C
+import CommonABI_C
 import Combine
 import CommonABI
 import Dispatch
