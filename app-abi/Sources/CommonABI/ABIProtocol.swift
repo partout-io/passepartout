@@ -8,9 +8,9 @@ import CommonABI_C
 
 public protocol ABIProtocol {
 #if !USE_C_ABI
-    typealias EventCallback = ABIEventCallback
+    typealias EventCallback = (UnsafeRawPointer?, ABI.Event) -> Void
 #else
-    typealias EventCallback = ABICEventCallback
+    typealias EventCallback = (UnsafeRawPointer?, psp_event) -> Void
 #endif
 
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?)
@@ -25,9 +25,6 @@ public protocol ABIProtocol {
 //    func tunnelGetAll() -> [ABI.Identifier: ABI.TunnelStatus]
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: ABI.Identifier)
 }
-
-public typealias ABIEventCallback = (UnsafeRawPointer?, ABI.Event) -> Void
-public typealias ABIEventCCallback = (UnsafeRawPointer?, psp_event) -> Void
 
 @MainActor
 public protocol ABIObserver {
