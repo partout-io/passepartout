@@ -16,7 +16,6 @@ public actor ProfileManager {
         case save(Profile, previous: Profile?)
         case remove([ABI.Identifier])
         case refresh([ABI.Identifier: ABI.ProfileHeader])
-        case search(String?)
         case startRemoteImport
         case stopRemoteImport
     }

@@ -43,18 +43,14 @@ public final class ProfileObserver {
 // MARK: - Actions
 
 extension ProfileObserver {
-//    // To avoid dup/expensive tracking of localProfiles
-//    public func profile(withId profileId: ABI.Identifier) async -> Profile? {
-//        await profileManager.profile(withId: profileId)
-//    }
-//
-//    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
-//    public func remove(withId profileId: ABI.Identifier) async
-//    public func remove(withIds profileIds: [ABI.Identifier]) async
-//    public func eraseRemotelySharedProfiles() async throws
-//    public func resaveAllProfiles() async
-//    public func observeLocal() async throws
-//    public func observeRemote(repository: ProfileRepository) async throws
+    //    // To avoid dup/expensive tracking of localProfiles
+    //    public func profile(withId profileId: ABI.Identifier) async -> Profile? {
+    //        await profileManager.profile(withId: profileId)
+    //    }
+    //
+    //    public func resaveAllProfiles() async
+
+    //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
 
     public func new() async throws {
         try await abi.profileNew(named: "lorem ipsum")
@@ -75,6 +71,18 @@ extension ProfileObserver {
 
     public func search(byName name: String) {
         searchSubject.send(name)
+    }
+
+    public func remove(withId profileId: ABI.Identifier) async {
+        await abi.profileRemove(profileId)
+    }
+
+    public func remove(withIds profileIds: [ABI.Identifier]) async {
+        await abi.profileRemove(profileIds)
+    }
+
+    public func removeRemotelyShared() async throws {
+        try await abi.profileRemoveAllRemote()
     }
 }
 

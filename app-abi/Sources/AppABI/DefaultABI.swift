@@ -33,6 +33,7 @@ final class DefaultABI: ABIProtocol {
         eventCallback = callback
 
         Task {
+            // FIXME: ###, this is not so easy, done on app launch/foreground with IAP updates
             try await profileManager.observeLocal()
             try await profileManager.observeRemote(repository: InMemoryProfileRepository())
         }
@@ -70,13 +71,6 @@ final class DefaultABI: ABIProtocol {
         try await profileManager.duplicate(profileWithId: profileId)
     }
 
-    func profileDelete(_ id: ABI.Identifier) async {
-        guard let profileId = UUID(uuidString: id) else {
-            preconditionFailure()
-        }
-        await profileManager.remove(withId: profileId)
-    }
-
     func profileImportText(_ text: String) async throws {
         var profile = try registry.compatibleProfile(fromString: text)
         // FIXME: ###, faking shared
@@ -84,6 +78,27 @@ final class DefaultABI: ABIProtocol {
         builder.attributes.isAvailableForTV = .random()
         profile = try builder.build()
         try await profileManager.save(profile, remotelyShared: true)
+    }
+
+    func profileRemove(_ id: ABI.Identifier) async {
+        guard let profileId = UUID(uuidString: id) else {
+            preconditionFailure()
+        }
+        await profileManager.remove(withId: profileId)
+    }
+
+    func profileRemove(_ ids: [ABI.Identifier]) async {
+        let profileIds = ids.map {
+            guard let profileId = UUID(uuidString: $0) else {
+                preconditionFailure()
+            }
+            return profileId
+        }
+        await profileManager.remove(withIds: profileIds)
+    }
+
+    func profileRemoveAllRemote() async throws {
+        try await profileManager.eraseRemotelySharedProfiles()
     }
 
 //    // MARK: - Tunnel
