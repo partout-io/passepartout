@@ -139,6 +139,7 @@ private extension ProfileObserver {
             // FIXME: ###, localized module types
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
 
+        // FIXME: ###, add ABIProtocol.log(level, message)
 //        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
 }
