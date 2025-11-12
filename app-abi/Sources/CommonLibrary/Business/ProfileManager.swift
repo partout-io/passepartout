@@ -30,7 +30,6 @@ public actor ProfileManager {
 
     // MARK: State
 
-    // FIXME: ###, probably overkill to retain full profiles, only get them on request
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
             didChange.send(.refresh(computedProfileHeaders()))
@@ -278,7 +277,7 @@ private extension ProfileManager {
         if !excludedIds.isEmpty {
             pp_log_g(.App.profiles, .info, "Delete excluded profiles from repository: \(excludedIds)")
             Task {
-                // XXX: ignore this published value
+                // XXX: Ignore this published value
                 try await repository.removeProfiles(withIds: Array(excludedIds))
             }
         }
@@ -370,7 +369,7 @@ private extension ProfileManager {
                 }
             }
 
-            // yield a little bit
+            // Yield a little bit
             try? await Task.sleep(for: .milliseconds(100))
         }
         await remoteImportTask?.value
@@ -404,12 +403,13 @@ private extension ProfileManager {
     }
 
     func computedProfileHeaders() -> [ABI.Identifier: ABI.ProfileHeader] {
-        allProfiles.reduce(into: [:]) {
+        let allHeaders = allProfiles.reduce(into: [:]) {
             $0[$1.key.uuidString] = $1.value.uiHeader(
                 sharingFlags: sharingFlags(for: $1.key),
                 requiredFeatures: requiredFeatures(for: $1.value)
             )
         }
-//        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+        pp_log_g(.App.profiles, .info, "Updated headers: \(allHeaders)")
+        return allHeaders
     }
 }
