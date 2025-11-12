@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonABI
-import Foundation
 
 public actor ProfileManager {
     private enum Observer: CaseIterable {
