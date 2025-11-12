@@ -45,8 +45,14 @@ private extension ProfileListView {
                 }
                 Toggle("", isOn: Binding {
                     tunnelObserver.status(for: profile.id) == .connected
-                } set: {
-                    tunnelObserver.setEnabled($0, profileId: profile.id)
+                } set: { isEnabled in
+                    Task {
+                        if isEnabled {
+                            try await tunnelObserver.connect(to: profile.id)
+                        } else {
+                            try await tunnelObserver.disconnect(from: profile.id)
+                        }
+                    }
                 })
             }
         }

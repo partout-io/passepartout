@@ -25,8 +25,10 @@ public protocol ABIProtocol {
     func profileRemove(_ ids: [ABI.Identifier]) async
     func profileRemoveAllRemote() async throws
 
-//    func tunnelGetAll() -> [ABI.Identifier: ABI.TunnelStatus]
-//    func tunnelSetEnabled(_ enabled: Bool, profileId: ABI.Identifier)
+    func tunnelConnect(to profileId: ABI.Identifier, force: Bool) async throws
+//    func tunnelReconnect(to profileId: ABI.Identifier) async throws
+    func tunnelDisconnect(from profileId: ABI.Identifier) async throws
+    func tunnelCurrentLog() async -> [String]
 }
 
 @MainActor

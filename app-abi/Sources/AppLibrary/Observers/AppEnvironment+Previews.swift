@@ -18,7 +18,7 @@ extension AppEnvironment {
         let iapObserver = IAPObserver()
         let preferencesObserver = PreferencesObserver()
         let profileObserver = ProfileObserver(abi: abi)
-        let tunnelObserver = TunnelObserver()
+        let tunnelObserver = TunnelObserver(abi: abi)
         return AppEnvironment(
             abi: abi,
             configObserver: configObserver,

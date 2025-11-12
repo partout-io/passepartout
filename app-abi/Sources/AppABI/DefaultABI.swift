@@ -20,12 +20,15 @@ final class DefaultABI: ABIProtocol {
     // FIXME: ###, business objects, this should map most of AppContext
     private let registry: Registry
     private let profileManager: ProfileManager
+//    private let extendedTunnel: ExtendedTunnel
+    private var extendedTunnel: ExtendedTunnel!
 
     private var profileEventTask: Task<Void, Never>?
 
     init() {
         registry = Registry()
         profileManager = ProfileManager(profiles: [])
+//        extendedTunnel = ExtendedTunnel
     }
 
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?) {
@@ -101,18 +104,26 @@ final class DefaultABI: ABIProtocol {
         try await profileManager.eraseRemotelySharedProfiles()
     }
 
-//    // MARK: - Tunnel
-//
-//    func tunnelGetAll() -> [ProfileID : ABI.TunnelStatus] {
-//        // FIXME: ###
-//        [:]
+    // MARK: - Tunnel
+
+    func tunnelConnect(to profileId: ABI.Identifier, force: Bool) async throws {
+        guard let profileId = UUID(uuidString: profileId) else { return }
+        guard let profile = await profileManager.partoutProfile(withId: profileId) else { return }
+        try await extendedTunnel.connect(with: profile, force: force)
+    }
+
+//    func tunnelReconnect(to profileId: ABI.Identifier) async throws {
+//        try await extendedTunnel.rec
 //    }
-//
-//    func tunnelSetEnabled(_ enabled: Bool, profileId: String) {
-////        let dtoId = String(cString: profileId)
-////        statuses[dtoId] = enabled ? .connected : .disconnected
-//        postArea(PSPAreaTunnel)
-//    }
+
+    func tunnelDisconnect(from profileId: ABI.Identifier) async throws {
+        guard let profileId = UUID(uuidString: profileId) else { return }
+        try await extendedTunnel.disconnect(from: profileId)
+    }
+
+    func tunnelCurrentLog() async -> [String] {
+        await extendedTunnel.currentLog(parameters: Constants.shared.log)
+    }
 }
 
 // MARK: - Events

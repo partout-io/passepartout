@@ -206,6 +206,10 @@ extension ProfileManager {
 // MARK: State
 
 extension ProfileManager {
+    public func partoutProfile(withId profileId: Profile.ID) -> Profile? {
+        allProfiles[profileId]
+    }
+
     public func profile(withId profileId: Profile.ID) -> ABI.Profile? {
         guard let profile = allProfiles[profileId] else { return nil }
         return profile.uiProfile(

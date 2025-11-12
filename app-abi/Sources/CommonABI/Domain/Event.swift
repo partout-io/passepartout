@@ -5,11 +5,15 @@
 extension ABI {
     public enum Event {
         case profiles(ProfileEvent)
-        case tunnel
+        case tunnel(TunnelEvent)
     }
 
     public enum ProfileEvent {
         case ready
         case refresh([Identifier: ProfileHeader])
+    }
+
+    public enum TunnelEvent {
+        case refresh
     }
 }

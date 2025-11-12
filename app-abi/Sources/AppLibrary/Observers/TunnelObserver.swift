@@ -8,40 +8,51 @@ import CommonABI
 import Observation
 
 @MainActor @Observable
-final class TunnelObserver: ABIObserver {
+public final class TunnelObserver: ABIObserver {
+    private let abi: ABIProtocol
+
     private(set) var statuses: [ABI.Identifier: ABI.TunnelStatus]
 
-    init() {
+    public init(abi: ABIProtocol) {
+        self.abi = abi
         statuses = [:]
-        refresh()
+    }
+}
+
+// MARK: - Actions
+
+extension TunnelObserver {
+    public func connect(to profileId: ABI.Identifier, force: Bool = false) async throws {
+        try await abi.tunnelConnect(to: profileId, force: force)
     }
 
-    func refresh() {
-//        statuses = abi.tunnelGetAll()
+//    public func reconnect(to profileId: ABI.Identifier) async throws {
+//        try await abi.tunnelReconnect(to: profileId)
+//    }
+
+    public func disconnect(from profileId: ABI.Identifier) async throws {
+        try await abi.tunnelDisconnect(from: profileId)
     }
 
-    func status(for profileId: ABI.Identifier) -> ABI.TunnelStatus {
-        statuses[profileId] ?? .disconnected
+    public func currentLog() async -> [String] {
+        await abi.tunnelCurrentLog()
     }
 
-    func setEnabled(_ enabled: Bool, profileId: ABI.Identifier) {
-//        abi.tunnelSetEnabled(enabled, profileId: profileId)
+    public func onUpdate(_ event: ABI.Event) {
+        guard case .tunnel(let tunnelEvent) = event else {
+            return
+        }
+        print("TunnelObserver.onUpdate()")
+        switch tunnelEvent {
+        case .refresh:
+            break
+        }
     }
+}
 
-    func onUpdate(_ event: ABI.Event) {
-        print("onUpdate() called")
-        refresh()
-    }
+// MARK: - State
 
-    // MARK: - Actions
-
-//    public func install(_ profile: Profile) async throws
-//    public func connect(with profile: Profile, force: Bool = false) async throws
-//    public func disconnect(from profileId: Profile.ID) async throws
-//    public func currentLog(parameters: Constants.Log) async -> [String]
-
-    // MARK: - State
-
+extension TunnelObserver {
 //    public var activeProfile: TunnelActiveProfile?
 //    public var activeProfiles: [Profile.ID: TunnelActiveProfile]
 //    public var activeProfilesStream: AsyncStream<[Profile.ID: TunnelActiveProfile]>
@@ -51,4 +62,8 @@ final class TunnelObserver: ABIObserver {
 //    public func dataCount(ofProfileId profileId: Profile.ID) -> DataCount?
 //    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code?
 //    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T?
+
+    public func status(for profileId: ABI.Identifier) -> ABI.TunnelStatus {
+        statuses[profileId] ?? .disconnected
+    }
 }
