@@ -13,7 +13,7 @@ public actor ProfileManager {
 
     public enum Event: Equatable {
         case ready
-        case save(Profile, previous: Profile?) // FIXME: ###, ABI.Profile
+        case save(Profile, previous: Profile?) // Internal event
         case remove([ABI.Identifier])
         case refresh([ABI.Identifier: ABI.ProfileHeader])
         case startRemoteImport
