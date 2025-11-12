@@ -22,7 +22,6 @@ public final class ProfileObserver {
     public private(set) var filteredHeaders: [ABI.ProfileHeader]
     public private(set) var isReady: Bool
     public var isRemoteImportingEnabled: Bool
-
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
@@ -33,7 +32,6 @@ public final class ProfileObserver {
         filteredHeaders = []
         isReady = false
         isRemoteImportingEnabled = false
-
         searchSubject = CurrentValueSubject("")
 
         observeEvents()
