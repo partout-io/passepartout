@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonProvidersCore
-import Foundation
 
 extension Registry {
     public convenience init(
