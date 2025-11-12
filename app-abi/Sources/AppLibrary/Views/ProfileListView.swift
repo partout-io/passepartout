@@ -56,7 +56,7 @@ private extension ProfileListView {
         Button("New") {
             Task {
                 do {
-                    try await profileObserver.new()
+                    try await profileObserver.new(named: "lorem ipsum")
                 } catch {
                     print(error.localizedDescription)
                 }

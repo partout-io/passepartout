@@ -52,8 +52,8 @@ extension ProfileObserver {
 
     //    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws
 
-    public func new() async throws {
-        try await abi.profileNew(named: "lorem ipsum")
+    public func new(named name: String) async throws {
+        try await abi.profileNew(named: name)
     }
 
     public func new(fromURL url: URL) async throws {
