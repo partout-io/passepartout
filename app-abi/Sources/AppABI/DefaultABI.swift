@@ -78,7 +78,11 @@ final class DefaultABI: ABIProtocol {
     }
 
     func profileImportText(_ text: String) async throws {
-        let profile = try registry.compatibleProfile(fromString: text)
+        var profile = try registry.compatibleProfile(fromString: text)
+        // FIXME: ###, faking shared
+        var builder = profile.builder()
+        builder.attributes.isAvailableForTV = .random()
+        profile = try builder.build()
         try await profileManager.save(profile, remotelyShared: true)
     }
 
