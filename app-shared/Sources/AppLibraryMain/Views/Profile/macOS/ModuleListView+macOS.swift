@@ -6,7 +6,7 @@
 
 import AppAccessibility
 import CommonLibrary
-import CommonUtils
+
 import SwiftUI
 
 struct ModuleListView: View, Routable {

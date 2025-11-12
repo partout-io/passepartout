@@ -4,7 +4,7 @@
 
 #if os(macOS)
 
-import CommonUtils
+import CommonLibrary
 import SwiftUI
 
 struct SystemExtensionView: View {

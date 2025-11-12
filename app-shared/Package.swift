@@ -47,10 +47,6 @@ let package = Package(
             targets: ["CommonProviders"]
         ),
         .library(
-            name: "CommonUtils",
-            targets: ["CommonUtils"]
-        ),
-        .library(
             name: "CommonWeb",
             targets: ["CommonWeb"]
         ),
@@ -154,7 +150,6 @@ let package = Package(
             name: "CommonLibrary",
             dependencies: [
                 "CommonProviders",
-                "CommonUtils",
                 "partout"
             ],
             resources: [
@@ -175,9 +170,6 @@ let package = Package(
         .target(
             name: "CommonProvidersCore",
             dependencies: ["partout"]
-        ),
-        .target(
-            name: "CommonUtils"
         ),
         .target(
             name: "CommonWeb",
@@ -224,10 +216,6 @@ let package = Package(
             resources: [
                 .process("Resources")
             ]
-        ),
-        .testTarget(
-            name: "CommonUtilsTests",
-            dependencies: ["CommonUtils"]
         ),
         .testTarget(
             name: "CommonWebTests",

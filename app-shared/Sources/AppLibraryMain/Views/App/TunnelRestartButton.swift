@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonUtils
+
 import SwiftUI
 
 struct TunnelRestartButton<Label>: View where Label: View {
