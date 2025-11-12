@@ -19,7 +19,7 @@ struct HideMeProviderTests: APITestSuite {
             presetsCount: 1,
             serversCount: 2,
             isCached: false
-        ),
+        )
 //        FetchInput(
 //            cache: nil,
 //            presetsCount: 1,

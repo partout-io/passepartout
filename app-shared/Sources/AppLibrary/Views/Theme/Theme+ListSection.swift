@@ -4,7 +4,6 @@
 
 #if !os(tvOS)
 
-
 import SwiftUI
 
 extension Theme {
