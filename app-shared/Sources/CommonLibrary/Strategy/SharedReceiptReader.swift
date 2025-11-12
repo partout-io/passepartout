@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-
-
 public actor SharedReceiptReader: AppReceiptReader {
     private let reader: InAppReceiptReader
 

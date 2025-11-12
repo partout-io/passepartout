@@ -40,7 +40,7 @@ public struct AppPreferenceValues: Hashable, Codable, Sendable {
     // XXX: These are copied from ConfigManager.activeFlags for use
     // in the PacketTunnelProvider (see AppContext.onApplicationActive).
     // In the app, use ConfigManager.activeFlags directly.
-    public var configFlagsData: Data? = nil
+    public var configFlagsData: Data?
 
     public var dnsFallsBack = true
     public var lastCheckedVersionDate: TimeInterval?
@@ -50,7 +50,7 @@ public struct AppPreferenceValues: Hashable, Codable, Sendable {
     public var relaxedVerification = false
     public var skipsPurchases = false
 
-    public var experimentalData: Data? = nil
+    public var experimentalData: Data?
 
     public init() {
     }

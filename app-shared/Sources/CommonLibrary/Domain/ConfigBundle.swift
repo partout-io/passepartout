@@ -10,12 +10,6 @@ public struct ConfigBundle: Decodable {
 
         public let data: JSON?
 
-        init(rate: Int, minBuild: Int?, data: JSON?) {
-            self.rate = rate
-            self.minBuild = minBuild
-            self.data = data
-        }
-
         public func isActive(withBuild buildNumber: Int) -> Bool {
             if let minBuild, buildNumber < minBuild {
                 return false
@@ -27,7 +21,7 @@ public struct ConfigBundle: Decodable {
     // flag -> deployment (0-100)
     public let map: [ConfigFlag: Config]
 
-    init(map: [ConfigFlag : Config]) {
+    init(map: [ConfigFlag: Config]) {
         self.map = map
     }
 
