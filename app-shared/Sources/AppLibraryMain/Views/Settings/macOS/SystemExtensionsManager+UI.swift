@@ -5,7 +5,7 @@
 #if os(macOS)
 
 import AppKit
-import CommonUtils
+import CommonLibrary
 import Foundation
 
 extension SystemExtensionManager {

@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonUtils
-import Foundation
+import CommonLibrary
 
 final class MockBetaChecker: BetaChecker {
     var isBeta = false

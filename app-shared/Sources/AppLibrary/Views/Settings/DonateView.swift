@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonUtils
+
 import SwiftUI
 
 public struct DonateView<Modifier>: View where Modifier: ViewModifier {

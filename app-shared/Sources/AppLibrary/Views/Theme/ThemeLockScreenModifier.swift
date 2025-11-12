@@ -4,7 +4,7 @@
 
 #if !os(tvOS)
 
-import CommonUtils
+import CommonLibrary
 #if canImport(LocalAuthentication)
 import LocalAuthentication
 #endif

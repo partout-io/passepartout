@@ -4,7 +4,7 @@
 
 #if !os(tvOS)
 
-import CommonUtils
+import CommonLibrary
 import SwiftUI
 
 public struct ThemeCopiableText<Value, ValueView>: View where Value: CustomStringConvertible, ValueView: View {
