@@ -27,8 +27,13 @@ final class DefaultABI: ABIProtocol {
 
     init() {
         registry = Registry()
+        // FIXME: ###, mock managers
         profileManager = ProfileManager(profiles: [])
-//        extendedTunnel = ExtendedTunnel
+        extendedTunnel = ExtendedTunnel(tunnel: Tunnel(
+            .global,
+            strategy: FakeTunnelStrategy(),
+            environmentFactory: { SharedTunnelEnvironment(profileId: $0) },
+        ), interval: 1.0)
     }
 
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?) {
