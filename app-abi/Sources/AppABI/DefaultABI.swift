@@ -54,35 +54,32 @@ final class DefaultABI: ABIProtocol {
         return await profileManager.profile(withId: profileId)
     }
 
-    // FIXME: ###, .partoutProfile mapping is bs
     func profileSave(_ profile: ABI.Profile) async throws {
         let partoutProfile = try profile.partoutProfile()
         try await profileManager.save(partoutProfile)
     }
 
-    // FIXME: ###, name from args, or from internal constants?
     func profileNew(named name: String) async throws {
-        let profile = try Profile.Builder(name: name).build()
-        try await profileManager.save(profile)
+        try await profileManager.new(named: name)
     }
 
-    func profileImportText(_ text: String) async throws {
-        let profile = try registry.compatibleProfile(fromString: text)
-        try await profileManager.save(profile, remotelyShared: true)
+    func profileDup(_ id: ABI.Identifier) async throws {
+        guard let profileId = UUID(uuidString: id) else {
+            preconditionFailure()
+        }
+        try await profileManager.duplicate(profileWithId: profileId)
     }
-
-//    func profileDup(_ id: String) async throws -> ABI.ProfileHeader {
-//        profileManager.du
-//        // FIXME: ###
-//        postArea(PSPAreaProfile)
-//        fatalError()
-//    }
 
     func profileDelete(_ id: ABI.Identifier) async {
         guard let profileId = UUID(uuidString: id) else {
             preconditionFailure()
         }
         await profileManager.remove(withId: profileId)
+    }
+
+    func profileImportText(_ text: String) async throws {
+        let profile = try registry.compatibleProfile(fromString: text)
+        try await profileManager.save(profile, remotelyShared: true)
     }
 
 //    // MARK: - Tunnel

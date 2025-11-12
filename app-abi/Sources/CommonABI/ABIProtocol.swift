@@ -16,12 +16,12 @@ public protocol ABIProtocol {
     typealias EventCallback = (UnsafeRawPointer?, ABICallbackEvent) -> Void
     func registerEvents(context: UnsafeRawPointer?, callback: EventCallback?)
 
-//    func profile(withId id: ABI.Identifier) async -> ABI.Profile?
+    func profile(withId id: ABI.Identifier) async -> ABI.Profile?
     func profileSave(_ profile: ABI.Profile) async throws
     func profileNew(named name: String) async throws
-    func profileImportText(_ text: String) async throws
-//    func profileDup(_ id: ABI.Identifier) async throws -> ABI.ProfileHeader
+    func profileDup(_ id: ABI.Identifier) async throws
     func profileDelete(_ id: ABI.Identifier) async
+    func profileImportText(_ text: String) async throws
 
 //    func tunnelGetAll() -> [ABI.Identifier: ABI.TunnelStatus]
 //    func tunnelSetEnabled(_ enabled: Bool, profileId: ABI.Identifier)

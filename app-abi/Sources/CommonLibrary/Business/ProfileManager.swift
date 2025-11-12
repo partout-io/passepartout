@@ -144,6 +144,37 @@ extension ProfileManager {
         pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
+    public func new(named name: String) async throws {
+        let uniqueName = firstUniqueName(from: name)
+        let profile = try Profile.Builder(name: uniqueName).build()
+        try await save(profile)
+    }
+
+    public func duplicate(profileWithId profileId: Profile.ID) async throws {
+        guard let profile = allProfiles[profileId] else {
+            return
+        }
+        var builder = profile.builder(withNewId: true)
+        builder.name = firstUniqueName(from: profile.name)
+        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
+        let copy = try builder.build()
+
+        try await save(copy)
+    }
+
+    public func firstUniqueName(from name: String) -> String {
+        let allNames = Set(allProfiles.values.map(\.name))
+        var newName = name
+        var index = 1
+        while true {
+            if !allNames.contains(newName) {
+                return newName
+            }
+            newName = [name, index.description].joined(separator: ".")
+            index += 1
+        }
+    }
+
     public func remove(withId profileId: Profile.ID) async {
         await remove(withIds: [profileId])
     }

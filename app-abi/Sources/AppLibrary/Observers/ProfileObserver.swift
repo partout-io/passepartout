@@ -57,8 +57,7 @@ extension ProfileObserver {
 //    public func observeRemote(repository: ProfileRepository) async throws
 
     public func new() async throws {
-        let name = firstUniqueName(from: "lorem ipsum")
-        try await abi.profileNew(named: name)
+        try await abi.profileNew(named: "lorem ipsum")
     }
 
     public func new(fromURL url: URL) async throws {
@@ -74,19 +73,13 @@ extension ProfileObserver {
         try await abi.profileImportText(text)
     }
 
+    public func duplicate(profileWithId profileId: ABI.Identifier) async throws {
+        try await abi.profileDup(profileId)
+    }
+
     public func search(byName name: String) {
         searchSubject.send(name)
     }
-
-//    public func duplicate(profileWithId profileId: ABI.Identifier) async throws {
-//        guard var profile = localProfiles[profileId] else {
-//            return
-//        }
-//        profile.renewId()
-//        profile.name = firstUniqueName(from: profile.name)
-////        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
-//        try await abi.profileSave(profile)
-//    }
 }
 
 // MARK: - State
@@ -106,19 +99,6 @@ extension ProfileObserver: ABIObserver {
 
     public var isSearching: Bool {
         !searchSubject.value.isEmpty
-    }
-
-    public func firstUniqueName(from name: String) -> String {
-        let allNames = Set(allHeaders.values.map(\.name))
-        var newName = name
-        var index = 1
-        while true {
-            if !allNames.contains(newName) {
-                return newName
-            }
-            newName = [name, index.description].joined(separator: ".")
-            index += 1
-        }
     }
 
     public func onUpdate(_ event: ABI.Event) {
