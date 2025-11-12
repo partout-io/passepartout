@@ -68,9 +68,10 @@ private extension ProfileListView {
         Button("Import file") {
             Task {
                 do {
-                    guard let url = URL(string: "https://") else {
-                        fatalError()
-                    }
+                    let path = NSTemporaryDirectory().appending("imported-file.txt")
+                    let url = URL(filePath: path)
+                    let text = "{\"id\":\"e790a205-af25-4a8b-af89-0711245ac96c\",\"name\":\"imported url\",\"modules\":[],\"activeModulesIds\":[]}"
+                    try text.write(to: url, atomically: true, encoding: .utf8)
                     try await profileObserver.new(fromURL: url)
                 } catch {
                     print(error.localizedDescription)
@@ -83,7 +84,9 @@ private extension ProfileListView {
         Button("Import text") {
             Task {
                 do {
-                    try await profileObserver.new(fromText: "text")
+                    // FIXME: ###
+                    let text = "{\"id\":\"e80c727f-e52c-4fed-8f59-e77d3d313a88\",\"name\":\"imported text\",\"modules\":[],\"activeModulesIds\":[]}"
+                    try await profileObserver.new(fromText: text)
                 } catch {
                     print(error.localizedDescription)
                 }

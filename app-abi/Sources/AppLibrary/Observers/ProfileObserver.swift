@@ -61,15 +61,11 @@ extension ProfileObserver {
     }
 
     public func new(fromURL url: URL) async throws {
-        // FIXME: ###
-//        let text = try String(contentsOf: url)
-        let text = "{\"id\":\"e790a205-af25-4a8b-af89-0711245ac96c\",\"name\":\"imported url\",\"modules\":[],\"activeModulesIds\":[]}"
+        let text = try String(contentsOf: url)
         try await abi.profileImportText(text)
     }
 
     public func new(fromText text: String) async throws {
-        // FIXME: ###
-        let text = "{\"id\":\"e80c727f-e52c-4fed-8f59-e77d3d313a88\",\"name\":\"imported text\",\"modules\":[],\"activeModulesIds\":[]}"
         try await abi.profileImportText(text)
     }
 
