@@ -6,6 +6,7 @@ import Combine
 import CommonUtils
 import Foundation
 
+// FIXME: ###, Keep MainActor until observers
 @MainActor
 public final class IAPManager: ObservableObject {
     private let customUserLevel: ABI.AppUserLevel?

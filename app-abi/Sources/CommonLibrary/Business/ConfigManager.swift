@@ -8,6 +8,7 @@ public protocol ConfigManagerStrategy {
     func bundle() async throws -> ConfigBundle
 }
 
+// FIXME: ###, Keep MainActor until observers
 @MainActor
 public final class ConfigManager: ObservableObject {
     private let strategy: ConfigManagerStrategy?

@@ -4,6 +4,7 @@
 
 import Foundation
 
+// FIXME: ###, Keep MainActor until observers
 @MainActor
 public final class VersionChecker: ObservableObject {
     public struct Release: Hashable, Sendable {

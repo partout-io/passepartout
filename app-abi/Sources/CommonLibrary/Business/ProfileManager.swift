@@ -4,7 +4,9 @@
 
 import CommonABI
 
-public actor ProfileManager {
+// FIXME: ###, Keep MainActor until observers
+@MainActor
+public final class ProfileManager {
     private enum Observer: CaseIterable {
         case local
         case remote
@@ -59,7 +61,7 @@ public actor ProfileManager {
     // MARK: - Init
 
     // For testing/previews
-    public init(profiles: [Profile]) {
+    public convenience init(profiles: [Profile]) {
         self.init(repository: InMemoryProfileRepository(profiles: profiles))
     }
 

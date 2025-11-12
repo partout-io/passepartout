@@ -5,6 +5,7 @@
 import CommonUtils
 import Foundation
 
+// FIXME: ###, Keep MainActor until observers
 @MainActor
 public final class ExtendedTunnel: ObservableObject {
     public static nonisolated let isManualKey = "isManual"
