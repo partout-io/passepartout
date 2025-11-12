@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@_exported import CommonIAP
 @_exported import CommonProviders
 @_exported import Partout
 
