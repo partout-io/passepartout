@@ -55,14 +55,6 @@ extension WireGuardParseError: @retroactive LocalizedError {
     }
 }
 
-private func tr(_ key: String) -> String {
-    NSLocalizedString(key, bundle: .module, comment: "")
-}
-
-private func tr(_ format: String, _ arguments: CVarArg...) -> String {
-    String(format: tr(format), arguments: arguments)
-}
-
 private func composed(_ title: String, _ info: String) -> String {
     [title, info].joined(separator: " ")
 }

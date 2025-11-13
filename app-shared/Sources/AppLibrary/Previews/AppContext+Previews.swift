@@ -15,6 +15,7 @@ extension AppContext {
             inAppHelper: FakeAppProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
+            timeoutInterval: Constants.shared.iap.productsTimeoutInterval,
             productsAtBuild: { _ in
                 []
             }

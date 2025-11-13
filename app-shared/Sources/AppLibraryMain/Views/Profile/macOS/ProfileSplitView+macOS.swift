@@ -5,7 +5,6 @@
 #if os(macOS)
 
 import CommonLibrary
-
 import SwiftUI
 
 struct ProfileSplitView: View, Routable {

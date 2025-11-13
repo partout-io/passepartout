@@ -88,16 +88,3 @@ extension Issue {
         Strings.Unlocalized.Issues.subject
     }
 }
-
-private extension Issue {
-    var template: String {
-        do {
-            guard let templateURL = Bundle.module.url(forResource: "Issue", withExtension: "txt") else {
-                fatalError("Unable to find Issue.txt in Resources")
-            }
-            return try String(contentsOf: templateURL)
-        } catch {
-            fatalError("Unable to parse Issue.txt: \(error)")
-        }
-    }
-}

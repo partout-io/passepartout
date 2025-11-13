@@ -4,7 +4,6 @@
 
 import Combine
 import CommonLibrary
-
 import SwiftUI
 
 struct DNSView: View, ModuleDraftEditing {

@@ -5,14 +5,6 @@
 import Foundation
 
 extension ChangelogEntry {
-    public var issueURL: URL? {
-        issue.map {
-            Constants.shared.github.urlForIssue($0)
-        }
-    }
-}
-
-extension ChangelogEntry {
     private static let entryPrefix = "* "
 
     public init?(_ index: Int, line: String) {

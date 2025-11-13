@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import CommonLibrary
 
 extension PartoutLogger {
     public enum Target {
