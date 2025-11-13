@@ -7,7 +7,7 @@ import Foundation
 
 extension AppContext {
     public static let forPreviews: AppContext = {
-        let constants: Constants = .shared
+        let constants = Resources.constants
 
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
@@ -15,7 +15,7 @@ extension AppContext {
             inAppHelper: FakeAppProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
-            timeoutInterval: Constants.shared.iap.productsTimeoutInterval,
+            timeoutInterval: Resources.constants.iap.productsTimeoutInterval,
             productsAtBuild: { _ in
                 []
             }

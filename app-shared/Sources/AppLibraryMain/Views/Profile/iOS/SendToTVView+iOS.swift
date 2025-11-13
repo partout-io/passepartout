@@ -67,7 +67,7 @@ private extension SendToTVView {
     }
 
     func passcodeView(url: URL) -> some View {
-        SendToTVPasscodeView(length: Constants.shared.webReceiver.passcodeLength) { passcode in
+        SendToTVPasscodeView(length: Resources.constants.webReceiver.passcodeLength) { passcode in
             do {
                 isSending = true
                 try await onComplete(url, passcode)

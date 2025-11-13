@@ -22,6 +22,6 @@ extension HTTPAddressPort {
 
 extension HTTPAddressPort {
     static var forWebReceiver: HTTPAddressPort {
-        HTTPAddressPort(port: String(Constants.shared.webReceiver.port))
+        HTTPAddressPort(port: String(Resources.constants.webReceiver.port))
     }
 }

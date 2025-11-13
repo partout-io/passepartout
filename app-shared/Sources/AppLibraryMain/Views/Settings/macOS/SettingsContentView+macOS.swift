@@ -71,7 +71,7 @@ private extension SettingsContentView {
             .themeSection(header: Strings.Global.Nouns.about)
 
             Group {
-                ExternalLink(Strings.Unlocalized.faq, url: Constants.shared.websites.faq)
+                ExternalLink(Strings.Unlocalized.faq, url: Resources.constants.websites.faq)
                 if distributionTarget == .developerID {
                     linkContent(.systemExtension)
                 }

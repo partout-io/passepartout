@@ -44,7 +44,7 @@ extension ReportIssueButton {
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
                 urlForTunnelLog: BundleConfiguration.urlForTunnelLog(in: distributionTarget),
-                parameters: Constants.shared.log,
+                parameters: Resources.constants.log,
                 comment: comment
             ))
             service.recipients = [issue.to]
@@ -59,11 +59,11 @@ private extension Issue {
         var list: [Any] = []
         list.append(body)
         if let appLog,
-           let url = appLog.toTemporaryURL(withFilename: Constants.shared.log.appPath) {
+           let url = appLog.toTemporaryURL(withFilename: Resources.constants.log.appPath) {
             list.append(url)
         }
         if let tunnelLog,
-           let url = tunnelLog.toTemporaryURL(withFilename: Constants.shared.log.tunnelPath) {
+           let url = tunnelLog.toTemporaryURL(withFilename: Resources.constants.log.tunnelPath) {
             list.append(url)
         }
         return list

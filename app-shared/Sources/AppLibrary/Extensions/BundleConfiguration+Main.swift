@@ -4,7 +4,7 @@
 
 import CommonLibrary
 
-// WARNING: beware of Constants.shared dependency
+// WARNING: beware of Resources.constants dependency
 
 extension BundleConfiguration {
     public enum BundleKey: String {
@@ -83,7 +83,7 @@ private extension BundleConfiguration {
 
     // WARNING: fails from package itself, e.g. in previews
     static var main: BundleConfiguration {
-        guard let bundle = BundleConfiguration(.main, key: Constants.shared.bundleKey) else {
+        guard let bundle = BundleConfiguration(.main, key: Resources.constants.bundleKey) else {
             fatalError("Missing main bundle")
         }
         return bundle

@@ -28,7 +28,7 @@ public struct LinksView: View {
 
 private extension LinksView {
     var constants: Constants {
-        .shared
+        Resources.constants
     }
 
     var appStoreId: String {
