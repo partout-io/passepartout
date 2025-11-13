@@ -15,7 +15,7 @@ final class AppDelegate: NSObject {
             pp_log_g(.App.core, .info, "UI tests: mock AppContext")
             return .forUITesting
         }
-        return AppContext(constants: Resources.constants)
+        return AppContext()
     }()
 
 #if os(macOS)

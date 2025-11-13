@@ -14,11 +14,12 @@ import CoreData
 import Foundation
 
 extension AppContext {
-    convenience init(constants: Constants) {
+    convenience init() {
 
         // MARK: Declare globals
 
         let distributionTarget = Dependencies.distributionTarget
+        let constants = Resources.constants
         let dependencies: Dependencies = .shared
         let kvManager = dependencies.kvManager
 
