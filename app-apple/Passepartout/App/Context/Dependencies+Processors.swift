@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 
 extension Dependencies {
     func appProcessor(
@@ -20,6 +21,6 @@ extension Dependencies {
 
     @Sendable
     nonisolated func profileTitle(_ profile: Profile) -> String {
-        String(format: Constants.shared.tunnel.profileTitleFormat, profile.name)
+        String(format: Resources.constants.tunnel.profileTitleFormat, profile.name)
     }
 }

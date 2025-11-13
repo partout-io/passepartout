@@ -5,6 +5,7 @@
 #if os(macOS)
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 extension ReportIssueButton: View {

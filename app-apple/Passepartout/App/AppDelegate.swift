@@ -5,6 +5,7 @@
 import AppAccessibility
 import AppLibrary
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 @MainActor
@@ -14,7 +15,7 @@ final class AppDelegate: NSObject {
             pp_log_g(.App.core, .info, "UI tests: mock AppContext")
             return .forUITesting
         }
-        return AppContext()
+        return AppContext(constants: Resources.constants)
     }()
 
 #if os(macOS)

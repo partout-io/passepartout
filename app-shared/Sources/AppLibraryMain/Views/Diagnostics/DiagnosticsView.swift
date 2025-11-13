@@ -4,6 +4,7 @@
 
 import AppAccessibility
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 struct DiagnosticsView: View {

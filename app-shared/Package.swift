@@ -18,10 +18,7 @@ let package = Package(
         ),
         .library(
             name: "AppLibrary",
-            targets: [
-                "AppLibrary",
-                "CommonResources"
-            ]
+            targets: ["AppLibrary"]
         ),
         .library(
             name: "AppLibraryMain",
@@ -74,7 +71,8 @@ let package = Package(
             dependencies: [
                 "AppStrings",
                 "AppAccessibility",
-                "CommonLibrary"
+                "CommonLibrary",
+                "CommonResources"
             ]
         ),
         .target(
