@@ -16,6 +16,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let distributionTarget = Dependencies.distributionTarget
         let constants = Resources.constants
+        let logURL = BundleConfiguration.urlForTunnelLog(in: distributionTarget)
+        let versionString = BundleConfiguration.mainVersionString
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -23,7 +25,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // profile-aware context later.
         _ = PartoutLogger.register(
             for: .tunnelGlobal(distributionTarget),
-            with: AppPreferenceValues()
+            loggingTo: logURL,
+            with: AppPreferenceValues(),
+            parameters: constants.log,
+            versionString: versionString
         )
 
         // The app may propagate its local preferences on manual start
@@ -76,7 +81,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Update the logger now that we have a context
         let ctx = PartoutLogger.register(
             for: .tunnelProfile(originalProfile.id, distributionTarget),
-            with: preferences
+            loggingTo: logURL,
+            with: preferences,
+            parameters: constants.log,
+            versionString: versionString
         )
         self.ctx = ctx
         try await trackContext(ctx)
