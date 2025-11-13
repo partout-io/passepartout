@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if canImport(CommonLibraryWeb)
-
-import CommonLibraryWeb
 import Foundation
 
 public final class DummyWebReceiver: WebReceiver {
@@ -29,5 +26,3 @@ extension WebReceiverManager {
         self.init(webReceiver: DummyWebReceiver(url: URL(fileURLWithPath: "")))
     }
 }
-
-#endif

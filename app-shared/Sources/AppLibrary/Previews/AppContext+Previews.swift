@@ -7,15 +7,13 @@ import Foundation
 
 extension AppContext {
     public static let forPreviews: AppContext = {
-        let constants = Resources.constants
-
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
             customUserLevel: .complete,
             inAppHelper: FakeAppProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
-            timeoutInterval: Resources.constants.iap.productsTimeoutInterval,
+            timeoutInterval: 5.0,
             productsAtBuild: { _ in
                 []
             }
@@ -33,7 +31,7 @@ extension AppContext {
                 SharedTunnelEnvironment(profileId: nil)
             },
             processor: processor,
-            interval: constants.tunnel.refreshInterval
+            interval: 10.0
         )
         let apiManager = APIManager(
             .global,

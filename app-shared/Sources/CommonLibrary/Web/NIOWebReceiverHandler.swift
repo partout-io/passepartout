@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if os(tvOS)
+
 import Foundation
 import NIO
 import NIOHTTP1
@@ -128,3 +130,5 @@ extension NIOWebReceiverHandler {
         context.writeAndFlush(wrapOutboundOut(.end(nil)), promise: nil)
     }
 }
+
+#endif

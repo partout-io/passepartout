@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if os(tvOS)
+
 import Foundation
 import NIO
 import NIOHTTP1
@@ -211,3 +213,5 @@ private extension UInt32 {
         return false
     }
 }
+
+#endif
