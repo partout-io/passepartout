@@ -2,15 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
-import Foundation
-
-public enum ProfileSharingFlag {
-    case shared
-
-    case tv
-}
-
 extension ProfileManager {
     public func sharingFlags(for profileId: Profile.ID) -> [ProfileSharingFlag] {
         if isRemotelyShared(profileWithId: profileId) {

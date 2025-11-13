@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 // Order matters
 public enum OnboardingStep: String, RawRepresentable, CaseIterable {
     case community

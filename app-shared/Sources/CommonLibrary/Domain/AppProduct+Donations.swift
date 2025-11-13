@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 extension AppProduct {
     public enum Donations {
         public static let tiny = AppProduct(donationId: "Tiny")

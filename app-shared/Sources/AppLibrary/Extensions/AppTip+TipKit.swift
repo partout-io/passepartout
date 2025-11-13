@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import CommonLibrary
 import TipKit
 
 @available(iOS 17, macOS 14, *)

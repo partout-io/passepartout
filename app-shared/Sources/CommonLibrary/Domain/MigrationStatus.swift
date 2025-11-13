@@ -2,14 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public enum MigrationStatus: Equatable {
     case excluded
-
     case pending
-
     case done
-
     case failed
 }

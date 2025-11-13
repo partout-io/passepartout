@@ -2,11 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
-// order matters
+// Order matters
 public enum ProfilesLayout: String, RawRepresentable, CaseIterable, Codable {
     case list
-
     case grid
 }

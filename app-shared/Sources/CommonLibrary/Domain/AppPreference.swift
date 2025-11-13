@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public enum AppPreference: String, PreferenceProtocol {
 
     // Not directly accessible
