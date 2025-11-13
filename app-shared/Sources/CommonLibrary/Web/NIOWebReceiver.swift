@@ -73,11 +73,11 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
         guard let address = channel?.localAddress?.ipAddress else {
             logger.error("Web server has no bound IP address")
             throw WebReceiverError()
-      }
+        }
         guard let url = URL(string: "http://\(address):\(port)") else {
             logger.error("Web server URL could not be built")
             throw WebReceiverError()
-      }
+        }
         logger.notice("Web server did start: \(url)")
         return url
     }
