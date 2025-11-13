@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
-
 extension KeyValueManager {
     public func object<T>(forUIPreference pref: UIPreference) -> T? {
         object(forKey: pref.key)
