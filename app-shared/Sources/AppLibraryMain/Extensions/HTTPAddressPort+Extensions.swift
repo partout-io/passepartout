@@ -3,31 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
 
-struct HTTPAddressPort {
-    enum Scheme: String {
-        case http
-
-        case https
-    }
-
-    var scheme: Scheme = .http
-
-    var address = ""
-
-    var port = ""
-
-    var url: URL? {
-        guard let port = Int(port) else {
-            return nil
-        }
-        guard !address.isEmpty else {
-            return nil
-        }
-        return URL(string: "\(scheme)://\(address):\(port)")
-    }
-
+extension HTTPAddressPort {
     var urlDescription: String? {
         let addressDescription = {
             !address.isEmpty ? address : "<\(Strings.Global.Nouns.address.lowercased())>"

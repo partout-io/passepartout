@@ -6,6 +6,21 @@ import CommonLibrary
 import Foundation
 
 extension Issue {
+    var body: String {
+        let providers = providerLastUpdates.mapValues {
+            $0.date.localizedDescription(style: .timestamp)
+        }
+        return template
+            .replacingOccurrences(of: "$comment", with: comment)
+            .replacingOccurrences(of: "$appLine", with: appLine ?? "unknown")
+            .replacingOccurrences(of: "$osLine", with: osLine)
+            .replacingOccurrences(of: "$deviceLine", with: deviceLine ?? "unknown")
+            .replacingOccurrences(of: "$providerLastUpdates", with: providers.description)
+            .replacingOccurrences(of: "$purchasedProducts", with: purchasedProducts.map(\.rawValue).description)
+    }
+}
+
+extension Issue {
     struct Metadata {
         let ctx: PartoutLoggerContext
 
@@ -71,5 +86,18 @@ extension Issue {
 
     var subject: String {
         Strings.Unlocalized.Issues.subject
+    }
+}
+
+private extension Issue {
+    var template: String {
+        do {
+            guard let templateURL = Bundle.module.url(forResource: "Issue", withExtension: "txt") else {
+                fatalError("Unable to find Issue.txt in Resources")
+            }
+            return try String(contentsOf: templateURL)
+        } catch {
+            fatalError("Unable to parse Issue.txt: \(error)")
+        }
     }
 }
