@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if canImport(CommonLibraryWeb)
+
 import CommonLibraryWeb
 
 @MainActor
@@ -73,3 +75,5 @@ public final class WebReceiverManager: ObservableObject {
         filesStream.finish()
     }
 }
+
+#endif
