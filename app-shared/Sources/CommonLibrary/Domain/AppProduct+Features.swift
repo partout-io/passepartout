@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 extension AppProduct {
     public enum Essentials {
         static let all: [AppProduct] = [

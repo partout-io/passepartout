@@ -5,7 +5,6 @@
 #if os(macOS)
 import AppKit
 #endif
-import Foundation
 #if !os(macOS)
 import UIKit
 #endif

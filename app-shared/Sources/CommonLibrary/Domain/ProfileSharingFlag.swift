@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol AppFeatureRequiring {
-    var features: Set<AppFeature> { get }
+public enum ProfileSharingFlag {
+    case shared
+    case tv
 }

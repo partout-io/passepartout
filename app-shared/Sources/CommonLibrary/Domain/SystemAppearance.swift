@@ -2,10 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public enum SystemAppearance: String, RawRepresentable {
     case light
-
     case dark
 }

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public struct AppProduct: RawRepresentable, Hashable, Sendable {
     public let rawValue: String
 

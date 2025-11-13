@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import AppLibrary
+@testable import CommonLibrary
 import Foundation
 import Testing
 
