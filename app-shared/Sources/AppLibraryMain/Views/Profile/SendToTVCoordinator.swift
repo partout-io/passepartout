@@ -28,13 +28,19 @@ struct SendToTVCoordinator: View {
 private extension SendToTVCoordinator {
     func upload(_ profile: Profile, to url: URL, with passcode: String) async throws {
         let client = WebUploader(
-            registryCoder: registryCoder,
             strategy: URLSessionUploaderStrategy(
                 timeout: Constants.shared.api.timeoutInterval
-            )
+            ),
+            logger: PartoutWebLogger()
         )
         do {
-            try await client.send(profile, to: url, passcode: passcode)
+            let encodedProfile = try registryCoder.json(from: profile)
+            try await client.send(
+                encodedProfile,
+                filename: profile.name,
+                to: url,
+                passcode: passcode
+            )
             isPresented = false
         } catch {
             pp_log_g(.App.core, .error, "Unable to upload profile: \(error)")

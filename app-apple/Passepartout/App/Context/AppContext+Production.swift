@@ -193,7 +193,12 @@ extension AppContext {
         let preferencesManager = PreferencesManager()
 
 #if os(tvOS)
-        let webReceiver = NIOWebReceiver(stringsBundle: AppStrings.bundle, port: constants.webReceiver.port)
+        let webUploaderPath = try NIOWebReceiver.webUploaderPath()
+        let webReceiver = NIOWebReceiver(
+            htmlPath: webUploaderPath,
+            stringsBundle: AppStrings.bundle,
+            port: constants.webReceiver.port
+        )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
             dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)
         }

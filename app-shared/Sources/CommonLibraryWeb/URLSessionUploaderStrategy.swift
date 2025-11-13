@@ -17,7 +17,7 @@ public final class URLSessionUploaderStrategy: WebUploaderStrategy {
         do {
             let (_, response) = try await URLSession.shared.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
-                throw AppError.webUploader(nil, nil)
+                throw WebUploaderStrategyError()
             }
             let statusCode = httpResponse.statusCode
             guard statusCode == 200 else {
@@ -27,10 +27,10 @@ public final class URLSessionUploaderStrategy: WebUploaderStrategy {
                 default:
                     break
                 }
-                throw AppError.webUploader(statusCode, nil)
+                throw WebUploaderStrategyError(status: statusCode)
             }
         } catch {
-            throw AppError.webUploader(nil, error)
+            throw WebUploaderStrategyError(reason: error)
         }
     }
 }

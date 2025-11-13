@@ -10,6 +10,20 @@ extension Constants {
     public static let shared = Bundle.module.unsafeDecode(Constants.self, filename: "Constants")
 }
 
+#if os(tvOS)
+import CommonWeb
+
+extension NIOWebReceiver {
+    public static func webUploaderPath() throws -> String {
+        guard let path = Bundle.module.path(forResource: "web_uploader", ofType: "html") else {
+            throw AppError.notFound
+        }
+        return path
+    }
+}
+
+#endif
+
 extension API {
     public static var shared: [APIMapper] {
 #if DEBUG

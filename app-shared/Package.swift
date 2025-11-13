@@ -43,12 +43,12 @@ let package = Package(
             targets: ["CommonLibrary"]
         ),
         .library(
-            name: "CommonProviders",
-            targets: ["CommonProviders"]
+            name: "CommonLibraryWeb",
+            targets: ["CommonLibraryWeb"]
         ),
         .library(
-            name: "CommonWeb",
-            targets: ["CommonWeb"]
+            name: "CommonProviders",
+            targets: ["CommonProviders"]
         ),
         .library(
             name: "PartoutLibrary",
@@ -70,9 +70,9 @@ let package = Package(
         .target(
             name: "AppLibrary",
             dependencies: [
-                "CommonLibrary",
                 "AppStrings",
-                "AppAccessibility"
+                "AppAccessibility",
+                "CommonLibrary"
             ],
             resources: [
                 .process("Resources")
@@ -91,10 +91,7 @@ let package = Package(
         ),
         .target(
             name: "AppLibraryTV",
-            dependencies: [
-                "AppLibrary",
-                "CommonWeb"
-            ]
+            dependencies: ["AppLibrary"]
         ),
         .target(
             name: "AppLibraryTVWrapper",
@@ -146,6 +143,7 @@ let package = Package(
         .target(
             name: "CommonLibrary",
             dependencies: [
+                .target(name: "CommonLibraryWeb", condition: .when(platforms: [.tvOS])),
                 "CommonProviders",
                 "partout"
             ]
@@ -166,14 +164,10 @@ let package = Package(
             dependencies: ["partout"]
         ),
         .target(
-            name: "CommonWeb",
+            name: "CommonLibraryWeb",
             dependencies: [
-                "CommonLibrary",
                 .product(name: "NIO", package: "swift-nio"),
                 .product(name: "NIOHTTP1", package: "swift-nio")
-            ],
-            resources: [
-                .process("Resources")
             ]
         ),
         .target(
@@ -212,8 +206,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "CommonWebTests",
-            dependencies: ["CommonWeb"],
+            name: "CommonLibraryWebTests",
+            dependencies: ["CommonLibraryWeb"],
             resources: [
                 .process("Resources")
             ]
