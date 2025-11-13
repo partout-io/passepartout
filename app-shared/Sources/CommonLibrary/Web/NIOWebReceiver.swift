@@ -175,7 +175,7 @@ private extension NIOWebReceiver {
                 break
             } catch {
                 logger.debug("Skip invalid interface: \(error)")
-          }
+            }
 
             // leave if no more addresses
             guard let next = ptr.pointee.ifa_next else {
