@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Combine
-import CoreData
+@preconcurrency import CoreData
 import Foundation
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {
@@ -182,7 +182,7 @@ private extension CoreDataRepository {
     }
 
     @discardableResult
-    func unsafeSendResults(from controller: NSFetchedResultsController<CD>) -> [T] {
+    nonisolated func unsafeSendResults(from controller: NSFetchedResultsController<CD>) -> [T] {
         guard var cdEntities = controller.fetchedObjects else {
             return []
         }
