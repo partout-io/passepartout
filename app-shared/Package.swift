@@ -149,6 +149,13 @@ let package = Package(
             ]
         ),
         .target(
+            name: "CommonLibraryWeb",
+            dependencies: [
+                .product(name: "NIO", package: "swift-nio"),
+                .product(name: "NIOHTTP1", package: "swift-nio")
+            ]
+        ),
+        .target(
             name: "CommonProviders",
             dependencies: ["CommonProvidersAPI"]
         ),
@@ -162,13 +169,6 @@ let package = Package(
         .target(
             name: "CommonProvidersCore",
             dependencies: ["partout"]
-        ),
-        .target(
-            name: "CommonLibraryWeb",
-            dependencies: [
-                .product(name: "NIO", package: "swift-nio"),
-                .product(name: "NIOHTTP1", package: "swift-nio")
-            ]
         ),
         .target(
             name: "PartoutLibrary",
