@@ -6,7 +6,7 @@ import Foundation
 
 @MainActor
 public final class RegistryCoder: ObservableObject, Sendable {
-    public let registry: Registry
+    private let registry: Registry
 
     public init(registry: Registry) {
         self.registry = registry
