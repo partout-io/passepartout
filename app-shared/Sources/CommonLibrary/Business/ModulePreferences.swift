@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
 public final class ModulePreferences: ObservableObject, ModulePreferencesRepository {
     private var repository: ModulePreferencesRepository?

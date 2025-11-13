@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonProviders
-
 import Foundation
+import Partout
 
 @MainActor
 public final class PreferencesManager: ObservableObject {

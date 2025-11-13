@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Foundation
+
 public struct Credits: Decodable {
     public struct License: Decodable {
         public let name: String

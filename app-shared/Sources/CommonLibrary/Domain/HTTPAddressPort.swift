@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Foundation
+
 public struct HTTPAddressPort {
     public enum Scheme: String {
         case http

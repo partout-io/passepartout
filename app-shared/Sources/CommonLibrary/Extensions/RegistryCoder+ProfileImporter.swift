@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
 extension RegistryCoder: ProfileImporter {
     public nonisolated func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {

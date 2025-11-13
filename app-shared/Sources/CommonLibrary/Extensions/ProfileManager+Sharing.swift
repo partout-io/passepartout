@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension ProfileManager {
     public func sharingFlags(for profileId: Profile.ID) -> [ProfileSharingFlag] {
         if isRemotelyShared(profileWithId: profileId) {

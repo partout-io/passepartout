@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public struct EditableProfile: MutableProfileType {
     public let version: Int? = nil
 

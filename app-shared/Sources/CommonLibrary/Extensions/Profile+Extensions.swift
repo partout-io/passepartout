@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
 extension Profile {
     public static func sorting(lhs: Self, rhs: Self) -> Bool {

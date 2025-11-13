@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Foundation
+import Partout
+
 @MainActor
 public final class WebReceiverManager: ObservableObject {
     public struct Website: Sendable {

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Foundation
 
 public enum Resources {
     public static let constants = Bundle.module.unsafeDecode(Constants.self, filename: "Constants")
