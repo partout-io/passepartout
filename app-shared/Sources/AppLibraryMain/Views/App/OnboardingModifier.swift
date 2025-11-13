@@ -66,7 +66,7 @@ private extension OnboardingModifier {
     func alertActions(for item: OnboardingStep) -> some View {
         switch item {
         case .community:
-            Link(Strings.Onboarding.Community.subscribe, destination: Constants.shared.websites.subreddit)
+            Link(Strings.Onboarding.Community.subscribe, destination: Resources.constants.websites.subreddit)
                 .environment(\.openURL, OpenURLAction { _ in
                     advance()
                     return .systemAction

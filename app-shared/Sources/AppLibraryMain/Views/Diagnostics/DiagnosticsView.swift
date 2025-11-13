@@ -52,7 +52,7 @@ struct DiagnosticsView: View {
 
     private let dateFormatter: DateFormatter = {
         let df = DateFormatter()
-        df.dateFormat = Constants.shared.formats.timestamp
+        df.dateFormat = Resources.constants.formats.timestamp
         return df
     }()
 

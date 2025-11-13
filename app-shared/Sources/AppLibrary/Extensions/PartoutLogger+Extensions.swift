@@ -24,20 +24,20 @@ extension PartoutLogger {
                 isDefaultLoggerRegistered = true
                 let logger = appLogger(preferences: preferences)
                 PartoutLogger.register(logger)
-                logger.logPreamble(parameters: Constants.shared.log)
+                logger.logPreamble(parameters: Resources.constants.log)
             }
             return .global
         case .tunnelGlobal(let target):
             let logger = tunnelLogger(preferences: preferences, target: target)
             PartoutLogger.register(logger)
-            logger.logPreamble(parameters: Constants.shared.log)
+            logger.logPreamble(parameters: Resources.constants.log)
             return .global
         case .tunnelProfile(let profileId, let target):
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
                 let logger = tunnelLogger(preferences: preferences, target: target)
                 PartoutLogger.register(logger)
-                logger.logPreamble(parameters: Constants.shared.log)
+                logger.logPreamble(parameters: Resources.constants.log)
             }
             return PartoutLoggerContext(profileId)
         }
@@ -49,7 +49,7 @@ private extension PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: BundleConfiguration.urlForAppLog,
-            parameters: Constants.shared.log,
+            parameters: Resources.constants.log,
             logsPrivateData: preferences.logsPrivateData
         )
         return builder.build()
@@ -59,7 +59,7 @@ private extension PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: BundleConfiguration.urlForTunnelLog(in: target),
-            parameters: Constants.shared.log,
+            parameters: Resources.constants.log,
             logsPrivateData: preferences.logsPrivateData
         )
         builder.willPrint = {

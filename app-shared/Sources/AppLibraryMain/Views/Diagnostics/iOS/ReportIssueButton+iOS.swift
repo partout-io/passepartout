@@ -64,7 +64,7 @@ extension ReportIssueButton {
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
                 urlForTunnelLog: BundleConfiguration.urlForTunnelLog(in: distributionTarget),
-                parameters: Constants.shared.log,
+                parameters: Resources.constants.log,
                 comment: comment
             ))
             guard MailComposerView.canSendMail() else {
@@ -92,10 +92,10 @@ private extension Issue {
         var list: [MailComposerView.Attachment] = []
         let mimeType = Strings.Unlocalized.Issues.attachmentMimeType
         if let appLog {
-            list.append(.init(data: appLog, mimeType: mimeType, fileName: Constants.shared.log.appPath))
+            list.append(.init(data: appLog, mimeType: mimeType, fileName: Resources.constants.log.appPath))
         }
         if let tunnelLog {
-            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: Constants.shared.log.tunnelPath))
+            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: Resources.constants.log.tunnelPath))
         }
         return list
     }

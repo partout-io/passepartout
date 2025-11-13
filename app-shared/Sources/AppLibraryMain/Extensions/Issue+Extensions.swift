@@ -10,7 +10,7 @@ extension Issue {
         let providers = providerLastUpdates.mapValues {
             $0.date.localizedDescription(style: .timestamp)
         }
-        return template
+        return Resources.issueTemplate
             .replacingOccurrences(of: "$comment", with: comment)
             .replacingOccurrences(of: "$appLine", with: appLine ?? "unknown")
             .replacingOccurrences(of: "$osLine", with: osLine)
@@ -81,7 +81,7 @@ extension Issue {
 
 extension Issue {
     var to: String {
-        Constants.shared.emails.issues
+        Resources.constants.emails.issues
     }
 
     var subject: String {

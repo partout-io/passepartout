@@ -4,11 +4,11 @@
 
 import CommonLibrary
 
-// WARNING: beware of Constants.shared dependency
+// WARNING: beware of Resources.constants dependency
 
 extension BundleConfiguration {
     public static var urlForAppLog: URL {
-        urlForCaches.appending(path: Constants.shared.log.appPath)
+        urlForCaches.appending(path: Resources.constants.log.appPath)
     }
 
     public static func urlForTunnelLog(in target: DistributionTarget) -> URL {
@@ -24,7 +24,7 @@ extension BundleConfiguration {
                 pp_log_g(.App.core, .error, "Unable to create temporary directory \(baseURL): \(error)")
             }
         }
-        return baseURL.appending(path: Constants.shared.log.tunnelPath)
+        return baseURL.appending(path: Resources.constants.log.tunnelPath)
     }
 }
 

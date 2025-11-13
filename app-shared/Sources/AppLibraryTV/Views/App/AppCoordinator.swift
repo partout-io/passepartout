@@ -115,12 +115,12 @@ private extension AppCoordinator {
     func pushDestination(for item: AppCoordinatorRoute?) -> some View {
         switch item {
         case .appLog:
-            DebugLogView(withAppParameters: Constants.shared.log) {
+            DebugLogView(withAppParameters: Resources.constants.log) {
                 DebugLogContentView(lines: $0)
             }
 
         case .tunnelLog:
-            DebugLogView(withTunnel: tunnel, parameters: Constants.shared.log) {
+            DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
                 DebugLogContentView(lines: $0)
             }
 

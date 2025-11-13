@@ -6,6 +6,6 @@ import CommonLibrary
 
 extension IAPManager {
     public var verificationDelayMinutes: Int {
-        Constants.shared.tunnel.verificationDelayMinutes(isBeta: isBeta)
+        Resources.constants.tunnel.verificationDelayMinutes(isBeta: isBeta)
     }
 }
