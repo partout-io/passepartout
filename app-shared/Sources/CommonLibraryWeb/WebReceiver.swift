@@ -6,6 +6,13 @@ import Foundation
 
 public protocol WebReceiver {
     func start(passcode: String?, onReceive: @escaping (String, String) -> Void) throws -> URL
-
     func stop()
+}
+
+public struct WebReceiverError: Error {
+    public let reason: Error?
+
+    init(_ reason: Error? = nil) {
+        self.reason = reason
+    }
 }
