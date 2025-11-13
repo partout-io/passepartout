@@ -6,6 +6,7 @@
 
 import CommonProvidersCore
 import JavaScriptCore
+import Partout
 
 extension AppleJavaScriptEngine: ProviderScriptingEngine {
 

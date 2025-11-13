@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 #if canImport(Combine)
 import Combine

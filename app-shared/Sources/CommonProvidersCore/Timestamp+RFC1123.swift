@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
 private let rfc1123: DateFormatter = {
     let formatter = DateFormatter()

@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 public struct Provider: Identifiable, Hashable, CustomStringConvertible, Sendable {
     public let id: ProviderID

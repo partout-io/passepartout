@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
 public struct ProviderServer: Identifiable, Hashable, Codable, Sendable {
     public struct Metadata: Hashable, Codable, Sendable {
