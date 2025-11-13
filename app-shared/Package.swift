@@ -80,10 +80,7 @@ let package = Package(
         ),
         .target(
             name: "AppLibraryMain",
-            dependencies: ["AppLibrary"],
-            resources: [
-                .process("Resources")
-            ]
+            dependencies: ["AppLibrary"]
         ),
         .target(
             name: "AppLibraryMainWrapper",
@@ -151,9 +148,6 @@ let package = Package(
             dependencies: [
                 "CommonProviders",
                 "partout"
-            ],
-            resources: [
-                .process("Resources")
             ]
         ),
         .target(

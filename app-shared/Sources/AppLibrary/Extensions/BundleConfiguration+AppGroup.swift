@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import CommonLibrary
 
 // WARNING: beware of Constants.shared dependency
 

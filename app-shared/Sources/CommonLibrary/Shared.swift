@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 extension LoggerCategory {
@@ -17,8 +16,4 @@ extension LoggerCategory {
 
         public static let web = LoggerCategory(rawValue: "app.web")
     }
-}
-
-extension Constants {
-    public static let shared = Bundle.module.unsafeDecode(Constants.self, filename: "Constants")
 }

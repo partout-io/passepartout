@@ -6,7 +6,6 @@
 
 import Combine
 import CommonLibrary
-
 import SwiftUI
 
 public struct AppMenu: View {

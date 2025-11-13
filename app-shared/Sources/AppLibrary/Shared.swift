@@ -2,8 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary
 import CommonProviders
 import Partout
+
+extension Constants {
+    public static let shared = Bundle.module.unsafeDecode(Constants.self, filename: "Constants")
+}
 
 extension API {
     public static var shared: [APIMapper] {

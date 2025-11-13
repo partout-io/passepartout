@@ -4,6 +4,7 @@
 
 #if !os(tvOS)
 
+import CommonLibrary
 import SwiftUI
 
 public struct LongContentEditor: View {

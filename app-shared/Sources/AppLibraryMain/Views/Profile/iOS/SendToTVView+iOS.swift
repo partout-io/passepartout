@@ -5,7 +5,6 @@
 #if os(iOS)
 
 import CommonLibrary
-
 import SwiftUI
 
 struct SendToTVView: View {
