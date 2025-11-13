@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonUtils
+import CommonLibrary
 import SwiftUI
 
 struct ProfilesLayoutPicker: View {

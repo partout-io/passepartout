@@ -5,6 +5,7 @@
 #if os(macOS)
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestination>: View where LinkContent: View, SettingsDestination: View, DiagnosticsDestination: View {
@@ -71,7 +72,7 @@ private extension SettingsContentView {
             .themeSection(header: Strings.Global.Nouns.about)
 
             Group {
-                ExternalLink(Strings.Unlocalized.faq, url: Constants.shared.websites.faq)
+                ExternalLink(Strings.Unlocalized.faq, url: Resources.constants.websites.faq)
                 if distributionTarget == .developerID {
                     linkContent(.systemExtension)
                 }

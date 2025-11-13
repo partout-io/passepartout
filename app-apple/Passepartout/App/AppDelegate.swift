@@ -5,7 +5,7 @@
 import AppAccessibility
 import AppLibrary
 import CommonLibrary
-import CommonUtils
+import CommonResources
 import SwiftUI
 
 @MainActor

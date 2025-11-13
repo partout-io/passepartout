@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 struct SettingsCoordinator: View {
@@ -130,7 +131,7 @@ extension SettingsCoordinator {
     func pushDestination(for item: DiagnosticsRoute?) -> some View {
         switch item {
         case .appLog(let title):
-            DebugLogView(withAppParameters: Constants.shared.log) {
+            DebugLogView(withAppParameters: Resources.constants.log) {
                 DebugLogContentView(lines: $0)
             }
             .navigationTitle(title)
@@ -145,7 +146,7 @@ extension SettingsCoordinator {
                 }
                 .navigationTitle(title)
             } else {
-                DebugLogView(withTunnel: tunnel, parameters: Constants.shared.log) {
+                DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
                     DebugLogContentView(lines: $0)
                 }
                 .navigationTitle(title)

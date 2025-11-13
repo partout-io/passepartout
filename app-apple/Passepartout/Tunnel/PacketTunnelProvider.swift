@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonUtils
+import CommonResources
 @preconcurrency import NetworkExtension
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
@@ -15,7 +15,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let distributionTarget = Dependencies.distributionTarget
-        let constants: Constants = .shared
+        let constants = Resources.constants
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -134,6 +134,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                     reader: StoreKitReceiptReader(logger: dependencies.iapLogger()),
                 ),
                 betaChecker: dependencies.betaChecker(),
+                timeoutInterval: constants.iap.productsTimeoutInterval,
                 productsAtBuild: dependencies.productsAtBuild()
             )
             if distributionTarget.supportsIAP {

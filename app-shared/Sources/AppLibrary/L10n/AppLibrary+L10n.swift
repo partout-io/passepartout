@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import CommonLibrary
 
 extension SystemAppearance {
     public var localizedDescription: String {

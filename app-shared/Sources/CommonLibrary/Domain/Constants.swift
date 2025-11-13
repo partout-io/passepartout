@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public struct Constants: Decodable, Sendable {
     public struct Containers: Decodable, Sendable {
         public let local: String

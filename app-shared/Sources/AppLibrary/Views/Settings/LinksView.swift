@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 public struct LinksView: View {
@@ -28,7 +29,7 @@ public struct LinksView: View {
 
 private extension LinksView {
     var constants: Constants {
-        .shared
+        Resources.constants
     }
 
     var appStoreId: String {

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public struct EditableProfile: MutableProfileType {
     public let version: Int? = nil
 

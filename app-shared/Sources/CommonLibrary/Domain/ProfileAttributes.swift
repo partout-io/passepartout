@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 extension ProfileType where UserInfoType == JSON {
     public var attributes: ProfileAttributes {
         ProfileAttributes(userInfo: userInfo)

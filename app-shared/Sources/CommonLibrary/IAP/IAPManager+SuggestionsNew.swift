@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonUtils
-
 extension IAPManager {
     public enum Platform {
         case iOS

@@ -4,13 +4,13 @@
 
 import AppLibrary
 import CommonLibrary
-import CommonUtils
+import CommonResources
 import Foundation
 
 extension AppContext {
     static var forUITesting: AppContext {
         let dependencies: Dependencies = .shared
-        let constants: Constants = .shared
+        let constants = Resources.constants
         let ctx: PartoutLoggerContext = .global
 
         var logger = PartoutLogger.Builder()
@@ -28,6 +28,7 @@ extension AppContext {
             inAppHelper: dependencies.appProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
+            timeoutInterval: constants.iap.productsTimeoutInterval,
             productsAtBuild: { _ in
                 []
             }

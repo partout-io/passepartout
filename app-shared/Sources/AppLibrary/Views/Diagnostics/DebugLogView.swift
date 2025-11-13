@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonUtils
 import SwiftUI
 
 public struct DebugLogView<Content>: View where Content: View {
@@ -39,7 +38,7 @@ private extension DebugLogView {
 
     var copyButton: some View {
         Button {
-            Utils.copyToPasteboard(currentLines.joined(separator: "\n"))
+            copyToPasteboard(currentLines.joined(separator: "\n"))
         } label: {
             ThemeImage(.copy)
         }

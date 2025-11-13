@@ -4,8 +4,6 @@
 
 import AppAccessibility
 import CommonLibrary
-import CommonUtils
-import CommonWeb
 import SwiftUI
 
 struct ConnectionProfilesView: View {

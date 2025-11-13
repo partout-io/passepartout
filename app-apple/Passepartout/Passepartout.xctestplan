@@ -36,13 +36,6 @@
     {
       "target" : {
         "containerPath" : "container:..\/app-shared",
-        "identifier" : "CommonUtilsTests",
-        "name" : "CommonUtilsTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
         "identifier" : "AppLibraryTests",
         "name" : "AppLibraryTests"
       }
@@ -67,13 +60,6 @@
         "containerPath" : "container:..\/app-shared",
         "identifier" : "AppLibraryMainTests",
         "name" : "AppLibraryMainTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "CommonWebTests",
-        "name" : "CommonWebTests"
       }
     }
   ],

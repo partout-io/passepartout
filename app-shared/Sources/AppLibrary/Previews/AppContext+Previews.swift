@@ -3,19 +3,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonUtils
 import Foundation
 
 extension AppContext {
     public static let forPreviews: AppContext = {
-        let constants: Constants = .shared
-
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
             customUserLevel: .complete,
             inAppHelper: FakeAppProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
+            timeoutInterval: 5.0,
             productsAtBuild: { _ in
                 []
             }
@@ -33,7 +31,7 @@ extension AppContext {
                 SharedTunnelEnvironment(profileId: nil)
             },
             processor: processor,
-            interval: constants.tunnel.refreshInterval
+            interval: 10.0
         )
         let apiManager = APIManager(
             .global,

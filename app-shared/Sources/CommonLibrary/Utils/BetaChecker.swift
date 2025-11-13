@@ -1,0 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+public protocol BetaChecker {
+    func isBeta() async -> Bool
+}

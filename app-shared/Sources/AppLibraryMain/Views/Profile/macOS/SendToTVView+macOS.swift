@@ -5,7 +5,6 @@
 #if os(macOS)
 
 import CommonLibrary
-import CommonUtils
 import SwiftUI
 
 struct SendToTVView: View {

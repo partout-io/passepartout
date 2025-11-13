@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Combine
-import CommonUtils
+
 import Foundation
 
 @MainActor
@@ -17,6 +17,8 @@ public final class IAPManager: ObservableObject {
     private let betaChecker: BetaChecker
 
     private let unrestrictedFeatures: Set<AppFeature>
+
+    private let timeoutInterval: TimeInterval
 
     private let productsAtBuild: BuildProducts<AppProduct>?
 
@@ -47,6 +49,7 @@ public final class IAPManager: ObservableObject {
         receiptReader: AppReceiptReader,
         betaChecker: BetaChecker,
         unrestrictedFeatures: Set<AppFeature> = [],
+        timeoutInterval: TimeInterval,
         productsAtBuild: BuildProducts<AppProduct>? = nil
     ) {
         self.customUserLevel = customUserLevel
@@ -54,6 +57,7 @@ public final class IAPManager: ObservableObject {
         self.receiptReader = receiptReader
         self.betaChecker = betaChecker
         self.unrestrictedFeatures = unrestrictedFeatures
+        self.timeoutInterval = timeoutInterval
         self.productsAtBuild = productsAtBuild
         userLevel = .undefined
         purchasedProducts = []
@@ -82,7 +86,7 @@ extension IAPManager {
             return []
         }
         do {
-            let inAppProducts = try await inAppHelper.fetchProducts(timeout: Constants.shared.iap.productsTimeoutInterval)
+            let inAppProducts = try await inAppHelper.fetchProducts(timeout: timeoutInterval)
             return products.compactMap {
                 inAppProducts[$0]
             }
@@ -300,7 +304,7 @@ extension IAPManager {
                     .store(in: &subscriptions)
 
                 if withProducts {
-                    let products = try await inAppHelper.fetchProducts(timeout: Constants.shared.iap.productsTimeoutInterval)
+                    let products = try await inAppHelper.fetchProducts(timeout: timeoutInterval)
                     pp_log_g(.App.iap, .info, "Available in-app products: \(products.map(\.key))")
                 }
             } catch is TaskTimeoutError {

@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonUtils
-import Foundation
-
 @MainActor
 public final class WebReceiverManager: ObservableObject {
     public struct Website: Sendable {
@@ -49,10 +46,14 @@ public final class WebReceiverManager: ObservableObject {
 
     public func start() throws {
         let passcode = passcodeGenerator?()
-        let url = try webReceiver.start(passcode: passcode) { [weak self] in
-            self?.filesStream.send(File(name: $0, contents: $1))
+        do {
+            let url = try webReceiver.start(passcode: passcode) { [weak self] in
+                self?.filesStream.send(File(name: $0, contents: $1))
+            }
+            website = Website(url: url, passcode: passcode)
+        } catch let error as WebReceiverError {
+            throw AppError.webReceiver(error)
         }
-        website = Website(url: url, passcode: passcode)
     }
 
     public func renewPasscode() {
