@@ -10,8 +10,8 @@ extension Constants {
     public static let shared = Bundle.module.unsafeDecode(Constants.self, filename: "Constants")
 }
 
-#if os(tvOS)
-import CommonWeb
+#if canImport(CommonLibraryWeb)
+import CommonLibraryWeb
 
 extension NIOWebReceiver {
     public static func webUploaderPath() throws -> String {
