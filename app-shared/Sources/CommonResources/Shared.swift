@@ -22,7 +22,7 @@ public enum Resources {
         }
     }()
 
-#if canImport(CommonLibraryWeb)
+#if os(tvOS)
     public static let webUploaderPath: String = {
         guard let path = Bundle.module.path(forResource: "web_uploader", ofType: "html") else {
             fatalError("Unable to find web_uploader.html in Resources")

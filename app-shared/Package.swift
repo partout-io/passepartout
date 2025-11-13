@@ -18,7 +18,10 @@ let package = Package(
         ),
         .library(
             name: "AppLibrary",
-            targets: ["AppLibrary"]
+            targets: [
+                "AppLibrary",
+                "CommonResources"
+            ]
         ),
         .library(
             name: "AppLibraryMain",
@@ -43,10 +46,6 @@ let package = Package(
             targets: ["CommonLibrary"]
         ),
         .library(
-            name: "CommonLibraryWeb",
-            targets: ["CommonLibraryWeb"]
-        ),
-        .library(
             name: "CommonProviders",
             targets: ["CommonProviders"]
         ),
@@ -56,7 +55,10 @@ let package = Package(
         ),
         .library(
             name: "TunnelLibrary",
-            targets: ["CommonLibrary"]
+            targets: [
+                "CommonLibrary",
+                "CommonResources"
+            ]
         )
     ],
     dependencies: [
@@ -73,9 +75,6 @@ let package = Package(
                 "AppStrings",
                 "AppAccessibility",
                 "CommonLibrary"
-            ],
-            resources: [
-                .process("Resources")
             ]
         ),
         .target(
@@ -107,8 +106,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "CommonData",
-            dependencies: []
+            name: "CommonData"
         ),
         .target(
             name: "CommonDataPreferences",
@@ -143,16 +141,10 @@ let package = Package(
         .target(
             name: "CommonLibrary",
             dependencies: [
-                .target(name: "CommonLibraryWeb", condition: .when(platforms: [.tvOS])),
+                .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 "CommonProviders",
                 "partout"
-            ]
-        ),
-        .target(
-            name: "CommonLibraryWeb",
-            dependencies: [
-                .product(name: "NIO", package: "swift-nio"),
-                .product(name: "NIOHTTP1", package: "swift-nio")
             ]
         ),
         .target(
@@ -171,6 +163,13 @@ let package = Package(
             dependencies: ["partout"]
         ),
         .target(
+            name: "CommonResources",
+            dependencies: ["CommonLibrary"],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .target(
             name: "PartoutLibrary",
             dependencies: ["partout"],
             path: "Sources/Empty/PartoutLibrary"
@@ -185,7 +184,10 @@ let package = Package(
         ),
         .testTarget(
             name: "CommonLibraryTests",
-            dependencies: ["CommonLibrary"]
+            dependencies: ["CommonLibrary"],
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "CommonProvidersTests",
@@ -201,13 +203,6 @@ let package = Package(
         .testTarget(
             name: "CommonProvidersCoreTests",
             dependencies: ["CommonProvidersCore"],
-            resources: [
-                .process("Resources")
-            ]
-        ),
-        .testTarget(
-            name: "CommonLibraryWebTests",
-            dependencies: ["CommonLibraryWeb"],
             resources: [
                 .process("Resources")
             ]

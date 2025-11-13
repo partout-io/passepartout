@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if canImport(CommonLibraryWeb)
-@_exported import CommonLibraryWeb
-#endif
 @_exported import CommonProviders
 @_exported import Partout
 
