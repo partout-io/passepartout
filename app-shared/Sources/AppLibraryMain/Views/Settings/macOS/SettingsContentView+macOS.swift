@@ -5,6 +5,7 @@
 #if os(macOS)
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestination>: View where LinkContent: View, SettingsDestination: View, DiagnosticsDestination: View {

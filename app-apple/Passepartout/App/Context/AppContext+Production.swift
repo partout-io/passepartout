@@ -9,19 +9,16 @@ import CommonDataPreferences
 import CommonDataProfiles
 import CommonDataProviders
 import CommonLibrary
-#if os(tvOS)
-import CommonWeb
-#endif
+import CommonResources
 import CoreData
 import Foundation
 
 extension AppContext {
-    convenience init() {
+    convenience init(constants: Constants) {
 
         // MARK: Declare globals
 
         let distributionTarget = Dependencies.distributionTarget
-        let constants: Constants = .shared
         let dependencies: Dependencies = .shared
         let kvManager = dependencies.kvManager
 
@@ -75,7 +72,7 @@ extension AppContext {
             inAppHelper: dependencies.simulatedAppProductHelper(),
             receiptReader: dependencies.simulatedAppReceiptReader(),
             betaChecker: dependencies.betaChecker(),
-            timeoutInterval: Constants.shared.iap.productsTimeoutInterval,
+            timeoutInterval: constants.iap.productsTimeoutInterval,
             productsAtBuild: dependencies.productsAtBuild()
         )
         if distributionTarget.supportsIAP {
@@ -89,14 +86,14 @@ extension AppContext {
 #if DEBUG
         let configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
 #else
-        let configURL = Constants.shared.websites.config
+        let configURL = constants.websites.config
 #endif
-        let betaConfigURL = Constants.shared.websites.betaConfig
+        let betaConfigURL = constants.websites.betaConfig
         let configManager = ConfigManager(
             strategy: GitHubConfigStrategy(
                 url: configURL,
                 betaURL: betaConfigURL,
-                ttl: Constants.shared.websites.configTTL,
+                ttl: constants.websites.configTTL,
                 isBeta: { [weak iapManager] in
                     iapManager?.isBeta == true
                 }
@@ -111,7 +108,7 @@ extension AppContext {
                 pp_log_g(.App.core, .info, "Device ID: \(existingId)")
                 return existingId
             }
-            let newId = String.random(count: Constants.shared.deviceIdLength)
+            let newId = String.random(count: constants.deviceIdLength)
             kvManager.set(newId, forAppPreference: .deviceId)
             pp_log_g(.App.core, .info, "Device ID (new): \(newId)")
             return newId
@@ -193,11 +190,11 @@ extension AppContext {
         let preferencesManager = PreferencesManager()
 
 #if os(tvOS)
-        let webUploaderPath = try NIOWebReceiver.webUploaderPath()
         let webReceiver = NIOWebReceiver(
-            htmlPath: webUploaderPath,
+            htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
-            port: constants.webReceiver.port
+            port: constants.webReceiver.port,
+            logger: PartoutWebLogger()
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
             dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)
@@ -263,8 +260,8 @@ extension AppContext {
         // MARK: Version
 
         let versionStrategy = GitHubReleaseStrategy(
-            releaseURL: Constants.shared.github.latestRelease,
-            rateLimit: Constants.shared.api.versionRateLimit
+            releaseURL: constants.github.latestRelease,
+            rateLimit: constants.api.versionRateLimit
         )
         let versionChecker: VersionChecker
         if !iapManager.isBeta {
@@ -275,9 +272,9 @@ extension AppContext {
                 downloadURL: {
                     switch distributionTarget {
                     case .appStore:
-                        return Constants.shared.websites.appStoreDownload
+                        return constants.websites.appStoreDownload
                     case .developerID:
-                        return Constants.shared.websites.macDownload
+                        return constants.websites.macDownload
                     case .enterprise:
                         fatalError("No URL for enterprise distribution")
                     }

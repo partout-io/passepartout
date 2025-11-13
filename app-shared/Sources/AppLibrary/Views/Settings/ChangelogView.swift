@@ -5,6 +5,7 @@
 #if !os(tvOS)
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 import WebKit
 
