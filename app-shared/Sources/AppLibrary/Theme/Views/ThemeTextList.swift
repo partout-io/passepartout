@@ -33,7 +33,7 @@ public struct ThemeTextList: View {
                             if copiable {
                                 Spacer()
                                 Button {
-                                    Utils.copyToPasteboard(pair.element)
+                                    copyToPasteboard(pair.element)
                                 } label: {
                                     ThemeImage(.copy)
                                 }

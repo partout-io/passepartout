@@ -38,7 +38,7 @@ private extension DebugLogView {
 
     var copyButton: some View {
         Button {
-            Utils.copyToPasteboard(currentLines.joined(separator: "\n"))
+            copyToPasteboard(currentLines.joined(separator: "\n"))
         } label: {
             ThemeImage(.copy)
         }
