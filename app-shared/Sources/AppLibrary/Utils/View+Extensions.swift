@@ -59,6 +59,19 @@ extension View {
         self
 #endif
     }
+
+    public func copyToPasteboard(_ string: String) {
+#if os(iOS)
+        let pb: UIPasteboard = .general
+        pb.string = string
+#elseif os(macOS)
+        let pb: NSPasteboard = .general
+        pb.clearContents()
+        pb.setString(string, forType: .string)
+#else
+        fatalError("Copy unavailable")
+#endif
+    }
 }
 
 extension ViewModifier {

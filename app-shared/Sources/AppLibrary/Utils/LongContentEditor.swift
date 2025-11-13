@@ -23,7 +23,7 @@ public struct LongContentEditor: View {
         contentView
             .toolbar {
                 Button {
-                    Utils.copyToPasteboard(content)
+                    copyToPasteboard(content)
                 } label: {
                     Image(systemName: copySystemImage ?? "doc.on.doc")
                 }
