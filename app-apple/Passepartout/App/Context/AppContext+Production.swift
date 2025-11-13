@@ -9,7 +9,6 @@ import CommonDataPreferences
 import CommonDataProfiles
 import CommonDataProviders
 import CommonLibrary
-import CommonUtils
 #if os(tvOS)
 import CommonWeb
 #endif
@@ -76,6 +75,7 @@ extension AppContext {
             inAppHelper: dependencies.simulatedAppProductHelper(),
             receiptReader: dependencies.simulatedAppReceiptReader(),
             betaChecker: dependencies.betaChecker(),
+            timeoutInterval: Constants.shared.iap.productsTimeoutInterval,
             productsAtBuild: dependencies.productsAtBuild()
         )
         if distributionTarget.supportsIAP {
