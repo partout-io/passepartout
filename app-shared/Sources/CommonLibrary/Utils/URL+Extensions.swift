@@ -2,22 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import SwiftUI
+import Foundation
 
 extension URL {
     public var filename: String {
         deletingPathExtension()
             .lastPathComponent
-    }
-
-    public func open() {
-#if os(iOS)
-        UIApplication.shared.open(self)
-#elseif os(macOS)
-        NSWorkspace.shared.open(self)
-#else
-        fatalError("Unsupported")
-#endif
     }
 
     public static func mailto(to: String, subject: String, body: String) -> URL? {
