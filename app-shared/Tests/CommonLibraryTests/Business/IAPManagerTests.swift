@@ -448,6 +448,7 @@ extension IAPManager {
             receiptReader: receiptReader,
             betaChecker: betaChecker ?? TestFlightChecker(),
             unrestrictedFeatures: unrestrictedFeatures,
+            timeoutInterval: 5.0,
             productsAtBuild: productsAtBuild
         )
     }
