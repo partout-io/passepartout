@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonUtils
 
 extension Dependencies {
     nonisolated var customUserLevel: AppUserLevel? {
