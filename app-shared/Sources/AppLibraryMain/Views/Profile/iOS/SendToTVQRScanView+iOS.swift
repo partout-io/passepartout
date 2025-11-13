@@ -4,6 +4,7 @@
 
 #if os(iOS)
 
+import CommonLibrary
 import SwiftUI
 
 struct SendToTVQRScanView: View {
