@@ -40,8 +40,6 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
             throw WebReceiverError()
         }
         guard let host = firstIPv4Address(withInterfacePrefix: "en") else {
-//            pp_log_g(.App.web, .error, "Web server has no IPv4 Ethernet addresses to listen on")
-//            throw AppError.webReceiver()
             logger.error("Web server has no IPv4 Ethernet addresses to listen on")
             throw WebReceiverError()
         }
@@ -69,31 +67,23 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
             channel = try bootstrap.bind(host: host, port: port).wait()
             self.group = group
         } catch {
-//            pp_log_g(.App.web, .error, "Web server could not bind: \(error)")
-//            throw AppError.webReceiver(error)
             logger.error("Web server could not bind: \(error)")
             throw WebReceiverError(error)
         }
         guard let address = channel?.localAddress?.ipAddress else {
-//            pp_log_g(.App.web, .error, "Web server has no bound IP address")
-//            throw AppError.webReceiver()
             logger.error("Web server has no bound IP address")
             throw WebReceiverError()
       }
         guard let url = URL(string: "http://\(address):\(port)") else {
-//            pp_log_g(.App.web, .error, "Web server URL could not be built")
-//            throw AppError.webReceiver()
             logger.error("Web server URL could not be built")
             throw WebReceiverError()
       }
-//        pp_log_g(.App.web, .notice, "Web server did start: \(url)")
         logger.notice("Web server did start: \(url)")
         return url
     }
 
     public func stop() {
         guard let channel else {
-//            pp_log_g(.App.web, .error, "Web server is not started")
             logger.error("Web server is not started")
             return
         }
@@ -104,10 +94,8 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
         do {
             try channel.close().wait()
             try group?.syncShutdownGracefully()
-//            pp_log_g(.App.web, .notice, "Web server did stop")
             logger.notice("Web server did stop")
         } catch {
-//            pp_log_g(.App.web, .error, "Unable to stop web server: \(error)")
             logger.error("Unable to stop web server: \(error)")
         }
     }
@@ -186,7 +174,6 @@ private extension NIOWebReceiver {
                 // stop at first success
                 break
             } catch {
-//                pp_log_g(.App.web, .debug, "Skip invalid interface: \(error)")
                 logger.debug("Skip invalid interface: \(error)")
           }
 
