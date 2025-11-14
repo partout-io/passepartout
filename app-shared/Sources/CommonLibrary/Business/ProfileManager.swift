@@ -179,7 +179,7 @@ extension ProfileManager {
         pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
-    // FIXME: ###, Profile.ID in public
+    // FIXME: #1594, Profile.ID in public
     public func duplicate(profileWithId profileId: Profile.ID) async throws {
         guard let profile = allProfiles[profileId] else {
             return
@@ -206,12 +206,12 @@ extension ProfileManager {
         }
     }
 
-    // FIXME: ###, Profile.ID in public
+    // FIXME: #1594, Profile.ID in public
     public func remove(withId profileId: Profile.ID) async {
         await remove(withIds: [profileId])
     }
 
-    // FIXME: ###, Profile.ID in public
+    // FIXME: #1594, Profile.ID in public
     public func remove(withIds profileIds: [Profile.ID]) async {
         pp_log_g(.App.profiles, .notice, "Remove profiles \(profileIds)...")
         do {
@@ -242,7 +242,7 @@ extension ProfileManager {
 // MARK: - State
 
 extension ProfileManager {
-    // FIXME: ###, Profile.ID in public
+    // FIXME: #1594, Profile.ID in public
     public func profile(withId profileId: Profile.ID) -> AppProfile? {
         guard let profile = allProfiles[profileId] else { return nil }
         return profile.uiProfile(
