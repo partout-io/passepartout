@@ -52,6 +52,12 @@ public final class AppContext: ObservableObject, Sendable {
 
     private var subscriptions: Set<AnyCancellable>
 
+    // MARK: Observables
+
+    public let profileObservable: ProfileObservable
+
+    // MARK: - Init
+
     public init(
         apiManager: APIManager,
         configManager: ConfigManager,
@@ -88,6 +94,12 @@ public final class AppContext: ObservableObject, Sendable {
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
         didLoadReceiptDate = nil
         subscriptions = []
+
+        profileObservable = ProfileObservable(
+            logger: PartoutCategoryLogger(.App.profiles),
+            profileManager: profileManager,
+            registry: registry
+        )
     }
 }
 

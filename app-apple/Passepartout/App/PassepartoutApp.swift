@@ -61,16 +61,14 @@ extension PassepartoutApp {
         )
     }
 
+#if os(tvOS)
     func newContentView() -> some View {
         AppCoordinator(
-            profileObservable: ProfileObservable(
-                logger: PartoutCategoryLogger(.App.profiles),
-                profileManager: context.profileManager,
-                registry: context.registry
-            ),
+            profileObservable: context.profileObservable,
             tunnel: context.tunnel,
             registry: context.registry,
             webReceiverManager: context.webReceiverManager
         )
     }
+#endif
 }
