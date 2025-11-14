@@ -10,7 +10,7 @@ struct AppPreferenceTests {
     @Test
     func givenFlags_whenSet_thenDataMatches() throws {
         var sut = AppPreferenceValues()
-        sut.configFlags = [.ovpnCrossConnection, .tvSendTo]
+        sut.configFlags = [.neSocketUDP, .neSocketTCP]
         sut.experimental.ignoredConfigFlags = [.appNotWorking, .neSocketUDP]
 
         let configFlagsData = try #require(sut.configFlagsData)
@@ -24,9 +24,9 @@ struct AppPreferenceTests {
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut = AppPreferenceValues()
-        sut.configFlags = [.tvSendTo, .neSocketUDP]
+        sut.configFlags = [.neSocketUDP, .neSocketTCP]
         sut.experimental.ignoredConfigFlags = [.appNotWorking, .neSocketUDP]
-        #expect(sut.isFlagEnabled(.tvSendTo))
+        #expect(sut.isFlagEnabled(.neSocketTCP))
         #expect(!sut.isFlagEnabled(.neSocketUDP))
         #expect(!sut.isFlagEnabled(.appNotWorking))
     }
