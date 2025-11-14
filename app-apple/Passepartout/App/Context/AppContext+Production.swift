@@ -140,7 +140,7 @@ extension AppContext {
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = dependencies.backupProfileRepository(
             ctx,
-            registryCoder: registryCoder,
+            encoder: appEncoder,
             model: cdRemoteModel,
             name: constants.containers.backup,
             observingResults: true
