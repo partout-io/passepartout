@@ -5,6 +5,7 @@
 import CommonLibrary
 import CommonResources
 @preconcurrency import NetworkExtension
+import Partout
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var ctx: PartoutLoggerContext?

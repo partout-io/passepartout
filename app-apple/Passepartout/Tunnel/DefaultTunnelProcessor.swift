@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Partout
 
 final class DefaultTunnelProcessor: Sendable {
     init() {

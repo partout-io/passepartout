@@ -6,6 +6,7 @@ import CommonData
 import CommonLibrary
 import CoreData
 import Foundation
+import Partout
 
 extension CommonData {
 

@@ -6,6 +6,7 @@ import AppLibrary
 import CommonLibrary
 import CommonResources
 import Foundation
+import Partout
 
 extension AppContext {
     static var forUITesting: AppContext {

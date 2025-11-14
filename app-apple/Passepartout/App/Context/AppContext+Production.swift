@@ -12,6 +12,7 @@ import CommonLibrary
 import CommonResources
 import CoreData
 import Foundation
+import Partout
 
 extension AppContext {
     convenience init() {

@@ -4,9 +4,9 @@
 
 import CommonData
 import CommonLibrary
-
 import CoreData
 import Foundation
+import Partout
 
 final class CDProviderRepositoryV3: ProviderRepository {
     private nonisolated let context: NSManagedObjectContext
