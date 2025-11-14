@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public struct ConfigBundle: Decodable {
     public struct Config: Codable {
         public let rate: Int

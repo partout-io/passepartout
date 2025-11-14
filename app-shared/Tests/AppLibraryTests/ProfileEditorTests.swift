@@ -6,6 +6,7 @@
 import Combine
 import CommonLibrary
 import Foundation
+import Partout
 import XCTest
 
 final class ProfileEditorTests: XCTestCase {

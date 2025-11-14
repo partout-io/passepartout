@@ -4,6 +4,7 @@
 
 import Combine
 import Foundation
+import Partout
 
 public protocol ProfileRepository {
     var profilesPublisher: AnyPublisher<[Profile], Never> { get }

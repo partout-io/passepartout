@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 public final class InMemoryProviderRepository: ProviderRepository {
     public let providerId: ProviderID

@@ -4,12 +4,13 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 extension ProfileManager {
     public static func forUITesting(withRegistry registry: Registry, processor: ProfileProcessor) -> ProfileManager {
         let repository = InMemoryProfileRepository()
         let remoteRepository = InMemoryProfileRepository()
-        let manager = ProfileManager(processor: processor, repository: repository)
+        let manager = ProfileManager(registry: registry, processor: processor, repository: repository)
 
         Task {
             do {

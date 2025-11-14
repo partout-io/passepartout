@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum ProfileSharingFlag {
+public enum ProfileSharingFlag: String, Codable, Sendable {
     case shared
     case tv
 }

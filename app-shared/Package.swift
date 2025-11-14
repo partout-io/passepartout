@@ -7,8 +7,8 @@ let package = Package(
     name: "App",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v16),
-        .macOS(.v13),
+        .iOS(.v17),
+        .macOS(.v14),
         .tvOS(.v17)
     ],
     products: [
@@ -91,9 +91,14 @@ let package = Package(
             dependencies: ["AppLibrary"]
         ),
         .target(
+            name: "AppLibraryTVLegacy",
+            dependencies: ["AppLibrary"]
+        ),
+        .target(
             name: "AppLibraryTVWrapper",
             dependencies: [
-                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS]))
+                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS])),
+                .target(name: "AppLibraryTVLegacy", condition: .when(platforms: [.tvOS]))
             ],
             path: "Sources/Empty/AppLibraryTVWrapper"
         ),

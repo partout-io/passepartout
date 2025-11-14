@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
+import Partout
 
 extension PartoutLogger {
     public enum Target {
@@ -16,28 +16,31 @@ extension PartoutLogger {
     @discardableResult
     public static func register(
         for target: Target,
-        with preferences: AppPreferenceValues
+        loggingTo url: URL,
+        with preferences: AppPreferenceValues,
+        parameters: Constants.Log,
+        versionString: String
     ) -> PartoutLoggerContext {
         switch target {
         case .app:
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = appLogger(preferences: preferences)
+                let logger = appLogger(to: url, preferences: preferences, parameters: parameters)
                 PartoutLogger.register(logger)
-                logger.logPreamble(parameters: Resources.constants.log)
+                logger.logPreamble(versionString: versionString, parameters: parameters)
             }
             return .global
-        case .tunnelGlobal(let target):
-            let logger = tunnelLogger(preferences: preferences, target: target)
+        case .tunnelGlobal:
+            let logger = tunnelLogger(to: url, preferences: preferences, parameters: parameters)
             PartoutLogger.register(logger)
-            logger.logPreamble(parameters: Resources.constants.log)
+            logger.logPreamble(versionString: versionString, parameters: parameters)
             return .global
-        case .tunnelProfile(let profileId, let target):
+        case .tunnelProfile(let profileId, _):
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = tunnelLogger(preferences: preferences, target: target)
+                let logger = tunnelLogger(to: url, preferences: preferences, parameters: parameters)
                 PartoutLogger.register(logger)
-                logger.logPreamble(parameters: Resources.constants.log)
+                logger.logPreamble(versionString: versionString, parameters: parameters)
             }
             return PartoutLoggerContext(profileId)
         }
@@ -45,21 +48,29 @@ extension PartoutLogger {
 }
 
 private extension PartoutLogger {
-    static func appLogger(preferences: AppPreferenceValues) -> PartoutLogger {
+    static func appLogger(
+        to url: URL,
+        preferences: AppPreferenceValues,
+        parameters: Constants.Log
+    ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
-            to: BundleConfiguration.urlForAppLog,
-            parameters: Resources.constants.log,
+            to: url,
+            parameters: parameters,
             logsPrivateData: preferences.logsPrivateData
         )
         return builder.build()
     }
 
-    static func tunnelLogger(preferences: AppPreferenceValues, target: DistributionTarget) -> PartoutLogger {
+    static func tunnelLogger(
+        to url: URL,
+        preferences: AppPreferenceValues,
+        parameters: Constants.Log
+    ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
-            to: BundleConfiguration.urlForTunnelLog(in: target),
-            parameters: Resources.constants.log,
+            to: url,
+            parameters: parameters,
             logsPrivateData: preferences.logsPrivateData
         )
         builder.willPrint = {
@@ -69,14 +80,14 @@ private extension PartoutLogger {
         return builder.build()
     }
 
-    func logPreamble(parameters: Constants.Log) {
+    func logPreamble(versionString: String, parameters: Constants.Log) {
         let level = parameters.options.maxLevel
         appendLog(level, message: "")
         appendLog(level, message: "--- BEGIN ---")
         appendLog(level, message: "")
 
         let systemInfo = SystemInformation()
-        appendLog(level, message: "App: \(BundleConfiguration.mainVersionString)")
+        appendLog(level, message: "App: \(versionString)")
         appendLog(level, message: "OS: \(systemInfo.osString)")
         if let deviceString = systemInfo.deviceString {
             appendLog(level, message: "Device: \(deviceString)")
@@ -84,7 +95,7 @@ private extension PartoutLogger {
         appendLog(level, message: "")
 
         if let localLoggerURL {
-            pp_log(.global, .App.core, .debug, "Log to: \(localLoggerURL)")
+            pp_log_g(.App.core, .debug, "Log to: \(localLoggerURL)")
         }
     }
 }

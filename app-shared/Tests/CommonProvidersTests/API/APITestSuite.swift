@@ -6,6 +6,7 @@ import CommonProviders
 @testable import CommonProvidersAPI
 @testable import CommonProvidersCore
 import Foundation
+import Partout
 
 protocol APITestSuite {
 }

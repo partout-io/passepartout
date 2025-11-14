@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 extension Provider {
     public struct Metadata: Hashable, Codable, Sendable {

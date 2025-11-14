@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 final class DefaultAppProcessor: Sendable {
     private let apiManager: APIManager

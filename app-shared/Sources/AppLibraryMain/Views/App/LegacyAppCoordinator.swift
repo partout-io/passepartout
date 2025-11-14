@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding {
+public struct LegacyAppCoordinator: View, AppCoordinatorConforming, SizeClassProviding {
 
     @EnvironmentObject
     public var iapManager: IAPManager
@@ -111,7 +111,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
 
 // MARK: -
 
-extension AppCoordinator {
+extension LegacyAppCoordinator {
     var contentView: some View {
         ProfileContainerView(
             layout: overriddenLayout,
@@ -321,7 +321,7 @@ private struct ProviderServerCoordinatorIfSupported: View {
 
 // MARK: - Handlers
 
-extension AppCoordinator {
+extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
         interactiveManager.present(with: profile, onComplete: onComplete)
@@ -378,7 +378,7 @@ extension AppCoordinator {
     }
 }
 
-private extension AppCoordinator {
+private extension LegacyAppCoordinator {
     func onSelectProviderEntity(with newModule: Module, in profile: Profile, force: Bool) async throws {
 
         // XXX: select entity after dismissing
@@ -415,7 +415,7 @@ private extension AppCoordinator {
     }
 
     func onEditProfile(_ preview: ProfilePreview) {
-        guard let profile = profileManager.profile(withId: preview.id) else {
+        guard let profile = profileManager.partoutProfile(withId: preview.id) else {
             return
         }
         editProfile(profile.editable())
@@ -443,7 +443,7 @@ private extension AppCoordinator {
     }
 }
 
-private extension AppCoordinator {
+private extension LegacyAppCoordinator {
     func present(_ route: ModalRoute?) {
         setLater(route) {
             modalRoute = $0
@@ -501,7 +501,7 @@ private struct DynamicPaywallModifier: ViewModifier {
 // MARK: - Previews
 
 #Preview {
-    AppCoordinator(
+    LegacyAppCoordinator(
         profileManager: .forPreviews,
         tunnel: .forPreviews,
         registry: Registry(),

@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 public protocol ProviderRepository: AnyObject, Sendable {
     var providerId: ProviderID { get }

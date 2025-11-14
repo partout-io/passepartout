@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
+@available(*, deprecated)
 public struct ProfilePreview: Identifiable, Hashable {
     public let id: Profile.ID
 

@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 extension ProfileEditor {
     public func load(_ profile: EditableProfile, isShared: Bool) {

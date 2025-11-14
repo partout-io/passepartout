@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 @MainActor
 extension TunnelInstallationProviding {
@@ -11,7 +12,7 @@ extension TunnelInstallationProviding {
         tunnel
             .activeProfiles
             .compactMap {
-                profileManager.profile(withId: $0.key)
+                profileManager.partoutProfile(withId: $0.key)
             }
     }
 }

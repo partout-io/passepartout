@@ -4,43 +4,42 @@
 
 import Combine
 import Foundation
+import Partout
 
 @MainActor
 public final class ProfileManager: ObservableObject {
     private enum Observer: CaseIterable {
         case local
-
         case remote
     }
 
     public enum Event: Equatable {
         case ready
-
-        case save(Profile, previous: Profile?)
-
-        case remove([Profile.ID])
-
-        case localProfiles
-
-        case filteredProfiles
-
-        case remoteProfiles
-
+        case refresh([AppIdentifier: AppProfileHeader])
         case startRemoteImport
-
         case stopRemoteImport
+
+        @available(*, deprecated)
+        case localProfiles
+        @available(*, deprecated)
+        case remoteProfiles
+        @available(*, deprecated)
+        case filteredProfiles
+        @available(*, deprecated)
+        case save(Profile, previous: Profile?)
+        @available(*, deprecated)
+        case remove([Profile.ID])
+        @available(*, deprecated)
+        case changeRemoteImport
     }
 
     // MARK: Dependencies
 
+    private let registry: Registry
     private let repository: ProfileRepository
-
     private let backupRepository: ProfileRepository?
-
     private var remoteRepository: ProfileRepository?
-
     private let mirrorsRemoteRepository: Bool
-
     private let processor: ProfileProcessor?
 
     // MARK: State
@@ -48,15 +47,17 @@ public final class ProfileManager: ObservableObject {
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
             didChange.send(.localProfiles)
+            didChange.send(.refresh(computedProfileHeaders()))
 
             reloadFilteredProfiles(with: searchSubject.value)
             reloadRequiredFeatures()
         }
     }
 
-    private var allRemoteProfiles: [Profile.ID: Profile] {
+    private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
             didChange.send(.remoteProfiles)
+            didChange.send(.refresh(computedProfileHeaders()))
         }
     }
 
@@ -66,15 +67,21 @@ public final class ProfileManager: ObservableObject {
         }
     }
 
+    @available(*, deprecated)
     @Published
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 
+    @available(*, deprecated)
     @Published
-    public var isRemoteImportingEnabled = false
+    public var isRemoteImportingEnabled = false {
+        didSet {
+            didChange.send(.changeRemoteImport)
+        }
+    }
 
     private var waitingObservers: Set<Observer> {
         didSet {
-            if isReady {
+            if waitingObservers.isEmpty {
                 didChange.send(.ready)
             }
         }
@@ -83,36 +90,39 @@ public final class ProfileManager: ObservableObject {
     // MARK: Publishers
 
     public let didChange: PassthroughSubject<Event, Never>
-
-    private let searchSubject: CurrentValueSubject<String, Never>
-
     private var localSubscription: AnyCancellable?
-
     private var remoteSubscription: AnyCancellable?
-
-    private var searchSubscription: AnyCancellable?
-
     private var remoteImportTask: Task<Void, Never>?
 
-    // for testing/previews
+    @available(*, deprecated)
+    private let searchSubject: CurrentValueSubject<String, Never>
+    @available(*, deprecated)
+    private var searchSubscription: AnyCancellable?
+
+    // For testing/previews
     public convenience init(profiles: [Profile]) {
-        self.init(repository: InMemoryProfileRepository(profiles: profiles))
+        self.init(
+            registry: Registry(),
+            repository: InMemoryProfileRepository(profiles: profiles)
+        )
     }
 
     public init(
+        registry: Registry,
         processor: ProfileProcessor? = nil,
         repository: ProfileRepository,
         backupRepository: ProfileRepository? = nil,
         mirrorsRemoteRepository: Bool = false,
         readyAfterRemote: Bool = false
     ) {
+        self.registry = registry
         self.processor = processor
         self.repository = repository
         self.backupRepository = backupRepository
         self.mirrorsRemoteRepository = mirrorsRemoteRepository
 
         allProfiles = [:]
-        allRemoteProfiles = [:]
+        remoteProfilesIds = []
         filteredProfiles = []
         requiredFeatures = [:]
         if readyAfterRemote {
@@ -120,64 +130,17 @@ public final class ProfileManager: ObservableObject {
         } else {
             waitingObservers = [.local]
         }
-
         didChange = PassthroughSubject()
-        searchSubject = CurrentValueSubject("")
 
+        searchSubject = CurrentValueSubject("")
         observeSearch()
     }
 }
 
-// MARK: - View
+// MARK: - Actions
 
 extension ProfileManager {
-    public var isReady: Bool {
-        waitingObservers.isEmpty
-    }
-
-    public var hasProfiles: Bool {
-        !filteredProfiles.isEmpty
-    }
-
-    public var previews: [ProfilePreview] {
-        filteredProfiles.map {
-            processor?.preview(from: $0) ?? ProfilePreview($0)
-        }
-    }
-
-    public func profile(withId profileId: Profile.ID) -> Profile? {
-        allProfiles[profileId]
-    }
-
-    public var isSearching: Bool {
-        !searchSubject.value.isEmpty
-    }
-
-    public func search(byName name: String) {
-        searchSubject.send(name)
-    }
-
-    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
-        requiredFeatures[profileId]
-    }
-
-    public func reloadRequiredFeatures() {
-        guard let processor else {
-            return
-        }
-        requiredFeatures = allProfiles.reduce(into: [:]) {
-            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
-                return
-            }
-            $0[$1.key] = ineligible
-        }
-        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
-    }
-}
-
-// MARK: - Edit
-
-extension ProfileManager {
+    // FIXME: #1594, Profile in public
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {
@@ -229,42 +192,31 @@ extension ProfileManager {
         pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
-    public func remove(withId profileId: Profile.ID) async {
-        await remove(withIds: [profileId])
-    }
-
-    public func remove(withIds profileIds: [Profile.ID]) async {
-        pp_log_g(.App.profiles, .notice, "Remove profiles \(profileIds)...")
-        do {
-            try await repository.removeProfiles(withIds: profileIds)
-            try? await remoteRepository?.removeProfiles(withIds: profileIds)
-            didChange.send(.remove(profileIds))
-        } catch {
-            pp_log_g(.App.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
+    public func `import`(_ input: ProfileImporterInput, sharingFlag: ProfileSharingFlag? = nil) async throws {
+        var profile = try registry.importedProfile(from: input, passphrase: nil)
+        pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
+        if sharingFlag == .tv {
+            var builder = profile.builder()
+            builder.attributes.isAvailableForTV = true
+            profile = try builder.build()
         }
-    }
-}
-
-// MARK: - Remote/Attributes
-
-extension ProfileManager {
-    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
-        allRemoteProfiles.keys.contains(profileId)
+        try await save(profile, isLocal: true, remotelyShared: sharingFlag != nil)
     }
 
-    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
-        profile(withId: profileId)?.attributes.isAvailableForTV == true
+    // FIXME: #1594, Profile.ID in public
+    public func duplicate(profileWithId profileId: Profile.ID) async throws {
+        guard let profile = allProfiles[profileId] else {
+            return
+        }
+
+        var builder = profile.builder(withNewId: true)
+        builder.name = firstUniqueName(from: profile.name)
+        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
+        let copy = try builder.build()
+
+        try await save(copy)
     }
 
-    public func eraseRemotelySharedProfiles() async throws {
-        pp_log_g(.App.profiles, .notice, "Erase remotely shared profiles...")
-        try await remoteRepository?.removeAllProfiles()
-    }
-}
-
-// MARK: - Shortcuts
-
-extension ProfileManager {
     public func firstUniqueName(from name: String) -> String {
         let allNames = Set(allProfiles.values.map(\.name))
         var newName = name
@@ -278,30 +230,49 @@ extension ProfileManager {
         }
     }
 
-    public func duplicate(profileWithId profileId: Profile.ID) async throws {
-        guard let profile = profile(withId: profileId) else {
-            return
+    // FIXME: #1594, Profile.ID in public
+    public func remove(withId profileId: Profile.ID) async {
+        await remove(withIds: [profileId])
+    }
+
+    // FIXME: #1594, Profile.ID in public
+    public func remove(withIds profileIds: [Profile.ID]) async {
+        pp_log_g(.App.profiles, .notice, "Remove profiles \(profileIds)...")
+        do {
+            try await repository.removeProfiles(withIds: profileIds)
+            try? await remoteRepository?.removeProfiles(withIds: profileIds)
+            didChange.send(.remove(profileIds))
+        } catch {
+            pp_log_g(.App.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }
+    }
 
-        var builder = profile.builder(withNewId: true)
-        builder.name = firstUniqueName(from: profile.name)
-        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
-        let copy = try builder.build()
-
-        try await save(copy)
+    public func eraseRemotelySharedProfiles() async throws {
+        pp_log_g(.App.profiles, .notice, "Erase remotely shared profiles...")
+        try await remoteRepository?.removeAllProfiles()
     }
 
     public func resaveAllProfiles() async {
-        for preview in previews {
-            guard let profile = profile(withId: preview.id) else {
-                continue
-            }
+        for profile in allProfiles.values {
             do {
                 try await save(profile, isLocal: true)
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to re-save profile \(preview.id): \(error)")
+                pp_log_g(.App.profiles, .error, "Unable to re-save profile \(profile.id): \(error)")
             }
         }
+    }
+}
+
+// MARK: - State
+
+extension ProfileManager {
+    // FIXME: #1594, Profile.ID in public
+    public func profile(withId profileId: Profile.ID) -> AppProfile? {
+        guard let profile = allProfiles[profileId] else { return nil }
+        return profile.uiProfile(
+            sharingFlags: sharingFlags(for: profileId),
+            requiredFeatures: requiredFeatures(for: profile)
+        )
     }
 }
 
@@ -334,16 +305,6 @@ extension ProfileManager {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.reloadRemoteProfiles($0)
-            }
-    }
-}
-
-private extension ProfileManager {
-    func observeSearch(debounce: Int = 200) {
-        searchSubscription = searchSubject
-            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadFilteredProfiles(with: $0)
             }
     }
 }
@@ -386,9 +347,7 @@ private extension ProfileManager {
         objectWillChange.send()
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
-        allRemoteProfiles = result.reduce(into: [:]) {
-            $0[$1.id] = $1
-        }
+        remoteProfilesIds = Set(result.map(\.id))
         if waitingObservers.contains(.remote) {
             waitingObservers.remove(.remote)
         }
@@ -422,7 +381,7 @@ private extension ProfileManager {
             pp_log_g(.App.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
 
-        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(Set(allRemoteProfiles.keys))
+        let remotelyDeletedIds = Set(allProfiles.keys).subtracting(remoteProfilesIds)
         let mirrorsRemoteRepository = mirrorsRemoteRepository
 
         remoteImportTask = Task.detached { [weak self] in
@@ -476,6 +435,102 @@ private extension ProfileManager {
         }
         await remoteImportTask?.value
         remoteImportTask = nil
+    }
+
+    func computedProfileHeaders() -> [AppIdentifier: AppProfileHeader] {
+        let allHeaders = allProfiles.reduce(into: [:]) {
+            $0[$1.key] = $1.value.uiHeader(
+                sharingFlags: sharingFlags(for: $1.key),
+                requiredFeatures: requiredFeatures(for: $1.value)
+            )
+        }
+        pp_log_g(.App.profiles, .info, "Updated headers: \(allHeaders)")
+        return allHeaders
+    }
+}
+
+// MARK: - Deprecated
+
+@available(*, deprecated)
+extension ProfileManager {
+    public var isReady: Bool {
+        waitingObservers.isEmpty
+    }
+
+    public var hasProfiles: Bool {
+        !filteredProfiles.isEmpty
+    }
+
+    public var previews: [ProfilePreview] {
+        filteredProfiles.map {
+            processor?.preview(from: $0) ?? ProfilePreview($0)
+        }
+    }
+
+    public func partoutProfile(withId profileId: Profile.ID) -> Profile? {
+        allProfiles[profileId]
+    }
+
+    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
+        remoteProfilesIds.contains(profileId)
+    }
+
+    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
+        allProfiles[profileId]?.attributes.isAvailableForTV == true
+    }
+
+    public func sharingFlags(for profileId: Profile.ID) -> [ProfileSharingFlag] {
+        if isRemotelyShared(profileWithId: profileId) {
+            if isAvailableForTV(profileWithId: profileId) {
+                return [.tv]
+            } else {
+                return [.shared]
+            }
+        }
+        return []
+    }
+
+    public func requiredFeatures(for profile: Profile) -> Set<AppFeature> {
+        guard let ineligible = processor?.requiredFeatures(profile), !ineligible.isEmpty else {
+            return []
+        }
+        return ineligible
+    }
+
+    public var isSearching: Bool {
+        !searchSubject.value.isEmpty
+    }
+
+    public func search(byName name: String) {
+        searchSubject.send(name)
+    }
+
+    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
+        requiredFeatures[profileId]
+    }
+
+    public func reloadRequiredFeatures() {
+        guard let processor else {
+            return
+        }
+        requiredFeatures = allProfiles.reduce(into: [:]) {
+            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
+                return
+            }
+            $0[$1.key] = ineligible
+        }
+        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+    }
+}
+
+@available(*, deprecated)
+private extension ProfileManager {
+    func observeSearch(debounce: Int = 200) {
+        searchSubscription = searchSubject
+            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.reloadFilteredProfiles(with: $0)
+            }
     }
 
     func reloadFilteredProfiles(with search: String) {

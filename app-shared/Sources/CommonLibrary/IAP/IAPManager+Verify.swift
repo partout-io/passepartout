@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension IAPManager {
     public func verify(_ profile: Profile, extra: Set<AppFeature>? = nil) throws {
         var features = profile.features

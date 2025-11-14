@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonProvidersCore
+import Partout
 
 extension Registry {
     public convenience init(

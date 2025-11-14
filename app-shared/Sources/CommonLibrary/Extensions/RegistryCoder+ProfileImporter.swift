@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
-extension RegistryCoder: ProfileImporter {
+extension Registry: ProfileImporter {
     public nonisolated func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {
         let name: String
         let contents: String
@@ -21,13 +22,20 @@ extension RegistryCoder: ProfileImporter {
 
         // Try to decode a full Partout profile first
         do {
-            return try profile(from: contents)
+            return try compatibleProfile(fromString: contents)
         } catch {
             pp_log_g(.App.core, .debug, "Unable to decode profile for import: \(error)")
         }
 
         // Fall back to parsing a single module
-        let importedModule = try module(from: contents, object: passphrase)
+        let importedModule = try module(fromContents: contents, object: passphrase)
         return try profile(withName: name, singleModule: importedModule)
+    }
+}
+
+@available(*, deprecated)
+extension RegistryCoder: ProfileImporter {
+    public nonisolated func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {
+        try registry.importedProfile(from: input, passphrase: passphrase)
     }
 }

@@ -10,13 +10,10 @@ struct ProfilesView: View {
     @EnvironmentObject
     private var configManager: ConfigManager
 
-    @ObservedObject
-    var profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     @ObservedObject
     var webReceiverManager: WebReceiverManager
-
-    let registry: Registry
 
     @FocusState
     private var detail: Detail?
@@ -40,14 +37,14 @@ private extension ProfilesView {
             if configManager.canImportToTV {
                 importSection
             }
-            if profileManager.hasProfiles {
+            if profileObservable.hasProfiles {
                 profilesSection
             }
         }
         .themeList()
         .frame(maxWidth: .infinity)
         .themeEmpty(
-            if: !configManager.canImportToTV && !profileManager.hasProfiles,
+            if: !configManager.canImportToTV && !profileObservable.hasProfiles,
             message: Strings.Views.App.Folders.noProfiles
         )
     }
@@ -56,8 +53,7 @@ private extension ProfilesView {
         DetailView(
             detail: detail,
             webReceiverManager: webReceiverManager,
-            registry: registry,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             errorHandler: errorHandler
         )
         .frame(maxWidth: .infinity)
@@ -74,26 +70,26 @@ private extension ProfilesView {
     }
 
     var profilesSection: some View {
-        ForEach(profileManager.previews, id: \.id, content: row(forProfilePreview:))
+        ForEach(profileObservable.filteredHeaders, id: \.id, content: row(forHeader:))
             .themeSection(header: Strings.Global.Nouns.profiles)
     }
 
-    func row(forProfilePreview preview: ProfilePreview) -> some View {
+    func row(forHeader header: AppProfileHeader) -> some View {
         Button {
             //
         } label: {
             HStack {
-                Text(preview.name)
+                Text(header.name)
                 Spacer()
                 ProfileSharingView(
-                    profileManager: profileManager,
-                    profileId: preview.id
+                    flags: header.sharingFlags,
+                    isRemoteImportingEnabled: profileObservable.isRemoteImportingEnabled
                 )
             }
         }
         .contextMenu {
             Button(Strings.Global.Actions.delete, role: .destructive) {
-                deleteProfile(withId: preview.id)
+                deleteProfile(withId: header.id)
             }
         }
         .focused($detail, equals: .profiles)
@@ -120,7 +116,7 @@ private extension ProfilesView {
 
     func deleteProfile(withId profileId: Profile.ID) {
         Task {
-            await profileManager.remove(withId: profileId)
+            await profileObservable.remove(withId: profileId)
         }
     }
 }
@@ -139,10 +135,7 @@ private struct DetailView: View {
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
-    let registry: Registry
-
-    @ObservedObject
-    var profileManager: ProfileManager
+    var profileObservable: ProfileObservable
 
     @ObservedObject
     var errorHandler: ErrorHandler
@@ -167,8 +160,7 @@ private extension DetailView {
     var importView: some View {
         WebReceiverView(
             webReceiverManager: webReceiverManager,
-            registry: registry,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             errorHandler: errorHandler
         )
     }
@@ -176,20 +168,19 @@ private extension DetailView {
 
 // MARK: - Preview
 
-#Preview("Empty") {
-    ProfilesView(
-        profileManager: ProfileManager(profiles: []),
-        webReceiverManager: .forPreviews,
-        registry: Registry()
-    )
-    .withMockEnvironment()
-}
-
-#Preview("Profiles") {
-    ProfilesView(
-        profileManager: .forPreviews,
-        webReceiverManager: .forPreviews,
-        registry: Registry()
-    )
-    .withMockEnvironment()
-}
+// FIXME: #1594, Previews
+//#Preview("Empty") {
+//    ProfilesView(
+//        profileObservable: ProfileManager(profiles: []),
+//        webReceiverManager: .forPreviews
+//    )
+//    .withMockEnvironment()
+//}
+//
+//#Preview("Profiles") {
+//    ProfilesView(
+//        profileObservable: .forPreviews,
+//        webReceiverManager: .forPreviews
+//    )
+//    .withMockEnvironment()
+//}

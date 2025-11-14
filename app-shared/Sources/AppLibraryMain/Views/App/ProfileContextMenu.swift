@@ -46,7 +46,7 @@ struct ProfileContextMenu: View, Routable {
 @MainActor
 private extension ProfileContextMenu {
     var profile: Profile? {
-        profileManager.profile(withId: preview.id)
+        profileManager.partoutProfile(withId: preview.id)
     }
 
     var providerConnectToButton: some View {

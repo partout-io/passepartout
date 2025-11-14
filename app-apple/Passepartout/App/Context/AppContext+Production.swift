@@ -12,6 +12,7 @@ import CommonLibrary
 import CommonResources
 import CoreData
 import Foundation
+import Partout
 
 extension AppContext {
     convenience init() {
@@ -23,7 +24,15 @@ extension AppContext {
         let dependencies: Dependencies = .shared
         let kvManager = dependencies.kvManager
 
-        let ctx = PartoutLogger.register(for: .app, with: kvManager.preferences)
+        let logURL = BundleConfiguration.urlForAppLog
+        let versionString = BundleConfiguration.mainVersionString
+        let ctx = PartoutLogger.register(
+            for: .app,
+            loggingTo: logURL,
+            with: kvManager.preferences,
+            parameters: constants.log,
+            versionString: versionString
+        )
 
         // MARK: Core Data
 
@@ -161,6 +170,7 @@ extension AppContext {
             registry: registry
         )
         let profileManager = ProfileManager(
+            registry: registry,
             processor: processor,
             repository: mainProfileRepository,
             backupRepository: backupProfileRepository,
@@ -192,10 +202,10 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
+            log: PartoutCategoryLogger(.App.web),
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
-            port: constants.webReceiver.port,
-            logger: PartoutWebLogger()
+            port: constants.webReceiver.port
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
             dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)

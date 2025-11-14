@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
+import Partout
 
 extension Dependencies {
     nonisolated func coreDataLogger() -> LoggerProtocol {

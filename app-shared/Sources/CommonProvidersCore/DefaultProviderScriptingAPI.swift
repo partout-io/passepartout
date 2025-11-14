@@ -6,6 +6,7 @@ import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
+import Partout
 
 public final class DefaultProviderScriptingAPI {
     private let ctx: PartoutLoggerContext

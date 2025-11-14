@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 public struct WireGuardProviderTemplate: Hashable, Codable, Sendable {
     public struct UserInfo: Sendable {

@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import CommonResources
+import Partout
 
 extension Dependencies {
     func appProcessor(

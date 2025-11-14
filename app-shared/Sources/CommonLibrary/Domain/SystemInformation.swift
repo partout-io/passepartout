@@ -4,8 +4,7 @@
 
 #if os(macOS)
 import AppKit
-#endif
-#if !os(macOS)
+#elseif os(iOS) || os(tvOS)
 import UIKit
 #endif
 
@@ -20,11 +19,16 @@ public struct SystemInformation {
         let osName = "macOS"
         let osVersion = "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
         deviceString = nil
-#else
+#elseif os(iOS) || os(tvOS)
         let device: UIDevice = .current
         let osName = device.systemName
         let osVersion = device.systemVersion
         deviceString = device.model
+#else
+        // TODO: ###, Non-Apple OS information
+        let osName = "Unknown"
+        let osVersion = "0.0.0"
+        deviceString = nil
 #endif
         osString = "\(osName) \(osVersion)"
     }

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Partout
 import SwiftUI
 
 public struct ProfileSharingView: View {
@@ -15,6 +16,7 @@ public struct ProfileSharingView: View {
         self.isRemoteImportingEnabled = isRemoteImportingEnabled
     }
 
+    @available(*, deprecated)
     public init(profileManager: ProfileManager, profileId: Profile.ID) {
         self.init(
             flags: profileManager.sharingFlags(for: profileId),

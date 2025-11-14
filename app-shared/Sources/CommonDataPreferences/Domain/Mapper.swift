@@ -5,6 +5,7 @@
 import CommonLibrary
 import CoreData
 import Foundation
+import Partout
 
 struct DomainMapper {
 }

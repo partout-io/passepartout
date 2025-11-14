@@ -4,6 +4,7 @@
 
 @testable import CommonProviders
 import Foundation
+import Partout
 import Testing
 
 struct HideMeProviderTests: APITestSuite {

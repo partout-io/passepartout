@@ -158,7 +158,7 @@ private extension DiagnosticsView {
         tunnel.activeProfiles
             .values
             .compactMap {
-                profileManager.profile(withId: $0.id)
+                profileManager.partoutProfile(withId: $0.id)
             }
             .sorted(by: Profile.sorting)
     }

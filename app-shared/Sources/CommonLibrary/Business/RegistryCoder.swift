@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
+import Partout
 
+@available(*, deprecated)
 @MainActor
 public final class RegistryCoder: ObservableObject, Sendable {
-    private let registry: Registry
+    let registry: Registry
 
     public init(registry: Registry) {
         self.registry = registry

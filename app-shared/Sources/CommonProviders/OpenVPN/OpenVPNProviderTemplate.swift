@@ -4,6 +4,7 @@
 
 import CommonProvidersCore
 import Foundation
+import Partout
 
 public struct OpenVPNProviderTemplate: Codable, Sendable {
     public let configuration: OpenVPN.Configuration

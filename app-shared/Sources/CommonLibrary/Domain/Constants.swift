@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public struct Constants: Decodable, Sendable {
     public struct Containers: Decodable, Sendable {
         public let local: String

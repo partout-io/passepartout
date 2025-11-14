@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 extension DNSProtocol: LocalizableEntity {
     public var localizedDescription: String {
