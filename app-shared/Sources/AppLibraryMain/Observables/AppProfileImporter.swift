@@ -22,7 +22,8 @@ final class AppProfileImporter: ObservableObject {
 
     func tryImport(
         urls: [URL],
-        profileManager: ProfileManager
+        profileManager: ProfileManager,
+        importer: ProfileImporter? = nil
     ) async throws {
         var withPassphrase: [URL] = []
 
@@ -31,7 +32,8 @@ final class AppProfileImporter: ObservableObject {
                 try await importURL(
                     url,
                     withPassphrase: nil,
-                    profileManager: profileManager
+                    profileManager: profileManager,
+                    importer: importer
                 )
             } catch {
                 if let error = error as? PartoutError, error.code == .OpenVPN.passphraseRequired {
@@ -49,12 +51,13 @@ final class AppProfileImporter: ObservableObject {
         }
     }
 
-    func reImport(url: URL, profileManager: ProfileManager) async throws {
+    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter? = nil) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
-                profileManager: profileManager
+                profileManager: profileManager,
+                importer: importer
             )
             urlsRequiringPassphrase.removeFirst()
             scheduleNextImport()
@@ -86,13 +89,19 @@ private extension AppProfileImporter {
     func importURL(
         _ url: URL,
         withPassphrase passphrase: String?,
-        profileManager: ProfileManager
+        profileManager: ProfileManager,
+        importer: ProfileImporter?
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
             if didStartAccess {
                 url.stopAccessingSecurityScopedResource()
             }
+        }
+        if let importer {
+            let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
+            try await profileManager.save(profile)
+            return
         }
         try await profileManager.import(.file(url), passphrase: passphrase)
     }
