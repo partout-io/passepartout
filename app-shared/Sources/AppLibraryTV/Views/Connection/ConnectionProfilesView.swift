@@ -64,7 +64,7 @@ private extension ConnectionProfilesView {
     func toggleButton(for preview: ProfilePreview) -> some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profileManager.profile(withId: preview.id),
+            profile: profileManager.partoutProfile(withId: preview.id),
             errorHandler: errorHandler,
             flow: flow,
             label: { isOn, _ in

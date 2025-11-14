@@ -128,7 +128,7 @@ private extension AppMenu {
             guard let installedProfile else {
                 return
             }
-            guard let profile = profileManager.profile(withId: installedProfile.id) else {
+            guard let profile = profileManager.partoutProfile(withId: installedProfile.id) else {
                 return
             }
             do {
@@ -160,7 +160,7 @@ private extension AppMenu {
 
     func toggleProfile(_ isOn: Bool, for preview: ProfilePreview) {
         Task {
-            guard let profile = profileManager.profile(withId: preview.id) else {
+            guard let profile = profileManager.partoutProfile(withId: preview.id) else {
                 return
             }
             do {

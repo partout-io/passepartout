@@ -67,7 +67,7 @@ private extension ConnectionView {
         guard let id = tunnel.activeProfile?.id else {
             return nil
         }
-        return profileManager.profile(withId: id)
+        return profileManager.partoutProfile(withId: id)
     }
 
     var activeView: some View {

@@ -74,7 +74,7 @@ private extension ProfileRowView {
 
 private extension ProfileRowView {
     var profile: Profile? {
-        profileManager.profile(withId: preview.id)
+        profileManager.partoutProfile(withId: preview.id)
     }
 
     var requiredFeatures: Set<AppFeature>? {

@@ -242,10 +242,6 @@ extension ProfileManager {
 // MARK: - State
 
 extension ProfileManager {
-    func partoutProfile(withId profileId: Profile.ID) -> Profile? {
-        allProfiles[profileId]
-    }
-
     // FIXME: ###, Profile.ID in public
     public func profile(withId profileId: Profile.ID) -> AppProfile? {
         guard let profile = allProfiles[profileId] else { return nil }
@@ -445,6 +441,10 @@ extension ProfileManager {
         filteredProfiles.map {
             processor?.preview(from: $0) ?? ProfilePreview($0)
         }
+    }
+
+    public func partoutProfile(withId profileId: Profile.ID) -> Profile? {
+        allProfiles[profileId]
     }
 
     public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {

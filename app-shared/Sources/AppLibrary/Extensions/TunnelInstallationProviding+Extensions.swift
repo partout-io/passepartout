@@ -12,7 +12,7 @@ extension TunnelInstallationProviding {
         tunnel
             .activeProfiles
             .compactMap {
-                profileManager.profile(withId: $0.key)
+                profileManager.partoutProfile(withId: $0.key)
             }
     }
 }

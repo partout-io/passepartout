@@ -44,7 +44,7 @@ private extension ModuleSendMenu {
             do {
                 var destination: Profile.Builder
                 if let preview {
-                    guard let existingDestination = profileManager.profile(withId: preview.id) else {
+                    guard let existingDestination = profileManager.partoutProfile(withId: preview.id) else {
                         throw PartoutError(.notFound)
                     }
                     destination = existingDestination.builder()

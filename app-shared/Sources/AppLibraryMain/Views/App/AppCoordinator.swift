@@ -415,7 +415,7 @@ private extension AppCoordinator {
     }
 
     func onEditProfile(_ preview: ProfilePreview) {
-        guard let profile = profileManager.profile(withId: preview.id) else {
+        guard let profile = profileManager.partoutProfile(withId: preview.id) else {
             return
         }
         editProfile(profile.editable())
