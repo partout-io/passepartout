@@ -29,6 +29,8 @@ public final class ProfileManager: ObservableObject {
         case save(Profile, previous: Profile?)
         @available(*, deprecated)
         case remove([Profile.ID])
+        @available(*, deprecated)
+        case changeRemoteImport
     }
 
     // MARK: Dependencies
@@ -71,7 +73,11 @@ public final class ProfileManager: ObservableObject {
 
     @available(*, deprecated)
     @Published
-    public var isRemoteImportingEnabled = false
+    public var isRemoteImportingEnabled = false {
+        didSet {
+            didChange.send(.changeRemoteImport)
+        }
+    }
 
     private var waitingObservers: Set<Observer> {
         didSet {

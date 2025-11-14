@@ -81,7 +81,7 @@ extension ProfileObservable {
     }
 
     public func setRemoteImportingEnabled(_ isEnabled: Bool) {
-        isRemoteImportingEnabled = isEnabled
+        profileManager.isRemoteImportingEnabled = isEnabled
     }
 }
 
@@ -128,6 +128,9 @@ private extension ProfileObservable {
                     isReady = true
                 case .refresh(let headers):
                     allHeaders = headers
+                case .changeRemoteImport:
+                    // Later, set this property directly on ProfileObservable
+                    isRemoteImportingEnabled = profileManager.isRemoteImportingEnabled
                 default:
                     break
                 }
