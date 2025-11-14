@@ -9,8 +9,6 @@ import Foundation
 import XCTest
 
 final class AppProfileImporterTests: XCTestCase {
-    private let importer = SomeModule.Implementation()
-
     private var subscriptions: Set<AnyCancellable> = []
 }
 
@@ -20,7 +18,7 @@ extension AppProfileImporterTests {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
 
-        try await sut.tryImport(urls: [], profileManager: profileManager, importer: importer)
+        try await sut.tryImport(urls: [], profileManager: profileManager)
         XCTAssertEqual(sut.nextURL, nil)
         XCTAssertTrue(profileManager.previews.isEmpty)
     }
@@ -47,11 +45,7 @@ extension AppProfileImporterTests {
             }
             .store(in: &subscriptions)
 
-        try await sut.tryImport(
-            urls: [url],
-            profileManager: profileManager,
-            importer: importer
-        )
+        try await sut.tryImport(urls: [url], profileManager: profileManager)
         XCTAssertEqual(sut.nextURL, nil)
 
         await fulfillment(of: [exp])
@@ -79,15 +73,11 @@ extension AppProfileImporterTests {
             }
             .store(in: &subscriptions)
 
-        try await sut.tryImport(
-            urls: [url],
-            profileManager: profileManager,
-            importer: importer
-        )
+        try await sut.tryImport(urls: [url], profileManager: profileManager)
         XCTAssertEqual(sut.nextURL, url)
 
         sut.currentPassphrase = "passphrase"
-        try await sut.reImport(url: url, profileManager: profileManager, importer: importer)
+        try await sut.reImport(url: url, profileManager: profileManager)
         XCTAssertEqual(sut.nextURL, nil)
 
         await fulfillment(of: [exp])
@@ -98,11 +88,7 @@ extension AppProfileImporterTests {
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
 
-        try await sut.tryImport(
-            urls: [url, url, url],
-            profileManager: profileManager,
-            importer: importer
-        )
+        try await sut.tryImport(urls: [url, url, url], profileManager: profileManager)
         XCTAssertEqual(sut.nextURL, url)
         XCTAssertEqual(sut.urlsRequiringPassphrase.count, 3)
     }
