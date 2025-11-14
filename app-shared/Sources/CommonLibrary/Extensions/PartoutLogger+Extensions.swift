@@ -95,7 +95,7 @@ private extension PartoutLogger {
         appendLog(level, message: "")
 
         if let localLoggerURL {
-            pp_log(.global, .App.core, .debug, "Log to: \(localLoggerURL)")
+            pp_log_g(.App.core, .debug, "Log to: \(localLoggerURL)")
         }
     }
 }
