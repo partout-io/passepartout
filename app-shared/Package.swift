@@ -91,9 +91,14 @@ let package = Package(
             dependencies: ["AppLibrary"]
         ),
         .target(
+            name: "AppLibraryTVCross",
+            dependencies: ["AppLibrary"]
+        ),
+        .target(
             name: "AppLibraryTVWrapper",
             dependencies: [
-                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS]))
+                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS])),
+                .target(name: "AppLibraryTVCross", condition: .when(platforms: [.tvOS]))
             ],
             path: "Sources/Empty/AppLibraryTVWrapper"
         ),

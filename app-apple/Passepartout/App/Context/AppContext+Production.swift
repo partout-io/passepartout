@@ -200,10 +200,10 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
+            logger: PartoutCategoryLogger(.App.web),
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
-            port: constants.webReceiver.port,
-            logger: PartoutCategoryLogger(.App.web)
+            port: constants.webReceiver.port
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
             dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)
