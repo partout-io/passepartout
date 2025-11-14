@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Partout
 
 extension TimeInterval: StyledLocalizableEntity {
     public enum Style {

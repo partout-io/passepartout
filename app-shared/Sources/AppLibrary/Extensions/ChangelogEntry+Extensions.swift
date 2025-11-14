@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import CommonResources
+import Foundation
 
 extension ChangelogEntry {
     public var issueURL: URL? {

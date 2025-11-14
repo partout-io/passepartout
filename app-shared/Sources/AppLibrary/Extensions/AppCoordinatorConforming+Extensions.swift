@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 extension AppCoordinatorConforming {
     public func onConnect(_ profile: Profile, force: Bool, verify: Bool = true) async {

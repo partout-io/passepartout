@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Partout
 import SwiftUI
 
 public struct VersionView<R, Icon>: View where R: Hashable, Icon: View {
