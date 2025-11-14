@@ -24,12 +24,8 @@ public final class AppEncoder: ObservableObject {
         profile.name.appending(".json")
     }
 
-    public func writeToJSON(_ profile: Profile) throws -> String {
-        try registry.json(fromProfile: profile)
-    }
-
     public func writeToURL(_ profile: Profile) throws -> URL {
-        let json = try writeToJSON(profile)
+        let json = try json(fromProfile: profile)
         let data = Data(json.utf8)
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(profile.id.uuidString)

@@ -64,7 +64,7 @@ private extension ProfileExportButton {
 
     func exportProfiles() {
         do {
-            viewModel.jsonString = try appEncoder.writeToJSON(profile)
+            viewModel.jsonString = try appEncoder.json(fromProfile: profile)
             viewModel.isExporting = true
         } catch {
             errorHandler.handle(error)
