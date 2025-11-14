@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol WebLogger {
+public protocol AppLogger {
     func debug(_ message: String)
     func info(_ message: String)
     func notice(_ message: String)

@@ -6,13 +6,13 @@ import Foundation
 
 @MainActor
 public final class WebUploader: ObservableObject, Sendable {
+    private let logger: AppLogger
+
     private let strategy: WebUploaderStrategy
 
-    private let logger: WebLogger
-
-    public init(strategy: WebUploaderStrategy, logger: WebLogger) {
-        self.strategy = strategy
+    public init(logger: AppLogger, strategy: WebUploaderStrategy) {
         self.logger = logger
+        self.strategy = strategy
     }
 
     public func send(_ content: String, filename: String, to url: URL, passcode: String) async throws {

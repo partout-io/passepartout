@@ -9,17 +9,18 @@ import NIO
 import NIOHTTP1
 
 public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
+    private let logger: AppLogger
+
     private let html: String
 
     private let port: Int
-
-    private let logger: WebLogger
 
     private var channel: Channel?
 
     private var group: EventLoopGroup?
 
-    public init(htmlPath: String, stringsBundle: Bundle, port: Int, logger: WebLogger) {
+    public init(logger: AppLogger, htmlPath: String, stringsBundle: Bundle, port: Int) {
+        self.logger = logger
         html = {
             do {
                 let contents = try String(contentsOfFile: htmlPath)
@@ -30,7 +31,6 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
             }
         }()
         self.port = port
-        self.logger = logger
     }
 
     // onReceive(filename, content)

@@ -4,7 +4,7 @@
 
 import Partout
 
-public final class PartoutCategoryLogger {
+public final class PartoutCategoryLogger: AppLogger {
     private let category: LoggerCategory
 
     public init(_ category: LoggerCategory) {
@@ -27,5 +27,3 @@ public final class PartoutCategoryLogger {
         pp_log_g(category, .error, message)
     }
 }
-
-extension PartoutCategoryLogger: WebLogger {}
