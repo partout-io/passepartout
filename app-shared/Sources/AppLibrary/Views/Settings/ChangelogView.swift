@@ -8,7 +8,6 @@ import CommonLibrary
 import CommonResources
 import Partout
 import SwiftUI
-import WebKit
 
 public struct ChangelogView: View {
 
