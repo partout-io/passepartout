@@ -8,8 +8,6 @@ import SwiftUI
 struct AppProfileImporterModifier: ViewModifier {
     let profileManager: ProfileManager
 
-    let registryCoder: RegistryCoder
-
     @Binding
     var isPresented: Bool
 
@@ -51,8 +49,7 @@ private extension AppProfileImporterModifier {
             Task {
                 try await importer.reImport(
                     url: url,
-                    profileManager: profileManager,
-                    importer: registryCoder
+                    profileManager: profileManager
                 )
             }
         }
@@ -71,8 +68,7 @@ private extension AppProfileImporterModifier {
                 let urls = try result.get()
                 try await importer.tryImport(
                     urls: urls,
-                    profileManager: profileManager,
-                    importer: registryCoder
+                    profileManager: profileManager
                 )
             } catch {
                 await errorHandler.handle(

@@ -10,6 +10,7 @@ extension View {
         environmentObject(theme)
             .environmentObject(context.apiManager)
             .environmentObject(context.appearanceManager)
+            .environmentObject(context.appEncoder)
             .environmentObject(context.configManager)
             .environment(\.distributionTarget, context.distributionTarget)
             .environmentObject(context.iapManager)
@@ -17,7 +18,6 @@ extension View {
             .environmentObject(context.onboardingManager)
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)
-            .environmentObject(context.registryCoder)
             .environmentObject(context.versionChecker)
     }
 

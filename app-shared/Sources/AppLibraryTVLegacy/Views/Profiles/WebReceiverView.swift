@@ -7,9 +7,6 @@ import SwiftUI
 
 struct WebReceiverView: View {
 
-    @EnvironmentObject
-    private var registryCoder: RegistryCoder
-
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
@@ -70,17 +67,10 @@ private extension WebReceiverView {
         for await file in webReceiverManager.files {
             pp_log_g(.App.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
-                let input: ProfileImporterInput = .contents(filename: file.name, data: file.contents)
-
-                // TODO: #1512, import encrypted OpenVPN profiles over the web
-                var profile = try registryCoder.importedProfile(from: input, passphrase: nil)
-                pp_log_g(.App.web, .info, "Import uploaded profile: \(profile)")
-
-                var builder = profile.builder()
-                builder.attributes.isAvailableForTV = true
-                profile = try builder.build()
-                try await profileManager.save(profile, isLocal: true)
-
+                try await profileManager.import(
+                    .contents(filename: file.name, data: file.contents),
+                    sharingFlag: .tv
+                )
                 webReceiverManager.renewPasscode()
             } catch {
                 pp_log_g(.App.web, .error, "Unable to import uploaded profile: \(error)")

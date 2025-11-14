@@ -9,7 +9,7 @@ import SwiftUI
 struct SendToTVCoordinator: View {
 
     @EnvironmentObject
-    private var registryCoder: RegistryCoder
+    private var appEncoder: AppEncoder
 
     let profile: Profile
 
@@ -35,7 +35,7 @@ private extension SendToTVCoordinator {
             )
         )
         do {
-            let encodedProfile = try registryCoder.json(from: profile)
+            let encodedProfile = try appEncoder.json(fromProfile: profile)
             try await client.send(
                 encodedProfile,
                 filename: profile.name,

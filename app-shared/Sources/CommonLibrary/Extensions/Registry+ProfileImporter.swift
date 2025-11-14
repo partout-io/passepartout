@@ -32,10 +32,3 @@ extension Registry: ProfileImporter {
         return try profile(withName: name, singleModule: importedModule)
     }
 }
-
-@available(*, deprecated)
-extension RegistryCoder: ProfileImporter {
-    public nonisolated func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {
-        try registry.importedProfile(from: input, passphrase: passphrase)
-    }
-}

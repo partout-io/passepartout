@@ -8,7 +8,7 @@ import SwiftUI
 struct ProfileShareButton: View {
 
     @EnvironmentObject
-    private var registryCoder: RegistryCoder
+    private var appEncoder: AppEncoder
 
     @EnvironmentObject
     private var iapManager: IAPManager
@@ -51,7 +51,7 @@ private extension ProfileShareButton {
     func toURL() throws -> URL {
         do {
             pp_log_g(.App.profiles, .debug, "Writing profile \(profile.id) for sharing...")
-            let url = try profile.writeToURL(coder: registryCoder)
+            let url = try appEncoder.writeToURL(profile)
             pp_log_g(.App.profiles, .debug, "Written profile to: \(url)")
             return url
         } catch {

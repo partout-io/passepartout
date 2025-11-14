@@ -23,7 +23,7 @@ final class AppProfileImporter: ObservableObject {
     func tryImport(
         urls: [URL],
         profileManager: ProfileManager,
-        importer: ProfileImporter
+        importer: ProfileImporter? = nil
     ) async throws {
         var withPassphrase: [URL] = []
 
@@ -51,7 +51,7 @@ final class AppProfileImporter: ObservableObject {
         }
     }
 
-    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter) async throws {
+    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter? = nil) async throws {
         do {
             try await importURL(
                 url,
@@ -90,7 +90,7 @@ private extension AppProfileImporter {
         _ url: URL,
         withPassphrase passphrase: String?,
         profileManager: ProfileManager,
-        importer: ProfileImporter
+        importer: ProfileImporter?
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
@@ -98,7 +98,11 @@ private extension AppProfileImporter {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
-        try await profileManager.save(profile)
+        if let importer {
+            let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
+            try await profileManager.save(profile)
+            return
+        }
+        try await profileManager.import(.file(url), passphrase: passphrase)
     }
 }
