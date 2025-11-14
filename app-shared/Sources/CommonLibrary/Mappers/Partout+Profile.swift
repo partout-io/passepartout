@@ -24,10 +24,6 @@ extension Profile {
         requiredFeatures: Set<AppFeature>
     ) -> AppProfile {
         AppProfile(
-            header: uiHeader(
-                sharingFlags: sharingFlags,
-                requiredFeatures: requiredFeatures
-            ),
             native: self
         )
     }
