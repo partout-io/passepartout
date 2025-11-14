@@ -4,7 +4,7 @@
 
 import Partout
 
-@available(*, deprecated)
+@available(*, deprecated, message: "#1594")
 public struct ProfilePreview: Identifiable, Hashable {
     public let id: Profile.ID
 

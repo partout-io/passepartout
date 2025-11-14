@@ -14,6 +14,8 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let appearanceManager: AppearanceManager
 
+    public let appEncoder: AppEncoder
+
     public let configManager: ConfigManager
 
     public let distributionTarget: DistributionTarget
@@ -29,8 +31,6 @@ public final class AppContext: ObservableObject, Sendable {
     public let profileManager: ProfileManager
 
     public let registry: Registry
-
-    public let registryCoder: RegistryCoder
 
     public let sysexManager: SystemExtensionManager?
 
@@ -60,6 +60,7 @@ public final class AppContext: ObservableObject, Sendable {
 
     public init(
         apiManager: APIManager,
+        appEncoder: AppEncoder,
         configManager: ConfigManager,
         distributionTarget: DistributionTarget,
         iapManager: IAPManager,
@@ -77,6 +78,7 @@ public final class AppContext: ObservableObject, Sendable {
     ) {
         self.apiManager = apiManager
         appearanceManager = AppearanceManager(kvManager: kvManager)
+        self.appEncoder = appEncoder
         self.configManager = configManager
         self.distributionTarget = distributionTarget
         self.iapManager = iapManager
@@ -85,7 +87,6 @@ public final class AppContext: ObservableObject, Sendable {
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
-        self.registryCoder = RegistryCoder(registry: registry)
         self.sysexManager = sysexManager
         self.tunnel = tunnel
         self.versionChecker = versionChecker

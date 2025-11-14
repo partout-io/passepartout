@@ -275,12 +275,7 @@ extension LegacyAppCoordinator {
                 let filename = profileManager.firstUniqueName(
                     from: Strings.Placeholders.Profile.importedName
                 )
-                let profile = try RegistryCoder(registry: registry)
-                    .importedProfile(
-                        from: .contents(filename: filename, data: text),
-                        passphrase: nil
-                    )
-                try await profileManager.save(profile)
+                try await profileManager.import(.contents(filename: filename, data: text))
             } catch {
                 pp_log_g(.App.profiles, .error, "Unable to import text: \(error)")
                 errorHandler.handle(error, title: Strings.Global.Actions.import)

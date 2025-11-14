@@ -7,9 +7,6 @@ import SwiftUI
 
 struct WebReceiverView: View {
 
-    @EnvironmentObject
-    private var registryCoder: RegistryCoder
-
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 

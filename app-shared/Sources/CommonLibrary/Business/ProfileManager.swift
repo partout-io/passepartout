@@ -192,8 +192,12 @@ extension ProfileManager {
         pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
-    public func `import`(_ input: ProfileImporterInput, sharingFlag: ProfileSharingFlag? = nil) async throws {
-        var profile = try registry.importedProfile(from: input, passphrase: nil)
+    public func `import`(
+        _ input: ProfileImporterInput,
+        passphrase: String? = nil,
+        sharingFlag: ProfileSharingFlag? = nil
+    ) async throws {
+        var profile = try registry.importedProfile(from: input, passphrase: passphrase)
         pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
         if sharingFlag == .tv {
             var builder = profile.builder()

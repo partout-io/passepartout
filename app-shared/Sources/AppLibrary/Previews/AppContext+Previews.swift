@@ -51,6 +51,7 @@ extension AppContext {
 
         return AppContext(
             apiManager: apiManager,
+            appEncoder: AppEncoder(registry: registry),
             configManager: configManager,
             distributionTarget: distributionTarget,
             iapManager: iapManager,

@@ -22,8 +22,7 @@ final class AppProfileImporter: ObservableObject {
 
     func tryImport(
         urls: [URL],
-        profileManager: ProfileManager,
-        importer: ProfileImporter
+        profileManager: ProfileManager
     ) async throws {
         var withPassphrase: [URL] = []
 
@@ -32,8 +31,7 @@ final class AppProfileImporter: ObservableObject {
                 try await importURL(
                     url,
                     withPassphrase: nil,
-                    profileManager: profileManager,
-                    importer: importer
+                    profileManager: profileManager
                 )
             } catch {
                 if let error = error as? PartoutError, error.code == .OpenVPN.passphraseRequired {
@@ -51,13 +49,12 @@ final class AppProfileImporter: ObservableObject {
         }
     }
 
-    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter) async throws {
+    func reImport(url: URL, profileManager: ProfileManager) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
-                profileManager: profileManager,
-                importer: importer
+                profileManager: profileManager
             )
             urlsRequiringPassphrase.removeFirst()
             scheduleNextImport()
@@ -89,8 +86,7 @@ private extension AppProfileImporter {
     func importURL(
         _ url: URL,
         withPassphrase passphrase: String?,
-        profileManager: ProfileManager,
-        importer: ProfileImporter
+        profileManager: ProfileManager
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
@@ -98,7 +94,6 @@ private extension AppProfileImporter {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
-        try await profileManager.save(profile)
+        try await profileManager.import(.file(url), passphrase: passphrase)
     }
 }

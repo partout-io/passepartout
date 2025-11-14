@@ -133,7 +133,7 @@ extension AppContext {
                 }
             }
         )
-        let registryCoder = RegistryCoder(registry: registry)
+        let appEncoder = AppEncoder(registry: registry)
 
         let tunnelIdentifier = BundleConfiguration.mainString(for: .tunnelId)
 #if targetEnvironment(simulator)
@@ -157,7 +157,7 @@ extension AppContext {
         }
         let backupProfileRepository = dependencies.backupProfileRepository(
             ctx,
-            registryCoder: registryCoder,
+            encoder: appEncoder,
             model: cdRemoteModel,
             name: constants.containers.backup,
             observingResults: false
@@ -234,7 +234,7 @@ extension AppContext {
                     pp_log(ctx, .App.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
                     try await profileManager.observeRemote(repository: {
                         CommonData.cdProfileRepositoryV3(
-                            registryCoder: registryCoder,
+                            encoder: appEncoder,
                             context: remoteStore.context,
                             observingResults: true,
                             onResultError: {
@@ -299,6 +299,7 @@ extension AppContext {
 
         self.init(
             apiManager: apiManager,
+            appEncoder: appEncoder,
             configManager: configManager,
             distributionTarget: distributionTarget,
             iapManager: iapManager,
@@ -356,7 +357,7 @@ private extension Dependencies {
 
     func backupProfileRepository(
         _ ctx: PartoutLoggerContext,
-        registryCoder: RegistryCoder,
+        encoder: AppEncoder,
         model: NSManagedObjectModel,
         name: String,
         observingResults: Bool
@@ -369,7 +370,7 @@ private extension Dependencies {
             author: nil
         )
         return CommonData.cdProfileRepositoryV3(
-            registryCoder: registryCoder,
+            encoder: encoder,
             context: store.context,
             observingResults: observingResults,
             onResultError: {

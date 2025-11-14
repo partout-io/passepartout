@@ -12,7 +12,7 @@ struct ProfileExportButton: View {
     }
 
     @EnvironmentObject
-    private var registryCoder: RegistryCoder
+    private var appEncoder: AppEncoder
 
     @EnvironmentObject
     private var iapManager: IAPManager
@@ -46,7 +46,7 @@ struct ProfileExportButton: View {
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(JSONFile.init(string:)),
                 contentType: .json,
-                defaultFilename: profile.defaultFilename,
+                defaultFilename: appEncoder.defaultFilename(for: profile),
                 onCompletion: { _ in }
             )
             .withErrorHandler(errorHandler)
@@ -64,7 +64,7 @@ private extension ProfileExportButton {
 
     func exportProfiles() {
         do {
-            viewModel.jsonString = try profile.writeToJSON(coder: registryCoder)
+            viewModel.jsonString = try appEncoder.writeToJSON(profile)
             viewModel.isExporting = true
         } catch {
             errorHandler.handle(error)
