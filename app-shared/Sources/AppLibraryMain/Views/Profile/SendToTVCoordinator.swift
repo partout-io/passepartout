@@ -29,7 +29,7 @@ struct SendToTVCoordinator: View {
 private extension SendToTVCoordinator {
     func upload(_ profile: Profile, to url: URL, with passcode: String) async throws {
         let client = WebUploader(
-            logger: PartoutCategoryLogger(.App.web),
+            log: PartoutCategoryLogger(.App.web),
             strategy: URLSessionUploaderStrategy(
                 timeout: Resources.constants.api.timeoutInterval
             )

@@ -43,7 +43,7 @@ extension ProfileManagerTests {
         XCTAssertTrue(sut.isReady)
         XCTAssertTrue(sut.hasProfiles)
         XCTAssertEqual(sut.previews.count, 1)
-        XCTAssertEqual(sut.profile(withId: profile.id), profile)
+        XCTAssertEqual(sut.partoutProfile(withId: profile.id), profile)
     }
 
     func test_givenRepository_whenSearch_thenIsSearching() async throws {
@@ -144,7 +144,7 @@ extension ProfileManagerTests {
             try await $0.save(profile)
         }
         XCTAssertEqual(sut.previews.count, 1)
-        XCTAssertEqual(sut.profile(withId: profile.id), profile)
+        XCTAssertEqual(sut.partoutProfile(withId: profile.id), profile)
     }
 
     func test_givenRepository_whenSaveExisting_thenIsReplaced() async throws {
@@ -475,7 +475,7 @@ extension ProfileManagerTests {
         }
 
         try sut.previews.forEach {
-            let profile = try XCTUnwrap(sut.profile(withId: $0.id))
+            let profile = try XCTUnwrap(sut.partoutProfile(withId: $0.id))
             XCTAssertTrue(sut.isRemotelyShared(profileWithId: $0.id))
             switch $0.id {
             case l1:
@@ -589,6 +589,18 @@ extension ProfileManagerTests {
 }
 
 // MARK: -
+
+private extension ProfileManager {
+    convenience init(
+        processor: ProfileProcessor? = nil,
+        repository: ProfileRepository,
+        backupRepository: ProfileRepository? = nil,
+        mirrorsRemoteRepository: Bool = false,
+        readyAfterRemote: Bool = false
+    ) {
+        self.init(registry: Registry(), processor: processor, repository: repository, backupRepository: backupRepository, mirrorsRemoteRepository: mirrorsRemoteRepository, readyAfterRemote: readyAfterRemote)
+    }
+}
 
 private extension ProfileManagerTests {
     func newProfile(_ name: String = "", id: UUID? = nil, fingerprint: UUID? = nil) -> Profile {
