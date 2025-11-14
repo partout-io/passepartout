@@ -5,7 +5,7 @@
 import Partout
 
 extension Profile {
-    public func uiHeader(
+    func uiHeader(
         sharingFlags: [ProfileSharingFlag],
         requiredFeatures: Set<AppFeature>
     ) -> AppProfileHeader {
@@ -19,7 +19,7 @@ extension Profile {
         )
     }
 
-    public func uiProfile(
+    func uiProfile(
         sharingFlags: [ProfileSharingFlag],
         requiredFeatures: Set<AppFeature>
     ) -> AppProfile {

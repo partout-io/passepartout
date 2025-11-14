@@ -3,17 +3,21 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Foundation
 import Partout
 import SwiftUI
 
-public struct ConnectionStatusText: View {
-    let tunnel: TunnelObservable
+@available(*, deprecated, message: "#1594")
+public struct LegacyConnectionStatusText: View {
 
-    let profileId: AppIdentifier?
+    @ObservedObject
+    var tunnel: ExtendedTunnel
+
+    let profileId: Profile.ID?
 
     let withColors: Bool
 
-    public init(tunnel: TunnelObservable, profileId: AppIdentifier?, withColors: Bool = true) {
+    public init(tunnel: ExtendedTunnel, profileId: Profile.ID?, withColors: Bool = true) {
         self.tunnel = tunnel
         self.profileId = profileId
         self.withColors = withColors
@@ -23,7 +27,7 @@ public struct ConnectionStatusText: View {
         if let profileId, tunnel.isActiveProfile(withId: profileId) {
             ConnectionStatusDynamicText(tunnel: tunnel, profileId: profileId, withColors: withColors)
         } else {
-            ConnectionStatusStaticText(status: .disconnected, color: .secondary)
+            ConnectionStatusStaticText(status: .inactive, color: .secondary)
         }
     }
 }
@@ -33,7 +37,7 @@ private struct ConnectionStatusStaticText: View {
 
     private let color: Color
 
-    init(status: AppProfile.Status, color: Color) {
+    init(status: TunnelStatus, color: Color) {
         statusDescription = status.localizedDescription
         self.color = color
     }
@@ -54,9 +58,10 @@ private struct ConnectionStatusDynamicText: View {
     @EnvironmentObject
     private var theme: Theme
 
-    let tunnel: TunnelObservable
+    @ObservedObject
+    var tunnel: ExtendedTunnel
 
-    let profileId: AppIdentifier
+    let profileId: Profile.ID
 
     let withColors: Bool
 
@@ -70,24 +75,25 @@ private struct ConnectionStatusDynamicText: View {
 
 private extension ConnectionStatusDynamicText {
     var statusDescription: String {
-        if let lastError = tunnel.lastError(for: profileId),
-           case .partout(let partoutError) = lastError {
-            return partoutError.code.localizedDescription(style: .tunnel)
+        if let lastErrorCode = tunnel.lastErrorCode(ofProfileId: profileId) {
+            return lastErrorCode.localizedDescription(style: .tunnel)
         }
-        let status = tunnel.status(for: profileId)
+        let status = tunnel.connectionStatus(ofProfileId: profileId)
         switch status {
-        case .connected:
-            if let dataCount = tunnel.transfers[profileId] {
+        case .active:
+            if let dataCount = tunnel.dataCount(ofProfileId: profileId) {
                 let down = dataCount.received.descriptionAsDataUnit
                 let up = dataCount.sent.descriptionAsDataUnit
                 return "↓\(down) ↑\(up)"
             }
-        case .disconnected:
+
+        case .inactive:
             var desc = status.localizedDescription
             if let profile = tunnel.activeProfiles[profileId], profile.onDemand {
                 desc += Strings.Views.Ui.ConnectionStatus.onDemandSuffix
             }
             return desc
+
         default:
             break
         }
@@ -95,37 +101,36 @@ private extension ConnectionStatusDynamicText {
     }
 }
 
-// FIXME: #1594, Previews
-//#Preview("Status (Static)") {
-//    ConnectionStatusStaticText(status: .disconnecting, color: .cyan)
-//        .frame(width: 400, height: 100)
-//        .withMockEnvironment()
-//}
-//
-//#Preview("Connected (Dynamic)") {
-//    ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
-//        .task {
-//            try? await ExtendedTunnel.forPreviews.connect(with: .forPreviews)
-//        }
-//        .frame(width: 400, height: 100)
-//        .withMockEnvironment()
-//}
-//
-//#Preview("On-Demand (Dynamic)") {
-//    var builder = Profile.Builder()
-//    let onDemand = OnDemandModule.Builder()
-//    builder.modules = [onDemand.build()]
-//    builder.activeModulesIds = [onDemand.id]
-//    let profile: Profile
-//    do {
-//        profile = try builder.build()
-//    } catch {
-//        fatalError()
-//    }
-//    return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
-//        .task {
-//            try? await ExtendedTunnel.forPreviews.connect(with: profile)
-//        }
-//        .frame(width: 400, height: 100)
-//        .withMockEnvironment()
-//}
+#Preview("Status (Static)") {
+    ConnectionStatusStaticText(status: .deactivating, color: .cyan)
+        .frame(width: 400, height: 100)
+        .withMockEnvironment()
+}
+
+#Preview("Connected (Dynamic)") {
+    ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
+        .task {
+            try? await ExtendedTunnel.forPreviews.connect(with: .forPreviews)
+        }
+        .frame(width: 400, height: 100)
+        .withMockEnvironment()
+}
+
+#Preview("On-Demand (Dynamic)") {
+    var builder = Profile.Builder()
+    let onDemand = OnDemandModule.Builder()
+    builder.modules = [onDemand.build()]
+    builder.activeModulesIds = [onDemand.id]
+    let profile: Profile
+    do {
+        profile = try builder.build()
+    } catch {
+        fatalError()
+    }
+    return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
+        .task {
+            try? await ExtendedTunnel.forPreviews.connect(with: profile)
+        }
+        .frame(width: 400, height: 100)
+        .withMockEnvironment()
+}

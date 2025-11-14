@@ -7,6 +7,11 @@ import Partout
 
 @MainActor
 public final class ExtendedTunnel: ObservableObject {
+    public enum Event {
+        case refresh([AppIdentifier: AppProfile.Info])
+        case dataCount
+    }
+
     public static nonisolated let isManualKey = "isManual"
 
     public static nonisolated let appPreferences = "appPreferences"
@@ -20,6 +25,8 @@ public final class ExtendedTunnel: ObservableObject {
     private let processor: AppTunnelProcessor?
 
     private let interval: TimeInterval
+
+    public let didChange: PassthroughStream<Event>
 
     private var subscriptions: [Task<Void, Never>]
 
@@ -36,13 +43,14 @@ public final class ExtendedTunnel: ObservableObject {
         self.kvManager = kvManager
         self.processor = processor
         self.interval = interval
+        didChange = PassthroughStream()
         subscriptions = []
 
         observeObjects()
     }
 }
 
-// MARK: - Public interface
+// MARK: - Actions
 
 extension ExtendedTunnel {
     public func install(_ profile: Profile) async throws {
@@ -118,58 +126,16 @@ extension ExtendedTunnel {
     }
 }
 
+// MARK: - State
+
 extension ExtendedTunnel {
-#if os(iOS) || os(tvOS)
-    public var activeProfile: TunnelActiveProfile? {
-        tunnel.activeProfile
-    }
-#endif
-    public var activeProfiles: [Profile.ID: TunnelActiveProfile] {
-        guard !tunnel.activeProfiles.isEmpty else {
-            if let last = lastUsedProfile {
-                return [last.id: last]
-            }
-            return [:]
-        }
-        return tunnel.activeProfiles
+    public func transfer(ofProfileId profileId: AppIdentifier) -> ProfileTransfer? {
+        dataCount(ofProfileId: profileId)?.uiTransfer
     }
 
-    public var activeProfilesStream: AsyncStream<[Profile.ID: TunnelActiveProfile]> {
-        tunnel.activeProfilesStream
-    }
-
-    public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        tunnel.activeProfiles.keys.contains(profileId)
-    }
-
-    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        activeProfiles[profileId]?.status ?? .inactive
-    }
-
-    public func connectionStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        let status = status(ofProfileId: profileId)
-        guard let environment = tunnel.environment(for: profileId) else {
-            return status
-        }
-        return status.withEnvironment(environment)
-    }
-
-    public func dataCount(ofProfileId profileId: Profile.ID) -> DataCount? {
-        tunnel
-            .environment(for: profileId)?
-            .environmentValue(forKey: TunnelEnvironmentKeys.dataCount)
-    }
-
-    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
-        tunnel
-            .environment(for: profileId)?
-            .environmentValue(forKey: TunnelEnvironmentKeys.lastErrorCode)
-    }
-
-    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T? where T: Decodable {
-        tunnel
-            .environment(for: profileId)?
-            .environmentValue(forKey: key)
+    public func lastError(ofProfileId profileId: AppIdentifier) -> AppError? {
+        guard let code = lastErrorCode(ofProfileId: profileId) else { return nil }
+        return AppError.partout(PartoutError(code))
     }
 }
 
@@ -192,6 +158,9 @@ private extension ExtendedTunnel {
                 if let first = newActiveProfiles.first {
                     kvManager?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
+
+                // Publish compound statuses
+                didChange.send(.refresh(computedProfileInfos(from: newActiveProfiles)))
             }
         }
 
@@ -205,6 +174,7 @@ private extension ExtendedTunnel {
                     break
                 }
                 objectWillChange.send()
+                didChange.send(.dataCount)
 
                 try? await Task.sleep(interval: interval)
             }
@@ -249,6 +219,25 @@ private extension ExtendedTunnel {
             onDemand: false
         )
     }
+
+    func profileStatus(ofProfileId profileId: Profile.ID) -> AppProfile.Status {
+        let status = status(ofProfileId: profileId)
+        guard let environment = tunnel.environment(for: profileId) else {
+            return status.uiStatus
+        }
+        return status.withEnvironment(environment).uiStatus
+    }
+
+    func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [AppIdentifier: AppProfile.Info] {
+        var info = activeProfiles.mapValues {
+            let profileStatus = self.profileStatus(ofProfileId: $0.id)
+            return AppProfile.Info(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
+        }
+        if info.isEmpty, let last = self.lastUsedProfile {
+            info = [last.id: last.uiInfo]
+        }
+        return info
+    }
 }
 
 extension TunnelStatus {
@@ -267,5 +256,64 @@ extension TunnelStatus {
             }
         }
         return status
+    }
+}
+
+// MARK: - Deprecated
+
+@available(*, deprecated, message: "#1594")
+extension ExtendedTunnel {
+    public var activeProfilesStream: AsyncStream<[Profile.ID: TunnelActiveProfile]> {
+        tunnel.activeProfilesStream
+    }
+
+#if os(iOS) || os(tvOS)
+    public var activeProfile: TunnelActiveProfile? {
+        tunnel.activeProfile
+    }
+#endif
+
+    public var activeProfiles: [Profile.ID: TunnelActiveProfile] {
+        guard !tunnel.activeProfiles.isEmpty else {
+            if let last = lastUsedProfile {
+                return [last.id: last]
+            }
+            return [:]
+        }
+        return tunnel.activeProfiles
+    }
+
+    public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
+        tunnel.activeProfiles.keys.contains(profileId)
+    }
+
+    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+        activeProfiles[profileId]?.status ?? .inactive
+    }
+
+    public func connectionStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+        let status = status(ofProfileId: profileId)
+        guard let environment = tunnel.environment(for: profileId) else {
+            return status
+        }
+        return status.withEnvironment(environment)
+    }
+
+    public func dataCount(ofProfileId profileId: Profile.ID) -> DataCount? {
+        tunnel
+            .environment(for: profileId)?
+            .environmentValue(forKey: TunnelEnvironmentKeys.dataCount)
+    }
+
+    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
+        tunnel
+            .environment(for: profileId)?
+            .environmentValue(forKey: TunnelEnvironmentKeys.lastErrorCode)
+    }
+
+    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T? where T: Decodable {
+        tunnel
+            .environment(for: profileId)?
+            .environmentValue(forKey: key)
     }
 }

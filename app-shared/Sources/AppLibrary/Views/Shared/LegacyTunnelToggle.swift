@@ -6,10 +6,13 @@ import CommonLibrary
 import Partout
 import SwiftUI
 
-public struct TunnelToggle<Label>: View where Label: View {
-    private let tunnel: TunnelObservable
+@available(*, deprecated, message: "#1594")
+public struct LegacyTunnelToggle<Label>: View where Label: View {
 
-    private let profile: AppProfile?
+    @ObservedObject
+    private var tunnel: ExtendedTunnel
+
+    private let profile: Profile?
 
     private let errorHandler: ErrorHandler
 
@@ -18,8 +21,8 @@ public struct TunnelToggle<Label>: View where Label: View {
     private let label: (Binding<Bool>, Bool) -> Label
 
     public init(
-        tunnel: TunnelObservable,
-        profile: AppProfile?,
+        tunnel: ExtendedTunnel,
+        profile: Profile?,
         errorHandler: ErrorHandler,
         flow: ConnectionFlow?,
         label: @escaping (Binding<Bool>, Bool) -> Label
@@ -39,7 +42,7 @@ public struct TunnelToggle<Label>: View where Label: View {
 
 // MARK: Standard
 
-public struct TunnelTextToggle: View {
+public struct LegacyTunnelTextToggle: View {
     let title: String
 
     @Binding
@@ -53,17 +56,17 @@ public struct TunnelTextToggle: View {
     }
 }
 
-extension TunnelToggle where Label == TunnelTextToggle {
-    public init(_ title: String = "", tunnel: TunnelObservable, profile: AppProfile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
+extension LegacyTunnelToggle where Label == LegacyTunnelTextToggle {
+    public init(_ title: String = "", tunnel: ExtendedTunnel, profile: Profile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
         self.init(tunnel: tunnel, profile: profile, errorHandler: errorHandler, flow: flow) { isOn, _ in
-            TunnelTextToggle(title: title, isOn: isOn)
+            LegacyTunnelTextToggle(title: title, isOn: isOn)
         }
     }
 }
 
 // MARK: -
 
-private extension TunnelToggle {
+private extension LegacyTunnelToggle {
     var isOnBinding: Binding<Bool> {
         Binding {
             isOn
@@ -73,8 +76,8 @@ private extension TunnelToggle {
     }
 }
 
-private extension TunnelToggle {
-    var tunnelProfile: AppProfile.Info? {
+private extension LegacyTunnelToggle {
+    var tunnelProfile: TunnelActiveProfile? {
         guard let profile else {
             return nil
         }
@@ -85,11 +88,11 @@ private extension TunnelToggle {
         guard let tunnelProfile else {
             return false
         }
-        return tunnelProfile.status != .disconnected || tunnelProfile.onDemand
+        return tunnelProfile.status != .inactive || tunnelProfile.onDemand
     }
 
     var canInteract: Bool {
-        profile != nil && tunnelProfile?.status != .disconnecting
+        profile != nil && tunnelProfile?.status != .deactivating
     }
 
     func tryPerform(isOn: Bool) {
@@ -97,7 +100,7 @@ private extension TunnelToggle {
             return
         }
         Task {
-            await perform(isOn: isOn, with: profile.native)
+            await perform(isOn: isOn, with: profile)
         }
     }
 

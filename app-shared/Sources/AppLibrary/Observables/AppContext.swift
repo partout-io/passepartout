@@ -56,6 +56,8 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let profileObservable: ProfileObservable
 
+    public let tunnelObservable: TunnelObservable
+
     // MARK: - Init
 
     public init(
@@ -99,6 +101,10 @@ public final class AppContext: ObservableObject, Sendable {
         profileObservable = ProfileObservable(
             log: PartoutCategoryLogger(.App.profiles),
             profileManager: profileManager
+        )
+        tunnelObservable = TunnelObservable(
+            log: PartoutCategoryLogger(.App.core),
+            extendedTunnel: tunnel
         )
     }
 }

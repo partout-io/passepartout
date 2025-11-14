@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-public struct LegacyAppCoordinator: View, AppCoordinatorConforming, SizeClassProviding {
+public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeClassProviding {
 
     @EnvironmentObject
     public var iapManager: IAPManager

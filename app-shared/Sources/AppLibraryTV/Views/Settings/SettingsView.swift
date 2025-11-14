@@ -12,7 +12,7 @@ struct SettingsView: View {
 
     let profileObservable: ProfileObservable
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     @FocusState
     private var focus: Detail?

@@ -6,13 +6,13 @@ import CommonLibrary
 import Foundation
 import Partout
 
-extension AppCoordinatorConforming {
-    public func onConnect(_ profile: AppProfile, force: Bool, verify: Bool = true) async {
+extension LegacyAppCoordinatorConforming {
+    public func onConnect(_ profile: Profile, force: Bool, verify: Bool = true) async {
         do {
             if verify {
-                try iapManager.verify(profile.native)
+                try iapManager.verify(profile)
             }
-            try await tunnel.connect(to: profile, force: force)
+            try await tunnel.connect(with: profile, force: force)
         } catch AppError.ineligibleProfile(let requiredFeatures) {
             onPurchaseRequired(for: profile, features: requiredFeatures) {
                 Task {
@@ -22,7 +22,7 @@ extension AppCoordinatorConforming {
         } catch AppError.interactiveLogin {
             onInteractiveLogin(profile) { newProfile in
                 Task {
-                    await onConnect(newProfile, force: true, verify: verify)
+                    await onConnect(newProfile.native, force: true, verify: verify)
                 }
             }
         } catch let ppError as PartoutError {
@@ -37,7 +37,7 @@ extension AppCoordinatorConforming {
         }
     }
 
-    public func onError(_ error: Error, profile: AppProfile) {
-        onError(error, title: profile.native.name)
+    public func onError(_ error: Error, profile: Profile) {
+        onError(error, title: profile.name)
     }
 }

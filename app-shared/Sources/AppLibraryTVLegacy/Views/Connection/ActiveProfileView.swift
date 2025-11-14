@@ -67,7 +67,7 @@ private extension ActiveProfileView {
     }
 
     var statusView: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
+        LegacyConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
             .font(.title2)
             .frame(maxWidth: .infinity, alignment: .leading)
             .brightness(0.2)

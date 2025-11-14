@@ -10,13 +10,13 @@ import Partout
 public protocol AppCoordinatorConforming {
     var iapManager: IAPManager { get }
 
-    var tunnel: ExtendedTunnel { get }
+    var tunnel: TunnelObservable { get }
 
-    func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock)
+    func onInteractiveLogin(_ profile: AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock)
 
-    func onProviderEntityRequired(_ profile: Profile, force: Bool)
+    func onProviderEntityRequired(_ profile: AppProfile, force: Bool)
 
-    func onPurchaseRequired(for profile: Profile, features: Set<AppFeature>, continuation: (() -> Void)?)
+    func onPurchaseRequired(for profile: AppProfile, features: Set<AppFeature>, continuation: (() -> Void)?)
 
     func onError(_ error: Error, title: String)
 }

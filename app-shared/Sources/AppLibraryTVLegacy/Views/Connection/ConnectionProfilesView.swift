@@ -60,7 +60,7 @@ private extension ConnectionProfilesView {
     }
 
     func toggleButton(for preview: ProfilePreview) -> some View {
-        TunnelToggle(
+        LegacyTunnelToggle(
             tunnel: tunnel,
             profile: profileManager.partoutProfile(withId: preview.id),
             errorHandler: errorHandler,

@@ -8,7 +8,7 @@ import Partout
 
 @MainActor
 public final class InteractiveManager: ObservableObject {
-    public typealias CompletionBlock = (Profile) throws -> Void
+    public typealias CompletionBlock = (AppProfile) throws -> Void
 
     @Published
     public var isPresented = false
@@ -20,9 +20,9 @@ public final class InteractiveManager: ObservableObject {
     public init() {
     }
 
-    public func present(with profile: Profile, onComplete: CompletionBlock?) {
+    public func present(with profile: AppProfile, onComplete: CompletionBlock?) {
         editor = ProfileEditor()
-        editor.load(profile.editable(), isShared: false)
+        editor.load(profile.native.editable(), isShared: false)
         self.onComplete = onComplete
         isPresented = true
     }
@@ -30,6 +30,6 @@ public final class InteractiveManager: ObservableObject {
     public func complete() throws {
         isPresented = false
         let newProfile = try editor.buildAndUpdate()
-        try onComplete?(newProfile)
+        try onComplete?(AppProfile(native: newProfile))
     }
 }
