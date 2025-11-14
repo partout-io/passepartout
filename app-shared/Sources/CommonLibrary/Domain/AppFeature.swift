@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum AppFeature: String, CaseIterable {
+public enum AppFeature: String, CaseIterable, Sendable {
     case appleTV
     case dns
     case httpProxy
