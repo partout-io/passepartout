@@ -9,10 +9,6 @@
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE"
         }, {
-            "name": "lzo",
-            "licenseName": "GPLv2",
-            "licenseURL": "https://www.gnu.org/licenses/gpl-2.0.txt"
-        }, {
             "name": "OpenSSL",
             "licenseName": "OpenSSL",
             "licenseURL": "https://raw.githubusercontent.com/openssl/openssl/master/LICENSE.txt"
