@@ -14,8 +14,7 @@ struct ConnectionView: View, Routable {
         case profile(Profile.ID)
     }
 
-    @ObservedObject
-    var profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     @ObservedObject
     var tunnel: ExtendedTunnel
@@ -63,16 +62,16 @@ struct ConnectionView: View, Routable {
 }
 
 private extension ConnectionView {
-    var activeProfile: Profile? {
+    var activeProfile: AppProfile? {
         guard let id = tunnel.activeProfile?.id else {
             return nil
         }
-        return profileManager.partoutProfile(withId: id)
+        return profileObservable.profile(withId: id)
     }
 
     var activeView: some View {
         ActiveProfileView(
-            profile: activeProfile,
+            profile: activeProfile?.native,
             tunnel: tunnel,
             isSwitching: $showsSidePanel,
             focusedField: $focusedField,
@@ -113,7 +112,7 @@ private extension ConnectionView {
 
     var profilesListView: some View {
         ConnectionProfilesView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel,
             focusedField: $focusedField,
             errorHandler: errorHandler,
@@ -160,24 +159,25 @@ private extension ConnectionView {
 
 // MARK: -
 
-#Preview("List") {
-    ConnectionView(
-        profileManager: .forPreviews,
-        tunnel: .forPreviews,
-        interactiveManager: InteractiveManager(),
-        errorHandler: .default(),
-        showsSidePanel: true
-    )
-    .withMockEnvironment()
-}
-
-#Preview("Empty") {
-    ConnectionView(
-        profileManager: ProfileManager(profiles: []),
-        tunnel: .forPreviews,
-        interactiveManager: InteractiveManager(),
-        errorHandler: .default(),
-        showsSidePanel: true
-    )
-    .withMockEnvironment()
-}
+// FIXME: #1594, Previews
+//#Preview("List") {
+//    ConnectionView(
+//        profileObservable: .forPreviews,
+//        tunnel: .forPreviews,
+//        interactiveManager: InteractiveManager(),
+//        errorHandler: .default(),
+//        showsSidePanel: true
+//    )
+//    .withMockEnvironment()
+//}
+//
+//#Preview("Empty") {
+//    ConnectionView(
+//        profileObservable: ProfileManager(profiles: []),
+//        tunnel: .forPreviews,
+//        interactiveManager: InteractiveManager(),
+//        errorHandler: .default(),
+//        showsSidePanel: true
+//    )
+//    .withMockEnvironment()
+//}

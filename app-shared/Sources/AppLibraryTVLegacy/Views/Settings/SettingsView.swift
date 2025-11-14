@@ -10,7 +10,8 @@ struct SettingsView: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    let profileObservable: ProfileObservable
+    @ObservedObject
+    var profileManager: ProfileManager
 
     let tunnel: ExtendedTunnel
 
@@ -73,9 +74,7 @@ private extension SettingsView {
     }
 
     var preferencesSection: some View {
-        // FIXME: #1594, Preferences
-        EmptyView()
-//        PreferencesView(profileObservable: profileObservable)
+        PreferencesView(profileManager: profileManager)
     }
 
     var troubleshootingSection: some View {
@@ -133,12 +132,11 @@ private struct DetailView: View {
 
 // MARK: - Preview
 
-// FIXME: #1594, Previews
-//#Preview {
-//    SettingsView(
-//        profileObservable: .forPreviews,
-//        tunnel: .forPreviews
-//    )
-//    .themeNavigationStack()
-//    .withMockEnvironment()
-//}
+#Preview {
+    SettingsView(
+        profileManager: .forPreviews,
+        tunnel: .forPreviews
+    )
+    .themeNavigationStack()
+    .withMockEnvironment()
+}

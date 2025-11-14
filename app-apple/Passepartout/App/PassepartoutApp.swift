@@ -6,6 +6,7 @@
 import AppLibraryMain
 #elseif os(tvOS)
 import AppLibraryTV
+import AppLibraryTVLegacy
 #endif
 
 import CommonLibrary
@@ -52,8 +53,21 @@ extension PassepartoutApp {
 #endif
 
     func contentView() -> some View {
-        AppCoordinator(
+        LegacyAppCoordinator(
             profileManager: context.profileManager,
+            tunnel: context.tunnel,
+            registry: context.registry,
+            webReceiverManager: context.webReceiverManager
+        )
+    }
+
+    func newContentView() -> some View {
+        AppCoordinator(
+            profileObservable: ProfileObservable(
+                logger: PartoutCategoryLogger(.App.profiles),
+                profileManager: context.profileManager,
+                registry: context.registry
+            ),
             tunnel: context.tunnel,
             registry: context.registry,
             webReceiverManager: context.webReceiverManager

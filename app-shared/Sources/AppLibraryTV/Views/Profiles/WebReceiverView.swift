@@ -7,16 +7,10 @@ import SwiftUI
 
 struct WebReceiverView: View {
 
-    @EnvironmentObject
-    private var registryCoder: RegistryCoder
-
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
-    let registry: Registry
-
-    @ObservedObject
-    var profileManager: ProfileManager
+    var profileObservable: ProfileObservable
 
     @ObservedObject
     var errorHandler: ErrorHandler
@@ -70,17 +64,9 @@ private extension WebReceiverView {
         for await file in webReceiverManager.files {
             pp_log_g(.App.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
-                let input: ProfileImporterInput = .contents(filename: file.name, data: file.contents)
-
                 // TODO: #1512, import encrypted OpenVPN profiles over the web
-                var profile = try registryCoder.importedProfile(from: input, passphrase: nil)
-                pp_log_g(.App.web, .info, "Import uploaded profile: \(profile)")
-
-                var builder = profile.builder()
-                builder.attributes.isAvailableForTV = true
-                profile = try builder.build()
-                try await profileManager.save(profile, isLocal: true)
-
+                let input: ProfileImporterInput = .contents(filename: file.name, data: file.contents)
+                try await profileObservable.import(from: input)
                 webReceiverManager.renewPasscode()
             } catch {
                 pp_log_g(.App.web, .error, "Unable to import uploaded profile: \(error)")
@@ -92,14 +78,15 @@ private extension WebReceiverView {
 
 // MARK: -
 
-#Preview {
-    WebReceiverView(
-        webReceiverManager: .forPreviews,
-        registry: Registry(),
-        profileManager: .forPreviews,
-        errorHandler: .default()
-    )
-    .task {
-        try? WebReceiverManager.forPreviews.start()
-    }
-}
+// FIXME: #1594, Previews
+//#Preview {
+//    WebReceiverView(
+//        webReceiverManager: .forPreviews,
+//        registry: Registry(),
+//        profileObservable: .forPreviews,
+//        errorHandler: .default()
+//    )
+//    .task {
+//        try? WebReceiverManager.forPreviews.start()
+//    }
+//}

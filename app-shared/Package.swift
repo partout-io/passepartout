@@ -91,14 +91,14 @@ let package = Package(
             dependencies: ["AppLibrary"]
         ),
         .target(
-            name: "AppLibraryTVCross",
+            name: "AppLibraryTVLegacy",
             dependencies: ["AppLibrary"]
         ),
         .target(
             name: "AppLibraryTVWrapper",
             dependencies: [
                 .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS])),
-                .target(name: "AppLibraryTVCross", condition: .when(platforms: [.tvOS]))
+                .target(name: "AppLibraryTVLegacy", condition: .when(platforms: [.tvOS]))
             ],
             path: "Sources/Empty/AppLibraryTVWrapper"
         ),

@@ -6,12 +6,12 @@ import CommonLibrary
 import CommonResources
 import SwiftUI
 
-public struct AppCoordinator: View, AppCoordinatorConforming {
+public struct LegacyAppCoordinator: View, AppCoordinatorConforming {
 
     @EnvironmentObject
     public var iapManager: IAPManager
 
-    private let profileObservable: ProfileObservable
+    private let profileManager: ProfileManager
 
     public let tunnel: ExtendedTunnel
 
@@ -32,12 +32,12 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     private var errorHandler: ErrorHandler = .default()
 
     public init(
-        profileObservable: ProfileObservable,
+        profileManager: ProfileManager,
         tunnel: ExtendedTunnel,
         registry: Registry,
         webReceiverManager: WebReceiverManager
     ) {
-        self.profileObservable = profileObservable
+        self.profileManager = profileManager
         self.tunnel = tunnel
         self.registry = registry
         self.webReceiverManager = webReceiverManager
@@ -70,10 +70,10 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     }
 }
 
-private extension AppCoordinator {
+private extension LegacyAppCoordinator {
     var connectionView: some View {
         ConnectionView(
-            profileObservable: profileObservable,
+            profileManager: profileManager,
             tunnel: tunnel,
             interactiveManager: interactiveManager,
             errorHandler: errorHandler,
@@ -90,7 +90,7 @@ private extension AppCoordinator {
 
     var profilesView: some View {
         ProfilesView(
-            profileObservable: profileObservable,
+            profileManager: profileManager,
             webReceiverManager: webReceiverManager,
             registry: registry
         )
@@ -104,13 +104,13 @@ private extension AppCoordinator {
 
     var settingsView: some View {
         SettingsView(
-            profileObservable: profileObservable,
+            profileManager: profileManager,
             tunnel: tunnel
         )
     }
 }
 
-private extension AppCoordinator {
+private extension LegacyAppCoordinator {
 
     @ViewBuilder
     func pushDestination(for item: AppCoordinatorRoute?) -> some View {
@@ -133,7 +133,7 @@ private extension AppCoordinator {
 
 // MARK: - Handlers
 
-extension AppCoordinator {
+extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
         interactiveManager.present(
@@ -215,13 +215,12 @@ private struct DynamicPaywallModifier: ViewModifier {
 
 // MARK: - Previews
 
-// FIXME: #1594, Previews
-//#Preview {
-//    AppCoordinator(
-//        profileObservable: .forPreviews,
-//        tunnel: .forPreviews,
-//        registry: Registry(),
-//        webReceiverManager: WebReceiverManager()
-//    )
-//    .withMockEnvironment()
-//}
+#Preview {
+    LegacyAppCoordinator(
+        profileManager: .forPreviews,
+        tunnel: .forPreviews,
+        registry: Registry(),
+        webReceiverManager: WebReceiverManager()
+    )
+    .withMockEnvironment()
+}

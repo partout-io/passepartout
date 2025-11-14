@@ -10,7 +10,8 @@ struct ProfilesView: View {
     @EnvironmentObject
     private var configManager: ConfigManager
 
-    let profileObservable: ProfileObservable
+    @ObservedObject
+    var profileManager: ProfileManager
 
     @ObservedObject
     var webReceiverManager: WebReceiverManager
@@ -39,14 +40,14 @@ private extension ProfilesView {
             if configManager.canImportToTV {
                 importSection
             }
-            if profileObservable.hasProfiles {
+            if profileManager.hasProfiles {
                 profilesSection
             }
         }
         .themeList()
         .frame(maxWidth: .infinity)
         .themeEmpty(
-            if: !configManager.canImportToTV && !profileObservable.hasProfiles,
+            if: !configManager.canImportToTV && !profileManager.hasProfiles,
             message: Strings.Views.App.Folders.noProfiles
         )
     }
@@ -56,7 +57,7 @@ private extension ProfilesView {
             detail: detail,
             webReceiverManager: webReceiverManager,
             registry: registry,
-            profileObservable: profileObservable,
+            profileManager: profileManager,
             errorHandler: errorHandler
         )
         .frame(maxWidth: .infinity)
@@ -73,26 +74,26 @@ private extension ProfilesView {
     }
 
     var profilesSection: some View {
-        ForEach(profileObservable.filteredHeaders, id: \.id, content: row(forHeader:))
+        ForEach(profileManager.previews, id: \.id, content: row(forProfilePreview:))
             .themeSection(header: Strings.Global.Nouns.profiles)
     }
 
-    func row(forHeader header: AppProfileHeader) -> some View {
+    func row(forProfilePreview preview: ProfilePreview) -> some View {
         Button {
             //
         } label: {
             HStack {
-                Text(header.name)
+                Text(preview.name)
                 Spacer()
                 ProfileSharingView(
-                    flags: header.sharingFlags,
-                    isRemoteImportingEnabled: profileObservable.isRemoteImportingEnabled
+                    profileManager: profileManager,
+                    profileId: preview.id
                 )
             }
         }
         .contextMenu {
             Button(Strings.Global.Actions.delete, role: .destructive) {
-                deleteProfile(withId: header.id)
+                deleteProfile(withId: preview.id)
             }
         }
         .focused($detail, equals: .profiles)
@@ -119,7 +120,7 @@ private extension ProfilesView {
 
     func deleteProfile(withId profileId: Profile.ID) {
         Task {
-            await profileObservable.remove(withId: profileId)
+            await profileManager.remove(withId: profileId)
         }
     }
 }
@@ -140,7 +141,8 @@ private struct DetailView: View {
 
     let registry: Registry
 
-    var profileObservable: ProfileObservable
+    @ObservedObject
+    var profileManager: ProfileManager
 
     @ObservedObject
     var errorHandler: ErrorHandler
@@ -165,7 +167,8 @@ private extension DetailView {
     var importView: some View {
         WebReceiverView(
             webReceiverManager: webReceiverManager,
-            profileObservable: profileObservable,
+            registry: registry,
+            profileManager: profileManager,
             errorHandler: errorHandler
         )
     }
@@ -173,21 +176,20 @@ private extension DetailView {
 
 // MARK: - Preview
 
-// FIXME: #1594, Previews
-//#Preview("Empty") {
-//    ProfilesView(
-//        profileObservable: ProfileManager(profiles: []),
-//        webReceiverManager: .forPreviews,
-//        registry: Registry()
-//    )
-//    .withMockEnvironment()
-//}
-//
-//#Preview("Profiles") {
-//    ProfilesView(
-//        profileObservable: .forPreviews,
-//        webReceiverManager: .forPreviews,
-//        registry: Registry()
-//    )
-//    .withMockEnvironment()
-//}
+#Preview("Empty") {
+    ProfilesView(
+        profileManager: ProfileManager(profiles: []),
+        webReceiverManager: .forPreviews,
+        registry: Registry()
+    )
+    .withMockEnvironment()
+}
+
+#Preview("Profiles") {
+    ProfilesView(
+        profileManager: .forPreviews,
+        webReceiverManager: .forPreviews,
+        registry: Registry()
+    )
+    .withMockEnvironment()
+}

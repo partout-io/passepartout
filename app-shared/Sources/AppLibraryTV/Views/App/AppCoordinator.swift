@@ -11,7 +11,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     @EnvironmentObject
     public var iapManager: IAPManager
 
-    private let profileManager: ProfileManager
+    private let profileObservable: ProfileObservable
 
     public let tunnel: ExtendedTunnel
 
@@ -32,12 +32,12 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     private var errorHandler: ErrorHandler = .default()
 
     public init(
-        profileManager: ProfileManager,
+        profileObservable: ProfileObservable,
         tunnel: ExtendedTunnel,
         registry: Registry,
         webReceiverManager: WebReceiverManager
     ) {
-        self.profileManager = profileManager
+        self.profileObservable = profileObservable
         self.tunnel = tunnel
         self.registry = registry
         self.webReceiverManager = webReceiverManager
@@ -73,7 +73,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 private extension AppCoordinator {
     var connectionView: some View {
         ConnectionView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel,
             interactiveManager: interactiveManager,
             errorHandler: errorHandler,
@@ -90,7 +90,7 @@ private extension AppCoordinator {
 
     var profilesView: some View {
         ProfilesView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             webReceiverManager: webReceiverManager,
             registry: registry
         )
@@ -104,7 +104,7 @@ private extension AppCoordinator {
 
     var settingsView: some View {
         SettingsView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel
         )
     }
@@ -215,12 +215,13 @@ private struct DynamicPaywallModifier: ViewModifier {
 
 // MARK: - Previews
 
-#Preview {
-    AppCoordinator(
-        profileManager: .forPreviews,
-        tunnel: .forPreviews,
-        registry: Registry(),
-        webReceiverManager: WebReceiverManager()
-    )
-    .withMockEnvironment()
-}
+// FIXME: #1594, Previews
+//#Preview {
+//    AppCoordinator(
+//        profileObservable: .forPreviews,
+//        tunnel: .forPreviews,
+//        registry: Registry(),
+//        webReceiverManager: WebReceiverManager()
+//    )
+//    .withMockEnvironment()
+//}

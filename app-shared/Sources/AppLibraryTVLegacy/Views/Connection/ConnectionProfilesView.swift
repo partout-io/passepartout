@@ -11,7 +11,8 @@ struct ConnectionProfilesView: View {
     @EnvironmentObject
     private var configManager: ConfigManager
 
-    let  profileObservable: ProfileObservable
+    @ObservedObject
+    var profileManager: ProfileManager
 
     @ObservedObject
     var tunnel: ExtendedTunnel
@@ -29,10 +30,10 @@ struct ConnectionProfilesView: View {
             headerView
                 .frame(maxWidth: .infinity, alignment: .leading)
             List {
-                ForEach(headers, id: \.id, content: toggleButton(for:))
+                ForEach(allPreviews, id: \.id, content: toggleButton(for:))
             }
             .themeList()
-            .themeProgress(if: false, isEmpty: !profileObservable.hasProfiles) {
+            .themeProgress(if: false, isEmpty: !profileManager.hasProfiles) {
                 Text(Strings.Views.App.Folders.noProfiles)
                     .themeEmptyMessage()
             }
@@ -41,8 +42,8 @@ struct ConnectionProfilesView: View {
 }
 
 private extension ConnectionProfilesView {
-    var headers: [AppProfileHeader] {
-        profileObservable.filteredHeaders
+    var allPreviews: [ProfilePreview] {
+        profileManager.previews
     }
 
     var headerString: String {
@@ -60,32 +61,32 @@ private extension ConnectionProfilesView {
             .font(.body)
     }
 
-    func toggleButton(for header: AppProfileHeader) -> some View {
+    func toggleButton(for preview: ProfilePreview) -> some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profileObservable.profile(withId: header.id)?.native,
+            profile: profileManager.partoutProfile(withId: preview.id),
             errorHandler: errorHandler,
             flow: flow,
             label: { isOn, _ in
                 Button {
                     isOn.wrappedValue.toggle()
                 } label: {
-                    toggleView(for: header)
+                    toggleView(for: preview)
                 }
             }
         )
-        .focused($focusedField, equals: .profile(header.id))
+        .focused($focusedField, equals: .profile(preview.id))
         .uiAccessibility(.App.ProfileList.profile)
     }
 
-    func toggleView(for header: AppProfileHeader) -> some View {
+    func toggleView(for preview: ProfilePreview) -> some View {
         HStack {
-            Text(header.name)
+            Text(preview.name)
             Spacer()
-            tunnel.statusImageName(ofProfileId: header.id)
+            tunnel.statusImageName(ofProfileId: preview.id)
                 .map {
                     ThemeImage($0)
-                        .opaque(tunnel.isActiveProfile(withId: header.id))
+                        .opaque(tunnel.isActiveProfile(withId: preview.id))
                 }
         }
         .font(.headline)
@@ -94,24 +95,23 @@ private extension ConnectionProfilesView {
 
 // MARK: - Previews
 
-// FIXME: #1594, Previews
-//#Preview("List") {
-//    ContentPreview(profileObservable: .forPreviews)
-//}
-//
-//#Preview("Empty") {
-//    ContentPreview(profileObservable: ProfileManager(profiles: []))
-//}
+#Preview("List") {
+    ContentPreview(profileManager: .forPreviews)
+}
+
+#Preview("Empty") {
+    ContentPreview(profileManager: ProfileManager(profiles: []))
+}
 
 private struct ContentPreview: View {
-    let profileObservable: ProfileObservable
+    let profileManager: ProfileManager
 
     @FocusState
     var focusedField: ConnectionView.Field?
 
     var body: some View {
         ConnectionProfilesView(
-            profileObservable: profileObservable,
+            profileManager: profileManager,
             tunnel: .forPreviews,
             focusedField: $focusedField,
             errorHandler: .default()
