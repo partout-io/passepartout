@@ -12,7 +12,6 @@ import Observation
 public final class ProfileObservable {
     private let logger: AppLogger
     private let profileManager: ProfileManager
-    private let registry: Registry
 
     private var allHeaders: [AppIdentifier: AppProfileHeader] {
         didSet {
@@ -26,10 +25,9 @@ public final class ProfileObservable {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init(logger: AppLogger, profileManager: ProfileManager, registry: Registry) {
+    public init(logger: AppLogger, profileManager: ProfileManager) {
         self.logger = logger
         self.profileManager = profileManager
-        self.registry = registry
 
         allHeaders = [:]
         filteredHeaders = []
@@ -54,15 +52,8 @@ extension ProfileObservable {
         try await profileManager.save(profile.native, isLocal: isLocal, remotelyShared: sharingFlag != nil)
     }
 
-    public func `import`(from input: ProfileImporterInput, sharingFlag: ProfileSharingFlag? = nil) async throws {
-        var profile = try registry.importedProfile(from: input, passphrase: nil)
-        logger.info("Import decoded profile: \(profile)")
-        if sharingFlag == .tv {
-            var builder = profile.builder()
-            builder.attributes.isAvailableForTV = true
-            profile = try builder.build()
-        }
-        try await profileManager.save(profile, isLocal: true, remotelyShared: sharingFlag != nil)
+    public func `import`(_ input: ProfileImporterInput, sharingFlag: ProfileSharingFlag? = nil) async throws {
+        try await profileManager.import(input, sharingFlag: sharingFlag)
     }
 
     public func duplicate(profileWithId profileId: AppIdentifier) async throws {

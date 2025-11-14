@@ -169,6 +169,7 @@ extension AppContext {
             registry: registry
         )
         let profileManager = ProfileManager(
+            registry: registry,
             processor: processor,
             repository: mainProfileRepository,
             backupRepository: backupProfileRepository,

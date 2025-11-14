@@ -33,6 +33,7 @@ public final class ProfileManager: ObservableObject {
 
     // MARK: Dependencies
 
+    private let registry: Registry
     private let repository: ProfileRepository
     private let backupRepository: ProfileRepository?
     private var remoteRepository: ProfileRepository?
@@ -94,16 +95,21 @@ public final class ProfileManager: ObservableObject {
 
     // For testing/previews
     public convenience init(profiles: [Profile]) {
-        self.init(repository: InMemoryProfileRepository(profiles: profiles))
+        self.init(
+            registry: Registry(),
+            repository: InMemoryProfileRepository(profiles: profiles)
+        )
     }
 
     public init(
+        registry: Registry,
         processor: ProfileProcessor? = nil,
         repository: ProfileRepository,
         backupRepository: ProfileRepository? = nil,
         mirrorsRemoteRepository: Bool = false,
         readyAfterRemote: Bool = false
     ) {
+        self.registry = registry
         self.processor = processor
         self.repository = repository
         self.backupRepository = backupRepository
@@ -178,6 +184,17 @@ extension ProfileManager {
             }
         }
         pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
+    }
+
+    public func `import`(_ input: ProfileImporterInput, sharingFlag: ProfileSharingFlag? = nil) async throws {
+        var profile = try registry.importedProfile(from: input, passphrase: nil)
+        pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
+        if sharingFlag == .tv {
+            var builder = profile.builder()
+            builder.attributes.isAvailableForTV = true
+            profile = try builder.build()
+        }
+        try await save(profile, isLocal: true, remotelyShared: sharingFlag != nil)
     }
 
     // FIXME: #1594, Profile.ID in public

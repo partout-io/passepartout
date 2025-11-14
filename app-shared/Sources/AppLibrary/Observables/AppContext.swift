@@ -97,8 +97,7 @@ public final class AppContext: ObservableObject, Sendable {
 
         profileObservable = ProfileObservable(
             logger: PartoutCategoryLogger(.App.profiles),
-            profileManager: profileManager,
-            registry: registry
+            profileManager: profileManager
         )
     }
 }
