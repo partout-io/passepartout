@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
-import Partout
 
 public struct Issue: Identifiable {
     public let id: UUID
@@ -14,7 +13,7 @@ public struct Issue: Identifiable {
 
     public let purchasedProducts: Set<AppProduct>
 
-    public let providerLastUpdates: [ProviderID: Timestamp]
+    public let providerLastUpdates: [ProviderID: UInt32]
 
     public let appLog: Data?
 
@@ -28,7 +27,7 @@ public struct Issue: Identifiable {
         comment: String,
         appLine: String?,
         purchasedProducts: Set<AppProduct>,
-        providerLastUpdates: [ProviderID: Timestamp] = [:],
+        providerLastUpdates: [ProviderID: UInt32] = [:],
         appLog: Data? = nil,
         tunnelLog: Data? = nil
     ) {
