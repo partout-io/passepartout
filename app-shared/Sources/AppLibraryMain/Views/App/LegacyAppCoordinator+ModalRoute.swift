@@ -5,7 +5,7 @@
 import CommonLibrary
 import Foundation
 
-extension AppCoordinator {
+extension LegacyAppCoordinator {
     enum ModalRoute: Identifiable {
         case editProfile
         case editProviderEntity(Profile, Bool, Module)
@@ -42,13 +42,13 @@ extension AppCoordinator {
     }
 }
 
-extension AppCoordinator.ModalRoute: Equatable {
+extension LegacyAppCoordinator.ModalRoute: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-private extension AppCoordinator.ModalRoute {
+private extension LegacyAppCoordinator.ModalRoute {
     var size: ThemeModalSize {
         switch self {
         case .interactiveLogin:

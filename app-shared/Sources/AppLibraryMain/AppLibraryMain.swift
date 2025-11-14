@@ -5,6 +5,7 @@
 import AppAccessibility
 @_exported import AppLibrary
 import CommonLibrary
+@_exported import Partout
 import TipKit
 
 public final class AppLibraryMain: AppLibraryConfiguring {
