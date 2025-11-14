@@ -203,7 +203,7 @@ extension AppContext {
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
             port: constants.webReceiver.port,
-            logger: PartoutWebLogger()
+            logger: PartoutCategoryLogger(.App.web)
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
             dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)
