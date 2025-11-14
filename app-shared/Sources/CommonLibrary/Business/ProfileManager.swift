@@ -19,17 +19,17 @@ public final class ProfileManager: ObservableObject {
         case startRemoteImport
         case stopRemoteImport
 
-        @available(*, deprecated)
+        @available(*, deprecated, message: "#1594")
         case localProfiles
-        @available(*, deprecated)
+        @available(*, deprecated, message: "#1594")
         case remoteProfiles
-        @available(*, deprecated)
+        @available(*, deprecated, message: "#1594")
         case filteredProfiles
-        @available(*, deprecated)
+        @available(*, deprecated, message: "#1594")
         case save(Profile, previous: Profile?)
-        @available(*, deprecated)
+        @available(*, deprecated, message: "#1594")
         case remove([Profile.ID])
-        @available(*, deprecated)
+        @available(*, deprecated, message: "#1594")
         case changeRemoteImport
     }
 
@@ -67,11 +67,11 @@ public final class ProfileManager: ObservableObject {
         }
     }
 
-    @available(*, deprecated)
+    @available(*, deprecated, message: "#1594")
     @Published
     private var requiredFeatures: [Profile.ID: Set<AppFeature>]
 
-    @available(*, deprecated)
+    @available(*, deprecated, message: "#1594")
     @Published
     public var isRemoteImportingEnabled = false {
         didSet {
@@ -94,9 +94,9 @@ public final class ProfileManager: ObservableObject {
     private var remoteSubscription: AnyCancellable?
     private var remoteImportTask: Task<Void, Never>?
 
-    @available(*, deprecated)
+    @available(*, deprecated, message: "#1594")
     private let searchSubject: CurrentValueSubject<String, Never>
-    @available(*, deprecated)
+    @available(*, deprecated, message: "#1594")
     private var searchSubscription: AnyCancellable?
 
     // For testing/previews
@@ -451,7 +451,7 @@ private extension ProfileManager {
 
 // MARK: - Deprecated
 
-@available(*, deprecated)
+@available(*, deprecated, message: "#1594")
 extension ProfileManager {
     public var isReady: Bool {
         waitingObservers.isEmpty
@@ -523,7 +523,7 @@ extension ProfileManager {
     }
 }
 
-@available(*, deprecated)
+@available(*, deprecated, message: "#1594")
 private extension ProfileManager {
     func observeSearch(debounce: Int = 200) {
         searchSubscription = searchSubject
