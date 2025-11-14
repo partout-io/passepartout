@@ -11,7 +11,7 @@ struct ConnectionProfilesView: View {
     @EnvironmentObject
     private var configManager: ConfigManager
 
-    let  profileObservable: ProfileObservable
+    let profileObservable: ProfileObservable
 
     @ObservedObject
     var tunnel: ExtendedTunnel

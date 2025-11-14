@@ -65,8 +65,7 @@ private extension WebReceiverView {
             pp_log_g(.App.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
                 // TODO: #1512, import encrypted OpenVPN profiles over the web
-                let input: ProfileImporterInput = .contents(filename: file.name, data: file.contents)
-                try await profileObservable.import(input)
+                try await profileObservable.import(.contents(filename: file.name, data: file.contents))
                 webReceiverManager.renewPasscode()
             } catch {
                 pp_log_g(.App.web, .error, "Unable to import uploaded profile: \(error)")

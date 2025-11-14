@@ -16,6 +16,7 @@ public struct ProfileSharingView: View {
         self.isRemoteImportingEnabled = isRemoteImportingEnabled
     }
 
+    @available(*, deprecated)
     public init(profileManager: ProfileManager, profileId: Profile.ID) {
         self.init(
             flags: profileManager.sharingFlags(for: profileId),

@@ -5,7 +5,7 @@
 import Partout
 
 public struct AppProfile: Identifiable, Hashable, Sendable {
-    public private(set) var header: AppProfileHeader
+    public let header: AppProfileHeader
     public let native: Profile
 
     public var id: AppIdentifier {
