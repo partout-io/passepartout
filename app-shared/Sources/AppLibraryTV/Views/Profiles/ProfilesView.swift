@@ -15,8 +15,6 @@ struct ProfilesView: View {
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
-    let registry: Registry
-
     @FocusState
     private var detail: Detail?
 
@@ -55,7 +53,6 @@ private extension ProfilesView {
         DetailView(
             detail: detail,
             webReceiverManager: webReceiverManager,
-            registry: registry,
             profileObservable: profileObservable,
             errorHandler: errorHandler
         )
@@ -138,8 +135,6 @@ private struct DetailView: View {
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
-    let registry: Registry
-
     var profileObservable: ProfileObservable
 
     @ObservedObject
@@ -177,8 +172,7 @@ private extension DetailView {
 //#Preview("Empty") {
 //    ProfilesView(
 //        profileObservable: ProfileManager(profiles: []),
-//        webReceiverManager: .forPreviews,
-//        registry: Registry()
+//        webReceiverManager: .forPreviews
 //    )
 //    .withMockEnvironment()
 //}
@@ -186,8 +180,7 @@ private extension DetailView {
 //#Preview("Profiles") {
 //    ProfilesView(
 //        profileObservable: .forPreviews,
-//        webReceiverManager: .forPreviews,
-//        registry: Registry()
+//        webReceiverManager: .forPreviews
 //    )
 //    .withMockEnvironment()
 //}

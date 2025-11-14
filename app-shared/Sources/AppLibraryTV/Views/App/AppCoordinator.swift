@@ -15,8 +15,6 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 
     public let tunnel: ExtendedTunnel
 
-    private let registry: Registry
-
     private let webReceiverManager: WebReceiverManager
 
     @State
@@ -34,12 +32,10 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     public init(
         profileObservable: ProfileObservable,
         tunnel: ExtendedTunnel,
-        registry: Registry,
         webReceiverManager: WebReceiverManager
     ) {
         self.profileObservable = profileObservable
         self.tunnel = tunnel
-        self.registry = registry
         self.webReceiverManager = webReceiverManager
     }
 
@@ -91,8 +87,7 @@ private extension AppCoordinator {
     var profilesView: some View {
         ProfilesView(
             profileObservable: profileObservable,
-            webReceiverManager: webReceiverManager,
-            registry: registry
+            webReceiverManager: webReceiverManager
         )
     }
 
@@ -220,7 +215,6 @@ private struct DynamicPaywallModifier: ViewModifier {
 //    AppCoordinator(
 //        profileObservable: .forPreviews,
 //        tunnel: .forPreviews,
-//        registry: Registry(),
 //        webReceiverManager: WebReceiverManager()
 //    )
 //    .withMockEnvironment()
