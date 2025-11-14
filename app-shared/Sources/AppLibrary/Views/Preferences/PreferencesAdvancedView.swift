@@ -24,9 +24,7 @@ struct PreferencesAdvancedView: View {
 private extension PreferencesAdvancedView {
     static let flags: [ConfigFlag] = [
         .neSocketUDP,
-        .neSocketTCP,
-        .ovpnCrossConnection,
-        .wgCrossConnection
+        .neSocketTCP
     ]
 
     static func description(for flag: ConfigFlag) -> String {
@@ -36,10 +34,6 @@ private extension PreferencesAdvancedView {
             return V.neSocketUDP
         case .neSocketTCP:
             return V.neSocketTCP
-        case .ovpnCrossConnection:
-            return V.ovpnCrossConnection
-        case .wgCrossConnection:
-            return V.wgCrossConnection
         default:
             assertionFailure()
             return ""

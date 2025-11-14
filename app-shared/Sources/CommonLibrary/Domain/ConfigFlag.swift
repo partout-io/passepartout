@@ -7,13 +7,8 @@ public enum ConfigFlag: String, CaseIterable, RawRepresentable, Codable, Sendabl
     case allowsRelaxedVerification
     case appNotWorking
     // These are temporary (older activations come last)
-    case ovpnCrossConnection
-    case tvSendTo
-    case wgCrossParser
-    case wgCrossConnection
     case neSocketUDP
     case neSocketTCP
-    case tvWebImport            // 08/09
     case unknown
 }
 
