@@ -128,6 +128,7 @@ public final class ProfileManager: ObservableObject {
 // MARK: - Actions
 
 extension ProfileManager {
+    // FIXME: #1594, Profile in public
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {
