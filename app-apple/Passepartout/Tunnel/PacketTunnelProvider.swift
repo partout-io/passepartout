@@ -25,7 +25,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // in fact miss profile decoding errors. Re-register the
         // profile-aware context later.
         _ = PartoutLogger.register(
-            for: .tunnelGlobal(distributionTarget),
+            for: .tunnelGlobal,
             loggingTo: logURL,
             with: AppPreferenceValues(),
             parameters: constants.log,
@@ -81,7 +81,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
         // Update the logger now that we have a context
         let ctx = PartoutLogger.register(
-            for: .tunnelProfile(originalProfile.id, distributionTarget),
+            for: .tunnelProfile(originalProfile.id),
             loggingTo: logURL,
             with: preferences,
             parameters: constants.log,
