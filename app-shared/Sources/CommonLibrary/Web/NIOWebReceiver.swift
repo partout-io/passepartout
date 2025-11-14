@@ -9,7 +9,7 @@ import NIO
 import NIOHTTP1
 
 public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
-    private let logger: AppLogger
+    private let log: AppLogger
 
     private let html: String
 
@@ -19,8 +19,8 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
 
     private var group: EventLoopGroup?
 
-    public init(logger: AppLogger, htmlPath: String, stringsBundle: Bundle, port: Int) {
-        self.logger = logger
+    public init(log: AppLogger, htmlPath: String, stringsBundle: Bundle, port: Int) {
+        self.log = log
         html = {
             do {
                 let contents = try String(contentsOfFile: htmlPath)
@@ -36,11 +36,11 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
     // onReceive(filename, content)
     public func start(passcode: String?, onReceive: @escaping (String, String) -> Void) throws -> URL {
         guard channel == nil else {
-            logger.error("Web server is already started")
+            log.error("Web server is already started")
             throw WebReceiverError()
         }
         guard let host = firstIPv4Address(withInterfacePrefix: "en") else {
-            logger.error("Web server has no IPv4 Ethernet addresses to listen on")
+            log.error("Web server has no IPv4 Ethernet addresses to listen on")
             throw WebReceiverError()
         }
         do {
@@ -67,24 +67,24 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
             channel = try bootstrap.bind(host: host, port: port).wait()
             self.group = group
         } catch {
-            logger.error("Web server could not bind: \(error)")
+            log.error("Web server could not bind: \(error)")
             throw WebReceiverError(error)
         }
         guard let address = channel?.localAddress?.ipAddress else {
-            logger.error("Web server has no bound IP address")
+            log.error("Web server has no bound IP address")
             throw WebReceiverError()
         }
         guard let url = URL(string: "http://\(address):\(port)") else {
-            logger.error("Web server URL could not be built")
+            log.error("Web server URL could not be built")
             throw WebReceiverError()
         }
-        logger.notice("Web server did start: \(url)")
+        log.notice("Web server did start: \(url)")
         return url
     }
 
     public func stop() {
         guard let channel else {
-            logger.error("Web server is not started")
+            log.error("Web server is not started")
             return
         }
         defer {
@@ -94,9 +94,9 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
         do {
             try channel.close().wait()
             try group?.syncShutdownGracefully()
-            logger.notice("Web server did stop")
+            log.notice("Web server did stop")
         } catch {
-            logger.error("Unable to stop web server: \(error)")
+            log.error("Unable to stop web server: \(error)")
         }
     }
 }
@@ -174,7 +174,7 @@ private extension NIOWebReceiver {
                 // stop at first success
                 break
             } catch {
-                logger.debug("Skip invalid interface: \(error)")
+                log.debug("Skip invalid interface: \(error)")
             }
 
             // leave if no more addresses

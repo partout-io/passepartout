@@ -6,17 +6,17 @@ import Foundation
 
 @MainActor
 public final class WebUploader: ObservableObject, Sendable {
-    private let logger: AppLogger
+    private let log: AppLogger
 
     private let strategy: WebUploaderStrategy
 
-    public init(logger: AppLogger, strategy: WebUploaderStrategy) {
-        self.logger = logger
+    public init(log: AppLogger, strategy: WebUploaderStrategy) {
+        self.log = log
         self.strategy = strategy
     }
 
     public func send(_ content: String, filename: String, to url: URL, passcode: String) async throws {
-        logger.info("WebUploader: sending to \(url) with passcode \(passcode)")
+        log.info("WebUploader: sending to \(url) with passcode \(passcode)")
         var formBuilder = MultipartForm.Builder()
         formBuilder.fields["passcode"] = MultipartForm.Field(passcode)
         formBuilder.fields["file"] = MultipartForm.Field(content, filename: filename)

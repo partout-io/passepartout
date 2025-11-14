@@ -202,7 +202,7 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
-            logger: PartoutCategoryLogger(.App.web),
+            log: PartoutCategoryLogger(.App.web),
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
             port: constants.webReceiver.port

@@ -96,7 +96,7 @@ public final class AppContext: ObservableObject, Sendable {
         subscriptions = []
 
         profileObservable = ProfileObservable(
-            logger: PartoutCategoryLogger(.App.profiles),
+            log: PartoutCategoryLogger(.App.profiles),
             profileManager: profileManager
         )
     }
