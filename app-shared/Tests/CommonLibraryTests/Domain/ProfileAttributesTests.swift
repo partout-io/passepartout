@@ -17,7 +17,7 @@ final class ProfileAttributesTests: XCTestCase {
             "isAvailableForTV": isAvailableForTV
         ])
 
-        let sut = ABI.ProfileAttributes(userInfo: userInfo)
+        let sut = ProfileAttributes(userInfo: userInfo)
         XCTAssertEqual(sut.userInfo, userInfo)
         XCTAssertEqual(sut.fingerprint, fingerprint)
         XCTAssertEqual(sut.lastUpdate, lastUpdate)
@@ -34,7 +34,7 @@ final class ProfileAttributesTests: XCTestCase {
             "isAvailableForTV": isAvailableForTV
         ])
 
-        var sut = ABI.ProfileAttributes(userInfo: nil)
+        var sut = ProfileAttributes(userInfo: nil)
         sut.fingerprint = fingerprint
         sut.lastUpdate = lastUpdate
         sut.isAvailableForTV = isAvailableForTV
@@ -62,7 +62,7 @@ final class ProfileAttributesTests: XCTestCase {
             ]
         ])
 
-        let sut = ABI.ProfileAttributes(userInfo: userInfo)
+        let sut = ProfileAttributes(userInfo: userInfo)
         XCTAssertEqual(sut.userInfo, userInfo)
         for moduleId in [moduleId1, moduleId2] {
             let module = sut.preferences(inModule: moduleId)
@@ -89,7 +89,7 @@ final class ProfileAttributesTests: XCTestCase {
             ]
         ])
 
-        var sut = ABI.ProfileAttributes(userInfo: nil)
+        var sut = ProfileAttributes(userInfo: nil)
         for moduleId in [moduleId1, moduleId2] {
             var module = sut.preferences(inModule: moduleId1)
             module.rawExcludedEndpoints = excludedEndpoints

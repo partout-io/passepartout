@@ -5,7 +5,7 @@
 import Foundation
 import Partout
 
-extension ABI.ProfileAttributes {
+extension ProfileAttributes {
     public struct ModulePreferences {
         private enum Key: String {
             case excludedEndpoints
@@ -43,7 +43,7 @@ extension ABI.ProfileAttributes {
     }
 }
 
-extension ABI.ProfileAttributes.ModulePreferences {
+extension ProfileAttributes.ModulePreferences {
     var rawExcludedEndpoints: [String] {
         get {
             userInfo[Key.excludedEndpoints.rawValue]?

@@ -4,6 +4,7 @@
 
 import Partout
 
+// FIXME: #1594, Make internal
 extension ABI {
     public struct ConfigBundle: Decodable {
         public struct Config: Codable {

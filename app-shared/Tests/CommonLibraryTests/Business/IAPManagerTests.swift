@@ -18,7 +18,7 @@ final class IAPManagerTests: XCTestCase {
     private var subscriptions: Set<AnyCancellable> = []
 }
 
-extension ABI.AppRelease {
+extension AppRelease {
     static let target = Self("older", build: 1000)
 }
 
