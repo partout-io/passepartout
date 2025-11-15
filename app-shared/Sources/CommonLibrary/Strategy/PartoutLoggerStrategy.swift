@@ -51,5 +51,3 @@ extension LoggerCategory {
         self.init(rawValue: appCategory.id)
     }
 }
-
-
