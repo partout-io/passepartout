@@ -14,3 +14,19 @@ extension SystemAppearance {
         }
     }
 }
+
+extension AppProfile.Status: LocalizableEntity {
+    public var localizedDescription: String {
+        let V = Strings.Entities.TunnelStatus.self
+        switch self {
+        case .disconnected:
+            return V.inactive
+        case .connecting:
+            return V.activating
+        case .connected:
+            return V.active
+        case .disconnecting:
+            return V.deactivating
+        }
+    }
+}

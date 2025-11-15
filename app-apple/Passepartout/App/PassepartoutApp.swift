@@ -65,7 +65,7 @@ extension PassepartoutApp {
     func newContentView() -> some View {
         AppCoordinator(
             profileObservable: context.profileObservable,
-            tunnel: context.tunnel,
+            tunnel: context.tunnelObservable,
             webReceiverManager: context.webReceiverManager
         )
     }

@@ -14,10 +14,9 @@ struct ActiveProfileView: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    let profile: Profile?
+    let profile: AppProfile?
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     @Binding
     var isSwitching: Bool
@@ -59,7 +58,7 @@ struct ActiveProfileView: View {
 
 private extension ActiveProfileView {
     var activeProfileView: some View {
-        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(profile?.native.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title)
             .fontWeight(theme.relevantWeight)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -73,14 +72,14 @@ private extension ActiveProfileView {
             .brightness(0.2)
     }
 
-    func detailView(for profile: Profile) -> some View {
+    func detailView(for profile: AppProfile) -> some View {
         VStack(spacing: 10) {
-            if let primaryType = profile.localizedDescription(optionalStyle: .primaryType) {
+            if let primaryType = profile.native.localizedDescription(optionalStyle: .primaryType) {
                 ListRowView(title: Strings.Global.Nouns.protocol) {
                     Text(primaryType)
                 }
             }
-            if let pair = profile.activeProviderModule {
+            if let pair = profile.native.activeProviderModule {
                 if let provider = apiManager.provider(withId: pair.providerId) {
                     ListRowView(title: Strings.Global.Nouns.provider) {
                         Text(provider.description)
@@ -92,7 +91,7 @@ private extension ActiveProfileView {
                     }
                 }
             }
-            if let secondaryTypes = profile.localizedDescription(optionalStyle: .secondaryTypes) {
+            if let secondaryTypes = profile.native.localizedDescription(optionalStyle: .secondaryTypes) {
                 ListRowView(title: secondaryTypes) {
                     EmptyView()
                 }
@@ -130,81 +129,82 @@ private extension ActiveProfileView {
 
 // MARK: - Previews
 
-#Preview("Host") {
-    let profile: Profile = {
-        do {
-            var moduleBuilder = OpenVPNModule.Builder()
-            moduleBuilder.configurationBuilder = .init()
-            moduleBuilder.configurationBuilder?.ca = .init(pem: "")
-            moduleBuilder.configurationBuilder?.remotes = [
-                try .init("1.2.3.4", .init(.tcp, 1234))
-            ]
-            let module = try moduleBuilder.build()
-
-            let builder = Profile.Builder(
-                name: "Host",
-                modules: [module]
-            )
-            return try builder.build()
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }()
-
-    HStack {
-        ContentPreview(profile: profile)
-            .frame(maxWidth: .infinity)
-        VStack {}
-            .frame(maxWidth: .infinity)
-    }
-}
-
-#Preview("Provider") {
-    let profile: Profile = {
-        do {
-            var moduleBuilder = ProviderModule.Builder()
-            moduleBuilder.providerId = .mullvad
-            moduleBuilder.providerModuleType = .openVPN
-            let module = try moduleBuilder.build()
-
-            let builder = Profile.Builder(
-                name: "Provider",
-                modules: [module]
-            )
-            return try builder.build()
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }()
-
-    HStack {
-        ContentPreview(profile: profile)
-            .frame(maxWidth: .infinity)
-        VStack {}
-            .frame(maxWidth: .infinity)
-    }
-    .task {
-        try? await APIManager.forPreviews.fetchIndex()
-    }
-}
-
-private struct ContentPreview: View {
-    let profile: Profile
-
-    @State
-    private var isSwitching = false
-
-    @FocusState
-    private var focusedField: ConnectionView.Field?
-
-    var body: some View {
-        ActiveProfileView(
-            profile: profile,
-            tunnel: .forPreviews,
-            isSwitching: $isSwitching,
-            focusedField: $focusedField,
-            errorHandler: .default()
-        )
-        .withMockEnvironment()
-    }
-}
+// FIXME: #1594, Previews
+//#Preview("Host") {
+//    let profile: Profile = {
+//        do {
+//            var moduleBuilder = OpenVPNModule.Builder()
+//            moduleBuilder.configurationBuilder = .init()
+//            moduleBuilder.configurationBuilder?.ca = .init(pem: "")
+//            moduleBuilder.configurationBuilder?.remotes = [
+//                try .init("1.2.3.4", .init(.tcp, 1234))
+//            ]
+//            let module = try moduleBuilder.build()
+//
+//            let builder = Profile.Builder(
+//                name: "Host",
+//                modules: [module]
+//            )
+//            return try builder.build()
+//        } catch {
+//            fatalError(error.localizedDescription)
+//        }
+//    }()
+//
+//    HStack {
+//        ContentPreview(profile: profile)
+//            .frame(maxWidth: .infinity)
+//        VStack {}
+//            .frame(maxWidth: .infinity)
+//    }
+//}
+//
+//#Preview("Provider") {
+//    let profile: Profile = {
+//        do {
+//            var moduleBuilder = ProviderModule.Builder()
+//            moduleBuilder.providerId = .mullvad
+//            moduleBuilder.providerModuleType = .openVPN
+//            let module = try moduleBuilder.build()
+//
+//            let builder = Profile.Builder(
+//                name: "Provider",
+//                modules: [module]
+//            )
+//            return try builder.build()
+//        } catch {
+//            fatalError(error.localizedDescription)
+//        }
+//    }()
+//
+//    HStack {
+//        ContentPreview(profile: profile)
+//            .frame(maxWidth: .infinity)
+//        VStack {}
+//            .frame(maxWidth: .infinity)
+//    }
+//    .task {
+//        try? await APIManager.forPreviews.fetchIndex()
+//    }
+//}
+//
+//private struct ContentPreview: View {
+//    let profile: Profile
+//
+//    @State
+//    private var isSwitching = false
+//
+//    @FocusState
+//    private var focusedField: ConnectionView.Field?
+//
+//    var body: some View {
+//        ActiveProfileView(
+//            profile: profile,
+//            tunnel: .forPreviews,
+//            isSwitching: $isSwitching,
+//            focusedField: $focusedField,
+//            errorHandler: .default()
+//        )
+//        .withMockEnvironment()
+//    }
+//}

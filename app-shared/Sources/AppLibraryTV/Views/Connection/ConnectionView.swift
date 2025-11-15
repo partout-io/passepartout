@@ -11,13 +11,12 @@ struct ConnectionView: View, Routable {
 
         case switchProfile
 
-        case profile(Profile.ID)
+        case profile(AppIdentifier)
     }
 
     let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     @ObservedObject
     var interactiveManager: InteractiveManager
@@ -71,7 +70,7 @@ private extension ConnectionView {
 
     var activeView: some View {
         ActiveProfileView(
-            profile: activeProfile?.native,
+            profile: activeProfile,
             tunnel: tunnel,
             isSwitching: $showsSidePanel,
             focusedField: $focusedField,
@@ -123,16 +122,16 @@ private extension ConnectionView {
 
 private extension ConnectionView {
     func onTunnelActiveProfile(
-        old: TunnelActiveProfile?,
-        new: TunnelActiveProfile?
+        old: AppProfile.Info?,
+        new: AppProfile.Info?
     ) {
         // on profile connection, hide side panel and focus on connect button
-        if new?.status == .activating {
+        if new?.status == .connecting {
             showsSidePanel = false
             focusedField = .connect
         }
         // if connect button is focused and no profile is active, focus on switch profile
-        if focusedField == .connect && (new == nil || new?.status == .inactive) {
+        if focusedField == .connect && (new == nil || new?.status == .disconnected) {
             focusedField = .switchProfile
         }
     }

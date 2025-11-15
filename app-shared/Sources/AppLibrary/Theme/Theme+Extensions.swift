@@ -38,6 +38,46 @@ extension TunnelStatus {
     }
 }
 
+extension TunnelObservable {
+    public func statusImageName(ofProfileId profileId: AppIdentifier) -> Theme.ImageName? {
+        activeProfiles[profileId]?.status.imageName
+    }
+
+    public func statusColor(ofProfileId profileId: Profile.ID, _ theme: Theme) -> Color {
+        let info = activeProfiles[profileId]
+        if lastError(for: profileId) != nil {
+            switch info?.status {
+            case .disconnected:
+                return theme.inactiveColor
+            default:
+                return theme.errorColor
+            }
+        }
+        switch info?.status {
+        case .connected:
+            return theme.activeColor
+        case .connecting, .disconnecting:
+            return theme.pendingColor
+        case .disconnected, nil:
+            return info?.onDemand == true ? theme.pendingColor : theme.inactiveColor
+        }
+    }
+}
+
+private extension AppProfile.Status {
+    var imageName: Theme.ImageName? {
+        switch self {
+        case .connected:
+            return .marked
+        case .connecting, .disconnecting:
+            return .pending
+        case .disconnected:
+            return nil
+        }
+    }
+}
+
+@available(*, deprecated, message: "#1594")
 extension ExtendedTunnel {
     public func statusImageName(ofProfileId profileId: Profile.ID) -> Theme.ImageName? {
         connectionStatus(ofProfileId: profileId).imageName
@@ -63,6 +103,7 @@ extension ExtendedTunnel {
     }
 }
 
+@available(*, deprecated, message: "#1594")
 private extension TunnelStatus {
     var imageName: Theme.ImageName? {
         switch self {

@@ -5,15 +5,13 @@
 import Partout
 
 public struct AppProfile: Identifiable, Hashable, Sendable {
-    public let header: AppProfileHeader
     public let native: Profile
 
     public var id: AppIdentifier {
         native.id
     }
 
-    public init(header: AppProfileHeader, native: Profile) {
-        self.header = header
+    public init(native: Profile) {
         self.native = native
     }
 }

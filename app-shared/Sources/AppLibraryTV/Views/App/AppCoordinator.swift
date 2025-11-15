@@ -13,7 +13,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 
     private let profileObservable: ProfileObservable
 
-    public let tunnel: ExtendedTunnel
+    public let tunnel: TunnelObservable
 
     private let webReceiverManager: WebReceiverManager
 
@@ -31,7 +31,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 
     public init(
         profileObservable: ProfileObservable,
-        tunnel: ExtendedTunnel,
+        tunnel: TunnelObservable,
         webReceiverManager: WebReceiverManager
     ) {
         self.profileObservable = profileObservable
@@ -75,10 +75,10 @@ private extension AppCoordinator {
             errorHandler: errorHandler,
             flow: .init(
                 onConnect: {
-                    await onConnect($0, force: false)
+                    await onConnect(AppProfile(native: $0), force: false)
                 },
                 onProviderEntityRequired: {
-                    onProviderEntityRequired($0, force: false)
+                    onProviderEntityRequired(AppProfile(native: $0), force: false)
                 }
             )
         )
@@ -116,9 +116,11 @@ private extension AppCoordinator {
             }
 
         case .tunnelLog:
-            DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
-                DebugLogContentView(lines: $0)
-            }
+            // FIXME: #1594, DebugLog
+            EmptyView()
+//            DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
+//                DebugLogContentView(lines: $0)
+//            }
 
         default:
             EmptyView()
@@ -129,7 +131,7 @@ private extension AppCoordinator {
 // MARK: - Handlers
 
 extension AppCoordinator {
-    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
         interactiveManager.present(
             with: profile,
@@ -137,15 +139,15 @@ extension AppCoordinator {
         )
     }
 
-    public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
+    public func onProviderEntityRequired(_ profile: AppProfile, force: Bool) {
         errorHandler.handle(
-            title: profile.name,
+            title: profile.native.name,
             message: Strings.Alerts.Providers.MissingServer.message
         )
     }
 
     public func onPurchaseRequired(
-        for profile: Profile,
+        for profile: AppProfile,
         features: Set<AppFeature>,
         continuation: (() -> Void)?
     ) {
@@ -168,7 +170,7 @@ extension AppCoordinator {
         pp_log_g(.App.core, .info, "Present paywall")
         paywallContinuation = continuation
 
-        setLater(.init(profile, requiredFeatures: features, action: .connect)) {
+        setLater(.init(profile.native, requiredFeatures: features, action: .connect)) {
             paywallReason = $0
         }
     }

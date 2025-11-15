@@ -23,7 +23,7 @@ struct ActiveTunnelButton: View {
     let flow: ConnectionFlow?
 
     var body: some View {
-        TunnelToggle(
+        LegacyTunnelToggle(
             tunnel: tunnel,
             profile: profile,
             errorHandler: errorHandler,

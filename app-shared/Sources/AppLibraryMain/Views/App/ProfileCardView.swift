@@ -48,7 +48,7 @@ struct ProfileCardView: View {
 
 private extension ProfileCardView {
     var statusView: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: preview.id)
+        LegacyConnectionStatusText(tunnel: tunnel, profileId: preview.id)
     }
 }
 

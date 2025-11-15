@@ -6,7 +6,7 @@ import CommonLibrary
 import CommonResources
 import SwiftUI
 
-public struct LegacyAppCoordinator: View, AppCoordinatorConforming {
+public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
 
     @EnvironmentObject
     public var iapManager: IAPManager
@@ -137,7 +137,7 @@ extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
         interactiveManager.present(
-            with: profile,
+            with: AppProfile(native: profile),
             onComplete: onComplete
         )
     }

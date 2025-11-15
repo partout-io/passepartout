@@ -74,13 +74,10 @@ extension TunnelStatus: LocalizableEntity {
         switch self {
         case .inactive:
             return V.inactive
-
         case .activating:
             return V.activating
-
         case .active:
             return V.active
-
         case .deactivating:
             return V.deactivating
         }

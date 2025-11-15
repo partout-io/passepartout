@@ -61,7 +61,7 @@ private extension ProfileRowView {
     }
 
     var tunnelToggle: some View {
-        TunnelToggle(
+        LegacyTunnelToggle(
             tunnel: tunnel,
             profile: profile,
             errorHandler: errorHandler,

@@ -10,10 +10,9 @@ struct ActiveTunnelButton: View {
     @EnvironmentObject
     private var theme: Theme
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
-    let profile: Profile?
+    let profile: AppProfile?
 
     @FocusState.Binding
     var focusedField: ConnectionView.Field?
@@ -49,7 +48,7 @@ private extension ActiveTunnelButton {
             return theme.enableColor
         }
         switch activeProfile.status {
-        case .inactive:
+        case .disconnected:
             return activeProfile.onDemand ? theme.disableColor : theme.enableColor
         default:
             return theme.disableColor

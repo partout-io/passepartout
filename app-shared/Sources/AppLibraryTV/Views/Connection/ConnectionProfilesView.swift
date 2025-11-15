@@ -13,8 +13,7 @@ struct ConnectionProfilesView: View {
 
     let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     @FocusState.Binding
     var focusedField: ConnectionView.Field?
@@ -61,7 +60,7 @@ private extension ConnectionProfilesView {
     func toggleButton(for header: AppProfileHeader) -> some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profileObservable.profile(withId: header.id)?.native,
+            profile: profileObservable.profile(withId: header.id),
             errorHandler: errorHandler,
             flow: flow,
             label: { isOn, _ in
@@ -100,20 +99,20 @@ private extension ConnectionProfilesView {
 //#Preview("Empty") {
 //    ContentPreview(profileObservable: ProfileManager(profiles: []))
 //}
-
-private struct ContentPreview: View {
-    let profileObservable: ProfileObservable
-
-    @FocusState
-    var focusedField: ConnectionView.Field?
-
-    var body: some View {
-        ConnectionProfilesView(
-            profileObservable: profileObservable,
-            tunnel: .forPreviews,
-            focusedField: $focusedField,
-            errorHandler: .default()
-        )
-        .withMockEnvironment()
-    }
-}
+//
+//private struct ContentPreview: View {
+//    let profileObservable: ProfileObservable
+//
+//    @FocusState
+//    var focusedField: ConnectionView.Field?
+//
+//    var body: some View {
+//        ConnectionProfilesView(
+//            profileObservable: profileObservable,
+//            tunnel: .forPreviews,
+//            focusedField: $focusedField,
+//            errorHandler: .default()
+//        )
+//        .withMockEnvironment()
+//    }
+//}

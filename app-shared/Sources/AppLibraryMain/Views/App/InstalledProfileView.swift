@@ -81,11 +81,11 @@ private extension InstalledProfileView {
     }
 
     var statusText: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
+        LegacyConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
     }
 
     var toggleButton: some View {
-        TunnelToggle(
+        LegacyTunnelToggle(
             tunnel: tunnel,
             profile: profile,
             errorHandler: errorHandler,
