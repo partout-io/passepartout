@@ -7,8 +7,8 @@ import SwiftUI
 
 struct WebReceiverView: View {
 
-    @EnvironmentObject
-    private var logger: ViewLogger
+    @Environment(ViewLogger.self)
+    private var logger
 
     @ObservedObject
     var webReceiverManager: WebReceiverManager

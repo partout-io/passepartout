@@ -8,8 +8,8 @@ import SwiftUI
 
 public struct AppCoordinator: View, AppCoordinatorConforming {
 
-    @EnvironmentObject
-    private var logger: ViewLogger
+    @Environment(ViewLogger.self)
+    private var logger
 
     @EnvironmentObject
     public var iapManager: IAPManager

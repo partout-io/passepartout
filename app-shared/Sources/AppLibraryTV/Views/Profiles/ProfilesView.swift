@@ -7,8 +7,8 @@ import SwiftUI
 
 struct ProfilesView: View {
 
-    @EnvironmentObject
-    private var logger: ViewLogger
+    @Environment(ViewLogger.self)
+    private var logger
 
     @EnvironmentObject
     private var configManager: ConfigManager

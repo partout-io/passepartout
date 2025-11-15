@@ -8,8 +8,8 @@ import SwiftUI
 
 struct SendToTVCoordinator: View {
 
-    @EnvironmentObject
-    private var logger: ViewLogger
+    @Environment(ViewLogger.self)
+    private var logger
 
     @EnvironmentObject
     private var appEncoder: AppEncoder

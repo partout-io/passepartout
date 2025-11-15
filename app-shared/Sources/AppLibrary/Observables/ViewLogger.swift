@@ -2,9 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
+import CommonLibrary
+import Observation
 
-public final class ViewLogger: ObservableObject, AppLogger {
+@Observable
+public final class ViewLogger: AppLogger {
     private let strategy: AppLogger
 
     public init(strategy: AppLogger) {
