@@ -121,7 +121,6 @@ private extension PartoutLogger.Builder {
             .wireguard,
             .App.core,
             .App.iap,
-            .App.migration,
             .App.profiles,
             .App.web
         ])

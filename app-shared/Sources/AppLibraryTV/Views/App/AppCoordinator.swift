@@ -9,6 +9,9 @@ import SwiftUI
 public struct AppCoordinator: View, AppCoordinatorConforming {
 
     @EnvironmentObject
+    private var logger: ViewLogger
+
+    @EnvironmentObject
     public var iapManager: IAPManager
 
     private let profileObservable: ProfileObservable
@@ -132,7 +135,7 @@ private extension AppCoordinator {
 
 extension AppCoordinator {
     public func onInteractiveLogin(_ profile: AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
-        pp_log_g(.App.core, .info, "Present interactive login")
+        logger.log(.core, .info, "Present interactive login")
         interactiveManager.present(
             with: profile,
             onComplete: onComplete
@@ -151,10 +154,10 @@ extension AppCoordinator {
         features: Set<AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pp_log_g(.App.core, .info, "Purchase required for features: \(features)")
+        logger.log(.core, .info, "Purchase required for features: \(features)")
         guard !iapManager.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pp_log_g(.App.core, .info, "Present verification alert")
+            logger.log(.core, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -167,7 +170,7 @@ extension AppCoordinator {
             )
             return
         }
-        pp_log_g(.App.core, .info, "Present paywall")
+        logger.log(.core, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile.native, requiredFeatures: features, action: .connect)) {
