@@ -64,6 +64,19 @@ extension TunnelObservable {
     }
 }
 
+private extension AppProfile.Status {
+    var imageName: Theme.ImageName? {
+        switch self {
+        case .connected:
+            return .marked
+        case .connecting, .disconnecting:
+            return .pending
+        case .disconnected:
+            return nil
+        }
+    }
+}
+
 @available(*, deprecated, message: "#1594")
 extension ExtendedTunnel {
     public func statusImageName(ofProfileId profileId: Profile.ID) -> Theme.ImageName? {
@@ -86,19 +99,6 @@ extension ExtendedTunnel {
             return theme.pendingColor
         case .inactive:
             return activeProfiles[profileId]?.onDemand == true ? theme.pendingColor : theme.inactiveColor
-        }
-    }
-}
-
-private extension AppProfile.Status {
-    var imageName: Theme.ImageName? {
-        switch self {
-        case .connected:
-            return .marked
-        case .connecting, .disconnecting:
-            return .pending
-        case .disconnected:
-            return nil
         }
     }
 }
