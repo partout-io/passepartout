@@ -5,8 +5,6 @@
 import CommonLibrary
 import Partout
 
-// WARNING: beware of Resources.constants dependency
-
 extension Constants {
     public var bundleMainVersionString: String {
         BundleConfiguration.mainVersionString
