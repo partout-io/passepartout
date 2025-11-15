@@ -130,7 +130,7 @@ extension ExtendedTunnel {
 
 extension ExtendedTunnel {
     public func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
-        dataCount(ofProfileId: profileId)?.uiTransfer
+        dataCount(ofProfileId: profileId)?.abiTransfer
     }
 
     public func lastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
@@ -223,9 +223,9 @@ private extension ExtendedTunnel {
     func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppProfile.Status {
         let status = status(ofProfileId: profileId)
         guard let environment = tunnel.environment(for: profileId) else {
-            return status.uiStatus
+            return status.abiStatus
         }
-        return status.withEnvironment(environment).uiStatus
+        return status.withEnvironment(environment).abiStatus
     }
 
     func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [ABI.AppIdentifier: ABI.AppProfile.Info] {
@@ -234,7 +234,7 @@ private extension ExtendedTunnel {
             return ABI.AppProfile.Info(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
         }
         if info.isEmpty, let last = self.lastUsedProfile {
-            info = [last.id: last.uiInfo]
+            info = [last.id: last.abiInfo]
         }
         return info
     }

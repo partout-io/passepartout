@@ -273,7 +273,7 @@ extension ProfileManager {
     // FIXME: #1594, Profile.ID in public
     public func profile(withId profileId: Profile.ID) -> ABI.AppProfile? {
         guard let profile = allProfiles[profileId] else { return nil }
-        return profile.uiProfile(
+        return profile.abiProfile(
             sharingFlags: sharingFlags(for: profileId),
             requiredFeatures: requiredFeatures(for: profile)
         )
@@ -443,7 +443,7 @@ private extension ProfileManager {
 
     func computedProfileHeaders() -> [ABI.AppIdentifier: ABI.AppProfileHeader] {
         let allHeaders = allProfiles.reduce(into: [:]) {
-            $0[$1.key] = $1.value.uiHeader(
+            $0[$1.key] = $1.value.abiHeader(
                 sharingFlags: sharingFlags(for: $1.key),
                 requiredFeatures: requiredFeatures(for: $1.value)
             )

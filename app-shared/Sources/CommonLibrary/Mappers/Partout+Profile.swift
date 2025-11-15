@@ -5,7 +5,7 @@
 import Partout
 
 extension Profile {
-    func uiHeader(
+    func abiHeader(
         sharingFlags: [ABI.ProfileSharingFlag],
         requiredFeatures: Set<ABI.AppFeature>
     ) -> ABI.AppProfileHeader {
@@ -19,7 +19,7 @@ extension Profile {
         )
     }
 
-    func uiProfile(
+    func abiProfile(
         sharingFlags: [ABI.ProfileSharingFlag],
         requiredFeatures: Set<ABI.AppFeature>
     ) -> ABI.AppProfile {
