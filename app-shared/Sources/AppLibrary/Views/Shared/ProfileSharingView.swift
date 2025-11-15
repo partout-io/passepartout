@@ -7,11 +7,11 @@ import Partout
 import SwiftUI
 
 public struct ProfileSharingView: View {
-    private let flags: [ProfileSharingFlag]
+    private let flags: [ABI.ProfileSharingFlag]
 
     private let isRemoteImportingEnabled: Bool
 
-    public init(flags: [ProfileSharingFlag], isRemoteImportingEnabled: Bool) {
+    public init(flags: [ABI.ProfileSharingFlag], isRemoteImportingEnabled: Bool) {
         self.flags = flags
         self.isRemoteImportingEnabled = isRemoteImportingEnabled
     }

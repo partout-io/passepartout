@@ -8,7 +8,7 @@ import Partout
 
 @MainActor
 public final class IAPManager: ObservableObject {
-    private let customUserLevel: AppUserLevel?
+    private let customUserLevel: ABI.AppUserLevel?
 
     private let inAppHelper: any AppProductHelper
 
@@ -16,11 +16,11 @@ public final class IAPManager: ObservableObject {
 
     private let betaChecker: BetaChecker
 
-    private let unrestrictedFeatures: Set<AppFeature>
+    private let unrestrictedFeatures: Set<ABI.AppFeature>
 
     private let timeoutInterval: TimeInterval
 
-    private let productsAtBuild: BuildProducts<AppProduct>?
+    private let productsAtBuild: BuildProducts<ABI.AppProduct>?
 
     @Published
     public var isEnabled = true {
@@ -29,14 +29,14 @@ public final class IAPManager: ObservableObject {
         }
     }
 
-    private(set) var userLevel: AppUserLevel
+    private(set) var userLevel: ABI.AppUserLevel
 
     public private(set) var originalPurchase: OriginalPurchase?
 
-    public private(set) var purchasedProducts: Set<AppProduct>
+    public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
     @Published
-    public private(set) var eligibleFeatures: Set<AppFeature>
+    public private(set) var eligibleFeatures: Set<ABI.AppFeature>
 
     @Published
     private var pendingReceiptTask: Task<Void, Never>?
@@ -44,13 +44,13 @@ public final class IAPManager: ObservableObject {
     private var subscriptions: Set<AnyCancellable>
 
     public init(
-        customUserLevel: AppUserLevel? = nil,
+        customUserLevel: ABI.AppUserLevel? = nil,
         inAppHelper: any AppProductHelper,
         receiptReader: AppReceiptReader,
         betaChecker: BetaChecker,
-        unrestrictedFeatures: Set<AppFeature> = [],
+        unrestrictedFeatures: Set<ABI.AppFeature> = [],
         timeoutInterval: TimeInterval,
-        productsAtBuild: BuildProducts<AppProduct>? = nil
+        productsAtBuild: BuildProducts<ABI.AppProduct>? = nil
     ) {
         self.customUserLevel = customUserLevel
         self.inAppHelper = inAppHelper
@@ -81,7 +81,7 @@ extension IAPManager {
         await reloadReceipt()
     }
 
-    public func purchasableProducts(for products: [AppProduct]) async throws -> [InAppProduct] {
+    public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [InAppProduct] {
         guard isEnabled else {
             return []
         }
@@ -91,7 +91,7 @@ extension IAPManager {
                 inAppProducts[$0]
             }
         } catch is TaskTimeoutError {
-            throw AppError.timeout
+            throw ABI.AppError.timeout
         } catch {
             pp_log_g(.App.iap, .error, "Unable to fetch in-app products: \(error)")
             throw error
@@ -143,11 +143,11 @@ extension IAPManager {
         userLevel.isBeta
     }
 
-    public func isEligible(for feature: AppFeature) -> Bool {
+    public func isEligible(for feature: ABI.AppFeature) -> Bool {
         eligibleFeatures.contains(feature)
     }
 
-    public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == AppFeature {
+    public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == ABI.AppFeature {
         if features.isEmpty {
             return true
         }
@@ -156,7 +156,7 @@ extension IAPManager {
 
     public var isEligibleForComplete: Bool {
         let rawProducts = purchasedProducts.compactMap {
-            AppProduct(rawValue: $0.rawValue)
+            ABI.AppProduct(rawValue: $0.rawValue)
         }
 
         //
@@ -188,7 +188,7 @@ extension IAPManager {
     }
 
     public func didPurchase(_ purchasable: InAppProduct) -> Bool {
-        guard let product = AppProduct(rawValue: purchasable.productIdentifier) else {
+        guard let product = ABI.AppProduct(rawValue: purchasable.productIdentifier) else {
             return false
         }
         return purchasedProducts.contains(product)
@@ -208,8 +208,8 @@ private extension IAPManager {
         pp_log_g(.App.iap, .notice, "Start reloading in-app receipt...")
 
         var originalPurchase: OriginalPurchase?
-        var purchasedProducts: Set<AppProduct> = []
-        var eligibleFeatures: Set<AppFeature> = []
+        var purchasedProducts: Set<ABI.AppProduct> = []
+        var eligibleFeatures: Set<ABI.AppFeature> = []
 
         if let receipt = await receiptReader.receipt(at: userLevel) {
             originalPurchase = receipt.originalPurchase
@@ -228,11 +228,11 @@ private extension IAPManager {
             if let iapReceipts = receipt.purchaseReceipts {
                 pp_log_g(.App.iap, .info, "Process in-app purchase receipts...")
 
-                let products: [AppProduct] = iapReceipts.compactMap {
+                let products: [ABI.AppProduct] = iapReceipts.compactMap {
                     guard let pid = $0.productIdentifier else {
                         return nil
                     }
-                    guard let product = AppProduct(rawValue: pid) else {
+                    guard let product = ABI.AppProduct(rawValue: pid) else {
                         pp_log_g(.App.iap, .debug, "\tDiscard unknown product identifier: \(pid)")
                         return nil
                     }
@@ -308,7 +308,7 @@ extension IAPManager {
                     pp_log_g(.App.iap, .info, "Available in-app products: \(products.map(\.key))")
                 }
             } catch is TaskTimeoutError {
-                throw AppError.timeout
+                throw ABI.AppError.timeout
             } catch {
                 pp_log_g(.App.iap, .error, "Unable to fetch in-app products: \(error)")
             }

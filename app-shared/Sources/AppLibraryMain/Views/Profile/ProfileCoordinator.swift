@@ -158,7 +158,7 @@ private extension ProfileCoordinator {
                 onDismiss()
             }
             return savedProfile
-        } catch AppError.verificationReceiptIsLoading {
+        } catch ABI.AppError.verificationReceiptIsLoading {
             pp_log_g(.App.profiles, .error, "Unable to commit profile: loading receipt")
             let V = Strings.Views.Paywall.Alerts.self
             errorHandler.handle(
@@ -166,7 +166,7 @@ private extension ProfileCoordinator {
                 message: [V.Verification.edit, V.Verification.boot].joined(separator: "\n\n")
             )
             return nil
-        } catch AppError.verificationRequiredFeatures(let requiredFeatures) {
+        } catch ABI.AppError.verificationRequiredFeatures(let requiredFeatures) {
             pp_log_g(.App.profiles, .error, "Unable to commit profile: required features \(requiredFeatures)")
             let nextReason = PaywallReason(
                 nil,

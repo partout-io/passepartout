@@ -8,7 +8,7 @@ import SwiftUI
 struct ReportIssueButton {
 
     @Environment(\.distributionTarget)
-    var distributionTarget: DistributionTarget
+    var distributionTarget: ABI.DistributionTarget
 
     let title: String
 
@@ -18,7 +18,7 @@ struct ReportIssueButton {
 
     let apiManager: APIManager
 
-    let purchasedProducts: Set<AppProduct>
+    let purchasedProducts: Set<ABI.AppProduct>
 
     @Binding
     var isUnableToEmail: Bool
@@ -34,7 +34,7 @@ extension ReportIssueButton {
     enum ModalRoute: Identifiable {
         case comment
 
-        case submit(Issue)
+        case submit(ABI.Issue)
 
         var id: Int {
             switch self {

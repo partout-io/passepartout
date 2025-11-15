@@ -7,19 +7,19 @@ import Foundation
 import Partout
 
 extension AppCoordinatorConforming {
-    public func onConnect(_ profile: AppProfile, force: Bool, verify: Bool = true) async {
+    public func onConnect(_ profile: ABI.AppProfile, force: Bool, verify: Bool = true) async {
         do {
             if verify {
                 try iapManager.verify(profile.native)
             }
             try await tunnel.connect(to: profile, force: force)
-        } catch AppError.ineligibleProfile(let requiredFeatures) {
+        } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
             onPurchaseRequired(for: profile, features: requiredFeatures) {
                 Task {
                     await onConnect(profile, force: force, verify: false)
                 }
             }
-        } catch AppError.interactiveLogin {
+        } catch ABI.AppError.interactiveLogin {
             onInteractiveLogin(profile) { newProfile in
                 Task {
                     await onConnect(newProfile, force: true, verify: verify)
@@ -37,7 +37,7 @@ extension AppCoordinatorConforming {
         }
     }
 
-    public func onError(_ error: Error, profile: AppProfile) {
+    public func onError(_ error: Error, profile: ABI.AppProfile) {
         onError(error, title: profile.native.name)
     }
 }

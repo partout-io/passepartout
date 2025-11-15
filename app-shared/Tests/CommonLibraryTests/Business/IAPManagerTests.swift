@@ -19,7 +19,7 @@ final class IAPManagerTests: XCTestCase {
 }
 
 extension AppRelease {
-    static let target = AppRelease("older", build: 1000)
+    static let target = Self("older", build: 1000)
 }
 
 // MARK: - Actions
@@ -29,7 +29,7 @@ extension IAPManagerTests {
         let reader = FakeAppReceiptReader()
         let sut = IAPManager(receiptReader: reader)
 
-        let appProducts: [AppProduct] = [
+        let appProducts: [ABI.AppProduct] = [
             .Essentials.iOS_macOS,
             .Donations.huge
         ]
@@ -44,7 +44,7 @@ extension IAPManagerTests {
         await reader.setReceipt(withBuild: .max, products: [])
         let sut = IAPManager(receiptReader: reader)
 
-        let appleTV: AppProduct = .Features.appleTV
+        let appleTV: ABI.AppProduct = .Features.appleTV
         XCTAssertFalse(sut.purchasedProducts.contains(appleTV))
         do {
             let purchasable = try await sut.purchasableProducts(for: [appleTV])
@@ -74,7 +74,7 @@ extension IAPManagerTests {
             return []
         }
         await sut.reloadReceipt()
-        XCTAssertTrue(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertTrue(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
     }
 
     func test_givenBuildProducts_whenNewer_thenFreeVersion() async {
@@ -87,7 +87,7 @@ extension IAPManagerTests {
             return []
         }
         await sut.reloadReceipt()
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
     }
 
     func test_givenBuildProducts_whenFutureRelease_thenFreeVersion() async {
@@ -126,13 +126,13 @@ extension IAPManagerTests {
         let reader = FakeAppReceiptReader()
         let sut = IAPManager(receiptReader: reader)
 
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 
         await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS_macOS])
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 
         await sut.reloadReceipt()
-        XCTAssertTrue(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertTrue(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
     }
 
     func test_givenPurchasedFeatures_thenIsOnlyEligibleForFeatures() async {
@@ -148,7 +148,7 @@ extension IAPManagerTests {
         XCTAssertFalse(sut.isEligible(for: .onDemand))
         XCTAssertTrue(sut.isEligible(for: .routing))
         XCTAssertFalse(sut.isEligible(for: .sharing))
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
     }
 
     func test_givenPurchasedAndCancelledFeature_thenIsNotEligible() async {
@@ -161,7 +161,7 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
     }
 
     func test_givenFreeVersion_thenIsNotEligibleForAnyFeature() async {
@@ -170,7 +170,7 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
-        AppFeature.essentialFeatures.forEach {
+        ABI.AppFeature.essentialFeatures.forEach {
             XCTAssertFalse(sut.isEligible(for: $0))
         }
     }
@@ -190,11 +190,11 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
-        let excluded: Set<AppFeature> = [
+        let excluded: Set<ABI.AppFeature> = [
             .appleTV
         ]
-        AppFeature.allCases.forEach {
-            if AppFeature.essentialFeatures.contains($0) {
+        ABI.AppFeature.allCases.forEach {
+            if ABI.AppFeature.essentialFeatures.contains($0) {
                 XCTAssertTrue(sut.isEligible(for: $0))
                 XCTAssertFalse(excluded.contains($0))
             } else {
@@ -221,11 +221,11 @@ extension IAPManagerTests {
 #if os(macOS)
         await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.macOS, .Features.networkSettings])
         await sut.reloadReceipt()
-        XCTAssertTrue(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertTrue(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #else
         await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS, .Features.networkSettings])
         await sut.reloadReceipt()
-        XCTAssertTrue(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertTrue(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #endif
     }
 
@@ -236,11 +236,11 @@ extension IAPManagerTests {
 #if os(macOS)
         await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS, .Features.networkSettings])
         await sut.reloadReceipt()
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #else
         await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.macOS, .Features.networkSettings])
         await sut.reloadReceipt()
-        XCTAssertFalse(sut.isEligible(for: AppFeature.essentialFeatures))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #endif
     }
 
@@ -284,14 +284,14 @@ extension IAPManagerTests {
         let sut = IAPManager(customUserLevel: .beta, receiptReader: reader)
 
         await sut.reloadReceipt()
-        XCTAssertFalse(sut.isEligible(for: AppFeature.allCases))
+        XCTAssertFalse(sut.isEligible(for: ABI.AppFeature.allCases))
     }
 
     func test_givenBetaLevel_thenIsEligibleForUserLevelFeatures() async {
         let reader = FakeAppReceiptReader()
         let sut = IAPManager(customUserLevel: .beta, receiptReader: reader)
 
-        let eligible = AppUserLevel.beta.features
+        let eligible = ABI.AppUserLevel.beta.features
 
         await sut.reloadReceipt()
         XCTAssertTrue(sut.isEligible(for: eligible))
@@ -301,7 +301,7 @@ extension IAPManagerTests {
         let reader = FakeAppReceiptReader()
         let sut = IAPManager(customUserLevel: .beta, receiptReader: reader, unrestrictedFeatures: [.onDemand])
 
-        var eligible = AppUserLevel.beta.features
+        var eligible = ABI.AppUserLevel.beta.features
         eligible.append(.onDemand)
 
         await sut.reloadReceipt()
@@ -313,11 +313,11 @@ extension IAPManagerTests {
         let sut = IAPManager(customUserLevel: .essentials, receiptReader: reader)
 
         await sut.reloadReceipt()
-        let excluded: Set<AppFeature> = [
+        let excluded: Set<ABI.AppFeature> = [
             .appleTV
         ]
-        AppFeature.allCases.forEach {
-            if AppFeature.essentialFeatures.contains($0) {
+        ABI.AppFeature.allCases.forEach {
+            if ABI.AppFeature.essentialFeatures.contains($0) {
                 XCTAssertTrue(sut.isEligible(for: $0))
                 XCTAssertFalse(excluded.contains($0))
             } else {
@@ -332,7 +332,7 @@ extension IAPManagerTests {
         let sut = IAPManager(customUserLevel: .complete, receiptReader: reader)
 
         await sut.reloadReceipt()
-        AppFeature.allCases.forEach {
+        ABI.AppFeature.allCases.forEach {
             XCTAssertTrue(sut.isEligible(for: $0))
         }
     }
@@ -435,12 +435,12 @@ extension IAPManagerTests {
 
 extension IAPManager {
     convenience init(
-        customUserLevel: AppUserLevel? = nil,
+        customUserLevel: ABI.AppUserLevel? = nil,
         inAppHelper: (any AppProductHelper)? = nil,
         receiptReader: AppReceiptReader,
         betaChecker: BetaChecker? = nil,
-        unrestrictedFeatures: Set<AppFeature> = [],
-        productsAtBuild: BuildProducts<AppProduct>? = nil
+        unrestrictedFeatures: Set<ABI.AppFeature> = [],
+        productsAtBuild: BuildProducts<ABI.AppProduct>? = nil
     ) {
         self.init(
             customUserLevel: customUserLevel,
@@ -453,7 +453,7 @@ extension IAPManager {
         )
     }
 
-    convenience init(products: Set<AppProduct>) async {
+    convenience init(products: Set<ABI.AppProduct>) async {
         let reader = FakeAppReceiptReader()
         await reader.setReceipt(withBuild: .max, products: products)
         self.init(receiptReader: reader)

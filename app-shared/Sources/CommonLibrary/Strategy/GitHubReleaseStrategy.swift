@@ -16,12 +16,12 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         self.rateLimit = rateLimit
     }
 
-    public func latestVersion(since: Date) async throws -> SemanticVersion {
+    public func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
         if since > .distantPast {
             let elapsed = -since.timeIntervalSinceNow
             guard elapsed >= rateLimit else {
                 pp_log_g(.App.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
-                throw AppError.rateLimit
+                throw ABI.AppError.rateLimit
             }
         }
 
@@ -31,9 +31,9 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
 
         let json = try JSONDecoder().decode(VersionJSON.self, from: result.0)
         let newVersion = json.name
-        guard let semNew = SemanticVersion(newVersion) else {
+        guard let semNew = ABI.SemanticVersion(newVersion) else {
             pp_log_g(.App.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
-            throw AppError.unexpectedResponse
+            throw ABI.AppError.unexpectedResponse
         }
         return semNew
     }

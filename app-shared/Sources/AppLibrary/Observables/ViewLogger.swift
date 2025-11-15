@@ -13,7 +13,7 @@ public final class ViewLogger: AppLogger {
         self.strategy = strategy
     }
 
-    public func log(_ category: AppLogCategory, _ level: AppLogLevel, _ message: String) {
+    public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         strategy.log(category, level, message)
     }
 }

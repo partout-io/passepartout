@@ -48,7 +48,7 @@ extension ProfileEditor {
             .map(\.moduleType)
     }
 
-    public func availableModuleTypes(forTarget target: DistributionTarget) -> [ModuleType] {
+    public func availableModuleTypes(forTarget target: ABI.DistributionTarget) -> [ModuleType] {
         let types: [ModuleType]
         if target.supportsPaidFeatures {
             types = ModuleType.allCases
@@ -206,7 +206,7 @@ extension ProfileEditor {
             do {
                 try impl.validate($0)
             } catch {
-                throw AppError.malformedModule($0, error: error)
+                throw ABI.AppError.malformedModule($0, error: error)
             }
         }
 

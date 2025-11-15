@@ -30,7 +30,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         lastUpdated = .distantPast
     }
 
-    public func bundle() async throws -> ConfigBundle {
+    public func bundle() async throws -> ABI.ConfigBundle {
         let isBeta = isBeta()
         pp_log_g(.App.core, .debug, "Config (GitHub): beta = \(isBeta)")
         if lastUpdated > .distantPast {
@@ -38,7 +38,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
             let ttl = isBeta ? ttl / 10.0 : ttl
             guard elapsed >= ttl else {
                 pp_log_g(.App.core, .debug, "Config (GitHub): elapsed \(elapsed) < \(ttl)")
-                throw AppError.rateLimit
+                throw ABI.AppError.rateLimit
             }
         }
         let targetURL = isBeta ? betaURL : url
@@ -47,6 +47,6 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         request.cachePolicy = .reloadIgnoringCacheData
         let result = try await URLSession.shared.data(for: request)
         lastUpdated = Date()
-        return try JSONDecoder().decode(ConfigBundle.self, from: result.0)
+        return try JSONDecoder().decode(ABI.ConfigBundle.self, from: result.0)
     }
 }

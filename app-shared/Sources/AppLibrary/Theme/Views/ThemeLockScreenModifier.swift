@@ -12,7 +12,7 @@ import SwiftUI
 
 struct ThemeLockScreenModifier<LockedContent>: ViewModifier where LockedContent: View {
 
-    @AppStorage(UIPreference.locksInBackground.key)
+    @AppStorage(ABI.UIPreference.locksInBackground.key)
     private var locksInBackground = false
 
     @EnvironmentObject

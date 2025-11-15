@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Library versions
-set(PARTOUT_SHA1 0e7e8718)
+set(PARTOUT_SHA1 4d765ea0)
 set(SWIFT_VERSION 6_2)
 set(JNI_DIR ${CMAKE_SOURCE_DIR}/libs)
 

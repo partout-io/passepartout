@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary
 import Partout
 
 public struct EditableProfile: MutableProfileType {
@@ -41,14 +42,14 @@ public struct EditableProfile: MutableProfileType {
             do {
                 return try $0.build()
             } catch {
-                throw AppError.malformedModule($0, error: error)
+                throw ABI.AppError.malformedModule($0, error: error)
             }
         }
         builder.activeModulesIds = activeModulesIds
 
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
         guard !trimmedName.isEmpty else {
-            throw AppError.emptyProfileName
+            throw ABI.AppError.emptyProfileName
         }
         builder.name = trimmedName
         builder.behavior = behavior
@@ -58,7 +59,7 @@ public struct EditableProfile: MutableProfileType {
         // for example, IP and HTTP Proxy modules require a VPN in NE
         if builder.activeConnectionModule == nil,
            let requiringConnection = builder.activeModules.first(where: \.requiresConnection) {
-            throw AppError.moduleRequiresConnection(requiringConnection)
+            throw ABI.AppError.moduleRequiresConnection(requiringConnection)
         }
 
         return builder
@@ -81,15 +82,5 @@ extension Profile {
         modules.compactMap {
             $0.moduleBuilder()
         }
-    }
-}
-
-extension Module {
-    public func moduleBuilder() -> (any ModuleBuilder)? {
-        guard let buildableModule = self as? any BuildableType else {
-            return nil
-        }
-        let builder = buildableModule.builder() as any BuilderType
-        return builder as? any ModuleBuilder
     }
 }

@@ -8,7 +8,7 @@ import SwiftUI
 struct ProfileDuplicateButton<Label>: View where Label: View {
     let profileManager: ProfileManager
 
-    let preview: ProfilePreview
+    let preview: ABI.ProfilePreview
 
     let errorHandler: ErrorHandler
 

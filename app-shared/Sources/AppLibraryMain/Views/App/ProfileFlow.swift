@@ -6,7 +6,7 @@ import CommonLibrary
 import Foundation
 
 struct ProfileFlow {
-    let onEditProfile: (ProfilePreview) -> Void
-    let onDeleteProfile: (ProfilePreview) -> Void
+    let onEditProfile: (ABI.ProfilePreview) -> Void
+    let onDeleteProfile: (ABI.ProfilePreview) -> Void
     let connectionFlow: ConnectionFlow?
 }

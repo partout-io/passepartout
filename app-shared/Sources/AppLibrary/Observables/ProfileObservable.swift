@@ -13,12 +13,12 @@ public final class ProfileObservable {
     private let logger: AppLogger
     private let profileManager: ProfileManager
 
-    private var allHeaders: [AppIdentifier: AppProfileHeader] {
+    private var allHeaders: [ABI.AppIdentifier: ABI.AppProfileHeader] {
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
     }
-    public private(set) var filteredHeaders: [AppProfileHeader]
+    public private(set) var filteredHeaders: [ABI.AppProfileHeader]
     public private(set) var isReady: Bool
     public private(set) var isRemoteImportingEnabled: Bool
     private var eventSubscription: AnyCancellable?
@@ -44,19 +44,19 @@ public final class ProfileObservable {
 extension ProfileObservable {
 
     // To avoid dup/expensive tracking of localProfiles
-    public func profile(withId profileId: AppIdentifier) -> AppProfile? {
+    public func profile(withId profileId: ABI.AppIdentifier) -> ABI.AppProfile? {
         profileManager.profile(withId: profileId)
     }
 
-    public func save(_ profile: AppProfile, isLocal: Bool = false, sharingFlag: ProfileSharingFlag? = nil) async throws {
+    public func save(_ profile: ABI.AppProfile, isLocal: Bool = false, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
         try await profileManager.save(profile.native, isLocal: isLocal, remotelyShared: sharingFlag != nil)
     }
 
-    public func `import`(_ input: ProfileImporterInput, sharingFlag: ProfileSharingFlag? = nil) async throws {
+    public func `import`(_ input: ABI.ProfileImporterInput, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
         try await profileManager.import(input, sharingFlag: sharingFlag)
     }
 
-    public func duplicate(profileWithId profileId: AppIdentifier) async throws {
+    public func duplicate(profileWithId profileId: ABI.AppIdentifier) async throws {
         try await profileManager.duplicate(profileWithId: profileId)
     }
 
@@ -64,11 +64,11 @@ extension ProfileObservable {
         searchSubject.send(name)
     }
 
-    public func remove(withId profileId: AppIdentifier) async {
+    public func remove(withId profileId: ABI.AppIdentifier) async {
         await profileManager.remove(withId: profileId)
     }
 
-    public func remove(withIds profileIds: [AppIdentifier]) async {
+    public func remove(withIds profileIds: [ABI.AppIdentifier]) async {
         await profileManager.remove(withIds: profileIds)
     }
 
@@ -92,7 +92,7 @@ extension ProfileObservable {
         !filteredHeaders.isEmpty
     }
 
-    public func requiredFeatures(forProfileWithId profileId: AppIdentifier) -> Set<AppFeature>? {
+    public func requiredFeatures(forProfileWithId profileId: ABI.AppIdentifier) -> Set<ABI.AppFeature>? {
         allHeaders[profileId]?.requiredFeatures
     }
 
@@ -154,7 +154,7 @@ private extension ProfileObservable {
             }
             .sorted()
             // FIXME: #1594, localized module types
-//            processor?.preview(from: $0) ?? ProfilePreview($0)
+//            processor?.preview(from: $0) ?? ABI.ProfilePreview($0)
 
         logger.log(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
     }

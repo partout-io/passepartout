@@ -19,7 +19,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
     @Environment(\.verticalSizeClass)
     public var vsClass
 
-    @AppStorage(UIPreference.profilesLayout.key)
+    @AppStorage(ABI.UIPreference.profilesLayout.key)
     private var layout: ProfilesLayout = .list
 
     private let profileManager: ProfileManager
@@ -319,7 +319,7 @@ private struct ProviderServerCoordinatorIfSupported: View {
 extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
-        interactiveManager.present(with: AppProfile(native: profile), onComplete: onComplete)
+        interactiveManager.present(with: ABI.AppProfile(native: profile), onComplete: onComplete)
     }
 
     public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
@@ -333,7 +333,7 @@ extension LegacyAppCoordinator {
 
     public func onPurchaseRequired(
         for profile: Profile,
-        features: Set<AppFeature>,
+        features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
         pp_log_g(.App.core, .info, "Purchase required for features: \(features)")
@@ -361,7 +361,7 @@ extension LegacyAppCoordinator {
     }
 
     public func onError(_ error: Error, title: String) {
-        if case AppError.systemExtension(let result) = error, result != .success {
+        if case ABI.AppError.systemExtension(let result) = error, result != .success {
             modalRoute = .systemExtension
             return
         }
@@ -409,14 +409,14 @@ private extension LegacyAppCoordinator {
         editProfile(profile)
     }
 
-    func onEditProfile(_ preview: ProfilePreview) {
+    func onEditProfile(_ preview: ABI.ProfilePreview) {
         guard let profile = profileManager.partoutProfile(withId: preview.id) else {
             return
         }
         editProfile(profile.editable())
     }
 
-    func onDeleteProfile(_ preview: ProfilePreview) {
+    func onDeleteProfile(_ preview: ABI.ProfilePreview) {
         confirmationAction = .deleteProfile(preview)
     }
 
@@ -475,7 +475,7 @@ private struct DynamicPaywallModifier: ViewModifier {
     @Binding
     var paywallReason: PaywallReason?
 
-    let onEditProfile: (ProfilePreview) -> Void
+    let onEditProfile: (ABI.ProfilePreview) -> Void
 
     let paywallContinuation: (() -> Void)?
 

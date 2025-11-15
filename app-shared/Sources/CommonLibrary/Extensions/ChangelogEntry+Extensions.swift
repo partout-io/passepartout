@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension ChangelogEntry {
+extension ABI.ChangelogEntry {
     private static let entryPrefix = "* "
 
     public init?(_ index: Int, line: String) {

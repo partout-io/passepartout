@@ -12,7 +12,7 @@ import SwiftUI
 public struct ChangelogView: View {
 
     @State
-    private var entries: [ChangelogEntry] = []
+    private var entries: [ABI.ChangelogEntry] = []
 
     @State
     private var isLoading = true
@@ -59,13 +59,13 @@ private extension ChangelogView {
             pp_log_g(.App.core, .info, "CHANGELOG: Fetching \(url)")
             let result = try await URLSession.shared.data(from: url)
             guard let text = String(data: result.0, encoding: .utf8) else {
-                throw AppError.notFound
+                throw ABI.AppError.notFound
             }
             entries = text
                 .split(separator: "\n")
                 .enumerated()
                 .compactMap {
-                    ChangelogEntry($0.offset, line: String($0.element))
+                    ABI.ChangelogEntry($0.offset, line: String($0.element))
                 }
         } catch {
             pp_log_g(.App.core, .error, "CHANGELOG: Unable to load: \(error)")

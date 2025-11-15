@@ -111,7 +111,7 @@ private extension ProfilesView {
        }
     }
 
-    func deleteProfile(withId profileId: AppIdentifier) {
+    func deleteProfile(withId profileId: ABI.AppIdentifier) {
         Task {
             await profileObservable.remove(withId: profileId)
         }
@@ -132,7 +132,7 @@ private struct DetailView: View {
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
-    var profileObservable: ProfileObservable
+    let profileObservable: ProfileObservable
 
     @ObservedObject
     var errorHandler: ErrorHandler

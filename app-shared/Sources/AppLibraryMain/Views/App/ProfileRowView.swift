@@ -23,7 +23,7 @@ struct ProfileRowView: View, Routable, SizeClassProviding {
 
     let tunnel: ExtendedTunnel
 
-    let preview: ProfilePreview
+    let preview: ABI.ProfilePreview
 
     let errorHandler: ErrorHandler
 
@@ -77,7 +77,7 @@ private extension ProfileRowView {
         profileManager.partoutProfile(withId: preview.id)
     }
 
-    var requiredFeatures: Set<AppFeature>? {
+    var requiredFeatures: Set<ABI.AppFeature>? {
         profileManager.requiredFeatures(forProfileWithId: preview.id)
     }
 }

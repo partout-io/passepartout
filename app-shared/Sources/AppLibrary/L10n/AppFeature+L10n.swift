@@ -5,7 +5,7 @@
 import CommonLibrary
 import Foundation
 
-extension AppFeature: LocalizableEntity {
+extension ABI.AppFeature: LocalizableEntity {
     public var localizedDescription: String {
         let V = Strings.Features.self
         switch self {
@@ -29,7 +29,7 @@ extension AppFeature: LocalizableEntity {
     }
 }
 
-extension AppFeature: Comparable {
+extension ABI.AppFeature: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.localizedDescription.lowercased() < rhs.localizedDescription.lowercased()
     }

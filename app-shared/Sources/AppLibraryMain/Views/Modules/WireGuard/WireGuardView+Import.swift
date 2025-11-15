@@ -40,7 +40,7 @@ private extension WireGuardView.ImportModifier {
         do {
             let url = try result.get()
             guard url.startAccessingSecurityScopedResource() else {
-                throw AppError.permissionDenied
+                throw ABI.AppError.permissionDenied
             }
             defer {
                 url.stopAccessingSecurityScopedResource()

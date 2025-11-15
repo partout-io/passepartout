@@ -7,12 +7,12 @@ import Partout
 public final class PartoutLoggerStrategy: AppLogger, Sendable {
     public init() {}
 
-    public func log(_ category: AppLogCategory, _ level: AppLogLevel, _ message: String) {
+    public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         pp_log_g(category.partoutCategory, level.partoutLevel, message)
     }
 }
 
-private extension AppLogCategory {
+private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {
         switch self {
         case .core: .App.core
@@ -23,7 +23,7 @@ private extension AppLogCategory {
     }
 }
 
-private extension AppLogLevel {
+private extension ABI.AppLogLevel {
     var partoutLevel: DebugLog.Level {
         switch self {
         case .debug: .debug
@@ -38,12 +38,16 @@ private extension AppLogLevel {
 // FIXME: #1594, Make internal
 extension LoggerCategory {
     public enum App {
-        public static let core = LoggerCategory(rawValue: AppLogCategory.core.id)
+        public static let core = LoggerCategory(appCategory: .core)
 
-        public static let iap = LoggerCategory(rawValue: AppLogCategory.iap.id)
+        public static let iap = LoggerCategory(appCategory: .iap)
 
-        public static let profiles = LoggerCategory(rawValue: AppLogCategory.profiles.id)
+        public static let profiles = LoggerCategory(appCategory: .profiles)
 
-        public static let web = LoggerCategory(rawValue: AppLogCategory.web.id)
+        public static let web = LoggerCategory(appCategory: .web)
+    }
+
+    private init(appCategory: ABI.AppLogCategory) {
+        self.init(rawValue: appCategory.id)
     }
 }

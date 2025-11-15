@@ -83,11 +83,11 @@ private extension AppMenu {
             .themeSection(header: Strings.Views.App.Folders.default)
     }
 
-    func profileToggle(for preview: ProfilePreview) -> some View {
+    func profileToggle(for preview: ABI.ProfilePreview) -> some View {
         Toggle(preview.name, isOn: profileToggleBinding(for: preview))
     }
 
-    func profileToggleBinding(for preview: ProfilePreview) -> Binding<Bool> {
+    func profileToggleBinding(for preview: ABI.ProfilePreview) -> Binding<Bool> {
         Binding {
             isProfileActive(preview)
         } set: { isOn in
@@ -154,11 +154,11 @@ private extension AppMenu {
         }
     }
 
-    func isProfileActive(_ preview: ProfilePreview) -> Bool {
+    func isProfileActive(_ preview: ABI.ProfilePreview) -> Bool {
         tunnel.status(ofProfileId: preview.id) != .inactive
     }
 
-    func toggleProfile(_ isOn: Bool, for preview: ProfilePreview) {
+    func toggleProfile(_ isOn: Bool, for preview: ABI.ProfilePreview) {
         Task {
             guard let profile = profileManager.partoutProfile(withId: preview.id) else {
                 return

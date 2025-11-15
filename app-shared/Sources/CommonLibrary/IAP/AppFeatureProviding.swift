@@ -3,5 +3,5 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public protocol AppFeatureProviding {
-    var features: [AppFeature] { get }
+    var features: [ABI.AppFeature] { get }
 }

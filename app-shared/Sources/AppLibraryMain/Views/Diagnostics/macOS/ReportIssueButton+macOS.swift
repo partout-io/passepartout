@@ -37,7 +37,7 @@ extension ReportIssueButton {
                 isUnableToEmail = true
                 return
             }
-            let issue = await Issue.withMetadata(.init(
+            let issue = await ABI.Issue.withMetadata(.init(
                 ctx: .global,
                 target: distributionTarget,
                 versionString: BundleConfiguration.mainVersionString,
@@ -55,7 +55,7 @@ extension ReportIssueButton {
     }
 }
 
-private extension Issue {
+private extension ABI.Issue {
     var items: [Any] {
         var list: [Any] = []
         list.append(body)

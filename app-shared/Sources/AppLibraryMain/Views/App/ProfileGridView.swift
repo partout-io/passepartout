@@ -13,7 +13,7 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
     @Environment(\.isSearching)
     private var isSearching
 
-    @AppStorage(UIPreference.pinsActiveProfile.key)
+    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
     private var pinsActiveProfile = true
 
     @ObservedObject
@@ -63,7 +63,7 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
 // MARK: - Subviews
 
 private extension ProfileGridView {
-    var allPreviews: [ProfilePreview] {
+    var allPreviews: [ABI.ProfilePreview] {
         profileManager.previews
     }
 
@@ -91,7 +91,7 @@ private extension ProfileGridView {
         }
     }
 
-    func profileView(for preview: ProfilePreview) -> some View {
+    func profileView(for preview: ABI.ProfilePreview) -> some View {
         ProfileRowView(
             style: .compact,
             profileManager: profileManager,

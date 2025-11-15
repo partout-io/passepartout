@@ -5,11 +5,11 @@
 import Partout
 
 extension Profile {
-    func uiHeader(
-        sharingFlags: [ProfileSharingFlag],
-        requiredFeatures: Set<AppFeature>
-    ) -> AppProfileHeader {
-        AppProfileHeader(
+    func abiHeader(
+        sharingFlags: [ABI.ProfileSharingFlag],
+        requiredFeatures: Set<ABI.AppFeature>
+    ) -> ABI.AppProfileHeader {
+        ABI.AppProfileHeader(
             id: id,
             name: name,
             moduleTypes: modules.map(\.moduleType.rawValue),
@@ -19,11 +19,11 @@ extension Profile {
         )
     }
 
-    func uiProfile(
-        sharingFlags: [ProfileSharingFlag],
-        requiredFeatures: Set<AppFeature>
-    ) -> AppProfile {
-        AppProfile(
+    func abiProfile(
+        sharingFlags: [ABI.ProfileSharingFlag],
+        requiredFeatures: Set<ABI.AppFeature>
+    ) -> ABI.AppProfile {
+        ABI.AppProfile(
             native: self
         )
     }

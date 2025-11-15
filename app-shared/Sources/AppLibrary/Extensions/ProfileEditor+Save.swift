@@ -25,16 +25,16 @@ extension ProfileEditor {
         if let iapManager, !iapManager.isBeta {
             do {
                 try iapManager.verify(profileToSave, extra: extraFeatures)
-            } catch AppError.ineligibleProfile(let requiredFeatures) {
+            } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
 
                 // still loading receipt
                 guard !iapManager.isLoadingReceipt else {
-                    throw AppError.verificationReceiptIsLoading
+                    throw ABI.AppError.verificationReceiptIsLoading
                 }
 
                 // purchase required
                 guard requiredFeatures.isEmpty else {
-                    throw AppError.verificationRequiredFeatures(requiredFeatures)
+                    throw ABI.AppError.verificationRequiredFeatures(requiredFeatures)
                 }
             }
         }
@@ -60,8 +60,8 @@ extension ProfileEditor {
 }
 
 private extension ProfileEditor {
-    var extraFeatures: Set<AppFeature> {
-        var list: Set<AppFeature> = []
+    var extraFeatures: Set<ABI.AppFeature> {
+        var list: Set<ABI.AppFeature> = []
         if isShared {
             list.insert(.sharing)
             if isAvailableForTV {

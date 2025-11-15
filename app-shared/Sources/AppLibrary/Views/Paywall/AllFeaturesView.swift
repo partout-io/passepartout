@@ -6,15 +6,15 @@ import CommonLibrary
 import SwiftUI
 
 struct AllFeaturesView: View {
-    let marked: Set<AppFeature>
+    let marked: Set<ABI.AppFeature>
 
-    let highlighted: Set<AppFeature>
+    let highlighted: Set<ABI.AppFeature>
 
     var font: Font?
 
     var body: some View {
         VStack(alignment: .leading) {
-            ForEach(AppFeature.allCases.sorted()) {
+            ForEach(ABI.AppFeature.allCases.sorted()) {
                 FeatureRow(
                     feature: $0,
                     flags: flags(for: $0)
@@ -27,7 +27,7 @@ struct AllFeaturesView: View {
 }
 
 private extension AllFeaturesView {
-    func flags(for feature: AppFeature) -> Set<FeatureRow.Flag> {
+    func flags(for feature: ABI.AppFeature) -> Set<FeatureRow.Flag> {
         var flags: Set<FeatureRow.Flag> = []
         if marked.contains(feature) {
             flags.insert(.marked)

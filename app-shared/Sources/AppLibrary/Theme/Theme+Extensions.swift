@@ -39,7 +39,7 @@ extension TunnelStatus {
 }
 
 extension TunnelObservable {
-    public func statusImageName(ofProfileId profileId: AppIdentifier) -> Theme.ImageName? {
+    public func statusImageName(ofProfileId profileId: ABI.AppIdentifier) -> Theme.ImageName? {
         activeProfiles[profileId]?.status.imageName
     }
 
@@ -64,7 +64,7 @@ extension TunnelObservable {
     }
 }
 
-private extension AppProfile.Status {
+private extension ABI.AppProfile.Status {
     var imageName: Theme.ImageName? {
         switch self {
         case .connected:

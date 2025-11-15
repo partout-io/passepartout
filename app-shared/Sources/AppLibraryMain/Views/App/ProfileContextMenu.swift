@@ -22,7 +22,7 @@ struct ProfileContextMenu: View, Routable {
     @ObservedObject
     var tunnel: ExtendedTunnel
 
-    let preview: ProfilePreview
+    let preview: ABI.ProfilePreview
 
     let errorHandler: ErrorHandler
 

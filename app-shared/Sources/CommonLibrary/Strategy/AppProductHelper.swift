@@ -4,8 +4,8 @@
 
 import Foundation
 
-public protocol AppProductHelper: InAppHelper where ProductType == AppProduct {
+public protocol AppProductHelper: InAppHelper where ProductType == ABI.AppProduct {
 }
 
-extension StoreKitHelper: AppProductHelper where ProductType == AppProduct {
+extension StoreKitHelper: AppProductHelper where ProductType == ABI.AppProduct {
 }

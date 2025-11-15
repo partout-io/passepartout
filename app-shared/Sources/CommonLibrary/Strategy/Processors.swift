@@ -8,9 +8,9 @@ import Partout
 public protocol ProfileProcessor: Sendable {
     func isIncluded(_ profile: Profile) -> Bool
 
-    func preview(from profile: Profile) -> ProfilePreview
+    func preview(from profile: Profile) -> ABI.ProfilePreview
 
-    func requiredFeatures(_ profile: Profile) -> Set<AppFeature>?
+    func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>?
 
     func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder
 }

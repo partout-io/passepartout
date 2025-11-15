@@ -13,7 +13,7 @@ struct PaywallCoordinator: View {
     @Binding
     var isPresented: Bool
 
-    let requiredFeatures: Set<AppFeature>
+    let requiredFeatures: Set<ABI.AppFeature>
 
     @StateObject
     private var model = Model()

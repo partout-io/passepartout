@@ -26,7 +26,7 @@ extension OnboardingStep {
 
 extension OnboardingStep: Comparable {
     var order: Int {
-        OnboardingStep.allCases.firstIndex(of: self) ?? .max
+        Self.allCases.firstIndex(of: self) ?? .max
     }
 
     public static func < (lhs: Self, rhs: Self) -> Bool {

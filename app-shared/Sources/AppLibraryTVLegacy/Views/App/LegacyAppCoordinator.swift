@@ -137,7 +137,7 @@ extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
         interactiveManager.present(
-            with: AppProfile(native: profile),
+            with: ABI.AppProfile(native: profile),
             onComplete: onComplete
         )
     }
@@ -151,7 +151,7 @@ extension LegacyAppCoordinator {
 
     public func onPurchaseRequired(
         for profile: Profile,
-        features: Set<AppFeature>,
+        features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
         pp_log_g(.App.core, .info, "Purchase required for features: \(features)")

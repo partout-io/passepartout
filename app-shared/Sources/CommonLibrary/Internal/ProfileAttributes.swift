@@ -4,6 +4,8 @@
 
 import Partout
 
+// FIXME: #1594, Make internal
+
 extension ProfileType where UserInfoType == JSON {
     public var attributes: ProfileAttributes {
         ProfileAttributes(userInfo: userInfo)

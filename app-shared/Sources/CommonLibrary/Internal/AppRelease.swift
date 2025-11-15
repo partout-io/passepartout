@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Make internal
 public struct AppRelease: Sendable {
     private let name: String
 

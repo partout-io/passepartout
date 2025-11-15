@@ -147,7 +147,7 @@ private extension CustomProductView {
         CustomProductView(
             style: .paywall(primary: true),
             iapManager: .forPreviews,
-            product: AppProduct.Complete.OneTime.lifetime.asFakeIAP,
+            product: ABI.AppProduct.Complete.OneTime.lifetime.asFakeIAP,
             purchasingIdentifier: .constant(nil),
             onComplete: { _, _ in },
             onError: { _ in }

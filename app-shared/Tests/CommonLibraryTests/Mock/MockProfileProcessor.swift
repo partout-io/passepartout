@@ -12,7 +12,7 @@ final class MockProfileProcessor: ProfileProcessor {
 
     var requiredFeaturesCount = 0
 
-    var requiredFeatures: Set<AppFeature>?
+    var requiredFeatures: Set<ABI.AppFeature>?
 
     var willRebuildCount = 0
 
@@ -25,11 +25,11 @@ final class MockProfileProcessor: ProfileProcessor {
         return isIncludedBlock(profile)
     }
 
-    func preview(from profile: Profile) -> ProfilePreview {
-        ProfilePreview(profile)
+    func preview(from profile: Profile) -> ABI.ProfilePreview {
+        ABI.ProfilePreview(profile)
     }
 
-    func requiredFeatures(_ profile: Profile) -> Set<AppFeature>? {
+    func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         requiredFeaturesCount += 1
         return requiredFeatures
     }

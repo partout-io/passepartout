@@ -56,7 +56,7 @@ private extension DebugLogView {
 
 extension DebugLogView {
     public init(
-        withAppParameters parameters: Constants.Log,
+        withAppParameters parameters: ABI.Constants.Log,
         content: @escaping ([String]) -> Content
     ) {
         self.init {
@@ -68,7 +68,7 @@ extension DebugLogView {
 
     public init(
         withTunnel tunnel: ExtendedTunnel,
-        parameters: Constants.Log,
+        parameters: ABI.Constants.Log,
         content: @escaping ([String]) -> Content
     ) {
         self.init {

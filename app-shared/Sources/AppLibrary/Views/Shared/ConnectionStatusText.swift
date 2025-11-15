@@ -9,11 +9,11 @@ import SwiftUI
 public struct ConnectionStatusText: View {
     let tunnel: TunnelObservable
 
-    let profileId: AppIdentifier?
+    let profileId: ABI.AppIdentifier?
 
     let withColors: Bool
 
-    public init(tunnel: TunnelObservable, profileId: AppIdentifier?, withColors: Bool = true) {
+    public init(tunnel: TunnelObservable, profileId: ABI.AppIdentifier?, withColors: Bool = true) {
         self.tunnel = tunnel
         self.profileId = profileId
         self.withColors = withColors
@@ -33,7 +33,7 @@ private struct ConnectionStatusStaticText: View {
 
     private let color: Color
 
-    init(status: AppProfile.Status, color: Color) {
+    init(status: ABI.AppProfile.Status, color: Color) {
         statusDescription = status.localizedDescription
         self.color = color
     }
@@ -56,7 +56,7 @@ private struct ConnectionStatusDynamicText: View {
 
     let tunnel: TunnelObservable
 
-    let profileId: AppIdentifier
+    let profileId: ABI.AppIdentifier
 
     let withColors: Bool
 

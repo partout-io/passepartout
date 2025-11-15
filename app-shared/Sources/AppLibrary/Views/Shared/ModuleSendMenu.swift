@@ -39,7 +39,7 @@ private extension ModuleSendMenu {
         Strings.Views.Ui.ModuleSend.newProfileName(module.moduleType)
     }
 
-    func sendModule(to preview: ProfilePreview?) {
+    func sendModule(to preview: ABI.ProfilePreview?) {
         Task {
             do {
                 var destination: Profile.Builder

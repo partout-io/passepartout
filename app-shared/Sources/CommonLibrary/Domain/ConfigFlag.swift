@@ -2,21 +2,23 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum ConfigFlag: String, CaseIterable, RawRepresentable, Codable, Sendable {
-    // These must be permanent
-    case allowsRelaxedVerification
-    case appNotWorking
-    // These are temporary (older activations come last)
-    case neSocketUDP
-    case neSocketTCP
-    case unknown
+extension ABI {
+    public enum ConfigFlag: String, CaseIterable, RawRepresentable, Codable, Sendable {
+        // These must be permanent
+        case allowsRelaxedVerification
+        case appNotWorking
+        // These are temporary (older activations come last)
+        case neSocketUDP
+        case neSocketTCP
+        case unknown
+    }
 }
 
-extension ConfigFlag: CustomStringConvertible {
+extension ABI.ConfigFlag: CustomStringConvertible {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
-        guard let known = ConfigFlag(rawValue: rawValue) else {
+        guard let known = Self(rawValue: rawValue) else {
             self = .unknown
             return
         }

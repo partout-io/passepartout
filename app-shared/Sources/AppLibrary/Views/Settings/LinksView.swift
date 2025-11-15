@@ -29,7 +29,7 @@ public struct LinksView: View {
 }
 
 private extension LinksView {
-    var constants: Constants {
+    var constants: ABI.Constants {
         Resources.constants
     }
 

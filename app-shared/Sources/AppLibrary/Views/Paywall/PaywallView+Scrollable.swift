@@ -15,7 +15,7 @@ struct PaywallScrollableView: View {
     @ObservedObject
     var iapManager: IAPManager
 
-    let requiredFeatures: Set<AppFeature>
+    let requiredFeatures: Set<ABI.AppFeature>
 
     @ObservedObject
     var model: PaywallCoordinator.Model
@@ -110,7 +110,7 @@ private extension PaywallScrollableView {
 // MARK: - Previews
 
 #Preview {
-    let features: Set<AppFeature> = [.appleTV, .dns, .sharing]
+    let features: Set<ABI.AppFeature> = [.appleTV, .dns, .sharing]
     PaywallScrollableView(
         isPresented: .constant(true),
         iapManager: .forPreviews,

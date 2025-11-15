@@ -11,7 +11,7 @@ struct PreferencesAdvancedView: View {
     private var configManager: ConfigManager
 
     @Binding
-    var experimental: AppPreferenceValues.Experimental
+    var experimental: ABI.AppPreferenceValues.Experimental
 
     var body: some View {
         Form {
@@ -22,12 +22,12 @@ struct PreferencesAdvancedView: View {
 }
 
 private extension PreferencesAdvancedView {
-    static let flags: [ConfigFlag] = [
+    static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
         .neSocketTCP
     ]
 
-    static func description(for flag: ConfigFlag) -> String {
+    static func description(for flag: ABI.ConfigFlag) -> String {
         let V = Strings.Entities.Ui.ConfigFlag.self
         switch flag {
         case .neSocketUDP:
@@ -52,7 +52,7 @@ private extension PreferencesAdvancedView {
         )
     }
 
-    func isOnBinding(for flag: ConfigFlag) -> Binding<Bool> {
+    func isOnBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
         Binding<Bool> {
             experimental.isUsed(flag)
         } set: {
@@ -60,7 +60,7 @@ private extension PreferencesAdvancedView {
         }
     }
 
-    func flagView(for flag: ConfigFlag) -> some View {
+    func flagView(for flag: ABI.ConfigFlag) -> some View {
         VStack(alignment: .leading) {
             Text(Self.description(for: flag))
             Text(configManager.isActive(flag) ? Strings.Global.Nouns.enabled : Strings.Global.Nouns.disabled)
@@ -69,12 +69,12 @@ private extension PreferencesAdvancedView {
     }
 }
 
-private extension AppPreferenceValues.Experimental {
-    func isUsed(_ flag: ConfigFlag) -> Bool {
+private extension ABI.AppPreferenceValues.Experimental {
+    func isUsed(_ flag: ABI.ConfigFlag) -> Bool {
         !ignoredConfigFlags.contains(flag)
     }
 
-    mutating func setUsed(_ flag: ConfigFlag, isUsed: Bool) {
+    mutating func setUsed(_ flag: ABI.ConfigFlag, isUsed: Bool) {
         if isUsed {
             ignoredConfigFlags.remove(flag)
         } else {

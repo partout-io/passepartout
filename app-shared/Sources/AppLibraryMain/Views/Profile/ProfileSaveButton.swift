@@ -20,7 +20,7 @@ struct ProfileSaveButton: View {
                     try await action()
                     errorModuleIds = []
                 } catch {
-                    switch AppError(error) {
+                    switch ABI.AppError(error) {
                     case .partout(let ppError):
                         switch ppError.code {
                         case .incompatibleModules:

@@ -6,7 +6,7 @@ import CommonLibrary
 import Foundation
 import Partout
 
-extension AppError: LocalizedError {
+extension ABI.AppError: LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
         switch self {
@@ -51,7 +51,7 @@ extension AppError: LocalizedError {
             return nil
 
         case .systemExtension:
-            assertionFailure("AppError.systemExtension should be handled in AppCoordinator")
+            assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
 
         case .timeout:

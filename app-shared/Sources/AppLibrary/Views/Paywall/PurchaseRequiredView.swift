@@ -10,7 +10,7 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    let features: Set<AppFeature>?
+    let features: Set<ABI.AppFeature>?
 
     var force: Bool = false
 
@@ -45,7 +45,7 @@ extension PurchaseRequiredView where Content == PurchaseRequiredButton {
     }
 
     public init(
-        requiring features: Set<AppFeature>?,
+        requiring features: Set<ABI.AppFeature>?,
         reason: Binding<PaywallReason?>
     ) {
         self.features = features
@@ -64,7 +64,7 @@ extension PurchaseRequiredView where Content == PurchaseRequiredButton {
 // use for ad hoc feature paywalls, presents without confirmation
 extension PurchaseRequiredView where Content == Button<Text> {
     public init(
-        requiring features: Set<AppFeature>,
+        requiring features: Set<ABI.AppFeature>,
         reason: Binding<PaywallReason?>,
         title: String,
         force: Bool = true
@@ -89,7 +89,7 @@ extension PurchaseRequiredView where Content == PurchaseRequiredImage {
         self.init(requiring: requiring?.features)
     }
 
-    public init(requiring features: Set<AppFeature>?) {
+    public init(requiring features: Set<ABI.AppFeature>?) {
         self.features = features
         content = {
             PurchaseRequiredImage()

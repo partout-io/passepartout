@@ -13,7 +13,7 @@ struct PaywallFixedView: View {
     @ObservedObject
     var iapManager: IAPManager
 
-    let requiredFeatures: Set<AppFeature>
+    let requiredFeatures: Set<ABI.AppFeature>
 
     @ObservedObject
     var model: PaywallCoordinator.Model
@@ -26,7 +26,7 @@ struct PaywallFixedView: View {
     let onError: (Error) -> Void
 
     @FocusState
-    private var selectedProduct: AppProduct?
+    private var selectedProduct: ABI.AppProduct?
 
     var body: some View {
         GeometryReader { geo in
@@ -72,7 +72,7 @@ private extension PaywallFixedView {
                     onComplete: onComplete,
                     onError: onError
                 )
-                .focused($selectedProduct, equals: AppProduct(rawValue: iap.productIdentifier))
+                .focused($selectedProduct, equals: ABI.AppProduct(rawValue: iap.productIdentifier))
                 .frame(maxWidth: .infinity)
                 .disabled(iapManager.didPurchase(iap))
             }
@@ -106,7 +106,7 @@ private extension PaywallFixedView {
                     onComplete: onComplete,
                     onError: onError
                 )
-                .focused($selectedProduct, equals: AppProduct(rawValue: iap.productIdentifier))
+                .focused($selectedProduct, equals: ABI.AppProduct(rawValue: iap.productIdentifier))
                 .frame(maxWidth: .infinity)
                 .themeBlurred(if: iapManager.didPurchase(iap))
                 .disabled(iapManager.didPurchase(iap))
@@ -133,7 +133,7 @@ private extension PaywallFixedView {
 // MARK: - Previews
 
 #Preview("WithComplete") {
-    let features: Set<AppFeature> = [.appleTV, .dns, .sharing]
+    let features: Set<ABI.AppFeature> = [.appleTV, .dns, .sharing]
     PaywallFixedView(
         isPresented: .constant(true),
         iapManager: .forPreviews,
@@ -147,7 +147,7 @@ private extension PaywallFixedView {
 }
 
 #Preview("WithoutComplete") {
-    let features: Set<AppFeature> = [.appleTV, .dns, .sharing]
+    let features: Set<ABI.AppFeature> = [.appleTV, .dns, .sharing]
     PaywallFixedView(
         isPresented: .constant(true),
         iapManager: .forPreviews,
@@ -161,7 +161,7 @@ private extension PaywallFixedView {
 }
 
 #Preview("Individual") {
-    let features: Set<AppFeature> = [.appleTV]
+    let features: Set<ABI.AppFeature> = [.appleTV]
     PaywallFixedView(
         isPresented: .constant(true),
         iapManager: .forPreviews,

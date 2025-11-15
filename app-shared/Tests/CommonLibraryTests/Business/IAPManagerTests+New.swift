@@ -161,7 +161,7 @@ final class IAPManagerNewSuggestionsTests: XCTestCase {
 extension IAPManagerTests {
     func test_givenFree_whenSuggestMixedFeatures_thenSuggestsEssentials() async {
         let sut = await IAPManager(products: [])
-        let features: Set<AppFeature> = [.appleTV, .dns]
+        let features: Set<ABI.AppFeature> = [.appleTV, .dns]
         XCTAssertEqual(sut.mixedProducts(for: features, on: .iOS), [
             .Essentials.iOS_macOS,
             .Essentials.iOS,
@@ -176,7 +176,7 @@ extension IAPManagerTests {
 
     func test_givenFree_whenSuggestNonEssentialFeature_thenDoesNotSuggestEssentials() async {
         let sut = await IAPManager(products: [])
-        let features: Set<AppFeature> = [.appleTV]
+        let features: Set<ABI.AppFeature> = [.appleTV]
         XCTAssertEqual(sut.mixedProducts(for: features, on: .iOS), [
             .Features.appleTV
         ])
@@ -187,7 +187,7 @@ extension IAPManagerTests {
 
     func test_givenFree_whenSuggestNonEssentialImplyingEssentialFeature_thenDoesNotSuggestEssentials() async {
         let sut = await IAPManager(products: [])
-        let features: Set<AppFeature> = [.appleTV, .sharing]
+        let features: Set<ABI.AppFeature> = [.appleTV, .sharing]
         XCTAssertEqual(sut.mixedProducts(for: features, on: .iOS), [
             .Features.appleTV
         ])
@@ -203,15 +203,15 @@ private extension IAPManager {
     func essentialProducts(
         on platform: Platform,
         including: Set<SuggestionInclusion> = [.singlePlatformEssentials]
-    ) -> Set<AppProduct> {
-        suggestedProducts(for: AppFeature.essentialFeatures, on: platform, including: including)
+    ) -> Set<ABI.AppProduct> {
+        suggestedProducts(for: ABI.AppFeature.essentialFeatures, on: platform, including: including)
     }
 
     func mixedProducts(
-        for features: Set<AppFeature>,
+        for features: Set<ABI.AppFeature>,
         on platform: Platform,
         including: Set<SuggestionInclusion> = [.singlePlatformEssentials]
-    ) -> Set<AppProduct> {
+    ) -> Set<ABI.AppProduct> {
         suggestedProducts(for: features, on: platform, including: including)
     }
 }

@@ -2,16 +2,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum DistributionTarget: String, Sendable {
-    case appStore
+extension ABI {
+    public enum DistributionTarget: String, Sendable {
+        case appStore
 
-    case developerID
+        case developerID
 
-    // TODO: #13, behave like .complete when this is implemented
-    case enterprise
+        // TODO: #13, behave like .complete when this is implemented
+        case enterprise
+    }
 }
 
-extension DistributionTarget {
+extension ABI.DistributionTarget {
     public var canAlwaysReportIssue: Bool {
         self == .enterprise
     }

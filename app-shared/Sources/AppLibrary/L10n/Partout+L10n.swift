@@ -7,8 +7,8 @@ import Foundation
 import Partout
 
 extension Profile {
-    public var localizedPreview: ProfilePreview {
-        ProfilePreview(
+    public var localizedPreview: ABI.ProfilePreview {
+        ABI.ProfilePreview(
             id: id,
             name: name,
             subtitle: localizedDescription(optionalStyle: .moduleTypes)

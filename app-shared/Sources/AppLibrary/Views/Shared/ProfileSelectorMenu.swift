@@ -17,13 +17,13 @@ public struct ProfileSelectorMenu: View {
 
     private let excludedProfileId: Profile.ID?
 
-    private let onSelect: (ProfilePreview?) -> Void
+    private let onSelect: (ABI.ProfilePreview?) -> Void
 
     public init(
         _ title: String,
         withNewTitle newTitle: String? = nil,
         excluding excludedProfileId: Profile.ID? = nil,
-        onSelect: @escaping (ProfilePreview?) -> Void
+        onSelect: @escaping (ABI.ProfilePreview?) -> Void
     ) {
         self.title = title
         self.newTitle = newTitle
@@ -53,7 +53,7 @@ public struct ProfileSelectorMenu: View {
 }
 
 private extension ProfileSelectorMenu {
-    var previews: [ProfilePreview]? {
+    var previews: [ABI.ProfilePreview]? {
         let filtered = profileManager
             .previews
             .filter {

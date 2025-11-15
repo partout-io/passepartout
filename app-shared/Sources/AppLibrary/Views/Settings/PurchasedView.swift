@@ -50,8 +50,8 @@ private extension PurchasedView {
         iapManager.originalPurchase == nil && iapManager.purchasedProducts.isEmpty && iapManager.eligibleFeatures.isEmpty
     }
 
-    var allFeatures: [AppFeature] {
-        AppFeature.allCases.sorted {
+    var allFeatures: [ABI.AppFeature] {
+        ABI.AppFeature.allCases.sorted {
             let lRank = $0.rank(with: iapManager)
             let rRank = $1.rank(with: iapManager)
             if lRank != rRank {
@@ -144,7 +144,7 @@ private struct PurchasedFeatureView: View {
 
 // MARK: -
 
-private extension AppFeature {
+private extension ABI.AppFeature {
 
     @MainActor
     func rank(with iapManager: IAPManager) -> Int {

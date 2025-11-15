@@ -6,7 +6,7 @@ import Foundation
 import Partout
 
 public protocol ConfigManagerStrategy {
-    func bundle() async throws -> ConfigBundle
+    func bundle() async throws -> ABI.ConfigBundle
 }
 
 @MainActor
@@ -16,7 +16,7 @@ public final class ConfigManager: ObservableObject {
     private let buildNumber: Int
 
     @Published
-    private var bundle: ConfigBundle?
+    private var bundle: ABI.ConfigBundle?
 
     private var isPending = false
 
@@ -49,30 +49,30 @@ public final class ConfigManager: ObservableObject {
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
             pp_log_g(.App.core, .info, "Config: active flags = \(activeFlags)")
             pp_log_g(.App.core, .debug, "Config: \(newBundle)")
-        } catch AppError.rateLimit {
+        } catch ABI.AppError.rateLimit {
             pp_log_g(.App.core, .debug, "Config: TTL")
         } catch {
             pp_log_g(.App.core, .error, "Unable to refresh config flags: \(error)")
         }
     }
 
-    public func isActive(_ flag: ConfigFlag) -> Bool {
+    public func isActive(_ flag: ABI.ConfigFlag) -> Bool {
         activeMap(for: flag) != nil
     }
 
-    public func data(for flag: ConfigFlag) -> JSON? {
+    public func data(for flag: ABI.ConfigFlag) -> JSON? {
         activeMap(for: flag)?.data
     }
 
-    public var activeFlags: Set<ConfigFlag> {
-        Set(ConfigFlag.allCases.filter {
+    public var activeFlags: Set<ABI.ConfigFlag> {
+        Set(ABI.ConfigFlag.allCases.filter {
             isActive($0)
         })
     }
 }
 
 private extension ConfigManager {
-    func activeMap(for flag: ConfigFlag) -> ConfigBundle.Config? {
+    func activeMap(for flag: ABI.ConfigFlag) -> ABI.ConfigBundle.Config? {
         guard let map = bundle?.map[flag] else {
             return nil
         }

@@ -18,9 +18,9 @@ extension IAPManager {
     }
 
     public func suggestedProducts(
-        for features: Set<AppFeature>,
+        for features: Set<ABI.AppFeature>,
         including: Set<SuggestionInclusion> = [.complete, .singlePlatformEssentials]
-    ) -> Set<AppProduct> {
+    ) -> Set<ABI.AppProduct> {
 #if os(iOS)
         suggestedProducts(for: features, on: .iOS, including: including)
 #elseif os(macOS)
@@ -36,11 +36,11 @@ extension IAPManager {
 
     // suggest the minimum set of products for the given required features
     func suggestedProducts(
-        for features: Set<AppFeature>,
+        for features: Set<ABI.AppFeature>,
         on platform: Platform,
         including: Set<SuggestionInclusion>,
         asserting: Bool = false
-    ) -> Set<AppProduct> {
+    ) -> Set<ABI.AppProduct> {
         guard !purchasedProducts.contains(where: \.isComplete) else {
             if asserting {
                 assertionFailure("Suggesting products to complete version purchaser?")
@@ -48,7 +48,7 @@ extension IAPManager {
             return []
         }
 
-        var suggested: Set<AppProduct> = []
+        var suggested: Set<ABI.AppProduct> = []
 
         // prioritize eligible features from non-essential products
         let nonEssentialProducts = features.flatMap(\.nonEssentialProducts)

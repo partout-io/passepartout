@@ -14,7 +14,7 @@ extension PaywallCoordinator {
         @Published
         var isFetchingProducts = true
 
-        private(set) var suggestedProducts: Set<AppProduct> = []
+        private(set) var suggestedProducts: Set<ABI.AppProduct> = []
 
         private(set) var completePurchasable: [InAppProduct] = []
 
@@ -30,7 +30,7 @@ extension PaywallCoordinator {
 
 extension PaywallCoordinator.Model {
     func fetchAvailableProducts(
-        for requiredFeatures: Set<AppFeature>,
+        for requiredFeatures: Set<ABI.AppFeature>,
         with iapManager: IAPManager
     ) async throws {
         guard isFetchingProducts else {
@@ -43,7 +43,7 @@ extension PaywallCoordinator.Model {
         do {
             let rawProducts = iapManager.suggestedProducts(for: requiredFeatures)
             guard !rawProducts.isEmpty else {
-                throw AppError.emptyProducts
+                throw ABI.AppError.emptyProducts
             }
             let rawSortedProducts = rawProducts.sorted {
                 $0.productRank < $1.productRank
@@ -57,7 +57,7 @@ extension PaywallCoordinator.Model {
     }
 
     func setSuggestedProducts(
-        _ suggestedProducts: Set<AppProduct>,
+        _ suggestedProducts: Set<ABI.AppProduct>,
         purchasable: [InAppProduct]
     ) throws {
         let completeProducts = suggestedProducts.filter(\.isComplete)
@@ -65,7 +65,7 @@ extension PaywallCoordinator.Model {
         var completePurchasable: [InAppProduct] = []
         var individualPurchasable: [InAppProduct] = []
         purchasable.forEach {
-            guard let raw = AppProduct(rawValue: $0.productIdentifier) else {
+            guard let raw = ABI.AppProduct(rawValue: $0.productIdentifier) else {
                 return
             }
             if completeProducts.contains(raw) {
@@ -76,7 +76,7 @@ extension PaywallCoordinator.Model {
         }
         pp_log_g(.App.iap, .info, "Individual products: \(individualPurchasable)")
         guard !completePurchasable.isEmpty || !individualPurchasable.isEmpty else {
-            throw AppError.emptyProducts
+            throw ABI.AppError.emptyProducts
         }
 
         objectWillChange.send()
@@ -86,7 +86,7 @@ extension PaywallCoordinator.Model {
     }
 }
 
-private extension AppProduct {
+private extension ABI.AppProduct {
     var productRank: Int {
         switch self {
         case .Essentials.iOS_macOS:
@@ -109,7 +109,7 @@ extension PaywallCoordinator.Model {
 
     @MainActor
     static func forPreviews(
-        _ features: Set<AppFeature>,
+        _ features: Set<ABI.AppFeature>,
         including: Set<IAPManager.SuggestionInclusion>
     ) -> PaywallCoordinator.Model {
         let state = PaywallCoordinator.Model()

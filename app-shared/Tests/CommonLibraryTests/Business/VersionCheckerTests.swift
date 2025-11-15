@@ -73,10 +73,10 @@ private final class MockStrategy: VersionCheckerStrategy {
     // only allow once
     var didHitRateLimit = false
 
-    func latestVersion(since: Date) async throws -> SemanticVersion {
+    func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
         if since > .distantPast {
             didHitRateLimit = true
         }
-        return SemanticVersion("4.10.20")!
+        return ABI.SemanticVersion("4.10.20")!
     }
 }

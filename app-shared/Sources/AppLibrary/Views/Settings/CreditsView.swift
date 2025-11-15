@@ -17,7 +17,7 @@ public struct CreditsView: View {
             noticesHeader: Strings.Views.Settings.Credits.notices,
             translationsHeader: Strings.Views.Settings.Credits.translations,
             errorDescription: {
-                AppError($0)
+                ABI.AppError($0)
                     .localizedDescription
             }
         )

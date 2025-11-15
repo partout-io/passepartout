@@ -5,25 +5,25 @@
 import Partout
 
 extension DNSModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+    public var features: Set<ABI.AppFeature> {
         [.dns]
     }
 }
 
 extension HTTPProxyModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+    public var features: Set<ABI.AppFeature> {
         [.httpProxy]
     }
 }
 
 extension IPModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+    public var features: Set<ABI.AppFeature> {
         [.routing]
     }
 }
 
 extension OnDemandModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+    public var features: Set<ABI.AppFeature> {
         guard policy != .any else {
             return []
         }
@@ -36,8 +36,8 @@ extension OnDemandModule.Builder: AppFeatureRequiring {
 }
 
 extension OpenVPNModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
-        var list: Set<AppFeature> = []
+    public var features: Set<ABI.AppFeature> {
+        var list: Set<ABI.AppFeature> = []
         if isInteractive, let otpMethod = credentials?.otpMethod, otpMethod != .none {
             list.insert(.otp)
         }
@@ -46,8 +46,8 @@ extension OpenVPNModule.Builder: AppFeatureRequiring {
 }
 
 extension ProviderModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
-        var list: Set<AppFeature> = []
+    public var features: Set<ABI.AppFeature> {
+        var list: Set<ABI.AppFeature> = []
         providerId?.features.forEach {
             list.insert($0)
         }
@@ -56,7 +56,7 @@ extension ProviderModule.Builder: AppFeatureRequiring {
 }
 
 extension WireGuardModule.Builder: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+    public var features: Set<ABI.AppFeature> {
         []
     }
 }

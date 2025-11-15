@@ -15,7 +15,7 @@ extension EnvironmentValues {
         }
     }
 
-    public var distributionTarget: DistributionTarget {
+    public var distributionTarget: ABI.DistributionTarget {
         get {
             self[DistributionTargetKey.self]
         }
@@ -30,5 +30,5 @@ private struct IsUITestingKey: EnvironmentKey {
 }
 
 private struct DistributionTargetKey: EnvironmentKey {
-    static let defaultValue: DistributionTarget = .appStore
+    static let defaultValue: ABI.DistributionTarget = .appStore
 }

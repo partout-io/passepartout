@@ -17,7 +17,7 @@ public protocol LegacyAppCoordinatorConforming {
 
     func onProviderEntityRequired(_ profile: Profile, force: Bool)
 
-    func onPurchaseRequired(for profile: Profile, features: Set<AppFeature>, continuation: (() -> Void)?)
+    func onPurchaseRequired(for profile: Profile, features: Set<ABI.AppFeature>, continuation: (() -> Void)?)
 
     func onError(_ error: Error, title: String)
 }

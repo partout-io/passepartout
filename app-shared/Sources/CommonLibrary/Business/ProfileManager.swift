@@ -15,7 +15,7 @@ public final class ProfileManager: ObservableObject {
 
     public enum Event: Equatable {
         case ready
-        case refresh([AppIdentifier: AppProfileHeader])
+        case refresh([ABI.AppIdentifier: ABI.AppProfileHeader])
         case startRemoteImport
         case stopRemoteImport
 
@@ -69,7 +69,7 @@ public final class ProfileManager: ObservableObject {
 
     @available(*, deprecated, message: "#1594")
     @Published
-    private var requiredFeatures: [Profile.ID: Set<AppFeature>]
+    private var requiredFeatures: [Profile.ID: Set<ABI.AppFeature>]
 
     @available(*, deprecated, message: "#1594")
     @Published
@@ -193,9 +193,9 @@ extension ProfileManager {
     }
 
     public func `import`(
-        _ input: ProfileImporterInput,
+        _ input: ABI.ProfileImporterInput,
         passphrase: String? = nil,
-        sharingFlag: ProfileSharingFlag? = nil
+        sharingFlag: ABI.ProfileSharingFlag? = nil
     ) async throws {
         var profile = try registry.importedProfile(from: input, passphrase: passphrase)
         pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
@@ -271,9 +271,9 @@ extension ProfileManager {
 
 extension ProfileManager {
     // FIXME: #1594, Profile.ID in public
-    public func profile(withId profileId: Profile.ID) -> AppProfile? {
+    public func profile(withId profileId: Profile.ID) -> ABI.AppProfile? {
         guard let profile = allProfiles[profileId] else { return nil }
-        return profile.uiProfile(
+        return profile.abiProfile(
             sharingFlags: sharingFlags(for: profileId),
             requiredFeatures: requiredFeatures(for: profile)
         )
@@ -441,9 +441,9 @@ private extension ProfileManager {
         remoteImportTask = nil
     }
 
-    func computedProfileHeaders() -> [AppIdentifier: AppProfileHeader] {
+    func computedProfileHeaders() -> [ABI.AppIdentifier: ABI.AppProfileHeader] {
         let allHeaders = allProfiles.reduce(into: [:]) {
-            $0[$1.key] = $1.value.uiHeader(
+            $0[$1.key] = $1.value.abiHeader(
                 sharingFlags: sharingFlags(for: $1.key),
                 requiredFeatures: requiredFeatures(for: $1.value)
             )
@@ -465,9 +465,9 @@ extension ProfileManager {
         !filteredProfiles.isEmpty
     }
 
-    public var previews: [ProfilePreview] {
+    public var previews: [ABI.ProfilePreview] {
         filteredProfiles.map {
-            processor?.preview(from: $0) ?? ProfilePreview($0)
+            processor?.preview(from: $0) ?? ABI.ProfilePreview($0)
         }
     }
 
@@ -483,7 +483,7 @@ extension ProfileManager {
         allProfiles[profileId]?.attributes.isAvailableForTV == true
     }
 
-    public func sharingFlags(for profileId: Profile.ID) -> [ProfileSharingFlag] {
+    public func sharingFlags(for profileId: Profile.ID) -> [ABI.ProfileSharingFlag] {
         if isRemotelyShared(profileWithId: profileId) {
             if isAvailableForTV(profileWithId: profileId) {
                 return [.tv]
@@ -494,7 +494,7 @@ extension ProfileManager {
         return []
     }
 
-    public func requiredFeatures(for profile: Profile) -> Set<AppFeature> {
+    public func requiredFeatures(for profile: Profile) -> Set<ABI.AppFeature> {
         guard let ineligible = processor?.requiredFeatures(profile), !ineligible.isEmpty else {
             return []
         }
@@ -509,7 +509,7 @@ extension ProfileManager {
         searchSubject.send(name)
     }
 
-    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<AppFeature>? {
+    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<ABI.AppFeature>? {
         requiredFeatures[profileId]
     }
 

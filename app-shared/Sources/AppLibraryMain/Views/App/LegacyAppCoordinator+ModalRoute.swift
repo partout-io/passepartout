@@ -38,7 +38,7 @@ extension LegacyAppCoordinator {
     }
 
     enum ConfirmationAction {
-        case deleteProfile(ProfilePreview)
+        case deleteProfile(ABI.ProfilePreview)
     }
 }
 

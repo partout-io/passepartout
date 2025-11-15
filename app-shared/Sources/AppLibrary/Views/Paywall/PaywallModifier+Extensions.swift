@@ -24,13 +24,13 @@ extension PaywallModifier {
     public struct Reason: Hashable {
         public let profile: Profile?
 
-        public let requiredFeatures: Set<AppFeature>
+        public let requiredFeatures: Set<ABI.AppFeature>
 
         public let action: Action
 
         public init(
             _ profile: Profile?,
-            requiredFeatures: Set<AppFeature>,
+            requiredFeatures: Set<ABI.AppFeature>,
             action: Action
         ) {
             self.profile = profile

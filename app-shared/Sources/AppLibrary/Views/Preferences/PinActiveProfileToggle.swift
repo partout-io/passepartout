@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct PinActiveProfileToggle: View {
 
-    @AppStorage(UIPreference.pinsActiveProfile.key)
+    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
     private var pinsActiveProfile = true
 
     public init() {
@@ -22,7 +22,7 @@ public struct PinActiveProfileToggle: View {
 
 public struct HideActiveProfileButton: View {
 
-    @AppStorage(UIPreference.pinsActiveProfile.key)
+    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
     private var pinsActiveProfile = true
 
     public init() {

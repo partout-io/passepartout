@@ -8,7 +8,7 @@ import Partout
 @MainActor
 public final class ExtendedTunnel: ObservableObject {
     public enum Event {
-        case refresh([AppIdentifier: AppProfile.Info])
+        case refresh([ABI.AppIdentifier: ABI.AppProfile.Info])
         case dataCount
     }
 
@@ -66,7 +66,7 @@ extension ExtendedTunnel {
     private func installAndConnect(_ connect: Bool, with profile: Profile, force: Bool) async throws {
         let newProfile = try await processedProfile(profile)
         if connect && !force && newProfile.isInteractive {
-            throw AppError.interactiveLogin
+            throw ABI.AppError.interactiveLogin
         }
         var options: [String: NSObject] = [Self.isManualKey: true as NSNumber]
         if let preferences = kvManager?.preferences {
@@ -86,7 +86,7 @@ extension ExtendedTunnel {
                     case .success:
                         break
                     default:
-                        throw AppError.systemExtension(result)
+                        throw ABI.AppError.systemExtension(result)
                     }
                     pp_log_g(.App.core, .info, "System Extension: installation result is \(result)")
                 } catch {
@@ -109,7 +109,7 @@ extension ExtendedTunnel {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func currentLog(parameters: Constants.Log) async -> [String] {
+    public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
         guard let anyProfile = tunnel.activeProfiles.first?.value else {
             return []
         }
@@ -129,13 +129,13 @@ extension ExtendedTunnel {
 // MARK: - State
 
 extension ExtendedTunnel {
-    public func transfer(ofProfileId profileId: AppIdentifier) -> ProfileTransfer? {
-        dataCount(ofProfileId: profileId)?.uiTransfer
+    public func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
+        dataCount(ofProfileId: profileId)?.abiTransfer
     }
 
-    public func lastError(ofProfileId profileId: AppIdentifier) -> AppError? {
+    public func lastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
         guard let code = lastErrorCode(ofProfileId: profileId) else { return nil }
-        return AppError.partout(PartoutError(code))
+        return ABI.AppError.partout(PartoutError(code))
     }
 }
 
@@ -220,21 +220,21 @@ private extension ExtendedTunnel {
         )
     }
 
-    func profileStatus(ofProfileId profileId: Profile.ID) -> AppProfile.Status {
+    func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppProfile.Status {
         let status = status(ofProfileId: profileId)
         guard let environment = tunnel.environment(for: profileId) else {
-            return status.uiStatus
+            return status.abiStatus
         }
-        return status.withEnvironment(environment).uiStatus
+        return status.withEnvironment(environment).abiStatus
     }
 
-    func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [AppIdentifier: AppProfile.Info] {
+    func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [ABI.AppIdentifier: ABI.AppProfile.Info] {
         var info = activeProfiles.mapValues {
             let profileStatus = self.profileStatus(ofProfileId: $0.id)
-            return AppProfile.Info(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
+            return ABI.AppProfile.Info(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
         }
         if info.isEmpty, let last = self.lastUsedProfile {
-            info = [last.id: last.uiInfo]
+            info = [last.id: last.abiInfo]
         }
         return info
     }

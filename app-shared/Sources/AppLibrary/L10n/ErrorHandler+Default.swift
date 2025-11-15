@@ -12,7 +12,7 @@ extension ErrorHandler {
             defaultTitle: Strings.Unlocalized.appName,
             dismissTitle: Strings.Global.Nouns.ok,
             errorDescription: {
-                AppError($0).localizedDescription
+                ABI.AppError($0).localizedDescription
             },
             beforeAlert: {
                 pp_log_g(.App.core, .error, "Error handler being presented: \($0)")

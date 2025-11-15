@@ -6,7 +6,7 @@ import CommonLibrary
 import CommonResources
 import Foundation
 
-extension ChangelogEntry {
+extension ABI.ChangelogEntry {
     public var issueURL: URL? {
         issue.map {
             Resources.constants.github.urlForIssue($0)

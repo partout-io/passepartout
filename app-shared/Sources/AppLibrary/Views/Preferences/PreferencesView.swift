@@ -23,7 +23,7 @@ public struct PreferencesView: View {
     private var configManager: ConfigManager
 
 #if os(iOS)
-    @AppStorage(UIPreference.locksInBackground.key)
+    @AppStorage(ABI.UIPreference.locksInBackground.key)
     private var locksInBackground = false
 #elseif os(macOS)
     @EnvironmentObject
@@ -36,7 +36,7 @@ public struct PreferencesView: View {
     private let profileManager: ProfileManager
 
     @State
-    private var preferences = AppPreferenceValues()
+    private var preferences = ABI.AppPreferenceValues()
 
     @State
     private var isConfirmingEraseiCloud = false

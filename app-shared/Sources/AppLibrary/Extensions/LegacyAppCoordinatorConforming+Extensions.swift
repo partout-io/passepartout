@@ -13,13 +13,13 @@ extension LegacyAppCoordinatorConforming {
                 try iapManager.verify(profile)
             }
             try await tunnel.connect(with: profile, force: force)
-        } catch AppError.ineligibleProfile(let requiredFeatures) {
+        } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
             onPurchaseRequired(for: profile, features: requiredFeatures) {
                 Task {
                     await onConnect(profile, force: force, verify: false)
                 }
             }
-        } catch AppError.interactiveLogin {
+        } catch ABI.AppError.interactiveLogin {
             onInteractiveLogin(profile) { newProfile in
                 Task {
                     await onConnect(newProfile.native, force: true, verify: verify)

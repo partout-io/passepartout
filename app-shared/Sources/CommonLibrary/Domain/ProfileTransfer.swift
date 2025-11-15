@@ -2,13 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public struct ProfileTransfer: Hashable, Codable, Sendable {
-    public let received: Int
+extension ABI {
+    public struct ProfileTransfer: Hashable, Codable, Sendable {
+        public let received: Int
 
-    public let sent: Int
+        public let sent: Int
 
-    init(received: Int, sent: Int) {
-        self.received = received
-        self.sent = sent
+        init(received: Int, sent: Int) {
+            self.received = received
+            self.sent = sent
+        }
     }
 }
