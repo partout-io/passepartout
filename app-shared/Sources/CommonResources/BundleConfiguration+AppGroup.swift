@@ -8,15 +8,15 @@ import Partout
 // WARNING: beware of Resources.constants dependency
 
 extension Constants {
-    public var mainVersionString: String {
+    public var bundleMainVersionString: String {
         BundleConfiguration.mainVersionString
     }
 
-    public var urlForAppLog: URL {
+    public var bundleURLForAppLog: URL {
         BundleConfiguration.urlForCaches.appending(path: log.appPath)
     }
 
-    public func urlForTunnelLog(in target: DistributionTarget) -> URL {
+    public func bundleURLForTunnelLog(in target: DistributionTarget) -> URL {
         let baseURL: URL
         if target.supportsAppGroups {
             baseURL = BundleConfiguration.urlForCaches

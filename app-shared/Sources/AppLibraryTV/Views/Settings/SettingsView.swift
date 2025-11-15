@@ -61,7 +61,7 @@ private extension SettingsView {
             } label: {
                 ThemeRow(
                     Strings.Global.Nouns.version,
-                    value: Resources.constants.mainVersionString
+                    value: Resources.constants.bundleMainVersionString
                 )
             }
             .focused($focus, equals: .version)

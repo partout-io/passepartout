@@ -25,14 +25,12 @@ extension AppContext {
         let logger = PartoutLoggerStrategy()
         let kvManager = dependencies.kvManager
 
-        let logURL = constants.urlForAppLog
-        let versionString = BundleConfiguration.mainVersionString
         let ctx = PartoutLogger.register(
             for: .app,
-            loggingTo: logURL,
+            loggingTo: constants.bundleURLForAppLog,
             with: kvManager.preferences,
             parameters: constants.log,
-            versionString: versionString
+            versionString: constants.bundleMainVersionString
         )
 
         // MARK: Core Data
