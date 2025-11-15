@@ -19,10 +19,10 @@ public enum CommonLibrary {
                 }
 
                 // AppFeatureRequiring
-                guard builder is any ABI.AppFeatureRequiring else {
+                guard builder is any AppFeatureRequiring else {
                     fatalError("\(moduleType): #1 is not AppFeatureRequiring")
                 }
-                guard moduleBuilder is any ABI.AppFeatureRequiring else {
+                guard moduleBuilder is any AppFeatureRequiring else {
                     fatalError("\(moduleType): #2 is not AppFeatureRequiring")
                 }
             } catch {

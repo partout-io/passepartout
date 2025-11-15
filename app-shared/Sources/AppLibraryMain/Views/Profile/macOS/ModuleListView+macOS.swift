@@ -76,7 +76,7 @@ private extension ModuleListView {
                 ThemeImage(.warning)
             } else if profileEditor.isActiveModule(withId: module.id) {
                 PurchaseRequiredView(
-                    for: module as? ABI.AppFeatureRequiring,
+                    for: module as? AppFeatureRequiring,
                     reason: $paywallReason
                 )
             }

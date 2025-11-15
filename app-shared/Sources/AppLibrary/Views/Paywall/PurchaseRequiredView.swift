@@ -38,7 +38,7 @@ private extension PurchaseRequiredView {
 // use for essential paywall, presents without confirmation
 extension PurchaseRequiredView where Content == PurchaseRequiredButton {
     public init(
-        for requiring: ABI.AppFeatureRequiring?,
+        for requiring: AppFeatureRequiring?,
         reason: Binding<PaywallReason?>
     ) {
         self.init(requiring: requiring?.features, reason: reason)
@@ -85,7 +85,7 @@ extension PurchaseRequiredView where Content == Button<Text> {
 
 // use for upgrade icon only
 extension PurchaseRequiredView where Content == PurchaseRequiredImage {
-    public init(for requiring: ABI.AppFeatureRequiring?) {
+    public init(for requiring: AppFeatureRequiring?) {
         self.init(requiring: requiring?.features)
     }
 

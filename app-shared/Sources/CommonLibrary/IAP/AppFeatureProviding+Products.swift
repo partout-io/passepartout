@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension ABI.AppProduct: ABI.AppFeatureProviding {
+extension ABI.AppProduct: AppFeatureProviding {
     public var features: [ABI.AppFeature] {
         switch self {
 
