@@ -8,7 +8,7 @@ import Partout
 @MainActor
 public final class VersionChecker: ObservableObject {
     public struct Release: Hashable, Sendable {
-        public let version: SemanticVersion
+        public let version: ABI.SemanticVersion
 
         public let url: URL
     }
@@ -17,7 +17,7 @@ public final class VersionChecker: ObservableObject {
 
     private let strategy: VersionCheckerStrategy
 
-    private let currentVersion: SemanticVersion
+    private let currentVersion: ABI.SemanticVersion
 
     private let downloadURL: URL
 
@@ -29,7 +29,7 @@ public final class VersionChecker: ObservableObject {
         currentVersion: String,
         downloadURL: URL
     ) {
-        guard let semCurrent = SemanticVersion(currentVersion) else {
+        guard let semCurrent = ABI.SemanticVersion(currentVersion) else {
             preconditionFailure("Unparsable current version: \(currentVersion)")
         }
         self.kvManager = kvManager
@@ -40,7 +40,7 @@ public final class VersionChecker: ObservableObject {
 
     public var latestRelease: Release? {
         guard let latestVersionDescription = kvManager.string(forAppPreference: .lastCheckedVersion),
-              let latestVersion = SemanticVersion(latestVersionDescription) else {
+              let latestVersion = ABI.SemanticVersion(latestVersionDescription) else {
             return nil
         }
         return latestVersion > currentVersion ? Release(version: latestVersion, url: downloadURL) : nil
@@ -72,13 +72,13 @@ public final class VersionChecker: ObservableObject {
             } else {
                 pp_log_g(.App.core, .debug, "Version: current is latest version")
             }
-        } catch AppError.rateLimit {
+        } catch ABI.AppError.rateLimit {
             pp_log_g(.App.core, .debug, "Version: rate limit")
-        } catch AppError.unexpectedResponse {
+        } catch ABI.AppError.unexpectedResponse {
             // save the check date regardless because the service call succeeded
             kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
 
-            pp_log_g(.App.core, .error, "Unable to check version: \(AppError.unexpectedResponse)")
+            pp_log_g(.App.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
             pp_log_g(.App.core, .error, "Unable to check version: \(error)")
         }
@@ -87,8 +87,8 @@ public final class VersionChecker: ObservableObject {
 
 extension VersionChecker {
     private final class DummyStrategy: VersionCheckerStrategy {
-        func latestVersion(since: Date) async throws -> SemanticVersion {
-            SemanticVersion("255.255.255")!
+        func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
+            ABI.SemanticVersion("255.255.255")!
         }
     }
 

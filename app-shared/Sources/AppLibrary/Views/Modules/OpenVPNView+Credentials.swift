@@ -147,7 +147,7 @@ private extension OpenVPNCredentialsGroup {
 }
 
 private extension OpenVPNCredentialsGroup {
-    var requiredFeatures: Set<AppFeature>? {
+    var requiredFeatures: Set<ABI.AppFeature>? {
         draft.module.isInteractive && builder.otpMethod != .none ? [.otp] : nil
     }
 

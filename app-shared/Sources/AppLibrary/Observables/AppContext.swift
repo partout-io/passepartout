@@ -18,7 +18,7 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let configManager: ConfigManager
 
-    public let distributionTarget: DistributionTarget
+    public let distributionTarget: ABI.DistributionTarget
 
     public let iapManager: IAPManager
 
@@ -44,7 +44,7 @@ public final class AppContext: ObservableObject, Sendable {
 
     private let receiptInvalidationInterval: TimeInterval
 
-    private let onEligibleFeaturesBlock: ((Set<AppFeature>) async -> Void)?
+    private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
     private var launchTask: Task<Void, Error>?
 
@@ -66,7 +66,7 @@ public final class AppContext: ObservableObject, Sendable {
         apiManager: APIManager,
         appEncoder: AppEncoder,
         configManager: ConfigManager,
-        distributionTarget: DistributionTarget,
+        distributionTarget: ABI.DistributionTarget,
         iapManager: IAPManager,
         kvManager: KeyValueManager,
         logger: AppLogger,
@@ -79,7 +79,7 @@ public final class AppContext: ObservableObject, Sendable {
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
         receiptInvalidationInterval: TimeInterval = 30.0,
-        onEligibleFeaturesBlock: ((Set<AppFeature>) async -> Void)? = nil
+        onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         self.apiManager = apiManager
         appearanceManager = AppearanceManager(kvManager: kvManager)
@@ -119,7 +119,7 @@ public final class AppContext: ObservableObject, Sendable {
 extension AppContext {
     public func onApplicationActive() {
         Task {
-            // XXX: Should handle AppError.couldNotLaunch (although extremely rare)
+            // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
             try await onForeground()
 
             await configManager.refreshBundle()
@@ -128,7 +128,7 @@ extension AppContext {
             // Propagate active config flags to tunnel via preferences
             kvManager.preferences.configFlags = configManager.activeFlags
 
-            // Disable .relaxedVerification if ConfigFlag disallows it
+            // Disable .relaxedVerification if ABI.ConfigFlag disallows it
             if !configManager.isActive(.allowsRelaxedVerification) {
                 kvManager.set(false, forAppPreference: .relaxedVerification)
             }
@@ -228,7 +228,7 @@ private extension AppContext {
         pendingTask = nil
     }
 
-    func onEligibleFeatures(_ features: Set<AppFeature>) async throws {
+    func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
         try await waitForTasks()
 
         pp_log_g(.App.core, .notice, "Application did update eligible features")
@@ -268,7 +268,7 @@ private extension AppContext {
                 try await tunnel.disconnect(from: profile.id)
                 do {
                     try await tunnel.connect(with: profile)
-                } catch AppError.interactiveLogin {
+                } catch ABI.AppError.interactiveLogin {
                     pp_log_g(.App.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {
                     pp_log_g(.App.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
@@ -292,7 +292,7 @@ private extension AppContext {
                     try await onLaunch()
                 } catch {
                     launchTask = nil // Redo the launch task
-                    throw AppError.couldNotLaunch(reason: error)
+                    throw ABI.AppError.couldNotLaunch(reason: error)
                 }
             }
             didLaunch = true

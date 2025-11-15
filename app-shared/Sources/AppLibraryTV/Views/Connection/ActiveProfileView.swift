@@ -14,7 +14,7 @@ struct ActiveProfileView: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    let profile: AppProfile?
+    let profile: ABI.AppProfile?
 
     let tunnel: TunnelObservable
 
@@ -72,7 +72,7 @@ private extension ActiveProfileView {
             .brightness(0.2)
     }
 
-    func detailView(for profile: AppProfile) -> some View {
+    func detailView(for profile: ABI.AppProfile) -> some View {
         VStack(spacing: 10) {
             if let primaryType = profile.native.localizedDescription(optionalStyle: .primaryType) {
                 ListRowView(title: Strings.Global.Nouns.protocol) {

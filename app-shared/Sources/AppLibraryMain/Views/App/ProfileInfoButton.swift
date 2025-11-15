@@ -6,9 +6,9 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileInfoButton: View {
-    let preview: ProfilePreview
+    let preview: ABI.ProfilePreview
 
-    let onEdit: (ProfilePreview) -> Void
+    let onEdit: (ABI.ProfilePreview) -> Void
 
     var body: some View {
         Button {

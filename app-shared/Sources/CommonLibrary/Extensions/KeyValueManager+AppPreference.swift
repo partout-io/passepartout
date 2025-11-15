@@ -7,9 +7,9 @@ import Foundation
 extension KeyValueManager {
 
     // TODO: #1513, refactor to keep automatically in sync with AppPreference
-    public var preferences: AppPreferenceValues {
+    public var preferences: ABI.AppPreferenceValues {
         get {
-            var values = AppPreferenceValues()
+            var values = ABI.AppPreferenceValues()
             values.deviceId = string(forAppPreference: .deviceId)
             values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack)
             values.lastCheckedVersionDate = double(forAppPreference: .lastCheckedVersionDate)
@@ -36,10 +36,10 @@ extension KeyValueManager {
         }
     }
 
-    public convenience init(store: KeyValueStore, fallback: AppPreferenceValues) {
+    public convenience init(store: KeyValueStore, fallback: ABI.AppPreferenceValues) {
         let values = [
-            AppPreference.dnsFallsBack.key: fallback.dnsFallsBack,
-            AppPreference.logsPrivateData.key: fallback.logsPrivateData
+            ABI.AppPreference.dnsFallsBack.key: fallback.dnsFallsBack,
+            ABI.AppPreference.logsPrivateData.key: fallback.logsPrivateData
         ]
         self.init(store: store, fallback: values)
     }
@@ -48,29 +48,29 @@ extension KeyValueManager {
 // MARK: - Shortcuts
 
 extension KeyValueManager {
-    public func object<T>(forAppPreference pref: AppPreference) -> T? {
+    public func object<T>(forAppPreference pref: ABI.AppPreference) -> T? {
         object(forKey: pref.key)
     }
 
-    public func set<T>(_ value: T?, forAppPreference pref: AppPreference) {
+    public func set<T>(_ value: T?, forAppPreference pref: ABI.AppPreference) {
         set(value, forKey: pref.key)
     }
 }
 
 extension KeyValueManager {
-    public func bool(forAppPreference pref: AppPreference) -> Bool {
+    public func bool(forAppPreference pref: ABI.AppPreference) -> Bool {
         bool(forKey: pref.key)
     }
 
-    public func integer(forAppPreference pref: AppPreference) -> Int {
+    public func integer(forAppPreference pref: ABI.AppPreference) -> Int {
         integer(forKey: pref.key)
     }
 
-    public func double(forAppPreference pref: AppPreference) -> Double {
+    public func double(forAppPreference pref: ABI.AppPreference) -> Double {
         double(forKey: pref.key)
     }
 
-    public func string(forAppPreference pref: AppPreference) -> String? {
+    public func string(forAppPreference pref: ABI.AppPreference) -> String? {
         string(forKey: pref.key)
     }
 }

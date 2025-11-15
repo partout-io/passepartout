@@ -5,7 +5,7 @@
 import Partout
 
 extension TunnelStatus {
-    var uiStatus: AppProfile.Status {
+    var uiStatus: ABI.AppProfile.Status {
         switch self {
         case .inactive: .disconnected
         case .activating: .connecting
@@ -16,13 +16,13 @@ extension TunnelStatus {
 }
 
 extension TunnelActiveProfile {
-    var uiInfo: AppProfile.Info {
-        AppProfile.Info(id: id, status: status.uiStatus, onDemand: onDemand)
+    var uiInfo: ABI.AppProfile.Info {
+        ABI.AppProfile.Info(id: id, status: status.uiStatus, onDemand: onDemand)
     }
 }
 
 extension DataCount {
-    var uiTransfer: ProfileTransfer {
-        ProfileTransfer(received: Int(received), sent: Int(sent))
+    var uiTransfer: ABI.ProfileTransfer {
+        ABI.ProfileTransfer(received: Int(received), sent: Int(sent))
     }
 }

@@ -18,7 +18,7 @@ public struct LogsPrivateDataToggle: View {
 
     public var body: some View {
         Toggle(Strings.Views.Diagnostics.Rows.includePrivateData, isOn: $logsPrivateData)
-            .themeKeyValue(kvManager, AppPreference.logsPrivateData.key, $logsPrivateData, default: false)
+            .themeKeyValue(kvManager, ABI.AppPreference.logsPrivateData.key, $logsPrivateData, default: false)
             .onChange(of: logsPrivateData) {
                 kvManager.set($0, forAppPreference: .logsPrivateData)
             }

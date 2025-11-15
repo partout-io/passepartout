@@ -5,5 +5,9 @@
 import Foundation
 
 extension ABI {
-    public typealias AppIdentifier = UUID
+    public enum ProfileImporterInput {
+        case contents(filename: String, data: String)
+
+        case file(URL)
+    }
 }

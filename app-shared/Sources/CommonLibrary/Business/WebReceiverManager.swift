@@ -55,7 +55,7 @@ public final class WebReceiverManager: ObservableObject {
             }
             website = Website(url: url, passcode: passcode)
         } catch let error as WebReceiverError {
-            throw AppError.webReceiver(error)
+            throw ABI.AppError.webReceiver(error)
         }
     }
 

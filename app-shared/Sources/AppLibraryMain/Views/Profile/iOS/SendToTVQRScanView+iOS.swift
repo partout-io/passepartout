@@ -16,7 +16,7 @@ struct SendToTVQRScanView: View {
     private var usingScanner = true
 
     @State
-    private var addressPort: HTTPAddressPort = .forWebReceiver
+    private var addressPort: ABI.HTTPAddressPort = .forWebReceiver
 
     var body: some View {
         ZStack {

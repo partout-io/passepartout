@@ -111,7 +111,7 @@ private extension ProfilesView {
        }
     }
 
-    func deleteProfile(withId profileId: AppIdentifier) {
+    func deleteProfile(withId profileId: ABI.AppIdentifier) {
         Task {
             await profileObservable.remove(withId: profileId)
         }

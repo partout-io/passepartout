@@ -365,7 +365,7 @@ extension ProfileManagerTests {
         }
         XCTAssertEqual(sut.previews.count, allProfiles.count)
 
-        XCTAssertEqual(Set(sut.previews), Set(allProfiles.map { ProfilePreview($0) }))
+        XCTAssertEqual(Set(sut.previews), Set(allProfiles.map { ABI.ProfilePreview($0) }))
         localProfiles.forEach {
             XCTAssertFalse(sut.isRemotelyShared(profileWithId: $0.id))
         }
@@ -444,7 +444,7 @@ extension ProfileManagerTests {
         }
 
         XCTAssertEqual(processor.isIncludedCount, allProfiles.count)
-        XCTAssertEqual(Set(sut.previews), Set(localProfiles.map { ProfilePreview($0) }))
+        XCTAssertEqual(Set(sut.previews), Set(localProfiles.map { ABI.ProfilePreview($0) }))
         localProfiles.forEach {
             XCTAssertFalse(sut.isRemotelyShared(profileWithId: $0.id))
         }
@@ -567,7 +567,7 @@ extension ProfileManagerTests {
             remoteRepository.profiles = []
         }
         XCTAssertEqual(sut.previews.count, 1)
-        XCTAssertEqual(sut.previews.first, ProfilePreview(profile))
+        XCTAssertEqual(sut.previews.first, ABI.ProfilePreview(profile))
     }
 
     func test_givenRemoteRepositoryAndMirroring_whenRemoteIsDeleted_thenLocalIsDeleted() async throws {

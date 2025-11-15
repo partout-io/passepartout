@@ -25,7 +25,7 @@ struct AddProfileMenu: View {
     @Binding
     var importAction: Action?
 
-    let onNewProfile: (EditableProfile) -> Void
+    let onNewProfile: (ABI.EditableProfile) -> Void
 
     var body: some View {
         Menu {
@@ -48,7 +48,7 @@ struct AddProfileMenu: View {
 private extension AddProfileMenu {
     var emptyProfileButton: some View {
         Button {
-            let editable = EditableProfile(name: newName)
+            let editable = ABI.EditableProfile(name: newName)
             onNewProfile(editable)
         } label: {
             ThemeImageLabel(Strings.Views.App.Toolbar.NewProfile.empty, .profileEdit)
@@ -117,7 +117,7 @@ private struct ProviderSubmenu: View {
 
     let registry: Registry
 
-    let onSelect: (EditableProfile) -> Void
+    let onSelect: (ABI.EditableProfile) -> Void
 
     var body: some View {
         Menu {
@@ -129,7 +129,7 @@ private struct ProviderSubmenu: View {
 
     func profileButton(for moduleType: ModuleType) -> some View {
         Button(moduleType.localizedDescription) {
-            var editable = EditableProfile()
+            var editable = ABI.EditableProfile()
             editable.name = provider.description
             var moduleBuilder = ProviderModule.Builder()
             moduleBuilder.providerId = provider.id

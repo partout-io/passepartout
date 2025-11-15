@@ -19,7 +19,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
     @Environment(\.isSearching)
     private var isSearching
 
-    @AppStorage(UIPreference.pinsActiveProfile.key)
+    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
     private var pinsActiveProfile = true
 
     @ObservedObject
@@ -59,7 +59,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
 }
 
 private extension ProfileListView {
-    var allPreviews: [ProfilePreview] {
+    var allPreviews: [ABI.ProfilePreview] {
         profileManager.previews
     }
 
@@ -88,7 +88,7 @@ private extension ProfileListView {
         .modifier(HideActiveProfileModifier())
     }
 
-    func profileView(for preview: ProfilePreview) -> some View {
+    func profileView(for preview: ABI.ProfilePreview) -> some View {
         ProfileRowView(
             style: cardStyle,
             profileManager: profileManager,

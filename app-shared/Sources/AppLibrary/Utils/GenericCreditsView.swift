@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 public struct GenericCreditsView: View {
-    private let credits: Credits
+    private let credits: ABI.Credits
 
     private var licensesHeader: String?
 
@@ -20,7 +20,7 @@ public struct GenericCreditsView: View {
     private var contentForLicense: [String: String] = [:]
 
     public init(
-        credits: Credits,
+        credits: ABI.Credits,
         licensesHeader: String? = nil,
         noticesHeader: String? = nil,
         translationsHeader: String? = nil,
@@ -80,13 +80,13 @@ private extension GenericCreditsView {
 // MARK: -
 
 private extension GenericCreditsView {
-    var sortedLicenses: [Credits.License] {
+    var sortedLicenses: [ABI.Credits.License] {
         credits.licenses.sorted {
             $0.name.lowercased() < $1.name.lowercased()
         }
     }
 
-    var sortedNotices: [Credits.Notice] {
+    var sortedNotices: [ABI.Credits.Notice] {
         credits.notices.sorted {
             $0.name.lowercased() < $1.name.lowercased()
         }
@@ -141,7 +141,7 @@ private extension GenericCreditsView {
         }
     }
 
-    func noticeView(_ content: Credits.Notice) -> some View {
+    func noticeView(_ content: ABI.Credits.Notice) -> some View {
         VStack {
             Text(content.message)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

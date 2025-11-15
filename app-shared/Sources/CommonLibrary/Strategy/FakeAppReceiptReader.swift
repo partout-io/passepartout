@@ -11,11 +11,11 @@ public actor FakeAppReceiptReader: AppReceiptReader {
         self.localReceipt = localReceipt
     }
 
-    public func setReceipt(withBuild build: Int, products: Set<AppProduct>, cancelledProducts: Set<AppProduct> = []) {
+    public func setReceipt(withBuild build: Int, products: Set<ABI.AppProduct>, cancelledProducts: Set<ABI.AppProduct> = []) {
         setReceipt(withPurchase: OriginalPurchase(buildNumber: build), products: products, cancelledProducts: cancelledProducts)
     }
 
-    public func setReceipt(withPurchase purchase: OriginalPurchase, products: Set<AppProduct>, cancelledProducts: Set<AppProduct> = []) {
+    public func setReceipt(withPurchase purchase: OriginalPurchase, products: Set<ABI.AppProduct>, cancelledProducts: Set<ABI.AppProduct> = []) {
         setReceipt(
             withPurchase: purchase,
             identifiers: Set(products.map(\.rawValue)),
@@ -38,7 +38,7 @@ public actor FakeAppReceiptReader: AppReceiptReader {
         })
     }
 
-    public func receipt(at userLevel: AppUserLevel) async -> InAppReceipt? {
+    public func receipt(at userLevel: ABI.AppUserLevel) async -> InAppReceipt? {
         localReceipt
     }
 
@@ -49,7 +49,7 @@ public actor FakeAppReceiptReader: AppReceiptReader {
 
 extension FakeAppReceiptReader {
     public func addPurchase(
-        with product: AppProduct,
+        with product: ABI.AppProduct,
         expirationDate: Date? = nil,
         cancellationDate: Date? = nil
     ) async {

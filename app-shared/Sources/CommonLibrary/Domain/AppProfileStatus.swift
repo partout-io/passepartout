@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension AppProfile {
+extension ABI.AppProfile {
     public enum Status: Int, Codable, Sendable {
         case disconnected
         case connecting
@@ -11,11 +11,11 @@ extension AppProfile {
     }
 
     public struct Info: Identifiable, Hashable, Codable, Sendable {
-        public let id: AppIdentifier
+        public let id: ABI.AppIdentifier
         public let status: Status
         public let onDemand: Bool
 
-        public init(id: AppIdentifier, status: Status, onDemand: Bool) {
+        public init(id: ABI.AppIdentifier, status: Status, onDemand: Bool) {
             self.id = id
             self.status = status
             self.onDemand = onDemand

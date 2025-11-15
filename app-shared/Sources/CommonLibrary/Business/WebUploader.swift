@@ -24,7 +24,7 @@ public final class WebUploader: ObservableObject, Sendable {
         do {
             try await strategy.upload(form, to: url)
         } catch let error as WebUploaderStrategyError {
-            throw AppError.webUploader(error.status, error.reason)
+            throw ABI.AppError.webUploader(error.status, error.reason)
         }
     }
 }

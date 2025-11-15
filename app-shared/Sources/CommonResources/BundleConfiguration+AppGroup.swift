@@ -5,7 +5,7 @@
 import CommonLibrary
 import Partout
 
-extension Constants {
+extension ABI.Constants {
     public var bundleMainVersionString: String {
         BundleConfiguration.mainVersionString
     }
@@ -14,7 +14,7 @@ extension Constants {
         BundleConfiguration.urlForCaches.appending(path: log.appPath)
     }
 
-    public func bundleURLForTunnelLog(in target: DistributionTarget) -> URL {
+    public func bundleURLForTunnelLog(in target: ABI.DistributionTarget) -> URL {
         let baseURL: URL
         if target.supportsAppGroups {
             baseURL = BundleConfiguration.urlForCaches

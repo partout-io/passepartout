@@ -4,8 +4,8 @@
 
 import Partout
 
-extension Profile: AppFeatureRequiring {
-    public var features: Set<AppFeature> {
+extension Profile: ABI.AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
         let builders = activeModules.compactMap { module in
             guard let builder = module.moduleBuilder() else {
                 fatalError("Cannot produce ModuleBuilder from Module: \(module)")
@@ -16,10 +16,10 @@ extension Profile: AppFeatureRequiring {
     }
 }
 
-extension Array: AppFeatureRequiring where Element == any ModuleBuilder {
-    public var features: Set<AppFeature> {
+extension Array: ABI.AppFeatureRequiring where Element == any ModuleBuilder {
+    public var features: Set<ABI.AppFeature> {
         let requirements = compactMap { builder in
-            guard let requiring = builder as? AppFeatureRequiring else {
+            guard let requiring = builder as? ABI.AppFeatureRequiring else {
                 fatalError("ModuleBuilder does not implement AppFeatureRequiring: \(builder)")
             }
             return requiring

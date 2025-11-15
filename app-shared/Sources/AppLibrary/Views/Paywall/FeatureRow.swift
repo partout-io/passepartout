@@ -12,11 +12,11 @@ public struct FeatureRow: View {
         case marked
     }
 
-    private let feature: AppFeature
+    private let feature: ABI.AppFeature
 
     private let flags: Set<Flag>
 
-    public init(feature: AppFeature, flags: Set<Flag>) {
+    public init(feature: ABI.AppFeature, flags: Set<Flag>) {
         self.feature = feature
         self.flags = flags
     }

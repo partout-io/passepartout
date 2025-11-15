@@ -10,8 +10,8 @@ public final class TunnelObservable {
     private let logger: AppLogger
     private let extendedTunnel: ExtendedTunnel
 
-    public private(set) var activeProfiles: [AppIdentifier: AppProfile.Info]
-    public private(set) var transfers: [AppIdentifier: ProfileTransfer]
+    public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
+    public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
     public init(logger: AppLogger, extendedTunnel: ExtendedTunnel) {
@@ -27,19 +27,19 @@ public final class TunnelObservable {
 // MARK: - Actions
 
 extension TunnelObservable {
-    public func connect(to profile: AppProfile, force: Bool = false) async throws {
+    public func connect(to profile: ABI.AppProfile, force: Bool = false) async throws {
         try await extendedTunnel.connect(with: profile.native, force: force)
     }
 
-//    public func reconnect(to profileId: AppIdentifier) async throws {
+//    public func reconnect(to profileId: ABI.AppIdentifier) async throws {
 //        try await abi.tunnelReconnect(to: profileId)
 //    }
 
-    public func disconnect(from profileId: AppIdentifier) async throws {
+    public func disconnect(from profileId: ABI.AppIdentifier) async throws {
         try await extendedTunnel.disconnect(from: profileId)
     }
 
-    public func currentLog(parameters: Constants.Log) async -> [String] {
+    public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
         await extendedTunnel.currentLog(parameters: parameters)
     }
 
@@ -58,19 +58,19 @@ extension TunnelObservable {
 // MARK: - State
 
 extension TunnelObservable {
-    public var activeProfile: AppProfile.Info? {
+    public var activeProfile: ABI.AppProfile.Info? {
         activeProfiles.first?.value
     }
 
-    public func isActiveProfile(withId profileId: AppIdentifier) -> Bool {
+    public func isActiveProfile(withId profileId: ABI.AppIdentifier) -> Bool {
         activeProfiles.keys.contains(profileId)
     }
 
-    public func status(for profileId: AppIdentifier) -> AppProfile.Status {
+    public func status(for profileId: ABI.AppIdentifier) -> ABI.AppProfile.Status {
         activeProfiles[profileId]?.status ?? .disconnected
     }
 
-    public func lastError(for profileId: AppIdentifier) -> AppError? {
+    public func lastError(for profileId: ABI.AppIdentifier) -> ABI.AppError? {
         extendedTunnel.lastError(ofProfileId: profileId)
     }
 }

@@ -4,14 +4,16 @@
 
 import Partout
 
-public struct AppProfile: Identifiable, Hashable, Sendable {
-    public let native: Profile
+extension ABI {
+    public struct AppProfile: Identifiable, Hashable, Sendable {
+        public let native: Profile
 
-    public var id: AppIdentifier {
-        native.id
-    }
+        public var id: ABI.AppIdentifier {
+            native.id
+        }
 
-    public init(native: Profile) {
-        self.native = native
+        public init(native: Profile) {
+            self.native = native
+        }
     }
 }

@@ -14,12 +14,12 @@ struct ProfileCardView: View {
 
     let style: Style
 
-    let preview: ProfilePreview
+    let preview: ABI.ProfilePreview
 
     @ObservedObject
     var tunnel: ExtendedTunnel
 
-    var onTap: ((ProfilePreview) -> Void)?
+    var onTap: ((ABI.ProfilePreview) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading) {

@@ -94,9 +94,9 @@ private extension DonateView {
             isFetchingProducts = false
         }
         do {
-            availableProducts = try await iapManager.purchasableProducts(for: AppProduct.Donations.all)
+            availableProducts = try await iapManager.purchasableProducts(for: ABI.AppProduct.Donations.all)
             guard !availableProducts.isEmpty else {
-                throw AppError.emptyProducts
+                throw ABI.AppError.emptyProducts
             }
         } catch {
             onError(error, dismissing: false)

@@ -17,7 +17,7 @@ public struct PaywallProductView: View {
 
     private let withIncludedFeatures: Bool
 
-    private let requiredFeatures: Set<AppFeature>
+    private let requiredFeatures: Set<ABI.AppFeature>
 
     @Binding
     private var purchasingIdentifier: String?
@@ -34,7 +34,7 @@ public struct PaywallProductView: View {
         style: PaywallProductViewStyle,
         product: InAppProduct,
         withIncludedFeatures: Bool,
-        requiredFeatures: Set<AppFeature> = [],
+        requiredFeatures: Set<ABI.AppFeature> = [],
         purchasingIdentifier: Binding<String?>,
         onComplete: @escaping (String, InAppPurchaseResult) -> Void,
         onError: @escaping (Error) -> Void
@@ -53,7 +53,7 @@ public struct PaywallProductView: View {
         VStack(alignment: .leading) {
             productView
             if withIncludedFeatures,
-               let product = AppProduct(rawValue: product.productIdentifier) {
+               let product = ABI.AppProduct(rawValue: product.productIdentifier) {
                 DisclosingFeaturesView(
                     product: product,
                     requiredFeatures: requiredFeatures,
@@ -80,8 +80,8 @@ private extension PaywallProductView {
         isRedundant || isPurchasing || iapManager.didPurchase(product)
     }
 
-    var rawProduct: AppProduct? {
-        AppProduct(rawValue: product.productIdentifier)
+    var rawProduct: ABI.AppProduct? {
+        ABI.AppProduct(rawValue: product.productIdentifier)
     }
 
     var isRedundant: Bool {
@@ -127,7 +127,7 @@ private extension PaywallProductView {
             iapManager: .forPreviews,
             style: .paywall(primary: true),
             product: InAppProduct(
-                productIdentifier: AppProduct.Features.appleTV.rawValue,
+                productIdentifier: ABI.AppProduct.Features.appleTV.rawValue,
                 localizedTitle: "Foo",
                 localizedDescription: "Bar",
                 localizedPrice: "$10",

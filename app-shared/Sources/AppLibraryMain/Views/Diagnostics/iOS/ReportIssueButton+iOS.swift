@@ -33,7 +33,7 @@ extension ReportIssueButton: View {
 }
 
 extension ReportIssueButton {
-    func emailComposerView(issue: Issue) -> some View {
+    func emailComposerView(issue: ABI.Issue) -> some View {
         MailComposerView(
             isPresented: Binding(presenting: $modalRoute) {
                 switch $0 {
@@ -57,14 +57,14 @@ extension ReportIssueButton {
             defer {
                 isPending = false
             }
-            let issue = await Issue.withMetadata(.init(
+            let issue = await ABI.Issue.withMetadata(.init(
                 ctx: .global,
                 target: distributionTarget,
                 versionString: BundleConfiguration.mainVersionString,
                 purchasedProducts: purchasedProducts,
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
-                urlForTunnelLog: BundleConfiguration.urlForTunnelLog(in: distributionTarget),
+                urlForTunnelLog: Resources.constants.bundleURLForTunnelLog(in: distributionTarget),
                 parameters: Resources.constants.log,
                 comment: comment
             ))
@@ -76,7 +76,7 @@ extension ReportIssueButton {
         }
     }
 
-    func openMailTo(with issue: Issue) {
+    func openMailTo(with issue: ABI.Issue) {
         guard let url = URL.mailto(to: issue.to, subject: issue.subject, body: issue.body) else {
             return
         }
@@ -88,7 +88,7 @@ extension ReportIssueButton {
     }
 }
 
-private extension Issue {
+private extension ABI.Issue {
     var attachments: [MailComposerView.Attachment] {
         var list: [MailComposerView.Attachment] = []
         let mimeType = Strings.Unlocalized.Issues.attachmentMimeType

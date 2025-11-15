@@ -11,7 +11,7 @@ import Partout
 public final class ProfileEditor: ObservableObject {
 
     @Published
-    var editableProfile: EditableProfile
+    var editableProfile: ABI.EditableProfile
 
     @Published
     public var isShared: Bool
@@ -31,7 +31,7 @@ public final class ProfileEditor: ObservableObject {
 
     // for testing/previews
     public init(modules: [any ModuleBuilder]) {
-        editableProfile = EditableProfile(
+        editableProfile = ABI.EditableProfile(
             modules: modules,
             activeModulesIds: Set(modules.map(\.id))
         )
@@ -48,7 +48,7 @@ extension ProfileEditor {
             .map(\.moduleType)
     }
 
-    public func availableModuleTypes(forTarget target: DistributionTarget) -> [ModuleType] {
+    public func availableModuleTypes(forTarget target: ABI.DistributionTarget) -> [ModuleType] {
         let types: [ModuleType]
         if target.supportsPaidFeatures {
             types = ModuleType.allCases
@@ -65,7 +65,7 @@ extension ProfileEditor {
 // MARK: - Editing
 
 extension ProfileEditor {
-    public var profile: EditableProfile {
+    public var profile: ABI.EditableProfile {
         get {
             editableProfile
         }
@@ -206,7 +206,7 @@ extension ProfileEditor {
             do {
                 try impl.validate($0)
             } catch {
-                throw AppError.malformedModule($0, error: error)
+                throw ABI.AppError.malformedModule($0, error: error)
             }
         }
 

@@ -6,9 +6,9 @@ import CommonLibrary
 import Foundation
 
 public enum Resources {
-    public static let constants = Bundle.module.unsafeDecode(Constants.self, filename: "Constants")
+    public static let constants = Bundle.module.unsafeDecode(ABI.Constants.self, filename: "Constants")
 
-    public static let credits = Bundle.module.unsafeDecode(Credits.self, filename: "Credits")
+    public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "Credits")
 
     public static let issueTemplate: String = {
         do {

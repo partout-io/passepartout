@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol PreferenceProtocol {
-    var key: String { get }
+extension ABI {
+    public protocol PreferenceProtocol {
+        var key: String { get }
+    }
 }

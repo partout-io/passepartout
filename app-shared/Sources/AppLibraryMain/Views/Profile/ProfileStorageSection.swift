@@ -97,7 +97,7 @@ private extension ProfileStorageSection {
         distributionTarget.supportsCloudKit
     }
 
-    var sharingRequirements: Set<AppFeature> {
+    var sharingRequirements: Set<ABI.AppFeature> {
         profileEditor.isShared ? [.sharing] : []
     }
 
@@ -113,7 +113,7 @@ private extension ProfileStorageSection {
         Strings.Modules.General.Sections.Storage.Tv.Icloud.footer
     }
 
-    var tvRequirements: Set<AppFeature> {
+    var tvRequirements: Set<ABI.AppFeature> {
         profileEditor.isShared && profileEditor.isAvailableForTV ? [.appleTV, .sharing] : []
     }
 

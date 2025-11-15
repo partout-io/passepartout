@@ -76,7 +76,7 @@ private extension ModuleListView {
                 ThemeImage(.warning)
             } else if profileEditor.isActiveModule(withId: module.id) {
                 PurchaseRequiredView(
-                    for: module as? AppFeatureRequiring,
+                    for: module as? ABI.AppFeatureRequiring,
                     reason: $paywallReason
                 )
             }
@@ -127,8 +127,8 @@ private extension ModuleListView {
         profileEditor.availableModuleTypes(forTarget: distributionTarget)
     }
 
-    var requiredGeneralFeatures: Set<AppFeature> {
-        var features: Set<AppFeature> = []
+    var requiredGeneralFeatures: Set<ABI.AppFeature> {
+        var features: Set<ABI.AppFeature> = []
         if profileEditor.isShared {
             features.insert(.sharing)
         }

@@ -5,15 +5,15 @@
 import Partout
 
 extension ProfileType where UserInfoType == JSON {
-    public var attributes: ProfileAttributes {
-        ProfileAttributes(userInfo: userInfo)
+    public var attributes: ABI.ProfileAttributes {
+        ABI.ProfileAttributes(userInfo: userInfo)
     }
 }
 
 extension MutableProfileType where UserInfoType == JSON {
-    public var attributes: ProfileAttributes {
+    public var attributes: ABI.ProfileAttributes {
         get {
-            ProfileAttributes(userInfo: userInfo)
+            ABI.ProfileAttributes(userInfo: userInfo)
         }
         set {
             userInfo = newValue.userInfo
@@ -23,27 +23,29 @@ extension MutableProfileType where UserInfoType == JSON {
 
 // MARK: - ProfileAttributes
 
-public struct ProfileAttributes {
-    fileprivate enum Key: String {
-        case fingerprint
+extension ABI {
+    public struct ProfileAttributes {
+        fileprivate enum Key: String {
+            case fingerprint
 
-        case lastUpdate
+            case lastUpdate
 
-        case isAvailableForTV
+            case isAvailableForTV
 
-        case preferences
-    }
+            case preferences
+        }
 
-    private(set) var userInfo: JSON
+        private(set) var userInfo: JSON
 
-    init(userInfo: JSON?) {
-        self.userInfo = userInfo ?? [:]
+        init(userInfo: JSON?) {
+            self.userInfo = userInfo ?? [:]
+        }
     }
 }
 
 // MARK: Basic
 
-extension ProfileAttributes {
+extension ABI.ProfileAttributes {
     public var fingerprint: UUID? {
         get {
             guard let string = userInfo[Key.fingerprint.rawValue]?.stringValue else {
@@ -86,7 +88,7 @@ extension ProfileAttributes {
 
 // MARK: Preferences
 
-extension ProfileAttributes {
+extension ABI.ProfileAttributes {
     public func preferences(inModule moduleId: UUID) -> ModulePreferences {
         ModulePreferences(userInfo: allPreferences[moduleId.uuidString])
     }
@@ -107,7 +109,7 @@ extension ProfileAttributes {
     }
 }
 
-private extension ProfileAttributes {
+private extension ABI.ProfileAttributes {
     var allPreferences: [String: JSON] {
         get {
             userInfo[Key.preferences.rawValue]?.objectValue ?? [:]
@@ -120,7 +122,7 @@ private extension ProfileAttributes {
 
 // MARK: -
 
-extension ProfileAttributes: CustomDebugStringConvertible {
+extension ABI.ProfileAttributes: CustomDebugStringConvertible {
     public var debugDescription: String {
         let descs = [
             fingerprint.map {

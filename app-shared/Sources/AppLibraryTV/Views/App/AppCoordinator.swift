@@ -78,10 +78,10 @@ private extension AppCoordinator {
             errorHandler: errorHandler,
             flow: .init(
                 onConnect: {
-                    await onConnect(AppProfile(native: $0), force: false)
+                    await onConnect(ABI.AppProfile(native: $0), force: false)
                 },
                 onProviderEntityRequired: {
-                    onProviderEntityRequired(AppProfile(native: $0), force: false)
+                    onProviderEntityRequired(ABI.AppProfile(native: $0), force: false)
                 }
             )
         )
@@ -134,7 +134,7 @@ private extension AppCoordinator {
 // MARK: - Handlers
 
 extension AppCoordinator {
-    public func onInteractiveLogin(_ profile: AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         logger.log(.core, .info, "Present interactive login")
         interactiveManager.present(
             with: profile,
@@ -142,7 +142,7 @@ extension AppCoordinator {
         )
     }
 
-    public func onProviderEntityRequired(_ profile: AppProfile, force: Bool) {
+    public func onProviderEntityRequired(_ profile: ABI.AppProfile, force: Bool) {
         errorHandler.handle(
             title: profile.native.name,
             message: Strings.Alerts.Providers.MissingServer.message
@@ -150,8 +150,8 @@ extension AppCoordinator {
     }
 
     public func onPurchaseRequired(
-        for profile: AppProfile,
-        features: Set<AppFeature>,
+        for profile: ABI.AppProfile,
+        features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
         logger.log(.core, .info, "Purchase required for features: \(features)")

@@ -110,7 +110,7 @@ private extension ProfileEditView {
                     ThemeImage(.warning)
                 } else if profileEditor.isActiveModule(withId: module.id) {
                     PurchaseRequiredView(
-                        for: module as? AppFeatureRequiring,
+                        for: module as? ABI.AppFeatureRequiring,
                         reason: $paywallReason
                     )
                 }

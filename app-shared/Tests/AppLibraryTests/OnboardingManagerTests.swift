@@ -11,12 +11,12 @@ import Testing
 struct OnboardingManagerTests {
     @Test
     func test_givenStep_whenOrder_thenIsExpected() {
-        #expect(OnboardingStep.community.order == 0)
-        #expect(OnboardingStep.doneV3.order == 1)
-        #expect(OnboardingStep.migrateV3_2_3.order == 2)
-        #expect(OnboardingStep.doneV3_2_3.order == 3)
-        #expect(OnboardingStep.migrateV3_5_15.order == 4)
-        #expect(OnboardingStep.doneV3_5_15.order == 5)
+        #expect(ABI.OnboardingStep.community.order == 0)
+        #expect(ABI.OnboardingStep.doneV3.order == 1)
+        #expect(ABI.OnboardingStep.migrateV3_2_3.order == 2)
+        #expect(ABI.OnboardingStep.doneV3_2_3.order == 3)
+        #expect(ABI.OnboardingStep.migrateV3_5_15.order == 4)
+        #expect(ABI.OnboardingStep.doneV3_5_15.order == 5)
     }
 
     @Test

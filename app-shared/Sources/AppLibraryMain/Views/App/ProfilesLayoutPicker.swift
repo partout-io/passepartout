@@ -11,11 +11,11 @@ struct ProfilesLayoutPicker: View {
     private var theme: Theme
 
     @Binding
-    var layout: ProfilesLayout
+    var layout: ABI.ProfilesLayout
 
     var body: some View {
         Picker(selection: $layout.animation(theme.animation(for: .profilesLayout))) {
-            ForEach(ProfilesLayout.allCases, id: \.self, content: \.image)
+            ForEach(ABI.ProfilesLayout.allCases, id: \.self, content: \.image)
         } label: {
             layout.image
         }
@@ -25,7 +25,7 @@ struct ProfilesLayoutPicker: View {
     }
 }
 
-private extension ProfilesLayout {
+private extension ABI.ProfilesLayout {
     var image: ThemeImage {
         switch self {
         case .list:

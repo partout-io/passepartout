@@ -12,11 +12,11 @@ public protocol AppCoordinatorConforming {
 
     var tunnel: TunnelObservable { get }
 
-    func onInteractiveLogin(_ profile: AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock)
+    func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock)
 
-    func onProviderEntityRequired(_ profile: AppProfile, force: Bool)
+    func onProviderEntityRequired(_ profile: ABI.AppProfile, force: Bool)
 
-    func onPurchaseRequired(for profile: AppProfile, features: Set<AppFeature>, continuation: (() -> Void)?)
+    func onPurchaseRequired(for profile: ABI.AppProfile, features: Set<ABI.AppFeature>, continuation: (() -> Void)?)
 
     func onError(_ error: Error, title: String)
 }

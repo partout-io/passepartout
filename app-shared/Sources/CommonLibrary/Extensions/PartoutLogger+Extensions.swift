@@ -17,8 +17,8 @@ extension PartoutLogger {
     public static func register(
         for target: Target,
         loggingTo url: URL,
-        with preferences: AppPreferenceValues,
-        parameters: Constants.Log,
+        with preferences: ABI.AppPreferenceValues,
+        parameters: ABI.Constants.Log,
         versionString: String
     ) -> PartoutLoggerContext {
         switch target {
@@ -50,8 +50,8 @@ extension PartoutLogger {
 private extension PartoutLogger {
     static func appLogger(
         to url: URL,
-        preferences: AppPreferenceValues,
-        parameters: Constants.Log
+        preferences: ABI.AppPreferenceValues,
+        parameters: ABI.Constants.Log
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
@@ -64,8 +64,8 @@ private extension PartoutLogger {
 
     static func tunnelLogger(
         to url: URL,
-        preferences: AppPreferenceValues,
-        parameters: Constants.Log
+        preferences: ABI.AppPreferenceValues,
+        parameters: ABI.Constants.Log
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
@@ -80,13 +80,13 @@ private extension PartoutLogger {
         return builder.build()
     }
 
-    func logPreamble(versionString: String, parameters: Constants.Log) {
+    func logPreamble(versionString: String, parameters: ABI.Constants.Log) {
         let level = parameters.options.maxLevel
         appendLog(level, message: "")
         appendLog(level, message: "--- BEGIN ---")
         appendLog(level, message: "")
 
-        let systemInfo = SystemInformation()
+        let systemInfo = ABI.SystemInformation()
         appendLog(level, message: "App: \(versionString)")
         appendLog(level, message: "OS: \(systemInfo.osString)")
         if let deviceString = systemInfo.deviceString {
@@ -101,7 +101,7 @@ private extension PartoutLogger {
 }
 
 extension PartoutLogger {
-    public func currentLog(parameters: Constants.Log) -> [String] {
+    public func currentLog(parameters: ABI.Constants.Log) -> [String] {
         currentLogLines(
             sinceLast: parameters.sinceLast,
             maxLevel: parameters.options.maxLevel
@@ -111,7 +111,7 @@ extension PartoutLogger {
 }
 
 private extension PartoutLogger.Builder {
-    mutating func configureLogging(to url: URL, parameters: Constants.Log, logsPrivateData: Bool) {
+    mutating func configureLogging(to url: URL, parameters: ABI.Constants.Log, logsPrivateData: Bool) {
         assertsMissingLoggingCategory = true
         setOSLog(for: [
             .core,

@@ -6,7 +6,7 @@ import Foundation
 import Partout
 
 extension Registry: ProfileImporter {
-    public nonisolated func importedProfile(from input: ProfileImporterInput, passphrase: String?) throws -> Profile {
+    public nonisolated func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
         let name: String
         let contents: String
         switch input {

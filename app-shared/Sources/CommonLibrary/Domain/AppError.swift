@@ -4,50 +4,52 @@
 
 import Partout
 
-public enum AppError: Error {
-    case couldNotLaunch(reason: Error)
+extension ABI {
+    public enum AppError: Error {
+        case couldNotLaunch(reason: Error)
 
-    case emptyProducts
+        case emptyProducts
 
-    case emptyProfileName
+        case emptyProfileName
 
-    case ineligibleProfile(Set<AppFeature>)
+        case ineligibleProfile(Set<AppFeature>)
 
-    case interactiveLogin
+        case interactiveLogin
 
-    case malformedModule(any ModuleBuilder, error: Error)
+        case malformedModule(any ModuleBuilder, error: Error)
 
-    case moduleRequiresConnection(any Module)
+        case moduleRequiresConnection(any Module)
 
-    case notFound
+        case notFound
 
-    case partout(PartoutError)
+        case partout(PartoutError)
 
-    case permissionDenied
+        case permissionDenied
 
-    case rateLimit
+        case rateLimit
 
-    case systemExtension(SystemExtensionManager.Result)
+        case systemExtension(SystemExtensionManager.Result)
 
-    case timeout
+        case timeout
 
-    case unexpectedResponse
+        case unexpectedResponse
 
-    case unknown
+        case unknown
 
-    case verificationReceiptIsLoading
+        case verificationReceiptIsLoading
 
-    case verificationRequiredFeatures(Set<AppFeature>)
+        case verificationRequiredFeatures(Set<AppFeature>)
 
-    case webReceiver(Error? = nil)
+        case webReceiver(Error? = nil)
 
-    case webUploader(Int?, Error?)
+        case webUploader(Int?, Error?)
 
-    public init(_ error: Error) {
-        if let spError = error as? AppError {
-            self = spError
-        } else {
-            self = .partout(PartoutError(error))
+        public init(_ error: Error) {
+            if let spError = error as? AppError {
+                self = spError
+            } else {
+                self = .partout(PartoutError(error))
+            }
         }
     }
 }

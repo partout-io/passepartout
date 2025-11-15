@@ -8,28 +8,30 @@ import AppKit
 import UIKit
 #endif
 
-public struct SystemInformation {
-    public let osString: String
+extension ABI {
+    public struct SystemInformation {
+        public let osString: String
 
-    public let deviceString: String?
+        public let deviceString: String?
 
-    public init() {
+        public init() {
 #if os(macOS)
-        let os = ProcessInfo().operatingSystemVersion
-        let osName = "macOS"
-        let osVersion = "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
-        deviceString = nil
+            let os = ProcessInfo().operatingSystemVersion
+            let osName = "macOS"
+            let osVersion = "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
+            deviceString = nil
 #elseif os(iOS) || os(tvOS)
-        let device: UIDevice = .current
-        let osName = device.systemName
-        let osVersion = device.systemVersion
-        deviceString = device.model
+            let device: UIDevice = .current
+            let osName = device.systemName
+            let osVersion = device.systemVersion
+            deviceString = device.model
 #else
-        // TODO: ###, Non-Apple OS information
-        let osName = "Unknown"
-        let osVersion = "0.0.0"
-        deviceString = nil
+            // TODO: ###, Non-Apple OS information
+            let osName = "Unknown"
+            let osVersion = "0.0.0"
+            deviceString = nil
 #endif
-        osString = "\(osName) \(osVersion)"
+            osString = "\(osName) \(osVersion)"
+        }
     }
 }

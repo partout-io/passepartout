@@ -19,7 +19,7 @@ struct PaywallView: View, SizeClassProviding {
     @ObservedObject
     var iapManager: IAPManager
 
-    let requiredFeatures: Set<AppFeature>
+    let requiredFeatures: Set<ABI.AppFeature>
 
     @ObservedObject
     var model: PaywallCoordinator.Model

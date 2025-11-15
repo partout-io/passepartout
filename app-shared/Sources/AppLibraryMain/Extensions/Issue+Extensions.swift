@@ -6,7 +6,7 @@ import CommonLibrary
 import CommonResources
 import Foundation
 
-extension Issue {
+extension ABI.Issue {
     var body: String {
         let providers = providerLastUpdates.mapValues {
             $0.date.localizedDescription(style: .timestamp)
@@ -21,15 +21,15 @@ extension Issue {
     }
 }
 
-extension Issue {
+extension ABI.Issue {
     struct Metadata {
         let ctx: PartoutLoggerContext
 
-        let target: DistributionTarget
+        let target: ABI.DistributionTarget
 
         let versionString: String
 
-        let purchasedProducts: Set<AppProduct>
+        let purchasedProducts: Set<ABI.AppProduct>
 
         let providerLastUpdates: [ProviderID: Timestamp]
 
@@ -37,13 +37,13 @@ extension Issue {
 
         let urlForTunnelLog: URL
 
-        let parameters: Constants.Log
+        let parameters: ABI.Constants.Log
 
         let comment: String
     }
 
     @MainActor
-    static func withMetadata(_ metadata: Metadata) async -> Issue {
+    static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
         let appLog = metadata.ctx.logger.currentLog(parameters: metadata.parameters)
             .joined(separator: "\n")
             .data(using: .utf8)
@@ -69,7 +69,7 @@ extension Issue {
             tunnelLog = nil
         }
 
-        return Issue(
+        return ABI.Issue(
             comment: metadata.comment,
             appLine: "\(Strings.Unlocalized.appName) \(metadata.versionString) [\(metadata.target.rawValue)]",
             purchasedProducts: metadata.purchasedProducts,
@@ -80,7 +80,7 @@ extension Issue {
     }
 }
 
-extension Issue {
+extension ABI.Issue {
     var to: String {
         Resources.constants.emails.issues
     }

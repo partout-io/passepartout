@@ -47,7 +47,7 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        let distributionTarget: DistributionTarget = .appStore
+        let distributionTarget: ABI.DistributionTarget = .appStore
 
         return AppContext(
             apiManager: apiManager,

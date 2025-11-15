@@ -6,16 +6,16 @@ import CommonLibrary
 import SwiftUI
 
 struct DisclosingFeaturesView: View {
-    private let product: AppProduct
+    private let product: ABI.AppProduct
 
-    private let requiredFeatures: Set<AppFeature>
+    private let requiredFeatures: Set<ABI.AppFeature>
 
     @Binding
     private var isDisclosing: Bool
 
     init(
-        product: AppProduct,
-        requiredFeatures: Set<AppFeature>,
+        product: ABI.AppProduct,
+        requiredFeatures: Set<ABI.AppFeature>,
         isDisclosing: Binding<Bool>
     ) {
         self.product = product

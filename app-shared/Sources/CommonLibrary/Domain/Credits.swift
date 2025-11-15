@@ -4,24 +4,26 @@
 
 import Foundation
 
-public struct Credits: Decodable {
-    public struct License: Decodable {
-        public let name: String
+extension ABI {
+    public struct Credits: Decodable {
+        public struct License: Decodable {
+            public let name: String
 
-        public let licenseName: String
+            public let licenseName: String
 
-        public let licenseURL: URL
+            public let licenseURL: URL
+        }
+
+        public struct Notice: Decodable {
+            public let name: String
+
+            public let message: String
+        }
+
+        public let licenses: [License]
+
+        public let notices: [Notice]
+
+        public let translations: [String: [String]]
     }
-
-    public struct Notice: Decodable {
-        public let name: String
-
-        public let message: String
-    }
-
-    public let licenses: [License]
-
-    public let notices: [Notice]
-
-    public let translations: [String: [String]]
 }

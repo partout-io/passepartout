@@ -174,7 +174,7 @@ private extension PaywallModifier {
 }
 
 private extension IAPManager {
-    func excludingEligible(from features: Set<AppFeature>) -> Set<AppFeature> {
+    func excludingEligible(from features: Set<ABI.AppFeature>) -> Set<ABI.AppFeature> {
         features.filter {
             !isEligible(for: $0)
         }

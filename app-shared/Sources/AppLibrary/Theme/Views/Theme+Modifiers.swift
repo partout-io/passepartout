@@ -255,7 +255,7 @@ extension View {
     }
 
     @ViewBuilder
-    public func themeTip(_ tip: AppTip) -> some View {
+    public func themeTip(_ tip: ABI.AppTip) -> some View {
         if #available(iOS 18, macOS 15, *) {
             popoverTip(tip)
         } else {

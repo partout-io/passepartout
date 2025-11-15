@@ -9,11 +9,11 @@ struct SemanticVersionTests {
 
     @Test
     func comparison() throws {
-        let ref = try #require(SemanticVersion("1.10.10"))
-        let newerPatch = try #require(SemanticVersion("1.10.11"))
-        let newerPatchOlderMinor = try #require(SemanticVersion("1.9.11"))
-        let newerMinorOlderPatch = try #require(SemanticVersion("1.11.0"))
-        let newerMajorOlderMinorPatch = try #require(SemanticVersion("2.0.0"))
+        let ref = try #require(ABI.SemanticVersion("1.10.10"))
+        let newerPatch = try #require(ABI.SemanticVersion("1.10.11"))
+        let newerPatchOlderMinor = try #require(ABI.SemanticVersion("1.9.11"))
+        let newerMinorOlderPatch = try #require(ABI.SemanticVersion("1.11.0"))
+        let newerMajorOlderMinorPatch = try #require(ABI.SemanticVersion("2.0.0"))
 
         #expect(newerPatch > ref)
         #expect(newerPatchOlderMinor < ref)

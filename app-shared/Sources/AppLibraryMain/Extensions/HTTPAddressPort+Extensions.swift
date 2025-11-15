@@ -5,7 +5,7 @@
 import CommonLibrary
 import CommonResources
 
-extension HTTPAddressPort {
+extension ABI.HTTPAddressPort {
     var urlDescription: String? {
         let addressDescription = {
             !address.isEmpty ? address : "<\(Strings.Global.Nouns.address.lowercased())>"
@@ -21,8 +21,8 @@ extension HTTPAddressPort {
     }
 }
 
-extension HTTPAddressPort {
-    static var forWebReceiver: HTTPAddressPort {
-        HTTPAddressPort(port: String(Resources.constants.webReceiver.port))
+extension ABI.HTTPAddressPort {
+    static var forWebReceiver: ABI.HTTPAddressPort {
+        ABI.HTTPAddressPort(port: String(Resources.constants.webReceiver.port))
     }
 }

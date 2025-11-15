@@ -5,7 +5,7 @@
 import Partout
 
 extension IAPManager {
-    public func verify(_ profile: Profile, extra: Set<AppFeature>? = nil) throws {
+    public func verify(_ profile: Profile, extra: Set<ABI.AppFeature>? = nil) throws {
         var features = profile.features
         extra?.forEach {
             features.insert($0)
@@ -13,7 +13,7 @@ extension IAPManager {
         try verify(features)
     }
 
-    public func verify(_ features: Set<AppFeature>) throws {
+    public func verify(_ features: Set<ABI.AppFeature>) throws {
 #if os(tvOS)
         guard isEligible(for: .appleTV) else {
             throw AppError.ineligibleProfile(features.union([.appleTV]))
@@ -23,7 +23,7 @@ extension IAPManager {
             !isEligible(for: $0)
         }
         guard requiredFeatures.isEmpty else {
-            throw AppError.ineligibleProfile(requiredFeatures)
+            throw ABI.AppError.ineligibleProfile(requiredFeatures)
         }
     }
 }
