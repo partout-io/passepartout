@@ -319,7 +319,7 @@ private struct ProviderServerCoordinatorIfSupported: View {
 extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
-        interactiveManager.present(with: profile, onComplete: onComplete)
+        interactiveManager.present(with: AppProfile(native: profile), onComplete: onComplete)
     }
 
     public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
