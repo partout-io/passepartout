@@ -25,7 +25,7 @@ extension AppContext {
         let logger = PartoutLoggerStrategy()
         let kvManager = dependencies.kvManager
 
-        let logURL = BundleConfiguration.urlForAppLog
+        let logURL = constants.urlForAppLog
         let versionString = BundleConfiguration.mainVersionString
         let ctx = PartoutLogger.register(
             for: .app,

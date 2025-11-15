@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
+import CommonResources
 import SwiftUI
 
 struct SettingsView: View {
@@ -61,7 +61,7 @@ private extension SettingsView {
             } label: {
                 ThemeRow(
                     Strings.Global.Nouns.version,
-                    value: BundleConfiguration.mainVersionString
+                    value: Resources.constants.mainVersionString
                 )
             }
             .focused($focus, equals: .version)

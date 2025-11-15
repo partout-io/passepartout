@@ -7,15 +7,19 @@ import Partout
 
 // WARNING: beware of Resources.constants dependency
 
-extension BundleConfiguration {
-    public static var urlForAppLog: URL {
-        urlForCaches.appending(path: Resources.constants.log.appPath)
+extension Constants {
+    public var mainVersionString: String {
+        BundleConfiguration.mainVersionString
     }
 
-    public static func urlForTunnelLog(in target: DistributionTarget) -> URL {
+    public var urlForAppLog: URL {
+        BundleConfiguration.urlForCaches.appending(path: log.appPath)
+    }
+
+    public func urlForTunnelLog(in target: DistributionTarget) -> URL {
         let baseURL: URL
         if target.supportsAppGroups {
-            baseURL = urlForCaches
+            baseURL = BundleConfiguration.urlForCaches
         } else {
             let fm: FileManager = .default
             baseURL = fm.temporaryDirectory
@@ -25,7 +29,7 @@ extension BundleConfiguration {
                 pp_log_g(.App.core, .error, "Unable to create temporary directory \(baseURL): \(error)")
             }
         }
-        return baseURL.appending(path: Resources.constants.log.tunnelPath)
+        return baseURL.appending(path: log.tunnelPath)
     }
 }
 
@@ -33,8 +37,8 @@ extension BundleConfiguration {
 
 #if !os(tvOS)
 
-extension BundleConfiguration {
-    public static var urlForCaches: URL {
+private extension BundleConfiguration {
+    static var urlForCaches: URL {
         let url = appGroupURL.appending(components: "Library", "Caches")
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
@@ -44,7 +48,7 @@ extension BundleConfiguration {
         return url
     }
 
-    public static var urlForDocuments: URL {
+    static var urlForDocuments: URL {
         let url = appGroupURL.appending(components: "Library", "Documents")
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
