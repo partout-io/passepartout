@@ -13,7 +13,7 @@ struct WebReceiverView: View {
     @ObservedObject
     var webReceiverManager: WebReceiverManager
 
-    var profileObservable: ProfileObservable
+    let profileObservable: ProfileObservable
 
     @ObservedObject
     var errorHandler: ErrorHandler
