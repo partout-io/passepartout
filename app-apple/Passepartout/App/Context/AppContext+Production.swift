@@ -22,7 +22,7 @@ extension AppContext {
         let distributionTarget = Dependencies.distributionTarget
         let constants = Resources.constants
         let dependencies: Dependencies = .shared
-        let loggerStrategy = PartoutLoggerStrategy()
+        let logger = PartoutLoggerStrategy()
         let kvManager = dependencies.kvManager
 
         let logURL = BundleConfiguration.urlForAppLog
@@ -203,7 +203,7 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
-            logger: loggerStrategy,
+            logger: logger,
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
             port: constants.webReceiver.port
@@ -305,7 +305,7 @@ extension AppContext {
             distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            loggerStrategy: loggerStrategy,
+            logger: logger,
             onboardingManager: onboardingManager,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
