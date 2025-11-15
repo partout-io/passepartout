@@ -38,17 +38,17 @@ private extension ABI.AppLogLevel {
 // FIXME: #1594, Make internal
 extension LoggerCategory {
     public enum App {
-        public static let core = LoggerCategory(.core)
+        public static let core = LoggerCategory(appCategory: .core)
 
-        public static let iap = LoggerCategory(.iap)
+        public static let iap = LoggerCategory(appCategory: .iap)
 
-        public static let profiles = LoggerCategory(.profiles)
+        public static let profiles = LoggerCategory(appCategory: .profiles)
 
-        public static let web = LoggerCategory(.web)
+        public static let web = LoggerCategory(appCategory: .web)
     }
 
-    private init(_ category: ABI.AppLogCategory) {
-        self.init(rawValue: category.id)
+    private init(appCategory: ABI.AppLogCategory) {
+        self.init(rawValue: appCategory.id)
     }
 }
 
