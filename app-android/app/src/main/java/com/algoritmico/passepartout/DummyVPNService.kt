@@ -48,8 +48,8 @@ class DummyVPNService: VpnService() {
         startForeground(1, notification)
 
         // FIXME: read from intent
-//        val inputStream = assets.open("vps.ovpn")
-        val inputStream = assets.open("vps.wg")
+        val inputStream = assets.open("vps-tcp.ovpn")
+//        val inputStream = assets.open("vps.json")
         val testProfileString = inputStream.bufferedReader().use { it.readText() }
 
         // FIXME: initialize inside NativeWrapper and never expose ctx

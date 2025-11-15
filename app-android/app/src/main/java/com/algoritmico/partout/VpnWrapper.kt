@@ -35,9 +35,12 @@ class VpnWrapper: AutoCloseable {
         // FIXME: hardcode network settings to try tun fd
 //        builder.setSession()
         builder
-//            .addAddress("10.8.0.2", 24)
-//            .addRoute("10.8.0.0", 24)
-            .addAddress("10.74.73.14", 32)
+            // OpenVPN
+            .addAddress("10.8.0.2", 24)
+            .addRoute("10.8.0.0", 24)
+            // WireGuard
+//            .addAddress("192.168.30.2", 32)
+            // All
             .addRoute("0.0.0.0", 0)
             .addDnsServer("1.1.1.1")
 
