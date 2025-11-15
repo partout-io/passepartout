@@ -64,6 +64,7 @@ extension TunnelObservable {
     }
 }
 
+@available(*, deprecated, message: "#1594")
 extension ExtendedTunnel {
     public func statusImageName(ofProfileId profileId: Profile.ID) -> Theme.ImageName? {
         connectionStatus(ofProfileId: profileId).imageName
