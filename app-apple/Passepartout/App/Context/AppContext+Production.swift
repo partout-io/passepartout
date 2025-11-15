@@ -22,16 +22,15 @@ extension AppContext {
         let distributionTarget = Dependencies.distributionTarget
         let constants = Resources.constants
         let dependencies: Dependencies = .shared
+        let logger = PartoutLoggerStrategy()
         let kvManager = dependencies.kvManager
 
-        let logURL = BundleConfiguration.urlForAppLog
-        let versionString = BundleConfiguration.mainVersionString
         let ctx = PartoutLogger.register(
             for: .app,
-            loggingTo: logURL,
+            loggingTo: constants.bundleURLForAppLog,
             with: kvManager.preferences,
             parameters: constants.log,
-            versionString: versionString
+            versionString: constants.bundleMainVersionString
         )
 
         // MARK: Core Data
@@ -202,7 +201,7 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
-            log: PartoutCategoryLogger(.App.web),
+            logger: logger,
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
             port: constants.webReceiver.port
@@ -304,6 +303,7 @@ extension AppContext {
             distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
+            logger: logger,
             onboardingManager: onboardingManager,
             preferencesManager: preferencesManager,
             profileManager: profileManager,

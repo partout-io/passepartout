@@ -8,6 +8,9 @@ import SwiftUI
 
 struct SendToTVCoordinator: View {
 
+    @Environment(ViewLogger.self)
+    private var logger
+
     @EnvironmentObject
     private var appEncoder: AppEncoder
 
@@ -29,7 +32,7 @@ struct SendToTVCoordinator: View {
 private extension SendToTVCoordinator {
     func upload(_ profile: Profile, to url: URL, with passcode: String) async throws {
         let client = WebUploader(
-            log: PartoutCategoryLogger(.App.web),
+            logger: logger,
             strategy: URLSessionUploaderStrategy(
                 timeout: Resources.constants.api.timeoutInterval
             )

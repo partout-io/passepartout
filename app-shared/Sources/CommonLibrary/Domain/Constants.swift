@@ -197,8 +197,6 @@ public struct Constants: Decodable, Sendable {
         public let options: LocalLogger.Options
     }
 
-    public let bundleKey: String
-
     public let deviceIdLength: Int
 
     public let containers: Containers

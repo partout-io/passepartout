@@ -17,8 +17,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let distributionTarget = Dependencies.distributionTarget
         let constants = Resources.constants
-        let logURL = BundleConfiguration.urlForTunnelLog(in: distributionTarget)
-        let versionString = BundleConfiguration.mainVersionString
+        let logURL = constants.bundleURLForTunnelLog(in: distributionTarget)
+        let versionString = constants.bundleMainVersionString
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would

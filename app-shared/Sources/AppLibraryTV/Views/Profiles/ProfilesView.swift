@@ -7,6 +7,9 @@ import SwiftUI
 
 struct ProfilesView: View {
 
+    @Environment(ViewLogger.self)
+    private var logger
+
     @EnvironmentObject
     private var configManager: ConfigManager
 
@@ -99,7 +102,7 @@ private extension ProfilesView {
                 do {
                     try webReceiverManager.start()
                 } catch {
-                    pp_log_g(.App.core, .error, "Unable to start web receiver: \(error)")
+                    logger.log(.core, .error, "Unable to start web receiver: \(error)")
                     errorHandler.handle(error)
                 }
             } else {

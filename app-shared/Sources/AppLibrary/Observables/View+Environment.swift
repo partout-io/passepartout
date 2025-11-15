@@ -19,6 +19,7 @@ extension View {
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)
             .environmentObject(context.versionChecker)
+            .environment(context.viewLogger)
     }
 
     public func withMockEnvironment() -> some View {

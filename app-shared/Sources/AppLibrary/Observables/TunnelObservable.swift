@@ -7,15 +7,15 @@ import Observation
 
 @MainActor @Observable
 public final class TunnelObservable {
-    private let log: AppLogger
+    private let logger: AppLogger
     private let extendedTunnel: ExtendedTunnel
 
     public private(set) var activeProfiles: [AppIdentifier: AppProfile.Info]
     public private(set) var transfers: [AppIdentifier: ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(log: AppLogger, extendedTunnel: ExtendedTunnel) {
-        self.log = log
+    public init(logger: AppLogger, extendedTunnel: ExtendedTunnel) {
+        self.logger = logger
         self.extendedTunnel = extendedTunnel
         activeProfiles = [:]
         transfers = [:]

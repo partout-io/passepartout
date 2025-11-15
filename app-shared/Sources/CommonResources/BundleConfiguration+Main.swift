@@ -5,8 +5,6 @@
 import CommonLibrary
 import Partout
 
-// WARNING: beware of Resources.constants dependency
-
 extension BundleConfiguration {
     public enum BundleKey: String {
         case appStoreId
@@ -84,7 +82,7 @@ private extension BundleConfiguration {
 
     // WARNING: fails from package itself, e.g. in previews
     static var main: BundleConfiguration {
-        guard let bundle = BundleConfiguration(.main, key: Resources.constants.bundleKey) else {
+        guard let bundle = BundleConfiguration(.main, key: "AppConfig") else {
             fatalError("Missing main bundle")
         }
         return bundle

@@ -10,7 +10,7 @@ import Observation
 
 @MainActor @Observable
 public final class ProfileObservable {
-    private let log: AppLogger
+    private let logger: AppLogger
     private let profileManager: ProfileManager
 
     private var allHeaders: [AppIdentifier: AppProfileHeader] {
@@ -25,8 +25,8 @@ public final class ProfileObservable {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init(log: AppLogger, profileManager: ProfileManager) {
-        self.log = log
+    public init(logger: AppLogger, profileManager: ProfileManager) {
+        self.logger = logger
         self.profileManager = profileManager
 
         allHeaders = [:]
@@ -156,6 +156,6 @@ private extension ProfileObservable {
             // FIXME: #1594, localized module types
 //            processor?.preview(from: $0) ?? ProfilePreview($0)
 
-        log.notice("Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
+        logger.log(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
     }
 }

@@ -3,8 +3,5 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public protocol AppLogger {
-    func debug(_ message: String)
-    func info(_ message: String)
-    func notice(_ message: String)
-    func error(_ message: String)
+    func log(_ category: AppLogCategory, _ level: AppLogLevel, _ message: String)
 }

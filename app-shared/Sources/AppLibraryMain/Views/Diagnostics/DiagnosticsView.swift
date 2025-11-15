@@ -185,7 +185,7 @@ private extension DiagnosticsView {
         let target = distributionTarget
         return await Task.detached {
             LocalLogger.FileStrategy()
-                .availableLogs(at: BundleConfiguration.urlForTunnelLog(in: target))
+                .availableLogs(at: Resources.constants.bundleURLForTunnelLog(in: target))
                 .sorted {
                     $0.key > $1.key
                 }
@@ -212,7 +212,7 @@ private extension DiagnosticsView {
 
     func removeTunnelLogs() {
         LocalLogger.FileStrategy()
-            .purgeLogs(at: BundleConfiguration.urlForTunnelLog(in: distributionTarget))
+            .purgeLogs(at: Resources.constants.bundleURLForTunnelLog(in: distributionTarget))
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

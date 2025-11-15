@@ -38,6 +38,8 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let versionChecker: VersionChecker
 
+    public let viewLogger: ViewLogger
+
     public let webReceiverManager: WebReceiverManager
 
     private let receiptInvalidationInterval: TimeInterval
@@ -67,6 +69,7 @@ public final class AppContext: ObservableObject, Sendable {
         distributionTarget: DistributionTarget,
         iapManager: IAPManager,
         kvManager: KeyValueManager,
+        logger: AppLogger,
         onboardingManager: OnboardingManager? = nil,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
@@ -92,6 +95,7 @@ public final class AppContext: ObservableObject, Sendable {
         self.sysexManager = sysexManager
         self.tunnel = tunnel
         self.versionChecker = versionChecker
+        viewLogger = ViewLogger(strategy: logger)
         self.webReceiverManager = webReceiverManager
         self.receiptInvalidationInterval = receiptInvalidationInterval
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
@@ -99,11 +103,11 @@ public final class AppContext: ObservableObject, Sendable {
         subscriptions = []
 
         profileObservable = ProfileObservable(
-            log: PartoutCategoryLogger(.App.profiles),
+            logger: logger,
             profileManager: profileManager
         )
         tunnelObservable = TunnelObservable(
-            log: PartoutCategoryLogger(.App.core),
+            logger: logger,
             extendedTunnel: tunnel
         )
     }

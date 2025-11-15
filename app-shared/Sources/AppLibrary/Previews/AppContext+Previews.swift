@@ -56,6 +56,7 @@ extension AppContext {
             distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
+            logger: PartoutLoggerStrategy(),
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
