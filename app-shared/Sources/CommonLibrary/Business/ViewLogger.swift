@@ -4,7 +4,7 @@
 
 import Combine
 
-public final class ViewLogger: ObservableObject {
+public final class ViewLogger: ObservableObject, AppLogger {
     private let strategy: AppLogger
 
     public init(strategy: AppLogger) {
