@@ -20,7 +20,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
     public var vsClass
 
     @AppStorage(ABI.UIPreference.profilesLayout.key)
-    private var layout: ABI.ProfilesLayout = .list
+    private var layout: ProfilesLayout = .list
 
     private let profileManager: ProfileManager
 
@@ -135,7 +135,7 @@ extension LegacyAppCoordinator {
         )
     }
 
-    var overriddenLayout: ABI.ProfilesLayout {
+    var overriddenLayout: ProfilesLayout {
         if isUITesting {
             return isBigDevice ? .grid : .list
         }
@@ -405,7 +405,7 @@ private extension LegacyAppCoordinator {
         }
     }
 
-    func onNewProfile(_ profile: ABI.EditableProfile) {
+    func onNewProfile(_ profile: EditableProfile) {
         editProfile(profile)
     }
 
@@ -430,7 +430,7 @@ private extension LegacyAppCoordinator {
         }
     }
 
-    func editProfile(_ profile: ABI.EditableProfile) {
+    func editProfile(_ profile: EditableProfile) {
         profilePath = NavigationPath()
         let isShared = profileManager.isRemotelyShared(profileWithId: profile.id)
         profileEditor.load(profile, isShared: isShared)

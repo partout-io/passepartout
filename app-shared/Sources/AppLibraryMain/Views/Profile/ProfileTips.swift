@@ -4,9 +4,9 @@
 
 import CommonLibrary
 
-extension ABI.AppTip {
+extension AppTip {
     enum Profile {
-        static let buildYourProfile = ABI.AppTip(
+        static let buildYourProfile = AppTip(
             id: "build-your-profile",
             titleString: Strings.Tips.Profile.BuildYourProfile.title,
             messageString: Strings.Tips.Profile.BuildYourProfile.message

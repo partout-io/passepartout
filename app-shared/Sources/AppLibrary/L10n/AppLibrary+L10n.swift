@@ -4,7 +4,7 @@
 
 import CommonLibrary
 
-extension ABI.SystemAppearance {
+extension SystemAppearance {
     public var localizedDescription: String {
         let V = Strings.Entities.Ui.SystemAppearance.self
         switch self {

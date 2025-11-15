@@ -11,7 +11,7 @@ import Partout
 public final class ProfileEditor: ObservableObject {
 
     @Published
-    var editableProfile: ABI.EditableProfile
+    var editableProfile: EditableProfile
 
     @Published
     public var isShared: Bool
@@ -31,7 +31,7 @@ public final class ProfileEditor: ObservableObject {
 
     // for testing/previews
     public init(modules: [any ModuleBuilder]) {
-        editableProfile = ABI.EditableProfile(
+        editableProfile = EditableProfile(
             modules: modules,
             activeModulesIds: Set(modules.map(\.id))
         )
@@ -65,7 +65,7 @@ extension ProfileEditor {
 // MARK: - Editing
 
 extension ProfileEditor {
-    public var profile: ABI.EditableProfile {
+    public var profile: EditableProfile {
         get {
             editableProfile
         }

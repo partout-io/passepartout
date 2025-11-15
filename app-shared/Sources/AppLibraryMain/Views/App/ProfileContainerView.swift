@@ -10,7 +10,7 @@ struct ProfileContainerView: View, Routable {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    let layout: ABI.ProfilesLayout
+    let layout: ProfilesLayout
 
     let profileManager: ProfileManager
 
@@ -119,7 +119,7 @@ private struct ContainerModifier: ViewModifier {
 }
 
 private struct PreviewView: View {
-    let layout: ABI.ProfilesLayout
+    let layout: ProfilesLayout
 
     var body: some View {
         NavigationStack {

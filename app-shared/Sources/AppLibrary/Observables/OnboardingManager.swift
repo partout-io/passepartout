@@ -10,9 +10,9 @@ import Partout
 public final class OnboardingManager: ObservableObject {
     private let kvManager: KeyValueManager?
 
-    private let initialStep: ABI.OnboardingStep
+    private let initialStep: OnboardingStep
 
-    public private(set) var step: ABI.OnboardingStep {
+    public private(set) var step: OnboardingStep {
         willSet {
             pp_log_g(.App.core, .info, "Current step: \(step)")
         }
@@ -22,16 +22,16 @@ public final class OnboardingManager: ObservableObject {
         }
     }
 
-    public init(kvManager: KeyValueManager? = nil, initialStep: ABI.OnboardingStep? = nil) {
+    public init(kvManager: KeyValueManager? = nil, initialStep: OnboardingStep? = nil) {
         self.kvManager = kvManager
         self.initialStep = initialStep ?? .first
         step = self.initialStep
     }
 
     public convenience init(kvManager: KeyValueManager) {
-        let initialStep: ABI.OnboardingStep?
+        let initialStep: OnboardingStep?
         if let rawStep = kvManager.string(forUIPreference: .onboardingStep) {
-            initialStep = ABI.OnboardingStep(rawValue: rawStep)
+            initialStep = OnboardingStep(rawValue: rawStep)
         } else {
             initialStep = nil
         }
@@ -54,9 +54,9 @@ public final class OnboardingManager: ObservableObject {
     }
 }
 
-extension ABI.OnboardingStep {
-    var nextStep: ABI.OnboardingStep {
-        let all = ABI.OnboardingStep.allCases
+extension OnboardingStep {
+    var nextStep: OnboardingStep {
+        let all = OnboardingStep.allCases
         guard let index = all.firstIndex(of: self) else {
             fatalError("How can self not be part of allCases?")
         }

@@ -8,7 +8,7 @@ import SwiftUI
 struct SendToTVFormView: View {
 
     @Binding
-    var addressPort: ABI.HTTPAddressPort
+    var addressPort: HTTPAddressPort
 
     var passcode: Binding<String>?
 
@@ -54,7 +54,7 @@ private extension SendToTVFormView {
     struct FormPreview: View {
 
         @State
-        private var addressPort = ABI.HTTPAddressPort()
+        private var addressPort = HTTPAddressPort()
 
         @State
         private var passcode = ""

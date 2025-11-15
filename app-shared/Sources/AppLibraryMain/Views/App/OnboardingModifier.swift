@@ -50,7 +50,7 @@ struct OnboardingModifier: ViewModifier {
 }
 
 private extension OnboardingModifier {
-    func alertTitle(for item: ABI.OnboardingStep?) -> String {
+    func alertTitle(for item: OnboardingStep?) -> String {
         switch item {
         case .community:
             return Strings.Unlocalized.reddit
@@ -64,7 +64,7 @@ private extension OnboardingModifier {
     }
 
     @ViewBuilder
-    func alertActions(for item: ABI.OnboardingStep) -> some View {
+    func alertActions(for item: OnboardingStep) -> some View {
         switch item {
         case .community:
             Link(Strings.Onboarding.Community.subscribe, destination: Resources.constants.websites.subreddit)
@@ -85,7 +85,7 @@ private extension OnboardingModifier {
     }
 
     @ViewBuilder
-    func alertMessage(for item: ABI.OnboardingStep) -> some View {
+    func alertMessage(for item: OnboardingStep) -> some View {
         switch item {
         case .community:
             Text(Strings.Onboarding.Community.message(Strings.Unlocalized.appName))

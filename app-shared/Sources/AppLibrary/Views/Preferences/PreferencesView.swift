@@ -82,7 +82,7 @@ public struct PreferencesView: View {
 }
 
 private extension PreferencesView {
-    static let systemAppearances: [ABI.SystemAppearance?] = [
+    static let systemAppearances: [SystemAppearance?] = [
         nil,
         .light,
         .dark

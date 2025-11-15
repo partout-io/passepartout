@@ -7,7 +7,7 @@ import Foundation
 import Partout
 
 extension ProfileEditor {
-    public func load(_ profile: ABI.EditableProfile, isShared: Bool) {
+    public func load(_ profile: EditableProfile, isShared: Bool) {
         editableProfile = profile
         self.isShared = isShared
         removedModules = [:]

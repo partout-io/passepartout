@@ -18,14 +18,14 @@ struct AppToolbar: ToolbarContent, SizeClassProviding {
     let registry: Registry
 
     @Binding
-    var layout: ABI.ProfilesLayout
+    var layout: ProfilesLayout
 
     @Binding
     var importAction: AddProfileMenu.Action?
 
     let onSettings: () -> Void
 
-    let onNewProfile: (ABI.EditableProfile) -> Void
+    let onNewProfile: (EditableProfile) -> Void
 
     var body: some ToolbarContent {
         if isBigDevice {

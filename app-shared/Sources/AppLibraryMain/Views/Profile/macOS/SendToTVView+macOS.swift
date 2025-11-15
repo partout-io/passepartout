@@ -15,7 +15,7 @@ struct SendToTVView: View {
     let onComplete: (URL, String) async throws -> Void
 
     @State
-    private var addressPort: ABI.HTTPAddressPort = .forWebReceiver
+    private var addressPort: HTTPAddressPort = .forWebReceiver
 
     @State
     private var passcode = ""

@@ -11,7 +11,7 @@ public final class AppearanceManager: ObservableObject {
     private let kvManager: KeyValueManager
 
     @Published
-    public var systemAppearance: ABI.SystemAppearance? {
+    public var systemAppearance: SystemAppearance? {
         didSet {
             kvManager.set(systemAppearance?.rawValue, forUIPreference: .systemAppearance)
             apply()
@@ -22,7 +22,7 @@ public final class AppearanceManager: ObservableObject {
         self.kvManager = kvManager
         systemAppearance = kvManager.string(forUIPreference: .systemAppearance)
             .flatMap {
-                ABI.SystemAppearance(rawValue: $0)
+                SystemAppearance(rawValue: $0)
             }
     }
 }

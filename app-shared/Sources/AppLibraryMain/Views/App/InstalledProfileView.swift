@@ -11,7 +11,7 @@ struct InstalledProfileView: View, Routable {
     @EnvironmentObject
     private var theme: Theme
 
-    let layout: ABI.ProfilesLayout
+    let layout: ProfilesLayout
 
     let profileManager: ProfileManager
 
@@ -114,7 +114,7 @@ private struct HeaderModifier: ViewModifier {
     @EnvironmentObject
     private var theme: Theme
 
-    let layout: ABI.ProfilesLayout
+    let layout: ProfilesLayout
 
     func body(content: Content) -> some View {
         switch layout {
@@ -133,7 +133,7 @@ private struct HeaderModifier: ViewModifier {
 }
 
 private struct CardModifier: ViewModifier {
-    let layout: ABI.ProfilesLayout
+    let layout: ProfilesLayout
 
     func body(content: Content) -> some View {
         switch layout {
@@ -178,7 +178,7 @@ private struct CardModifier: ViewModifier {
 }
 
 private struct HeaderView: View {
-    let layout: ABI.ProfilesLayout
+    let layout: ProfilesLayout
 
     var body: some View {
         InstalledProfileView(

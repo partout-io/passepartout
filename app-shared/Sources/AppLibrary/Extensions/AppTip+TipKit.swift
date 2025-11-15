@@ -6,7 +6,7 @@ import CommonLibrary
 import TipKit
 
 @available(iOS 17, macOS 14, *)
-extension ABI.AppTip: Tip {
+extension AppTip: Tip {
     public var title: Text {
         Text(titleString)
     }
