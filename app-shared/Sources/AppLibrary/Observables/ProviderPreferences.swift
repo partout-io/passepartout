@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary
 import Foundation
 
 public final class ProviderPreferences: ObservableObject, ProviderPreferencesRepository {
