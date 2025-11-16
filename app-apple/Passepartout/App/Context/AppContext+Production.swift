@@ -215,7 +215,7 @@ extension AppContext {
 
         // MARK: Eligibility
 
-        let onEligibleFeaturesBlock: (Set<AppFeature>) async -> Void = { @MainActor features in
+        let onEligibleFeaturesBlock: (Set<ABI.AppFeature>) async -> Void = { @MainActor features in
             let isEligibleForSharing = features.contains(.sharing)
             let isRemoteImportingEnabled = isEligibleForSharing
 

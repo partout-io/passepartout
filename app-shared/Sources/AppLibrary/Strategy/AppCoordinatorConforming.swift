@@ -4,11 +4,10 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 @MainActor
 public protocol AppCoordinatorConforming {
-    var iapManager: IAPManager { get }
+    var iapObservable: IAPObservable { get }
 
     var tunnel: TunnelObservable { get }
 

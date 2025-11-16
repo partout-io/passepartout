@@ -4,6 +4,7 @@
 
 import Foundation
 
+// FIXME: #1594, This is redundant
 public protocol LoggerProtocol: Sendable {
     func debug(_ msg: String)
 

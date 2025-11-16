@@ -8,6 +8,12 @@ import Partout
 
 @MainActor
 public final class IAPManager: ObservableObject {
+    public enum Event {
+        case status(isEnabled: Bool)
+        case eligibleFeatures(Set<ABI.AppFeature>)
+        case loadReceipt(isLoading: Bool)
+    }
+
     private let customUserLevel: ABI.AppUserLevel?
 
     private let inAppHelper: any AppProductHelper
@@ -22,10 +28,15 @@ public final class IAPManager: ObservableObject {
 
     private let productsAtBuild: BuildProducts<ABI.AppProduct>?
 
+    // FIXME: #1594, AppContext requires Published
     @Published
     public var isEnabled = true {
+//        willSet {
+//            objectWillChange.send()
+//        }
         didSet {
             pendingReceiptTask?.cancel()
+            didChange.send(.status(isEnabled: isEnabled))
         }
     }
 
@@ -35,11 +46,27 @@ public final class IAPManager: ObservableObject {
 
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
+    // FIXME: #1594, AppContext requires Published
     @Published
-    public private(set) var eligibleFeatures: Set<ABI.AppFeature>
+    public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
+//        willSet {
+//            objectWillChange.send()
+//        }
+        didSet {
+            didChange.send(.eligibleFeatures(eligibleFeatures))
+        }
+    }
 
-    @Published
-    private var pendingReceiptTask: Task<Void, Never>?
+    private var pendingReceiptTask: Task<Void, Never>? {
+        willSet {
+            objectWillChange.send()
+        }
+        didSet {
+            didChange.send(.loadReceipt(isLoading: pendingReceiptTask != nil))
+        }
+    }
+
+    public let didChange: PassthroughStream<Event>
 
     private var subscriptions: Set<AnyCancellable>
 
@@ -62,6 +89,7 @@ public final class IAPManager: ObservableObject {
         userLevel = .undefined
         purchasedProducts = []
         eligibleFeatures = []
+        didChange = PassthroughStream()
         subscriptions = []
     }
 }
@@ -282,7 +310,7 @@ private extension IAPManager {
 
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
-        self.eligibleFeatures = eligibleFeatures // @Published -> objectWillChange.send()
+        self.eligibleFeatures = eligibleFeatures // Will call objectWillChange.send()
     }
 }
 

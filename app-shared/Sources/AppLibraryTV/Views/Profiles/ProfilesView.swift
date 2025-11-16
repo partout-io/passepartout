@@ -71,7 +71,7 @@ private extension ProfilesView {
             .themeSection(header: Strings.Global.Nouns.profiles)
     }
 
-    func row(forHeader header: AppProfileHeader) -> some View {
+    func row(forHeader header: ABI.AppProfileHeader) -> some View {
         Button {
             //
         } label: {

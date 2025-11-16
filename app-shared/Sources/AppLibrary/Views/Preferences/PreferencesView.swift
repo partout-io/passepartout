@@ -205,7 +205,7 @@ public struct PreferencesView: View {
             }
         }
         .themeSection(header: Strings.Global.Nouns.preferences)
-        .themeKeyValue(kvManager, AppPreference.relaxedVerification.key, $relaxedVerification, default: false)
+        .themeKeyValue(kvManager, ABI.AppPreference.relaxedVerification.key, $relaxedVerification, default: false)
     }
 }
 

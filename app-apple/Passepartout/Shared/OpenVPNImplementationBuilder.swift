@@ -7,11 +7,11 @@ import Foundation
 import Partout
 
 struct OpenVPNImplementationBuilder: Sendable {
-    private let distributionTarget: DistributionTarget
+    private let distributionTarget: ABI.DistributionTarget
 
-    private let configBlock: @Sendable () -> Set<ConfigFlag>
+    private let configBlock: @Sendable () -> Set<ABI.ConfigFlag>
 
-    init(distributionTarget: DistributionTarget, configBlock: @escaping @Sendable () -> Set<ConfigFlag>) {
+    init(distributionTarget: ABI.DistributionTarget, configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>) {
         self.distributionTarget = distributionTarget
         self.configBlock = configBlock
     }

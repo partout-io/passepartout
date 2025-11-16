@@ -6,9 +6,9 @@ import CommonLibrary
 import Partout
 
 struct WireGuardImplementationBuilder: Sendable {
-    private let configBlock: @Sendable () -> Set<ConfigFlag>
+    private let configBlock: @Sendable () -> Set<ABI.ConfigFlag>
 
-    init(configBlock: @escaping @Sendable () -> Set<ConfigFlag>) {
+    init(configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>) {
         self.configBlock = configBlock
     }
 

@@ -11,13 +11,10 @@ extension OpenVPN.PullMask: LocalizableEntity {
         switch self {
         case .routes:
             return Strings.Global.Nouns.routes
-
         case .dns:
             return Strings.Unlocalized.dns
-
         case .proxy:
             return Strings.Unlocalized.proxy
-
         @unknown default:
             return ""
         }
@@ -41,13 +38,10 @@ extension OpenVPN.CompressionFraming: LocalizableEntity {
         switch self {
         case .disabled:
             return Strings.Global.Nouns.disabled
-
         case .compLZO:
             return Strings.Unlocalized.OpenVPN.compLZO
-
         case .compress, .compressV2:
             return Strings.Unlocalized.OpenVPN.compress
-
         @unknown default:
             return Strings.Global.Nouns.unknown
         }
@@ -59,13 +53,10 @@ extension OpenVPN.CompressionAlgorithm: LocalizableEntity {
         switch self {
         case .disabled:
             return Strings.Global.Nouns.disabled
-
         case .LZO:
             return Strings.Unlocalized.OpenVPN.lzo
-
         case .other:
             return Strings.Entities.Openvpn.CompressionAlgorithm.other
-
         @unknown default:
             return Strings.Global.Nouns.unknown
         }
@@ -75,7 +66,6 @@ extension OpenVPN.CompressionAlgorithm: LocalizableEntity {
 extension OpenVPN.ObfuscationMethod: StyledLocalizableEntity {
     public enum Style {
         case short
-
         case long
     }
 
@@ -83,7 +73,6 @@ extension OpenVPN.ObfuscationMethod: StyledLocalizableEntity {
         switch style {
         case .short:
             return shortDescription
-
         case .long:
             return longDescription
         }
@@ -94,16 +83,12 @@ extension OpenVPN.ObfuscationMethod: StyledLocalizableEntity {
         switch self {
         case .xormask:
             return V.xormask.rawValue
-
         case .xorptrpos:
             return V.xorptrpos.rawValue
-
         case .reverse:
             return V.reverse.rawValue
-
         case .obfuscate:
             return V.obfuscate.rawValue
-
         @unknown default:
             return ""
         }
@@ -113,12 +98,47 @@ extension OpenVPN.ObfuscationMethod: StyledLocalizableEntity {
         switch self {
         case .xormask(let mask):
             return "\(shortDescription) \(mask.toHex())"
-
         case .obfuscate(let mask):
             return "\(shortDescription) \(mask.toHex())"
-
         default:
             return shortDescription
+        }
+    }
+}
+
+extension OpenVPN.Credentials.OTPMethod: StyledLocalizableEntity {
+    public enum Style {
+        case entity
+        case approachDescription
+    }
+
+    public func localizedDescription(style: Style) -> String {
+        switch style {
+        case .entity:
+            let V = Strings.Entities.Openvpn.OtpMethod.self
+            switch self {
+            case .none:
+                return V.none
+            case .append:
+                return V.append
+            case .encode:
+                return V.encode
+            @unknown default:
+                return V.none
+            }
+
+        case .approachDescription:
+            let V = Strings.Modules.Openvpn.Credentials.OtpMethod.Approach.self
+            switch self {
+            case .none:
+                return ""
+            case .append:
+                return V.append
+            case .encode:
+                return V.encode
+            @unknown default:
+                return ""
+            }
         }
     }
 }
@@ -126,7 +146,6 @@ extension OpenVPN.ObfuscationMethod: StyledLocalizableEntity {
 extension OpenVPN.Configuration.Builder: StyledLocalizableEntity {
     public enum Style {
         case tlsWrap
-
         case eku
     }
 
@@ -134,7 +153,6 @@ extension OpenVPN.Configuration.Builder: StyledLocalizableEntity {
         switch style {
         case .tlsWrap:
             return tlsWrap.tlsWrapDescription
-
         case .eku:
             return checksEKU.ekuDescription
         }
@@ -144,13 +162,9 @@ extension OpenVPN.Configuration.Builder: StyledLocalizableEntity {
 extension OpenVPN.Configuration.Builder: StyledOptionalLocalizableEntity {
     public enum OptionalStyle {
         case keepAlive
-
         case keepAliveTimeout
-
         case renegotiatesAfter
-
         case randomizeEndpoint
-
         case randomizeHostnames
     }
 
@@ -158,16 +172,12 @@ extension OpenVPN.Configuration.Builder: StyledOptionalLocalizableEntity {
         switch optionalStyle {
         case .keepAlive:
             return keepAliveInterval?.localizedDescription(style: .timeString)
-
         case .keepAliveTimeout:
             return keepAliveTimeout?.localizedDescription(style: .timeString)
-
         case .renegotiatesAfter:
             return renegotiatesAfter?.localizedDescription(style: .timeString)
-
         case .randomizeEndpoint:
             return randomizeEndpoint?.randomizeEndpointDescription
-
         case .randomizeHostnames:
             return randomizeHostnames?.randomizeHostnamesDescription
         }

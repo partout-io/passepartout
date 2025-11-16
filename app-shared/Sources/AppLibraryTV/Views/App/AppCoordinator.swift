@@ -11,8 +11,8 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     @Environment(ViewLogger.self)
     private var logger
 
-    @EnvironmentObject
-    public var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    public var iapObservable
 
     private let profileObservable: ProfileObservable
 
@@ -155,7 +155,7 @@ extension AppCoordinator {
         continuation: (() -> Void)?
     ) {
         logger.log(.core, .info, "Purchase required for features: \(features)")
-        guard !iapManager.isLoadingReceipt else {
+        guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
             logger.log(.core, .info, "Present verification alert")
             errorHandler.handle(
@@ -164,7 +164,7 @@ extension AppCoordinator {
                     V.Connect._1,
                     V.boot,
                     "\n\n",
-                    V.Connect._2(iapManager.verificationDelayMinutes)
+                    V.Connect._2(iapObservable.verificationDelayMinutes)
                 ].joined(separator: " "),
                 onDismiss: continuation
             )

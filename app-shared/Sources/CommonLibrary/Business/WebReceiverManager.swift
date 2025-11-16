@@ -31,8 +31,11 @@ public final class WebReceiverManager: ObservableObject {
         website != nil
     }
 
-    @Published
-    public private(set) var website: Website?
+    public private(set) var website: Website? {
+        willSet {
+            objectWillChange.send()
+        }
+    }
 
     public var files: AsyncStream<File> {
         filesStream.subscribe()

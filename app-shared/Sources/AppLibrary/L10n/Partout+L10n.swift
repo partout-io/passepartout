@@ -6,6 +6,8 @@ import CommonLibrary
 import Foundation
 import Partout
 
+// MARK: Profile
+
 extension Profile {
     public var localizedPreview: ABI.ProfilePreview {
         ABI.ProfilePreview(
@@ -19,9 +21,7 @@ extension Profile {
 extension Profile: StyledOptionalLocalizableEntity {
     public enum OptionalStyle {
         case moduleTypes
-
         case primaryType
-
         case secondaryTypes
     }
 
@@ -59,6 +59,46 @@ extension Profile: StyledOptionalLocalizableEntity {
     }
 }
 
+// MARK: - Modules
+
+extension ModuleBuilder {
+
+    @MainActor
+    public func description(inEditor editor: ProfileEditor) -> String {
+        moduleType.localizedDescription
+    }
+}
+
+extension ModuleType: LocalizableEntity {
+    public var localizedDescription: String {
+        switch self {
+        case .openVPN:
+            return Strings.Unlocalized.openVPN
+        case .wireGuard:
+            return Strings.Unlocalized.wireGuard
+        case .dns:
+            return Strings.Unlocalized.dns
+        case .httpProxy:
+            return Strings.Unlocalized.httpProxy
+        case .ip:
+            return Strings.Global.Nouns.routing
+        case .onDemand:
+            return Strings.Global.Nouns.onDemand
+        case .provider:
+            return Strings.Global.Nouns.provider
+        default:
+            assertionFailure("Missing localization for ModuleType: \(rawValue)")
+            return rawValue
+        }
+    }
+}
+
+extension ModuleType: @retroactive Comparable {
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.localizedDescription.lowercased() < rhs.localizedDescription.lowercased()
+    }
+}
+
 private extension Module {
     var primaryModuleType: ModuleType {
         if let providerModule = self as? ProviderModule {
@@ -67,6 +107,8 @@ private extension Module {
         return moduleType
     }
 }
+
+// MARK: - Misc
 
 extension TunnelStatus: LocalizableEntity {
     public var localizedDescription: String {
@@ -97,7 +139,6 @@ extension Address.Family: LocalizableEntity {
         switch self {
         case .v4:
             return Strings.Unlocalized.ipv4
-
         case .v6:
             return Strings.Unlocalized.ipv6
         }
@@ -107,7 +148,6 @@ extension Address.Family: LocalizableEntity {
 extension IPSettings: StyledOptionalLocalizableEntity {
     public enum OptionalStyle {
         case address
-
         case defaultGateway
     }
 
@@ -115,7 +155,6 @@ extension IPSettings: StyledOptionalLocalizableEntity {
         switch optionalStyle {
         case .address:
             return addressDescription
-
         case .defaultGateway:
             return defaultGatewayDescription
         }
@@ -145,131 +184,5 @@ extension Route: LocalizableEntity {
             return "default → \(gw)"
         }
         return "default → *"
-    }
-}
-
-extension OnDemandModule.Policy: LocalizableEntity {
-    public var localizedDescription: String {
-        switch self {
-        case .any:
-            return Strings.Entities.OnDemand.Policy.any
-
-        case .excluding:
-            return Strings.Entities.OnDemand.Policy.excluding
-
-        case .including:
-            return Strings.Entities.OnDemand.Policy.including
-
-        @unknown default:
-            return Strings.Entities.OnDemand.Policy.any
-        }
-    }
-}
-
-extension ProviderID: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        rawValue
-    }
-}
-
-extension ProviderEntity: LocalizableEntity {
-    public var localizedDescription: String {
-        heuristic?.localizedDescription ?? server.localizedDescription
-    }
-}
-
-extension ProviderHeuristic: LocalizableEntity {
-    public var localizedDescription: String {
-        switch self {
-        case .exact(let server):
-            return server.localizedDescription
-        case .sameCountry(let countryCode):
-            return countryCode.localizedAsRegionCode ?? countryCode
-        case .sameRegion(let region):
-            return region.localizedDescription
-        }
-    }
-}
-
-extension ProviderRegion: LocalizableEntity {
-    public var localizedDescription: String {
-        [countryCode.localizedAsRegionCode, area]
-            .compactMap { $0 }
-            .joined(separator: ", ")
-    }
-}
-
-extension ProviderServer: LocalizableEntity {
-    public var localizedDescription: String {
-        [metadata.countryCode.localizedAsRegionCode, metadata.area]
-            .compactMap { $0 }
-            .joined(separator: ", ")
-    }
-}
-
-extension ProviderServer {
-    public var localizedCountry: String? {
-        metadata.countryCode.localizedAsRegionCode
-    }
-
-    public var address: String {
-        if let hostname {
-            return hostname
-        }
-        if let ipAddresses {
-            return ipAddresses
-                .compactMap {
-                    guard let address = Address(data: $0) else {
-                        return nil
-                    }
-                    return address.description
-                }
-                .joined(separator: ", ")
-        }
-        return ""
-    }
-}
-
-extension OpenVPN.Credentials.OTPMethod: StyledLocalizableEntity {
-    public enum Style {
-        case entity
-
-        case approachDescription
-    }
-
-    public func localizedDescription(style: Style) -> String {
-        switch style {
-        case .entity:
-            let V = Strings.Entities.Openvpn.OtpMethod.self
-            switch self {
-            case .none:
-                return V.none
-
-            case .append:
-                return V.append
-
-            case .encode:
-                return V.encode
-
-            @unknown default:
-                return V.none
-            }
-
-        case .approachDescription:
-            let V = Strings.Modules.Openvpn.Credentials.OtpMethod.Approach.self
-            switch self {
-            case .none:
-                return ""
-
-            case .append:
-                return V.append
-
-            case .encode:
-                return V.encode
-
-            @unknown default:
-                return ""
-            }
-        }
     }
 }

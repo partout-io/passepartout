@@ -40,7 +40,7 @@ struct ConnectionProfilesView: View {
 }
 
 private extension ConnectionProfilesView {
-    var headers: [AppProfileHeader] {
+    var headers: [ABI.AppProfileHeader] {
         profileObservable.filteredHeaders
     }
 
@@ -57,7 +57,7 @@ private extension ConnectionProfilesView {
             .font(.body)
     }
 
-    func toggleButton(for header: AppProfileHeader) -> some View {
+    func toggleButton(for header: ABI.AppProfileHeader) -> some View {
         TunnelToggle(
             tunnel: tunnel,
             profile: profileObservable.profile(withId: header.id),
@@ -75,7 +75,7 @@ private extension ConnectionProfilesView {
         .uiAccessibility(.App.ProfileList.profile)
     }
 
-    func toggleView(for header: AppProfileHeader) -> some View {
+    func toggleView(for header: ABI.AppProfileHeader) -> some View {
         HStack {
             Text(header.name)
             Spacer()

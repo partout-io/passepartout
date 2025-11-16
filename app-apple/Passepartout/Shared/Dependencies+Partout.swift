@@ -12,9 +12,9 @@ extension Dependencies {
     }
 
     nonisolated func newRegistry(
-        distributionTarget: DistributionTarget,
+        distributionTarget: ABI.DistributionTarget,
         deviceId: String,
-        configBlock: @escaping @Sendable () -> Set<ConfigFlag>
+        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
     ) -> Registry {
         Registry(
             providerResolvers: [
@@ -73,6 +73,6 @@ extension Dependencies {
 private extension Dependencies {
     static let sharedKVStore: KeyValueManager = KeyValueManager(
         store: UserDefaultsStore(.standard),
-        fallback: AppPreferenceValues()
+        fallback: ABI.AppPreferenceValues()
     )
 }

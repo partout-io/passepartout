@@ -11,7 +11,7 @@ struct Dependencies {
 }
 
 extension Dependencies {
-    public nonisolated static var distributionTarget: DistributionTarget {
+    public nonisolated static var distributionTarget: ABI.DistributionTarget {
 #if PP_BUILD_MAC
         .developerID
 #else

@@ -68,12 +68,17 @@ public final class ProfileManager: ObservableObject {
     }
 
     @available(*, deprecated, message: "#1594")
-    @Published
-    private var requiredFeatures: [Profile.ID: Set<ABI.AppFeature>]
+    private var requiredFeatures: [Profile.ID: Set<ABI.AppFeature>] {
+        willSet {
+            objectWillChange.send()
+        }
+    }
 
     @available(*, deprecated, message: "#1594")
-    @Published
     public var isRemoteImportingEnabled = false {
+        willSet {
+            objectWillChange.send()
+        }
         didSet {
             didChange.send(.changeRemoteImport)
         }
