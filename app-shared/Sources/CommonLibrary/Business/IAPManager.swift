@@ -9,9 +9,9 @@ import Partout
 @MainActor
 public final class IAPManager: ObservableObject {
     public enum Event {
-        case status(Bool)
+        case status(isEnabled: Bool)
         case eligibleFeatures(Set<ABI.AppFeature>)
-        case receipt
+        case loadReceipt(isLoading: Bool)
     }
 
     private let customUserLevel: ABI.AppUserLevel?
@@ -36,7 +36,7 @@ public final class IAPManager: ObservableObject {
 //        }
         didSet {
             pendingReceiptTask?.cancel()
-            didChange.send(.status(isEnabled))
+            didChange.send(.status(isEnabled: isEnabled))
         }
     }
 
@@ -62,7 +62,7 @@ public final class IAPManager: ObservableObject {
             objectWillChange.send()
         }
         didSet {
-            didChange.send(.receipt)
+            didChange.send(.loadReceipt(isLoading: pendingReceiptTask != nil))
         }
     }
 
