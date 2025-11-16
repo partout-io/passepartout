@@ -11,8 +11,8 @@ struct OnboardingModifier: ViewModifier {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    @EnvironmentObject
-    private var onboardingManager: OnboardingManager
+    @Environment(OnboardingObservable.self)
+    private var onboardingObservable
 
     @EnvironmentObject
     private var profileManager: ProfileManager
@@ -29,9 +29,9 @@ struct OnboardingModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alert(
-                alertTitle(for: onboardingManager.step),
+                alertTitle(for: onboardingObservable.step),
                 isPresented: $isAlertPresented,
-                presenting: onboardingManager.step,
+                presenting: onboardingObservable.step,
                 actions: alertActions,
                 message: alertMessage
             )
@@ -139,18 +139,18 @@ private extension OnboardingModifier {
     }
 
     func performCurrentStep() {
-        switch onboardingManager.step {
+        switch onboardingObservable.step {
         case .community, .migrateV3_2_3, .migrateV3_5_15, .dropLZOCompression:
             isAlertPresented = true
         default:
-            if onboardingManager.step < .last {
+            if onboardingObservable.step < .last {
                 advance()
             }
         }
     }
 
     func advance() {
-        onboardingManager.advance()
+        onboardingObservable.advance()
         deferCurrentStep()
     }
 }

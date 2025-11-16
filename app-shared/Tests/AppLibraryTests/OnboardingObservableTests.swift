@@ -8,7 +8,7 @@ import Foundation
 import Testing
 
 @MainActor
-struct OnboardingManagerTests {
+struct OnboardingObservableTests {
     @Test
     func test_givenStep_whenOrder_thenIsExpected() {
         #expect(OnboardingStep.community.order == 0)
@@ -21,21 +21,21 @@ struct OnboardingManagerTests {
 
     @Test
     func givenNil_whenAdvance_thenAdvancesToNext() {
-        let sut = OnboardingManager() // .community
+        let sut = OnboardingObservable() // .community
         sut.advance()
         #expect(sut.step == .doneV3)
     }
 
     @Test
     func givenMid_whenAdvance_thenAdvancesToNext() {
-        let sut = OnboardingManager(initialStep: .migrateV3_2_3)
+        let sut = OnboardingObservable(initialStep: .migrateV3_2_3)
         sut.advance()
         #expect(sut.step == .doneV3_2_3)
     }
 
     @Test
     func givenMid_whenAdvanceFromV2_thenSkipsV323Migration() {
-        let sut = OnboardingManager(initialStep: .first) // .community
+        let sut = OnboardingObservable(initialStep: .first) // .community
         #expect(sut.step == .community)
         sut.advance() // .doneV3
         sut.advance() // .migrateV3_2_3 (skipped to .doneV3_6)
@@ -44,7 +44,7 @@ struct OnboardingManagerTests {
 
     @Test
     func givenMid_whenAdvanceFromV3_thenAdvancesToV323Migration() {
-        let sut = OnboardingManager(initialStep: .doneV3)
+        let sut = OnboardingObservable(initialStep: .doneV3)
         sut.advance()
         #expect(sut.step == .migrateV3_2_3)
         sut.advance()
@@ -53,7 +53,7 @@ struct OnboardingManagerTests {
 
     @Test
     func givenLast_whenAdvance_thenDoesNotAdvance() {
-        let sut = OnboardingManager(initialStep: .doneV3_5_18)
+        let sut = OnboardingObservable(initialStep: .doneV3_5_18)
         #expect(sut.step == .last)
         sut.advance()
         #expect(sut.step == .doneV3_5_18)

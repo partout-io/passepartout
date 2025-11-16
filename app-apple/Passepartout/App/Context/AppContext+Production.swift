@@ -196,7 +196,7 @@ extension AppContext {
             interval: constants.tunnel.refreshInterval
         )
 
-        let onboardingManager = OnboardingManager(kvManager: kvManager)
+        let onboardingObservable = OnboardingObservable(kvManager: kvManager)
         let preferencesManager = PreferencesManager()
 
 #if os(tvOS)
@@ -304,7 +304,7 @@ extension AppContext {
             iapManager: iapManager,
             kvManager: kvManager,
             logger: logger,
-            onboardingManager: onboardingManager,
+            onboardingObservable: onboardingObservable,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

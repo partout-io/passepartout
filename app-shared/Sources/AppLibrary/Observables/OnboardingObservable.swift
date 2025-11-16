@@ -4,10 +4,11 @@
 
 import CommonLibrary
 import Foundation
+import Observation
 import Partout
 
-@MainActor
-public final class OnboardingManager: ObservableObject {
+@MainActor @Observable
+public final class OnboardingObservable {
     private let kvManager: KeyValueManager?
 
     private let initialStep: OnboardingStep

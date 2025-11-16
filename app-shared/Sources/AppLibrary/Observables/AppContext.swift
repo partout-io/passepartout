@@ -24,7 +24,7 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let kvManager: KeyValueManager
 
-    public let onboardingManager: OnboardingManager
+    public let onboardingObservable: OnboardingObservable
 
     public let preferencesManager: PreferencesManager
 
@@ -72,7 +72,7 @@ public final class AppContext: ObservableObject, Sendable {
         iapManager: IAPManager,
         kvManager: KeyValueManager,
         logger: AppLogger,
-        onboardingManager: OnboardingManager? = nil,
+        onboardingObservable: OnboardingObservable? = nil,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
         registry: Registry,
@@ -90,7 +90,7 @@ public final class AppContext: ObservableObject, Sendable {
         self.distributionTarget = distributionTarget
         self.iapManager = iapManager
         self.kvManager = kvManager
-        self.onboardingManager = onboardingManager ?? OnboardingManager()
+        self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry

@@ -15,12 +15,12 @@ extension View {
             .environment(\.distributionTarget, context.distributionTarget)
             .environmentObject(context.iapManager)
             .environmentObject(context.kvManager)
-            .environmentObject(context.onboardingManager)
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)
             .environmentObject(context.versionChecker)
             .environment(context.viewLogger)
             // Observables
+            .environment(context.onboardingObservable)
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
             .environment(context.iapObservable)
