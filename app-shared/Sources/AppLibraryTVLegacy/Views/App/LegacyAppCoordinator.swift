@@ -26,7 +26,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
     private var paywallContinuation: (() -> Void)?
 
     @StateObject
-    private var interactiveManager = InteractiveManager()
+    private var interactiveObservable = InteractiveObservable()
 
     @StateObject
     private var errorHandler: ErrorHandler = .default()
@@ -75,7 +75,7 @@ private extension LegacyAppCoordinator {
         ConnectionView(
             profileManager: profileManager,
             tunnel: tunnel,
-            interactiveManager: interactiveManager,
+            interactiveObservable: interactiveObservable,
             errorHandler: errorHandler,
             flow: .init(
                 onConnect: {
@@ -134,9 +134,9 @@ private extension LegacyAppCoordinator {
 // MARK: - Handlers
 
 extension LegacyAppCoordinator {
-    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
-        interactiveManager.present(
+        interactiveObservable.present(
             with: ABI.AppProfile(native: profile),
             onComplete: onComplete
         )

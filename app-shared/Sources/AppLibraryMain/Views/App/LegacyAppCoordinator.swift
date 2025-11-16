@@ -54,8 +54,8 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
     @StateObject
     private var profileEditor = ProfileEditor()
 
-    @StateObject
-    private var interactiveManager = InteractiveManager()
+    @State
+    private var interactiveObservable = InteractiveObservable()
 
     @StateObject
     private var errorHandler: ErrorHandler = .default()
@@ -97,7 +97,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
             action: confirmDeleteProfile
         )
         .withErrorHandler(errorHandler)
-        .onChange(of: interactiveManager.isPresented) {
+        .onChange(of: interactiveObservable.isPresented) {
             modalRoute = $0 ? .interactiveLogin : nil
         }
         .onReceive(AppPipe.settings) {
@@ -224,10 +224,10 @@ extension LegacyAppCoordinator {
                 onSubmit: importText
             )
         case .interactiveLogin:
-            InteractiveCoordinator(style: .modal, manager: interactiveManager) {
+            InteractiveCoordinator(style: .modal, manager: interactiveObservable) {
                 errorHandler.handle(
                     $0,
-                    title: interactiveManager.editor.profile.name,
+                    title: interactiveObservable.editor.profile.name,
                     message: Strings.Errors.App.tunnel
                 )
             }
@@ -317,9 +317,9 @@ private struct ProviderServerCoordinatorIfSupported: View {
 // MARK: - Handlers
 
 extension LegacyAppCoordinator {
-    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
-        interactiveManager.present(with: ABI.AppProfile(native: profile), onComplete: onComplete)
+        interactiveObservable.present(with: ABI.AppProfile(native: profile), onComplete: onComplete)
     }
 
     public func onProviderEntityRequired(_ profile: Profile, force: Bool) {

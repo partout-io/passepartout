@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Observation
+import Foundation
 
 @Observable
 public final class ViewLogger: AppLogger {
