@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 @MainActor
 public protocol AppCoordinatorConforming {
