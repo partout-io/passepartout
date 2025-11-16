@@ -15,8 +15,11 @@ public final class ConfigManager: ObservableObject {
 
     private let buildNumber: Int
 
-    @Published
-    private var bundle: ABI.ConfigBundle?
+    private var bundle: ABI.ConfigBundle? {
+        willSet {
+            objectWillChange.send()
+        }
+    }
 
     private var isPending = false
 

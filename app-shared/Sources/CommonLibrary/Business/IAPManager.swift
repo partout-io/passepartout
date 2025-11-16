@@ -22,8 +22,12 @@ public final class IAPManager: ObservableObject {
 
     private let productsAtBuild: BuildProducts<ABI.AppProduct>?
 
+    // FIXME: #1594, AppContext requires Published
     @Published
     public var isEnabled = true {
+//        willSet {
+//            objectWillChange.send()
+//        }
         didSet {
             pendingReceiptTask?.cancel()
         }
@@ -35,11 +39,19 @@ public final class IAPManager: ObservableObject {
 
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
+    // FIXME: #1594, AppContext requires Published
     @Published
-    public private(set) var eligibleFeatures: Set<ABI.AppFeature>
+    public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
+//        willSet {
+//            objectWillChange.send()
+//        }
+    }
 
-    @Published
-    private var pendingReceiptTask: Task<Void, Never>?
+    private var pendingReceiptTask: Task<Void, Never>? {
+        willSet {
+            objectWillChange.send()
+        }
+    }
 
     private var subscriptions: Set<AnyCancellable>
 
@@ -282,7 +294,7 @@ private extension IAPManager {
 
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
-        self.eligibleFeatures = eligibleFeatures // @Published -> objectWillChange.send()
+        self.eligibleFeatures = eligibleFeatures // Will call objectWillChange.send()
     }
 }
 
