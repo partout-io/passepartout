@@ -5,13 +5,10 @@
 import CommonLibrary
 import Foundation
 
-@MainActor
-final class AppProfileImporter: ObservableObject {
-
-    @Published
+@MainActor @Observable
+final class AppProfileImporter {
     var isPresentingPassphrase = false
 
-    @Published
     var currentPassphrase = ""
 
     private(set) var urlsRequiringPassphrase: [URL] = []
