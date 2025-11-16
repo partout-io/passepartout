@@ -18,8 +18,7 @@ struct ConnectionProfilesView: View {
     @FocusState.Binding
     var focusedField: ConnectionView.Field?
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ConnectionFlow?
 

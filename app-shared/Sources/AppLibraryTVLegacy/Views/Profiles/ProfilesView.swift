@@ -21,7 +21,7 @@ struct ProfilesView: View {
     @FocusState
     private var detail: Detail?
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {
@@ -138,8 +138,7 @@ private struct DetailView: View {
     @ObservedObject
     var profileManager: ProfileManager
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var body: some View {
         VStack {

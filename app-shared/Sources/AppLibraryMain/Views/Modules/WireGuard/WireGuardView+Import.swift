@@ -16,8 +16,7 @@ extension WireGuardView {
         @Binding
         var isImporting: Bool
 
-        @ObservedObject
-        var errorHandler: ErrorHandler
+        let errorHandler: ErrorHandler
 
         let onImport: (WireGuard.Configuration.Builder?) -> Void
 

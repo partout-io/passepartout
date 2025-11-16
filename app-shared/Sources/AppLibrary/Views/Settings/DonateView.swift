@@ -30,7 +30,7 @@ public struct DonateView<Modifier>: View where Modifier: ViewModifier {
     @State
     private var isThankYouPresented = false
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     public init(modifier: Modifier) {

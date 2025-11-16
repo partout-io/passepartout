@@ -47,7 +47,7 @@ struct ProfileCoordinator: View {
     @State
     private var paywallReason: PaywallReason?
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

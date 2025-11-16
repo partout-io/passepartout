@@ -49,7 +49,7 @@ struct ProviderServerView: View {
         kvManager: KeyValueManager(store: UserDefaultsStore(.standard))
     )
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

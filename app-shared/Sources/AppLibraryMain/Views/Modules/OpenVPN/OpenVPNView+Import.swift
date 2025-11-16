@@ -16,8 +16,7 @@ extension OpenVPNView {
         @Binding
         var isImporting: Bool
 
-        @ObservedObject
-        var errorHandler: ErrorHandler
+        let errorHandler: ErrorHandler
 
         @State
         private var importURL: URL?

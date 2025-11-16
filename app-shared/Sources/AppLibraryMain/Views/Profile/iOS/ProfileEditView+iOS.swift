@@ -25,8 +25,7 @@ struct ProfileEditView: View, Routable {
     @Binding
     var paywallReason: PaywallReason?
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ProfileCoordinator.Flow?
 

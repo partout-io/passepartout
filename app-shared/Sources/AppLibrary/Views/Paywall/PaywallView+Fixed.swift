@@ -17,8 +17,7 @@ struct PaywallFixedView: View {
 
     let model: PaywallCoordinator.Model
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     let onComplete: (String, InAppPurchaseResult) -> Void
 

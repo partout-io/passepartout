@@ -18,7 +18,7 @@ struct PaywallCoordinator: View {
     @State
     private var model = Model()
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

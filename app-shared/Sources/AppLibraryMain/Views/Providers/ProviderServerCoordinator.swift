@@ -17,8 +17,7 @@ struct ProviderServerCoordinator: View {
 
     let onSelect: (ProviderEntity) async throws -> Void
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var body: some View {
         ProviderServerView(

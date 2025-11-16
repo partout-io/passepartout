@@ -28,7 +28,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
     @StateObject
     private var interactiveObservable = InteractiveObservable()
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     public init(

@@ -22,7 +22,7 @@ struct ProfileExportButton: View {
     @State
     private var viewModel = ViewModel()
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     init(profile: Profile) {

@@ -23,7 +23,7 @@ struct OpenVPNView: View, ModuleDraftEditing {
     @State
     private var paywallReason: PaywallReason?
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     init(serverConfiguration: OpenVPN.Configuration) {

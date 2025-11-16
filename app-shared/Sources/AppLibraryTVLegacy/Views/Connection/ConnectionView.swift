@@ -23,8 +23,7 @@ struct ConnectionView: View, Routable {
     @ObservedObject
     var interactiveObservable: InteractiveObservable
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ConnectionFlow?
 

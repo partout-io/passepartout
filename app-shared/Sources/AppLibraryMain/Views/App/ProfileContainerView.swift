@@ -21,8 +21,7 @@ struct ProfileContainerView: View, Routable {
     @Binding
     var isImporting: Bool
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ProfileFlow?
 
