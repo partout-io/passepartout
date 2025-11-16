@@ -10,8 +10,7 @@ import SwiftUI
 struct ProfileGeneralView: View {
     let profileManager: ProfileManager
 
-    @ObservedObject
-    var profileEditor: ProfileEditor
+    let profileEditor: ProfileEditor
 
     @Binding
     var path: NavigationPath
@@ -23,7 +22,7 @@ struct ProfileGeneralView: View {
 
     var body: some View {
         Form {
-            ProfileNameSection(name: $profileEditor.profile.name)
+            ProfileNameSection(name: profileEditor.binding(\.profile.name))
             profileEditor.shortcutsSections(path: $path)
             ProfileStorageSection(
                 profileEditor: profileEditor,

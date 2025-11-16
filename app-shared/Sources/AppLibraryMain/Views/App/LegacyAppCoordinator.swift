@@ -51,7 +51,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
     @State
     private var migrationPath = NavigationPath()
 
-    @StateObject
+    @State
     private var profileEditor = ProfileEditor()
 
     @State

@@ -16,8 +16,7 @@ struct ProfileStorageSection: View {
     @Environment(\.distributionTarget)
     private var distributionTarget
 
-    @ObservedObject
-    var profileEditor: ProfileEditor
+    let profileEditor: ProfileEditor
 
     @Binding
     var paywallReason: PaywallReason?
@@ -51,7 +50,7 @@ private extension ProfileStorageSection {
     }
 
     var sharingToggle: some View {
-        Toggle(isOn: $profileEditor.isShared) {
+        Toggle(isOn: profileEditor.binding(\.isShared)) {
             ThemeImageLabel(.cloudOn, inForm: true) {
                 HStack {
                     Text(Strings.Unlocalized.iCloud)
@@ -78,7 +77,7 @@ private extension ProfileStorageSection {
     }
 
     var tvToggle: some View {
-        Toggle(isOn: $profileEditor.isAvailableForTV) {
+        Toggle(isOn: profileEditor.binding(\.isAvailableForTV)) {
             ThemeImageLabel(.tvOn, inForm: true) {
                 HStack {
                     Text(Strings.Modules.General.Rows.appletv_compound)

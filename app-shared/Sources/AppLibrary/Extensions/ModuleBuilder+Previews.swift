@@ -27,7 +27,7 @@ private struct PreviewView<Builder>: View where Builder: ModuleBuilder & ModuleV
 
     let builder: Builder
 
-    @StateObject
+    @State
     private var editor = ProfileEditor()
 
     var body: some View {

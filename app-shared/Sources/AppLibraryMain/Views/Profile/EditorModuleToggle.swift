@@ -6,9 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 struct EditorModuleToggle<Label>: View where Label: View {
-
-    @ObservedObject
-    var profileEditor: ProfileEditor
+    let profileEditor: ProfileEditor
 
     let module: any ModuleBuilder
 

@@ -7,13 +7,10 @@ import CommonLibrary
 import Foundation
 import Partout
 
-@MainActor
-public final class ProfileEditor: ObservableObject {
-
-    @Published
+@MainActor @Observable
+public final class ProfileEditor {
     var editableProfile: EditableProfile
 
-    @Published
     public var isShared: Bool
 
     var removedModules: [UUID: any ModuleBuilder]

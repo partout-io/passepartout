@@ -20,8 +20,7 @@ struct ModuleListView: View, Routable {
     @Environment(\.distributionTarget)
     private var distributionTarget
 
-    @ObservedObject
-    var profileEditor: ProfileEditor
+    let profileEditor: ProfileEditor
 
     @Binding
     var selectedModuleId: UUID?
