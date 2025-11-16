@@ -10,8 +10,8 @@ import SwiftUI
 
 public struct AppMenu: View {
 
-    @EnvironmentObject
-    private var settings: MacSettingsModel
+    @Environment(MacSettingsModel.self)
+    private var settings
 
     @ObservedObject
     private var profileManager: ProfileManager
@@ -63,11 +63,11 @@ private extension AppMenu {
     }
 
     var loginToggle: some View {
-        Toggle(Strings.Views.Preferences.launchesOnLogin, isOn: $settings.launchesOnLogin)
+        Toggle(Strings.Views.Preferences.launchesOnLogin, isOn: settings.binding(\.launchesOnLogin))
     }
 
     var keepToggle: some View {
-        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: $settings.keepsInMenu)
+        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: settings.binding(\.keepsInMenu))
     }
 
     var reconnectButton: some View {

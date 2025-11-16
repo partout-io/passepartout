@@ -26,8 +26,8 @@ public struct PreferencesView: View {
     @AppStorage(ABI.UIPreference.locksInBackground.key)
     private var locksInBackground = false
 #elseif os(macOS)
-    @EnvironmentObject
-    private var settings: MacSettingsModel
+    @Environment(MacSettingsModel.self)
+    private var settings
 #endif
 
     @Environment(\.distributionTarget)
@@ -106,12 +106,12 @@ private extension PreferencesView {
 
 #elseif os(macOS)
     var launchesOnLoginSection: some View {
-        Toggle(Strings.Views.Preferences.launchesOnLogin, isOn: $settings.launchesOnLogin)
+        Toggle(Strings.Views.Preferences.launchesOnLogin, isOn: settings.binding(\.launchesOnLogin))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.LaunchesOnLogin.footer)
     }
 
     var keepsInMenuSection: some View {
-        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: $settings.keepsInMenu)
+        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: settings.binding(\.keepsInMenu))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.KeepsInMenu.footer)
     }
 #endif
@@ -221,6 +221,6 @@ private extension PreferencesView {
     PreferencesView(profileManager: .forPreviews)
         .withMockEnvironment()
 #if os(macOS)
-        .environmentObject(MacSettingsModel())
+        .environment(MacSettingsModel())
 #endif
 }

@@ -9,8 +9,8 @@ import CommonLibrary
 import Partout
 import ServiceManagement
 
-@MainActor
-public final class MacSettingsModel: ObservableObject {
+@MainActor @Observable
+public final class MacSettingsModel {
     private let kvManager: KeyValueManager?
 
     private let appService: SMAppService?
@@ -20,16 +20,10 @@ public final class MacSettingsModel: ObservableObject {
     }
 
     public var launchesOnLogin: Bool {
-        get {
-            appService?.status == .enabled
-        }
-        set {
-            objectWillChange.send()
-            guard let appService else {
-                return
-            }
+        didSet {
+            guard let appService else { return }
             do {
-                if newValue {
+                if launchesOnLogin {
                     try appService.register()
                 } else {
                     try appService.unregister()
@@ -40,24 +34,26 @@ public final class MacSettingsModel: ObservableObject {
         }
     }
 
-    public var keepsInMenu: Bool {
-        get {
-            kvManager?.bool(forUIPreference: .keepsInMenu) ?? false
-        }
-        set {
-            objectWillChange.send()
-            kvManager?.set(newValue, forUIPreference: .keepsInMenu)
+    public var keepsInMenu: Bool = false {
+        didSet {
+            kvManager?.set(keepsInMenu, forUIPreference: .keepsInMenu)
         }
     }
 
     public init() {
         kvManager = nil
         appService = nil
+
+        launchesOnLogin = false
+        keepsInMenu = false
     }
 
     public init(kvManager: KeyValueManager, loginItemId: String) {
         self.kvManager = kvManager
         appService = SMAppService.loginItem(identifier: loginItemId)
+
+        launchesOnLogin = appService?.status == .enabled
+        keepsInMenu = kvManager.bool(forUIPreference: .keepsInMenu)
     }
 }
 
