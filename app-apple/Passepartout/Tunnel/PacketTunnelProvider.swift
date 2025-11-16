@@ -27,17 +27,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         _ = PartoutLogger.register(
             for: .tunnelGlobal,
             loggingTo: logURL,
-            with: AppPreferenceValues(),
+            with: ABI.AppPreferenceValues(),
             parameters: constants.log,
             versionString: versionString
         )
 
         // The app may propagate its local preferences on manual start
-        let startPreferences: AppPreferenceValues?
+        let startPreferences: ABI.AppPreferenceValues?
         if let encodedPreferences = options?[ExtendedTunnel.appPreferences] as? NSData {
             do {
                 startPreferences = try JSONDecoder()
-                    .decode(AppPreferenceValues.self, from: encodedPreferences as Data)
+                    .decode(ABI.AppPreferenceValues.self, from: encodedPreferences as Data)
             } catch {
                 pp_log_g(.App.core, .error, "Unable to decode startTunnel() preferences")
                 startPreferences = nil
@@ -309,7 +309,7 @@ private extension PacketTunnelProvider {
         of profile: Profile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
-        params: Constants.Tunnel.Verification.Parameters,
+        params: ABI.Constants.Tunnel.Verification.Parameters,
         isRelaxed: Bool
     ) async {
         guard let ctx else {

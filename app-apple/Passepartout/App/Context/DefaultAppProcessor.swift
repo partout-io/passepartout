@@ -37,15 +37,15 @@ extension DefaultAppProcessor: ProfileProcessor {
 #endif
     }
 
-    func preview(from profile: Profile) -> ProfilePreview {
+    func preview(from profile: Profile) -> ABI.ProfilePreview {
         profile.localizedPreview
     }
 
-    func requiredFeatures(_ profile: Profile) -> Set<AppFeature>? {
+    func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         do {
             try iapManager.verify(profile)
             return nil
-        } catch AppError.ineligibleProfile(let requiredFeatures) {
+        } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
             return requiredFeatures
         } catch {
             return nil

@@ -7,9 +7,9 @@ import CommonResources
 import Partout
 
 extension Dependencies {
-    nonisolated var customUserLevel: AppUserLevel? {
+    nonisolated var customUserLevel: ABI.AppUserLevel? {
         guard let userLevelInteger = BundleConfiguration.mainIntegerIfPresent(for: .userLevel),
-              let userLevel = AppUserLevel(rawValue: userLevelInteger) else {
+              let userLevel = ABI.AppUserLevel(rawValue: userLevelInteger) else {
             return nil
         }
         return userLevel
@@ -17,7 +17,7 @@ extension Dependencies {
 
     func appProductHelper() -> any AppProductHelper {
         StoreKitHelper(
-            products: AppProduct.all,
+            products: ABI.AppProduct.all,
             inAppIdentifier: {
                 let prefix = BundleConfiguration.mainString(for: .iapBundlePrefix)
                 return "\(prefix).\($0.rawValue)"
@@ -29,7 +29,7 @@ extension Dependencies {
         TestFlightChecker()
     }
 
-    nonisolated func productsAtBuild() -> BuildProducts<AppProduct> {
+    nonisolated func productsAtBuild() -> BuildProducts<ABI.AppProduct> {
         { purchase in
 #if os(iOS)
             if purchase.isUntil(.freemium) {
