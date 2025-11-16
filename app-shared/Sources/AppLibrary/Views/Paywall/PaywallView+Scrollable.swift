@@ -17,8 +17,7 @@ struct PaywallScrollableView: View {
 
     let requiredFeatures: Set<ABI.AppFeature>
 
-    @ObservedObject
-    var model: PaywallCoordinator.Model
+    let model: PaywallCoordinator.Model
 
     @ObservedObject
     var errorHandler: ErrorHandler
@@ -50,7 +49,7 @@ private extension PaywallScrollableView {
                     product: $0,
                     withIncludedFeatures: false,
                     requiredFeatures: requiredFeatures,
-                    purchasingIdentifier: $model.purchasingIdentifier,
+                    purchasingIdentifier: model.binding(\.purchasingIdentifier),
                     onComplete: onComplete,
                     onError: onError
                 )
@@ -79,7 +78,7 @@ private extension PaywallScrollableView {
                 product: $0,
                 withIncludedFeatures: true,
                 requiredFeatures: requiredFeatures,
-                purchasingIdentifier: $model.purchasingIdentifier,
+                purchasingIdentifier: model.binding(\.purchasingIdentifier),
                 onComplete: onComplete,
                 onError: onError
             )

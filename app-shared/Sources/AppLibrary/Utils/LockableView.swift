@@ -53,8 +53,8 @@ public struct LockableView<Content: View, LockedContent: View>: View {
 
 // MARK: -
 
-@MainActor
-private final class Lock: ObservableObject {
+@MainActor @Observable
+private final class Lock {
     enum State {
         case none
 
@@ -65,7 +65,6 @@ private final class Lock: ObservableObject {
 
     static let shared = Lock()
 
-    @Published
     var state: State = .locked
 
     private init() {
@@ -127,9 +126,7 @@ private extension LockableView {
 // MARK: -
 
 private struct LockedContentWrapperView<Content>: View where Content: View {
-
-    @ObservedObject
-    var lock: Lock
+    let lock: Lock
 
     @ViewBuilder
     let content: Content
