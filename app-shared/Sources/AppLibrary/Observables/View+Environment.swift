@@ -20,6 +20,10 @@ extension View {
             .environmentObject(context.profileManager)
             .environmentObject(context.versionChecker)
             .environment(context.viewLogger)
+            // Observables
+            .environment(context.profileObservable)
+            .environment(context.tunnelObservable)
+            .environment(context.iapObservable)
     }
 
     public func withMockEnvironment() -> some View {

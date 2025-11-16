@@ -60,6 +60,8 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let tunnelObservable: TunnelObservable
 
+    public let iapObservable: IAPObservable
+
     // MARK: - Init
 
     public init(
@@ -102,14 +104,9 @@ public final class AppContext: ObservableObject, Sendable {
         didLoadReceiptDate = nil
         subscriptions = []
 
-        profileObservable = ProfileObservable(
-            logger: logger,
-            profileManager: profileManager
-        )
-        tunnelObservable = TunnelObservable(
-            logger: logger,
-            extendedTunnel: tunnel
-        )
+        profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)
+        tunnelObservable = TunnelObservable(logger: logger, extendedTunnel: tunnel)
+        iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
     }
 }
 
