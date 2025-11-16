@@ -27,29 +27,20 @@ public final class APIManager {
 
     private let repository: APIRepository
 
-    public private(set) var providers: [Provider] {
-        willSet {
 #if canImport(Combine)
-            objectWillChange.send()
+    @Published
 #endif
-        }
-    }
+    public private(set) var providers: [Provider]
 
-    public private(set) var cache: [ProviderID: ProviderCache] {
-        willSet {
 #if canImport(Combine)
-            objectWillChange.send()
+    @Published
 #endif
-        }
-    }
+    public private(set) var cache: [ProviderID: ProviderCache]
 
-    private var pendingServices: Set<PendingService> = [] {
-        willSet {
 #if canImport(Combine)
-            objectWillChange.send()
+    @Published
 #endif
-        }
-    }
+    private var pendingServices: Set<PendingService> = []
 
     private var subscriptions: [Task<Void, Never>]
 
