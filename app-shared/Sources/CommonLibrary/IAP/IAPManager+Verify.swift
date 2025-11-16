@@ -16,7 +16,7 @@ extension IAPManager {
     public func verify(_ features: Set<ABI.AppFeature>) throws {
 #if os(tvOS)
         guard isEligible(for: .appleTV) else {
-            throw AppError.ineligibleProfile(features.union([.appleTV]))
+            throw ABI.AppError.ineligibleProfile(features.union([.appleTV]))
         }
 #endif
         let requiredFeatures = features.filter {

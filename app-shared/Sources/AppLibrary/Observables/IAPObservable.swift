@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import Observation
 
 @MainActor @Observable
@@ -30,11 +31,21 @@ public final class IAPObservable {
 // MARK: - Actions
 
 extension IAPObservable {
+    public func verify(_ profile: ABI.AppProfile) throws {
+        try iapManager.verify(profile.native)
+    }
 }
 
 // MARK: - State
 
 extension IAPObservable {
+    public var isBeta: Bool {
+        iapManager.isBeta
+    }
+
+    public var verificationDelayMinutes: Int {
+        Resources.constants.tunnel.verificationDelayMinutes(isBeta: isBeta)
+    }
 }
 
 private extension IAPObservable {

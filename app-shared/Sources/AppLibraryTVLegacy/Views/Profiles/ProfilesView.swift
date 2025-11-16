@@ -72,7 +72,7 @@ private extension ProfilesView {
             .themeSection(header: Strings.Global.Nouns.profiles)
     }
 
-    func row(forProfilePreview preview: ProfilePreview) -> some View {
+    func row(forProfilePreview preview: ABI.ProfilePreview) -> some View {
         Button {
             //
         } label: {

@@ -42,7 +42,7 @@ struct ConnectionProfilesView: View {
 }
 
 private extension ConnectionProfilesView {
-    var allPreviews: [ProfilePreview] {
+    var allPreviews: [ABI.ProfilePreview] {
         profileManager.previews
     }
 
@@ -59,7 +59,7 @@ private extension ConnectionProfilesView {
             .font(.body)
     }
 
-    func toggleButton(for preview: ProfilePreview) -> some View {
+    func toggleButton(for preview: ABI.ProfilePreview) -> some View {
         LegacyTunnelToggle(
             tunnel: tunnel,
             profile: profileManager.partoutProfile(withId: preview.id),
@@ -77,7 +77,7 @@ private extension ConnectionProfilesView {
         .uiAccessibility(.App.ProfileList.profile)
     }
 
-    func toggleView(for preview: ProfilePreview) -> some View {
+    func toggleView(for preview: ABI.ProfilePreview) -> some View {
         HStack {
             Text(preview.name)
             Spacer()

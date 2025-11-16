@@ -8,8 +8,8 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     let profileObservable: ProfileObservable
 
@@ -43,7 +43,7 @@ struct SettingsView: View {
 private extension SettingsView {
     var masterView: some View {
         List {
-            if iapManager.isBeta {
+            if iapObservable.isBeta {
                 BetaSection()
             } else {
                 VersionUpdateLink()
