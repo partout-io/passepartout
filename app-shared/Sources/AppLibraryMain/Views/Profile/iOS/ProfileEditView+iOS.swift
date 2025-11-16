@@ -14,8 +14,7 @@ struct ProfileEditView: View, Routable {
 
     let profileManager: ProfileManager
 
-    @ObservedObject
-    var profileEditor: ProfileEditor
+    let profileEditor: ProfileEditor
 
     let moduleViewFactory: any ModuleViewFactory
 
@@ -36,7 +35,7 @@ struct ProfileEditView: View, Routable {
         debugChanges()
         return List {
             ProfileNameSection(
-                name: $profileEditor.profile.name
+                name: profileEditor.binding(\.profile.name)
             )
             modulesSection
             profileEditor.shortcutsSections(path: $path)

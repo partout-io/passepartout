@@ -33,7 +33,7 @@ struct PassepartoutApp: App {
     @Environment(\.scenePhase)
     var scenePhase
 
-    @StateObject
+    @State
     var theme = Theme()
 }
 

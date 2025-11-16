@@ -18,8 +18,7 @@ struct ConnectionView: View, Routable {
 
     let tunnel: TunnelObservable
 
-    @ObservedObject
-    var interactiveObservable: InteractiveObservable
+    let interactiveObservable: InteractiveObservable
 
     let errorHandler: ErrorHandler
 

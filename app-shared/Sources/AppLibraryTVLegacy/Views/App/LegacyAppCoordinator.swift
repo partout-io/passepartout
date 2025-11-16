@@ -25,7 +25,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
     @State
     private var paywallContinuation: (() -> Void)?
 
-    @StateObject
+    @State
     private var interactiveObservable = InteractiveObservable()
 
     @State

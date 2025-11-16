@@ -26,7 +26,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     @State
     private var paywallContinuation: (() -> Void)?
 
-    @StateObject
+    @State
     private var interactiveObservable = InteractiveObservable()
 
     @State

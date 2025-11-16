@@ -20,8 +20,7 @@ struct ConnectionView: View, Routable {
     @ObservedObject
     var tunnel: ExtendedTunnel
 
-    @ObservedObject
-    var interactiveObservable: InteractiveObservable
+    let interactiveObservable: InteractiveObservable
 
     let errorHandler: ErrorHandler
 
