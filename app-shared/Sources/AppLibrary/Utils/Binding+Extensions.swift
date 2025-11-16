@@ -12,6 +12,15 @@ public func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> {
     }
 }
 
+extension Observable {
+    public func binding<Value>(_ keyPath: ReferenceWritableKeyPath<Self, Value>) -> Binding<Value> {
+        Binding(
+            get: { self[keyPath: keyPath] },
+            set: { self[keyPath: keyPath] = $0 }
+        )
+    }
+}
+
 extension Binding where Value == Bool {
     public init<T: Equatable>(presenting other: Binding<T?>, equal value: T) {
         self.init {
