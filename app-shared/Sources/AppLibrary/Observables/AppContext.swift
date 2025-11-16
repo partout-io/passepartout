@@ -8,6 +8,7 @@ import CommonLibrary
 import Foundation
 import Partout
 
+// FIXME: #1594, Split into AppContext (AppLibrary) and CommonContext (CommonLibrary)
 @MainActor
 public final class AppContext: ObservableObject, Sendable {
     public let apiManager: APIManager
