@@ -8,6 +8,12 @@ import Partout
 
 @MainActor
 public final class IAPManager: ObservableObject {
+    public enum Event {
+        case status(Bool)
+        case eligibleFeatures(Set<ABI.AppFeature>)
+        case receipt
+    }
+
     private let customUserLevel: ABI.AppUserLevel?
 
     private let inAppHelper: any AppProductHelper
@@ -30,6 +36,7 @@ public final class IAPManager: ObservableObject {
 //        }
         didSet {
             pendingReceiptTask?.cancel()
+            didChange.send(.status(isEnabled))
         }
     }
 
@@ -45,13 +52,21 @@ public final class IAPManager: ObservableObject {
 //        willSet {
 //            objectWillChange.send()
 //        }
+        didSet {
+            didChange.send(.eligibleFeatures(eligibleFeatures))
+        }
     }
 
     private var pendingReceiptTask: Task<Void, Never>? {
         willSet {
             objectWillChange.send()
         }
+        didSet {
+            didChange.send(.receipt)
+        }
     }
+
+    public let didChange: PassthroughStream<Event>
 
     private var subscriptions: Set<AnyCancellable>
 
@@ -74,6 +89,7 @@ public final class IAPManager: ObservableObject {
         userLevel = .undefined
         purchasedProducts = []
         eligibleFeatures = []
+        didChange = PassthroughStream()
         subscriptions = []
     }
 }
