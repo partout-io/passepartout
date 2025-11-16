@@ -12,7 +12,7 @@ import Partout
 public final class AppContext: ObservableObject, Sendable {
     public let apiManager: APIManager
 
-    public let appearanceManager: AppearanceManager
+    public let appearanceObservable: AppearanceObservable
 
     public let appEncoder: AppEncoder
 
@@ -84,7 +84,7 @@ public final class AppContext: ObservableObject, Sendable {
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         self.apiManager = apiManager
-        appearanceManager = AppearanceManager(kvManager: kvManager)
+        appearanceObservable = AppearanceObservable(kvManager: kvManager)
         self.appEncoder = appEncoder
         self.configManager = configManager
         self.distributionTarget = distributionTarget

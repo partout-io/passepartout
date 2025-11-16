@@ -10,8 +10,8 @@ import SwiftUI
 
 public struct PreferencesView: View {
 
-    @EnvironmentObject
-    private var appearanceManager: AppearanceManager
+    @Environment(AppearanceObservable.self)
+    private var appearanceObservable
 
     @EnvironmentObject
     private var iapManager: IAPManager
@@ -90,7 +90,7 @@ private extension PreferencesView {
 
     var systemAppearanceSection: some View {
         Section {
-            Picker(Strings.Views.Preferences.systemAppearance, selection: $appearanceManager.systemAppearance) {
+            Picker(Strings.Views.Preferences.systemAppearance, selection: appearanceObservable.binding(\.systemAppearance)) {
                 ForEach(Self.systemAppearances, id: \.self) {
                     Text($0?.localizedDescription ?? Strings.Entities.Ui.SystemAppearance.system)
                 }

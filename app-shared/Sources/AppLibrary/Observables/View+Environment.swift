@@ -9,7 +9,6 @@ extension View {
     public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
         environmentObject(theme)
             .environmentObject(context.apiManager)
-            .environmentObject(context.appearanceManager)
             .environmentObject(context.appEncoder)
             .environmentObject(context.configManager)
             .environment(\.distributionTarget, context.distributionTarget)
@@ -20,6 +19,7 @@ extension View {
             .environmentObject(context.versionChecker)
             .environment(context.viewLogger)
             // Observables
+            .environment(context.appearanceObservable)
             .environment(context.onboardingObservable)
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
