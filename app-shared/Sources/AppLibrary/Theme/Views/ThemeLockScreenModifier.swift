@@ -15,8 +15,8 @@ struct ThemeLockScreenModifier<LockedContent>: ViewModifier where LockedContent:
     @AppStorage(ABI.UIPreference.locksInBackground.key)
     private var locksInBackground = false
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @ViewBuilder
     let lockedContent: () -> LockedContent

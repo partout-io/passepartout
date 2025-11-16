@@ -8,8 +8,8 @@ import SwiftUI
 
 public struct ThemeMenuImage: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     private let name: Theme.MenuImageName
 

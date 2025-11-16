@@ -7,8 +7,8 @@ import SwiftUI
 
 struct ProfileRowView: View, Routable, SizeClassProviding {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Environment(\.horizontalSizeClass)
     var hsClass

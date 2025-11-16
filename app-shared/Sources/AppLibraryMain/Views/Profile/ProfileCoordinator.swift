@@ -16,8 +16,8 @@ struct ProfileCoordinator: View {
         let onSendToTV: () -> Void
     }
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @EnvironmentObject
     private var iapManager: IAPManager

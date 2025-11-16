@@ -7,7 +7,7 @@ import SwiftUI
 @MainActor
 extension View {
     public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
-        environmentObject(theme)
+        self
             .environmentObject(context.apiManager)
             .environmentObject(context.appEncoder)
             .environmentObject(context.configManager)
@@ -19,6 +19,7 @@ extension View {
             .environmentObject(context.versionChecker)
             .environment(context.viewLogger)
             // Observables
+            .environment(theme)
             .environment(context.appearanceObservable)
             .environment(context.onboardingObservable)
             .environment(context.profileObservable)

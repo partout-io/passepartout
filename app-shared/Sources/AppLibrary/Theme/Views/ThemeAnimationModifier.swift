@@ -6,8 +6,8 @@ import SwiftUI
 
 struct ThemeAnimationModifier<T>: ViewModifier where T: Equatable {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     let value: T
 

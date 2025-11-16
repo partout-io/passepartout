@@ -4,8 +4,8 @@
 
 import SwiftUI
 
-@MainActor
-public final class Theme: ObservableObject {
+@MainActor @Observable
+public final class Theme {
     private var animation: Animation = .spring
 
     public internal(set) var animationCategories: Set<ThemeAnimationCategory> = Set(ThemeAnimationCategory.allCases)

@@ -6,8 +6,8 @@ import SwiftUI
 
 struct ThemeEmptyMessageModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     let fullScreen: Bool
 

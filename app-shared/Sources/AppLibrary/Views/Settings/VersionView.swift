@@ -8,8 +8,8 @@ import SwiftUI
 
 public struct VersionView<R, Icon>: View where R: Hashable, Icon: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Environment(\.colorScheme)
     private var colorScheme

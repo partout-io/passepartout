@@ -10,8 +10,8 @@ import SwiftUI
 extension ProviderServerView {
     struct ContentView: View {
 
-        @EnvironmentObject
-        private var theme: Theme
+        @Environment(Theme.self)
+        private var theme
 
         // FIXME: #1470, heavy data copy in SwiftUI
         let module: ProviderModule
@@ -50,7 +50,7 @@ private extension ProviderServerView.ContentView {
             TableColumn("") { region in
                 ThemeImage(.marked)
                     .opaque(region.isSelected(by: heuristic))
-                    .environmentObject(theme) // TODO: #873, Table loses environment
+                    .environment(theme) // TODO: #873, Table loses environment
             }
             .width(10.0)
 
@@ -59,7 +59,7 @@ private extension ProviderServerView.ContentView {
                     value: region.id,
                     selection: providerPreferences.favoriteServers()
                 )
-                .environmentObject(theme) // TODO: #873, Table loses environment
+                .environment(theme) // TODO: #873, Table loses environment
             }
             .width(15.0)
 
@@ -80,7 +80,7 @@ private extension ProviderServerView.ContentView {
                 }
                 .help(region.localizedDescription)
                 .cursor(.hand)
-                .environmentObject(theme) // TODO: #873, Table loses environment
+                .environment(theme) // TODO: #873, Table loses environment
             }
 
             TableColumn(Strings.Global.Nouns.region) { region in
@@ -95,7 +95,7 @@ private extension ProviderServerView.ContentView {
                 }
                 .help(region.area ?? "")
                 .cursor(.hand)
-                .environmentObject(theme) // TODO: #873, Table loses environment
+                .environment(theme) // TODO: #873, Table loses environment
             }
         }
     }

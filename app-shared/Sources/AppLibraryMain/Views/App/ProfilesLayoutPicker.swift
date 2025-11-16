@@ -7,8 +7,8 @@ import SwiftUI
 
 struct ProfilesLayoutPicker: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Binding
     var layout: ProfilesLayout

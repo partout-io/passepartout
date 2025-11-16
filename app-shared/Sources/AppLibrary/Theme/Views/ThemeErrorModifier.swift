@@ -6,8 +6,8 @@ import SwiftUI
 
 struct ThemeErrorModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     let isError: Bool
 

@@ -9,8 +9,8 @@ import SwiftUI
 
 public struct ThemeCopiableText<Value, ValueView>: View where Value: CustomStringConvertible, ValueView: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     private let title: String?
 

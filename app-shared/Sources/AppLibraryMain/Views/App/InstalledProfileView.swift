@@ -8,8 +8,8 @@ import SwiftUI
 
 struct InstalledProfileView: View, Routable {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     let layout: ProfilesLayout
 
@@ -111,8 +111,8 @@ private extension InstalledProfileView {
 
 private struct HeaderModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     let layout: ProfilesLayout
 

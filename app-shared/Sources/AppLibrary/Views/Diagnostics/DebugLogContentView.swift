@@ -6,8 +6,8 @@ import SwiftUI
 
 public struct DebugLogContentView: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     public let lines: [String]
 
@@ -50,7 +50,7 @@ private extension DebugLogContentView {
                         .themeTip(entry.line, edge: .bottom, width: 400.0, alignment: .leading) {
                             ThemeImage(.search)
                         }
-                        .environmentObject(theme) // TODO: #873, Table loses environment
+                        .environment(theme) // TODO: #873, Table loses environment
 
                     Text(entry.line)
                         .font(.caption)

@@ -35,8 +35,8 @@ extension OpenVPNView {
 private extension OpenVPNView {
     struct RemotesInnerView: View {
 
-        @EnvironmentObject
-        private var theme: Theme
+        @Environment(Theme.self)
+        private var theme
 
         @Environment(\.editMode)
         private var editMode: Binding<EditMode>?

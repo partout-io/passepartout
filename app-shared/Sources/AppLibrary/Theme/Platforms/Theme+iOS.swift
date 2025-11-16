@@ -41,8 +41,8 @@ extension View {
 
 struct ThemeBooleanPopoverModifier<Popover>: ViewModifier, SizeClassProviding where Popover: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Environment(\.horizontalSizeClass)
     var hsClass

@@ -8,8 +8,8 @@ import SwiftUI
 
 struct ThemeGridCellModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     func body(content: Content) -> some View {
         content

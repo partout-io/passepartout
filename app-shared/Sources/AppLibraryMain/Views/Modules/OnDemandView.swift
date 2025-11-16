@@ -7,8 +7,8 @@ import SwiftUI
 
 struct OnDemandView: View, ModuleDraftEditing {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Environment(\.distributionTarget)
     private var distributionTarget

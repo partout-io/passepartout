@@ -8,8 +8,8 @@ import SwiftUI
 
 struct ActiveProfileView: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @EnvironmentObject
     private var apiManager: APIManager

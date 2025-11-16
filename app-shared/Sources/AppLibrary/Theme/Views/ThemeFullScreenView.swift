@@ -6,8 +6,8 @@ import SwiftUI
 
 public struct ThemeFullScreenView<Icon>: View where Icon: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Environment(\.colorScheme)
     private var colorScheme

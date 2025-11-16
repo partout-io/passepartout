@@ -8,8 +8,8 @@ import SwiftUI
 
 struct DNSView: View, ModuleDraftEditing {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @ObservedObject
     var draft: ModuleDraft<DNSModule.Builder>
