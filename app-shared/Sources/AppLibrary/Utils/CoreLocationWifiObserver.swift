@@ -4,6 +4,10 @@
 
 import CoreLocation
 import Foundation
+#if os(iOS)
+import NetworkExtension
+#endif
+
 
 public actor CoreLocationWifiObserver: NSObject, WifiObserver {
     private let locationManager = CLLocationManager()
@@ -42,7 +46,7 @@ public actor CoreLocationWifiObserver: NSObject, WifiObserver {
     }
 
     private func currentSSIDWithoutAuthorization() async -> String {
-        await Utils.currentWifiSSID() ?? ""
+        await Self.currentWifiSSID() ?? ""
     }
 }
 
@@ -58,5 +62,17 @@ extension CoreLocationWifiObserver: CLLocationManagerDelegate {
         Task {
             await continuation?.resume(throwing: error)
         }
+    }
+}
+
+private extension CoreLocationWifiObserver {
+    static func currentWifiSSID() async -> String? {
+#if targetEnvironment(simulator)
+        ["My Home Network", "Safe Wi-Fi", "Friend's House"].randomElement()
+#elseif os(iOS)
+        await NEHotspotNetwork.fetchCurrent()?.ssid
+#else
+        nil
+#endif
     }
 }

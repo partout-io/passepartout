@@ -3,21 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
-#if os(iOS)
-import NetworkExtension
-#endif
-
-extension Utils {
-    public static func currentWifiSSID() async -> String? {
-#if targetEnvironment(simulator)
-        ["My Home Network", "Safe Wi-Fi", "Friend's House"].randomElement()
-#elseif os(iOS)
-        await NEHotspotNetwork.fetchCurrent()?.ssid
-#else
-        nil
-#endif
-    }
-}
 
 extension Utils {
     public static func string(fromIPv4 ipv4: UInt32) -> String {
