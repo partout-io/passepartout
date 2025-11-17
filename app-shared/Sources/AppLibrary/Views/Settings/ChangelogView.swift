@@ -11,6 +11,9 @@ import SwiftUI
 
 public struct ChangelogView: View {
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @State
     private var entries: [ABI.ChangelogEntry] = []
 
@@ -45,17 +48,17 @@ public struct ChangelogView: View {
 
 private extension ChangelogView {
     var versionString: String {
-        BundleConfiguration.mainVersionString
+        appConfiguration.versionString
     }
 
     var versionNumber: String {
-        BundleConfiguration.mainVersionNumber
+        appConfiguration.versionNumber
     }
 
     func loadChangelog() async {
         do {
             pp_log_g(.App.core, .info, "CHANGELOG: Load for version \(versionNumber)")
-            let url = Resources.constants.github.urlForChangelog(ofVersion: versionNumber)
+            let url = appConfiguration.constants.github.urlForChangelog(ofVersion: versionNumber)
             pp_log_g(.App.core, .info, "CHANGELOG: Fetching \(url)")
             let result = try await URLSession.shared.data(from: url)
             guard let text = String(data: result.0, encoding: .utf8) else {

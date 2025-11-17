@@ -12,6 +12,9 @@ public struct LinksView: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.distributionTarget)
     private var distributionTarget
 
@@ -30,11 +33,11 @@ public struct LinksView: View {
 
 private extension LinksView {
     var constants: ABI.Constants {
-        Resources.constants
+        appConfiguration.constants
     }
 
     var appStoreId: String {
-        BundleConfiguration.mainString(for: .appStoreId)
+        appConfiguration.bundleString(for: .appStoreId)
     }
 
     var supportSection: some View {
@@ -42,7 +45,7 @@ private extension LinksView {
             Link(Strings.Views.Settings.Links.Rows.joinCommunity, destination: constants.websites.subreddit)
             Link(Strings.Views.Settings.Links.Rows.openDiscussion, destination: constants.github.discussions)
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
-//                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: BundleConfiguration.urlForReview)
+//                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
             if !distributionTarget.supportsIAP && !iapManager.isBeta {
                 WebDonationLink()

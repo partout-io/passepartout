@@ -10,6 +10,9 @@ import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestination>: View where LinkContent: View, SettingsDestination: View, DiagnosticsDestination: View {
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.distributionTarget)
     private var distributionTarget
 
@@ -72,7 +75,7 @@ private extension SettingsContentView {
             .themeSection(header: Strings.Global.Nouns.about)
 
             Group {
-                ExternalLink(Strings.Unlocalized.faq, url: Resources.constants.websites.faq)
+                ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
                 if distributionTarget == .developerID {
                     linkContent(.systemExtension)
                 }
@@ -84,7 +87,7 @@ private extension SettingsContentView {
             .themeSection(header: Strings.Global.Nouns.troubleshooting)
         }
         .safeAreaInset(edge: .bottom) {
-            Text(BundleConfiguration.mainVersionString)
+            Text(appConfiguration.versionString)
                 .padding(.bottom)
         }
         .navigationTitle(Strings.Views.Settings.title)

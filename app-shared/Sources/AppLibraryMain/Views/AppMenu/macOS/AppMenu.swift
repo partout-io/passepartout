@@ -13,6 +13,9 @@ public struct AppMenu: View {
     @Environment(MacSettings.self)
     private var settings
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @ObservedObject
     private var profileManager: ProfileManager
 
@@ -49,7 +52,7 @@ public struct AppMenu: View {
 
 private extension AppMenu {
     var versionItem: some View {
-        Text(BundleConfiguration.mainVersionString)
+        Text(appConfiguration.versionString)
     }
 
     var updateButton: some View {
@@ -100,7 +103,7 @@ private extension AppMenu {
     }
 
     var quitButton: some View {
-        Button(Strings.Views.AppMenu.Items.quit(BundleConfiguration.mainDisplayName), action: quit)
+        Button(Strings.Views.AppMenu.Items.quit(appConfiguration.displayName), action: quit)
     }
 }
 

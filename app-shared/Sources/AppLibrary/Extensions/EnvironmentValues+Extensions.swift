@@ -16,6 +16,7 @@ extension EnvironmentValues {
         }
     }
 
+    // FIXME: #1594, Embed in AppConfiguration
     public var distributionTarget: ABI.DistributionTarget {
         get {
             self[DistributionTargetKey.self]

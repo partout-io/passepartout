@@ -11,6 +11,9 @@ struct SettingsCoordinator: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.dismiss)
     private var dismiss
 
@@ -73,7 +76,7 @@ extension SettingsCoordinator {
         case .version:
             Text(Strings.Global.Nouns.version)
 #if os(iOS)
-                .themeTrailingValue(BundleConfiguration.mainVersionString)
+                .themeTrailingValue(appConfiguration.versionString)
 #endif
 
         default:
@@ -131,7 +134,7 @@ extension SettingsCoordinator {
     func pushDestination(for item: DiagnosticsRoute?) -> some View {
         switch item {
         case .appLog(let title):
-            DebugLogView(withAppParameters: Resources.constants.log) {
+            DebugLogView(withAppParameters: appConfiguration.constants.log) {
                 DebugLogContentView(lines: $0)
             }
             .navigationTitle(title)
@@ -146,7 +149,7 @@ extension SettingsCoordinator {
                 }
                 .navigationTitle(title)
             } else {
-                DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
+                DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
                     DebugLogContentView(lines: $0)
                 }
                 .navigationTitle(title)

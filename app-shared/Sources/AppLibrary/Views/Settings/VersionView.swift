@@ -11,6 +11,9 @@ public struct VersionView<R, Icon>: View where R: Hashable, Icon: View {
     @Environment(Theme.self)
     private var theme
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.colorScheme)
     private var colorScheme
 
@@ -73,7 +76,7 @@ private extension VersionView {
     }
 
     var subtitle: String {
-        BundleConfiguration.mainVersionString
+        appConfiguration.versionString
     }
 
     var message: String {

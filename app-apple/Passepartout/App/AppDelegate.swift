@@ -20,9 +20,9 @@ final class AppDelegate: NSObject {
     }()
 
 #if os(macOS)
-    let settings = MacSettings(
+    lazy var settings = MacSettings(
         kvManager: Dependencies.shared.kvManager,
-        loginItemId: BundleConfiguration.mainString(for: .loginItemId)
+        loginItemId: context.appConfiguration.bundleString(for: .loginItemId)
     )
 #endif
 

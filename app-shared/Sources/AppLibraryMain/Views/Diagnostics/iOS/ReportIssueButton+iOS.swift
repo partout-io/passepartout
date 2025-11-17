@@ -60,7 +60,7 @@ extension ReportIssueButton {
             let issue = await ABI.Issue.withMetadata(.init(
                 ctx: .global,
                 target: distributionTarget,
-                versionString: BundleConfiguration.mainVersionString,
+                versionString: appConfiguration.versionString,
                 purchasedProducts: purchasedProducts,
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
