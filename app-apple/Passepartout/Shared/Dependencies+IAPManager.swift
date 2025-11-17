@@ -7,14 +7,6 @@ import CommonResources
 import Partout
 
 extension Dependencies {
-    func customUserLevel(cfg: ABI.AppConfiguration) -> ABI.AppUserLevel? {
-        guard let userLevelInteger = cfg.bundleIntegerIfPresent(for: .userLevel),
-              let userLevel = ABI.AppUserLevel(rawValue: userLevelInteger) else {
-            return nil
-        }
-        return userLevel
-    }
-
     func appProductHelper(cfg: ABI.AppConfiguration) -> any AppProductHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,

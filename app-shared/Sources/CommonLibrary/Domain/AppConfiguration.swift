@@ -37,7 +37,8 @@ extension ABI {
         public let versionNumber: String
         public let buildNumber: Int
         public let versionString: String
-        private let bundleValues: JSON
+        public let customUserLevel: AppUserLevel?
+        private let bundleStrings: [String: String]
 
         public let urlForAppLog: URL
         public let urlForTunnelLog: URL
@@ -52,7 +53,8 @@ extension ABI {
             versionNumber = "preview-1.2.3"
             buildNumber = 12345
             versionString = "preview-1.2.3-1234"
-            bundleValues = [:]
+            bundleStrings = [:]
+            customUserLevel = nil
 
             let dummyURL = URL(fileURLWithPath: "")
             urlForAppLog = dummyURL
@@ -73,22 +75,18 @@ extension ABI {
             buildNumber = bundle.buildNumber
             versionString = bundle.versionString
 
-            let bundleMap = BundleKey.allCases.reduce(into: [:]) {
+            var rawUserLevel: Int?
+            bundleStrings = BundleKey.allCases.reduce(into: [:]) {
                 switch $1 {
-                case .appStoreId, .cloudKitId, .groupId,
-                        .iapBundlePrefix, .keychainGroupId,
-                        .loginItemId, .tunnelId:
-                    $0[$1.rawValue] = bundle.string(for: $1)
                 case .userLevel:
-                    if let userLevel = bundle.integerIfPresent(for: $1) {
-                        $0[$1.rawValue] = userLevel
-                    }
+                    rawUserLevel = bundle.integerIfPresent(for: $1)
+                default:
+                    $0[$1.rawValue] = bundle.string(for: $1)
                 }
             }
-            do {
-                bundleValues = try JSON(bundleMap)
+            customUserLevel = rawUserLevel.map(AppUserLevel.init(rawValue:)) ?? nil
 
-                // All required, except .userLevel is optional
+            do {
                 let requiredKeys: Set<BundleKey>
                 switch buildTarget {
                 case .app:
@@ -98,7 +96,7 @@ extension ABI {
                 }
 
                 // Ensure all required keys are present
-                let foundKeys = bundleValues.objectValue.map { Set($0.keys) } ?? []
+                let foundKeys = Set(bundleStrings.keys)
                 guard foundKeys.isSuperset(of: Set(requiredKeys.map(\.rawValue))) else {
                     throw PartoutError(.decoding)
                 }
@@ -141,14 +139,10 @@ extension ABI {
         }
 
         public func bundleString(for key: ABI.BundleKey) -> String {
-            guard let value = bundleValues[key.rawValue]?.stringValue else {
+            guard let value = bundleStrings[key.rawValue] else {
                 fatalError("Missing bundle value in JSON for: \(key.rawValue)")
             }
             return value
-        }
-
-        public func bundleIntegerIfPresent(for key: ABI.BundleKey) -> Int? {
-            bundleValues[key.rawValue]?.doubleValue.map { Int($0) }
         }
     }
 }

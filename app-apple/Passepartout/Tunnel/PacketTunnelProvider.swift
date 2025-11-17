@@ -139,7 +139,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Create IAPManager for receipt verification
         let iapManager = await MainActor.run {
             let manager = IAPManager(
-                customUserLevel: dependencies.customUserLevel(cfg: appConfiguration),
+                customUserLevel: appConfiguration.customUserLevel,
                 inAppHelper: dependencies.appProductHelper(cfg: appConfiguration),
                 receiptReader: SharedReceiptReader(
                     reader: StoreKitReceiptReader(logger: dependencies.iapLogger()),

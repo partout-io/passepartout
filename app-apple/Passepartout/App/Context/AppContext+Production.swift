@@ -80,7 +80,7 @@ extension AppContext {
             return APIManager(ctx, from: API.shared, repository: repository)
         }()
         let iapManager = IAPManager(
-            customUserLevel: dependencies.customUserLevel(cfg: appConfiguration),
+            customUserLevel: appConfiguration.customUserLevel,
             inAppHelper: dependencies.simulatedAppProductHelper(cfg: appConfiguration),
             receiptReader: dependencies.simulatedAppReceiptReader(cfg: appConfiguration),
             betaChecker: dependencies.betaChecker(),
