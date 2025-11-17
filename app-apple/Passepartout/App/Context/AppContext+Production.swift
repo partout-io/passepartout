@@ -156,7 +156,7 @@ extension AppContext {
         }
         let backupProfileRepository = dependencies.backupProfileRepository(
             ctx,
-            logger: logger,
+            logger: appLogger,
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
