@@ -16,9 +16,7 @@ extension Dependencies {
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry,
-            title: {
-                profileTitle(for: $0)
-            }
+            title: profileTitle(for:)
         )
     }
 

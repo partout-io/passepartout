@@ -187,10 +187,7 @@ extension AppContext {
         }
         let tunnel = ExtendedTunnel(
             tunnel: Tunnel(ctx, strategy: tunnelStrategy) {
-                dependencies.appTunnelEnvironment(
-                    strategy: tunnelStrategy,
-                    profileId: $0
-                )
+                dependencies.appTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             },
             sysex: sysexManager,
             kvManager: kvManager,
@@ -209,7 +206,7 @@ extension AppContext {
             port: appConfiguration.constants.webReceiver.port
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
-            dependencies.webPasscodeGenerator(length: appConfiguration.constants.webReceiver.passcodeLength)
+            dependencies.webPasscodeGenerator()
         }
 #else
         let webReceiverManager = WebReceiverManager()
@@ -383,7 +380,8 @@ private extension Dependencies {
         )
     }
 
-    func webPasscodeGenerator(length: Int) -> String {
+    func webPasscodeGenerator() -> String {
+        let length = appConfiguration.constants.webReceiver.passcodeLength
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
