@@ -11,10 +11,9 @@ import Partout
 extension AppContext {
     static var forUITesting: AppContext {
         let dependencies: Dependencies = .shared
-        let distributionTarget = Dependencies.distributionTarget
         let appConfiguration = Resources.newAppConfiguration(
-            target: .app,
-            distributionTarget: distributionTarget
+            distributionTarget: Dependencies.distributionTarget,
+            buildTarget: .app
         )
         let ctx: PartoutLoggerContext = .global
 
@@ -74,7 +73,6 @@ extension AppContext {
             appConfiguration: appConfiguration,
             appEncoder: AppEncoder(registry: registry),
             configManager: configManager,
-            distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
             logger: PartoutLoggerStrategy(),

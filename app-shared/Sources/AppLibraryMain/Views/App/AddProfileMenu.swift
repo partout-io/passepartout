@@ -15,8 +15,8 @@ struct AddProfileMenu: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     let profileManager: ProfileManager
 
@@ -35,7 +35,7 @@ struct AddProfileMenu: View {
             importQRButton
 #endif
             importTextButton
-            if distributionTarget.supportsPaidFeatures {
+            if appConfiguration.distributionTarget.supportsPaidFeatures {
                 Divider()
                 providerProfileMenu
             }

@@ -22,8 +22,6 @@ public final class AppContext {
 
     public let appEncoderObservable: AppEncoderObservable
 
-    public let distributionTarget: ABI.DistributionTarget
-
     public let iapObservable: IAPObservable
 
     public let onboardingObservable: OnboardingObservable
@@ -83,7 +81,6 @@ public final class AppContext {
         appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
         configManager: ConfigManager,
-        distributionTarget: ABI.DistributionTarget,
         iapManager: IAPManager,
         kvManager: KeyValueManager,
         logger: AppLogger,
@@ -115,7 +112,6 @@ public final class AppContext {
         appFormatter = AppFormatter(constants: appConfiguration.constants)
         appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
-        self.distributionTarget = distributionTarget
         iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
         self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)

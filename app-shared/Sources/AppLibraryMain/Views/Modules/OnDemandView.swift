@@ -10,8 +10,8 @@ struct OnDemandView: View, ModuleDraftEditing {
     @Environment(Theme.self)
     private var theme
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     @ObservedObject
     var draft: ModuleDraft<OnDemandModule.Builder>
@@ -41,7 +41,7 @@ struct OnDemandView: View, ModuleDraftEditing {
 
 private extension OnDemandView {
     var allPolicies: [OnDemandModule.Policy] {
-        if distributionTarget.supportsPaidFeatures {
+        if appConfiguration.distributionTarget.supportsPaidFeatures {
             return [.any, .excluding, .including]
         } else {
             return [.any]

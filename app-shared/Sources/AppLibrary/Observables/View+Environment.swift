@@ -13,7 +13,6 @@ extension View {
             .environment(context.appFormatter)
             .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
-            .environment(\.distributionTarget, context.distributionTarget)
             .environment(context.iapObservable)
             .environment(context.onboardingObservable)
             .environment(context.profileObservable)

@@ -13,9 +13,6 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
-
     @Environment(\.dismiss)
     private var dismiss
 
@@ -68,7 +65,7 @@ private extension SettingsContentView {
                 linkContent(.version)
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.donate)
                 }
             }
@@ -76,11 +73,11 @@ private extension SettingsContentView {
 
             Group {
                 ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
-                if distributionTarget == .developerID {
+                if appConfiguration.distributionTarget == .developerID {
                     linkContent(.systemExtension)
                 }
                 linkContent(.diagnostics)
-                if distributionTarget.supportsIAP {
+                if appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.purchased)
                 }
             }

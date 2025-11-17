@@ -13,9 +13,6 @@ struct SettingsContentView<LinkContent, SettingsDestination, LogDestination>: Vi
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
-
     @Environment(\.dismiss)
     private var dismiss
 
@@ -56,7 +53,7 @@ private extension SettingsContentView {
             Group {
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.donate)
                 }
             }
@@ -67,7 +64,7 @@ private extension SettingsContentView {
 
             Group {
                 linkContent(.diagnostics)
-                if distributionTarget.supportsIAP {
+                if appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.purchased)
                 }
             }

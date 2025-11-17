@@ -21,8 +21,8 @@ public struct OpenVPNCredentialsGroup: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     @ObservedObject
     private var draft: ModuleDraft<OpenVPNModule.Builder>
@@ -80,7 +80,8 @@ private extension OpenVPNCredentialsGroup {
             }
             .themeContainerEntry(subtitle: Strings.Modules.Openvpn.Credentials.Interactive.footer)
 
-            if distributionTarget.supportsPaidFeatures && draft.module.isInteractive && !isAuthenticating {
+            if appConfiguration.distributionTarget.supportsPaidFeatures &&
+                draft.module.isInteractive && !isAuthenticating {
                 Picker(Strings.Unlocalized.otp, selection: $builder.otpMethod) {
                     ForEach(otpMethods, id: \.self) {
                         Text($0.localizedDescription(style: .entity))

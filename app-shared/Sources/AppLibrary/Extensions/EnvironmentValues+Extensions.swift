@@ -16,16 +16,6 @@ extension EnvironmentValues {
         }
     }
 
-    // FIXME: #1594, Embed in AppConfiguration
-    public var distributionTarget: ABI.DistributionTarget {
-        get {
-            self[DistributionTargetKey.self]
-        }
-        set {
-            self[DistributionTargetKey.self] = newValue
-        }
-    }
-
     public var appConfiguration: ABI.AppConfiguration {
         get {
             self[AppConfigurationKey.self]
@@ -40,10 +30,9 @@ private struct IsUITestingKey: EnvironmentKey {
     static let defaultValue = false
 }
 
-private struct DistributionTargetKey: EnvironmentKey {
-    static let defaultValue: ABI.DistributionTarget = .appStore
-}
-
 private struct AppConfigurationKey: EnvironmentKey {
-    static let defaultValue = Resources.newAppConfiguration(target: .app, distributionTarget: .appStore)
+    static let defaultValue = Resources.newAppConfiguration(
+        distributionTarget: .appStore,
+        buildTarget: .app
+    )
 }

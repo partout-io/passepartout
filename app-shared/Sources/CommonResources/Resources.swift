@@ -8,12 +8,12 @@ import Partout
 
 public enum Resources {
     public static func newAppConfiguration(
-        target: ABI.AppTarget,
-        distributionTarget: ABI.DistributionTarget
+        distributionTarget: ABI.DistributionTarget,
+        buildTarget: ABI.BuildTarget
     ) -> ABI.AppConfiguration {
         let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         if isPreview {
-            return ABI.AppConfiguration(constants: constants)
+            return ABI.AppConfiguration(constants: constants, distributionTarget: .appStore)
         }
         // WARNING: This fails from package itself, e.g. in previews
         guard let bundle = BundleConfiguration(.main, key: "AppConfig") else {
@@ -21,9 +21,9 @@ public enum Resources {
         }
         return ABI.AppConfiguration(
             constants: constants,
-            bundle: bundle,
-            target: target,
-            distributionTarget: distributionTarget
+            distributionTarget: distributionTarget,
+            buildTarget: buildTarget,
+            bundle: bundle
         )
     }
 

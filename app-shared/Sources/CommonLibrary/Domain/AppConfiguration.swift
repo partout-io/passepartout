@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public enum AppTarget {
+    public enum BuildTarget {
         case app
         case tunnel
     }
@@ -31,6 +31,7 @@ extension ABI {
 
     public struct AppConfiguration: Sendable {
         public let constants: ABI.Constants
+        public let distributionTarget: ABI.DistributionTarget
 
         public let displayName: String
         public let versionNumber: String
@@ -43,8 +44,10 @@ extension ABI {
         public let urlForReview: URL
 
         // For previews
-        public init(constants: Constants) {
+        public init(constants: Constants, distributionTarget: ABI.DistributionTarget) {
             self.constants = constants
+            self.distributionTarget = distributionTarget
+
             displayName = "preview-display-name"
             versionNumber = "preview-1.2.3"
             buildNumber = 12345
@@ -59,11 +62,12 @@ extension ABI {
 
         public init(
             constants: Constants,
-            bundle: BundleConfiguration,
-            target: AppTarget,
-            distributionTarget: DistributionTarget
+            distributionTarget: DistributionTarget,
+            buildTarget: BuildTarget,
+            bundle: BundleConfiguration
         ) {
             self.constants = constants
+            self.distributionTarget = distributionTarget
             displayName = bundle.displayName
             versionNumber = bundle.versionNumber
             buildNumber = bundle.buildNumber
@@ -86,7 +90,7 @@ extension ABI {
 
                 // All required, except .userLevel is optional
                 let requiredKeys: Set<BundleKey>
-                switch target {
+                switch buildTarget {
                 case .app:
                     requiredKeys = BundleKey.requiredAppKeys
                 case .tunnel:

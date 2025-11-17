@@ -36,9 +36,6 @@ struct DiagnosticsView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
-
     @EnvironmentObject
     private var configManager: ConfigManager
 
@@ -64,7 +61,7 @@ struct DiagnosticsView: View {
             }
             liveLogSection
             profilesSection
-            if distributionTarget.supportsAppGroups {
+            if appConfiguration.distributionTarget.supportsAppGroups {
                 tunnelLogsSection
             }
             if canReportIssue {
@@ -166,7 +163,7 @@ private extension DiagnosticsView {
     var canReportIssue: Bool {
         AppCommandLine.contains(.withReportIssue) ||
             iapManager.isEligibleForFeedback ||
-            distributionTarget.canAlwaysReportIssue ||
+            appConfiguration.distributionTarget.canAlwaysReportIssue ||
             isUsingExperimentalFeatures
     }
 

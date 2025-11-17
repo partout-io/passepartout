@@ -15,9 +15,6 @@ public struct LinksView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
-
     public init() {
     }
 
@@ -47,7 +44,7 @@ private extension LinksView {
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !distributionTarget.supportsIAP && !iapManager.isBeta {
+            if !appConfiguration.distributionTarget.supportsIAP && !iapManager.isBeta {
                 WebDonationLink()
             }
         }

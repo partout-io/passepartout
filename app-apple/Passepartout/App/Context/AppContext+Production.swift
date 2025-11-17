@@ -21,8 +21,8 @@ extension AppContext {
 
         let distributionTarget = Dependencies.distributionTarget
         let appConfiguration = Resources.newAppConfiguration(
-            target: .app,
-            distributionTarget: distributionTarget
+            distributionTarget: distributionTarget,
+            buildTarget: .app
         )
         let dependencies: Dependencies = .shared
         let logger = PartoutLoggerStrategy()
@@ -312,7 +312,6 @@ extension AppContext {
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
-            distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
             logger: logger,

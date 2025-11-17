@@ -10,9 +10,6 @@ struct ReportIssueButton {
     @Environment(\.appConfiguration)
     var appConfiguration
 
-    @Environment(\.distributionTarget)
-    var distributionTarget
-
     let title: String
 
     var message: String?

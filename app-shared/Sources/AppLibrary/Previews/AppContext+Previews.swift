@@ -9,7 +9,10 @@ import Partout
 
 extension AppContext {
     public static let forPreviews: AppContext = {
-        let appConfiguration = Resources.newAppConfiguration(target: .app, distributionTarget: .appStore)
+        let appConfiguration = Resources.newAppConfiguration(
+            distributionTarget: .appStore,
+            buildTarget: .app
+        )
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
             customUserLevel: .complete,
@@ -52,14 +55,11 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        let distributionTarget: ABI.DistributionTarget = .appStore
-
         return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: AppEncoder(registry: registry),
             configManager: configManager,
-            distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
             logger: PartoutLoggerStrategy(),

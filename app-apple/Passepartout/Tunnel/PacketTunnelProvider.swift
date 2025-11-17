@@ -15,10 +15,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var verifierSubscription: Task<Void, Error>?
 
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
-        let distributionTarget = Dependencies.distributionTarget
         let appConfiguration = Resources.newAppConfiguration(
-            target: .tunnel,
-            distributionTarget: distributionTarget
+            distributionTarget: Dependencies.distributionTarget,
+            buildTarget: .tunnel
         )
         let logURL = appConfiguration.urlForTunnelLog
         let versionString = appConfiguration.versionString
@@ -64,7 +63,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
         let registry = dependencies.newRegistry(
-            distributionTarget: distributionTarget,
+            distributionTarget: appConfiguration.distributionTarget,
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: { preferences.enabledFlags(of: preferences.configFlags) }
         )
@@ -152,7 +151,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 },
                 productsAtBuild: dependencies.productsAtBuild()
             )
-            if distributionTarget.supportsIAP {
+            if appConfiguration.distributionTarget.supportsIAP {
                 manager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
             } else {
                 manager.isEnabled = false
@@ -210,7 +209,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
             // Do not run the verification loop if IAPs are not supported
             // just ensure that the profile does not require any paid feature
-            if !distributionTarget.supportsIAP {
+            if !appConfiguration.distributionTarget.supportsIAP {
                 guard originalProfile.features.isEmpty else {
                     throw PartoutError(.App.ineligibleProfile)
                 }

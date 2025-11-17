@@ -30,8 +30,8 @@ public struct PreferencesView: View {
     private var settings
 #endif
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     private let profileManager: ProfileManager
 
@@ -59,13 +59,14 @@ public struct PreferencesView: View {
 #endif
             pinActiveProfileSection
             dnsFallsBackSection
-            if distributionTarget.supportsIAP {
+            if appConfiguration.distributionTarget.supportsIAP {
                 enablesPurchasesSection
             }
-            if distributionTarget.supportsIAP && configManager.isActive(.allowsRelaxedVerification) {
+            if appConfiguration.distributionTarget.supportsIAP &&
+                configManager.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationSection
             }
-            if distributionTarget.supportsCloudKit {
+            if appConfiguration.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
             NavigationLink(advancedTitle, destination: advancedView)
@@ -186,8 +187,8 @@ public struct PreferencesView: View {
     @EnvironmentObject
     private var configManager: ConfigManager
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     private let profileManager: ProfileManager
 
@@ -200,7 +201,8 @@ public struct PreferencesView: View {
 
     public var body: some View {
         Group {
-            if distributionTarget.supportsIAP && configManager.isActive(.allowsRelaxedVerification) {
+            if appConfiguration.distributionTarget.supportsIAP &&
+                configManager.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationToggle
             }
         }
