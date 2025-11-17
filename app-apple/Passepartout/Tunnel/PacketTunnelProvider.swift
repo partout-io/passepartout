@@ -15,10 +15,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var verifierSubscription: Task<Void, Error>?
 
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
-        let appConfiguration = Resources.newAppConfiguration(
-            distributionTarget: Dependencies.distributionTarget,
-            buildTarget: .tunnel
-        )
+        let dependencies = Dependencies(buildTarget: .tunnel)
+        let appConfiguration = dependencies.appConfiguration
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -45,21 +43,19 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }
 
         // Update or fetch existing preferences
-        let (dependencies, kvManager, preferences) = await MainActor.run {
-            let dependencies: Dependencies = .shared
+        let (kvManager, preferences) = await MainActor.run {
             let kvManager = dependencies.kvManager
             if let startPreferences {
                 kvManager.preferences = startPreferences
-                return (dependencies, kvManager, startPreferences)
+                return (kvManager, startPreferences)
             } else {
-                return (dependencies, kvManager, kvManager.preferences)
+                return (kvManager, kvManager.preferences)
             }
         }
 
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
         let registry = dependencies.newRegistry(
-            distributionTarget: appConfiguration.distributionTarget,
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: { preferences.enabledFlags(of: preferences.configFlags) }
         )

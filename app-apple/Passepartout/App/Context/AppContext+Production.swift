@@ -19,12 +19,8 @@ extension AppContext {
 
         // MARK: Declare globals
 
-        let distributionTarget = Dependencies.distributionTarget
-        let appConfiguration = Resources.newAppConfiguration(
-            distributionTarget: distributionTarget,
-            buildTarget: .app
-        )
-        let dependencies: Dependencies = .shared
+        let dependencies = Dependencies(buildTarget: .app)
+        let appConfiguration = dependencies.appConfiguration
         let logger = PartoutLoggerStrategy()
         let kvManager = dependencies.kvManager
 
@@ -57,7 +53,7 @@ extension AppContext {
         )
         let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
             let cloudKitIdentifier: String?
-            if isEnabled && distributionTarget.supportsCloudKit {
+            if isEnabled && dependencies.distributionTarget.supportsCloudKit {
                 cloudKitIdentifier = appConfiguration.bundleString(for: .cloudKitId)
             } else {
                 cloudKitIdentifier = nil
@@ -88,7 +84,7 @@ extension AppContext {
             },
             productsAtBuild: dependencies.productsAtBuild()
         )
-        if distributionTarget.supportsIAP {
+        if dependencies.distributionTarget.supportsIAP {
             iapManager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
         } else {
             iapManager.isEnabled = false
@@ -127,7 +123,6 @@ extension AppContext {
             return newId
         }()
         let registry = dependencies.newRegistry(
-            distributionTarget: distributionTarget,
             deviceId: deviceId,
             configBlock: { [weak configManager, weak kvManager] in
                 guard let configManager, let kvManager else { return [] }
@@ -182,7 +177,7 @@ extension AppContext {
         )
 
         let sysexManager: SystemExtensionManager?
-        if distributionTarget == .developerID {
+        if dependencies.distributionTarget == .developerID {
             sysexManager = SystemExtensionManager(
                 identifier: tunnelIdentifier,
                 version: appConfiguration.versionNumber,
@@ -231,7 +226,7 @@ extension AppContext {
             // toggle CloudKit sync based on .sharing eligibility
             let remoteStore = newRemoteStore(isRemoteImportingEnabled)
 
-            if distributionTarget.supportsCloudKit {
+            if dependencies.distributionTarget.supportsCloudKit {
 
                 // @Published
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
@@ -289,7 +284,7 @@ extension AppContext {
                 strategy: versionStrategy,
                 currentVersion: appConfiguration.versionNumber,
                 downloadURL: {
-                    switch distributionTarget {
+                    switch dependencies.distributionTarget {
                     case .appStore:
                         return appConfiguration.constants.websites.appStoreDownload
                     case .developerID:
@@ -340,6 +335,7 @@ private extension Dependencies {
 #endif
     }
 
+    @MainActor
     func simulatedAppProductHelper(cfg: ABI.AppConfiguration) -> any AppProductHelper {
         if AppCommandLine.contains(.fakeIAP) {
             return FakeAppProductHelper()
@@ -347,6 +343,7 @@ private extension Dependencies {
         return appProductHelper(cfg: cfg)
     }
 
+    @MainActor
     func simulatedAppReceiptReader(cfg: ABI.AppConfiguration) -> AppReceiptReader {
         if AppCommandLine.contains(.fakeIAP) {
             guard let mockHelper = simulatedAppProductHelper(cfg: cfg) as? FakeAppProductHelper else {

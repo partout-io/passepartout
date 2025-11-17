@@ -10,11 +10,8 @@ import Partout
 
 extension AppContext {
     static var forUITesting: AppContext {
-        let dependencies: Dependencies = .shared
-        let appConfiguration = Resources.newAppConfiguration(
-            distributionTarget: Dependencies.distributionTarget,
-            buildTarget: .app
-        )
+        let dependencies = Dependencies(buildTarget: .app)
+        let appConfiguration = dependencies.appConfiguration
         let ctx: PartoutLoggerContext = .global
 
         var logger = PartoutLogger.Builder()
@@ -41,7 +38,6 @@ extension AppContext {
             }
         )
         let registry = dependencies.newRegistry(
-            distributionTarget: .appStore,
             deviceId: "TestDeviceID",
             configBlock: { [] }
         )

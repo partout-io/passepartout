@@ -6,7 +6,7 @@ import CommonLibrary
 import Partout
 
 extension Dependencies {
-    nonisolated func coreDataLogger() -> LoggerProtocol {
+    func coreDataLogger() -> LoggerProtocol {
         CoreDataPersistentStoreLogger()
     }
 }

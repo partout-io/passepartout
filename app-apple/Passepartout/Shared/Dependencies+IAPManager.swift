@@ -7,6 +7,7 @@ import CommonResources
 import Partout
 
 extension Dependencies {
+    @MainActor
     func appProductHelper(cfg: ABI.AppConfiguration) -> any AppProductHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,
@@ -17,11 +18,11 @@ extension Dependencies {
         )
     }
 
-    nonisolated func betaChecker() -> BetaChecker {
+    func betaChecker() -> BetaChecker {
         TestFlightChecker()
     }
 
-    nonisolated func productsAtBuild() -> BuildProducts<ABI.AppProduct> {
+    func productsAtBuild() -> BuildProducts<ABI.AppProduct> {
         { purchase in
 #if os(iOS)
             if purchase.isUntil(.freemium) {
@@ -41,7 +42,7 @@ extension Dependencies {
         }
     }
 
-    nonisolated func iapLogger() -> LoggerProtocol {
+    func iapLogger() -> LoggerProtocol {
         IAPLogger()
     }
 }

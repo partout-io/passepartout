@@ -7,12 +7,12 @@ import Foundation
 import Partout
 
 extension Dependencies {
+    @MainActor
     var kvManager: KeyValueManager {
         Self.sharedKVStore
     }
 
-    nonisolated func newRegistry(
-        distributionTarget: ABI.DistributionTarget,
+    func newRegistry(
         deviceId: String,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
     ) -> Registry {
@@ -33,8 +33,8 @@ extension Dependencies {
         )
     }
 
-    nonisolated func neProtocolCoder(_ ctx: PartoutLoggerContext, cfg: ABI.AppConfiguration, registry: Registry) -> NEProtocolCoder {
-        if Self.distributionTarget.supportsAppGroups {
+    func neProtocolCoder(_ ctx: PartoutLoggerContext, cfg: ABI.AppConfiguration, registry: Registry) -> NEProtocolCoder {
+        if distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: cfg.bundleString(for: .tunnelId),
@@ -50,8 +50,8 @@ extension Dependencies {
         }
     }
 
-    nonisolated func appTunnelEnvironment(cfg: ABI.AppConfiguration, strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        if Self.distributionTarget.supportsAppGroups {
+    func appTunnelEnvironment(cfg: ABI.AppConfiguration, strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+        if distributionTarget.supportsAppGroups {
             return tunnelEnvironment(cfg: cfg, profileId: profileId)
         } else {
             guard let neStrategy = strategy as? NETunnelStrategy else {
@@ -61,7 +61,7 @@ extension Dependencies {
         }
     }
 
-    nonisolated func tunnelEnvironment(cfg: ABI.AppConfiguration, profileId: Profile.ID) -> TunnelEnvironment {
+    func tunnelEnvironment(cfg: ABI.AppConfiguration, profileId: Profile.ID) -> TunnelEnvironment {
         let appGroup = cfg.bundleString(for: .groupId)
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
@@ -71,6 +71,7 @@ extension Dependencies {
 }
 
 private extension Dependencies {
+    @MainActor
     static let sharedKVStore: KeyValueManager = KeyValueManager(
         store: UserDefaultsStore(.standard),
         fallback: ABI.AppPreferenceValues()

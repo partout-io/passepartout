@@ -3,15 +3,30 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import Foundation
 
-@MainActor
 struct Dependencies {
-    static let shared = Dependencies()
+    let appConfiguration: ABI.AppConfiguration
+
+    var distributionTarget: ABI.DistributionTarget {
+        appConfiguration.distributionTarget
+    }
+
+    var constants: ABI.Constants {
+        appConfiguration.constants
+    }
+
+    init(buildTarget: ABI.BuildTarget) {
+        appConfiguration = Resources.newAppConfiguration(
+            distributionTarget: Self.currentDistributionTarget,
+            buildTarget: buildTarget
+        )
+    }
 }
 
-extension Dependencies {
-    public nonisolated static var distributionTarget: ABI.DistributionTarget {
+private extension Dependencies {
+    static var currentDistributionTarget: ABI.DistributionTarget {
 #if PP_BUILD_MAC
         .developerID
 #else
