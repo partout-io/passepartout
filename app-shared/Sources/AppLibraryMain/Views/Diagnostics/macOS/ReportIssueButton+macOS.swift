@@ -39,13 +39,10 @@ extension ReportIssueButton {
             }
             let issue = await ABI.Issue.withMetadata(.init(
                 ctx: .global,
-                target: appConfiguration.distributionTarget,
-                versionString: appConfiguration.versionString,
+                appConfiguration: appConfiguration,
                 purchasedProducts: purchasedProducts,
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
-                urlForTunnelLog: appConfiguration.urlForTunnelLog,
-                parameters: appConfiguration.constants.log,
                 comment: comment
             ))
             service.recipients = [issue.to(cfg: appConfiguration)]
