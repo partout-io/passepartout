@@ -54,7 +54,7 @@ extension ABI {
             displayName = "preview-display-name"
             versionNumber = "preview-1.2.3"
             buildNumber = 12345
-            versionString = "preview-1.2.3-1234"
+            versionString = "preview-1.2.3-12345"
             bundleStrings = [:]
             customUserLevel = nil
 
