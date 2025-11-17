@@ -7,6 +7,10 @@ import Foundation
 import Partout
 
 extension Dependencies {
+    func appLogger() -> AppLogger {
+        PartoutLoggerStrategy()
+    }
+
     @MainActor
     var kvManager: KeyValueManager {
         Self.sharedKVStore

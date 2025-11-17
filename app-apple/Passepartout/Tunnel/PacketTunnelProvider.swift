@@ -16,6 +16,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let dependencies = Dependencies(buildTarget: .tunnel)
         let appConfiguration = dependencies.appConfiguration
+        let appLogger = dependencies.appLogger()
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -131,7 +132,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 customUserLevel: appConfiguration.customUserLevel,
                 inAppHelper: dependencies.appProductHelper(),
                 receiptReader: SharedReceiptReader(
-                    reader: StoreKitReceiptReader(logger: dependencies.iapLogger()),
+                    reader: StoreKitReceiptReader(logger: appLogger),
                 ),
                 betaChecker: dependencies.betaChecker(),
                 timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,

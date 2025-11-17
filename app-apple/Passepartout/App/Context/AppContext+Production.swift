@@ -21,7 +21,7 @@ extension AppContext {
 
         let dependencies = Dependencies(buildTarget: .app)
         let appConfiguration = dependencies.appConfiguration
-        let logger = PartoutLoggerStrategy()
+        let appLogger = dependencies.appLogger()
         let kvManager = dependencies.kvManager
 
         let ctx = PartoutLogger.register(
@@ -45,7 +45,7 @@ extension AppContext {
         }
 
         let localStore = CoreDataPersistentStore(
-            logger: dependencies.coreDataLogger(),
+            logger: appLogger,
             containerName: appConfiguration.constants.containers.local,
             model: cdLocalModel,
             cloudKitIdentifier: nil,
@@ -59,7 +59,7 @@ extension AppContext {
                 cloudKitIdentifier = nil
             }
             return CoreDataPersistentStore(
-                logger: dependencies.coreDataLogger(),
+                logger: appLogger,
                 containerName: appConfiguration.constants.containers.remote,
                 model: cdRemoteModel,
                 cloudKitIdentifier: cloudKitIdentifier,
@@ -76,7 +76,7 @@ extension AppContext {
         let iapManager = IAPManager(
             customUserLevel: appConfiguration.customUserLevel,
             inAppHelper: dependencies.simulatedAppProductHelper(),
-            receiptReader: dependencies.simulatedAppReceiptReader(),
+            receiptReader: dependencies.simulatedAppReceiptReader(logger: appLogger),
             betaChecker: dependencies.betaChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
             verificationDelayMinutesBlock: {
@@ -138,6 +138,7 @@ extension AppContext {
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = dependencies.backupProfileRepository(
             ctx,
+            logger: appLogger,
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -155,6 +156,7 @@ extension AppContext {
         }
         let backupProfileRepository = dependencies.backupProfileRepository(
             ctx,
+            logger: logger,
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -200,7 +202,7 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
-            logger: logger,
+            logger: appLogger,
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
             port: appConfiguration.constants.webReceiver.port
@@ -302,7 +304,7 @@ extension AppContext {
             configManager: configManager,
             iapManager: iapManager,
             kvManager: kvManager,
-            logger: logger,
+            logger: appLogger,
             onboardingObservable: onboardingObservable,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
@@ -339,7 +341,7 @@ private extension Dependencies {
     }
 
     @MainActor
-    func simulatedAppReceiptReader() -> AppReceiptReader {
+    func simulatedAppReceiptReader(logger: AppLogger) -> AppReceiptReader {
         if AppCommandLine.contains(.fakeIAP) {
             guard let mockHelper = simulatedAppProductHelper() as? FakeAppProductHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
@@ -347,7 +349,7 @@ private extension Dependencies {
             return mockHelper.receiptReader
         }
         return SharedReceiptReader(
-            reader: StoreKitReceiptReader(logger: iapLogger())
+            reader: StoreKitReceiptReader(logger: logger)
         )
     }
 
@@ -357,13 +359,14 @@ private extension Dependencies {
 
     func backupProfileRepository(
         _ ctx: PartoutLoggerContext,
+        logger: AppLogger,
         encoder: AppEncoder,
         model: NSManagedObjectModel,
         name: String,
         observingResults: Bool
     ) -> ProfileRepository {
         let store = CoreDataPersistentStore(
-            logger: coreDataLogger(),
+            logger: logger,
             containerName: name,
             model: model,
             cloudKitIdentifier: nil,
