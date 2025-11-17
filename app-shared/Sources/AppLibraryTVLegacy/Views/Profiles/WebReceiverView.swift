@@ -33,7 +33,7 @@ struct WebReceiverView: View {
 }
 
 private extension WebReceiverView {
-    func view(forWebsite website: WebReceiverManager.Website) -> some View {
+    func view(forWebsite website: ABI.WebsiteWithPasscode) -> some View {
         VStack {
             Text(Strings.Views.Tv.WebReceiver.qr)
             QRCodeView(text: website.url.absoluteString)

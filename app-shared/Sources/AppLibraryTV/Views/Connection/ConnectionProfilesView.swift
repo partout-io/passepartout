@@ -7,10 +7,6 @@ import CommonLibrary
 import SwiftUI
 
 struct ConnectionProfilesView: View {
-
-    @EnvironmentObject
-    private var configManager: ConfigManager
-
     let profileObservable: ProfileObservable
 
     let tunnel: TunnelObservable

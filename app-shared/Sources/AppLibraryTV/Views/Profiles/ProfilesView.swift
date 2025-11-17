@@ -10,13 +10,9 @@ struct ProfilesView: View {
     @Environment(ViewLogger.self)
     private var logger
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
-
     let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var webReceiverManager: WebReceiverManager
+    let webReceiverObservable: WebReceiverObservable
 
     @FocusState
     private var detail: Detail?
@@ -49,7 +45,7 @@ private extension ProfilesView {
     var detailView: some View {
         DetailView(
             detail: detail,
-            webReceiverManager: webReceiverManager,
+            webReceiverObservable: webReceiverObservable,
             profileObservable: profileObservable,
             errorHandler: errorHandler
         )
@@ -96,17 +92,17 @@ private extension ProfilesView {
 private extension ProfilesView {
     var isImporterEnabled: Binding<Bool> {
         Binding {
-            webReceiverManager.isStarted
+            webReceiverObservable.isStarted
         } set: {
             if $0 {
                 do {
-                    try webReceiverManager.start()
+                    try webReceiverObservable.start()
                 } catch {
                     logger.log(.core, .error, "Unable to start web receiver: \(error)")
                     errorHandler.handle(error)
                 }
             } else {
-                webReceiverManager.stop()
+                webReceiverObservable.stop()
             }
        }
     }
@@ -129,8 +125,7 @@ private enum Detail {
 private struct DetailView: View {
     let detail: Detail?
 
-    @ObservedObject
-    var webReceiverManager: WebReceiverManager
+    let webReceiverObservable: WebReceiverObservable
 
     let profileObservable: ProfileObservable
 
@@ -155,7 +150,7 @@ private struct DetailView: View {
 private extension DetailView {
     var importView: some View {
         WebReceiverView(
-            webReceiverManager: webReceiverManager,
+            webReceiverObservable: webReceiverObservable,
             profileObservable: profileObservable,
             errorHandler: errorHandler
         )
