@@ -74,10 +74,10 @@ extension ABI {
                 case .appStoreId, .cloudKitId, .groupId,
                         .iapBundlePrefix, .keychainGroupId,
                         .loginItemId, .tunnelId:
-                    $0[$1] = bundle.string(for: $1)
+                    $0[$1.rawValue] = bundle.string(for: $1)
                 case .userLevel:
                     if let userLevel = bundle.integerIfPresent(for: $1) {
-                        $0[$1] = userLevel
+                        $0[$1.rawValue] = userLevel
                     }
                 }
             }
