@@ -23,7 +23,7 @@ extension Dependencies {
     }
 
     @Sendable
-    nonisolated func profileTitle(for profile: Profile) -> String {
+    func profileTitle(for profile: Profile) -> String {
         String(format: appConfiguration.constants.tunnel.profileTitleFormat, profile.name)
     }
 }
