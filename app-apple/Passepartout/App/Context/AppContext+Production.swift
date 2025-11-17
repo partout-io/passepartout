@@ -15,7 +15,7 @@ import Foundation
 import Partout
 
 extension AppContext {
-    convenience init() {
+    static func forProduction() -> AppContext {
 
         // MARK: Declare globals
 
@@ -297,7 +297,7 @@ extension AppContext {
 
         // MARK: Build
 
-        self.init(
+        return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,

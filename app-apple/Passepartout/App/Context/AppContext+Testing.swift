@@ -8,7 +8,7 @@ import Foundation
 import Partout
 
 extension AppContext {
-    static var forUITesting: AppContext {
+    static func forUITesting() -> AppContext {
         let dependencies = Dependencies(buildTarget: .app)
         let appConfiguration = dependencies.appConfiguration
         let appLogger = dependencies.appLogger()
