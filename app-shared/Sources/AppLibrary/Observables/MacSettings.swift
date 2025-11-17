@@ -10,7 +10,7 @@ import Partout
 import ServiceManagement
 
 @MainActor @Observable
-public final class MacSettingsModel {
+public final class MacSettings {
     private let kvManager: KeyValueManager?
 
     private let appService: SMAppService?

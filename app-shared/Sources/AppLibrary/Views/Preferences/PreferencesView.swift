@@ -26,7 +26,7 @@ public struct PreferencesView: View {
     @AppStorage(ABI.UIPreference.locksInBackground.key)
     private var locksInBackground = false
 #elseif os(macOS)
-    @Environment(MacSettingsModel.self)
+    @Environment(MacSettings.self)
     private var settings
 #endif
 
@@ -221,6 +221,6 @@ private extension PreferencesView {
     PreferencesView(profileManager: .forPreviews)
         .withMockEnvironment()
 #if os(macOS)
-        .environment(MacSettingsModel())
+        .environment(MacSettings())
 #endif
 }

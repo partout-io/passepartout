@@ -10,7 +10,7 @@ import SwiftUI
 
 public struct AppMenu: View {
 
-    @Environment(MacSettingsModel.self)
+    @Environment(MacSettings.self)
     private var settings
 
     @ObservedObject

@@ -166,6 +166,6 @@ extension SettingsCoordinator {
     )
     .withMockEnvironment()
 #if os(macOS)
-    .environment(MacSettingsModel())
+    .environment(MacSettings())
 #endif
 }
