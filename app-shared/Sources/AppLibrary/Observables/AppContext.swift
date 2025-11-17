@@ -14,6 +14,8 @@ public final class AppContext {
 
     // MARK: Environment/Observables
 
+    // FIXME: #1594, Add injectable AppConfiguration from Constants/BundleConfiguration
+
     public let appearanceObservable: AppearanceObservable
 
     public let appEncoderObservable: AppEncoderObservable
@@ -106,9 +108,10 @@ public final class AppContext {
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
 
-        // Observables
+        // Environment
         appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
+        self.distributionTarget = distributionTarget
         iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
         self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)
@@ -116,7 +119,6 @@ public final class AppContext {
         viewLogger = ViewLogger(strategy: logger)
 
         // Other
-        self.distributionTarget = distributionTarget
         self.receiptInvalidationInterval = receiptInvalidationInterval
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
 
