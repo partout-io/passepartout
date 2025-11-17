@@ -11,6 +11,9 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
     @EnvironmentObject
     public var iapManager: IAPManager
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     private let profileManager: ProfileManager
 
     public let tunnel: ExtendedTunnel
@@ -116,12 +119,12 @@ private extension LegacyAppCoordinator {
     func pushDestination(for item: AppCoordinatorRoute?) -> some View {
         switch item {
         case .appLog:
-            DebugLogView(withAppParameters: Resources.constants.log) {
+            DebugLogView(withAppParameters: appConfiguration.constants.log) {
                 DebugLogContentView(lines: $0)
             }
 
         case .tunnelLog:
-            DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
+            DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
                 DebugLogContentView(lines: $0)
             }
 

@@ -11,6 +11,9 @@ struct SettingsView: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     let profileObservable: ProfileObservable
 
     let tunnel: TunnelObservable
@@ -61,7 +64,7 @@ private extension SettingsView {
             } label: {
                 ThemeRow(
                     Strings.Global.Nouns.version,
-                    value: Resources.constants.bundleMainVersionString
+                    value: appConfiguration.versionString
                 )
             }
             .focused($focus, equals: .version)

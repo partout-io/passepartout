@@ -9,6 +9,9 @@ import SwiftUI
 
 struct PaywallScrollableView: View {
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Binding
     var isPresented: Bool
 
@@ -90,8 +93,8 @@ private extension PaywallScrollableView {
 
     var linksView: some View {
         Section {
-            Link(Strings.Unlocalized.eula, destination: Resources.constants.websites.eula)
-            Link(Strings.Views.Settings.Links.Rows.privacyPolicy, destination: Resources.constants.websites.privacyPolicy)
+            Link(Strings.Unlocalized.eula, destination: appConfiguration.constants.websites.eula)
+            Link(Strings.Views.Settings.Links.Rows.privacyPolicy, destination: appConfiguration.constants.websites.privacyPolicy)
         }
     }
 

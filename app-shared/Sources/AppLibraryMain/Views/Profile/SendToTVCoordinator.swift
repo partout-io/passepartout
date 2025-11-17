@@ -14,6 +14,9 @@ struct SendToTVCoordinator: View {
     @Environment(AppEncoderObservable.self)
     private var appEncoder
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     let profile: Profile
 
     @Binding
@@ -34,7 +37,7 @@ private extension SendToTVCoordinator {
         let client = WebUploader(
             logger: logger,
             strategy: URLSessionUploaderStrategy(
-                timeout: Resources.constants.api.timeoutInterval
+                timeout: appConfiguration.constants.api.timeoutInterval
             )
         )
         do {

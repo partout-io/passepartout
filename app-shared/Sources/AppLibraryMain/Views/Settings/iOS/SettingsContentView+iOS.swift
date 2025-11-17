@@ -10,6 +10,9 @@ import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, LogDestination>: View where LinkContent: View, SettingsDestination: View, LogDestination: View {
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.distributionTarget)
     private var distributionTarget
 
@@ -59,7 +62,7 @@ private extension SettingsContentView {
             }
             .themeSection(header: Strings.Global.Nouns.about)
 
-            ExternalLink(Strings.Unlocalized.faq, url: Resources.constants.websites.faq)
+            ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
                 .themeSection(header: Strings.Global.Nouns.troubleshooting)
 
             Group {

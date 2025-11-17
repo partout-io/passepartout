@@ -10,6 +10,9 @@ import SwiftUI
 
 struct SendToTVView: View {
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Binding
     var isPresented: Bool
 
@@ -68,7 +71,7 @@ private extension SendToTVView {
     }
 
     func passcodeView(url: URL) -> some View {
-        SendToTVPasscodeView(length: Resources.constants.webReceiver.passcodeLength) { passcode in
+        SendToTVPasscodeView(length: appConfiguration.constants.webReceiver.passcodeLength) { passcode in
             do {
                 isSending = true
                 try await onComplete(url, passcode)

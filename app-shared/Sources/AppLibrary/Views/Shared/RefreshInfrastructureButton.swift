@@ -16,6 +16,9 @@ public struct RefreshInfrastructureButton<Label>: View where Label: View {
     @EnvironmentObject
     private var kvManager: KeyValueManager
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     private let module: ProviderModule
 
     private let label: () -> Label
@@ -78,7 +81,7 @@ public struct RefreshInfrastructureButtonProgressView: View {
 
 private extension RefreshInfrastructureButton {
     var isEnabled: Bool {
-        AppCommandLine.contains(.withoutRateLimits) || elapsed >= Resources.constants.api.refreshInfrastructureRateLimit
+        AppCommandLine.contains(.withoutRateLimits) || elapsed >= appConfiguration.constants.api.refreshInfrastructureRateLimit
     }
 
     func loadLastUpdate() {
