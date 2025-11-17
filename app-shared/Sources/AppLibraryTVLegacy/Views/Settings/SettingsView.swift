@@ -10,6 +10,9 @@ struct SettingsView: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @ObservedObject
     var profileManager: ProfileManager
 
@@ -61,7 +64,7 @@ private extension SettingsView {
             } label: {
                 ThemeRow(
                     Strings.Global.Nouns.version,
-                    value: BundleConfiguration.mainVersionString
+                    value: appConfiguration.versionString
                 )
             }
             .focused($focus, equals: .version)

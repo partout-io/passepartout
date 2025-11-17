@@ -3,13 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import Foundation
 
 extension ABI.ChangelogEntry {
-    public var issueURL: URL? {
+    public func issueURL(cfg: ABI.AppConfiguration) -> URL? {
         issue.map {
-            Resources.constants.github.urlForIssue($0)
+            cfg.constants.github.urlForIssue($0)
         }
     }
 }

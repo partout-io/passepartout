@@ -449,6 +449,7 @@ extension IAPManager {
             betaChecker: betaChecker ?? TestFlightChecker(),
             unrestrictedFeatures: unrestrictedFeatures,
             timeoutInterval: 5.0,
+            verificationDelayMinutesBlock: { _ in 2 },
             productsAtBuild: productsAtBuild
         )
     }

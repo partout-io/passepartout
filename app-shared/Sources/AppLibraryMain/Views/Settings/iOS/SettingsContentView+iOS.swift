@@ -5,13 +5,12 @@
 #if os(iOS)
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, LogDestination>: View where LinkContent: View, SettingsDestination: View, LogDestination: View {
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     @Environment(\.dismiss)
     private var dismiss
@@ -53,18 +52,18 @@ private extension SettingsContentView {
             Group {
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.donate)
                 }
             }
             .themeSection(header: Strings.Global.Nouns.about)
 
-            ExternalLink(Strings.Unlocalized.faq, url: Resources.constants.websites.faq)
+            ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
                 .themeSection(header: Strings.Global.Nouns.troubleshooting)
 
             Group {
                 linkContent(.diagnostics)
-                if distributionTarget.supportsIAP {
+                if appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.purchased)
                 }
             }

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import Partout
 
 extension Dependencies {
@@ -16,12 +15,12 @@ extension Dependencies {
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry,
-            title: profileTitle
+            title: profileTitle(for:)
         )
     }
 
     @Sendable
-    nonisolated func profileTitle(_ profile: Profile) -> String {
-        String(format: Resources.constants.tunnel.profileTitleFormat, profile.name)
+    func profileTitle(for profile: Profile) -> String {
+        String(format: appConfiguration.constants.tunnel.profileTitleFormat, profile.name)
     }
 }

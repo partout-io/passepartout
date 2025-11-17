@@ -14,7 +14,6 @@
 		0E23061E2DC2C2CB002D70D7 /* Dependencies+Partout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4C2D05FE5A00531CDE /* Dependencies+Partout.swift */; };
 		0E23061F2DC2C2CB002D70D7 /* DefaultTunnelProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAEC8A72D05DB8D001AA50C /* DefaultTunnelProcessor.swift */; };
 		0E2306222DC2C2DC002D70D7 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8195592CFDA75200CC8FFD /* Dependencies.swift */; };
-		0E2306232DC2C2DC002D70D7 /* Dependencies+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD492D05FE5A00531CDE /* Dependencies+CoreData.swift */; };
 		0E2306242DC2C2DC002D70D7 /* Dependencies+IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4B2D05FE5A00531CDE /* Dependencies+IAPManager.swift */; };
 		0E2BA91D2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
 		0E2BA91E2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
@@ -42,10 +41,8 @@
 		0E8DFD4E2D05FE5A00531CDE /* Dependencies+Partout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4C2D05FE5A00531CDE /* Dependencies+Partout.swift */; };
 		0E8DFD4F2D05FE5A00531CDE /* Dependencies+IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4B2D05FE5A00531CDE /* Dependencies+IAPManager.swift */; };
 		0E8DFD502D05FE5A00531CDE /* Dependencies+Processors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4D2D05FE5A00531CDE /* Dependencies+Processors.swift */; };
-		0E8DFD512D05FE5A00531CDE /* Dependencies+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD492D05FE5A00531CDE /* Dependencies+CoreData.swift */; };
 		0E8DFD532D05FE5A00531CDE /* Dependencies+Partout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4C2D05FE5A00531CDE /* Dependencies+Partout.swift */; };
 		0E8DFD542D05FE5A00531CDE /* Dependencies+IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4B2D05FE5A00531CDE /* Dependencies+IAPManager.swift */; };
-		0E8DFD562D05FE5A00531CDE /* Dependencies+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD492D05FE5A00531CDE /* Dependencies+CoreData.swift */; };
 		0E916B782CF80FD60072921A /* ProfileEditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E916B772CF80FD60072921A /* ProfileEditorScreen.swift */; platformFilters = (ios, macos, ); };
 		0E916B7C2CF811EB0072921A /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E916B7B2CF811EB0072921A /* XCUIElement+Extensions.swift */; };
 		0E94EE582B93554B00588243 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */; };
@@ -158,7 +155,6 @@
 		0E7F46102CF7F44C00B1C53A /* AppScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreen.swift; sourceTree = "<group>"; };
 		0E8195592CFDA75200CC8FFD /* Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
 		0E8D852F2C328CA1005493DE /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
-		0E8DFD492D05FE5A00531CDE /* Dependencies+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dependencies+CoreData.swift"; sourceTree = "<group>"; };
 		0E8DFD4B2D05FE5A00531CDE /* Dependencies+IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dependencies+IAPManager.swift"; sourceTree = "<group>"; };
 		0E8DFD4C2D05FE5A00531CDE /* Dependencies+Partout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dependencies+Partout.swift"; sourceTree = "<group>"; };
 		0E8DFD4D2D05FE5A00531CDE /* Dependencies+Processors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dependencies+Processors.swift"; sourceTree = "<group>"; };
@@ -359,7 +355,6 @@
 			children = (
 				0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */,
 				0E8195592CFDA75200CC8FFD /* Dependencies.swift */,
-				0E8DFD492D05FE5A00531CDE /* Dependencies+CoreData.swift */,
 				0E8DFD4B2D05FE5A00531CDE /* Dependencies+IAPManager.swift */,
 				0E8DFD4C2D05FE5A00531CDE /* Dependencies+Partout.swift */,
 				0E9805982E1D291500808635 /* OpenVPNImplementationBuilder.swift */,
@@ -800,7 +795,6 @@
 				0E8DFD4E2D05FE5A00531CDE /* Dependencies+Partout.swift in Sources */,
 				0E8DFD4F2D05FE5A00531CDE /* Dependencies+IAPManager.swift in Sources */,
 				0E8DFD502D05FE5A00531CDE /* Dependencies+Processors.swift in Sources */,
-				0E8DFD512D05FE5A00531CDE /* Dependencies+CoreData.swift in Sources */,
 				0E98059A2E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */,
 				0E7C3CCD2C9AF44600B72E69 /* AppDelegate.swift in Sources */,
 				0E2BA91D2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */,
@@ -864,7 +858,6 @@
 				0E98059E2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */,
 				0E9805992E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */,
 				0E8DFD542D05FE5A00531CDE /* Dependencies+IAPManager.swift in Sources */,
-				0E8DFD562D05FE5A00531CDE /* Dependencies+CoreData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -881,7 +874,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E2306222DC2C2DC002D70D7 /* Dependencies.swift in Sources */,
-				0E2306232DC2C2DC002D70D7 /* Dependencies+CoreData.swift in Sources */,
 				0E2306242DC2C2DC002D70D7 /* Dependencies+IAPManager.swift in Sources */,
 				0E23061E2DC2C2CB002D70D7 /* Dependencies+Partout.swift in Sources */,
 				0E23061F2DC2C2CB002D70D7 /* DefaultTunnelProcessor.swift in Sources */,

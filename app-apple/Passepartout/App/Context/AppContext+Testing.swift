@@ -4,14 +4,19 @@
 
 import AppLibrary
 import CommonLibrary
-import CommonResources
 import Foundation
 import Partout
 
 extension AppContext {
-    static var forUITesting: AppContext {
-        let dependencies: Dependencies = .shared
-        let constants = Resources.constants
+    static func forUITesting() -> AppContext {
+        let dependencies = Dependencies(buildTarget: .app)
+        let appConfiguration = dependencies.appConfiguration
+        let appLogger = dependencies.appLogger()
+        let registry = dependencies.newRegistry(
+            deviceId: "TestDeviceID",
+            configBlock: { [] }
+        )
+        let appEncoder = AppEncoder(registry: registry)
         let ctx: PartoutLoggerContext = .global
 
         var logger = PartoutLogger.Builder()
@@ -29,15 +34,13 @@ extension AppContext {
             inAppHelper: dependencies.appProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
-            timeoutInterval: constants.iap.productsTimeoutInterval,
+            timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: { _ in
+                2
+            },
             productsAtBuild: { _ in
                 []
             }
-        )
-        let registry = dependencies.newRegistry(
-            distributionTarget: .appStore,
-            deviceId: "TestDeviceID",
-            configBlock: { [] }
         )
         let processor = dependencies.appProcessor(
             apiManager: apiManager,
@@ -54,7 +57,7 @@ extension AppContext {
                 SharedTunnelEnvironment(profileId: nil)
             },
             processor: processor,
-            interval: constants.tunnel.refreshInterval
+            interval: appConfiguration.constants.tunnel.refreshInterval
         )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
@@ -63,12 +66,12 @@ extension AppContext {
 
         return AppContext(
             apiManager: apiManager,
-            appEncoder: AppEncoder(registry: registry),
+            appConfiguration: appConfiguration,
+            appEncoder: appEncoder,
             configManager: configManager,
-            distributionTarget: Dependencies.distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            logger: PartoutLoggerStrategy(),
+            logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

@@ -5,7 +5,6 @@
 import AppAccessibility
 import AppLibrary
 import CommonLibrary
-import CommonResources
 import Partout
 import SwiftUI
 
@@ -14,15 +13,15 @@ final class AppDelegate: NSObject {
     let context: AppContext = {
         if AppCommandLine.contains(.uiTesting) {
             pp_log_g(.App.core, .info, "UI tests: mock AppContext")
-            return .forUITesting
+            return .forUITesting()
         }
-        return AppContext()
+        return .forProduction()
     }()
 
 #if os(macOS)
-    let settings = MacSettings(
-        kvManager: Dependencies.shared.kvManager,
-        loginItemId: BundleConfiguration.mainString(for: .loginItemId)
+    lazy var macSettings = MacSettings(
+        kvManager: context.kvManager,
+        loginItemId: context.appConfiguration.bundleString(for: .loginItemId)
     )
 #endif
 

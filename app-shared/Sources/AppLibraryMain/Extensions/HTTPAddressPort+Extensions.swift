@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 
 extension HTTPAddressPort {
     var urlDescription: String? {
@@ -22,7 +21,7 @@ extension HTTPAddressPort {
 }
 
 extension HTTPAddressPort {
-    static var forWebReceiver: HTTPAddressPort {
-        HTTPAddressPort(port: String(Resources.constants.webReceiver.port))
+    static func forWebReceiver(cfg: ABI.AppConfiguration) -> HTTPAddressPort {
+        HTTPAddressPort(port: String(cfg.constants.webReceiver.port))
     }
 }

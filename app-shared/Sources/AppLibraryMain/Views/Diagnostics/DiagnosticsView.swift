@@ -4,7 +4,6 @@
 
 import AppAccessibility
 import CommonLibrary
-import CommonResources
 import SwiftUI
 
 struct DiagnosticsView: View {
@@ -21,6 +20,9 @@ struct DiagnosticsView: View {
     @Environment(Theme.self)
     private var theme
 
+    @Environment(AppFormatter.self)
+    private var appFormatter
+
     @EnvironmentObject
     private var apiManager: APIManager
 
@@ -30,8 +32,8 @@ struct DiagnosticsView: View {
     @EnvironmentObject
     private var kvManager: KeyValueManager
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     @EnvironmentObject
     private var configManager: ConfigManager
@@ -51,12 +53,6 @@ struct DiagnosticsView: View {
     @State
     var isPresentingUnableToEmail = false
 
-    private let dateFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = Resources.constants.formats.timestamp
-        return df
-    }()
-
     var body: some View {
         Form {
             if iapManager.isBeta {
@@ -64,7 +60,7 @@ struct DiagnosticsView: View {
             }
             liveLogSection
             profilesSection
-            if distributionTarget.supportsAppGroups {
+            if appConfiguration.distributionTarget.supportsAppGroups {
                 tunnelLogsSection
             }
             if canReportIssue {
@@ -141,7 +137,7 @@ private extension DiagnosticsView {
 
     func logView(for item: LogEntry) -> some View {
         ThemeRemovableItemRow(isEditing: true) {
-            let dateString = dateFormatter.string(from: item.date)
+            let dateString = appFormatter.string(from: item.date)
             navLink(dateString, to: .tunnelLog(title: dateString, url: item.url))
         } removeAction: {
             removeTunnelLog(at: item.url)
@@ -166,7 +162,7 @@ private extension DiagnosticsView {
     var canReportIssue: Bool {
         AppCommandLine.contains(.withReportIssue) ||
             iapManager.isEligibleForFeedback ||
-            distributionTarget.canAlwaysReportIssue ||
+            appConfiguration.distributionTarget.canAlwaysReportIssue ||
             isUsingExperimentalFeatures
     }
 
@@ -182,10 +178,9 @@ private extension DiagnosticsView {
     }
 
     func defaultTunnelLogs() async -> [LogEntry] {
-        let target = distributionTarget
-        return await Task.detached {
+        await Task.detached {
             LocalLogger.FileStrategy()
-                .availableLogs(at: Resources.constants.bundleURLForTunnelLog(in: target))
+                .availableLogs(at: await appConfiguration.urlForTunnelLog)
                 .sorted {
                     $0.key > $1.key
                 }
@@ -212,7 +207,7 @@ private extension DiagnosticsView {
 
     func removeTunnelLogs() {
         LocalLogger.FileStrategy()
-            .purgeLogs(at: Resources.constants.bundleURLForTunnelLog(in: distributionTarget))
+            .purgeLogs(at: appConfiguration.urlForTunnelLog)
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

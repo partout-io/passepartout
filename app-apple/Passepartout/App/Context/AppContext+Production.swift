@@ -15,22 +15,19 @@ import Foundation
 import Partout
 
 extension AppContext {
-    convenience init() {
+    static func forProduction() -> AppContext {
 
         // MARK: Declare globals
 
-        let distributionTarget = Dependencies.distributionTarget
-        let constants = Resources.constants
-        let dependencies: Dependencies = .shared
-        let logger = PartoutLoggerStrategy()
+        let dependencies = Dependencies(buildTarget: .app)
+        let appConfiguration = dependencies.appConfiguration
+        let appLogger = dependencies.appLogger()
         let kvManager = dependencies.kvManager
 
         let ctx = PartoutLogger.register(
             for: .app,
-            loggingTo: constants.bundleURLForAppLog,
-            with: kvManager.preferences,
-            parameters: constants.log,
-            versionString: constants.bundleMainVersionString
+            with: appConfiguration,
+            preferences: kvManager.preferences
         )
 
         // MARK: Core Data
@@ -48,22 +45,22 @@ extension AppContext {
         }
 
         let localStore = CoreDataPersistentStore(
-            logger: dependencies.coreDataLogger(),
-            containerName: constants.containers.local,
+            logger: appLogger,
+            containerName: appConfiguration.constants.containers.local,
             model: cdLocalModel,
             cloudKitIdentifier: nil,
             author: nil
         )
         let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
             let cloudKitIdentifier: String?
-            if isEnabled && distributionTarget.supportsCloudKit {
-                cloudKitIdentifier = BundleConfiguration.mainString(for: .cloudKitId)
+            if isEnabled && appConfiguration.distributionTarget.supportsCloudKit {
+                cloudKitIdentifier = appConfiguration.bundleString(for: .cloudKitId)
             } else {
                 cloudKitIdentifier = nil
             }
             return CoreDataPersistentStore(
-                logger: dependencies.coreDataLogger(),
-                containerName: constants.containers.remote,
+                logger: appLogger,
+                containerName: appConfiguration.constants.containers.remote,
                 model: cdRemoteModel,
                 cloudKitIdentifier: cloudKitIdentifier,
                 author: nil
@@ -77,14 +74,17 @@ extension AppContext {
             return APIManager(ctx, from: API.shared, repository: repository)
         }()
         let iapManager = IAPManager(
-            customUserLevel: dependencies.customUserLevel,
+            customUserLevel: appConfiguration.customUserLevel,
             inAppHelper: dependencies.simulatedAppProductHelper(),
-            receiptReader: dependencies.simulatedAppReceiptReader(),
+            receiptReader: dependencies.simulatedAppReceiptReader(logger: appLogger),
             betaChecker: dependencies.betaChecker(),
-            timeoutInterval: constants.iap.productsTimeoutInterval,
+            timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: {
+                appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
+            },
             productsAtBuild: dependencies.productsAtBuild()
         )
-        if distributionTarget.supportsIAP {
+        if appConfiguration.distributionTarget.supportsIAP {
             iapManager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
         } else {
             iapManager.isEnabled = false
@@ -95,19 +95,19 @@ extension AppContext {
 #if DEBUG
         let configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
 #else
-        let configURL = constants.websites.config
+        let configURL = appConfiguration.constants.websites.config
 #endif
-        let betaConfigURL = constants.websites.betaConfig
+        let betaConfigURL = appConfiguration.constants.websites.betaConfig
         let configManager = ConfigManager(
             strategy: GitHubConfigStrategy(
                 url: configURL,
                 betaURL: betaConfigURL,
-                ttl: constants.websites.configTTL,
+                ttl: appConfiguration.constants.websites.configTTL,
                 isBeta: { [weak iapManager] in
                     iapManager?.isBeta == true
                 }
             ),
-            buildNumber: BundleConfiguration.mainBuildNumber
+            buildNumber: appConfiguration.buildNumber
         )
 
         // MARK: Registry
@@ -117,13 +117,12 @@ extension AppContext {
                 pp_log_g(.App.core, .info, "Device ID: \(existingId)")
                 return existingId
             }
-            let newId = String.random(count: constants.deviceIdLength)
+            let newId = String.random(count: appConfiguration.constants.deviceIdLength)
             kvManager.set(newId, forAppPreference: .deviceId)
             pp_log_g(.App.core, .info, "Device ID (new): \(newId)")
             return newId
         }()
         let registry = dependencies.newRegistry(
-            distributionTarget: distributionTarget,
             deviceId: deviceId,
             configBlock: { [weak configManager, weak kvManager] in
                 guard let configManager, let kvManager else { return [] }
@@ -134,14 +133,15 @@ extension AppContext {
         )
         let appEncoder = AppEncoder(registry: registry)
 
-        let tunnelIdentifier = BundleConfiguration.mainString(for: .tunnelId)
+        let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = dependencies.backupProfileRepository(
             ctx,
+            logger: appLogger,
             encoder: appEncoder,
             model: cdRemoteModel,
-            name: constants.containers.backup,
+            name: appConfiguration.constants.containers.backup,
             observingResults: true
         )
         let backupProfileRepository: ProfileRepository? = nil
@@ -152,13 +152,14 @@ extension AppContext {
             coder: dependencies.neProtocolCoder(ctx, registry: registry)
         )
         let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) {
-            dependencies.profileTitle($0)
+            dependencies.profileTitle(for: $0)
         }
         let backupProfileRepository = dependencies.backupProfileRepository(
             ctx,
+            logger: appLogger,
             encoder: appEncoder,
             model: cdRemoteModel,
-            name: constants.containers.backup,
+            name: appConfiguration.constants.containers.backup,
             observingResults: false
         )
 #endif
@@ -177,11 +178,11 @@ extension AppContext {
         )
 
         let sysexManager: SystemExtensionManager?
-        if distributionTarget == .developerID {
+        if appConfiguration.distributionTarget == .developerID {
             sysexManager = SystemExtensionManager(
                 identifier: tunnelIdentifier,
-                version: BundleConfiguration.mainVersionNumber,
-                build: BundleConfiguration.mainBuildNumber
+                version: appConfiguration.versionNumber,
+                build: appConfiguration.buildNumber
             )
         } else {
             sysexManager = nil
@@ -193,7 +194,7 @@ extension AppContext {
             sysex: sysexManager,
             kvManager: kvManager,
             processor: processor,
-            interval: constants.tunnel.refreshInterval
+            interval: appConfiguration.constants.tunnel.refreshInterval
         )
 
         let onboardingObservable = OnboardingObservable(kvManager: kvManager)
@@ -201,13 +202,13 @@ extension AppContext {
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
-            logger: logger,
+            logger: appLogger,
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
-            port: constants.webReceiver.port
+            port: appConfiguration.constants.webReceiver.port
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
-            dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)
+            dependencies.webPasscodeGenerator()
         }
 #else
         let webReceiverManager = WebReceiverManager()
@@ -222,7 +223,7 @@ extension AppContext {
             // toggle CloudKit sync based on .sharing eligibility
             let remoteStore = newRemoteStore(isRemoteImportingEnabled)
 
-            if distributionTarget.supportsCloudKit {
+            if appConfiguration.distributionTarget.supportsCloudKit {
 
                 // @Published
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
@@ -270,21 +271,21 @@ extension AppContext {
         // MARK: Version
 
         let versionStrategy = GitHubReleaseStrategy(
-            releaseURL: constants.github.latestRelease,
-            rateLimit: constants.api.versionRateLimit
+            releaseURL: appConfiguration.constants.github.latestRelease,
+            rateLimit: appConfiguration.constants.api.versionRateLimit
         )
         let versionChecker: VersionChecker
         if !iapManager.isBeta {
             versionChecker = VersionChecker(
                 kvManager: kvManager,
                 strategy: versionStrategy,
-                currentVersion: BundleConfiguration.mainVersionNumber,
+                currentVersion: appConfiguration.versionNumber,
                 downloadURL: {
-                    switch distributionTarget {
+                    switch appConfiguration.distributionTarget {
                     case .appStore:
-                        return constants.websites.appStoreDownload
+                        return appConfiguration.constants.websites.appStoreDownload
                     case .developerID:
-                        return constants.websites.macDownload
+                        return appConfiguration.constants.websites.macDownload
                     case .enterprise:
                         fatalError("No URL for enterprise distribution")
                     }
@@ -296,14 +297,14 @@ extension AppContext {
 
         // MARK: Build
 
-        self.init(
+        return AppContext(
             apiManager: apiManager,
+            appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
-            distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            logger: logger,
+            logger: appLogger,
             onboardingObservable: onboardingObservable,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
@@ -312,7 +313,6 @@ extension AppContext {
             tunnel: tunnel,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            receiptInvalidationInterval: constants.iap.receiptInvalidationInterval,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
     }
@@ -332,6 +332,7 @@ private extension Dependencies {
 #endif
     }
 
+    @MainActor
     func simulatedAppProductHelper() -> any AppProductHelper {
         if AppCommandLine.contains(.fakeIAP) {
             return FakeAppProductHelper()
@@ -339,7 +340,8 @@ private extension Dependencies {
         return appProductHelper()
     }
 
-    func simulatedAppReceiptReader() -> AppReceiptReader {
+    @MainActor
+    func simulatedAppReceiptReader(logger: AppLogger) -> AppReceiptReader {
         if AppCommandLine.contains(.fakeIAP) {
             guard let mockHelper = simulatedAppProductHelper() as? FakeAppProductHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
@@ -347,7 +349,7 @@ private extension Dependencies {
             return mockHelper.receiptReader
         }
         return SharedReceiptReader(
-            reader: StoreKitReceiptReader(logger: iapLogger())
+            reader: StoreKitReceiptReader(logger: logger)
         )
     }
 
@@ -357,13 +359,14 @@ private extension Dependencies {
 
     func backupProfileRepository(
         _ ctx: PartoutLoggerContext,
+        logger: AppLogger,
         encoder: AppEncoder,
         model: NSManagedObjectModel,
         name: String,
         observingResults: Bool
     ) -> ProfileRepository {
         let store = CoreDataPersistentStore(
-            logger: coreDataLogger(),
+            logger: logger,
             containerName: name,
             model: model,
             cloudKitIdentifier: nil,
@@ -380,7 +383,8 @@ private extension Dependencies {
         )
     }
 
-    func webPasscodeGenerator(length: Int) -> String {
+    func webPasscodeGenerator() -> String {
+        let length = appConfiguration.constants.webReceiver.passcodeLength
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }

@@ -278,10 +278,7 @@ extension ProfileManager {
     // FIXME: #1594, Profile.ID in public
     public func profile(withId profileId: Profile.ID) -> ABI.AppProfile? {
         guard let profile = allProfiles[profileId] else { return nil }
-        return profile.abiProfile(
-            sharingFlags: sharingFlags(for: profileId),
-            requiredFeatures: requiredFeatures(for: profile)
-        )
+        return ABI.AppProfile(native: profile)
     }
 }
 

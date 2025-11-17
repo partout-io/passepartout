@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 
 public struct AppCoordinator: View, AppCoordinatorConforming {
@@ -13,6 +12,9 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 
     @Environment(IAPObservable.self)
     public var iapObservable
+
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     private let profileObservable: ProfileObservable
 
@@ -114,14 +116,14 @@ private extension AppCoordinator {
     func pushDestination(for item: AppCoordinatorRoute?) -> some View {
         switch item {
         case .appLog:
-            DebugLogView(withAppParameters: Resources.constants.log) {
+            DebugLogView(withAppParameters: appConfiguration.constants.log) {
                 DebugLogContentView(lines: $0)
             }
 
         case .tunnelLog:
             // FIXME: #1594, DebugLog
             EmptyView()
-//            DebugLogView(withTunnel: tunnel, parameters: Resources.constants.log) {
+//            DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
 //                DebugLogContentView(lines: $0)
 //            }
 

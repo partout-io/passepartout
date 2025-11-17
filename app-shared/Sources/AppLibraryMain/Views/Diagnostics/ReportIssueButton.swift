@@ -7,8 +7,8 @@ import SwiftUI
 
 struct ReportIssueButton {
 
-    @Environment(\.distributionTarget)
-    var distributionTarget: ABI.DistributionTarget
+    @Environment(\.appConfiguration)
+    var appConfiguration
 
     let title: String
 

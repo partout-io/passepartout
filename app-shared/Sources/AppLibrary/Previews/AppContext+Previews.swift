@@ -3,11 +3,19 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import Foundation
 import Partout
 
 extension AppContext {
     public static let forPreviews: AppContext = {
+        let appConfiguration = Resources.newAppConfiguration(
+            distributionTarget: .appStore,
+            buildTarget: .app
+        )
+        let appLogger = PartoutLoggerStrategy()
+        let registry = Registry()
+        let appEncoder = AppEncoder(registry: registry)
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
             customUserLevel: .complete,
@@ -15,6 +23,9 @@ extension AppContext {
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: 5.0,
+            verificationDelayMinutesBlock: { _ in
+                2
+            },
             productsAtBuild: { _ in
                 []
             }
@@ -41,22 +52,19 @@ extension AppContext {
         )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
-        let registry = Registry()
 
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        let distributionTarget: ABI.DistributionTarget = .appStore
-
         return AppContext(
             apiManager: apiManager,
-            appEncoder: AppEncoder(registry: registry),
+            appConfiguration: appConfiguration,
+            appEncoder: appEncoder,
             configManager: configManager,
-            distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
-            logger: PartoutLoggerStrategy(),
+            logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

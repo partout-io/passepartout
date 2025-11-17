@@ -5,13 +5,12 @@
 #if os(macOS)
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestination>: View where LinkContent: View, SettingsDestination: View, DiagnosticsDestination: View {
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     @Environment(\.dismiss)
     private var dismiss
@@ -65,26 +64,26 @@ private extension SettingsContentView {
                 linkContent(.version)
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.donate)
                 }
             }
             .themeSection(header: Strings.Global.Nouns.about)
 
             Group {
-                ExternalLink(Strings.Unlocalized.faq, url: Resources.constants.websites.faq)
-                if distributionTarget == .developerID {
+                ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
+                if appConfiguration.distributionTarget == .developerID {
                     linkContent(.systemExtension)
                 }
                 linkContent(.diagnostics)
-                if distributionTarget.supportsIAP {
+                if appConfiguration.distributionTarget.supportsIAP {
                     linkContent(.purchased)
                 }
             }
             .themeSection(header: Strings.Global.Nouns.troubleshooting)
         }
         .safeAreaInset(edge: .bottom) {
-            Text(BundleConfiguration.mainVersionString)
+            Text(appConfiguration.versionString)
                 .padding(.bottom)
         }
         .navigationTitle(Strings.Views.Settings.title)

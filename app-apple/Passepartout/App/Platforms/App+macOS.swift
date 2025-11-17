@@ -12,14 +12,14 @@ extension AppDelegate: NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         configure(with: AppLibraryMain())
         context.onApplicationActive()
-        if settings.isStartedFromLoginItem {
+        if macSettings.isStartedFromLoginItem {
             AppWindow.shared.isVisible = false
         }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         AppWindow.shared.isVisible = false
-        return !settings.keepsInMenu
+        return !macSettings.keepsInMenu
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -37,7 +37,7 @@ extension PassepartoutApp {
                     context.onApplicationActive()
                 }
                 .withEnvironment(from: context, theme: theme)
-                .environment(settings)
+                .environment(macSettings)
                 .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
                 .frame(minWidth: 600, minHeight: 400)
         }
@@ -60,7 +60,7 @@ extension PassepartoutApp {
                 tunnel: context.tunnel
             )
             .withEnvironment(from: context, theme: theme)
-            .environment(settings)
+            .environment(macSettings)
             .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
         } label: {
             AppMenuImage(tunnel: context.tunnel)

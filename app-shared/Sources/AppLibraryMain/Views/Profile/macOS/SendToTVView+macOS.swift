@@ -9,13 +9,16 @@ import SwiftUI
 
 struct SendToTVView: View {
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Binding
     var isPresented: Bool
 
     let onComplete: (URL, String) async throws -> Void
 
     @State
-    private var addressPort: HTTPAddressPort = .forWebReceiver
+    private var addressPort = HTTPAddressPort()
 
     @State
     private var passcode = ""
@@ -35,6 +38,9 @@ struct SendToTVView: View {
             }
             .themeNavigationStack()
             .withErrorHandler(errorHandler)
+            .onLoad {
+                addressPort = .forWebReceiver(cfg: appConfiguration)
+            }
     }
 }
 

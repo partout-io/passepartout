@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 @preconcurrency import NetworkExtension
 import Partout
 
@@ -15,10 +14,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var verifierSubscription: Task<Void, Error>?
 
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
-        let distributionTarget = Dependencies.distributionTarget
-        let constants = Resources.constants
-        let logURL = constants.bundleURLForTunnelLog(in: distributionTarget)
-        let versionString = constants.bundleMainVersionString
+        let dependencies = Dependencies(buildTarget: .tunnel)
+        let appConfiguration = dependencies.appConfiguration
+        let appLogger = dependencies.appLogger()
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -26,10 +24,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // profile-aware context later.
         _ = PartoutLogger.register(
             for: .tunnelGlobal,
-            loggingTo: logURL,
-            with: ABI.AppPreferenceValues(),
-            parameters: constants.log,
-            versionString: versionString
+            with: appConfiguration,
+            preferences: ABI.AppPreferenceValues()
         )
 
         // The app may propagate its local preferences on manual start
@@ -47,21 +43,19 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }
 
         // Update or fetch existing preferences
-        let (dependencies, kvManager, preferences) = await MainActor.run {
-            let dependencies: Dependencies = .shared
+        let (kvManager, preferences) = await MainActor.run {
             let kvManager = dependencies.kvManager
             if let startPreferences {
                 kvManager.preferences = startPreferences
-                return (dependencies, kvManager, startPreferences)
+                return (kvManager, startPreferences)
             } else {
-                return (dependencies, kvManager, kvManager.preferences)
+                return (kvManager, kvManager.preferences)
             }
         }
 
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
         let registry = dependencies.newRegistry(
-            distributionTarget: distributionTarget,
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: { preferences.enabledFlags(of: preferences.configFlags) }
         )
@@ -82,10 +76,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Update the logger now that we have a context
         let ctx = PartoutLogger.register(
             for: .tunnelProfile(originalProfile.id),
-            loggingTo: logURL,
-            with: preferences,
-            parameters: constants.log,
-            versionString: versionString
+            with: appConfiguration,
+            preferences: preferences
         )
         self.ctx = ctx
         try await trackContext(ctx)
@@ -113,7 +105,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 options: {
                     var options = NETunnelController.Options()
                     if preferences.dnsFallsBack {
-                        options.dnsFallbackServers = constants.tunnel.dnsFallbackServers
+                        options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
                     }
                     return options
                 }()
@@ -137,16 +129,19 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Create IAPManager for receipt verification
         let iapManager = await MainActor.run {
             let manager = IAPManager(
-                customUserLevel: dependencies.customUserLevel,
+                customUserLevel: appConfiguration.customUserLevel,
                 inAppHelper: dependencies.appProductHelper(),
                 receiptReader: SharedReceiptReader(
-                    reader: StoreKitReceiptReader(logger: dependencies.iapLogger()),
+                    reader: StoreKitReceiptReader(logger: appLogger),
                 ),
                 betaChecker: dependencies.betaChecker(),
-                timeoutInterval: constants.iap.productsTimeoutInterval,
+                timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+                verificationDelayMinutesBlock: {
+                    appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
+                },
                 productsAtBuild: dependencies.productsAtBuild()
             )
-            if distributionTarget.supportsIAP {
+            if appConfiguration.distributionTarget.supportsIAP {
                 manager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
             } else {
                 manager.isEnabled = false
@@ -193,7 +188,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             // Prepare for receipt verification
             await iapManager.fetchLevelIfNeeded()
             let isBeta = await iapManager.isBeta
-            let params = constants.tunnel.verificationParameters(isBeta: isBeta)
+            let params = appConfiguration.constants.tunnel.verificationParameters(isBeta: isBeta)
             pp_log(ctx, .App.iap, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Start the tunnel (ignore all start options)
@@ -201,7 +196,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
             // Do not run the verification loop if IAPs are not supported
             // just ensure that the profile does not require any paid feature
-            if !distributionTarget.supportsIAP {
+            if !appConfiguration.distributionTarget.supportsIAP {
                 guard originalProfile.features.isEmpty else {
                     throw PartoutError(.App.ineligibleProfile)
                 }

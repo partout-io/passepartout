@@ -14,11 +14,11 @@ struct ModuleListView: View, Routable {
     @EnvironmentObject
     private var iapManager: IAPManager
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.isUITesting)
     private var isUITesting
-
-    @Environment(\.distributionTarget)
-    private var distributionTarget
 
     let profileEditor: ProfileEditor
 
@@ -111,7 +111,7 @@ private extension ModuleListView {
     var addModuleMenu: some View {
         AddModuleMenu(
             moduleTypes: availableTypes,
-            withProviderType: distributionTarget.supportsPaidFeatures
+            withProviderType: appConfiguration.distributionTarget.supportsPaidFeatures
         ) {
             flow?.onNewModule($0)
         } label: {
@@ -122,7 +122,7 @@ private extension ModuleListView {
 
 private extension ModuleListView {
     var availableTypes: [ModuleType] {
-        profileEditor.availableModuleTypes(forTarget: distributionTarget)
+        profileEditor.availableModuleTypes(forTarget: appConfiguration.distributionTarget)
     }
 
     var requiredGeneralFeatures: Set<ABI.AppFeature> {

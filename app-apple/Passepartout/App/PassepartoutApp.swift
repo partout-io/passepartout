@@ -39,7 +39,7 @@ struct PassepartoutApp: App {
 
 extension PassepartoutApp {
     var appName: String {
-        BundleConfiguration.mainDisplayName
+        context.appConfiguration.displayName
     }
 
     var context: AppContext {
@@ -47,8 +47,8 @@ extension PassepartoutApp {
     }
 
 #if os(macOS)
-    var settings: MacSettings {
-        appDelegate.settings
+    var macSettings: MacSettings {
+        appDelegate.macSettings
     }
 #endif
 

@@ -14,13 +14,13 @@ public final class AppContext {
 
     // MARK: Environment/Observables
 
-    // FIXME: #1594, Add injectable AppConfiguration from Constants/BundleConfiguration
+    public let appConfiguration: ABI.AppConfiguration
 
     public let appearanceObservable: AppearanceObservable
 
     public let appEncoderObservable: AppEncoderObservable
 
-    public let distributionTarget: ABI.DistributionTarget
+    public let appFormatter: AppFormatter
 
     public let iapObservable: IAPObservable
 
@@ -78,9 +78,9 @@ public final class AppContext {
 
     public init(
         apiManager: APIManager,
+        appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
         configManager: ConfigManager,
-        distributionTarget: ABI.DistributionTarget,
         iapManager: IAPManager,
         kvManager: KeyValueManager,
         logger: AppLogger,
@@ -92,7 +92,6 @@ public final class AppContext {
         tunnel: ExtendedTunnel,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        receiptInvalidationInterval: TimeInterval = 30.0,
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         // Internal
@@ -109,9 +108,10 @@ public final class AppContext {
         self.webReceiverManager = webReceiverManager
 
         // Environment
+        self.appConfiguration = appConfiguration
+        appFormatter = AppFormatter(constants: appConfiguration.constants)
         appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
-        self.distributionTarget = distributionTarget
         iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
         self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)
@@ -119,7 +119,7 @@ public final class AppContext {
         viewLogger = ViewLogger(strategy: logger)
 
         // Other
-        self.receiptInvalidationInterval = receiptInvalidationInterval
+        receiptInvalidationInterval = appConfiguration.constants.iap.receiptInvalidationInterval
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
 
         didLoadReceiptDate = nil

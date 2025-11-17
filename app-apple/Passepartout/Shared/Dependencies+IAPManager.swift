@@ -3,33 +3,25 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import Partout
 
 extension Dependencies {
-    nonisolated var customUserLevel: ABI.AppUserLevel? {
-        guard let userLevelInteger = BundleConfiguration.mainIntegerIfPresent(for: .userLevel),
-              let userLevel = ABI.AppUserLevel(rawValue: userLevelInteger) else {
-            return nil
-        }
-        return userLevel
-    }
-
+    @MainActor
     func appProductHelper() -> any AppProductHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,
             inAppIdentifier: {
-                let prefix = BundleConfiguration.mainString(for: .iapBundlePrefix)
+                let prefix = appConfiguration.bundleString(for: .iapBundlePrefix)
                 return "\(prefix).\($0.rawValue)"
             }
         )
     }
 
-    nonisolated func betaChecker() -> BetaChecker {
+    func betaChecker() -> BetaChecker {
         TestFlightChecker()
     }
 
-    nonisolated func productsAtBuild() -> BuildProducts<ABI.AppProduct> {
+    func productsAtBuild() -> BuildProducts<ABI.AppProduct> {
         { purchase in
 #if os(iOS)
             if purchase.isUntil(.freemium) {
@@ -47,19 +39,5 @@ extension Dependencies {
             return []
 #endif
         }
-    }
-
-    nonisolated func iapLogger() -> LoggerProtocol {
-        IAPLogger()
-    }
-}
-
-private struct IAPLogger: LoggerProtocol {
-    func debug(_ msg: String) {
-        pp_log_g(.App.iap, .info, msg)
-    }
-
-    func warning(_ msg: String) {
-        pp_log_g(.App.iap, .error, msg)
     }
 }

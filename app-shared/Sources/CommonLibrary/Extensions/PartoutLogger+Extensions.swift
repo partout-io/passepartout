@@ -16,31 +16,50 @@ extension PartoutLogger {
     @discardableResult
     public static func register(
         for target: Target,
-        loggingTo url: URL,
-        with preferences: ABI.AppPreferenceValues,
-        parameters: ABI.Constants.Log,
-        versionString: String
+        with appConfiguration: ABI.AppConfiguration,
+        preferences: ABI.AppPreferenceValues
     ) -> PartoutLoggerContext {
         switch target {
         case .app:
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = appLogger(to: url, preferences: preferences, parameters: parameters)
+                let logger = appLogger(
+                    to: appConfiguration.urlForAppLog,
+                    preferences: preferences,
+                    parameters: appConfiguration.constants.log
+                )
                 PartoutLogger.register(logger)
-                logger.logPreamble(versionString: versionString, parameters: parameters)
+                logger.logPreamble(
+                    versionString: appConfiguration.versionString,
+                    parameters: appConfiguration.constants.log
+                )
             }
             return .global
         case .tunnelGlobal:
-            let logger = tunnelLogger(to: url, preferences: preferences, parameters: parameters)
+            let logger = tunnelLogger(
+                to: appConfiguration.urlForTunnelLog,
+                preferences: preferences,
+                parameters: appConfiguration.constants.log
+            )
             PartoutLogger.register(logger)
-            logger.logPreamble(versionString: versionString, parameters: parameters)
+            logger.logPreamble(
+                versionString: appConfiguration.versionString,
+                parameters: appConfiguration.constants.log
+            )
             return .global
         case .tunnelProfile(let profileId):
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = tunnelLogger(to: url, preferences: preferences, parameters: parameters)
+                let logger = tunnelLogger(
+                    to: appConfiguration.urlForTunnelLog,
+                    preferences: preferences,
+                    parameters: appConfiguration.constants.log
+                )
                 PartoutLogger.register(logger)
-                logger.logPreamble(versionString: versionString, parameters: parameters)
+                logger.logPreamble(
+                    versionString: appConfiguration.versionString,
+                    parameters: appConfiguration.constants.log
+                )
             }
             return PartoutLoggerContext(profileId)
         }

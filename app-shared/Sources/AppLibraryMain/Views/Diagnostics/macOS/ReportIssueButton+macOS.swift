@@ -5,7 +5,6 @@
 #if os(macOS)
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 
 extension ReportIssueButton: View {
@@ -39,32 +38,29 @@ extension ReportIssueButton {
             }
             let issue = await ABI.Issue.withMetadata(.init(
                 ctx: .global,
-                target: distributionTarget,
-                versionString: BundleConfiguration.mainVersionString,
+                appConfiguration: appConfiguration,
                 purchasedProducts: purchasedProducts,
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
-                urlForTunnelLog: Resources.constants.bundleURLForTunnelLog(in: distributionTarget),
-                parameters: Resources.constants.log,
                 comment: comment
             ))
-            service.recipients = [issue.to]
+            service.recipients = [issue.to(cfg: appConfiguration)]
             service.subject = issue.subject
-            service.perform(withItems: issue.items)
+            service.perform(withItems: issue.items(cfg: appConfiguration))
         }
     }
 }
 
 private extension ABI.Issue {
-    var items: [Any] {
+    func items(cfg: ABI.AppConfiguration) -> [Any] {
         var list: [Any] = []
         list.append(body)
         if let appLog,
-           let url = appLog.toTemporaryURL(withFilename: Resources.constants.log.appPath) {
+           let url = appLog.toTemporaryURL(withFilename: cfg.constants.log.appPath) {
             list.append(url)
         }
         if let tunnelLog,
-           let url = tunnelLog.toTemporaryURL(withFilename: Resources.constants.log.tunnelPath) {
+           let url = tunnelLog.toTemporaryURL(withFilename: cfg.constants.log.tunnelPath) {
             list.append(url)
         }
         return list

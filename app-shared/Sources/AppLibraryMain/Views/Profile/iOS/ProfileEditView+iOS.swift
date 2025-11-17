@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ProfileEditView: View, Routable {
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     let profileManager: ProfileManager
 
@@ -126,7 +126,7 @@ private extension ProfileEditView {
     var addModuleMenu: some View {
         AddModuleMenu(
             moduleTypes: availableTypes,
-            withProviderType: distributionTarget.supportsPaidFeatures
+            withProviderType: appConfiguration.distributionTarget.supportsPaidFeatures
         ) {
             flow?.onNewModule($0)
         } label: {
@@ -137,7 +137,7 @@ private extension ProfileEditView {
 
 private extension ProfileEditView {
     var availableTypes: [ModuleType] {
-        profileEditor.availableModuleTypes(forTarget: distributionTarget)
+        profileEditor.availableModuleTypes(forTarget: appConfiguration.distributionTarget)
     }
 
     func moveModules(from offsets: IndexSet, to newOffset: Int) {

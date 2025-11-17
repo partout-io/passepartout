@@ -5,7 +5,6 @@
 #if os(iOS)
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 import UIKit
 
@@ -43,10 +42,10 @@ extension ReportIssueButton {
                     return false
                 }
             },
-            toRecipients: [issue.to],
+            toRecipients: [issue.to(cfg: appConfiguration)],
             subject: issue.subject,
             messageBody: issue.body,
-            attachments: issue.attachments
+            attachments: issue.attachments(cfg: appConfiguration)
         )
     }
 
@@ -59,13 +58,10 @@ extension ReportIssueButton {
             }
             let issue = await ABI.Issue.withMetadata(.init(
                 ctx: .global,
-                target: distributionTarget,
-                versionString: BundleConfiguration.mainVersionString,
+                appConfiguration: appConfiguration,
                 purchasedProducts: purchasedProducts,
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
-                urlForTunnelLog: Resources.constants.bundleURLForTunnelLog(in: distributionTarget),
-                parameters: Resources.constants.log,
                 comment: comment
             ))
             guard MailComposerView.canSendMail() else {
@@ -77,7 +73,7 @@ extension ReportIssueButton {
     }
 
     func openMailTo(with issue: ABI.Issue) {
-        guard let url = URL.mailto(to: issue.to, subject: issue.subject, body: issue.body) else {
+        guard let url = URL.mailto(to: issue.to(cfg: appConfiguration), subject: issue.subject, body: issue.body) else {
             return
         }
         guard UIApplication.shared.canOpenURL(url) else {
@@ -89,14 +85,14 @@ extension ReportIssueButton {
 }
 
 private extension ABI.Issue {
-    var attachments: [MailComposerView.Attachment] {
+    func attachments(cfg: ABI.AppConfiguration) -> [MailComposerView.Attachment] {
         var list: [MailComposerView.Attachment] = []
         let mimeType = Strings.Unlocalized.Issues.attachmentMimeType
         if let appLog {
-            list.append(.init(data: appLog, mimeType: mimeType, fileName: Resources.constants.log.appPath))
+            list.append(.init(data: appLog, mimeType: mimeType, fileName: cfg.constants.log.appPath))
         }
         if let tunnelLog {
-            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: Resources.constants.log.tunnelPath))
+            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: cfg.constants.log.tunnelPath))
         }
         return list
     }

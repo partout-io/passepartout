@@ -7,12 +7,16 @@ import Foundation
 import Partout
 
 extension Dependencies {
+    func appLogger() -> AppLogger {
+        PartoutLoggerStrategy()
+    }
+
+    @MainActor
     var kvManager: KeyValueManager {
         Self.sharedKVStore
     }
 
-    nonisolated func newRegistry(
-        distributionTarget: ABI.DistributionTarget,
+    func newRegistry(
         deviceId: String,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
     ) -> Registry {
@@ -23,7 +27,7 @@ extension Dependencies {
             ],
             allImplementations: [
                 OpenVPNImplementationBuilder(
-                    distributionTarget: distributionTarget,
+                    distributionTarget: appConfiguration.distributionTarget,
                     configBlock: configBlock
                 ).build(),
                 WireGuardImplementationBuilder(
@@ -33,25 +37,25 @@ extension Dependencies {
         )
     }
 
-    nonisolated func neProtocolCoder(_ ctx: PartoutLoggerContext, registry: Registry) -> NEProtocolCoder {
-        if Self.distributionTarget.supportsAppGroups {
+    func neProtocolCoder(_ ctx: PartoutLoggerContext, registry: Registry) -> NEProtocolCoder {
+        if appConfiguration.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: BundleConfiguration.mainString(for: .tunnelId),
+                tunnelBundleIdentifier: appConfiguration.bundleString(for: .tunnelId),
                 registry: registry,
-                keychain: AppleKeychain(ctx, group: BundleConfiguration.mainString(for: .keychainGroupId))
+                keychain: AppleKeychain(ctx, group: appConfiguration.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: BundleConfiguration.mainString(for: .tunnelId),
+                tunnelBundleIdentifier: appConfiguration.bundleString(for: .tunnelId),
                 registry: registry
             )
         }
     }
 
-    nonisolated func appTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        if Self.distributionTarget.supportsAppGroups {
+    func appTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+        if appConfiguration.distributionTarget.supportsAppGroups {
             return tunnelEnvironment(profileId: profileId)
         } else {
             guard let neStrategy = strategy as? NETunnelStrategy else {
@@ -61,8 +65,8 @@ extension Dependencies {
         }
     }
 
-    nonisolated func tunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        let appGroup = BundleConfiguration.mainString(for: .groupId)
+    func tunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+        let appGroup = appConfiguration.bundleString(for: .groupId)
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
         }
@@ -71,6 +75,7 @@ extension Dependencies {
 }
 
 private extension Dependencies {
+    @MainActor
     static let sharedKVStore: KeyValueManager = KeyValueManager(
         store: UserDefaultsStore(.standard),
         fallback: ABI.AppPreferenceValues()

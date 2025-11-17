@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import Partout
 import SwiftUI
 
@@ -12,8 +11,8 @@ public struct LinksView: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     public init() {
     }
@@ -30,11 +29,7 @@ public struct LinksView: View {
 
 private extension LinksView {
     var constants: ABI.Constants {
-        Resources.constants
-    }
-
-    var appStoreId: String {
-        BundleConfiguration.mainString(for: .appStoreId)
+        appConfiguration.constants
     }
 
     var supportSection: some View {
@@ -42,9 +37,9 @@ private extension LinksView {
             Link(Strings.Views.Settings.Links.Rows.joinCommunity, destination: constants.websites.subreddit)
             Link(Strings.Views.Settings.Links.Rows.openDiscussion, destination: constants.github.discussions)
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
-//                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: BundleConfiguration.urlForReview)
+//                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !distributionTarget.supportsIAP && !iapManager.isBeta {
+            if !appConfiguration.distributionTarget.supportsIAP && !iapManager.isBeta {
                 WebDonationLink()
             }
         }

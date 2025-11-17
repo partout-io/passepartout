@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 
 struct OnboardingModifier: ViewModifier {
@@ -16,6 +15,9 @@ struct OnboardingModifier: ViewModifier {
 
     @EnvironmentObject
     private var profileManager: ProfileManager
+
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     @Environment(\.isUITesting)
     private var isUITesting
@@ -67,7 +69,7 @@ private extension OnboardingModifier {
     func alertActions(for item: OnboardingStep) -> some View {
         switch item {
         case .community:
-            Link(Strings.Onboarding.Community.subscribe, destination: Resources.constants.websites.subreddit)
+            Link(Strings.Onboarding.Community.subscribe, destination: appConfiguration.constants.websites.subreddit)
                 .environment(\.openURL, OpenURLAction { _ in
                     advance()
                     return .systemAction

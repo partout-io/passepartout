@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import SwiftUI
 
 extension EnvironmentValues {
@@ -15,12 +16,12 @@ extension EnvironmentValues {
         }
     }
 
-    public var distributionTarget: ABI.DistributionTarget {
+    public var appConfiguration: ABI.AppConfiguration {
         get {
-            self[DistributionTargetKey.self]
+            self[AppConfigurationKey.self]
         }
         set {
-            self[DistributionTargetKey.self] = newValue
+            self[AppConfigurationKey.self] = newValue
         }
     }
 }
@@ -29,6 +30,9 @@ private struct IsUITestingKey: EnvironmentKey {
     static let defaultValue = false
 }
 
-private struct DistributionTargetKey: EnvironmentKey {
-    static let defaultValue: ABI.DistributionTarget = .appStore
+private struct AppConfigurationKey: EnvironmentKey {
+    static let defaultValue = Resources.newAppConfiguration(
+        distributionTarget: .appStore,
+        buildTarget: .app
+    )
 }

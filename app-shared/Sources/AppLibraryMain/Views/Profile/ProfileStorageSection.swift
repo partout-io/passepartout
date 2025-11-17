@@ -13,8 +13,8 @@ struct ProfileStorageSection: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @Environment(\.distributionTarget)
-    private var distributionTarget
+    @Environment(\.appConfiguration)
+    private var appConfiguration
 
     let profileEditor: ProfileEditor
 
@@ -93,7 +93,7 @@ private extension ProfileStorageSection {
 
 private extension ProfileStorageSection {
     var showsSharing: Bool {
-        distributionTarget.supportsCloudKit
+        appConfiguration.distributionTarget.supportsCloudKit
     }
 
     var sharingRequirements: Set<ABI.AppFeature> {

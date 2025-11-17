@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol AppLogger {
+public protocol AppLogger: Sendable {
     func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
 }

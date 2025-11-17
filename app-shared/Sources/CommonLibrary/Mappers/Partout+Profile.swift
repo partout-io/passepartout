@@ -18,13 +18,4 @@ extension Profile {
             requiredFeatures: requiredFeatures
         )
     }
-
-    func abiProfile(
-        sharingFlags: [ABI.ProfileSharingFlag],
-        requiredFeatures: Set<ABI.AppFeature>
-    ) -> ABI.AppProfile {
-        ABI.AppProfile(
-            native: self
-        )
-    }
 }

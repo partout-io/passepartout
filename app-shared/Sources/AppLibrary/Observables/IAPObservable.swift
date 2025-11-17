@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import CommonResources
 import Foundation
 
 @MainActor @Observable
@@ -44,7 +43,7 @@ extension IAPObservable {
     }
 
     public var verificationDelayMinutes: Int {
-        Resources.constants.tunnel.verificationDelayMinutes(isBeta: isBeta)
+        iapManager.verificationDelayMinutes
     }
 }
 
