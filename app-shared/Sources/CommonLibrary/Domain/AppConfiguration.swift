@@ -10,16 +10,18 @@ extension ABI {
         case tunnel
     }
 
-    // All cases are strings, only .userLevel is number/integer
     public enum BundleKey: String, CaseIterable, Decodable {
+        // These cases are all strings
         case appStoreId
         case cloudKitId
-        case userLevel
         case groupId
         case iapBundlePrefix
         case keychainGroupId
         case loginItemId
         case tunnelId
+
+        // This is an integer number
+        case userLevel
 
         static func requiredKeys(for target: BuildTarget) -> Set<Self> {
             switch target {
