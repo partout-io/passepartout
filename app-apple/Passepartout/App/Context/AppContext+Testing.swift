@@ -11,7 +11,11 @@ import Partout
 extension AppContext {
     static var forUITesting: AppContext {
         let dependencies: Dependencies = .shared
-        let constants = Resources.constants
+        let distributionTarget = Dependencies.distributionTarget
+        let appConfiguration = Resources.newAppConfiguration(
+            target: .app,
+            distributionTarget: distributionTarget
+        )
         let ctx: PartoutLoggerContext = .global
 
         var logger = PartoutLogger.Builder()
@@ -26,10 +30,10 @@ extension AppContext {
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
-            inAppHelper: dependencies.appProductHelper(),
+            inAppHelper: dependencies.appProductHelper(cfg: appConfiguration),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
-            timeoutInterval: constants.iap.productsTimeoutInterval,
+            timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
             productsAtBuild: { _ in
                 []
             }
@@ -54,7 +58,7 @@ extension AppContext {
                 SharedTunnelEnvironment(profileId: nil)
             },
             processor: processor,
-            interval: constants.tunnel.refreshInterval
+            interval: appConfiguration.constants.tunnel.refreshInterval
         )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
@@ -63,9 +67,10 @@ extension AppContext {
 
         return AppContext(
             apiManager: apiManager,
+            appConfiguration: appConfiguration,
             appEncoder: AppEncoder(registry: registry),
             configManager: configManager,
-            distributionTarget: Dependencies.distributionTarget,
+            distributionTarget: distributionTarget,
             iapManager: iapManager,
             kvManager: kvManager,
             logger: PartoutLoggerStrategy(),

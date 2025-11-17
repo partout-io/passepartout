@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import CommonResources
 import Foundation
 import Partout
 
 extension AppContext {
     public static let forPreviews: AppContext = {
+        let appConfiguration = Resources.newAppConfiguration(target: .app, distributionTarget: .appStore)
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
             customUserLevel: .complete,
@@ -51,6 +53,7 @@ extension AppContext {
 
         return AppContext(
             apiManager: apiManager,
+            appConfiguration: appConfiguration,
             appEncoder: AppEncoder(registry: registry),
             configManager: configManager,
             distributionTarget: distributionTarget,
