@@ -9,14 +9,6 @@ import Foundation
 struct Dependencies {
     let appConfiguration: ABI.AppConfiguration
 
-    var distributionTarget: ABI.DistributionTarget {
-        appConfiguration.distributionTarget
-    }
-
-    var constants: ABI.Constants {
-        appConfiguration.constants
-    }
-
     init(buildTarget: ABI.BuildTarget) {
         appConfiguration = Resources.newAppConfiguration(
             distributionTarget: Self.currentDistributionTarget,

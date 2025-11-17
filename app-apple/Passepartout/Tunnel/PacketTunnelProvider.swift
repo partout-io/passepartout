@@ -63,7 +63,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         CommonLibrary.assertMissingImplementations(with: registry)
 
         // Decode profile from NE provider
-        let decoder = dependencies.neProtocolCoder(.global, cfg: appConfiguration, registry: registry)
+        let decoder = dependencies.neProtocolCoder(.global, registry: registry)
         let originalProfile: Profile
         do {
             originalProfile = try Profile(withNEProvider: self, decoder: decoder)
@@ -130,7 +130,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let iapManager = await MainActor.run {
             let manager = IAPManager(
                 customUserLevel: appConfiguration.customUserLevel,
-                inAppHelper: dependencies.appProductHelper(cfg: appConfiguration),
+                inAppHelper: dependencies.appProductHelper(),
                 receiptReader: SharedReceiptReader(
                     reader: StoreKitReceiptReader(logger: dependencies.iapLogger()),
                 ),
@@ -155,10 +155,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }
         do {
             // Environment for app/tunnel IPC
-            let environment = dependencies.tunnelEnvironment(
-                cfg: appConfiguration,
-                profileId: processedProfile.id
-            )
+            let environment = dependencies.tunnelEnvironment(profileId: processedProfile.id)
 
             // Pick socket and crypto strategy from preferences
             var factoryOptions = NEInterfaceFactory.Options()

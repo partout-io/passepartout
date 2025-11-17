@@ -23,7 +23,7 @@ extension Dependencies {
             ],
             allImplementations: [
                 OpenVPNImplementationBuilder(
-                    distributionTarget: distributionTarget,
+                    distributionTarget: appConfiguration.distributionTarget,
                     configBlock: configBlock
                 ).build(),
                 WireGuardImplementationBuilder(
@@ -33,26 +33,26 @@ extension Dependencies {
         )
     }
 
-    func neProtocolCoder(_ ctx: PartoutLoggerContext, cfg: ABI.AppConfiguration, registry: Registry) -> NEProtocolCoder {
-        if distributionTarget.supportsAppGroups {
+    func neProtocolCoder(_ ctx: PartoutLoggerContext, registry: Registry) -> NEProtocolCoder {
+        if appConfiguration.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: cfg.bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: appConfiguration.bundleString(for: .tunnelId),
                 registry: registry,
-                keychain: AppleKeychain(ctx, group: cfg.bundleString(for: .keychainGroupId))
+                keychain: AppleKeychain(ctx, group: appConfiguration.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: cfg.bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: appConfiguration.bundleString(for: .tunnelId),
                 registry: registry
             )
         }
     }
 
-    func appTunnelEnvironment(cfg: ABI.AppConfiguration, strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        if distributionTarget.supportsAppGroups {
-            return tunnelEnvironment(cfg: cfg, profileId: profileId)
+    func appTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+        if appConfiguration.distributionTarget.supportsAppGroups {
+            return tunnelEnvironment(profileId: profileId)
         } else {
             guard let neStrategy = strategy as? NETunnelStrategy else {
                 fatalError("NETunnelEnvironment requires NETunnelStrategy")
@@ -61,8 +61,8 @@ extension Dependencies {
         }
     }
 
-    func tunnelEnvironment(cfg: ABI.AppConfiguration, profileId: Profile.ID) -> TunnelEnvironment {
-        let appGroup = cfg.bundleString(for: .groupId)
+    func tunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+        let appGroup = appConfiguration.bundleString(for: .groupId)
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
         }

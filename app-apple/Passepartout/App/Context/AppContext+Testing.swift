@@ -26,7 +26,7 @@ extension AppContext {
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
-            inAppHelper: dependencies.appProductHelper(cfg: appConfiguration),
+            inAppHelper: dependencies.appProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
@@ -42,7 +42,6 @@ extension AppContext {
             configBlock: { [] }
         )
         let processor = dependencies.appProcessor(
-            cfg: appConfiguration,
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry

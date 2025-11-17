@@ -53,7 +53,7 @@ extension AppContext {
         )
         let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
             let cloudKitIdentifier: String?
-            if isEnabled && dependencies.distributionTarget.supportsCloudKit {
+            if isEnabled && appConfiguration.distributionTarget.supportsCloudKit {
                 cloudKitIdentifier = appConfiguration.bundleString(for: .cloudKitId)
             } else {
                 cloudKitIdentifier = nil
@@ -75,8 +75,8 @@ extension AppContext {
         }()
         let iapManager = IAPManager(
             customUserLevel: appConfiguration.customUserLevel,
-            inAppHelper: dependencies.simulatedAppProductHelper(cfg: appConfiguration),
-            receiptReader: dependencies.simulatedAppReceiptReader(cfg: appConfiguration),
+            inAppHelper: dependencies.simulatedAppProductHelper(),
+            receiptReader: dependencies.simulatedAppReceiptReader(),
             betaChecker: dependencies.betaChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
             verificationDelayMinutesBlock: {
@@ -84,7 +84,7 @@ extension AppContext {
             },
             productsAtBuild: dependencies.productsAtBuild()
         )
-        if dependencies.distributionTarget.supportsIAP {
+        if appConfiguration.distributionTarget.supportsIAP {
             iapManager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
         } else {
             iapManager.isEnabled = false
@@ -148,10 +148,10 @@ extension AppContext {
         let tunnelStrategy = NETunnelStrategy(
             ctx,
             bundleIdentifier: tunnelIdentifier,
-            coder: dependencies.neProtocolCoder(ctx, cfg: appConfiguration, registry: registry)
+            coder: dependencies.neProtocolCoder(ctx, registry: registry)
         )
         let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) {
-            dependencies.profileTitle(cfg: appConfiguration, profile: $0)
+            dependencies.profileTitle(for: $0)
         }
         let backupProfileRepository = dependencies.backupProfileRepository(
             ctx,
@@ -163,7 +163,6 @@ extension AppContext {
 #endif
 
         let processor = dependencies.appProcessor(
-            cfg: appConfiguration,
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry
@@ -177,7 +176,7 @@ extension AppContext {
         )
 
         let sysexManager: SystemExtensionManager?
-        if dependencies.distributionTarget == .developerID {
+        if appConfiguration.distributionTarget == .developerID {
             sysexManager = SystemExtensionManager(
                 identifier: tunnelIdentifier,
                 version: appConfiguration.versionNumber,
@@ -189,7 +188,6 @@ extension AppContext {
         let tunnel = ExtendedTunnel(
             tunnel: Tunnel(ctx, strategy: tunnelStrategy) {
                 dependencies.appTunnelEnvironment(
-                    cfg: appConfiguration,
                     strategy: tunnelStrategy,
                     profileId: $0
                 )
@@ -226,7 +224,7 @@ extension AppContext {
             // toggle CloudKit sync based on .sharing eligibility
             let remoteStore = newRemoteStore(isRemoteImportingEnabled)
 
-            if dependencies.distributionTarget.supportsCloudKit {
+            if appConfiguration.distributionTarget.supportsCloudKit {
 
                 // @Published
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
@@ -284,7 +282,7 @@ extension AppContext {
                 strategy: versionStrategy,
                 currentVersion: appConfiguration.versionNumber,
                 downloadURL: {
-                    switch dependencies.distributionTarget {
+                    switch appConfiguration.distributionTarget {
                     case .appStore:
                         return appConfiguration.constants.websites.appStoreDownload
                     case .developerID:
@@ -336,17 +334,17 @@ private extension Dependencies {
     }
 
     @MainActor
-    func simulatedAppProductHelper(cfg: ABI.AppConfiguration) -> any AppProductHelper {
+    func simulatedAppProductHelper() -> any AppProductHelper {
         if AppCommandLine.contains(.fakeIAP) {
             return FakeAppProductHelper()
         }
-        return appProductHelper(cfg: cfg)
+        return appProductHelper()
     }
 
     @MainActor
-    func simulatedAppReceiptReader(cfg: ABI.AppConfiguration) -> AppReceiptReader {
+    func simulatedAppReceiptReader() -> AppReceiptReader {
         if AppCommandLine.contains(.fakeIAP) {
-            guard let mockHelper = simulatedAppProductHelper(cfg: cfg) as? FakeAppProductHelper else {
+            guard let mockHelper = simulatedAppProductHelper() as? FakeAppProductHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
             }
             return mockHelper.receiptReader

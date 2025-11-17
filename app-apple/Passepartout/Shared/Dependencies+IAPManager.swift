@@ -8,11 +8,11 @@ import Partout
 
 extension Dependencies {
     @MainActor
-    func appProductHelper(cfg: ABI.AppConfiguration) -> any AppProductHelper {
+    func appProductHelper() -> any AppProductHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,
             inAppIdentifier: {
-                let prefix = cfg.bundleString(for: .iapBundlePrefix)
+                let prefix = appConfiguration.bundleString(for: .iapBundlePrefix)
                 return "\(prefix).\($0.rawValue)"
             }
         )
