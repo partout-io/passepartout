@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    fileprivate enum BundleKey: String, Decodable {
+    fileprivate enum BundleKey: String, CaseIterable, Decodable {
         case appStoreId
         case cloudKitId
         case userLevel
@@ -14,15 +14,29 @@ extension ABI {
         case keychainGroupId
         case loginItemId
         case tunnelId
+
+        static let requiredAppKeys = Set(allCases)
+            .subtracting([.userLevel])
+        static let requiredTunnelKeys: Set<Self> = [
+            .groupId,
+            .keychainGroupId,
+            .tunnelId
+        ]
     }
 
     public struct AppConfiguration: Decodable, Sendable {
+        public enum Target {
+            case app
+            case tunnel
+        }
+
         public let constants: ABI.Constants
 
         public let displayName: String
         public let versionNumber: String
         public let buildNumber: Int
         public let versionString: String
+        private let bundleValues: JSON
 
         public let urlForAppLog: URL
         public let urlForTunnelLog: URL
@@ -35,6 +49,7 @@ extension ABI {
             versionNumber = "preview-1.2.3"
             buildNumber = 12345
             versionString = "preview-1.2.3-1234"
+            bundleValues = [:]
 
             let dummyURL = URL(fileURLWithPath: "")
             urlForAppLog = dummyURL
@@ -42,12 +57,50 @@ extension ABI {
             urlForReview = dummyURL
         }
 
-        public init(_ bundle: BundleConfiguration, constants: Constants, target: DistributionTarget) {
+        public init(
+            _ bundle: BundleConfiguration,
+            constants: Constants,
+            target: Target,
+            distributionTarget: DistributionTarget
+        ) {
             self.constants = constants
             displayName = bundle.displayName
             versionNumber = bundle.versionNumber
             buildNumber = bundle.buildNumber
             versionString = bundle.versionString
+
+            let bundleMap = BundleKey.allCases.reduce(into: [:]) {
+                switch $1 {
+                case .appStoreId, .cloudKitId, .groupId,
+                        .iapBundlePrefix, .keychainGroupId,
+                        .loginItemId, .tunnelId:
+                    $0[$1] = bundle.string(for: $1)
+                case .userLevel:
+                    if let userLevel = bundle.integerIfPresent(for: $1) {
+                        $0[$1] = userLevel
+                    }
+                }
+            }
+            do {
+                bundleValues = try JSON(bundleMap)
+
+                // All required, except .userLevel is optional
+                let requiredKeys: Set<BundleKey>
+                switch target {
+                case .app:
+                    requiredKeys = BundleKey.requiredAppKeys
+                case .tunnel:
+                    requiredKeys = BundleKey.requiredTunnelKeys
+                }
+
+                // Ensure all required keys are present
+                let foundKeys = bundleValues.objectValue.map { Set($0.keys) } ?? []
+                guard foundKeys.isSuperset(of: Set(requiredKeys.map(\.rawValue))) else {
+                    throw PartoutError(.decoding)
+                }
+            } catch {
+                fatalError("Unable to fetch required bundle values: \(error)")
+            }
 
             let appGroupURL = {
                 let groupId = bundle.string(for: .groupId)
@@ -61,7 +114,7 @@ extension ABI {
             urlForAppLog = appGroupURL.forCaches.appending(path: constants.log.appPath)
             urlForTunnelLog = {
                 let baseURL: URL
-                if target.supportsAppGroups {
+                if distributionTarget.supportsAppGroups {
                     baseURL = appGroupURL.forCaches
                 } else {
                     let fm: FileManager = .default
@@ -91,6 +144,10 @@ private extension BundleConfiguration {
             fatalError("Missing main bundle key: \(key.rawValue)")
         }
         return value
+    }
+
+    func integerIfPresent(for key: ABI.BundleKey) -> Int? {
+        value(forKey: key.rawValue)
     }
 }
 
