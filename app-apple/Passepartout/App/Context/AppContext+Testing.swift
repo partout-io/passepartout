@@ -11,6 +11,12 @@ extension AppContext {
     static var forUITesting: AppContext {
         let dependencies = Dependencies(buildTarget: .app)
         let appConfiguration = dependencies.appConfiguration
+        let appLogger = dependencies.appLogger()
+        let registry = dependencies.newRegistry(
+            deviceId: "TestDeviceID",
+            configBlock: { [] }
+        )
+        let appEncoder = AppEncoder(registry: registry)
         let ctx: PartoutLoggerContext = .global
 
         var logger = PartoutLogger.Builder()
@@ -35,10 +41,6 @@ extension AppContext {
             productsAtBuild: { _ in
                 []
             }
-        )
-        let registry = dependencies.newRegistry(
-            deviceId: "TestDeviceID",
-            configBlock: { [] }
         )
         let processor = dependencies.appProcessor(
             apiManager: apiManager,
@@ -65,11 +67,11 @@ extension AppContext {
         return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
-            appEncoder: AppEncoder(registry: registry),
+            appEncoder: appEncoder,
             configManager: configManager,
             iapManager: iapManager,
             kvManager: kvManager,
-            logger: PartoutLoggerStrategy(),
+            logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

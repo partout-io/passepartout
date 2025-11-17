@@ -13,6 +13,9 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
+        let appLogger = PartoutLoggerStrategy()
+        let registry = Registry()
+        let appEncoder = AppEncoder(registry: registry)
         let kvManager = KeyValueManager()
         let iapManager = IAPManager(
             customUserLevel: .complete,
@@ -49,7 +52,6 @@ extension AppContext {
         )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
-        let registry = Registry()
 
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
@@ -58,11 +60,11 @@ extension AppContext {
         return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
-            appEncoder: AppEncoder(registry: registry),
+            appEncoder: appEncoder,
             configManager: configManager,
             iapManager: iapManager,
             kvManager: kvManager,
-            logger: PartoutLoggerStrategy(),
+            logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
