@@ -30,10 +30,8 @@ extension AppContext {
 
         let ctx = PartoutLogger.register(
             for: .app,
-            loggingTo: appConfiguration.urlForAppLog,
-            with: kvManager.preferences,
-            parameters: appConfiguration.constants.log,
-            versionString: appConfiguration.versionString
+            with: appConfiguration,
+            preferences: kvManager.preferences
         )
 
         // MARK: Core Data

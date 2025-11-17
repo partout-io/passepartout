@@ -19,8 +19,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             distributionTarget: Dependencies.distributionTarget,
             buildTarget: .tunnel
         )
-        let logURL = appConfiguration.urlForTunnelLog
-        let versionString = appConfiguration.versionString
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -28,10 +26,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // profile-aware context later.
         _ = PartoutLogger.register(
             for: .tunnelGlobal,
-            loggingTo: logURL,
-            with: ABI.AppPreferenceValues(),
-            parameters: appConfiguration.constants.log,
-            versionString: versionString
+            with: appConfiguration,
+            preferences: ABI.AppPreferenceValues()
         )
 
         // The app may propagate its local preferences on manual start
@@ -84,10 +80,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Update the logger now that we have a context
         let ctx = PartoutLogger.register(
             for: .tunnelProfile(originalProfile.id),
-            loggingTo: logURL,
-            with: preferences,
-            parameters: appConfiguration.constants.log,
-            versionString: versionString
+            with: appConfiguration,
+            preferences: preferences
         )
         self.ctx = ctx
         try await trackContext(ctx)

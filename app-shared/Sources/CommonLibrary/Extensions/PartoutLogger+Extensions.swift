@@ -16,31 +16,41 @@ extension PartoutLogger {
     @discardableResult
     public static func register(
         for target: Target,
-        loggingTo url: URL,
-        with preferences: ABI.AppPreferenceValues,
-        parameters: ABI.Constants.Log,
-        versionString: String
+        with cfg: ABI.AppConfiguration,
+        preferences: ABI.AppPreferenceValues
     ) -> PartoutLoggerContext {
         switch target {
         case .app:
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = appLogger(to: url, preferences: preferences, parameters: parameters)
+                let logger = appLogger(
+                    to: cfg.urlForAppLog,
+                    preferences: preferences,
+                    parameters: cfg.constants.log
+                )
                 PartoutLogger.register(logger)
-                logger.logPreamble(versionString: versionString, parameters: parameters)
+                logger.logPreamble(versionString: cfg.versionString, parameters: cfg.constants.log)
             }
             return .global
         case .tunnelGlobal:
-            let logger = tunnelLogger(to: url, preferences: preferences, parameters: parameters)
+            let logger = tunnelLogger(
+                to: cfg.urlForTunnelLog,
+                preferences: preferences,
+                parameters: cfg.constants.log
+            )
             PartoutLogger.register(logger)
-            logger.logPreamble(versionString: versionString, parameters: parameters)
+            logger.logPreamble(versionString: cfg.versionString, parameters: cfg.constants.log)
             return .global
         case .tunnelProfile(let profileId):
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = tunnelLogger(to: url, preferences: preferences, parameters: parameters)
+                let logger = tunnelLogger(
+                    to: cfg.urlForTunnelLog,
+                    preferences: preferences,
+                    parameters: cfg.constants.log
+                )
                 PartoutLogger.register(logger)
-                logger.logPreamble(versionString: versionString, parameters: parameters)
+                logger.logPreamble(versionString: cfg.versionString, parameters: cfg.constants.log)
             }
             return PartoutLoggerContext(profileId)
         }
