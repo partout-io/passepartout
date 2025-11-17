@@ -16,9 +16,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let distributionTarget = Dependencies.distributionTarget
-        let constants = Resources.constants
-        let logURL = constants.bundleURLForTunnelLog(in: distributionTarget)
-        let versionString = constants.bundleMainVersionString
+        let appConfiguration = Resources.newAppConfiguration(
+            target: .tunnel,
+            distributionTarget: distributionTarget
+        )
+        let logURL = appConfiguration.urlForTunnelLog
+        let versionString = appConfiguration.versionString
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -28,7 +31,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelGlobal,
             loggingTo: logURL,
             with: ABI.AppPreferenceValues(),
-            parameters: constants.log,
+            parameters: appConfiguration.constants.log,
             versionString: versionString
         )
 
@@ -69,7 +72,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         CommonLibrary.assertMissingImplementations(with: registry)
 
         // Decode profile from NE provider
-        let decoder = dependencies.neProtocolCoder(.global, registry: registry)
+        let decoder = dependencies.neProtocolCoder(.global, cfg: appConfiguration, registry: registry)
         let originalProfile: Profile
         do {
             originalProfile = try Profile(withNEProvider: self, decoder: decoder)
@@ -84,7 +87,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelProfile(originalProfile.id),
             loggingTo: logURL,
             with: preferences,
-            parameters: constants.log,
+            parameters: appConfiguration.constants.log,
             versionString: versionString
         )
         self.ctx = ctx
@@ -113,7 +116,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 options: {
                     var options = NETunnelController.Options()
                     if preferences.dnsFallsBack {
-                        options.dnsFallbackServers = constants.tunnel.dnsFallbackServers
+                        options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
                     }
                     return options
                 }()
@@ -137,13 +140,13 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Create IAPManager for receipt verification
         let iapManager = await MainActor.run {
             let manager = IAPManager(
-                customUserLevel: dependencies.customUserLevel,
-                inAppHelper: dependencies.appProductHelper(),
+                customUserLevel: dependencies.customUserLevel(cfg: appConfiguration),
+                inAppHelper: dependencies.appProductHelper(cfg: appConfiguration),
                 receiptReader: SharedReceiptReader(
                     reader: StoreKitReceiptReader(logger: dependencies.iapLogger()),
                 ),
                 betaChecker: dependencies.betaChecker(),
-                timeoutInterval: constants.iap.productsTimeoutInterval,
+                timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
                 productsAtBuild: dependencies.productsAtBuild()
             )
             if distributionTarget.supportsIAP {
@@ -160,7 +163,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }
         do {
             // Environment for app/tunnel IPC
-            let environment = dependencies.tunnelEnvironment(profileId: processedProfile.id)
+            let environment = dependencies.tunnelEnvironment(
+                cfg: appConfiguration,
+                profileId: processedProfile.id
+            )
 
             // Pick socket and crypto strategy from preferences
             var factoryOptions = NEInterfaceFactory.Options()
@@ -193,7 +199,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             // Prepare for receipt verification
             await iapManager.fetchLevelIfNeeded()
             let isBeta = await iapManager.isBeta
-            let params = constants.tunnel.verificationParameters(isBeta: isBeta)
+            let params = appConfiguration.constants.tunnel.verificationParameters(isBeta: isBeta)
             pp_log(ctx, .App.iap, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Start the tunnel (ignore all start options)

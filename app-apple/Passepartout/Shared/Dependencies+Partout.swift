@@ -33,26 +33,26 @@ extension Dependencies {
         )
     }
 
-    nonisolated func neProtocolCoder(_ ctx: PartoutLoggerContext, registry: Registry) -> NEProtocolCoder {
+    nonisolated func neProtocolCoder(_ ctx: PartoutLoggerContext, cfg: ABI.AppConfiguration, registry: Registry) -> NEProtocolCoder {
         if Self.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: BundleConfiguration.mainString(for: .tunnelId),
+                tunnelBundleIdentifier: cfg.bundleString(for: .tunnelId),
                 registry: registry,
-                keychain: AppleKeychain(ctx, group: BundleConfiguration.mainString(for: .keychainGroupId))
+                keychain: AppleKeychain(ctx, group: cfg.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: BundleConfiguration.mainString(for: .tunnelId),
+                tunnelBundleIdentifier: cfg.bundleString(for: .tunnelId),
                 registry: registry
             )
         }
     }
 
-    nonisolated func appTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+    nonisolated func appTunnelEnvironment(cfg: ABI.AppConfiguration, strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if Self.distributionTarget.supportsAppGroups {
-            return tunnelEnvironment(profileId: profileId)
+            return tunnelEnvironment(cfg: cfg, profileId: profileId)
         } else {
             guard let neStrategy = strategy as? NETunnelStrategy else {
                 fatalError("NETunnelEnvironment requires NETunnelStrategy")
@@ -61,8 +61,8 @@ extension Dependencies {
         }
     }
 
-    nonisolated func tunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        let appGroup = BundleConfiguration.mainString(for: .groupId)
+    nonisolated func tunnelEnvironment(cfg: ABI.AppConfiguration, profileId: Profile.ID) -> TunnelEnvironment {
+        let appGroup = cfg.bundleString(for: .groupId)
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
         }

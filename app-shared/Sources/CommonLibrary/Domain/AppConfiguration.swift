@@ -5,7 +5,12 @@
 import Partout
 
 extension ABI {
-    fileprivate enum BundleKey: String, CaseIterable, Decodable {
+    public enum AppTarget {
+        case app
+        case tunnel
+    }
+
+    public enum BundleKey: String, CaseIterable, Decodable {
         case appStoreId
         case cloudKitId
         case userLevel
@@ -25,11 +30,6 @@ extension ABI {
     }
 
     public struct AppConfiguration: Decodable, Sendable {
-        public enum Target {
-            case app
-            case tunnel
-        }
-
         public let constants: ABI.Constants
 
         public let displayName: String
@@ -60,7 +60,7 @@ extension ABI {
         public init(
             _ bundle: BundleConfiguration,
             constants: Constants,
-            target: Target,
+            target: AppTarget,
             distributionTarget: DistributionTarget
         ) {
             self.constants = constants
@@ -134,6 +134,17 @@ extension ABI {
                 }
                 return url
             }()
+        }
+
+        public func bundleString(for key: ABI.BundleKey) -> String {
+            guard let value = bundleValues[key.rawValue]?.stringValue else {
+                fatalError("Missing bundle value in JSON for: \(key.rawValue)")
+            }
+            return value
+        }
+
+        public func bundleIntegerIfPresent(for key: ABI.BundleKey) -> Int? {
+            bundleValues[key.rawValue]?.doubleValue.map { Int($0) }
         }
     }
 }

@@ -20,17 +20,20 @@ extension AppContext {
         // MARK: Declare globals
 
         let distributionTarget = Dependencies.distributionTarget
-        let constants = Resources.constants
+        let appConfiguration = Resources.newAppConfiguration(
+            target: .app,
+            distributionTarget: distributionTarget
+        )
         let dependencies: Dependencies = .shared
         let logger = PartoutLoggerStrategy()
         let kvManager = dependencies.kvManager
 
         let ctx = PartoutLogger.register(
             for: .app,
-            loggingTo: constants.bundleURLForAppLog,
+            loggingTo: appConfiguration.urlForAppLog,
             with: kvManager.preferences,
-            parameters: constants.log,
-            versionString: constants.bundleMainVersionString
+            parameters: appConfiguration.constants.log,
+            versionString: appConfiguration.versionString
         )
 
         // MARK: Core Data
@@ -49,7 +52,7 @@ extension AppContext {
 
         let localStore = CoreDataPersistentStore(
             logger: dependencies.coreDataLogger(),
-            containerName: constants.containers.local,
+            containerName: appConfiguration.constants.containers.local,
             model: cdLocalModel,
             cloudKitIdentifier: nil,
             author: nil
@@ -57,13 +60,13 @@ extension AppContext {
         let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
             let cloudKitIdentifier: String?
             if isEnabled && distributionTarget.supportsCloudKit {
-                cloudKitIdentifier = BundleConfiguration.mainString(for: .cloudKitId)
+                cloudKitIdentifier = appConfiguration.bundleString(for: .cloudKitId)
             } else {
                 cloudKitIdentifier = nil
             }
             return CoreDataPersistentStore(
                 logger: dependencies.coreDataLogger(),
-                containerName: constants.containers.remote,
+                containerName: appConfiguration.constants.containers.remote,
                 model: cdRemoteModel,
                 cloudKitIdentifier: cloudKitIdentifier,
                 author: nil
@@ -81,7 +84,7 @@ extension AppContext {
             inAppHelper: dependencies.simulatedAppProductHelper(),
             receiptReader: dependencies.simulatedAppReceiptReader(),
             betaChecker: dependencies.betaChecker(),
-            timeoutInterval: constants.iap.productsTimeoutInterval,
+            timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
             productsAtBuild: dependencies.productsAtBuild()
         )
         if distributionTarget.supportsIAP {
@@ -95,19 +98,19 @@ extension AppContext {
 #if DEBUG
         let configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
 #else
-        let configURL = constants.websites.config
+        let configURL = appConfiguration.constants.websites.config
 #endif
-        let betaConfigURL = constants.websites.betaConfig
+        let betaConfigURL = appConfiguration.constants.websites.betaConfig
         let configManager = ConfigManager(
             strategy: GitHubConfigStrategy(
                 url: configURL,
                 betaURL: betaConfigURL,
-                ttl: constants.websites.configTTL,
+                ttl: appConfiguration.constants.websites.configTTL,
                 isBeta: { [weak iapManager] in
                     iapManager?.isBeta == true
                 }
             ),
-            buildNumber: BundleConfiguration.mainBuildNumber
+            buildNumber: appConfiguration.buildNumber
         )
 
         // MARK: Registry
@@ -117,7 +120,7 @@ extension AppContext {
                 pp_log_g(.App.core, .info, "Device ID: \(existingId)")
                 return existingId
             }
-            let newId = String.random(count: constants.deviceIdLength)
+            let newId = String.random(count: appConfiguration.constants.deviceIdLength)
             kvManager.set(newId, forAppPreference: .deviceId)
             pp_log_g(.App.core, .info, "Device ID (new): \(newId)")
             return newId
@@ -134,7 +137,7 @@ extension AppContext {
         )
         let appEncoder = AppEncoder(registry: registry)
 
-        let tunnelIdentifier = BundleConfiguration.mainString(for: .tunnelId)
+        let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = dependencies.backupProfileRepository(
@@ -158,7 +161,7 @@ extension AppContext {
             ctx,
             encoder: appEncoder,
             model: cdRemoteModel,
-            name: constants.containers.backup,
+            name: appConfiguration.constants.containers.backup,
             observingResults: false
         )
 #endif
@@ -180,8 +183,8 @@ extension AppContext {
         if distributionTarget == .developerID {
             sysexManager = SystemExtensionManager(
                 identifier: tunnelIdentifier,
-                version: BundleConfiguration.mainVersionNumber,
-                build: BundleConfiguration.mainBuildNumber
+                version: appConfiguration.versionNumber,
+                build: appConfiguration.buildNumber
             )
         } else {
             sysexManager = nil
@@ -193,7 +196,7 @@ extension AppContext {
             sysex: sysexManager,
             kvManager: kvManager,
             processor: processor,
-            interval: constants.tunnel.refreshInterval
+            interval: appConfiguration.constants.tunnel.refreshInterval
         )
 
         let onboardingObservable = OnboardingObservable(kvManager: kvManager)
@@ -270,21 +273,21 @@ extension AppContext {
         // MARK: Version
 
         let versionStrategy = GitHubReleaseStrategy(
-            releaseURL: constants.github.latestRelease,
-            rateLimit: constants.api.versionRateLimit
+            releaseURL: appConfiguration.constants.github.latestRelease,
+            rateLimit: appConfiguration.constants.api.versionRateLimit
         )
         let versionChecker: VersionChecker
         if !iapManager.isBeta {
             versionChecker = VersionChecker(
                 kvManager: kvManager,
                 strategy: versionStrategy,
-                currentVersion: BundleConfiguration.mainVersionNumber,
+                currentVersion: appConfiguration.versionNumber,
                 downloadURL: {
                     switch distributionTarget {
                     case .appStore:
-                        return constants.websites.appStoreDownload
+                        return appConfiguration.constants.websites.appStoreDownload
                     case .developerID:
-                        return constants.websites.macDownload
+                        return appConfiguration.constants.websites.macDownload
                     case .enterprise:
                         fatalError("No URL for enterprise distribution")
                     }
@@ -298,6 +301,7 @@ extension AppContext {
 
         self.init(
             apiManager: apiManager,
+            appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
             distributionTarget: distributionTarget,
@@ -312,7 +316,6 @@ extension AppContext {
             tunnel: tunnel,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            receiptInvalidationInterval: constants.iap.receiptInvalidationInterval,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
     }

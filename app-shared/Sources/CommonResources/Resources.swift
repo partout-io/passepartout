@@ -4,9 +4,31 @@
 
 import CommonLibrary
 import Foundation
+import Partout
 
 public enum Resources {
-    public static let constants = Bundle.module.unsafeDecode(ABI.Constants.self, filename: "Constants")
+    public static func newAppConfiguration(
+        target: ABI.AppTarget,
+        distributionTarget: ABI.DistributionTarget
+    ) -> ABI.AppConfiguration {
+        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+        if isPreview {
+            return ABI.AppConfiguration(constants: constants)
+        }
+        // WARNING: This fails from package itself, e.g. in previews
+        guard let bundle = BundleConfiguration(.main, key: "AppConfig") else {
+            fatalError("Missing main bundle")
+        }
+        return ABI.AppConfiguration(
+            bundle,
+            constants: constants,
+            target: target,
+            distributionTarget: distributionTarget
+        )
+    }
+
+    // Do not expose this to view, use AppConfiguration.constants from environment
+    static let constants = Bundle.module.unsafeDecode(ABI.Constants.self, filename: "Constants")
 
     public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "Credits")
 

@@ -16,6 +16,8 @@ public final class AppContext {
 
     // FIXME: #1594, Add injectable AppConfiguration from Constants/BundleConfiguration
 
+    public let appConfiguration: ABI.AppConfiguration
+
     public let appearanceObservable: AppearanceObservable
 
     public let appEncoderObservable: AppEncoderObservable
@@ -78,6 +80,7 @@ public final class AppContext {
 
     public init(
         apiManager: APIManager,
+        appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
         configManager: ConfigManager,
         distributionTarget: ABI.DistributionTarget,
@@ -92,7 +95,6 @@ public final class AppContext {
         tunnel: ExtendedTunnel,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        receiptInvalidationInterval: TimeInterval = 30.0,
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         // Internal
@@ -109,6 +111,7 @@ public final class AppContext {
         self.webReceiverManager = webReceiverManager
 
         // Environment
+        self.appConfiguration = appConfiguration
         appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
         self.distributionTarget = distributionTarget
@@ -119,7 +122,7 @@ public final class AppContext {
         viewLogger = ViewLogger(strategy: logger)
 
         // Other
-        self.receiptInvalidationInterval = receiptInvalidationInterval
+        receiptInvalidationInterval = appConfiguration.constants.iap.receiptInvalidationInterval
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
 
         didLoadReceiptDate = nil
