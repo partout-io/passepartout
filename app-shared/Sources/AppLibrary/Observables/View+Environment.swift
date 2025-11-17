@@ -10,9 +10,9 @@ extension View {
         self
             .environment(theme)
             .environment(\.appConfiguration, context.appConfiguration)
-            .environment(context.appFormatter)
             .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
+            .environment(context.appFormatter)
             .environment(context.iapObservable)
             .environment(context.onboardingObservable)
             .environment(context.profileObservable)

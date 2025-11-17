@@ -16,11 +16,11 @@ public final class AppContext {
 
     public let appConfiguration: ABI.AppConfiguration
 
-    public let appFormatter: AppFormatter
-
     public let appearanceObservable: AppearanceObservable
 
     public let appEncoderObservable: AppEncoderObservable
+
+    public let appFormatter: AppFormatter
 
     public let iapObservable: IAPObservable
 
