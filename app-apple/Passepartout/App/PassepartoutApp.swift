@@ -47,8 +47,8 @@ extension PassepartoutApp {
     }
 
 #if os(macOS)
-    var settings: MacSettings {
-        appDelegate.settings
+    var macSettings: MacSettings {
+        appDelegate.macSettings
     }
 #endif
 
