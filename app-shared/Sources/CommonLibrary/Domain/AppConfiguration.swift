@@ -58,8 +58,8 @@ extension ABI {
         }
 
         public init(
-            _ bundle: BundleConfiguration,
             constants: Constants,
+            bundle: BundleConfiguration,
             target: AppTarget,
             distributionTarget: DistributionTarget
         ) {

@@ -20,8 +20,8 @@ public enum Resources {
             fatalError("Missing main bundle")
         }
         return ABI.AppConfiguration(
-            bundle,
             constants: constants,
+            bundle: bundle,
             target: target,
             distributionTarget: distributionTarget
         )
