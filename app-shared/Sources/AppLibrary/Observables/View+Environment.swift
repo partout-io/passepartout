@@ -9,6 +9,7 @@ extension View {
     public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
         self
             .environment(theme)
+            .environment(\.appConfiguration, context.appConfiguration)
             .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
             .environment(\.distributionTarget, context.distributionTarget)

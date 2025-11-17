@@ -14,8 +14,6 @@ public final class AppContext {
 
     // MARK: Environment/Observables
 
-    // FIXME: #1594, Add injectable AppConfiguration from Constants/BundleConfiguration
-
     public let appConfiguration: ABI.AppConfiguration
 
     public let appearanceObservable: AppearanceObservable
