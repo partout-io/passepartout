@@ -215,10 +215,10 @@ extension AppContext {
             logger: logger,
             htmlPath: Resources.webUploaderPath,
             stringsBundle: AppStrings.bundle,
-            port: constants.webReceiver.port
+            port: appConfiguration.constants.webReceiver.port
         )
         let webReceiverManager = WebReceiverManager(webReceiver: webReceiver) {
-            dependencies.webPasscodeGenerator(length: constants.webReceiver.passcodeLength)
+            dependencies.webPasscodeGenerator(length: appConfiguration.constants.webReceiver.passcodeLength)
         }
 #else
         let webReceiverManager = WebReceiverManager()
