@@ -5,12 +5,12 @@
 import Partout
 
 extension ABI {
-    public enum BuildTarget {
+    public enum BuildTarget: Sendable {
         case app
         case tunnel
     }
 
-    public enum BundleKey: String, CaseIterable, Decodable {
+    public enum BundleKey: String, CaseIterable, Decodable, Sendable {
         // These cases are all strings
         case appStoreId
         case cloudKitId
