@@ -89,14 +89,11 @@ extension ABI {
             customUserLevel = rawUserLevel.map(AppUserLevel.init(rawValue:)) ?? nil
 
             // Ensure that all required keys are present
-            do {
-                let foundKeys = Set(bundleStrings.keys)
-                let requiredKeys = BundleKey.requiredKeys(for: buildTarget).map(\.rawValue)
-                guard foundKeys.isSuperset(of: requiredKeys) else {
-                    throw PartoutError(.decoding)
-                }
-            } catch {
-                fatalError("Unable to fetch required bundle values: \(error)")
+            let foundKeys = Set(bundleStrings.keys)
+            let requiredKeys = Set(BundleKey.requiredKeys(for: buildTarget).map(\.rawValue))
+            guard foundKeys.isSuperset(of: requiredKeys) else {
+                let missingKeys = requiredKeys.subtracting(foundKeys)
+                fatalError("Unable to fetch required bundle values, missing: \(missingKeys)")
             }
 
             let appGroupURL = {
