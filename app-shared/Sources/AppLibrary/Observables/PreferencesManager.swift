@@ -6,6 +6,7 @@ import CommonLibrary
 import Foundation
 import Partout
 
+// FIXME: #1594, Improve preferences design
 @MainActor
 public final class PreferencesManager: ObservableObject {
     public var modulesRepositoryFactory: (UUID) throws -> ModulePreferencesRepository
