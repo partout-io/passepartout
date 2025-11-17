@@ -10,6 +10,7 @@ extension ABI {
         case tunnel
     }
 
+    // All cases are strings, only .userLevel is number/integer
     public enum BundleKey: String, CaseIterable, Decodable {
         case appStoreId
         case cloudKitId
@@ -20,13 +21,12 @@ extension ABI {
         case loginItemId
         case tunnelId
 
-        static let requiredAppKeys = Set(allCases)
-            .subtracting([.userLevel])
-        static let requiredTunnelKeys: Set<Self> = [
-            .groupId,
-            .keychainGroupId,
-            .tunnelId
-        ]
+        static func requiredKeys(for target: BuildTarget) -> Set<Self> {
+            switch target {
+            case .app: Set(allCases).subtracting([.userLevel])
+            case .tunnel: [.groupId, .keychainGroupId, .tunnelId]
+            }
+        }
     }
 
     public struct AppConfiguration: Sendable {
@@ -86,18 +86,11 @@ extension ABI {
             }
             customUserLevel = rawUserLevel.map(AppUserLevel.init(rawValue:)) ?? nil
 
+            // Ensure that all required keys are present
             do {
-                let requiredKeys: Set<BundleKey>
-                switch buildTarget {
-                case .app:
-                    requiredKeys = BundleKey.requiredAppKeys
-                case .tunnel:
-                    requiredKeys = BundleKey.requiredTunnelKeys
-                }
-
-                // Ensure all required keys are present
                 let foundKeys = Set(bundleStrings.keys)
-                guard foundKeys.isSuperset(of: Set(requiredKeys.map(\.rawValue))) else {
+                let requiredKeys = BundleKey.requiredKeys(for: buildTarget).map(\.rawValue)
+                guard foundKeys.isSuperset(of: requiredKeys) else {
                     throw PartoutError(.decoding)
                 }
             } catch {
