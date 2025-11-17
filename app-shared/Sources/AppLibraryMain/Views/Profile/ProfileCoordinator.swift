@@ -16,8 +16,8 @@ struct ProfileCoordinator: View {
         let onSendToTV: () -> Void
     }
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @EnvironmentObject
     private var iapManager: IAPManager
@@ -47,7 +47,7 @@ struct ProfileCoordinator: View {
     @State
     private var paywallReason: PaywallReason?
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

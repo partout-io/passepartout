@@ -113,8 +113,8 @@ public struct PurchaseRequiredButton: View {
 
 public struct PurchaseRequiredImage: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     public var body: some View {
         ThemeImage(.upgrade)

@@ -6,8 +6,8 @@ import SwiftUI
 
 struct ThemeItemModalModifier<Modal, T>: ViewModifier where Modal: View, T: Identifiable {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @Environment(\.colorScheme)
     private var colorScheme

@@ -18,7 +18,7 @@ extension PassepartoutApp {
         WindowGroup {
             contentView()
                 .onLoad {
-                    context.appearanceManager.apply()
+                    context.appearanceObservable.apply()
                 }
                 .task(id: scenePhase) {
                     if scenePhase == .active {

@@ -11,7 +11,7 @@ public protocol AppCoordinatorConforming {
 
     var tunnel: TunnelObservable { get }
 
-    func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock)
+    func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveObservable.CompletionBlock)
 
     func onProviderEntityRequired(_ profile: ABI.AppProfile, force: Bool)
 

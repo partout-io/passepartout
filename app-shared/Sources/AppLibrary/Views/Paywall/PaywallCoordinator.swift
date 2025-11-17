@@ -15,10 +15,10 @@ struct PaywallCoordinator: View {
 
     let requiredFeatures: Set<ABI.AppFeature>
 
-    @StateObject
+    @State
     private var model = Model()
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

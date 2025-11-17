@@ -18,8 +18,8 @@ struct DiagnosticsView: View {
         }
     }
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @EnvironmentObject
     private var apiManager: APIManager

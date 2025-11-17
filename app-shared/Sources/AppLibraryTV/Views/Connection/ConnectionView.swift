@@ -18,11 +18,9 @@ struct ConnectionView: View, Routable {
 
     let tunnel: TunnelObservable
 
-    @ObservedObject
-    var interactiveManager: InteractiveManager
+    let interactiveObservable: InteractiveObservable
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ConnectionFlow?
 
@@ -42,7 +40,7 @@ struct ConnectionView: View, Routable {
                         .focusSection()
                 }
                 .frame(maxWidth: .infinity)
-                .disabled(interactiveManager.isPresented)
+                .disabled(interactiveObservable.isPresented)
 
                 if showsSidePanel {
                     sidePanelView
@@ -55,7 +53,7 @@ struct ConnectionView: View, Routable {
         .themeAnimation(on: showsSidePanel, category: .profiles)
         .defaultFocus($focusedField, .switchProfile)
         .onChange(of: tunnel.activeProfile, onTunnelActiveProfile)
-        .onChange(of: interactiveManager.isPresented, onInteractivePresented)
+        .onChange(of: interactiveObservable.isPresented, onInteractivePresented)
         .onChange(of: focusedField, onFocus)
     }
 }
@@ -83,9 +81,9 @@ private extension ConnectionView {
         ZStack {
             profilesListView
                 .padding(.horizontal)
-                .opaque(!interactiveManager.isPresented)
+                .opaque(!interactiveObservable.isPresented)
 
-            if interactiveManager.isPresented {
+            if interactiveObservable.isPresented {
                 interactiveView
                     .padding(.horizontal, 100)
             }
@@ -94,18 +92,18 @@ private extension ConnectionView {
     }
 
     var interactiveView: some View {
-        InteractiveCoordinator(style: .inline(withCancel: false), manager: interactiveManager) {
+        InteractiveCoordinator(style: .inline(withCancel: false), manager: interactiveObservable) {
             errorHandler.handle(
                 $0,
-                title: interactiveManager.editor.profile.name,
+                title: interactiveObservable.editor.profile.name,
                 message: Strings.Errors.App.tunnel
             )
         }
         .font(.body)
         .onExitCommand {
-            let formerProfileId = interactiveManager.editor.profile.id
+            let formerProfileId = interactiveObservable.editor.profile.id
             focusedField = .profile(formerProfileId)
-            interactiveManager.isPresented = false
+            interactiveObservable.isPresented = false
         }
     }
 
@@ -163,7 +161,7 @@ private extension ConnectionView {
 //    ConnectionView(
 //        profileObservable: .forPreviews,
 //        tunnel: .forPreviews,
-//        interactiveManager: InteractiveManager(),
+//        interactiveObservable: InteractiveObservable(),
 //        errorHandler: .default(),
 //        showsSidePanel: true
 //    )
@@ -174,7 +172,7 @@ private extension ConnectionView {
 //    ConnectionView(
 //        profileObservable: ProfileManager(profiles: []),
 //        tunnel: .forPreviews,
-//        interactiveManager: InteractiveManager(),
+//        interactiveObservable: InteractiveObservable(),
 //        errorHandler: .default(),
 //        showsSidePanel: true
 //    )

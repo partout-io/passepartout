@@ -6,8 +6,8 @@ import SwiftUI
 
 public struct ThemeLogo: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     public init() {
     }

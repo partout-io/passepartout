@@ -6,8 +6,8 @@ import SwiftUI
 
 // https://www.ralfebert.com/swiftui/generic-error-handling/
 
-@MainActor
-public final class ErrorHandler: ObservableObject {
+@MainActor @Observable
+public final class ErrorHandler {
     let defaultTitle: String
 
     let dismissTitle: String
@@ -16,10 +16,8 @@ public final class ErrorHandler: ObservableObject {
 
     private let beforeAlert: (String) -> Void
 
-    @Published
     fileprivate var currentAlert: ErrorAlert?
 
-    @Published
     fileprivate var isPresented = false
 
     var currentTitle: String {
@@ -93,9 +91,7 @@ extension View {
 }
 
 private struct HandleErrorsByShowingAlertViewModifier: ViewModifier {
-
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     func body(content: Content) -> some View {
         content
@@ -106,7 +102,7 @@ private struct HandleErrorsByShowingAlertViewModifier: ViewModifier {
                 EmptyView()
                     .alert(
                         errorHandler.currentTitle,
-                        isPresented: $errorHandler.isPresented,
+                        isPresented: errorHandler.binding(\.isPresented),
                         presenting: errorHandler.currentAlert
                      ) { alert in
                          Button(role: .cancel) {

@@ -180,9 +180,7 @@ private extension OpenVPNCredentialsGroup {
     let editor = ProfileEditor(modules: [module])
 
     struct ContentView: View {
-
-        @ObservedObject
-        var editor: ProfileEditor
+        let editor: ProfileEditor
 
         let module: OpenVPNModule.Builder
 

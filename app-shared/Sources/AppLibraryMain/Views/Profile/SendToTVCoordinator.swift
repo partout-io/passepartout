@@ -11,8 +11,8 @@ struct SendToTVCoordinator: View {
     @Environment(ViewLogger.self)
     private var logger
 
-    @EnvironmentObject
-    private var appEncoder: AppEncoder
+    @Environment(AppEncoderObservable.self)
+    private var appEncoder
 
     let profile: Profile
 
@@ -38,7 +38,7 @@ private extension SendToTVCoordinator {
             )
         )
         do {
-            let encodedProfile = try appEncoder.json(fromProfile: profile)
+            let encodedProfile = try appEncoder.json(fromProfile: ABI.AppProfile(native: profile))
             try await client.send(
                 encodedProfile,
                 filename: profile.name,

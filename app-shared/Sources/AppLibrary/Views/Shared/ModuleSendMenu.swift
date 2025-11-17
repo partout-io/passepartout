@@ -15,8 +15,7 @@ public struct ModuleSendMenu: View {
 
     private let module: any ModuleBuilder
 
-    @ObservedObject
-    private var errorHandler: ErrorHandler
+    private let errorHandler: ErrorHandler
 
     public init(profileId: Profile.ID, module: any ModuleBuilder, errorHandler: ErrorHandler) {
         self.profileId = profileId

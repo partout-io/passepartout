@@ -8,8 +8,8 @@ import SwiftUI
 
 struct ActiveProfileView: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @EnvironmentObject
     private var apiManager: APIManager
@@ -24,8 +24,7 @@ struct ActiveProfileView: View {
     @FocusState.Binding
     var focusedField: ConnectionView.Field?
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ConnectionFlow?
 

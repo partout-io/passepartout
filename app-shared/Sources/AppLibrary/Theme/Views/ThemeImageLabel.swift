@@ -6,8 +6,8 @@ import SwiftUI
 
 public struct ThemeImageLabel<Title>: View where Title: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     private let name: Theme.ImageName
 

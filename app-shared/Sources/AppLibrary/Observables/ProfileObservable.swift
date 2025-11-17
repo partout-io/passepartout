@@ -6,7 +6,6 @@ import Combine
 import CommonLibrary
 import Dispatch
 import Foundation
-import Observation
 
 @MainActor @Observable
 public final class ProfileObservable {

@@ -21,11 +21,9 @@ struct PaywallView: View, SizeClassProviding {
 
     let requiredFeatures: Set<ABI.AppFeature>
 
-    @ObservedObject
-    var model: PaywallCoordinator.Model
+    let model: PaywallCoordinator.Model
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     let onComplete: (String, InAppPurchaseResult) -> Void
 

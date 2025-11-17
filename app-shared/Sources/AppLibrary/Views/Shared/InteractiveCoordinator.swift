@@ -14,12 +14,11 @@ public struct InteractiveCoordinator: View {
 
     private let style: Style
 
-    @ObservedObject
-    private var manager: InteractiveManager
+    private let manager: InteractiveObservable
 
     private let onError: (Error) -> Void
 
-    public init(style: Style, manager: InteractiveManager, onError: @escaping (Error) -> Void) {
+    public init(style: Style, manager: InteractiveObservable, onError: @escaping (Error) -> Void) {
         self.style = style
         self.manager = manager
         self.onError = onError

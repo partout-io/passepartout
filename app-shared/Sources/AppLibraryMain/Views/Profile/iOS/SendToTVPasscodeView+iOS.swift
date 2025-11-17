@@ -11,7 +11,7 @@ struct SendToTVPasscodeView: View {
 
     let onEnter: (String) async throws -> Void
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

@@ -37,7 +37,7 @@ extension PassepartoutApp {
                     context.onApplicationActive()
                 }
                 .withEnvironment(from: context, theme: theme)
-                .environmentObject(settings)
+                .environment(settings)
                 .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
                 .frame(minWidth: 600, minHeight: 400)
         }
@@ -60,11 +60,11 @@ extension PassepartoutApp {
                 tunnel: context.tunnel
             )
             .withEnvironment(from: context, theme: theme)
-            .environmentObject(settings)
+            .environment(settings)
             .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
         } label: {
             AppMenuImage(tunnel: context.tunnel)
-                .environmentObject(theme)
+                .environment(theme)
         }
     }
 }

@@ -10,8 +10,7 @@ public struct RestorePurchasesButton: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @ObservedObject
-    private var errorHandler: ErrorHandler
+    private let errorHandler: ErrorHandler
 
     public init(errorHandler: ErrorHandler) {
         self.errorHandler = errorHandler

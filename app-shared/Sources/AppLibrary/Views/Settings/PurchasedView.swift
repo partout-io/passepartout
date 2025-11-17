@@ -16,7 +16,7 @@ public struct PurchasedView: View {
     @State
     private var products: [InAppProduct] = []
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     public init() {

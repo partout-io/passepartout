@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
 import Partout
 
-@MainActor
-public final class InteractiveManager: ObservableObject {
+@MainActor @Observable
+public final class InteractiveObservable {
     public typealias CompletionBlock = (ABI.AppProfile) throws -> Void
 
-    @Published
     public var isPresented = false
 
     public private(set) var editor = ProfileEditor()

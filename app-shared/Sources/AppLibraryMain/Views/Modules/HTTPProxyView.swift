@@ -7,8 +7,8 @@ import SwiftUI
 
 struct HTTPProxyView: View, ModuleDraftEditing {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @ObservedObject
     var draft: ModuleDraft<HTTPProxyModule.Builder>

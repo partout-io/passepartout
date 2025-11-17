@@ -13,7 +13,7 @@ struct AppProfileImporterModifier: ViewModifier {
 
     let errorHandler: ErrorHandler
 
-    @StateObject
+    @State
     private var importer = AppProfileImporter()
 
     func body(content: Content) -> some View {

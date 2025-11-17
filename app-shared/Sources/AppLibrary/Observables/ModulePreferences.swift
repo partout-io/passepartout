@@ -2,9 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary
 import Foundation
 import Partout
 
+// FIXME: #1594, Improve preferences design
 public final class ModulePreferences: ObservableObject, ModulePreferencesRepository {
     private var repository: ModulePreferencesRepository?
 

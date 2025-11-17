@@ -8,10 +8,8 @@ import Partout
 
 extension PaywallCoordinator {
 
-    @MainActor
-    final class Model: ObservableObject {
-
-        @Published
+    @MainActor @Observable
+    final class Model {
         var isFetchingProducts = true
 
         private(set) var suggestedProducts: Set<ABI.AppProduct> = []
@@ -20,10 +18,8 @@ extension PaywallCoordinator {
 
         private(set) var individualPurchasable: [InAppProduct] = []
 
-        @Published
         var purchasingIdentifier: String?
 
-        @Published
         var isPurchasePendingConfirmation = false
     }
 }
@@ -79,7 +75,6 @@ extension PaywallCoordinator.Model {
             throw ABI.AppError.emptyProducts
         }
 
-        objectWillChange.send()
         self.suggestedProducts = suggestedProducts
         self.completePurchasable = completePurchasable
         self.individualPurchasable = individualPurchasable

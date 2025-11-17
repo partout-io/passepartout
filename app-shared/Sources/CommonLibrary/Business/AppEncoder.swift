@@ -5,7 +5,7 @@
 import Foundation
 import Partout
 
-public final class AppEncoder: ObservableObject {
+public final class AppEncoder {
     private let registry: Registry
 
     public init(registry: Registry) {

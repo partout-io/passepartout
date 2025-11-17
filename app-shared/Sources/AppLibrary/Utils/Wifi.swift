@@ -4,8 +4,8 @@
 
 import Foundation
 
-@MainActor
-public final class Wifi: ObservableObject {
+@MainActor @Observable
+public final class Wifi {
     private let observer: WifiObserver
 
     public init(observer: WifiObserver) {

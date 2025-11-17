@@ -26,10 +26,10 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     @State
     private var paywallContinuation: (() -> Void)?
 
-    @StateObject
-    private var interactiveManager = InteractiveManager()
+    @State
+    private var interactiveObservable = InteractiveObservable()
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     public init(
@@ -74,7 +74,7 @@ private extension AppCoordinator {
         ConnectionView(
             profileObservable: profileObservable,
             tunnel: tunnel,
-            interactiveManager: interactiveManager,
+            interactiveObservable: interactiveObservable,
             errorHandler: errorHandler,
             flow: .init(
                 onConnect: {
@@ -134,9 +134,9 @@ private extension AppCoordinator {
 // MARK: - Handlers
 
 extension AppCoordinator {
-    public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveManager.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         logger.log(.core, .info, "Present interactive login")
-        interactiveManager.present(
+        interactiveObservable.present(
             with: profile,
             onComplete: onComplete
         )

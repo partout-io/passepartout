@@ -6,11 +6,10 @@ import CommonLibrary
 import Foundation
 import SwiftUI
 
-@MainActor
-public final class AppearanceManager: ObservableObject {
+@MainActor @Observable
+public final class AppearanceObservable {
     private let kvManager: KeyValueManager
 
-    @Published
     public var systemAppearance: SystemAppearance? {
         didSet {
             kvManager.set(systemAppearance?.rawValue, forUIPreference: .systemAppearance)
@@ -27,7 +26,7 @@ public final class AppearanceManager: ObservableObject {
     }
 }
 
-extension AppearanceManager {
+extension AppearanceObservable {
     public func apply() {
 #if os(iOS)
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {

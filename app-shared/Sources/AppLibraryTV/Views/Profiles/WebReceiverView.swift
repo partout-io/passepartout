@@ -15,8 +15,7 @@ struct WebReceiverView: View {
 
     let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var body: some View {
         VStack {

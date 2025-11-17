@@ -13,7 +13,7 @@ public protocol LegacyAppCoordinatorConforming {
 
     var tunnel: ExtendedTunnel { get }
 
-    func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveManager.CompletionBlock)
+    func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock)
 
     func onProviderEntityRequired(_ profile: Profile, force: Bool)
 

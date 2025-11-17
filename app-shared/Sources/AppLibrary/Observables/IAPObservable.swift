@@ -4,7 +4,7 @@
 
 import CommonLibrary
 import CommonResources
-import Observation
+import Foundation
 
 @MainActor @Observable
 public final class IAPObservable {

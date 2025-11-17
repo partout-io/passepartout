@@ -44,8 +44,7 @@ private struct DestinationView: View {
     @Binding
     var path: NavigationPath
 
-    @ObservedObject
-    var editor: ProfileEditor
+    let editor: ProfileEditor
 
     @ObservedObject
     var draft: ModuleDraft<OpenVPNModule.Builder>

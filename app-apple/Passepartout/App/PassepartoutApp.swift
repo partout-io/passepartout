@@ -33,7 +33,7 @@ struct PassepartoutApp: App {
     @Environment(\.scenePhase)
     var scenePhase
 
-    @StateObject
+    @State
     var theme = Theme()
 }
 
@@ -47,7 +47,7 @@ extension PassepartoutApp {
     }
 
 #if os(macOS)
-    var settings: MacSettingsModel {
+    var settings: MacSettings {
         appDelegate.settings
     }
 #endif

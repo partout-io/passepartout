@@ -8,8 +8,8 @@ import SwiftUI
 extension IPView {
     struct RouteView: View {
 
-        @EnvironmentObject
-        private var theme: Theme
+        @Environment(Theme.self)
+        private var theme
 
         let family: Address.Family
 

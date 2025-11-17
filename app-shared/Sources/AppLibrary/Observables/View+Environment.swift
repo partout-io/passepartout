@@ -7,23 +7,25 @@ import SwiftUI
 @MainActor
 extension View {
     public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
-        environmentObject(theme)
-            .environmentObject(context.apiManager)
-            .environmentObject(context.appearanceManager)
-            .environmentObject(context.appEncoder)
-            .environmentObject(context.configManager)
+        self
+            .environment(theme)
+            .environment(context.appearanceObservable)
+            .environment(context.appEncoderObservable)
             .environment(\.distributionTarget, context.distributionTarget)
-            .environmentObject(context.iapManager)
-            .environmentObject(context.kvManager)
-            .environmentObject(context.onboardingManager)
-            .environmentObject(context.preferencesManager)
-            .environmentObject(context.profileManager)
-            .environmentObject(context.versionChecker)
-            .environment(context.viewLogger)
-            // Observables
+            .environment(context.iapObservable)
+            .environment(context.onboardingObservable)
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
-            .environment(context.iapObservable)
+            .environment(context.viewLogger)
+            // Redesign
+            .environmentObject(context.apiManager)
+            .environmentObject(context.preferencesManager)
+            // Deprecate
+            .environmentObject(context.configManager)
+            .environmentObject(context.iapManager)
+            .environmentObject(context.kvManager)
+            .environmentObject(context.profileManager)
+            .environmentObject(context.versionChecker)
     }
 
     public func withMockEnvironment() -> some View {

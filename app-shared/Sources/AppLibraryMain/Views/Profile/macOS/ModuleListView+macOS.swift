@@ -20,8 +20,7 @@ struct ModuleListView: View, Routable {
     @Environment(\.distributionTarget)
     private var distributionTarget
 
-    @ObservedObject
-    var profileEditor: ProfileEditor
+    let profileEditor: ProfileEditor
 
     @Binding
     var selectedModuleId: UUID?
@@ -32,8 +31,7 @@ struct ModuleListView: View, Routable {
     @Binding
     var paywallReason: PaywallReason?
 
-    @ObservedObject
-    var errorHandler: ErrorHandler
+    let errorHandler: ErrorHandler
 
     var flow: ProfileCoordinator.Flow?
 

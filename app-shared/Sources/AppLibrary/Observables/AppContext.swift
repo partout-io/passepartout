@@ -8,23 +8,43 @@ import CommonLibrary
 import Foundation
 import Partout
 
+// FIXME: #1594, Split into AppContext (AppLibrary) and CommonContext (CommonLibrary)
 @MainActor
-public final class AppContext: ObservableObject, Sendable {
-    public let apiManager: APIManager
+public final class AppContext {
 
-    public let appearanceManager: AppearanceManager
+    // MARK: Environment/Observables
 
-    public let appEncoder: AppEncoder
+    // FIXME: #1594, Add injectable AppConfiguration from Constants/BundleConfiguration
 
-    public let configManager: ConfigManager
+    public let appearanceObservable: AppearanceObservable
+
+    public let appEncoderObservable: AppEncoderObservable
 
     public let distributionTarget: ABI.DistributionTarget
+
+    public let iapObservable: IAPObservable
+
+    public let onboardingObservable: OnboardingObservable
+
+    public let profileObservable: ProfileObservable
+
+    public let tunnelObservable: TunnelObservable
+
+    public let viewLogger: ViewLogger
+
+    // MARK: Internal
+
+    private let sysexManager: SystemExtensionManager?
+
+    // FIXME: #1594, Drop or make internal
+
+    public let apiManager: APIManager
+
+    public let configManager: ConfigManager
 
     public let iapManager: IAPManager
 
     public let kvManager: KeyValueManager
-
-    public let onboardingManager: OnboardingManager
 
     public let preferencesManager: PreferencesManager
 
@@ -32,19 +52,19 @@ public final class AppContext: ObservableObject, Sendable {
 
     public let registry: Registry
 
-    public let sysexManager: SystemExtensionManager?
-
     public let tunnel: ExtendedTunnel
 
     public let versionChecker: VersionChecker
 
-    public let viewLogger: ViewLogger
-
     public let webReceiverManager: WebReceiverManager
+
+    // MARK: Other
 
     private let receiptInvalidationInterval: TimeInterval
 
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
+
+    // MARK: Internal state
 
     private var launchTask: Task<Void, Error>?
 
@@ -53,14 +73,6 @@ public final class AppContext: ObservableObject, Sendable {
     private var didLoadReceiptDate: Date?
 
     private var subscriptions: Set<AnyCancellable>
-
-    // MARK: Observables
-
-    public let profileObservable: ProfileObservable
-
-    public let tunnelObservable: TunnelObservable
-
-    public let iapObservable: IAPObservable
 
     // MARK: - Init
 
@@ -72,7 +84,7 @@ public final class AppContext: ObservableObject, Sendable {
         iapManager: IAPManager,
         kvManager: KeyValueManager,
         logger: AppLogger,
-        onboardingManager: OnboardingManager? = nil,
+        onboardingObservable: OnboardingObservable? = nil,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
         registry: Registry,
@@ -83,30 +95,35 @@ public final class AppContext: ObservableObject, Sendable {
         receiptInvalidationInterval: TimeInterval = 30.0,
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
+        // Internal
         self.apiManager = apiManager
-        appearanceManager = AppearanceManager(kvManager: kvManager)
-        self.appEncoder = appEncoder
         self.configManager = configManager
-        self.distributionTarget = distributionTarget
         self.iapManager = iapManager
         self.kvManager = kvManager
-        self.onboardingManager = onboardingManager ?? OnboardingManager()
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
         self.sysexManager = sysexManager
         self.tunnel = tunnel
         self.versionChecker = versionChecker
-        viewLogger = ViewLogger(strategy: logger)
         self.webReceiverManager = webReceiverManager
-        self.receiptInvalidationInterval = receiptInvalidationInterval
-        self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
-        didLoadReceiptDate = nil
-        subscriptions = []
 
+        // Environment
+        appearanceObservable = AppearanceObservable(kvManager: kvManager)
+        appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
+        self.distributionTarget = distributionTarget
+        iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
+        self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)
         tunnelObservable = TunnelObservable(logger: logger, extendedTunnel: tunnel)
-        iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
+        viewLogger = ViewLogger(strategy: logger)
+
+        // Other
+        self.receiptInvalidationInterval = receiptInvalidationInterval
+        self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
+
+        didLoadReceiptDate = nil
+        subscriptions = []
     }
 }
 

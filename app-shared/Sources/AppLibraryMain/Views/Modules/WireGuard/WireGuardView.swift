@@ -24,7 +24,7 @@ struct WireGuardView: View, ModuleDraftEditing {
     @State
     private var isImporting = false
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     init(draft: ModuleDraft<WireGuardModule.Builder>, parameters: ModuleViewParameters) {

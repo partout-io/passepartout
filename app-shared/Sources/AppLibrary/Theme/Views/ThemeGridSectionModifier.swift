@@ -8,8 +8,8 @@ import SwiftUI
 
 struct ThemeGridSectionModifier<Header>: ViewModifier where Header: View {
 
-    @EnvironmentObject
-    private var theme: Theme
+    @Environment(Theme.self)
+    private var theme
 
     @ViewBuilder
     let header: Header

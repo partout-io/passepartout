@@ -23,7 +23,7 @@ struct SendToTVView: View {
     @State
     private var isSending = false
 
-    @StateObject
+    @State
     private var errorHandler: ErrorHandler = .default()
 
     var body: some View {

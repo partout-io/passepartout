@@ -2,8 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary
 import Foundation
 
+// FIXME: #1594, Improve preferences design
 public final class ProviderPreferences: ObservableObject, ProviderPreferencesRepository {
     private var repository: ProviderPreferencesRepository?
 
