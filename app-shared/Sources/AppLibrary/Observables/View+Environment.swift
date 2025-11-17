@@ -8,16 +8,7 @@ import SwiftUI
 extension View {
     public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
         self
-            .environmentObject(context.apiManager)
-            .environmentObject(context.configManager)
             .environment(\.distributionTarget, context.distributionTarget)
-            .environmentObject(context.iapManager)
-            .environmentObject(context.kvManager)
-            .environmentObject(context.preferencesManager)
-            .environmentObject(context.profileManager)
-            .environmentObject(context.versionChecker)
-            .environment(context.viewLogger)
-            // Observables
             .environment(theme)
             .environment(context.appEncoderObservable)
             .environment(context.appearanceObservable)
@@ -25,6 +16,16 @@ extension View {
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
             .environment(context.iapObservable)
+            .environment(context.viewLogger)
+            // Redesign
+            .environmentObject(context.apiManager)
+            .environmentObject(context.preferencesManager)
+            // Deprecate
+            .environmentObject(context.configManager)
+            .environmentObject(context.iapManager)
+            .environmentObject(context.kvManager)
+            .environmentObject(context.profileManager)
+            .environmentObject(context.versionChecker)
     }
 
     public func withMockEnvironment() -> some View {
