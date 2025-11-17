@@ -33,10 +33,6 @@ private extension LinksView {
         appConfiguration.constants
     }
 
-    var appStoreId: String {
-        appConfiguration.bundleString(for: .appStoreId)
-    }
-
     var supportSection: some View {
         Group {
             Link(Strings.Views.Settings.Links.Rows.joinCommunity, destination: constants.websites.subreddit)
