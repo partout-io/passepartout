@@ -8,14 +8,14 @@ import SwiftUI
 extension View {
     public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
         self
-            .environment(\.distributionTarget, context.distributionTarget)
             .environment(theme)
-            .environment(context.appEncoderObservable)
             .environment(context.appearanceObservable)
+            .environment(context.appEncoderObservable)
+            .environment(\.distributionTarget, context.distributionTarget)
+            .environment(context.iapObservable)
             .environment(context.onboardingObservable)
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
-            .environment(context.iapObservable)
             .environment(context.viewLogger)
             // Redesign
             .environmentObject(context.apiManager)

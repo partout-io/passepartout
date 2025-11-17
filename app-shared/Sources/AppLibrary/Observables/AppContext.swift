@@ -12,7 +12,27 @@ import Partout
 @MainActor
 public final class AppContext {
 
+    // MARK: Environment/Observables
+
+    public let appearanceObservable: AppearanceObservable
+
+    public let appEncoderObservable: AppEncoderObservable
+
+    public let distributionTarget: ABI.DistributionTarget
+
+    public let iapObservable: IAPObservable
+
+    public let onboardingObservable: OnboardingObservable
+
+    public let profileObservable: ProfileObservable
+
+    public let tunnelObservable: TunnelObservable
+
+    public let viewLogger: ViewLogger
+
     // MARK: Internal
+
+    private let sysexManager: SystemExtensionManager?
 
     // FIXME: #1594, Drop or make internal
 
@@ -30,33 +50,13 @@ public final class AppContext {
 
     public let registry: Registry
 
-    public let sysexManager: SystemExtensionManager?
-
     public let tunnel: ExtendedTunnel
 
     public let versionChecker: VersionChecker
 
     public let webReceiverManager: WebReceiverManager
 
-    // MARK: Observables
-
-    public let appearanceObservable: AppearanceObservable
-
-    public let appEncoderObservable: AppEncoderObservable
-
-    public let iapObservable: IAPObservable
-
-    public let onboardingObservable: OnboardingObservable
-
-    public let profileObservable: ProfileObservable
-
-    public let tunnelObservable: TunnelObservable
-
-    public let viewLogger: ViewLogger
-
     // MARK: Other
-
-    public let distributionTarget: ABI.DistributionTarget
 
     private let receiptInvalidationInterval: TimeInterval
 
