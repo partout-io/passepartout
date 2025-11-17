@@ -11,21 +11,18 @@ import Partout
 // FIXME: #1594, Split into AppContext (AppLibrary) and CommonContext (CommonLibrary)
 @MainActor
 public final class AppContext {
+
+    // MARK: Internal
+
+    // FIXME: #1594, Drop or make internal
+
     public let apiManager: APIManager
 
-    public let appearanceObservable: AppearanceObservable
-
-    public let appEncoder: AppEncoder
-
     public let configManager: ConfigManager
-
-    public let distributionTarget: ABI.DistributionTarget
 
     public let iapManager: IAPManager
 
     public let kvManager: KeyValueManager
-
-    public let onboardingObservable: OnboardingObservable
 
     public let preferencesManager: PreferencesManager
 
@@ -39,13 +36,33 @@ public final class AppContext {
 
     public let versionChecker: VersionChecker
 
+    public let webReceiverManager: WebReceiverManager
+
+    // MARK: Observables
+
+    public let appearanceObservable: AppearanceObservable
+
+    public let appEncoderObservable: AppEncoderObservable
+
+    public let iapObservable: IAPObservable
+
+    public let onboardingObservable: OnboardingObservable
+
+    public let profileObservable: ProfileObservable
+
+    public let tunnelObservable: TunnelObservable
+
     public let viewLogger: ViewLogger
 
-    public let webReceiverManager: WebReceiverManager
+    // MARK: Other
+
+    public let distributionTarget: ABI.DistributionTarget
 
     private let receiptInvalidationInterval: TimeInterval
 
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
+
+    // MARK: Internal state
 
     private var launchTask: Task<Void, Error>?
 
@@ -54,16 +71,6 @@ public final class AppContext {
     private var didLoadReceiptDate: Date?
 
     private var subscriptions: Set<AnyCancellable>
-
-    // MARK: Observables
-
-    public let appEncoderObservable: AppEncoderObservable
-
-    public let iapObservable: IAPObservable
-
-    public let profileObservable: ProfileObservable
-
-    public let tunnelObservable: TunnelObservable
 
     // MARK: - Init
 
@@ -86,31 +93,35 @@ public final class AppContext {
         receiptInvalidationInterval: TimeInterval = 30.0,
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
+        // Internal
         self.apiManager = apiManager
-        appearanceObservable = AppearanceObservable(kvManager: kvManager)
-        self.appEncoder = appEncoder
         self.configManager = configManager
-        self.distributionTarget = distributionTarget
         self.iapManager = iapManager
         self.kvManager = kvManager
-        self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
         self.sysexManager = sysexManager
         self.tunnel = tunnel
         self.versionChecker = versionChecker
-        viewLogger = ViewLogger(strategy: logger)
         self.webReceiverManager = webReceiverManager
-        self.receiptInvalidationInterval = receiptInvalidationInterval
-        self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
-        didLoadReceiptDate = nil
-        subscriptions = []
 
+        // Observables
+        appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
         iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
+        self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)
         tunnelObservable = TunnelObservable(logger: logger, extendedTunnel: tunnel)
+        viewLogger = ViewLogger(strategy: logger)
+
+        // Other
+        self.distributionTarget = distributionTarget
+        self.receiptInvalidationInterval = receiptInvalidationInterval
+        self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
+
+        didLoadReceiptDate = nil
+        subscriptions = []
     }
 }
 
