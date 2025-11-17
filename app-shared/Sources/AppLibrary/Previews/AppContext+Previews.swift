@@ -17,6 +17,9 @@ extension AppContext {
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: 5.0,
+            verificationDelayMinutesBlock: { _ in
+                2
+            },
             productsAtBuild: { _ in
                 []
             }

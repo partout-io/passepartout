@@ -34,6 +34,9 @@ extension AppContext {
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: { _ in
+                2
+            },
             productsAtBuild: { _ in
                 []
             }
@@ -44,6 +47,7 @@ extension AppContext {
             configBlock: { [] }
         )
         let processor = dependencies.appProcessor(
+            cfg: appConfiguration,
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry

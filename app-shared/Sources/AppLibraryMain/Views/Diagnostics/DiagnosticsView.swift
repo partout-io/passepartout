@@ -21,6 +21,9 @@ struct DiagnosticsView: View {
     @Environment(Theme.self)
     private var theme
 
+    @Environment(AppFormatter.self)
+    private var appFormatter
+
     @EnvironmentObject
     private var apiManager: APIManager
 
@@ -53,12 +56,6 @@ struct DiagnosticsView: View {
 
     @State
     var isPresentingUnableToEmail = false
-
-    private let dateFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = Resources.constants.formats.timestamp
-        return df
-    }()
 
     var body: some View {
         Form {
@@ -144,7 +141,7 @@ private extension DiagnosticsView {
 
     func logView(for item: LogEntry) -> some View {
         ThemeRemovableItemRow(isEditing: true) {
-            let dateString = dateFormatter.string(from: item.date)
+            let dateString = appFormatter.string(from: item.date)
             navLink(dateString, to: .tunnelLog(title: dateString, url: item.url))
         } removeAction: {
             removeTunnelLog(at: item.url)

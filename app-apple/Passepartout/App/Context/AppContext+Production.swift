@@ -80,11 +80,14 @@ extension AppContext {
             return APIManager(ctx, from: API.shared, repository: repository)
         }()
         let iapManager = IAPManager(
-            customUserLevel: dependencies.customUserLevel,
-            inAppHelper: dependencies.simulatedAppProductHelper(),
-            receiptReader: dependencies.simulatedAppReceiptReader(),
+            customUserLevel: dependencies.customUserLevel(cfg: appConfiguration),
+            inAppHelper: dependencies.simulatedAppProductHelper(cfg: appConfiguration),
+            receiptReader: dependencies.simulatedAppReceiptReader(cfg: appConfiguration),
             betaChecker: dependencies.betaChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: {
+                appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
+            },
             productsAtBuild: dependencies.productsAtBuild()
         )
         if distributionTarget.supportsIAP {
@@ -152,10 +155,10 @@ extension AppContext {
         let tunnelStrategy = NETunnelStrategy(
             ctx,
             bundleIdentifier: tunnelIdentifier,
-            coder: dependencies.neProtocolCoder(ctx, registry: registry)
+            coder: dependencies.neProtocolCoder(ctx, cfg: appConfiguration, registry: registry)
         )
         let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) {
-            dependencies.profileTitle($0)
+            dependencies.profileTitle(cfg: appConfiguration, profile: $0)
         }
         let backupProfileRepository = dependencies.backupProfileRepository(
             ctx,
@@ -167,6 +170,7 @@ extension AppContext {
 #endif
 
         let processor = dependencies.appProcessor(
+            cfg: appConfiguration,
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry
@@ -191,7 +195,11 @@ extension AppContext {
         }
         let tunnel = ExtendedTunnel(
             tunnel: Tunnel(ctx, strategy: tunnelStrategy) {
-                dependencies.appTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+                dependencies.appTunnelEnvironment(
+                    cfg: appConfiguration,
+                    strategy: tunnelStrategy,
+                    profileId: $0
+                )
             },
             sysex: sysexManager,
             kvManager: kvManager,
@@ -335,16 +343,16 @@ private extension Dependencies {
 #endif
     }
 
-    func simulatedAppProductHelper() -> any AppProductHelper {
+    func simulatedAppProductHelper(cfg: ABI.AppConfiguration) -> any AppProductHelper {
         if AppCommandLine.contains(.fakeIAP) {
             return FakeAppProductHelper()
         }
-        return appProductHelper()
+        return appProductHelper(cfg: cfg)
     }
 
-    func simulatedAppReceiptReader() -> AppReceiptReader {
+    func simulatedAppReceiptReader(cfg: ABI.AppConfiguration) -> AppReceiptReader {
         if AppCommandLine.contains(.fakeIAP) {
-            guard let mockHelper = simulatedAppProductHelper() as? FakeAppProductHelper else {
+            guard let mockHelper = simulatedAppProductHelper(cfg: cfg) as? FakeAppProductHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
             }
             return mockHelper.receiptReader

@@ -81,8 +81,8 @@ extension ABI.Issue {
 }
 
 extension ABI.Issue {
-    var to: String {
-        Resources.constants.emails.issues
+    func to(cfg: ABI.AppConfiguration) -> String {
+        cfg.constants.emails.issues
     }
 
     var subject: String {

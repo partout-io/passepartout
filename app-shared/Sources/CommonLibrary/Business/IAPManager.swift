@@ -26,6 +26,8 @@ public final class IAPManager: ObservableObject {
 
     private let timeoutInterval: TimeInterval
 
+    private let verificationDelayMinutesBlock: @Sendable (Bool) -> Int
+
     private let productsAtBuild: BuildProducts<ABI.AppProduct>?
 
     // FIXME: #1594, AppContext requires Published
@@ -66,6 +68,10 @@ public final class IAPManager: ObservableObject {
         }
     }
 
+    public var verificationDelayMinutes: Int {
+        verificationDelayMinutesBlock(isBeta)
+    }
+
     public let didChange: PassthroughStream<Event>
 
     private var subscriptions: Set<AnyCancellable>
@@ -77,6 +83,7 @@ public final class IAPManager: ObservableObject {
         betaChecker: BetaChecker,
         unrestrictedFeatures: Set<ABI.AppFeature> = [],
         timeoutInterval: TimeInterval,
+        verificationDelayMinutesBlock: @escaping @Sendable (Bool) -> Int,
         productsAtBuild: BuildProducts<ABI.AppProduct>? = nil
     ) {
         self.customUserLevel = customUserLevel
@@ -85,6 +92,7 @@ public final class IAPManager: ObservableObject {
         self.betaChecker = betaChecker
         self.unrestrictedFeatures = unrestrictedFeatures
         self.timeoutInterval = timeoutInterval
+        self.verificationDelayMinutesBlock = verificationDelayMinutesBlock
         self.productsAtBuild = productsAtBuild
         userLevel = .undefined
         purchasedProducts = []

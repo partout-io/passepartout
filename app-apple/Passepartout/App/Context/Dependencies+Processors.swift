@@ -8,6 +8,7 @@ import Partout
 
 extension Dependencies {
     func appProcessor(
+        cfg: ABI.AppConfiguration,
         apiManager: APIManager,
         iapManager: IAPManager,
         registry: Registry
@@ -16,12 +17,14 @@ extension Dependencies {
             apiManager: apiManager,
             iapManager: iapManager,
             registry: registry,
-            title: profileTitle
+            title: {
+                profileTitle(cfg: cfg, profile: $0)
+            }
         )
     }
 
     @Sendable
-    nonisolated func profileTitle(_ profile: Profile) -> String {
-        String(format: Resources.constants.tunnel.profileTitleFormat, profile.name)
+    nonisolated func profileTitle(cfg: ABI.AppConfiguration, profile: Profile) -> String {
+        String(format: cfg.constants.tunnel.profileTitleFormat, profile.name)
     }
 }

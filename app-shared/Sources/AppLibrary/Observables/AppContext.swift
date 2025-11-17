@@ -16,6 +16,8 @@ public final class AppContext {
 
     public let appConfiguration: ABI.AppConfiguration
 
+    public let appFormatter: AppFormatter
+
     public let appearanceObservable: AppearanceObservable
 
     public let appEncoderObservable: AppEncoderObservable
@@ -110,6 +112,7 @@ public final class AppContext {
 
         // Environment
         self.appConfiguration = appConfiguration
+        appFormatter = AppFormatter(constants: appConfiguration.constants)
         appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
         self.distributionTarget = distributionTarget

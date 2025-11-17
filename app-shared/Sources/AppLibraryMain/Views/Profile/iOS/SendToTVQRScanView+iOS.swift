@@ -8,6 +8,10 @@ import CommonLibrary
 import SwiftUI
 
 struct SendToTVQRScanView: View {
+
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     let onLoad: (Error?) -> Void
 
     let onDetect: (URL) -> Void
@@ -16,7 +20,7 @@ struct SendToTVQRScanView: View {
     private var usingScanner = true
 
     @State
-    private var addressPort: HTTPAddressPort = .forWebReceiver
+    private var addressPort = HTTPAddressPort()
 
     var body: some View {
         ZStack {
@@ -26,6 +30,9 @@ struct SendToTVQRScanView: View {
             } else {
                 formView
             }
+        }
+        .onLoad {
+            addressPort = .forWebReceiver(cfg: appConfiguration)
         }
     }
 }

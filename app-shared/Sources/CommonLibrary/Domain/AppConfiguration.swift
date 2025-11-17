@@ -29,7 +29,7 @@ extension ABI {
         ]
     }
 
-    public struct AppConfiguration: Decodable, Sendable {
+    public struct AppConfiguration: Sendable {
         public let constants: ABI.Constants
 
         public let displayName: String

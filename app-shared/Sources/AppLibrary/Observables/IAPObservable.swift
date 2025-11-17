@@ -44,7 +44,7 @@ extension IAPObservable {
     }
 
     public var verificationDelayMinutes: Int {
-        Resources.constants.tunnel.verificationDelayMinutes(isBeta: isBeta)
+        iapManager.verificationDelayMinutes
     }
 }
 

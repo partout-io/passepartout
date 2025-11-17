@@ -48,7 +48,7 @@ extension ReportIssueButton {
                 parameters: appConfiguration.constants.log,
                 comment: comment
             ))
-            service.recipients = [issue.to]
+            service.recipients = [issue.to(cfg: appConfiguration)]
             service.subject = issue.subject
             service.perform(withItems: issue.items(cfg: appConfiguration))
         }

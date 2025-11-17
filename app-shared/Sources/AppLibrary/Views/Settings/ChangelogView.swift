@@ -26,7 +26,7 @@ public struct ChangelogView: View {
     public var body: some View {
         Form {
             ForEach(entries, id: \.id) { entry in
-                if let url = entry.issueURL {
+                if let url = entry.issueURL(cfg: appConfiguration) {
                     Link(entry.comment, destination: url)
                 } else {
                     Text(entry.comment)

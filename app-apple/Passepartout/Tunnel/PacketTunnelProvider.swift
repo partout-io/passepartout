@@ -147,6 +147,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 ),
                 betaChecker: dependencies.betaChecker(),
                 timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+                verificationDelayMinutesBlock: {
+                    appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
+                },
                 productsAtBuild: dependencies.productsAtBuild()
             )
             if distributionTarget.supportsIAP {

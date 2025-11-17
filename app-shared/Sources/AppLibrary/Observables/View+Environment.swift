@@ -10,6 +10,7 @@ extension View {
         self
             .environment(theme)
             .environment(\.appConfiguration, context.appConfiguration)
+            .environment(context.appFormatter)
             .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
             .environment(\.distributionTarget, context.distributionTarget)
