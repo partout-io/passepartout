@@ -4,7 +4,6 @@
 
 import AppLibrary
 import CommonLibrary
-import CommonResources
 import Foundation
 import Partout
 

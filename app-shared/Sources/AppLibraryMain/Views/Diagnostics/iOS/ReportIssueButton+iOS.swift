@@ -5,7 +5,6 @@
 #if os(iOS)
 
 import CommonLibrary
-import CommonResources
 import SwiftUI
 import UIKit
 

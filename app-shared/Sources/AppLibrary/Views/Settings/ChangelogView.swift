@@ -5,7 +5,6 @@
 #if !os(tvOS)
 
 import CommonLibrary
-import CommonResources
 import Partout
 import SwiftUI
 

@@ -5,7 +5,6 @@
 import AppAccessibility
 import AppLibrary
 import CommonLibrary
-import CommonResources
 import Partout
 import SwiftUI
 
