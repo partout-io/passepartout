@@ -147,7 +147,7 @@ extension AppContext {
             ctx,
             encoder: appEncoder,
             model: cdRemoteModel,
-            name: constants.containers.backup,
+            name: appConfiguration.constants.containers.backup,
             observingResults: true
         )
         let backupProfileRepository: ProfileRepository? = nil
