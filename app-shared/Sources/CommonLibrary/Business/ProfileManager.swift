@@ -295,9 +295,7 @@ extension ProfileManager {
         localSubscription = Task { [weak self] in
             guard let self else { return }
             for await profiles in profileEvents {
-                await MainActor.run {
-                    reloadLocalProfiles(profiles)
-                }
+                reloadLocalProfiles(profiles)
             }
         }
     }
@@ -312,9 +310,7 @@ extension ProfileManager {
         remoteSubscription = Task { [weak self] in
             guard let self else { return }
             for await profiles in profileEvents {
-                await MainActor.run {
-                    reloadRemoteProfiles(profiles)
-                }
+                reloadRemoteProfiles(profiles)
             }
         }
     }
