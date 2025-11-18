@@ -187,14 +187,15 @@ private extension AppContext {
         subscriptions.insert(Task { [weak self] in
             guard let self else { return }
             for await event in iapEvents {
-                // FIXME: ###, .dropFirst() (of each) + .removeDuplicates()
                 switch event {
                 case .status(let isEnabled):
+                    // FIXME: #1594, .dropFirst() + .removeDuplicates()
                     pp_log_g(.App.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
                     kvManager.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let features):
+                    // FIXME: #1594, .dropFirst() + .removeDuplicates()
                     do {
                         pp_log_g(.App.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
                         try await onEligibleFeatures(features)
