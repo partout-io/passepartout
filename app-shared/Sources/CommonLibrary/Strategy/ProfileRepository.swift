@@ -7,7 +7,7 @@ import Foundation
 import Partout
 
 public protocol ProfileRepository: Sendable {
-    var profilesPublisher: AnyPublisher<[Profile], Never> { get }
+    nonisolated var profilesPublisher: AnyPublisher<[Profile], Never> { get }
 
     func fetchProfiles() async throws -> [Profile]
 
