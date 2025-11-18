@@ -19,24 +19,20 @@ struct StoreKitProductView: View {
     let onError: (Error) -> Void
 
     var body: some View {
-        if #available(iOS 17, macOS 14, tvOS 17, *) {
-            ProductView(id: product.productIdentifier)
-                .withPaywallStyle(style)
-                .onInAppPurchaseStart { _ in
-                    purchasingIdentifier = product.productIdentifier
+        ProductView(id: product.productIdentifier)
+            .withPaywallStyle(style)
+            .onInAppPurchaseStart { _ in
+                purchasingIdentifier = product.productIdentifier
+            }
+            .onInAppPurchaseCompletion { skProduct, result in
+                do {
+                    let skResult = try result.get()
+                    onComplete(skProduct.id, skResult.toResult)
+                } catch {
+                    onError(error)
                 }
-                .onInAppPurchaseCompletion { skProduct, result in
-                    do {
-                        let skResult = try result.get()
-                        onComplete(skProduct.id, skResult.toResult)
-                    } catch {
-                        onError(error)
-                    }
-                    purchasingIdentifier = nil
-                }
-        } else {
-            fatalError("Unsupported ProductView")
-        }
+                purchasingIdentifier = nil
+            }
     }
 }
 

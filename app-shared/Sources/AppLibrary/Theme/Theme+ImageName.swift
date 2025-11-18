@@ -114,12 +114,7 @@ extension Theme.ImageName {
             case .tunnelRestart: return "arrow.clockwise"
             case .tunnelToggle: return "power"
             case .tunnelUninstall: return "arrow.uturn.down"
-            case .tvOff:
-                if #available(iOS 17, macOS 14, tvOS 17, *) {
-                    return "tv.slash"
-                } else {
-                    return "tv"
-                }
+            case .tvOff: return "tv.slash"
             case .tvOn: return "tv"
             case .undisclose: return "chevron.up"
             case .upgrade: return "lock"

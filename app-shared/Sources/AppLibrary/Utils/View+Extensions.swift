@@ -102,14 +102,8 @@ public func setLater<T>(_ value: T?, millis: Int = 50, block: @escaping (T?) -> 
 
 #if !os(tvOS)
 extension Table {
-
-    @ViewBuilder
     public func withoutColumnHeaders() -> some View {
-        if #available(iOS 17, macOS 14, *) {
-            tableColumnHeaders(.hidden)
-        } else {
-            self
-        }
+        tableColumnHeaders(.hidden)
     }
 }
 #endif

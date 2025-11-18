@@ -29,14 +29,9 @@ public struct LongContentEditor: View {
             }
     }
 
-    @ViewBuilder
     private var contentView: some View {
-        if #available(iOS 17, macOS 14, *) {
-            TextEditor(text: $content)
-                .scrollClipDisabled()
-        } else {
-            TextEditor(text: $content)
-        }
+        TextEditor(text: $content)
+            .scrollClipDisabled()
     }
 }
 

@@ -15,17 +15,7 @@ public struct CompatibleSettingsLink<Label>: View where Label: View {
     }
 
     public var body: some View {
-        if #available(macOS 14, *) {
-            SettingsLink(label: label)
-        } else {
-            Button(action: {
-                if #available(macOS 13.0, *) {
-                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                } else {
-                    NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-                }
-            }, label: label)
-        }
+        SettingsLink(label: label)
     }
 }
 

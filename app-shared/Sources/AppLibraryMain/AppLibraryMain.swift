@@ -15,18 +15,15 @@ public final class AppLibraryMain: AppLibraryConfiguring {
     public func configure(with context: AppContext) {
         assertMissingImplementations(with: context.registry)
 
-        if #available(iOS 17, macOS 14, *) {
-
-            // for debugging
-//            Tips.showAllTipsForTesting()
-            if AppCommandLine.contains(.uiTesting) {
-                Tips.hideAllTipsForTesting()
-            }
-
-            try? Tips.configure([
-                .displayFrequency(.immediate)
-            ])
+        // For debugging
+//        Tips.showAllTipsForTesting()
+        if AppCommandLine.contains(.uiTesting) {
+            Tips.hideAllTipsForTesting()
         }
+
+        try? Tips.configure([
+            .displayFrequency(.immediate)
+        ])
     }
 }
 
