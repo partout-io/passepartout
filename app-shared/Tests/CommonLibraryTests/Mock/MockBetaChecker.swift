@@ -4,7 +4,7 @@
 
 import CommonLibrary
 
-final class MockBetaChecker: BetaChecker {
+final class MockBetaChecker: BetaChecker, @unchecked Sendable {
     var isBeta = false
 
     func isBeta() async -> Bool {
