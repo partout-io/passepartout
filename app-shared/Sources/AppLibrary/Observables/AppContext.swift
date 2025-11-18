@@ -22,6 +22,8 @@ public final class AppContext {
 
     public let appFormatter: AppFormatter
 
+    public let configObservable: ConfigObservable
+
     public let iapObservable: IAPObservable
 
     public let onboardingObservable: OnboardingObservable
@@ -30,7 +32,13 @@ public final class AppContext {
 
     public let tunnelObservable: TunnelObservable
 
+    public let userPreferences: UserPreferencesObservable
+
+    public let versionObservable: VersionObservable
+
     public let viewLogger: ViewLogger
+
+    public let webReceiverObservable: WebReceiverObservable
 
     // MARK: Internal
 
@@ -50,6 +58,7 @@ public final class AppContext {
 
     public let profileManager: ProfileManager
 
+    // FIXME: #1594, Partout detail, do not expose
     public let registry: Registry
 
     public let tunnel: ExtendedTunnel
@@ -112,11 +121,15 @@ public final class AppContext {
         appFormatter = AppFormatter(constants: appConfiguration.constants)
         appearanceObservable = AppearanceObservable(kvManager: kvManager)
         appEncoderObservable = AppEncoderObservable(encoder: appEncoder)
+        configObservable = ConfigObservable(configManager: configManager)
         iapObservable = IAPObservable(logger: logger, iapManager: iapManager)
         self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
         profileObservable = ProfileObservable(logger: logger, profileManager: profileManager)
         tunnelObservable = TunnelObservable(logger: logger, extendedTunnel: tunnel)
+        userPreferences = UserPreferencesObservable(kvManager: kvManager)
+        versionObservable = VersionObservable(versionChecker: versionChecker)
         viewLogger = ViewLogger(strategy: logger)
+        webReceiverObservable = WebReceiverObservable(webReceiverManager: webReceiverManager)
 
         // Other
         receiptInvalidationInterval = appConfiguration.constants.iap.receiptInvalidationInterval

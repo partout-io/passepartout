@@ -10,8 +10,7 @@ struct WebReceiverView: View {
     @Environment(ViewLogger.self)
     private var logger
 
-    @ObservedObject
-    var webReceiverManager: WebReceiverManager
+    let webReceiverObservable: WebReceiverObservable
 
     let profileObservable: ProfileObservable
 
@@ -19,7 +18,7 @@ struct WebReceiverView: View {
 
     var body: some View {
         VStack {
-            if let website = webReceiverManager.website {
+            if let website = webReceiverObservable.website {
                 view(forWebsite: website)
             } else {
                 Text(Strings.Views.Tv.WebReceiver.toggle)
@@ -27,13 +26,13 @@ struct WebReceiverView: View {
         }
         .task(handleUploadedFile)
         .onDisappear {
-            webReceiverManager.stop()
+            webReceiverObservable.stop()
         }
     }
 }
 
 private extension WebReceiverView {
-    func view(forWebsite website: WebReceiverManager.Website) -> some View {
+    func view(forWebsite website: ABI.WebsiteWithPasscode) -> some View {
         VStack {
             Text(Strings.Views.Tv.WebReceiver.qr)
             QRCodeView(text: website.url.absoluteString)
@@ -63,12 +62,12 @@ private extension WebReceiverView {
 
     @Sendable
     func handleUploadedFile() async {
-        for await file in webReceiverManager.files {
+        for await file in webReceiverObservable.files {
             logger.log(.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
                 // TODO: #1512, import encrypted OpenVPN profiles over the web
                 try await profileObservable.import(.contents(filename: file.name, data: file.contents))
-                webReceiverManager.renewPasscode()
+                webReceiverObservable.renewPasscode()
             } catch {
                 logger.log(.web, .error, "Unable to import uploaded profile: \(error)")
                 errorHandler.handle(error)

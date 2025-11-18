@@ -7,37 +7,25 @@ import Partout
 
 @MainActor
 public final class WebReceiverManager: ObservableObject {
-    public struct Website: Sendable {
-        public let url: URL
-
-        public let passcode: String?
-    }
-
-    public struct File: Sendable {
-        public let name: String
-
-        public let contents: String
-    }
-
     public typealias PasscodeGenerator = () -> String
 
     private let webReceiver: WebReceiver
 
     private let passcodeGenerator: PasscodeGenerator?
 
-    private let filesStream: PassthroughStream<File>
+    private let filesStream: PassthroughStream<ABI.WebFileUpload>
 
     public var isStarted: Bool {
         website != nil
     }
 
-    public private(set) var website: Website? {
+    public private(set) var website: ABI.WebsiteWithPasscode? {
         willSet {
             objectWillChange.send()
         }
     }
 
-    public var files: AsyncStream<File> {
+    public var files: AsyncStream<ABI.WebFileUpload> {
         filesStream.subscribe()
     }
 
@@ -54,9 +42,9 @@ public final class WebReceiverManager: ObservableObject {
         let passcode = passcodeGenerator?()
         do {
             let url = try webReceiver.start(passcode: passcode) { [weak self] in
-                self?.filesStream.send(File(name: $0, contents: $1))
+                self?.filesStream.send(ABI.WebFileUpload(name: $0, contents: $1))
             }
-            website = Website(url: url, passcode: passcode)
+            website = ABI.WebsiteWithPasscode(url: url, passcode: passcode)
         } catch let error as WebReceiverError {
             throw ABI.AppError.webReceiver(error)
         }

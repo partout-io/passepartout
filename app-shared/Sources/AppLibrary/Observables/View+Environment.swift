@@ -13,10 +13,13 @@ extension View {
             .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
             .environment(context.appFormatter)
+            .environment(context.configObservable)
             .environment(context.iapObservable)
             .environment(context.onboardingObservable)
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
+            .environment(context.userPreferences)
+            .environment(context.versionObservable)
             .environment(context.viewLogger)
             // Redesign
             .environmentObject(context.apiManager)

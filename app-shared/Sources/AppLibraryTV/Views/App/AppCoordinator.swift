@@ -20,7 +20,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 
     public let tunnel: TunnelObservable
 
-    private let webReceiverManager: WebReceiverManager
+    private let webReceiverObservable: WebReceiverObservable
 
     @State
     private var paywallReason: PaywallReason?
@@ -37,11 +37,11 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     public init(
         profileObservable: ProfileObservable,
         tunnel: TunnelObservable,
-        webReceiverManager: WebReceiverManager
+        webReceiverObservable: WebReceiverObservable
     ) {
         self.profileObservable = profileObservable
         self.tunnel = tunnel
-        self.webReceiverManager = webReceiverManager
+        self.webReceiverObservable = webReceiverObservable
     }
 
     public var body: some View {
@@ -92,7 +92,7 @@ private extension AppCoordinator {
     var profilesView: some View {
         ProfilesView(
             profileObservable: profileObservable,
-            webReceiverManager: webReceiverManager
+            webReceiverObservable: webReceiverObservable
         )
     }
 
@@ -193,9 +193,6 @@ extension AppCoordinator {
 
 private struct DynamicPaywallModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
-
     @Binding
     var paywallReason: PaywallReason?
 
@@ -222,7 +219,7 @@ private struct DynamicPaywallModifier: ViewModifier {
 //    AppCoordinator(
 //        profileObservable: .forPreviews,
 //        tunnel: .forPreviews,
-//        webReceiverManager: WebReceiverManager()
+//        webReceiverObservable: WebReceiverObservable()
 //    )
 //    .withMockEnvironment()
 //}

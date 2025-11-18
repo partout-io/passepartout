@@ -4,8 +4,7 @@
 
 import Foundation
 
-@MainActor
-public final class WebUploader: ObservableObject, Sendable {
+public final class WebUploader: Sendable {
     private let logger: AppLogger
 
     private let strategy: WebUploaderStrategy
