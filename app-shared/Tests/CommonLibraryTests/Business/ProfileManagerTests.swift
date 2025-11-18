@@ -193,6 +193,7 @@ extension ProfileManagerTests {
         XCTAssertEqual(processor.willRebuildCount, 1)
     }
 
+    // FIXME
     func test_givenRepository_whenSave_thenIsStoredToBackUpRepository() async throws {
         let repository = InMemoryProfileRepository(profiles: [])
         let backupRepository = InMemoryProfileRepository(profiles: [])
