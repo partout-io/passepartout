@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-public func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> {
+public func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> where T: Sendable {
     Binding {
         lhs.wrappedValue ?? rhs
     } set: {
@@ -13,6 +13,7 @@ public func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> {
 }
 
 extension Observable {
+    @MainActor
     public func binding<Value>(_ keyPath: ReferenceWritableKeyPath<Self, Value>) -> Binding<Value> {
         Binding(
             get: { self[keyPath: keyPath] },
@@ -22,7 +23,7 @@ extension Observable {
 }
 
 extension Binding where Value == Bool {
-    public init<T: Equatable>(presenting other: Binding<T?>, equal value: T) {
+    public init<T>(presenting other: Binding<T?>, equal value: T) where T: Equatable & Sendable {
         self.init {
             other.wrappedValue == value
         } set: {
@@ -32,7 +33,7 @@ extension Binding where Value == Bool {
         }
     }
 
-    public init<T>(presenting other: Binding<T?>, if block: @escaping (T?) -> Bool) {
+    public init<T>(presenting other: Binding<T?>, if block: @escaping @Sendable (T?) -> Bool) where T: Sendable {
         self.init {
             block(other.wrappedValue)
         } set: {
@@ -45,15 +46,15 @@ extension Binding where Value == Bool {
 
 extension Binding {
     public func toString() -> Binding<String> where Value == URL? {
-        .init {
+        Binding<String> {
             wrappedValue?.absoluteString ?? ""
         } set: {
             wrappedValue = URL(string: $0) ?? wrappedValue
         }
     }
 
-    public func toString(omittingZero: Bool = false) -> Binding<String> where Value: FixedWidthInteger {
-        .init {
+    public func toString(omittingZero: Bool = false) -> Binding<String> where Value: FixedWidthInteger & Sendable {
+        Binding<String> {
             if omittingZero, wrappedValue == .zero {
                 return ""
             }
