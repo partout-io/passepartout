@@ -629,8 +629,9 @@ private extension ProfileManagerTests {
         let exp = expectation(description: description)
         var wasMet = false
 
+        let profileEvents = sut.didChange.subscribe()
         Task {
-            for await event in sut.didChange.subscribe() {
+            for await event in profileEvents {
                 guard !wasMet else { return }
                 if event == expectedEvent, condition(sut) {
                     wasMet = true

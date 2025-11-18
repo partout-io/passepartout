@@ -183,9 +183,10 @@ private extension AppContext {
         }
 
         pp_log_g(.App.iap, .info, "\tObserve changes in IAPManager...")
+        let iapEvents = iapManager.didChange.subscribe()
         subscriptions.insert(Task { [weak self] in
             guard let self else { return }
-            for await event in iapManager.didChange.subscribe() {
+            for await event in iapEvents {
                 // FIXME: ###, .dropFirst() (of each) + .removeDuplicates()
                 switch event {
                 case .status(let isEnabled):
@@ -207,9 +208,10 @@ private extension AppContext {
         })
 
         pp_log_g(.App.profiles, .info, "\tObserve changes in ProfileManager...")
+        let profileEvents = profileManager.didChange.subscribe()
         subscriptions.insert(Task { [weak self] in
             guard let self else { return }
-            for await event in profileManager.didChange.subscribe() {
+            for await event in profileEvents {
                 switch event {
                 case .save(let profile, let previousProfile):
                     do {

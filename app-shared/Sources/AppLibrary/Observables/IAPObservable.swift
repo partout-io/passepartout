@@ -49,9 +49,10 @@ extension IAPObservable {
 
 private extension IAPObservable {
     func observeEvents() {
+        let iapEvents = iapManager.didChange.subscribe()
         subscription = Task { [weak self] in
             guard let self else { return }
-            for await event in iapManager.didChange.subscribe() {
+            for await event in iapEvents {
                 switch event {
                 case .status(let isEnabled):
                     self.isEnabled = isEnabled

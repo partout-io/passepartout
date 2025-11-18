@@ -117,9 +117,10 @@ private extension ProfileObservable {
     func observeEvents(debounce: Int = 200) {
         // No need for observeLocal/observeRemote, done by AppContext/ABI
 
+        let profileEvents = profileManager.didChange.subscribe()
         eventSubscription = Task { [weak self] in
             guard let self else { return }
-            for await event in profileManager.didChange.subscribe() {
+            for await event in profileEvents {
                 switch event {
                 case .ready:
                     isReady = true

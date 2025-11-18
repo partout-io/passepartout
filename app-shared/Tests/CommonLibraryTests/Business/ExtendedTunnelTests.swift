@@ -31,9 +31,10 @@ extension ExtendedTunnelTests {
         env.setEnvironmentValue(.crypto, forKey: TunnelEnvironmentKeys.lastErrorCode)
 
         let exp = Expectation()
+        let tunnelEvents = sut.didChange.subscribe()
         var didCall = false
         Task {
-            for await event in sut.didChange.subscribe() {
+            for await _ in tunnelEvents {
                 if !didCall, sut.lastErrorCode(ofProfileId: profile.id) != nil {
                     didCall = true
                     await exp.fulfill()

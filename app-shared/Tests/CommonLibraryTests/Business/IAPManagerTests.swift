@@ -360,8 +360,9 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
         let exp = expectation(description: "Eligible features")
+        let iapEvents = sut.didChange.subscribe().dropFirst()
         Task {
-            for await event in sut.didChange.subscribe().dropFirst() {
+            for await event in iapEvents {
                 switch event {
                 case .eligibleFeatures:
                     exp.fulfill()
@@ -415,8 +416,9 @@ extension IAPManagerTests {
         XCTAssertTrue(sut.eligibleFeatures.isEmpty)
 
         let exp = expectation(description: "Reload receipt")
+        let iapEvents = sut.didChange.subscribe().dropFirst()
         Task {
-            for await event in sut.didChange.subscribe().dropFirst() {
+            for await event in iapEvents {
                 switch event {
                 case .eligibleFeatures:
                     exp.fulfill()

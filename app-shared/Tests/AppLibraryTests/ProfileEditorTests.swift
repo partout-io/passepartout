@@ -205,8 +205,9 @@ extension ProfileEditorTests {
         let manager = ProfileManager(profiles: [])
 
         let exp = expectation(description: "Save")
+        let profileEvents = manager.didChange.subscribe()
         Task {
-            for await event in manager.didChange.subscribe() {
+            for await event in profileEvents {
                 switch event {
                 case .save(let savedProfile, _):
                     do {

@@ -28,8 +28,9 @@ extension AppProfileImporterTests {
         let url = URL(string: "file:///filename.txt")!
 
         let exp = expectation(description: "Save")
+        let profileEvents = profileManager.didChange.subscribe()
         Task {
-            for await event in profileManager.didChange.subscribe() {
+            for await event in profileEvents {
                 switch event {
                 case .save(let profile, _):
                     XCTAssertEqual(profile.modules.count, 2)
@@ -58,8 +59,9 @@ extension AppProfileImporterTests {
         let url = URL(string: "file:///filename.encrypted")!
 
         let exp = expectation(description: "Save")
+        let profileEvents = profileManager.didChange.subscribe()
         Task {
-            for await event in profileManager.didChange.subscribe() {
+            for await event in profileEvents {
                 switch event {
                 case .save(let profile, _):
                     XCTAssertEqual(profile.modules.count, 2)
