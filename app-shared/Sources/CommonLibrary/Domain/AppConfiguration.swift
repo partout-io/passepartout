@@ -84,8 +84,9 @@ extension ABI {
             }
 
             // Fetch user level manually
-            let rawUserLevel = bundle.integerIfPresent(for: .userLevel)
-            customUserLevel = rawUserLevel.map(AppUserLevel.init(rawValue:)) ?? nil
+            customUserLevel = bundle.integerIfPresent(for: .userLevel).map {
+                AppUserLevel(rawValue: $0)
+            } ?? nil
 
             let appGroupURL = {
                 let groupId = bundle.string(for: .groupId)
