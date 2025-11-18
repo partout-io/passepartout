@@ -330,13 +330,14 @@ extension IAPManager {
         // This method must be called EXACTLY once
         precondition(!isObserving)
         isObserving = true
+        let inAppEvents = inAppHelper.didUpdate
         Task {
             await fetchLevelIfNeeded()
             do {
                 // Reload the receipt on in-app updates
                 receiptSubscription = Task { [weak self] in
                     guard let self else { return }
-                    for await _ in inAppHelper.didUpdate {
+                    for await _ in inAppEvents {
                         await reloadReceipt()
                     }
                 }

@@ -143,11 +143,12 @@ extension ExtendedTunnel {
 
 private extension ExtendedTunnel {
     func observeObjects() {
+        let tunnelEvents = tunnel.activeProfilesStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
             guard let self else {
                 return
             }
-            for await newActiveProfiles in tunnel.activeProfilesStream.removeDuplicates() {
+            for await newActiveProfiles in tunnelEvents {
                 guard !Task.isCancelled else {
                     pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.tunnelSubscription")
                     break
