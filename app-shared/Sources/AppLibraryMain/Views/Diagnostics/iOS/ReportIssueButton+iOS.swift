@@ -31,6 +31,7 @@ extension ReportIssueButton: View {
     }
 }
 
+@MainActor
 extension ReportIssueButton {
     func emailComposerView(issue: ABI.Issue) -> some View {
         MailComposerView(
@@ -49,7 +50,6 @@ extension ReportIssueButton {
         )
     }
 
-    @MainActor
     func sendEmail(comment: String) {
         Task {
             isPending = true
