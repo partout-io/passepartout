@@ -6,6 +6,7 @@ import Foundation
 import NetworkExtension
 import Partout
 
+// Only @unchecked for the managersSubscription initialization
 public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
     private let repository: NETunnelManagerRepository & Sendable
 
