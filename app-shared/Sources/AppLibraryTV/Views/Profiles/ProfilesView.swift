@@ -33,13 +33,19 @@ struct ProfilesView: View {
 private extension ProfilesView {
     var masterView: some View {
         List {
-            importSection
+            if configManager.canImportToTV {
+                importSection
+            }
             if profileObservable.hasProfiles {
                 profilesSection
             }
         }
         .themeList()
         .frame(maxWidth: .infinity)
+        .themeEmpty(
+            if: !configManager.canImportToTV && !profileObservable.hasProfiles,
+            message: Strings.Views.App.Folders.noProfiles
+        )
     }
 
     var detailView: some View {

@@ -18,14 +18,23 @@ struct WireGuardImplementationBuilder: Sendable {
             importerBlock: { newParser() },
             validatorBlock: { newParser() },
             connectionBlock: {
+                let configFlags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
-                return try WireGuardConnection(ctx, parameters: $0, module: $1)
+
+                // Use new connection on manual preference or config flag
+                if configFlags.contains(.wgCrossConnection) {
+                    return try WireGuardConnection(ctx, parameters: $0, module: $1)
+                } else {
+                    return try LegacyWireGuardConnection(ctx, parameters: $0, module: $1)
+                }
             }
         )
     }
 
     private func newParser() -> ModuleImporter & ModuleBuilderValidator {
-        pp_log_g(.wireguard, .notice, "WireGuard: Using cross-platform parser")
-        return StandardWireGuardParser()
+        let flags = configBlock()
+        let isCrossParser = flags.contains(.wgCrossParser)
+        pp_log_g(.wireguard, .notice, "WireGuard: Using \(isCrossParser ? "cross-platform" : "legacy") parser")
+        return isCrossParser ? StandardWireGuardParser() : LegacyWireGuardParser()
     }
 }

@@ -93,6 +93,7 @@ By contributing to this project you are agreeing to the terms stated in the [Con
 
 - [fastlane][credits-fastlane]
 - [GenericJSON][credits-genericjson]
+- [lzo][credits-lzo]
 - [SwiftGen][credits-swiftgen]
 - [SwiftLint][credits-swiftlint]
 - [Tejas Mehta][credits-tmthecoder] for the implementation of the [OpenVPN XOR patch][credits-tmthecoder-xor]
@@ -170,6 +171,7 @@ Website: [passepartoutvpn.app][web-home] ([FAQ][web-faq])
 [credits-chatgpt]: https://chatgpt.com/
 [credits-fastlane]: https://github.com/fastlane/fastlane
 [credits-genericjson]: https://github.com/iwill/generic-json-swift
+[credits-lzo]: https://www.oberhumer.com/opensource/lzo/
 [credits-swiftgen]: https://github.com/SwiftGen/SwiftGen
 [credits-swiftlint]: https://github.com/realm/SwiftLint
 [credits-tmthecoder]: https://github.com/tmthecoder

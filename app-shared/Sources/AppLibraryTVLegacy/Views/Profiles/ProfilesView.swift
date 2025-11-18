@@ -37,13 +37,19 @@ struct ProfilesView: View {
 private extension ProfilesView {
     var masterView: some View {
         List {
-            importSection
+            if configManager.canImportToTV {
+                importSection
+            }
             if profileManager.hasProfiles {
                 profilesSection
             }
         }
         .themeList()
         .frame(maxWidth: .infinity)
+        .themeEmpty(
+            if: !configManager.canImportToTV && !profileManager.hasProfiles,
+            message: Strings.Views.App.Folders.noProfiles
+        )
     }
 
     var detailView: some View {

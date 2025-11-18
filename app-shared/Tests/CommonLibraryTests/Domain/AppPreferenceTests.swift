@@ -26,7 +26,7 @@ struct AppPreferenceTests {
         var sut = ABI.AppPreferenceValues()
         sut.configFlags = [.neSocketUDP, .neSocketTCP]
         sut.experimental.ignoredConfigFlags = [.appNotWorking, .neSocketUDP]
-        #expect(sut.isFlagEnabled(.neSocketTCP))
+        #expect(sut.isFlagEnabled(.tvSendTo))
         #expect(!sut.isFlagEnabled(.neSocketUDP))
         #expect(!sut.isFlagEnabled(.appNotWorking))
     }
