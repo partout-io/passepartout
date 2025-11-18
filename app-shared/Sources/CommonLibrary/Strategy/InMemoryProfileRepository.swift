@@ -5,7 +5,7 @@
 import Foundation
 import Partout
 
-public final class InMemoryProfileRepository: ProfileRepository, Sendable {
+public final class InMemoryProfileRepository: ProfileRepository {
     private let profilesSubject: CurrentValueStream<[Profile]>
 
     public init(profiles: [Profile] = []) {
