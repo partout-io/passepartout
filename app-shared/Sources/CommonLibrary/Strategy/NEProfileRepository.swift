@@ -8,7 +8,7 @@ import NetworkExtension
 import Partout
 
 public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
-    private let repository: NETunnelManagerRepository
+    private let repository: NETunnelManagerRepository & Sendable
 
     private let title: @Sendable (Profile) -> String
 
@@ -16,7 +16,10 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
     private var managersSubscription: Task<Void, Never>?
 
-    public init(repository: NETunnelManagerRepository, title: @escaping @Sendable (Profile) -> String) {
+    public init(
+        repository: NETunnelManagerRepository & Sendable,
+        title: @escaping @Sendable (Profile) -> String
+    ) {
         self.repository = repository
         self.title = title
         profilesSubject = CurrentValueSubject([])
