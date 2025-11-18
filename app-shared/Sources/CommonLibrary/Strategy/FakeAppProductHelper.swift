@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
-
 import Foundation
+import Partout
 
 public actor FakeAppProductHelper: AppProductHelper {
     private let purchase: OriginalPurchase
@@ -13,22 +12,22 @@ public actor FakeAppProductHelper: AppProductHelper {
 
     public nonisolated let receiptReader: FakeAppReceiptReader
 
-    private nonisolated let didUpdateSubject: PassthroughSubject<Void, Never>
+    private nonisolated let didUpdateSubject: PassthroughStream<Void>
 
     // set .max to skip entitled products
     public init(build: Int = .max) {
         purchase = OriginalPurchase(buildNumber: build)
         products = [:]
         receiptReader = FakeAppReceiptReader()
-        didUpdateSubject = PassthroughSubject()
+        didUpdateSubject = PassthroughStream()
     }
 
     public nonisolated var canMakePurchases: Bool {
         true
     }
 
-    public nonisolated var didUpdate: AnyPublisher<Void, Never> {
-        didUpdateSubject.eraseToAnyPublisher()
+    public nonisolated var didUpdate: AsyncStream<Void> {
+        didUpdateSubject.subscribe()
     }
 
     public func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: InAppProduct] {

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 @testable import CommonLibrary
 import Foundation
 import XCTest
@@ -14,8 +13,6 @@ final class IAPManagerTests: XCTestCase {
     private let defaultBuildNumber = 1000
 
     private let newerBuildNumber = 1500
-
-    private var subscriptions: Set<AnyCancellable> = []
 }
 
 extension AppRelease {
@@ -67,8 +64,8 @@ extension IAPManagerTests {
     func test_givenBuildProducts_whenOlder_thenEssentialsVersion() async {
         let reader = FakeAppReceiptReader()
         await reader.setReceipt(withBuild: olderBuildNumber, identifiers: [])
-        let sut = IAPManager(receiptReader: reader) { purchase in
-            if purchase.buildNumber <= self.defaultBuildNumber {
+        let sut = IAPManager(receiptReader: reader) { [defaultBuildNumber] purchase in
+            if purchase.buildNumber <= defaultBuildNumber {
                 return [.Essentials.iOS_macOS]
             }
             return []
@@ -80,8 +77,8 @@ extension IAPManagerTests {
     func test_givenBuildProducts_whenNewer_thenFreeVersion() async {
         let reader = FakeAppReceiptReader()
         await reader.setReceipt(withBuild: newerBuildNumber, products: [])
-        let sut = IAPManager(receiptReader: reader) { purchase in
-            if purchase.buildNumber <= self.defaultBuildNumber {
+        let sut = IAPManager(receiptReader: reader) { [defaultBuildNumber] purchase in
+            if purchase.buildNumber <= defaultBuildNumber {
                 return [.Essentials.iOS_macOS]
             }
             return []
@@ -363,13 +360,17 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
         let exp = expectation(description: "Eligible features")
-        sut
-            .$eligibleFeatures
-            .dropFirst()
-            .sink { _ in
-                exp.fulfill()
+        let iapEvents = sut.didChange.subscribe()
+        Task {
+            for await event in iapEvents {
+                switch event {
+                case .eligibleFeatures:
+                    exp.fulfill()
+                default:
+                    break
+                }
             }
-            .store(in: &subscriptions)
+        }
 
         await sut.reloadReceipt()
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)
@@ -415,13 +416,17 @@ extension IAPManagerTests {
         XCTAssertTrue(sut.eligibleFeatures.isEmpty)
 
         let exp = expectation(description: "Reload receipt")
-        sut
-            .$eligibleFeatures
-            .dropFirst()
-            .sink { _ in
-                exp.fulfill()
+        let iapEvents = sut.didChange.subscribe()
+        Task {
+            for await event in iapEvents {
+                switch event {
+                case .eligibleFeatures:
+                    exp.fulfill()
+                default:
+                    break
+                }
             }
-            .store(in: &subscriptions)
+        }
 
         sut.observeObjects()
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)

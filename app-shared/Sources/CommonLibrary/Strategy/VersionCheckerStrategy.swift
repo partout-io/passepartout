@@ -4,6 +4,6 @@
 
 import Foundation
 
-public protocol VersionCheckerStrategy {
+public protocol VersionCheckerStrategy: Sendable {
     func latestVersion(since: Date) async throws -> ABI.SemanticVersion
 }

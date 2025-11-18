@@ -6,7 +6,7 @@ import Partout
 
 extension ABI {
     @available(*, deprecated, message: "#1594")
-    public struct ProfilePreview: Identifiable, Hashable {
+    public struct ProfilePreview: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
 
         public let name: String

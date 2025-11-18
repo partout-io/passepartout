@@ -64,6 +64,7 @@ extension String {
 }
 
 extension String {
+    nonisolated(unsafe)
     private static let iso8601: ISO8601DateFormatter = {
         let fmt = ISO8601DateFormatter()
         fmt.formatOptions = .withFullDate

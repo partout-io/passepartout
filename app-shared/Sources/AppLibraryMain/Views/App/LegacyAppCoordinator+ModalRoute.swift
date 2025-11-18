@@ -37,7 +37,7 @@ extension LegacyAppCoordinator {
         }
     }
 
-    enum ConfirmationAction {
+    enum ConfirmationAction: Sendable {
         case deleteProfile(ABI.ProfilePreview)
     }
 }

@@ -2,14 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 
-public protocol UniqueEntity {
+public protocol UniqueEntity: Sendable {
     var uuid: UUID? { get }
 }
 
-public struct EntitiesResult<E> where E: UniqueEntity {
+public struct EntitiesResult<E>: Sendable where E: UniqueEntity {
     public let entities: [E]
 
     public let isFiltering: Bool
@@ -27,9 +26,9 @@ public struct EntitiesResult<E> where E: UniqueEntity {
 public protocol Repository {
     associatedtype Entity: UniqueEntity
 
-    var entitiesPublisher: AnyPublisher<EntitiesResult<Entity>, Never> { get }
+    var entitiesPublisher: AsyncStream<EntitiesResult<Entity>> { get }
 
-    func filter(byFormat format: String, arguments: [Any]?) async throws
+    func filter(byFormat format: String, arguments: [Sendable]?) async throws
 
     func resetFilter() async throws
 

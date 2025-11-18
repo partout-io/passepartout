@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 
 public enum InAppPurchaseResult: Sendable {
@@ -39,12 +38,12 @@ public struct InAppProduct: Sendable {
     }
 }
 
-public protocol InAppHelper {
+public protocol InAppHelper: Sendable {
     associatedtype ProductType: Hashable
 
     var canMakePurchases: Bool { get }
 
-    var didUpdate: AnyPublisher<Void, Never> { get }
+    var didUpdate: AsyncStream<Void> { get }
 
     func fetchProducts(timeout: TimeInterval) async throws -> [ProductType: InAppProduct]
 
@@ -88,6 +87,6 @@ public struct InAppReceipt: Sendable {
     }
 }
 
-public protocol InAppReceiptReader {
+public protocol InAppReceiptReader: Sendable {
     func receipt() async -> InAppReceipt?
 }

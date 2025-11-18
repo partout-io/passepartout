@@ -223,7 +223,7 @@ private extension OnDemandView {
 //    }
 }
 
-private class MockWifi: WifiObserver {
+private final class MockWifi: WifiObserver {
     func currentSSID() async throws -> String {
         ""
     }

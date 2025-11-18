@@ -2,26 +2,27 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 import Partout
 
 public final class InMemoryProfileRepository: ProfileRepository {
-    var profiles: [Profile] {
-        didSet {
-            profilesSubject.send(profiles)
+    private let profilesSubject: CurrentValueStream<[Profile]>
+
+    public init(profiles: [Profile] = []) {
+        profilesSubject = CurrentValueStream(profiles)
+    }
+
+    public var profiles: [Profile] {
+        get {
+            profilesSubject.value
+        }
+        set {
+            profilesSubject.send(newValue)
         }
     }
 
-    private let profilesSubject: CurrentValueSubject<[Profile], Never>
-
-    public init(profiles: [Profile] = []) {
-        self.profiles = profiles
-        profilesSubject = CurrentValueSubject(profiles)
-    }
-
-    public var profilesPublisher: AnyPublisher<[Profile], Never> {
-        profilesSubject.eraseToAnyPublisher()
+    public var profilesPublisher: AsyncStream<[Profile]> {
+        profilesSubject.subscribe()
     }
 
     public func fetchProfiles() async throws -> [Profile] {

@@ -2,27 +2,31 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 import NetworkExtension
 import Partout
 
-public final class NEProfileRepository: ProfileRepository {
-    private let repository: NETunnelManagerRepository
+// Only @unchecked for the managersSubscription initialization
+public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
+    private let repository: NETunnelManagerRepository & Sendable
 
     private let title: @Sendable (Profile) -> String
 
-    private let profilesSubject: CurrentValueSubject<[Profile], Never>
+    private let profilesSubject: CurrentValueStream<[Profile]>
 
     private var managersSubscription: Task<Void, Never>?
 
-    public init(repository: NETunnelManagerRepository, title: @escaping @Sendable (Profile) -> String) {
+    public init(
+        repository: NETunnelManagerRepository & Sendable,
+        title: @escaping @Sendable (Profile) -> String
+    ) {
         self.repository = repository
         self.title = title
-        profilesSubject = CurrentValueSubject([])
+        profilesSubject = CurrentValueStream([])
 
+        let managers = repository.managersStream
         managersSubscription = Task { [weak self] in
-            for await manager in repository.managersStream {
+            for await manager in managers {
                 guard !Task.isCancelled else {
                     pp_log_g(.App.profiles, .debug, "Cancelled NEProfileRepository.managersStream")
                     return
@@ -32,8 +36,8 @@ public final class NEProfileRepository: ProfileRepository {
         }
     }
 
-    public var profilesPublisher: AnyPublisher<[Profile], Never> {
-        profilesSubject.eraseToAnyPublisher()
+    public var profilesPublisher: AsyncStream<[Profile]> {
+        profilesSubject.subscribe()
     }
 
     public func fetchProfiles() async throws -> [Profile] {
@@ -54,7 +58,7 @@ public final class NEProfileRepository: ProfileRepository {
         try await repository.save(
             profile,
             forConnecting: false,
-            options: nil as [String: NSObject]?,
+            options: nil as [String: Sendable]?,
             title: title
         )
     }

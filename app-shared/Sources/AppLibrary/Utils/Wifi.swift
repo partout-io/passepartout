@@ -17,6 +17,6 @@ public final class Wifi {
     }
 }
 
-public protocol WifiObserver {
+public protocol WifiObserver: Sendable {
     func currentSSID() async throws -> String
 }

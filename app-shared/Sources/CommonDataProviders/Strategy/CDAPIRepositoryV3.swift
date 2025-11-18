@@ -4,7 +4,7 @@
 
 import CommonData
 import CommonLibrary
-import CoreData
+@preconcurrency import CoreData
 import Foundation
 import Partout
 

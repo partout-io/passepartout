@@ -44,6 +44,7 @@ extension ReportIssueButton {
         }
     }
 
+    @MainActor
     func commentInputView() -> some View {
         ThemeTextInputView(
             Strings.Views.Diagnostics.ReportIssue.title,

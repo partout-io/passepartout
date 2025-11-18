@@ -24,7 +24,6 @@ extension ReportIssueButton: View {
 }
 
 extension ReportIssueButton {
-
     @MainActor
     func sendEmail(comment: String) {
         Task {

@@ -15,7 +15,9 @@ public enum EditMode {
 }
 
 private struct EditModeEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: Binding<EditMode>?
+    public static var defaultValue: Binding<EditMode>? {
+        nil
+    }
 }
 
 extension EnvironmentValues {

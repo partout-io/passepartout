@@ -2,17 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 @testable import CommonLibrary
 import Foundation
 import XCTest
 
 @MainActor
 final class ProfileManagerTests: XCTestCase {
-    private var subscriptions: Set<AnyCancellable> = []
-}
-
-extension ProfileManagerTests {
 }
 
 // MARK: - View
@@ -198,6 +193,7 @@ extension ProfileManagerTests {
         XCTAssertEqual(processor.willRebuildCount, 1)
     }
 
+    // FIXME
     func test_givenRepository_whenSave_thenIsStoredToBackUpRepository() async throws {
         let repository = InMemoryProfileRepository(profiles: [])
         let backupRepository = InMemoryProfileRepository(profiles: [])
@@ -208,17 +204,17 @@ extension ProfileManagerTests {
         XCTAssertFalse(sut.hasProfiles)
 
         let profile = newProfile()
+        let backupProfiles = backupRepository.profilesPublisher
         let exp = expectation(description: "Backup")
-        backupRepository
-            .profilesPublisher
-            .sink {
-                guard !$0.isEmpty else {
-                    return
+        Task {
+            for await profiles in backupProfiles {
+                guard !profiles.isEmpty else {
+                    continue
                 }
-                XCTAssertEqual($0.first, profile)
+                XCTAssertEqual(profiles.first, profile)
                 exp.fulfill()
             }
-            .store(in: &subscriptions)
+        }
 
         try await sut.save(profile)
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)
@@ -251,17 +247,17 @@ extension ProfileManagerTests {
 
         try await waitForReady(sut, remoteRepository: remoteRepository)
 
+        let remoteProfiles = remoteRepository.profilesPublisher
         let exp = expectation(description: "Remote")
-        remoteRepository
-            .profilesPublisher
-            .sink {
-                guard !$0.isEmpty else {
-                    return
+        Task {
+            for await profiles in remoteProfiles {
+                guard !profiles.isEmpty else {
+                    continue
                 }
-                XCTAssertEqual($0.first, profile)
+                XCTAssertEqual(profiles.first, profile)
                 exp.fulfill()
             }
-            .store(in: &subscriptions)
+        }
 
         try await sut.save(profile, remotelyShared: true)
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)
@@ -277,16 +273,16 @@ extension ProfileManagerTests {
 
         try await waitForReady(sut, remoteRepository: remoteRepository)
 
+        let remoteProfiles = remoteRepository.profilesPublisher
         let exp = expectation(description: "Remote")
-        remoteRepository
-            .profilesPublisher
-            .sink {
-                guard $0.isEmpty else {
-                    return
+        Task {
+            for await profiles in remoteProfiles {
+                guard profiles.isEmpty else {
+                    continue
                 }
                 exp.fulfill()
             }
-            .store(in: &subscriptions)
+        }
 
         try await sut.save(profile, remotelyShared: false)
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)
@@ -630,24 +626,23 @@ private extension ProfileManagerTests {
     func wait(
         _ sut: ProfileManager,
         _ description: String,
-        until event: ProfileManager.Event,
+        until expectedEvent: ProfileManager.Event,
         condition: @escaping (ProfileManager) -> Bool = { _ in true },
         after action: (ProfileManager) async throws -> Void
     ) async throws {
         let exp = expectation(description: description)
         var wasMet = false
 
-        sut.didChange
-            .sink {
-                guard !wasMet else {
-                    return
-                }
-                if $0 == event, condition(sut) {
+        let profileEvents = sut.didChange.subscribe()
+        Task {
+            for await event in profileEvents {
+                guard !wasMet else { continue }
+                if event == expectedEvent, condition(sut) {
                     wasMet = true
                     exp.fulfill()
                 }
             }
-            .store(in: &subscriptions)
+        }
 
         try await action(sut)
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)

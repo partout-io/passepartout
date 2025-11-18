@@ -20,7 +20,7 @@ public final class ProfileObservable {
     public private(set) var filteredHeaders: [ABI.AppProfileHeader]
     public private(set) var isReady: Bool
     public private(set) var isRemoteImportingEnabled: Bool
-    private var eventSubscription: AnyCancellable?
+    private var eventSubscription: Task<Void, Never>?
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
@@ -117,12 +117,11 @@ private extension ProfileObservable {
     func observeEvents(debounce: Int = 200) {
         // No need for observeLocal/observeRemote, done by AppContext/ABI
 
-        eventSubscription = profileManager
-            .didChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self else { return }
-                switch $0 {
+        let profileEvents = profileManager.didChange.subscribe()
+        eventSubscription = Task { [weak self] in
+            guard let self else { return }
+            for await event in profileEvents {
+                switch event {
                 case .ready:
                     isReady = true
                 case .refresh(let headers):
@@ -134,6 +133,7 @@ private extension ProfileObservable {
                     break
                 }
             }
+        }
 
         searchSubscription = searchSubject
             .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)

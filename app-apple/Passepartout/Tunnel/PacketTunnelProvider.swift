@@ -13,10 +13,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     private var verifierSubscription: Task<Void, Error>?
 
-    override func startTunnel(options: [String: NSObject]? = nil) async throws {
+    override func startTunnel(options: [String: NSObject]? = nil, completionHandler: @escaping @Sendable (Error?) -> Void) {
         let dependencies = Dependencies(buildTarget: .tunnel)
-        let appConfiguration = dependencies.appConfiguration
-        let appLogger = dependencies.appLogger()
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -24,11 +22,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // profile-aware context later.
         _ = PartoutLogger.register(
             for: .tunnelGlobal,
-            with: appConfiguration,
+            with: dependencies.appConfiguration,
             preferences: ABI.AppPreferenceValues()
         )
 
         // The app may propagate its local preferences on manual start
+        let isInteractive = options?[ExtendedTunnel.isManualKey] == true as NSNumber
         let startPreferences: ABI.AppPreferenceValues?
         if let encodedPreferences = options?[ExtendedTunnel.appPreferences] as? NSData {
             do {
@@ -41,6 +40,28 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         } else {
             startPreferences = nil
         }
+
+        Task {
+            do {
+                try await compatibleStartTunnel(
+                    dependencies: dependencies,
+                    isInteractive: isInteractive,
+                    startPreferences: startPreferences
+                )
+                completionHandler(nil)
+            } catch {
+                completionHandler(error)
+            }
+        }
+    }
+
+    private func compatibleStartTunnel(
+        dependencies: Dependencies,
+        isInteractive: Bool,
+        startPreferences: ABI.AppPreferenceValues?
+    ) async throws {
+        let appConfiguration = dependencies.appConfiguration
+        let appLogger = dependencies.appLogger()
 
         // Update or fetch existing preferences
         let (kvManager, preferences) = await MainActor.run {
@@ -116,7 +137,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             throw error
         }
 
-        pp_log(ctx, .App.core, .info, "Tunnel started with options: \(options?.description ?? "nil")")
+        pp_log(ctx, .App.core, .info, "Tunnel started")
         if let startPreferences {
             pp_log(ctx, .App.core, .info, "\tDecoded preferences: \(startPreferences)")
         } else {
@@ -177,7 +198,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             // Check hold flag and hang the tunnel if set
             if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
                 pp_log(ctx, .App.core, .info, "Tunnel is on hold")
-                guard options?[ExtendedTunnel.isManualKey] == true as NSNumber else {
+                guard isInteractive else {
                     pp_log(ctx, .App.core, .error, "Tunnel was started non-interactively, hang here")
                     return
                 }

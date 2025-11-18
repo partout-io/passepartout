@@ -4,7 +4,7 @@
 
 import Foundation
 
-public final class SystemExtensionManager: NSObject {
+public final class SystemExtensionManager: NSObject, @unchecked Sendable {
     public enum Result: Sendable {
         case unknown
 

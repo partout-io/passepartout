@@ -119,9 +119,7 @@ final class QRScanViewController: UIViewController {
             view.layer.addSublayer(previewLayer)
 
             session.commitConfiguration()
-            queue.async { [weak self] in
-                self?.session.startRunning()
-            }
+            session.startRunning()
             onLoad?(nil)
         } catch {
             onLoad?(error)
@@ -134,7 +132,7 @@ final class QRScanViewController: UIViewController {
     }
 }
 
-extension QRScanViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension QRScanViewController: @preconcurrency AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             NSLog("QR: Unable to get image buffer")

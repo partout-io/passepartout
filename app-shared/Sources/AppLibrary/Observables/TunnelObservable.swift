@@ -77,9 +77,10 @@ extension TunnelObservable {
 
 private extension TunnelObservable {
     func observeEvents() {
+        let tunnelEvents = extendedTunnel.didChange.subscribe()
         subscription = Task { [weak self] in
             guard let self else { return }
-            for await event in extendedTunnel.didChange.subscribe() {
+            for await event in tunnelEvents {
                 switch event {
                 case .refresh(let active):
                     activeProfiles = active

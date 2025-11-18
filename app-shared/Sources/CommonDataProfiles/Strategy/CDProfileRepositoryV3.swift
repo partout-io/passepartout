@@ -14,7 +14,7 @@ extension CommonData {
         encoder: AppEncoder,
         context: NSManagedObjectContext,
         observingResults: Bool,
-        onResultError: ((Error) -> CoreDataResultAction)?
+        onResultError: (@Sendable (Error) -> CoreDataResultAction)?
     ) -> ProfileRepository {
         let repository = CoreDataRepository<CDProfileV3, Profile>(
             context: context,
@@ -74,7 +74,7 @@ private extension CommonData {
 
 // MARK: - Specialization
 
-extension CDProfileV3: CoreDataUniqueEntity {
+extension CDProfileV3: CoreDataUniqueEntity, @unchecked Sendable {
 }
 
 extension Profile: UniqueEntity {
@@ -84,10 +84,8 @@ extension Profile: UniqueEntity {
 }
 
 extension CoreDataRepository: ProfileRepository where T == Profile {
-    public nonisolated var profilesPublisher: AnyPublisher<[Profile], Never> {
-        entitiesPublisher
-            .map(\.entities)
-            .eraseToAnyPublisher()
+    public nonisolated var profilesPublisher: AsyncStream<[Profile]> {
+        entitiesPublisher.map(\.entities)
     }
 
     public func fetchProfiles() async throws -> [Profile] {

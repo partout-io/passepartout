@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Subject for search through manager (debounce not trivial)
 import Combine
 import Foundation
 import Partout
@@ -13,7 +14,7 @@ public final class ProfileManager: ObservableObject {
         case remote
     }
 
-    public enum Event: Equatable {
+    public enum Event: Equatable, Sendable {
         case ready
         case refresh([ABI.AppIdentifier: ABI.AppProfileHeader])
         case startRemoteImport
@@ -94,9 +95,9 @@ public final class ProfileManager: ObservableObject {
 
     // MARK: Publishers
 
-    public let didChange: PassthroughSubject<Event, Never>
-    private var localSubscription: AnyCancellable?
-    private var remoteSubscription: AnyCancellable?
+    public let didChange: PassthroughStream<Event>
+    private var localSubscription: Task<Void, Never>?
+    private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
 
     @available(*, deprecated, message: "#1594")
@@ -135,7 +136,7 @@ public final class ProfileManager: ObservableObject {
         } else {
             waitingObservers = [.local]
         }
-        didChange = PassthroughSubject()
+        didChange = PassthroughStream()
 
         searchSubject = CurrentValueSubject("")
         observeSearch()
@@ -290,13 +291,13 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadLocalProfiles(initialProfiles)
 
-        localSubscription = repository
-            .profilesPublisher
-            .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadLocalProfiles($0)
+        let profileEvents = repository.profilesPublisher.dropFirst()
+        localSubscription = Task { [weak self] in
+            guard let self else { return }
+            for await profiles in profileEvents {
+                reloadLocalProfiles(profiles)
             }
+        }
     }
 
     public func observeRemote(repository: ProfileRepository) async throws {
@@ -305,13 +306,13 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadRemoteProfiles(initialProfiles)
 
-        remoteSubscription = repository
-            .profilesPublisher
-            .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadRemoteProfiles($0)
+        let profileEvents = repository.profilesPublisher.dropFirst()
+        remoteSubscription = Task { [weak self] in
+            guard let self else { return }
+            for await profiles in profileEvents {
+                reloadRemoteProfiles(profiles)
             }
+        }
     }
 }
 

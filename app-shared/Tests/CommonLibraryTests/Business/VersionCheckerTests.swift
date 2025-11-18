@@ -68,9 +68,9 @@ struct VersionCheckerTests {
     }
 }
 
-private final class MockStrategy: VersionCheckerStrategy {
+private final class MockStrategy: VersionCheckerStrategy, @unchecked Sendable {
 
-    // only allow once
+    // Only allow once
     var didHitRateLimit = false
 
     func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
