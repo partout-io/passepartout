@@ -44,7 +44,7 @@ extension ABI {
 
         public let urlForAppLog: URL
         public let urlForTunnelLog: URL
-        public let urlForReview: URL
+        public let urlForReview: URL?
 
         // For previews
         public init(constants: Constants, distributionTarget: ABI.DistributionTarget) {
@@ -77,24 +77,15 @@ extension ABI {
             buildNumber = bundle.buildNumber
             versionString = bundle.versionString
 
-            var rawUserLevel: Int?
-            bundleStrings = BundleKey.allCases.reduce(into: [:]) {
-                switch $1 {
-                case .userLevel:
-                    rawUserLevel = bundle.integerIfPresent(for: $1)
-                default:
-                    $0[$1.rawValue] = bundle.string(for: $1)
-                }
+            // Ensure that all required keys are present (will crash on first missing)
+            let requiredBundleKeys = BundleKey.requiredKeys(for: buildTarget)
+            bundleStrings = requiredBundleKeys.reduce(into: [:]) {
+                $0[$1.rawValue] = bundle.string(for: $1)
             }
-            customUserLevel = rawUserLevel.map(AppUserLevel.init(rawValue:)) ?? nil
 
-            // Ensure that all required keys are present
-            let foundKeys = Set(bundleStrings.keys)
-            let requiredKeys = Set(BundleKey.requiredKeys(for: buildTarget).map(\.rawValue))
-            guard foundKeys.isSuperset(of: requiredKeys) else {
-                let missingKeys = requiredKeys.subtracting(foundKeys)
-                fatalError("Unable to fetch required bundle values, missing: \(missingKeys)")
-            }
+            // Fetch user level manually
+            let rawUserLevel = bundle.integerIfPresent(for: .userLevel)
+            customUserLevel = rawUserLevel.map(AppUserLevel.init(rawValue:)) ?? nil
 
             let appGroupURL = {
                 let groupId = bundle.string(for: .groupId)
@@ -121,13 +112,18 @@ extension ABI {
                 }
                 return baseURL.appending(path: constants.log.tunnelPath)
             }()
-            urlForReview = {
-                let appStoreId = bundle.string(for: .appStoreId)
-                guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
-                    fatalError("Unable to build urlForReview")
-                }
-                return url
-            }()
+
+            if requiredBundleKeys.contains(.appStoreId) {
+                urlForReview = {
+                    let appStoreId = bundle.string(for: .appStoreId)
+                    guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
+                        fatalError("Unable to build urlForReview")
+                    }
+                    return url
+                }()
+            } else {
+                urlForReview = nil
+            }
         }
 
         public func bundleString(for key: ABI.BundleKey) -> String {
