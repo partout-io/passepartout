@@ -7,13 +7,13 @@ import Foundation
 import Partout
 
 public struct ConnectionFlow {
-    public let onConnect: @Sendable (Profile) async -> Void
+    public let onConnect: (Profile) async -> Void
 
-    public let onProviderEntityRequired: @Sendable (Profile) -> Void
+    public let onProviderEntityRequired: (Profile) -> Void
 
     public init(
-        onConnect: @escaping @Sendable (Profile) async -> Void,
-        onProviderEntityRequired: @escaping @Sendable (Profile) -> Void
+        onConnect: @escaping (Profile) async -> Void,
+        onProviderEntityRequired: @escaping (Profile) -> Void
     ) {
         self.onConnect = onConnect
         self.onProviderEntityRequired = onProviderEntityRequired
