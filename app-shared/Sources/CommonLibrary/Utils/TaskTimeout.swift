@@ -7,7 +7,7 @@ import Foundation
 public struct TaskTimeoutError: Error {
 }
 
-public func performTask<T>(withTimeout timeout: TimeInterval, taskBlock: @escaping () async throws -> T) async throws -> T {
+public func performTask<T>(withTimeout timeout: TimeInterval, taskBlock: @escaping @Sendable () async throws -> T) async throws -> T where T: Sendable {
     let task = Task {
         let taskResult = try await taskBlock()
         try Task.checkCancellation()

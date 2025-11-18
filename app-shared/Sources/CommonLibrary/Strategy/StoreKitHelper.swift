@@ -2,17 +2,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
+@preconcurrency import Combine
 import Foundation
 import StoreKit
 
 @MainActor
-public final class StoreKitHelper<ProductType>: InAppHelper where ProductType: RawRepresentable & Hashable,
-                                                                  ProductType.RawValue == String {
+public final class StoreKitHelper<ProductType>: InAppHelper
+        where ProductType: RawRepresentable & Hashable & Sendable,
+              ProductType.RawValue == String {
 
     private let products: [ProductType]
 
-    private let inAppIdentifier: (ProductType) -> String
+    private let inAppIdentifier: @Sendable (ProductType) -> String
 
     private var activeTransactions: Set<Transaction>
 
@@ -20,7 +21,7 @@ public final class StoreKitHelper<ProductType>: InAppHelper where ProductType: R
 
     private var observer: Task<Void, Never>?
 
-    public init(products: [ProductType], inAppIdentifier: @escaping (ProductType) -> String) {
+    public init(products: [ProductType], inAppIdentifier: @escaping @Sendable (ProductType) -> String) {
         self.products = products
         self.inAppIdentifier = inAppIdentifier
         activeTransactions = []

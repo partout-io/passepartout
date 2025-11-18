@@ -34,7 +34,7 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
     }
 
     // onReceive(filename, content)
-    public func start(passcode: String?, onReceive: @escaping (String, String) -> Void) throws -> URL {
+    public func start(passcode: String?, onReceive: @escaping @Sendable (String, String) -> Void) throws -> URL {
         guard channel == nil else {
             logger.log(.web, .error, "Web server is already started")
             throw WebReceiverError()

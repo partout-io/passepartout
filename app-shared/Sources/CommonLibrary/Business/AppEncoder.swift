@@ -5,7 +5,7 @@
 import Foundation
 import Partout
 
-public final class AppEncoder {
+public final class AppEncoder: Sendable {
     private let registry: Registry
 
     public init(registry: Registry) {

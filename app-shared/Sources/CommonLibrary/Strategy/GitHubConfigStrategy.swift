@@ -13,7 +13,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
 
     private let ttl: TimeInterval
 
-    private let isBeta: @MainActor () -> Bool
+    private let isBeta: @Sendable () async -> Bool
 
     private var lastUpdated: Date
 
@@ -21,7 +21,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         url: URL,
         betaURL: URL,
         ttl: TimeInterval,
-        isBeta: @escaping () -> Bool
+        isBeta: @escaping @Sendable () async -> Bool
     ) {
         self.url = url
         self.betaURL = betaURL
@@ -31,7 +31,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
     }
 
     public func bundle() async throws -> ABI.ConfigBundle {
-        let isBeta = isBeta()
+        let isBeta = await isBeta()
         pp_log_g(.App.core, .debug, "Config (GitHub): beta = \(isBeta)")
         if lastUpdated > .distantPast {
             let elapsed = -lastUpdated.timeIntervalSinceNow

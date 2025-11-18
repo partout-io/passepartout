@@ -4,7 +4,7 @@
 
 import Foundation
 
-public protocol AppReceiptReader {
+public protocol AppReceiptReader: Sendable {
     func receipt(at userLevel: ABI.AppUserLevel) async -> InAppReceipt?
 
     func addPurchase(with identifier: String) async

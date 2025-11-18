@@ -5,7 +5,7 @@
 import Foundation
 import Partout
 
-public protocol ConfigManagerStrategy {
+public protocol ConfigManagerStrategy: Sendable {
     func bundle() async throws -> ABI.ConfigBundle
 }
 

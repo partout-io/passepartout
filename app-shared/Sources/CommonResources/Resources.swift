@@ -30,6 +30,7 @@ public enum Resources {
     // Do not expose this to views, use AppConfiguration.constants from environment
     static let constants = Bundle.module.unsafeDecode(ABI.Constants.self, filename: "Constants")
 
+    nonisolated(unsafe)
     public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "Credits")
 
     public static let issueTemplate: String = {

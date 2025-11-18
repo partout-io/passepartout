@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
+@preconcurrency import Combine
 @preconcurrency import CoreData
 import Foundation
 
@@ -18,10 +18,8 @@ public enum CoreDataResultAction {
     case halt
 }
 
-public actor CoreDataRepository<CD, T>: NSObject,
-                                        Repository,
-                                        NSFetchedResultsControllerDelegate where CD: CoreDataUniqueEntity,
-                                                                                 T: UniqueEntity {
+public actor CoreDataRepository<CD, T>: NSObject, Repository, NSFetchedResultsControllerDelegate
+        where CD: CoreDataUniqueEntity, T: UniqueEntity {
 
     private let entityName: String
 
@@ -31,11 +29,11 @@ public actor CoreDataRepository<CD, T>: NSObject,
 
     private let beforeFetch: ((NSFetchRequest<CD>) -> Void)?
 
-    private nonisolated let fromMapper: (CD) throws -> T?
+    private nonisolated let fromMapper: @Sendable (CD) throws -> T?
 
-    private nonisolated let toMapper: (T, NSManagedObjectContext) throws -> CD
+    private nonisolated let toMapper: @Sendable (T, NSManagedObjectContext) throws -> CD
 
-    private nonisolated let onResultError: ((Error) -> CoreDataResultAction)?
+    private nonisolated let onResultError: (@Sendable (Error) -> CoreDataResultAction)?
 
     private nonisolated let entitiesSubject: CurrentValueSubject<EntitiesResult<T>, Never>
 
@@ -44,10 +42,10 @@ public actor CoreDataRepository<CD, T>: NSObject,
     public init(
         context: NSManagedObjectContext,
         observingResults: Bool,
-        beforeFetch: ((NSFetchRequest<CD>) -> Void)? = nil,
-        fromMapper: @escaping (CD) throws -> T?,
-        toMapper: @escaping (T, NSManagedObjectContext) throws -> CD,
-        onResultError: ((Error) -> CoreDataResultAction)? = nil
+        beforeFetch: (@Sendable (NSFetchRequest<CD>) -> Void)? = nil,
+        fromMapper: @escaping @Sendable (CD) throws -> T?,
+        toMapper: @escaping @Sendable (T, NSManagedObjectContext) throws -> CD,
+        onResultError: (@Sendable (Error) -> CoreDataResultAction)? = nil
     ) {
         guard let entityName = CD.entity().name else {
             fatalError("Unable to find entity name for \(CD.self)")
@@ -68,7 +66,7 @@ public actor CoreDataRepository<CD, T>: NSObject,
             .eraseToAnyPublisher()
     }
 
-    public func filter(byFormat format: String, arguments: [Any]?) async throws {
+    public func filter(byFormat format: String, arguments: [Sendable]?) async throws {
         try await filter(byPredicate: NSPredicate(format: format, argumentArray: arguments))
     }
 

@@ -8,7 +8,7 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-final class NIOWebReceiverHandler {
+final class NIOWebReceiverHandler: @unchecked Sendable {
     typealias InboundIn = HTTPServerRequestPart
 
     typealias OutboundOut = HTTPServerResponsePart
@@ -17,13 +17,13 @@ final class NIOWebReceiverHandler {
 
     private let passcode: String?
 
-    private let onReceive: (String, String) -> Void
+    private let onReceive: @Sendable (String, String) -> Void
 
     private var requestHead: HTTPRequestHead?
 
     private var bodyBuffer: ByteBuffer?
 
-    init(html: String, passcode: String?, onReceive: @escaping (String, String) -> Void) {
+    init(html: String, passcode: String?, onReceive: @escaping @Sendable (String, String) -> Void) {
         self.html = html
         self.passcode = passcode
         self.onReceive = onReceive

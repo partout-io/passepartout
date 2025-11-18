@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import Partout
 
-public final class InMemoryProfileRepository: ProfileRepository {
+public final class InMemoryProfileRepository: ProfileRepository, @unchecked Sendable {
     var profiles: [Profile] {
         didSet {
             profilesSubject.send(profiles)

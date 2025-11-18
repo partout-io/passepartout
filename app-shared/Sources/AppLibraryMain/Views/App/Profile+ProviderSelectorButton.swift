@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 extension Profile {
-    func providerSelectorButton(onSelect: ((Profile) -> Void)?) -> some View {
+    func providerSelectorButton(onSelect: (@Sendable (Profile) -> Void)?) -> some View {
         activeProviderModule
             .map { module in
                 Button {

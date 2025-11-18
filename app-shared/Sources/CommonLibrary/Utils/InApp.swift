@@ -39,7 +39,7 @@ public struct InAppProduct: Sendable {
     }
 }
 
-public protocol InAppHelper {
+public protocol InAppHelper: Sendable {
     associatedtype ProductType: Hashable
 
     var canMakePurchases: Bool { get }
@@ -88,6 +88,6 @@ public struct InAppReceipt: Sendable {
     }
 }
 
-public protocol InAppReceiptReader {
+public protocol InAppReceiptReader: Sendable {
     func receipt() async -> InAppReceipt?
 }

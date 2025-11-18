@@ -25,12 +25,12 @@ struct ProfilesLayoutPicker: View {
     }
 }
 
+@MainActor
 private extension ProfilesLayout {
     var image: ThemeImage {
         switch self {
         case .list:
             return ThemeImage(.profilesList)
-
         case .grid:
             return ThemeImage(.profilesGrid)
         }

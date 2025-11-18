@@ -5,11 +5,11 @@
 import Combine
 import Foundation
 
-public protocol UniqueEntity {
+public protocol UniqueEntity: Sendable {
     var uuid: UUID? { get }
 }
 
-public struct EntitiesResult<E> where E: UniqueEntity {
+public struct EntitiesResult<E>: Sendable where E: UniqueEntity {
     public let entities: [E]
 
     public let isFiltering: Bool
@@ -29,7 +29,7 @@ public protocol Repository {
 
     var entitiesPublisher: AnyPublisher<EntitiesResult<Entity>, Never> { get }
 
-    func filter(byFormat format: String, arguments: [Any]?) async throws
+    func filter(byFormat format: String, arguments: [Sendable]?) async throws
 
     func resetFilter() async throws
 

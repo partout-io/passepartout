@@ -11,6 +11,7 @@ extension PartoutLogger {
         case tunnelProfile(Profile.ID)
     }
 
+    nonisolated(unsafe)
     private static var isDefaultLoggerRegistered = false
 
     @discardableResult

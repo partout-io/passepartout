@@ -5,6 +5,7 @@
 import CommonLibrary
 import Foundation
 
+@MainActor
 public protocol TunnelInstallationProviding {
     var profileManager: ProfileManager { get }
 

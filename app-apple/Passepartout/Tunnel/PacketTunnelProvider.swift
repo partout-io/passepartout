@@ -13,6 +13,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     private var verifierSubscription: Task<Void, Error>?
 
+    nonisolated(nonsending)
     override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let dependencies = Dependencies(buildTarget: .tunnel)
         let appConfiguration = dependencies.appConfiguration

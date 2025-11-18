@@ -7,7 +7,7 @@ import Foundation
 import NetworkExtension
 import Partout
 
-public final class NEProfileRepository: ProfileRepository {
+public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
     private let repository: NETunnelManagerRepository
 
     private let title: @Sendable (Profile) -> String
@@ -54,7 +54,7 @@ public final class NEProfileRepository: ProfileRepository {
         try await repository.save(
             profile,
             forConnecting: false,
-            options: nil as [String: NSObject]?,
+            options: nil as [String: Sendable]?,
             title: title
         )
     }

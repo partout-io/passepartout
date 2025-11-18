@@ -8,7 +8,7 @@ import Partout
 
 @MainActor
 public final class IAPManager: ObservableObject {
-    public enum Event {
+    public enum Event: Sendable {
         case status(isEnabled: Bool)
         case eligibleFeatures(Set<ABI.AppFeature>)
         case loadReceipt(isLoading: Bool)

@@ -4,6 +4,7 @@
 
 import SwiftUI
 
+@MainActor
 public protocol SizeClassProviding {
     var hsClass: UserInterfaceSizeClass? { get }
 

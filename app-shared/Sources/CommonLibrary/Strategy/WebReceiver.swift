@@ -5,7 +5,7 @@
 import Foundation
 
 public protocol WebReceiver {
-    func start(passcode: String?, onReceive: @escaping (String, String) -> Void) throws -> URL
+    func start(passcode: String?, onReceive: @escaping @Sendable (String, String) -> Void) throws -> URL
     func stop()
 }
 

@@ -5,7 +5,7 @@
 import Foundation
 
 extension ABI {
-    public struct Issue: Identifiable {
+    public struct Issue: Identifiable, Sendable {
         public let id: UUID
 
         public let comment: String

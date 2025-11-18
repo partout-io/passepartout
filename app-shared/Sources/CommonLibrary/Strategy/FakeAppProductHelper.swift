@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
-
+@preconcurrency import Combine
 import Foundation
 
 public actor FakeAppProductHelper: AppProductHelper {

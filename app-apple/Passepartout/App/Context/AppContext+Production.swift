@@ -104,7 +104,7 @@ extension AppContext {
                 betaURL: betaConfigURL,
                 ttl: appConfiguration.constants.websites.configTTL,
                 isBeta: { [weak iapManager] in
-                    iapManager?.isBeta == true
+                    await iapManager?.isBeta == true
                 }
             ),
             buildNumber: appConfiguration.buildNumber

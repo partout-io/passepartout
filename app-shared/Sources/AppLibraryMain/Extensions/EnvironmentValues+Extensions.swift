@@ -25,9 +25,11 @@ extension EnvironmentValues {
 }
 
 private struct NavigationPathKey: EnvironmentKey {
-    static let defaultValue: Binding<NavigationPath> = .constant(NavigationPath())
+    static var defaultValue: Binding<NavigationPath> {
+        .constant(NavigationPath())
+    }
 }
 
 private struct DismissProfileKey: EnvironmentKey {
-    static let defaultValue: () -> Void = {}
+    static var defaultValue: () -> Void {{}}
 }

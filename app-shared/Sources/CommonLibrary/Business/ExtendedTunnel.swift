@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+@preconcurrency import Foundation
 import Partout
 
 @MainActor
 public final class ExtendedTunnel: ObservableObject {
-    public enum Event {
+    public enum Event: Sendable {
         case refresh([ABI.AppIdentifier: ABI.AppProfile.Info])
         case dataCount
     }

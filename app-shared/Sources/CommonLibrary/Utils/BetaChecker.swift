@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol BetaChecker {
+public protocol BetaChecker: Sendable {
     func isBeta() async -> Bool
 }
