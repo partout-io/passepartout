@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import AppLibrary
-import Combine
 import CommonLibrary
 import Foundation
 import Partout
 import XCTest
 
 final class ProfileEditorTests: XCTestCase {
-    private var subscriptions: Set<AnyCancellable> = []
 }
 
 @MainActor
@@ -207,10 +205,9 @@ extension ProfileEditorTests {
         let manager = ProfileManager(profiles: [])
 
         let exp = expectation(description: "Save")
-        manager
-            .didChange
-            .sink {
-                switch $0 {
+        Task {
+            for await event in manager.didChange.subscribe() {
+                switch event {
                 case .save(let savedProfile, _):
                     do {
                         let lhs = try savedProfile.withoutUserInfo()
@@ -220,12 +217,11 @@ extension ProfileEditorTests {
                         XCTFail(error.localizedDescription)
                     }
                     exp.fulfill()
-
                 default:
                     break
                 }
             }
-            .store(in: &subscriptions)
+        }
 
         _ = try await sut.save(
             to: manager,

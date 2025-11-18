@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 @testable import CommonLibrary
 import Foundation
 import XCTest
@@ -14,8 +13,6 @@ final class IAPManagerTests: XCTestCase {
     private let defaultBuildNumber = 1000
 
     private let newerBuildNumber = 1500
-
-    private var subscriptions: Set<AnyCancellable> = []
 }
 
 extension AppRelease {
@@ -363,13 +360,16 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
         let exp = expectation(description: "Eligible features")
-        sut
-            .$eligibleFeatures
-            .dropFirst()
-            .sink { _ in
-                exp.fulfill()
+        Task {
+            for await event in sut.didChange.subscribe().dropFirst() {
+                switch event {
+                case .eligibleFeatures:
+                    exp.fulfill()
+                default:
+                    break
+                }
             }
-            .store(in: &subscriptions)
+        }
 
         await sut.reloadReceipt()
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)
@@ -415,13 +415,16 @@ extension IAPManagerTests {
         XCTAssertTrue(sut.eligibleFeatures.isEmpty)
 
         let exp = expectation(description: "Reload receipt")
-        sut
-            .$eligibleFeatures
-            .dropFirst()
-            .sink { _ in
-                exp.fulfill()
+        Task {
+            for await event in sut.didChange.subscribe().dropFirst() {
+                switch event {
+                case .eligibleFeatures:
+                    exp.fulfill()
+                default:
+                    break
+                }
             }
-            .store(in: &subscriptions)
+        }
 
         sut.observeObjects()
         await fulfillment(of: [exp], timeout: CommonLibraryTests.timeout)

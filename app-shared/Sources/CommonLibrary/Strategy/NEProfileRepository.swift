@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 import NetworkExtension
 import Partout
@@ -12,7 +11,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
     private let title: @Sendable (Profile) -> String
 
-    private let profilesSubject: CurrentValueSubject<[Profile], Never>
+    private let profilesSubject: CurrentValueStream<[Profile]>
 
     private var managersSubscription: Task<Void, Never>?
 
@@ -22,7 +21,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
     ) {
         self.repository = repository
         self.title = title
-        profilesSubject = CurrentValueSubject([])
+        profilesSubject = CurrentValueStream([])
 
         managersSubscription = Task { [weak self] in
             for await manager in repository.managersStream {
@@ -35,8 +34,8 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
         }
     }
 
-    public var profilesPublisher: AnyPublisher<[Profile], Never> {
-        profilesSubject.eraseToAnyPublisher()
+    public var profilesPublisher: AsyncStream<[Profile]> {
+        profilesSubject.subscribe()
     }
 
     public func fetchProfiles() async throws -> [Profile] {

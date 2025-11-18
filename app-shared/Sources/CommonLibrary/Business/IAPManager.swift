@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 import Partout
 
@@ -59,6 +58,14 @@ public final class IAPManager: ObservableObject {
         }
     }
 
+    public var verificationDelayMinutes: Int {
+        verificationDelayMinutesBlock(isBeta)
+    }
+
+    public let didChange: PassthroughStream<Event>
+
+    private var isObserving: Bool
+
     private var pendingReceiptTask: Task<Void, Never>? {
         willSet {
             objectWillChange.send()
@@ -68,13 +75,7 @@ public final class IAPManager: ObservableObject {
         }
     }
 
-    public var verificationDelayMinutes: Int {
-        verificationDelayMinutesBlock(isBeta)
-    }
-
-    public let didChange: PassthroughStream<Event>
-
-    private var subscriptions: Set<AnyCancellable>
+    private var receiptSubscription: Task<Void, Never>?
 
     public init(
         customUserLevel: ABI.AppUserLevel? = nil,
@@ -98,7 +99,7 @@ public final class IAPManager: ObservableObject {
         purchasedProducts = []
         eligibleFeatures = []
         didChange = PassthroughStream()
-        subscriptions = []
+        isObserving = false
     }
 }
 
@@ -326,19 +327,21 @@ private extension IAPManager {
 
 extension IAPManager {
     public func observeObjects(withProducts: Bool = true) {
+        // This method must be called EXACTLY once
+        precondition(!isObserving)
+        isObserving = true
         Task {
             await fetchLevelIfNeeded()
             do {
-                inAppHelper
-                    .didUpdate
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] in
-                        Task {
-                            await self?.reloadReceipt()
-                        }
+                // Reload the receipt on in-app updates
+                receiptSubscription = Task { [weak self] in
+                    guard let self else { return }
+                    for await _ in inAppHelper.didUpdate {
+                        await reloadReceipt()
                     }
-                    .store(in: &subscriptions)
+                }
 
+                // Fetch the available products
                 if withProducts {
                     let products = try await inAppHelper.fetchProducts(timeout: timeoutInterval)
                     pp_log_g(.App.iap, .info, "Available in-app products: \(products.map(\.key))")

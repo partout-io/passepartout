@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 
 public protocol UniqueEntity: Sendable {
@@ -27,7 +26,7 @@ public struct EntitiesResult<E>: Sendable where E: UniqueEntity {
 public protocol Repository {
     associatedtype Entity: UniqueEntity
 
-    var entitiesPublisher: AnyPublisher<EntitiesResult<Entity>, Never> { get }
+    var entitiesPublisher: AsyncStream<EntitiesResult<Entity>> { get }
 
     func filter(byFormat format: String, arguments: [Sendable]?) async throws
 

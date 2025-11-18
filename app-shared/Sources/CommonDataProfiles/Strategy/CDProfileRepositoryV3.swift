@@ -84,10 +84,8 @@ extension Profile: UniqueEntity {
 }
 
 extension CoreDataRepository: ProfileRepository where T == Profile {
-    public nonisolated var profilesPublisher: AnyPublisher<[Profile], Never> {
-        entitiesPublisher
-            .map(\.entities)
-            .eraseToAnyPublisher()
+    public nonisolated var profilesPublisher: AsyncStream<[Profile]> {
+        entitiesPublisher.map(\.entities)
     }
 
     public func fetchProfiles() async throws -> [Profile] {

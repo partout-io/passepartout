@@ -3,15 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import AppLibraryMain
-import Combine
 import CommonLibrary
 import Foundation
 import XCTest
 
 final class AppProfileImporterTests: XCTestCase {
     private let importer = SomeModule.Implementation()
-
-    private var subscriptions: Set<AnyCancellable> = []
 }
 
 @MainActor
@@ -31,21 +28,19 @@ extension AppProfileImporterTests {
         let url = URL(string: "file:///filename.txt")!
 
         let exp = expectation(description: "Save")
-        profileManager
-            .didChange
-            .sink {
-                switch $0 {
+        Task {
+            for await event in profileManager.didChange.subscribe() {
+                switch event {
                 case .save(let profile, _):
                     XCTAssertEqual(profile.modules.count, 2)
                     XCTAssertTrue(profile.modules.first is SomeModule)
                     XCTAssertTrue(profile.modules.last is OnDemandModule)
                     exp.fulfill()
-
                 default:
                     break
                 }
             }
-            .store(in: &subscriptions)
+        }
 
         try await sut.tryImport(
             urls: [url],
@@ -63,21 +58,19 @@ extension AppProfileImporterTests {
         let url = URL(string: "file:///filename.encrypted")!
 
         let exp = expectation(description: "Save")
-        profileManager
-            .didChange
-            .sink {
-                switch $0 {
+        Task {
+            for await event in profileManager.didChange.subscribe() {
+                switch event {
                 case .save(let profile, _):
                     XCTAssertEqual(profile.modules.count, 2)
                     XCTAssertTrue(profile.modules.first is SomeModule)
                     XCTAssertTrue(profile.modules.last is OnDemandModule)
                     exp.fulfill()
-
                 default:
                     break
                 }
             }
-            .store(in: &subscriptions)
+        }
 
         try await sut.tryImport(
             urls: [url],

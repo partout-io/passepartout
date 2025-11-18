@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 @testable import CommonLibrary
 import Foundation
 import Testing
@@ -25,7 +24,6 @@ extension ExtendedTunnelTests {
             env
         }
         let sut = ExtendedTunnel(tunnel: tunnel, interval: 0.1)
-        var subscriptions: Set<AnyCancellable> = []
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
@@ -34,17 +32,14 @@ extension ExtendedTunnelTests {
 
         let exp = Expectation()
         var didCall = false
-        sut
-            .objectWillChange
-            .sink {
+        Task {
+            for await event in sut.didChange.subscribe() {
                 if !didCall, sut.lastErrorCode(ofProfileId: profile.id) != nil {
                     didCall = true
-                    Task {
-                        await exp.fulfill()
-                    }
+                    await exp.fulfill()
                 }
             }
-            .store(in: &subscriptions)
+        }
 
         try await tunnel.disconnect(from: profile.id)
         try await exp.fulfillment(timeout: 500)

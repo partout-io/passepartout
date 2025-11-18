@@ -2,12 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Combine
 import Foundation
 import Partout
 
 public protocol ProfileRepository: Sendable {
-    nonisolated var profilesPublisher: AnyPublisher<[Profile], Never> { get }
+    nonisolated var profilesPublisher: AsyncStream<[Profile]> { get }
 
     func fetchProfiles() async throws -> [Profile]
 

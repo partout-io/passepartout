@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppAccessibility
-import Combine
 import CommonLibrary
 import Foundation
 import Partout
@@ -81,7 +80,7 @@ public final class AppContext {
 
     private var didLoadReceiptDate: Date?
 
-    private var subscriptions: Set<AnyCancellable>
+    private var subscriptions: Set<Task<Void, Never>>
 
     // MARK: - Init
 
@@ -183,47 +182,46 @@ private extension AppContext {
             await reloadSystemExtension()
         }
 
-        iapManager
-            .$isEnabled
-            .dropFirst()
-            .removeDuplicates()
-            .sink { [weak self] in
-                pp_log_g(.App.iap, .info, "IAPManager.isEnabled -> \($0)")
-                self?.kvManager.set(!$0, forAppPreference: .skipsPurchases)
-                Task {
-                    await self?.iapManager.reloadReceipt()
-                    self?.didLoadReceiptDate = Date()
-                }
-            }
-            .store(in: &subscriptions)
-
-        pp_log_g(.App.profiles, .info, "\tObserve eligible features...")
-        iapManager
-            .$eligibleFeatures
-            .dropFirst()
-            .removeDuplicates()
-            .sink { [weak self] eligible in
-                Task {
-                    try await self?.onEligibleFeatures(eligible)
-                }
-            }
-            .store(in: &subscriptions)
-
-        pp_log_g(.App.profiles, .info, "\tObserve changes in ProfileManager...")
-        profileManager
-            .didChange
-            .sink { [weak self] event in
+        pp_log_g(.App.iap, .info, "\tObserve changes in IAPManager...")
+        subscriptions.insert(Task { [weak self] in
+            guard let self else { return }
+            for await event in iapManager.didChange.subscribe() {
+                // FIXME: ###, .dropFirst() (of each) + .removeDuplicates()
                 switch event {
-                case .save(let profile, let previousProfile):
-                    Task {
-                        try await self?.onSaveProfile(profile, previous: previousProfile)
+                case .status(let isEnabled):
+                    pp_log_g(.App.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
+                    kvManager.set(!isEnabled, forAppPreference: .skipsPurchases)
+                    await iapManager.reloadReceipt()
+                    didLoadReceiptDate = Date()
+                case .eligibleFeatures(let features):
+                    do {
+                        pp_log_g(.App.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
+                        try await onEligibleFeatures(features)
+                    } catch {
+                        pp_log_g(.App.iap, .error, "Unable to react to eligible features: \(error)")
                     }
-
                 default:
                     break
                 }
             }
-            .store(in: &subscriptions)
+        })
+
+        pp_log_g(.App.profiles, .info, "\tObserve changes in ProfileManager...")
+        subscriptions.insert(Task { [weak self] in
+            guard let self else { return }
+            for await event in profileManager.didChange.subscribe() {
+                switch event {
+                case .save(let profile, let previousProfile):
+                    do {
+                        try await onSaveProfile(profile, previous: previousProfile)
+                    } catch {
+                        pp_log_g(.App.profiles, .error, "Unable to react to saved profile: \(error)")
+                    }
+                default:
+                    break
+                }
+            }
+        })
 
         do {
             pp_log_g(.App.core, .info, "\tFetch providers index...")

@@ -2,14 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@preconcurrency import Combine
 import Foundation
 import Partout
 
-// FIXME: #1594, MainActor is a temporary mitigation for Combine races
-@MainActor
 public final class InMemoryProfileRepository: ProfileRepository, @unchecked Sendable {
-    private nonisolated let profilesSubject: CurrentValueSubject<[Profile], Never>
+    private let profilesSubject: CurrentValueStream<[Profile]>
+
+    public init(profiles: [Profile] = []) {
+        profilesSubject = CurrentValueStream(profiles)
+    }
 
     public var profiles: [Profile] {
         get {
@@ -20,12 +21,8 @@ public final class InMemoryProfileRepository: ProfileRepository, @unchecked Send
         }
     }
 
-    public init(profiles: [Profile] = []) {
-        profilesSubject = CurrentValueSubject(profiles)
-    }
-
-    public nonisolated var profilesPublisher: AnyPublisher<[Profile], Never> {
-        profilesSubject.eraseToAnyPublisher()
+    public var profilesPublisher: AsyncStream<[Profile]> {
+        profilesSubject.subscribe()
     }
 
     public func fetchProfiles() async throws -> [Profile] {

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@preconcurrency import Combine
 @preconcurrency import CoreData
 import Foundation
+import Partout
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {
     // Core Data entity must have a unique "uuid" field
@@ -35,7 +35,7 @@ public actor CoreDataRepository<CD, T>: NSObject, Repository, NSFetchedResultsCo
 
     private nonisolated let onResultError: (@Sendable (Error) -> CoreDataResultAction)?
 
-    private nonisolated let entitiesSubject: CurrentValueSubject<EntitiesResult<T>, Never>
+    private nonisolated let entitiesSubject: CurrentValueStream<EntitiesResult<T>>
 
     private var resultsController: NSFetchedResultsController<CD>?
 
@@ -58,12 +58,11 @@ public actor CoreDataRepository<CD, T>: NSObject, Repository, NSFetchedResultsCo
         self.fromMapper = fromMapper
         self.toMapper = toMapper
         self.onResultError = onResultError
-        entitiesSubject = CurrentValueSubject(EntitiesResult())
+        entitiesSubject = CurrentValueStream(EntitiesResult())
     }
 
-    public nonisolated var entitiesPublisher: AnyPublisher<EntitiesResult<T>, Never> {
-        entitiesSubject
-            .eraseToAnyPublisher()
+    public nonisolated var entitiesPublisher: AsyncStream<EntitiesResult<T>> {
+        entitiesSubject.subscribe()
     }
 
     public func filter(byFormat format: String, arguments: [Sendable]?) async throws {

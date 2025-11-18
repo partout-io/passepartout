@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@preconcurrency import Combine
 import Foundation
+import Partout
 import StoreKit
 
 @MainActor
@@ -17,7 +17,7 @@ public final class StoreKitHelper<ProductType>: InAppHelper
 
     private var activeTransactions: Set<Transaction>
 
-    private nonisolated let didUpdateSubject: PassthroughSubject<Void, Never>
+    private nonisolated let didUpdateSubject: PassthroughStream<Void>
 
     private var observer: Task<Void, Never>?
 
@@ -25,7 +25,7 @@ public final class StoreKitHelper<ProductType>: InAppHelper
         self.products = products
         self.inAppIdentifier = inAppIdentifier
         activeTransactions = []
-        didUpdateSubject = PassthroughSubject()
+        didUpdateSubject = PassthroughStream()
 
         observer = transactionsObserverTask()
     }
@@ -40,8 +40,8 @@ extension StoreKitHelper {
         AppStore.canMakePayments
     }
 
-    public nonisolated var didUpdate: AnyPublisher<Void, Never> {
-        didUpdateSubject.eraseToAnyPublisher()
+    public nonisolated var didUpdate: AsyncStream<Void> {
+        didUpdateSubject.subscribe()
     }
 
     public func fetchProducts(timeout: TimeInterval) async throws -> [ProductType: InAppProduct] {
