@@ -291,7 +291,7 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadLocalProfiles(initialProfiles)
 
-        let profileEvents = repository.profilesPublisher
+        let profileEvents = repository.profilesPublisher.dropFirst()
         localSubscription = Task { [weak self] in
             guard let self else { return }
             for await profiles in profileEvents {
@@ -306,7 +306,7 @@ extension ProfileManager {
         let initialProfiles = try await repository.fetchProfiles()
         reloadRemoteProfiles(initialProfiles)
 
-        let profileEvents = repository.profilesPublisher
+        let profileEvents = repository.profilesPublisher.dropFirst()
         remoteSubscription = Task { [weak self] in
             guard let self else { return }
             for await profiles in profileEvents {
