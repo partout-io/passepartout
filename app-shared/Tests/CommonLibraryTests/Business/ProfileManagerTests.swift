@@ -203,11 +203,12 @@ extension ProfileManagerTests {
         XCTAssertFalse(sut.hasProfiles)
 
         let profile = newProfile()
+        let backupProfiles = backupRepository.profilesPublisher
         let exp = expectation(description: "Backup")
         Task {
-            for await profiles in backupRepository.profilesPublisher {
+            for await profiles in backupProfiles {
                 guard !profiles.isEmpty else {
-                    return
+                    continue
                 }
                 XCTAssertEqual(profiles.first, profile)
                 exp.fulfill()
@@ -245,11 +246,12 @@ extension ProfileManagerTests {
 
         try await waitForReady(sut, remoteRepository: remoteRepository)
 
+        let remoteProfiles = remoteRepository.profilesPublisher
         let exp = expectation(description: "Remote")
         Task {
-            for await profiles in remoteRepository.profilesPublisher {
+            for await profiles in remoteProfiles {
                 guard !profiles.isEmpty else {
-                    return
+                    continue
                 }
                 XCTAssertEqual(profiles.first, profile)
                 exp.fulfill()
@@ -270,11 +272,12 @@ extension ProfileManagerTests {
 
         try await waitForReady(sut, remoteRepository: remoteRepository)
 
+        let remoteProfiles = remoteRepository.profilesPublisher
         let exp = expectation(description: "Remote")
         Task {
-            for await profiles in remoteRepository.profilesPublisher {
+            for await profiles in remoteProfiles {
                 guard profiles.isEmpty else {
-                    return
+                    continue
                 }
                 exp.fulfill()
             }
@@ -632,7 +635,7 @@ private extension ProfileManagerTests {
         let profileEvents = sut.didChange.subscribe()
         Task {
             for await event in profileEvents {
-                guard !wasMet else { return }
+                guard !wasMet else { continue }
                 if event == expectedEvent, condition(sut) {
                     wasMet = true
                     exp.fulfill()
