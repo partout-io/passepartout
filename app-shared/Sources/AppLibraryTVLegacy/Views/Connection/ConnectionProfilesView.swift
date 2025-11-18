@@ -47,7 +47,9 @@ private extension ConnectionProfilesView {
 
     var headerString: String {
         var list: [String] = [Strings.Views.Tv.ConnectionProfiles.Header.share(Strings.Unlocalized.appName, Strings.Unlocalized.appleTV)]
-        list.append(Strings.Views.Tv.ConnectionProfiles.Header.import)
+        if configManager.canImportToTV {
+            list.append(Strings.Views.Tv.ConnectionProfiles.Header.import)
+        }
         return list.joined(separator: " ")
     }
 
