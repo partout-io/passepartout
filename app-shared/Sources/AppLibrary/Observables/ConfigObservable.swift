@@ -12,4 +12,12 @@ public final class ConfigObservable {
     public init(configManager: ConfigManager) {
         self.configManager = configManager
     }
+
+    public var canImportToTV: Bool {
+        configManager.canImportToTV
+    }
+
+    public var canSendToTV: Bool {
+        configManager.canSendToTV
+    }
 }

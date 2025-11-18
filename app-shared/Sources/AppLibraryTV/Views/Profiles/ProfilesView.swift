@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfilesView: View {
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Environment(ViewLogger.self)
     private var logger
@@ -33,7 +35,7 @@ struct ProfilesView: View {
 private extension ProfilesView {
     var masterView: some View {
         List {
-            if configManager.canImportToTV {
+            if configObservable.canImportToTV {
                 importSection
             }
             if profileObservable.hasProfiles {
@@ -43,7 +45,7 @@ private extension ProfilesView {
         .themeList()
         .frame(maxWidth: .infinity)
         .themeEmpty(
-            if: !configManager.canImportToTV && !profileObservable.hasProfiles,
+            if: !configObservable.canImportToTV && !profileObservable.hasProfiles,
             message: Strings.Views.App.Folders.noProfiles
         )
     }
