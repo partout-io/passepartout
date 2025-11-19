@@ -6,6 +6,4 @@ DerivedData/
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
-Sources/wxWidgets/include/
-vendors/**/include/
-bin/**/ppapp
+Package.resolved

@@ -2,12 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !PSP_DYNLIB
 import CommonProvidersAPI
 import CommonProvidersCore
-import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
 #endif
+import Foundation
 import Partout
 
 public final class DefaultAPIMapper: APIMapper {

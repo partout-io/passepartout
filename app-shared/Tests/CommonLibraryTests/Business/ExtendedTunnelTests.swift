@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonLibrary
+@testable import CommonLibraryCore
 import Foundation
 import Testing
 

@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "App",
+    name: "app-shared",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v17),
@@ -13,30 +13,9 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "AppAccessibility",
-            targets: ["AppAccessibility"]
-        ),
-        .library(
-            name: "AppLibrary",
-            targets: ["AppLibrary"]
-        ),
-        .library(
-            name: "AppLibraryMain",
-            targets: [
-                "CommonDataPreferences",
-                "CommonDataProfiles",
-                "CommonDataProviders",
-                "AppLibraryMainWrapper"
-            ]
-        ),
-        .library(
-            name: "AppLibraryTV",
-            targets: [
-                "CommonDataPreferences",
-                "CommonDataProfiles",
-                "CommonDataProviders",
-                "AppLibraryTVWrapper"
-            ]
+            name: "ABI",
+            type: .dynamic,
+            targets: ["ABI"]
         ),
         .library(
             name: "CommonLibrary",
@@ -45,17 +24,6 @@ let package = Package(
         .library(
             name: "CommonProviders",
             targets: ["CommonProviders"]
-        ),
-        .library(
-            name: "PartoutLibrary",
-            targets: ["PartoutLibrary"]
-        ),
-        .library(
-            name: "TunnelLibrary",
-            targets: [
-                "CommonLibrary",
-                "CommonResources"
-            ]
         )
     ],
     dependencies: [
@@ -63,91 +31,39 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
     ],
     targets: [
-        .target(
-            name: "AppAccessibility"
+        .executableTarget(
+            name: "ABIExample_C",
+            dependencies: ["ABI"]
         ),
         .target(
-            name: "AppLibrary",
-            dependencies: [
-                "AppStrings",
-                "AppAccessibility",
-                "CommonLibrary",
-                "CommonResources"
-            ]
+            name: "ABI",
+            dependencies: ["ABI_C"]
         ),
         .target(
-            name: "AppLibraryMain",
-            dependencies: ["AppLibrary"]
+            name: "ABI_C",
+            dependencies: ["CommonLibrary"]
         ),
         .target(
-            name: "AppLibraryMainWrapper",
-            dependencies: [
-                .target(name: "AppLibraryMain", condition: .when(platforms: [.iOS, .macOS]))
-            ],
-            path: "Sources/Empty/AppLibraryMainWrapper"
+            name: "CommonLibraryApple",
+            dependencies: ["CommonLibraryCore"]
         ),
         .target(
-            name: "AppLibraryTV",
-            dependencies: ["AppLibrary"]
-        ),
-        .target(
-            name: "AppLibraryTVLegacy",
-            dependencies: ["AppLibrary"]
-        ),
-        .target(
-            name: "AppLibraryTVWrapper",
-            dependencies: [
-                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS])),
-                .target(name: "AppLibraryTVLegacy", condition: .when(platforms: [.tvOS]))
-            ],
-            path: "Sources/Empty/AppLibraryTVWrapper"
-        ),
-        .target(
-            name: "AppStrings",
-            resources: [
-                .process("Resources")
-            ]
-        ),
-        .target(
-            name: "CommonData"
-        ),
-        .target(
-            name: "CommonDataPreferences",
-            dependencies: [
-                "CommonData",
-                "CommonLibrary"
-            ],
-            resources: [
-                .process("Preferences.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "CommonDataProfiles",
-            dependencies: [
-                "CommonData",
-                "CommonLibrary"
-            ],
-            resources: [
-                .process("Profiles.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "CommonDataProviders",
-            dependencies: [
-                "CommonData",
-                "CommonLibrary"
-            ],
-            resources: [
-                .process("Providers.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "CommonLibrary",
+            name: "CommonLibraryCore",
             dependencies: [
                 .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 "CommonProviders",
                 "partout"
+            ],
+            swiftSettings: [
+                .define("PSP_DYNLIB", .when(platforms: [.android, .linux, .windows]))
+            ]
+        ),
+        .target(
+            name: "CommonLibrary",
+            dependencies: [
+                "CommonLibraryCore",
+                .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
             ]
         ),
         .target(
@@ -164,26 +80,6 @@ let package = Package(
         .target(
             name: "CommonProvidersCore",
             dependencies: ["partout"]
-        ),
-        .target(
-            name: "CommonResources",
-            dependencies: ["CommonLibrary"],
-            resources: [
-                .process("Resources")
-            ]
-        ),
-        .target(
-            name: "PartoutLibrary",
-            dependencies: ["partout"],
-            path: "Sources/Empty/PartoutLibrary"
-        ),
-        .testTarget(
-            name: "AppLibraryTests",
-            dependencies: ["AppLibrary"]
-        ),
-        .testTarget(
-            name: "AppLibraryMainTests",
-            dependencies: ["AppLibraryMain"]
         ),
         .testTarget(
             name: "CommonLibraryTests",
