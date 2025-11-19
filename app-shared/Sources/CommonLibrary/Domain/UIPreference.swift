@@ -14,7 +14,7 @@ extension ABI {
         case systemAppearance
 
         public var key: String {
-            "ABI.\(rawValue)"
+            "UI.\(rawValue)"
         }
     }
 }
