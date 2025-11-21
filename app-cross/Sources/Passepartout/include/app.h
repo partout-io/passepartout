@@ -6,9 +6,6 @@
 
 #include <wx/wx.h>
 
-// From app-shared ABI
-extern "C" int example(int a, int b);
-
 class MyApp : public wxApp
 {
 public:

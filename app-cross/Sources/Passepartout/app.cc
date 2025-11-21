@@ -5,7 +5,9 @@
  */
 
 #include "app.h"
+extern "C" {
 #include "passepartout/abi.h"
+}
 
 bool MyApp::OnInit()
 {
