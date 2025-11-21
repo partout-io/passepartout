@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !PSP_DYNLIB
 import CommonProvidersCore
+#endif
 
 extension API.REST {
     public enum Resource {

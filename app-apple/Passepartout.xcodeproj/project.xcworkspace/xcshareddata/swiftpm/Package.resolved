@@ -1,12 +1,13 @@
 {
+  "originHash" : "9b1e2e514044fca3f639050fe37c818259339fd74db32122803ffeddd7d25197",
   "pins" : [
     {
       "identity" : "openssl-apple",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/openssl-apple",
       "state" : {
-        "revision" : "93a055021f02f1395a539dd418997699fdcfa86a",
-        "version" : "3.5.500"
+        "revision" : "5eaf588e6e46677779d23f184211ae7d406ec0e7",
+        "version" : "3.5.501"
       }
     },
     {
@@ -32,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio",
       "state" : {
-        "revision" : "a18bddb0acf7a40d982b2f128ce73ce4ee31f352",
-        "version" : "2.86.2"
+        "revision" : "6e02c7a2467cf22526ac54521d4230d8c5890e62",
+        "version" : "2.90.0"
       }
     },
     {
@@ -55,5 +56,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

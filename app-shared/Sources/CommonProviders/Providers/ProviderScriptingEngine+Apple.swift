@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if canImport(Darwin)
-
+#if !PSP_DYNLIB
 import CommonProvidersCore
+#endif
 import JavaScriptCore
 import Partout
 
@@ -108,5 +109,4 @@ extension AppleJavaScriptEngine: ProviderScriptingEngine {
         inject("api", object: api)
     }
 }
-
 #endif

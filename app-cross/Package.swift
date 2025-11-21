@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import Foundation
@@ -17,9 +17,18 @@ let package = Package(
         .macOS(.v14)
     ],
     dependencies: [
-        .package(path: "../submodules/partout")
+        .package(path: "../app-shared")
     ],
     targets: [
+        .executableTarget(
+            name: "Passepartout",
+            dependencies: [
+                .product(name: "ABI", package: "app-shared"),
+                "wxWidgets"
+            ],
+            cxxSettings: wxEnvironment.cxxSettings,
+            linkerSettings: wxEnvironment.linkerSettings
+        ),
         .target(
             name: "wxWidgets",
             publicHeadersPath: ".",
@@ -28,47 +37,6 @@ let package = Package(
         )
     ]
 )
-
-// The UI of the app. The UI does not depend on Partout
-// because it relies on OS IPC to communicate with the tunnel.
-package.targets.append(contentsOf: [
-    .executableTarget(
-        name: "ppapp",
-        dependencies: ["wxWidgets"],
-        cxxSettings: wxEnvironment.cxxSettings,
-        linkerSettings: wxEnvironment.linkerSettings
-    )
-])
-
-// The CLI target and dependencies. Like the UI, the CLI
-// does not depend on Partout.
-package.targets.append(contentsOf: [
-    .executableTarget(
-        name: "ppcli"
-    )
-])
-
-// The tunnel daemon target, the platform-specific bindings
-// and dependencies, plus the full Partout library.
-package.targets.append(contentsOf: [
-    .executableTarget(
-        name: "pptunnel",
-        dependencies: [
-            "Tunnel_C",
-            "TunnelMock_C"
-        ]
-    ),
-    .target(
-        name: "Tunnel_C"
-    ),
-    .target(
-        name: "TunnelMock_C",
-        dependencies: [
-            "Tunnel_C",
-            .product(name: "Partout", package: "partout")
-        ]
-    )
-])
 
 // MARK: -
 

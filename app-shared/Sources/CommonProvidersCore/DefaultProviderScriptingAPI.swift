@@ -3,9 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
 import Partout
 
 public final class DefaultProviderScriptingAPI {

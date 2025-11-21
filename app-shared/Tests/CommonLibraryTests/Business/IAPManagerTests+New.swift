@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonLibrary
+#if canImport(CommonLibraryApple)
+
+@testable import CommonLibraryApple
+@testable import CommonLibraryCore
 import XCTest
 
 @MainActor
@@ -215,3 +218,5 @@ private extension IAPManager {
         suggestedProducts(for: features, on: platform, including: including)
     }
 }
+
+#endif
