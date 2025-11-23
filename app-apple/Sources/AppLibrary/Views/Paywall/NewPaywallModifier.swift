@@ -42,11 +42,18 @@ public struct PaywallModifier: ViewModifier {
                 actions: confirmationActions,
                 message: confirmationMessage
             )
+#if !os(tvOS)
             .themeModal(
                 isPresented: $isPurchasing,
                 options: .init(size: .custom(width: 400, height: 400)),
                 content: modalDestination
             )
+#else
+            .navigationDestination(
+                isPresented: $isPurchasing,
+                destination: modalDestination
+            )
+#endif
             .onChange(of: isPurchasing) {
                 if !$0 {
                     reason = nil
