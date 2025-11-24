@@ -1,1 +1,2 @@
+* Fix regression in paywall layout
 * Improve software architecture
