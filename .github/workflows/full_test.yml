@@ -22,9 +22,12 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: api/package-lock.json
-      - name: Run App tests
+      - name: Run shared tests
         run: |
-          ci/run-app-tests.sh
+          ci/run-shared-tests.sh
+      - name: Run Apple tests
+        run: |
+          ci/run-apple-tests.sh
       - name: Run Partout tests
         run: |
           ci/run-partout-tests.sh

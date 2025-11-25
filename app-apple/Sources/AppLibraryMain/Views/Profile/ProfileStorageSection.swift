@@ -27,9 +27,7 @@ struct ProfileStorageSection: View {
         if showsSharing {
             sharingSection
         }
-        if configManager.canSendToTV {
-            tvSection
-        }
+        tvSection
     }
 }
 

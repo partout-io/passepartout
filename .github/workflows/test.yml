@@ -28,7 +28,9 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
       - run: |
-          ci/run-app-tests.sh
+          ci/run-shared-tests.sh
+      - run: |
+          ci/run-apple-tests.sh
   run_api_tests:
     name: Run Node.js API tests
     runs-on: ubuntu-latest

@@ -13,53 +13,11 @@
   },
   "testTargets" : [
     {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "CommonProvidersAPITests",
-        "name" : "CommonProvidersAPITests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "CommonLibraryTests",
-        "name" : "CommonLibraryTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "CommonProvidersTests",
-        "name" : "CommonProvidersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "AppLibraryTests",
-        "name" : "AppLibraryTests"
-      }
-    },
-    {
       "parallelizable" : true,
       "target" : {
         "containerPath" : "container:Passepartout.xcodeproj",
         "identifier" : "0E3FF4AD2CE3AF6F00BFF640",
         "name" : "PassepartoutTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "CommonProvidersCoreTests",
-        "name" : "CommonProvidersCoreTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/app-shared",
-        "identifier" : "AppLibraryMainTests",
-        "name" : "AppLibraryMainTests"
       }
     }
   ],
