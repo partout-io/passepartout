@@ -169,10 +169,7 @@ private extension DiagnosticsView {
     var isUsingExperimentalFeatures: Bool {
         !configManager.activeFlags.isDisjoint(with: [
             .neSocketUDP,
-            .neSocketTCP,
-            .ovpnCrossConnection,
-            .wgCrossConnection,
-            .wgCrossParser
+            .neSocketTCP
         ])
     }
 

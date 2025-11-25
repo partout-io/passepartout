@@ -20,12 +20,7 @@ struct OpenVPNImplementationBuilder: Sendable {
         OpenVPNModule.Implementation(
             importerBlock: { StandardOpenVPNParser() },
             connectionBlock: {
-                let configFlags = configBlock()
-                if configFlags.contains(.ovpnCrossConnection) {
-                    return try crossConnection(with: $0, module: $1)
-                } else {
-                    return try legacyConnection(with: $0, module: $1)
-                }
+                try crossConnection(with: $0, module: $1)
             }
         )
     }
@@ -36,27 +31,6 @@ private extension OpenVPNImplementationBuilder {
     // TODO: #218, this directory must be per-profile
     var cachesURL: URL {
         FileManager.default.temporaryDirectory
-    }
-
-    func legacyConnection(
-        with parameters: ConnectionParameters,
-        module: OpenVPNModule
-    ) throws -> Connection {
-        let ctx = PartoutLoggerContext(parameters.profile.id)
-        var options = OpenVPN.ConnectionOptions()
-        options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
-        options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
-        return try LegacyOpenVPNConnection(
-            ctx,
-            parameters: parameters,
-            module: module,
-            prng: PlatformPRNG(),
-            dns: SimpleDNSResolver {
-                POSIXDNSStrategy(hostname: $0)
-            },
-            options: options,
-            cachesURL: cachesURL
-        )
     }
 
     func crossConnection(

@@ -7,10 +7,6 @@ import CommonLibrary
 import SwiftUI
 
 struct ConnectionProfilesView: View {
-
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
     let profileObservable: ProfileObservable
 
     let tunnel: TunnelObservable
@@ -45,9 +41,7 @@ private extension ConnectionProfilesView {
 
     var headerString: String {
         var list: [String] = [Strings.Views.Tv.ConnectionProfiles.Header.share(Strings.Unlocalized.appName, Strings.Unlocalized.appleTV)]
-        if configObservable.canImportToTV {
-            list.append(Strings.Views.Tv.ConnectionProfiles.Header.import)
-        }
+        list.append(Strings.Views.Tv.ConnectionProfiles.Header.import)
         return list.joined(separator: " ")
     }
 
