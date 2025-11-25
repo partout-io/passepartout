@@ -29,8 +29,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val version = NativeLibraryWrapper().partoutVersion()
+        val wrapper = NativeLibraryWrapper()
+        val version = wrapper.partoutVersion()
+        val sum = wrapper.passepartoutExampleSum()
+        val json = wrapper.passepartoutExampleJSON()
         Log.e("Passepartout", ">>> $version")
+        Log.e("Passepartout", ">>> psp_example_sum: $sum")
+        Log.e("Passepartout", ">>> psp_example_json: $json")
 
         setContent {
             HelloWorld(

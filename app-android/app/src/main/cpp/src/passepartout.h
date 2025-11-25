@@ -4,4 +4,5 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
-#include <wx/wx.h>
+extern int psp_example_sum(int a, int b);
+extern const char *psp_example_json();

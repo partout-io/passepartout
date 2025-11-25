@@ -6,7 +6,7 @@
 
 #include "app.h"
 extern "C" {
-#include "passepartout/abi.h"
+#include "passepartout.h"
 }
 
 bool MyApp::OnInit()
@@ -28,7 +28,7 @@ MyFrame::MyFrame()
     appMenu->Append(wxID_EXIT, "Quit");
 
     char buf[100];
-    snprintf(buf, sizeof(buf), "Hello %d", example(10, 20));
+    snprintf(buf, sizeof(buf), "Hello %d", psp_example_sum(10, 20));
 
     // Dummy menu
     wxMenu* dummyMenu = new wxMenu;

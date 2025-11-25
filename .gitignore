@@ -16,3 +16,5 @@ tmp/
 *.lib
 *.dll
 *.dmg
+.cmake*
+bin
