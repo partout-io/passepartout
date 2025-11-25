@@ -4,4 +4,4 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
-#include <wx/wx.h>
+extern int example(int a, int b);

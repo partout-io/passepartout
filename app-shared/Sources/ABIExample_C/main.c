@@ -5,7 +5,7 @@
  */
 
 #include <stdio.h>
-#include "passepartout/abi.h"
+#include "passepartout.h"
 
 int main() {
     printf("Hello %d\n", example(10, 20));

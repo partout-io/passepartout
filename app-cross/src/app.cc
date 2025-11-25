@@ -6,7 +6,7 @@
 
 #include "app.h"
 extern "C" {
-#include "passepartout/abi.h"
+#include "passepartout.h"
 }
 
 bool MyApp::OnInit()

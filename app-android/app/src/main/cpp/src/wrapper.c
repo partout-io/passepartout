@@ -6,8 +6,17 @@
 
 #include <jni.h>
 #include <stdlib.h>
+#include "passepartout.h"
 #include "partout.h"
 #include "vpn.h"
+
+JNIEXPORT jint JNICALL
+Java_com_algoritmico_partout_NativeLibraryWrapper_passepartoutExample(JNIEnv
+* env,
+jobject thiz
+) {
+    return example(50, 70);
+}
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_partout_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {

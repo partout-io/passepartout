@@ -6,6 +6,7 @@ package com.algoritmico.partout
 import android.util.Log
 
 class NativeLibraryWrapper {
+    external fun passepartoutExample(): Int
     external fun partoutVersion(): String
     external fun partoutInitialize(cacheDir: String): Long
     external fun partoutDeinitialize(ctx: Long)
