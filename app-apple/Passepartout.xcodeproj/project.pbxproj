@@ -300,9 +300,9 @@
 		0E757F112CD0CFFC006E13E1 /* LoginItem */ = {
 			isa = PBXGroup;
 			children = (
+				0E757F182CD0CFFD006E13E1 /* LoginItem.entitlements */,
 				0E757F212CD0D2B7006E13E1 /* AppDelegate.swift */,
 				0E757F122CD0CFFC006E13E1 /* PassepartoutLoginItemApp.swift */,
-				0E757F182CD0CFFD006E13E1 /* LoginItem.entitlements */,
 			);
 			path = LoginItem;
 			sourceTree = "<group>";
