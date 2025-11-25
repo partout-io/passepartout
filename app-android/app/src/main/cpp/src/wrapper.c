@@ -17,7 +17,9 @@ Java_com_algoritmico_partout_NativeLibraryWrapper_passepartoutExampleSum(JNIEnv*
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_partout_NativeLibraryWrapper_passepartoutExampleJSON(JNIEnv *env, jobject thiz) {
-    jstring jmsg = (*env)->NewStringUTF(env, psp_example_json());
+    char *json = psp_example_json();
+    jstring jmsg = (*env)->NewStringUTF(env, json);
+    free(json);
     return jmsg;
 }
 
