@@ -11,7 +11,7 @@ foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
 
-# Configure static library
+# Configure as static library except on Android
 if(ANDROID)
     add_library(passepartout_shared SHARED ${PSP_SOURCES})
 else()
@@ -26,7 +26,7 @@ set_target_properties(passepartout_shared PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
 
-# FIXME: Make C modules internal in Partout
+# XXX: C modulemaps are required to import Partout as a Swift module
 set(PARTOUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/partout/Sources)
 target_include_directories(passepartout_shared PRIVATE
     ${OUTPUT_DIR}/partout/modules

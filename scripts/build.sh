@@ -3,7 +3,7 @@ cwd=`dirname $0`
 source $cwd/env.sh
 set -e
 
-# FIXME: ###, Use switch flags
+# Use switch statement later for more flags
 android_flag="$1"
 if [[ -n "$android_flag" && "$android_flag" != "-android" ]]; then
     echo "Either pass -android or nothing"
