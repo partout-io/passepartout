@@ -28,6 +28,8 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
       - run: |
+          ci/run-shared-tests.sh
+      - run: |
           ci/run-app-tests.sh
   run_api_tests:
     name: Run Node.js API tests
