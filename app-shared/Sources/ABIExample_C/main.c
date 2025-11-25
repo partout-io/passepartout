@@ -8,6 +8,6 @@
 #include "passepartout.h"
 
 int main() {
-    printf("Hello %d\n", example(10, 20));
+    printf("Hello %d\n", psp_example_sum(10, 20));
     return 0;
 }
