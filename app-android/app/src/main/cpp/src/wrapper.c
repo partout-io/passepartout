@@ -11,11 +11,14 @@
 #include "vpn.h"
 
 JNIEXPORT jint JNICALL
-Java_com_algoritmico_partout_NativeLibraryWrapper_passepartoutExample(JNIEnv
-* env,
-jobject thiz
-) {
-    return example(50, 70);
+Java_com_algoritmico_partout_NativeLibraryWrapper_passepartoutExampleSum(JNIEnv* env, jobject thiz) {
+    return psp_example_sum(50, 70);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_algoritmico_partout_NativeLibraryWrapper_passepartoutExampleJSON(JNIEnv *env, jobject thiz) {
+    jstring jmsg = (*env)->NewStringUTF(env, psp_example_json());
+    return jmsg;
 }
 
 JNIEXPORT jstring JNICALL
