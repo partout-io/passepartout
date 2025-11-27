@@ -22,7 +22,7 @@ extension Registry: ProfileImporter {
 
         // Try to decode a full Partout profile first
         do {
-            return try compatibleProfile(fromString: contents)
+            return try fallbackProfile(fromString: contents)
         } catch {
             pp_log_g(.App.core, .debug, "Unable to decode profile for import: \(error)")
         }

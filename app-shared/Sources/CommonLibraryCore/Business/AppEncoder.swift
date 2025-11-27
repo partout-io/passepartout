@@ -13,7 +13,7 @@ public final class AppEncoder: Sendable {
     }
 
     public func profile(fromString string: String) throws -> Profile {
-        try registry.compatibleProfile(fromString: string)
+        try registry.fallbackProfile(fromString: string)
     }
 
     public func json(fromProfile profile: Profile) throws -> String {
