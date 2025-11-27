@@ -26,14 +26,10 @@ set_target_properties(passepartout_shared PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
 
-# XXX: C modulemaps are required to import Partout as a Swift module
-set(PARTOUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/partout/Sources)
+# Import Partout as a Swift module plus the modulemap for the C ABI
 target_include_directories(passepartout_shared PRIVATE
+    ${OUTPUT_DIR}/partout
     ${OUTPUT_DIR}/partout/modules
-    ${PARTOUT_DIR}/PartoutABI_C/include
-    ${PARTOUT_DIR}/PartoutCore_C/include
-    ${PARTOUT_DIR}/PartoutOpenVPN_C/include
-    ${PARTOUT_DIR}/PartoutWireGuard_C/include
 )
 target_link_directories(passepartout_shared PRIVATE
     ${OUTPUT_DIR}/partout
