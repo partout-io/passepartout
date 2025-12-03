@@ -1,2 +1,2 @@
-* Fix regression in paywall layout
-* Improve software architecture
+* Relax requirements on iOS/macOS targets (#1626)
+* Drop legacy VPN code and LZO support (#1615)
