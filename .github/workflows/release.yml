@@ -38,9 +38,9 @@ jobs:
       - name: Validate translations
         run: |
           scripts/clean-translations.sh
-      - name: Run App tests
+      - name: Run Apple tests
         run: |
-          ci/run-app-tests.sh
+          ci/run-apple-tests.sh
       - name: Run Partout tests
         run: |
           ci/run-partout-tests.sh
