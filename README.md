@@ -100,6 +100,10 @@ By contributing to this project you are agreeing to the terms stated in the [Con
 
 The logo is taken from the awesome Circle Icons set by Nick Roach.
 
+### OpenSSL
+
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit. ([https://www.openssl.org/][dep-openssl])
+
 ### OpenVPN
 
 © Copyright 2025 OpenVPN | OpenVPN is a registered trademark of OpenVPN, Inc.
@@ -107,10 +111,6 @@ The logo is taken from the awesome Circle Icons set by Nick Roach.
 ### WireGuard
 
 © Copyright 2015-2025 Jason A. Donenfeld. All Rights Reserved. "WireGuard" and the "WireGuard" logo are registered trademarks of Jason A. Donenfeld.
-
-### OpenSSL
-
-This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit. ([https://www.openssl.org/][dep-openssl])
 
 ### Community
 
