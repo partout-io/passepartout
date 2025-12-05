@@ -33,6 +33,9 @@ if [[ -n "$is_template" ]]; then
         -mountpoint "$mnt" \
         -readwrite -noautoopen
 
+    echo "Link to /Applications..."
+    ln -s /Applications "$mnt/Applications"
+
     echo "Reapply .DS_Store..."
     cp "$srcfolder/.DS_Store" "$mnt"
     chmod 644 "$mnt/.DS_Store"
