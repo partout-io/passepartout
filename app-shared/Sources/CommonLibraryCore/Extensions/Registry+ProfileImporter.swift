@@ -13,9 +13,9 @@ extension Registry: ProfileImporter {
             name = filename
             contents = data
         case .file(let url):
+            var encoding: String.Encoding = .utf8
             // XXX: this may be very inefficient
-            // FIXME: #228, This was using usedEncoding:, does it matter?
-            contents = try String(contentsOf: url, encoding: .utf8)
+            contents = try String(contentsOf: url, usedEncoding: &encoding)
             name = url.lastPathComponent
         }
 
