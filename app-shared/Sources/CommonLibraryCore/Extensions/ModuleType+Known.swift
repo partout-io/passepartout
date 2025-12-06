@@ -12,7 +12,7 @@ extension ModuleType: @retroactive CaseIterable {
             .dns,
             .httpProxy,
             .ip,
-            .onDemand,
+            .onDemand
         ]
 #if PSP_PROVIDERS
         list.append(.provider)
