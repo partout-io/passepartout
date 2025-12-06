@@ -1,4 +1,7 @@
 {
+    "wgV4OverV6": {
+        "rate": 100,
+    },
     "neSocketUDP": {
         "rate": 100
     },

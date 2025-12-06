@@ -18,8 +18,14 @@ struct WireGuardImplementationBuilder: Sendable {
             importerBlock: { newParser() },
             validatorBlock: { newParser() },
             connectionBlock: {
+                let flags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
-                return try WireGuardConnection(ctx, parameters: $0, module: $1)
+                return try WireGuardConnection(
+                    ctx,
+                    parameters: $0,
+                    module: $1,
+                    preferringIPv4: flags.contains(.wgV4OverV6)
+                )
             }
         )
     }
