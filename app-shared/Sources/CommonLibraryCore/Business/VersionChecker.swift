@@ -60,11 +60,11 @@ public final class VersionChecker {
         let now = Date()
         do {
             let lastCheckedInterval = kvManager.double(forAppPreference: .lastCheckedVersionDate)
-            let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSince1970: lastCheckedInterval) : .distantPast
+            let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSinceReferenceDate: lastCheckedInterval) : .distantPast
 
             pp_log_g(.App.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
-            kvManager.set(now.timeIntervalSince1970, forAppPreference: .lastCheckedVersionDate)
+            kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
             kvManager.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
             pp_log_g(.App.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
@@ -81,7 +81,7 @@ public final class VersionChecker {
             pp_log_g(.App.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // save the check date regardless because the service call succeeded
-            kvManager.set(now.timeIntervalSince1970, forAppPreference: .lastCheckedVersionDate)
+            kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
 
             pp_log_g(.App.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
