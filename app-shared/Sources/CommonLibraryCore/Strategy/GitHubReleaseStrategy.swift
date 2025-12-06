@@ -40,14 +40,16 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     }
 }
 
-public struct VersionJSON: Decodable, Sendable {
-    enum CodingKeys: String, CodingKey {
-        case name
+extension GitHubReleaseStrategy {
+    public struct VersionJSON: Decodable, Sendable {
+        enum CodingKeys: String, CodingKey {
+            case name
 
-        case tagName = "tag_name"
+            case tagName = "tag_name"
+        }
+
+        let name: String
+
+        let tagName: String
     }
-
-    let name: String
-
-    let tagName: String
 }

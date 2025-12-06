@@ -286,7 +286,7 @@ extension AppContext {
                 var request = URLRequest(url: $0)
                 request.cachePolicy = .useProtocolCachePolicy
                 let result = try await URLSession.shared.data(for: request)
-                return try JSONDecoder().decode(VersionJSON.self, from: result.0)
+                return try JSONDecoder().decode(GitHubReleaseStrategy.VersionJSON.self, from: result.0)
             }
         )
         let versionChecker: VersionChecker
