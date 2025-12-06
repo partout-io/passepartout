@@ -10,12 +10,12 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
 
     private let rateLimit: TimeInterval
 
-    private let fetcher: @Sendable (URL) async throws -> VersionJSON
+    private let fetcher: @Sendable (URL) async throws -> Data
 
     public init(
         releaseURL: URL,
         rateLimit: TimeInterval,
-        fetcher: @escaping @Sendable (URL) async throws -> VersionJSON
+        fetcher: @escaping @Sendable (URL) async throws -> Data
     ) {
         self.releaseURL = releaseURL
         self.rateLimit = rateLimit
@@ -30,7 +30,8 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
                 throw ABI.AppError.rateLimit
             }
         }
-        let json = try await fetcher(releaseURL)
+        let data = try await fetcher(releaseURL)
+        let json = try JSONDecoder().decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
             pp_log_g(.App.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
@@ -40,8 +41,8 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     }
 }
 
-extension GitHubReleaseStrategy {
-    public struct VersionJSON: Decodable, Sendable {
+private extension GitHubReleaseStrategy {
+    struct VersionJSON: Decodable, Sendable {
         enum CodingKeys: String, CodingKey {
             case name
 

@@ -14,7 +14,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
 
     private let isBeta: @Sendable () async -> Bool
 
-    private let fetcher: @Sendable (URL) async throws -> ABI.ConfigBundle
+    private let fetcher: @Sendable (URL) async throws -> Data
 
     private var lastUpdated: Date
 
@@ -23,7 +23,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         betaURL: URL,
         ttl: TimeInterval,
         isBeta: @escaping @Sendable () async -> Bool,
-        fetcher: @escaping @Sendable (URL) async throws -> ABI.ConfigBundle
+        fetcher: @escaping @Sendable (URL) async throws -> Data
     ) {
         self.url = url
         self.betaURL = betaURL
@@ -46,7 +46,8 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         }
         let targetURL = isBeta ? betaURL : url
         pp_log_g(.App.core, .info, "Config (GitHub): fetching bundle from \(targetURL)")
-        let json = try await fetcher(url)
+        let data = try await fetcher(url)
+        let json = try JSONDecoder().decode(ABI.ConfigBundle.self, from: data)
         lastUpdated = Date()
         return json
     }
