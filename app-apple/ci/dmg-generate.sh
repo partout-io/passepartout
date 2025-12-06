@@ -18,6 +18,9 @@ set -e
 echo "Copy .app to .dmg contents..."
 cp -RH "dist/macOS/$name.app" "$srcfolder"
 
+echo "Add link to /Applications..."
+ln -sf /Applications "$srcfolder/Applications"
+
 if [[ -n "$is_template" ]]; then
     echo "Create template $volname..."
     hdiutil create \
@@ -32,9 +35,6 @@ if [[ -n "$is_template" ]]; then
     hdiutil attach "$dmg.template.dmg" \
         -mountpoint "$mnt" \
         -readwrite -noautoopen
-
-    echo "Link to /Applications..."
-    ln -s /Applications "$mnt/Applications"
 
     echo "Reapply .DS_Store..."
     cp "$srcfolder/.DS_Store" "$mnt"
