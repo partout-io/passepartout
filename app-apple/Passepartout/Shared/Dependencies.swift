@@ -20,9 +20,9 @@ struct Dependencies {
     }
 
     func formattedLog(timestamp: Date, message: String) -> String {
-        let messageFormat = appConfiguration.constants.log.formatter.timestamp
+        let messageFormat = appConfiguration.constants.log.formatter.message
         let formattedTimestamp = logFormatter.string(from: timestamp)
-        return String(format: message, formattedTimestamp, messageFormat)
+        return String(format: messageFormat, formattedTimestamp, message)
     }
 }
 
