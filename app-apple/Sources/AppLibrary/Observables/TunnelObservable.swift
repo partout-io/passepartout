@@ -14,10 +14,7 @@ public final class TunnelObservable {
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(
-        logger: AppLogger,
-        extendedTunnel: ExtendedTunnel,
-    ) {
+    public init(logger: AppLogger, extendedTunnel: ExtendedTunnel) {
         self.logger = logger
         self.extendedTunnel = extendedTunnel
         activeProfiles = [:]
