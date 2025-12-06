@@ -30,7 +30,7 @@ private extension OpenVPNImplementationBuilder {
 
     // TODO: #218, this directory must be per-profile
     var cachesURL: URL {
-        URL(fileURLWithPath: FileManager.default.temporaryDirectory.filePath())
+        FileManager.default.temporaryDirectory
     }
 
     func crossConnection(
