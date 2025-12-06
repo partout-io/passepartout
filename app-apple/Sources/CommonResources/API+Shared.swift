@@ -38,7 +38,7 @@ private extension API {
     // fetch remote JS (baseURL = remote)
     // fetch remote JSON (URL in scripts)
     static let remoteV7: APIMapper = {
-        let remoteURL = Resources.constants.websites.api.appendingPathComponent("v\(version)")
+        let remoteURL = Resources.constants.websites.api.miniAppending(path: "v\(version)")
         return DefaultAPIMapper(.global, baseURL: remoteURL, timeout: Resources.constants.api.timeoutInterval)
     }()
 }

@@ -3,6 +3,17 @@
 
 import PackageDescription
 
+let withProviders = true
+let swiftSettings = {
+    var list: [SwiftSetting] = [
+        .define("PSP_CROSS", .when(platforms: [.android, .linux, .windows]))
+    ]
+    if withProviders {
+        list.append(.define("PSP_PROVIDERS"))
+    }
+    return list
+}()
+
 let package = Package(
     name: "app-shared",
     defaultLocalization: "en",
@@ -20,10 +31,6 @@ let package = Package(
         .library(
             name: "CommonLibrary",
             targets: ["CommonLibrary"]
-        ),
-        .library(
-            name: "CommonProviders",
-            targets: ["CommonProviders"]
         )
     ],
     dependencies: [
@@ -49,23 +56,47 @@ let package = Package(
         ),
         .target(
             name: "CommonLibraryCore",
-            dependencies: [
-                .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
-                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
-                "CommonProviders",
-                "partout"
-            ],
-            swiftSettings: [
-                .define("PSP_DYNLIB", .when(platforms: [.android, .linux, .windows]))
-            ]
+            dependencies: {
+                var list: [Target.Dependency] = [
+                    .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                    .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                    "partout"
+                ]
+                if withProviders {
+                    list.append(
+                        .target(name: "CommonProviders")
+                    )
+                }
+                return list
+            }(),
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CommonLibrary",
             dependencies: [
                 "CommonLibraryCore",
                 .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
+        .testTarget(
+            name: "CommonLibraryTests",
+            dependencies: ["CommonLibrary"],
+            resources: [
+                .process("Resources")
+            ]
+        )
+    ]
+)
+
+if withProviders {
+    package.products.append(
+        .library(
+            name: "CommonProviders",
+            targets: ["CommonProviders"]
+        )
+    )
+    package.targets.append(contentsOf: [
         .target(
             name: "CommonProviders",
             dependencies: ["CommonProvidersAPI"]
@@ -80,13 +111,6 @@ let package = Package(
         .target(
             name: "CommonProvidersCore",
             dependencies: ["partout"]
-        ),
-        .testTarget(
-            name: "CommonLibraryTests",
-            dependencies: ["CommonLibrary"],
-            resources: [
-                .process("Resources")
-            ]
         ),
         .testTarget(
             name: "CommonProvidersTests",
@@ -106,5 +130,5 @@ let package = Package(
                 .process("Resources")
             ]
         )
-    ]
-)
+    ])
+}

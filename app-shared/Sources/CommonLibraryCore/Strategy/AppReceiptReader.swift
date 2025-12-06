@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 public protocol AppReceiptReader: Sendable {
     func receipt(at userLevel: ABI.AppUserLevel) async -> InAppReceipt?
 

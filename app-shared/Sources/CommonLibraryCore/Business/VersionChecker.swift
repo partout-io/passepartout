@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 extension VersionChecker: ObservableObject {}
 #endif
 
@@ -69,7 +68,7 @@ public final class VersionChecker {
             kvManager.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
             pp_log_g(.App.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             objectWillChange.send()
 #endif
 

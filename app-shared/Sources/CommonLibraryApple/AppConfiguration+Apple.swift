@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonLibraryCore
 #endif
 import Partout
@@ -131,7 +131,7 @@ private extension BundleConfiguration {
 #if !os(tvOS)
 
 private extension URL {
-    var forCaches: URL {
+    var forCaches: Self {
         let url = appending(components: "Library", "Caches")
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
@@ -141,7 +141,7 @@ private extension URL {
         return url
     }
 
-    var forDocuments: URL {
+    var forDocuments: Self {
         let url = appending(components: "Library", "Documents")
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 extension Array where Element == String {
     public var isLastEmpty: Bool {
         last?.trimmingCharacters(in: .whitespaces) == ""

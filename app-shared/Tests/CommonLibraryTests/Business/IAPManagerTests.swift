@@ -451,7 +451,7 @@ extension IAPManager {
             customUserLevel: customUserLevel,
             inAppHelper: inAppHelper ?? FakeAppProductHelper(),
             receiptReader: receiptReader,
-            betaChecker: betaChecker ?? TestFlightChecker(),
+            betaChecker: betaChecker ?? MockBetaChecker(),
             unrestrictedFeatures: unrestrictedFeatures,
             timeoutInterval: 5.0,
             verificationDelayMinutesBlock: { _ in 2 },

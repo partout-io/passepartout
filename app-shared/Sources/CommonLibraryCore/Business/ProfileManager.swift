@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Subject for search through manager (debounce not trivial)
-import Foundation
 import Partout
 
-#if !PSP_DYNLIB
+// FIXME: #1594, Subject for search through manager (debounce not trivial)
+
+#if !PSP_CROSS
 import Combine
 extension ProfileManager: ObservableObject {}
 #endif
@@ -51,7 +51,7 @@ public final class ProfileManager {
 
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             didChange.send(.localProfiles)
             reloadFilteredProfiles(with: searchSubject.value)
             reloadRequiredFeatures()
@@ -62,7 +62,7 @@ public final class ProfileManager {
 
     private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             didChange.send(.remoteProfiles)
 #endif
             didChange.send(.refresh(computedProfileHeaders()))
@@ -78,7 +78,7 @@ public final class ProfileManager {
     @available(*, deprecated, message: "#1594")
     private var requiredFeatures: [Profile.ID: Set<ABI.AppFeature>] {
         willSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             objectWillChange.send()
 #endif
         }
@@ -87,7 +87,7 @@ public final class ProfileManager {
     @available(*, deprecated, message: "#1594")
     public var isRemoteImportingEnabled = false {
         willSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             objectWillChange.send()
 #endif
         }
@@ -106,12 +106,12 @@ public final class ProfileManager {
 
     // MARK: Publishers
 
-    public let didChange: PassthroughStream<Event>
+    public let didChange: PassthroughStream<UniqueID, Event>
     private var localSubscription: Task<Void, Never>?
     private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
     @available(*, deprecated, message: "#1594")
     private let searchSubject: CurrentValueSubject<String, Never>
     @available(*, deprecated, message: "#1594")
@@ -151,7 +151,7 @@ public final class ProfileManager {
         }
         didChange = PassthroughStream()
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
         searchSubject = CurrentValueSubject("")
         observeSearch()
 #endif
@@ -333,7 +333,7 @@ extension ProfileManager {
 
 private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
         objectWillChange.send()
 #endif
         pp_log_g(.App.profiles, .info, "Reload local profiles: \(result.map(\.id))")
@@ -368,7 +368,7 @@ private extension ProfileManager {
     }
 
     func reloadRemoteProfiles(_ result: [Profile]) {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
         objectWillChange.send()
 #endif
         pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
@@ -523,7 +523,7 @@ extension ProfileManager {
         return ineligible
     }
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
     public var isSearching: Bool {
         !searchSubject.value.isEmpty
     }
@@ -553,7 +553,7 @@ extension ProfileManager {
 
 @available(*, deprecated, message: "#1594")
 private extension ProfileManager {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
     func observeSearch(debounce: Int = 200) {
         searchSubscription = searchSubject
             .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
@@ -564,7 +564,7 @@ private extension ProfileManager {
 #endif
 
     func reloadFilteredProfiles(with search: String) {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
         objectWillChange.send()
 #endif
         filteredProfiles = allProfiles

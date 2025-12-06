@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 @available(*, deprecated, message: "#1594")

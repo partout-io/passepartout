@@ -16,4 +16,8 @@ public final class ViewLogger: AppLogger {
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         strategy.log(category, level, message)
     }
+
+    public func formattedLog(timestamp: Date, message: String) -> String {
+        strategy.formattedLog(timestamp: timestamp, message: message)
+    }
 }

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Partout
 
 extension MultipartForm {
     public struct Builder {
@@ -53,7 +53,7 @@ extension MultipartForm {
             guard let headerRange = trimmedPart.range(of: "\r\n\r\n") else {
                 continue
             }
-            let headerText = trimmedPart[..<headerRange.lowerBound]
+            let headerText = String(trimmedPart[..<headerRange.lowerBound])
             let bodyText = trimmedPart[headerRange.upperBound...]
 
             let headers = headerText.components(separatedBy: "\r\n")
@@ -81,18 +81,6 @@ extension MultipartForm {
             fields[name] = Field(value, filename: filename)
         }
         self.fields = fields
-    }
-
-    public func toURLRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
-        let boundary = UUID().uuidString
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        let webData = toWebData()
-        request.httpBody = webData.body
-        return request
     }
 
     public func toWebData() -> (boundary: String, body: Data) {

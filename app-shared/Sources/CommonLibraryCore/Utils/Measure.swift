@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Dispatch
 
 public func measureMillis(block: () throws -> Void, completion: (UInt64) -> Void) rethrows {
     let startDate = DispatchTime.now()

@@ -217,9 +217,9 @@ private extension DiagnosticsView {
 #Preview {
     DiagnosticsView(profileManager: .forPreviews, tunnel: .forPreviews) {
         [
-            .init(date: Date(), url: URL(string: "http://one.com")!),
-            .init(date: Date().addingTimeInterval(-60), url: URL(string: "http://two.com")!),
-            .init(date: Date().addingTimeInterval(-600), url: URL(string: "http://three.com")!)
+            .init(date: Date(), url: URL(fileURLWithPath: "one.com")),
+            .init(date: Date().addingTimeInterval(-60), url: URL(fileURLWithPath: "two.com")),
+            .init(date: Date().addingTimeInterval(-600), url: URL(fileURLWithPath: "three.com"))
         ]
     }
     .withMockEnvironment()

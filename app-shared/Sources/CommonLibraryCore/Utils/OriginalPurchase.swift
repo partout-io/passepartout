@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Partout
 
 public struct OriginalPurchase: Sendable {
     public let buildNumber: Int

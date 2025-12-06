@@ -29,7 +29,7 @@ extension ABI {
 
         case rateLimit
 
-        case systemExtension(SystemExtensionManager.Result)
+        case systemExtension(ExtensionInstallerResult)
 
         case timeout
 

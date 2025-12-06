@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 extension DefaultAPIMapper {

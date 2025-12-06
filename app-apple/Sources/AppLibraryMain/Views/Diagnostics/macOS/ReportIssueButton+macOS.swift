@@ -42,7 +42,7 @@ extension ReportIssueButton {
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
                 comment: comment
-            ))
+            ), formatter: logFormatterBlock)
             service.recipients = [issue.to(cfg: appConfiguration)]
             service.subject = issue.subject
             service.perform(withItems: issue.items(cfg: appConfiguration))

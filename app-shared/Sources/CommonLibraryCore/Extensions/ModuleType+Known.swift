@@ -2,19 +2,23 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 extension ModuleType: @retroactive CaseIterable {
-    public static let allCases: [ModuleType] = [
-        .openVPN,
-        .wireGuard,
-        .dns,
-        .httpProxy,
-        .ip,
-        .onDemand,
-        .provider
-    ]
+    public static let allCases: [ModuleType] = {
+        var list: [ModuleType] = [
+            .openVPN,
+            .wireGuard,
+            .dns,
+            .httpProxy,
+            .ip,
+            .onDemand
+        ]
+#if PSP_PROVIDERS
+        list.append(.provider)
+#endif
+        return list
+    }()
 }
 
 extension ModuleType {

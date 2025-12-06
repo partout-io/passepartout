@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS && PSP_PROVIDERS
 import CommonProvidersCore
 #endif
 import Partout
@@ -48,6 +48,13 @@ extension OpenVPNModule.Builder: AppFeatureRequiring {
     }
 }
 
+extension WireGuardModule.Builder: AppFeatureRequiring {
+    public var features: Set<ABI.AppFeature> {
+        []
+    }
+}
+
+#if PSP_PROVIDERS
 extension ProviderModule.Builder: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         var list: Set<ABI.AppFeature> = []
@@ -57,9 +64,4 @@ extension ProviderModule.Builder: AppFeatureRequiring {
         return list
     }
 }
-
-extension WireGuardModule.Builder: AppFeatureRequiring {
-    public var features: Set<ABI.AppFeature> {
-        []
-    }
-}
+#endif

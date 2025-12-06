@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !PSP_CROSS
+import CommonLibraryCore
+#endif
 import Foundation
 
 // https://stackoverflow.com/a/32238344/784615

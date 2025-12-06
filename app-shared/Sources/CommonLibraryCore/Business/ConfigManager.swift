@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 extension ConfigManager: ObservableObject {}
 #endif
 
@@ -17,7 +16,7 @@ public final class ConfigManager {
 
     private var bundle: ABI.ConfigBundle? {
         willSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             objectWillChange.send()
 #endif
         }

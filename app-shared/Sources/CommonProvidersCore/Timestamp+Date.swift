@@ -5,6 +5,8 @@
 import Foundation
 import Partout
 
+public typealias Timestamp = UInt32
+
 // seconds since the epoch
 extension Timestamp {
     public var date: Date {
@@ -13,7 +15,7 @@ extension Timestamp {
 
     // this can be easily done without Foundation
     public static func now() -> Self {
-        UInt32(Date().timeIntervalSince1970)
+        Timestamp(Date().timeIntervalSince1970)
     }
 }
 

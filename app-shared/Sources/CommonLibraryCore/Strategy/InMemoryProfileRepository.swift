@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 public final class InMemoryProfileRepository: ProfileRepository {
-    private let profilesSubject: CurrentValueStream<[Profile]>
+    private let profilesSubject: CurrentValueStream<UniqueID, [Profile]>
 
     public init(profiles: [Profile] = []) {
         profilesSubject = CurrentValueStream(profiles)

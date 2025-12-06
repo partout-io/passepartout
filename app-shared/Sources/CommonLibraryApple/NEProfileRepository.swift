@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonLibraryCore
 #endif
 import Foundation
@@ -15,7 +15,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
     private let title: @Sendable (Profile) -> String
 
-    private let profilesSubject: CurrentValueStream<[Profile]>
+    private let profilesSubject: CurrentValueStream<UniqueID, [Profile]>
 
     private var managersSubscription: Task<Void, Never>?
 

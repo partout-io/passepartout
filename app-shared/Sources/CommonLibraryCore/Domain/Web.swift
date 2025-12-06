@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Partout
 
 extension ABI {
     public struct WebsiteWithPasscode: Sendable {

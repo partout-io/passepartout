@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonLibraryCore
 #endif
 import Foundation
@@ -20,7 +20,7 @@ public final class StoreKitHelper<ProductType>: InAppHelper
 
     private var activeTransactions: Set<Transaction>
 
-    private nonisolated let didUpdateSubject: PassthroughStream<Void>
+    private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
 
     private var observer: Task<Void, Never>?
 

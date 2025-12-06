@@ -4,6 +4,7 @@
 
 #if os(tvOS)
 
+import CommonLibraryCore
 import Foundation
 import NIO
 import NIOHTTP1

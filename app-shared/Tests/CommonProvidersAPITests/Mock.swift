@@ -61,9 +61,9 @@ extension MockRepository: ObservableObject {
 #endif
 
 final class MockRepository: APIRepository {
-    private let providersSubject = CurrentValueStream<[Provider]>([])
+    private let providersSubject = CurrentValueStream<UniqueID, [Provider]>([])
 
-    private let infrastructuresSubject = CurrentValueStream<[ProviderID: ProviderInfrastructure]>([:])
+    private let infrastructuresSubject = CurrentValueStream<UniqueID, [ProviderID: ProviderInfrastructure]>([:])
 
     var indexStream: AsyncStream<[Provider]> {
         providersSubject.subscribe()

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if canImport(Darwin)
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonProvidersCore
 #endif
 import JavaScriptCore

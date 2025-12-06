@@ -18,35 +18,35 @@ extension ABI {
             public let home: URL
 
             public var api: URL {
-                home.appendingPathComponent("api/")
+                home.miniAppending(path: "api/")
             }
 
             public var faq: URL {
-                home.appendingPathComponent("faq/")
+                home.miniAppending(path: "faq/")
             }
 
             public var blog: URL {
-                home.appendingPathComponent("blog/")
+                home.miniAppending(path: "blog/")
             }
 
             public var disclaimer: URL {
-                home.appendingPathComponent("disclaimer/")
+                home.miniAppending(path: "disclaimer/")
             }
 
             public var privacyPolicy: URL {
-                home.appendingPathComponent("privacy/")
+                home.miniAppending(path: "privacy/")
             }
 
             public var donate: URL {
-                home.appendingPathComponent("donate/")
+                home.miniAppending(path: "donate/")
             }
 
             public var config: URL {
-                home.appendingPathComponent("config/v1/bundle.json")
+                home.miniAppending(path: "config/v1/bundle.json")
             }
 
             public var betaConfig: URL {
-                home.appendingPathComponent("config/v1/bundle-beta.json")
+                home.miniAppending(path: "config/v1/bundle-beta.json")
             }
 
             public let subreddit: URL
@@ -62,11 +62,11 @@ extension ABI {
 
         public struct GitHub: Decodable, Sendable {
             public func urlForIssue(_ issue: Int) -> URL {
-                issues.appending(path: issue.description)
+                issues.miniAppending(path: issue.description)
             }
 
             public func urlForChangelog(ofVersion version: String) -> URL {
-                raw.appending(path: "refs/tags/v\(version)/CHANGELOG.txt")
+                raw.miniAppending(path: "refs/tags/v\(version)/CHANGELOG.txt")
             }
 
             public let discussions: URL
@@ -163,28 +163,9 @@ extension ABI {
 
         public struct Log: Decodable, Sendable {
             public struct Formatter: Decodable, Sendable {
-                enum CodingKeys: CodingKey {
-                    case timestamp
+                public let timestamp: String
 
-                    case message
-                }
-
-                private let timestampFormatter: DateFormatter
-
-                private let message: String
-
-                public init(from decoder: any Decoder) throws {
-                    let container = try decoder.container(keyedBy: CodingKeys.self)
-                    let timestampFormat = try container.decode(String.self, forKey: .timestamp)
-                    timestampFormatter = DateFormatter()
-                    timestampFormatter.dateFormat = timestampFormat
-                    message = try container.decode(String.self, forKey: .message)
-                }
-
-                public func formattedLine(_ line: DebugLog.Line) -> String {
-                    let formattedTimestamp = timestampFormatter.string(from: line.timestamp)
-                    return String(format: message, formattedTimestamp, line.message)
-                }
+                public let message: String
             }
 
             public let formatter: Formatter
