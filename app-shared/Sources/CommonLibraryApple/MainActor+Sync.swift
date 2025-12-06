@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Partout
 
 // XXX: Trick to call MainActor code synchronously
 extension MainActor {

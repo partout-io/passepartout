@@ -26,6 +26,8 @@ public final class AppEncoderObservable {
     }
 
     public func writeToURL(_ profile: ABI.AppProfile) throws -> URL {
-        try encoder.writeToURL(profile.native)
+        let path = try encoder.writeToFile(profile.native)
+        // Make sure to convert to URL to share actual file content
+        return URL(fileURLWithPath: path)
     }
 }

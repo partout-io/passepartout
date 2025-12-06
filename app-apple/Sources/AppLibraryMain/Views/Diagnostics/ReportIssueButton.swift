@@ -6,9 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 struct ReportIssueButton {
-
     @Environment(\.appConfiguration)
     var appConfiguration
+
+    @Environment(\.logFormatterBlock)
+    var logFormatterBlock
 
     let title: String
 

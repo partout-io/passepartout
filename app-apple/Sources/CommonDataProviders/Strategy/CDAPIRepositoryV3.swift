@@ -17,9 +17,9 @@ extension CommonData {
 private final class CDAPIRepositoryV3: NSObject, APIRepository {
     private nonisolated let context: NSManagedObjectContext
 
-    private nonisolated let providersSubject: CurrentValueStream<[Provider]>
+    private nonisolated let providersSubject: CurrentValueStream<UniqueID, [Provider]>
 
-    private nonisolated let cacheSubject: CurrentValueStream<[ProviderID: ProviderCache]>
+    private nonisolated let cacheSubject: CurrentValueStream<UniqueID, [ProviderID: ProviderCache]>
 
     private nonisolated let providersController: NSFetchedResultsController<CDProviderV3>
 

@@ -23,7 +23,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         _ = PartoutLogger.register(
             for: .tunnelGlobal,
             with: dependencies.appConfiguration,
-            preferences: ABI.AppPreferenceValues()
+            preferences: ABI.AppPreferenceValues(),
+            mapper: {
+                dependencies.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
         )
 
         // The app may propagate its local preferences on manual start
@@ -98,7 +101,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let ctx = PartoutLogger.register(
             for: .tunnelProfile(originalProfile.id),
             with: appConfiguration,
-            preferences: preferences
+            preferences: preferences,
+            mapper: {
+                dependencies.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
         )
         self.ctx = ctx
         try await trackContext(ctx)

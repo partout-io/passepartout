@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonProvidersCore
 #endif
 import Foundation
@@ -11,9 +11,9 @@ import Partout
 public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWriter {
     private let ctx: PartoutLoggerContext
 
-    private let providersSubject: CurrentValueStream<[Provider]>
+    private let providersSubject: CurrentValueStream<UniqueID, [Provider]>
 
-    private let infrastructuresSubject: CurrentValueStream<[ProviderID: ProviderInfrastructure]>
+    private let infrastructuresSubject: CurrentValueStream<UniqueID, [ProviderID: ProviderInfrastructure]>
 
     public init(_ ctx: PartoutLoggerContext) {
         self.ctx = ctx

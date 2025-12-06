@@ -51,7 +51,7 @@ extension ABI {
             bundleStrings = [:]
             customUserLevel = nil
 
-            let dummyURL = URL(fileURLWithPath: "")
+            let dummyURL = URL(string: "https://")!
             urlForAppLog = dummyURL
             urlForTunnelLog = dummyURL
             urlForReview = dummyURL

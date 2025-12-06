@@ -37,7 +37,7 @@ extension ABI.Issue {
     }
 
     @MainActor
-    static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
+    static func withMetadata(_ metadata: Metadata, formatter: @escaping LogFormatterBlock) async -> ABI.Issue {
         let parameters = metadata.appConfiguration.constants.log
         let appLog = metadata.ctx.logger.currentLog(parameters: parameters)
             .joined(separator: "\n")
@@ -49,6 +49,7 @@ extension ABI.Issue {
         let rawTunnelLog = await metadata.tunnel.currentLog(parameters: parameters)
         if !rawTunnelLog.isEmpty {
             tunnelLog = rawTunnelLog
+                .map(formatter)
                 .joined(separator: "\n")
                 .data(using: .utf8)
         }

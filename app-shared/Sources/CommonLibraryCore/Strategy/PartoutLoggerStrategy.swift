@@ -5,10 +5,18 @@
 import Partout
 
 public final class PartoutLoggerStrategy: AppLogger, Sendable {
-    public init() {}
+    private let formattedLog: @Sendable (Date, String) -> String
+
+    public init(formattedLog: @escaping @Sendable (Date, String) -> String) {
+        self.formattedLog = formattedLog
+    }
 
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         pp_log_g(category.partoutCategory, level.partoutLevel, message)
+    }
+
+    public func formattedLog(timestamp: Date, message: String) -> String {
+        formattedLog(timestamp, message)
     }
 }
 

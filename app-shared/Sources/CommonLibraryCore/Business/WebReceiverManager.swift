@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 extension WebReceiverManager: ObservableObject {}
 #endif
 
@@ -17,7 +16,7 @@ public final class WebReceiverManager {
 
     private let passcodeGenerator: PasscodeGenerator?
 
-    private let filesStream: PassthroughStream<ABI.WebFileUpload>
+    private let filesStream: PassthroughStream<UniqueID, ABI.WebFileUpload>
 
     public var isStarted: Bool {
         website != nil
@@ -25,7 +24,7 @@ public final class WebReceiverManager {
 
     public private(set) var website: ABI.WebsiteWithPasscode? {
         willSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             objectWillChange.send()
 #endif
         }
@@ -74,6 +73,6 @@ public final class WebReceiverManager {
 
 extension WebReceiverManager {
     public convenience init() {
-        self.init(webReceiver: DummyWebReceiver(url: URL(fileURLWithPath: "")))
+        self.init(webReceiver: DummyWebReceiver(url: URL(string: "https://")!))
     }
 }

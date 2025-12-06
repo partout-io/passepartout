@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 extension Registry: ProfileImporter {
@@ -14,15 +13,19 @@ extension Registry: ProfileImporter {
             name = filename
             contents = data
         case .file(let url):
-            var encoding: String.Encoding = .utf8
             // XXX: this may be very inefficient
-            contents = try String(contentsOf: url, usedEncoding: &encoding)
+            // FIXME: #228, This was using usedEncoding:, does it matter?
+            contents = try String(contentsOf: url, encoding: .utf8)
             name = url.lastPathComponent
         }
 
         // Try to decode a full Partout profile first
         do {
+#if !PSP_CROSS
             return try fallbackProfile(fromString: contents)
+#else
+            return try profile(fromJSON: contents)
+#endif
         } catch {
             pp_log_g(.App.core, .debug, "Unable to decode profile for import: \(error)")
         }

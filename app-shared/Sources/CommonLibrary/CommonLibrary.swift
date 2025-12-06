@@ -2,17 +2,16 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 @_exported import CommonLibraryCore
 #if canImport(CommonLibraryApple)
 @_exported import CommonLibraryApple
 #endif
+#if PSP_PROVIDERS
 @_exported import CommonProviders
 #endif
-
-#if canImport(FoundationNetworking)
-@_exported import FoundationNetworking
 #endif
+
 import Partout
 
 public enum CommonLibrary {

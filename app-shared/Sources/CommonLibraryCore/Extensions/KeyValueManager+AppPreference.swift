@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 extension KeyValueManager {
 
     // TODO: #1513, refactor to keep automatically in sync with AppPreference

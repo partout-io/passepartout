@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 public actor FakeAppProductHelper: AppProductHelper {
@@ -12,7 +11,7 @@ public actor FakeAppProductHelper: AppProductHelper {
 
     public nonisolated let receiptReader: FakeAppReceiptReader
 
-    private nonisolated let didUpdateSubject: PassthroughStream<Void>
+    private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
 
     // set .max to skip entitled products
     public init(build: Int = .max) {

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 extension ABI {
     public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
         public private(set) var id: AppIdentifier

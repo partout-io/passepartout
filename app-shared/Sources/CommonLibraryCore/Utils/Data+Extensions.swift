@@ -2,15 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Partout
 
 extension Data {
     public func toTemporaryURL(withFilename filename: String) -> URL? {
-        let path = NSTemporaryDirectory().appending(filename)
-        let url = URL(fileURLWithPath: path)
+        let path = FileManager.default.makeTemporaryPath(filename: filename)
         do {
-            try write(to: url)
-            return url
+            try write(toFile: path)
+            return URL(fileURLWithPath: path)
         } catch {
             return nil
         }

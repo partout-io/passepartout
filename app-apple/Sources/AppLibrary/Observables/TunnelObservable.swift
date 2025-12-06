@@ -14,7 +14,10 @@ public final class TunnelObservable {
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(logger: AppLogger, extendedTunnel: ExtendedTunnel) {
+    public init(
+        logger: AppLogger,
+        extendedTunnel: ExtendedTunnel,
+    ) {
         self.logger = logger
         self.extendedTunnel = extendedTunnel
         activeProfiles = [:]
@@ -41,6 +44,9 @@ extension TunnelObservable {
 
     public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
         await extendedTunnel.currentLog(parameters: parameters)
+            .map {
+                logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
     }
 
 //    public func onUpdate(_ event: ABI.Event) {

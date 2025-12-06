@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Partout
 
 public protocol WebReceiver {
     func start(passcode: String?, onReceive: @escaping @Sendable (String, String) -> Void) throws -> URL
@@ -12,7 +12,7 @@ public protocol WebReceiver {
 public struct WebReceiverError: Error {
     public let reason: Error?
 
-    init(_ reason: Error? = nil) {
+    public init(_ reason: Error? = nil) {
         self.reason = reason
     }
 }
