@@ -73,6 +73,6 @@ public final class WebReceiverManager {
 
 extension WebReceiverManager {
     public convenience init() {
-        self.init(webReceiver: DummyWebReceiver(url: URL(string: "https://")!))
+        self.init(webReceiver: DummyWebReceiver(url: URL(fileURLWithPath: "")))
     }
 }
