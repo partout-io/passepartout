@@ -10,9 +10,9 @@ extension View {
         self
             .environment(theme)
             .environment(\.appConfiguration, context.appConfiguration)
-            .environment(\.logFormatterBlock, { [weak context] in
+            .environment(\.logFormatterBlock) { [weak context] in
                 context?.viewLogger.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
-            })
+            }
             .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
             .environment(context.appFormatter)
