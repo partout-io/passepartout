@@ -35,7 +35,7 @@ public final class AppEncoder: Sendable {
         let data = Data([UInt8](json.utf8))
 #endif
         let filename = "\(profile.id.uuidString).json"
-        let path = FileManager.default.makeTemporaryPath(filename: filename)
+        let path = FileManager.default.makeTemporaryURL(filename: filename).filePath()
         try data.write(toFile: path)
         return path
     }

@@ -6,10 +6,10 @@ import Partout
 
 extension Data {
     public func toTemporaryURL(withFilename filename: String) -> URL? {
-        let path = FileManager.default.makeTemporaryPath(filename: filename)
+        let url = FileManager.default.makeTemporaryURL(filename: filename)
         do {
-            try write(toFile: path)
-            return URL(fileURLWithPath: path)
+            try write(toFile: url.filePath())
+            return url as? URL
         } catch {
             return nil
         }
