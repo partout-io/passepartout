@@ -13,6 +13,9 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
+    @Environment(\.logFormatterBlock)
+    private var logFormatterBlock
+
     private let profileManager: ProfileManager
 
     public let tunnel: ExtendedTunnel
@@ -123,9 +126,14 @@ private extension LegacyAppCoordinator {
             }
 
         case .tunnelLog:
-            DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
-                DebugLogContentView(lines: $0)
-            }
+            DebugLogView(
+                withTunnel: tunnel,
+                parameters: appConfiguration.constants.log,
+                logFormatterBlock: logFormatterBlock,
+                content: {
+                    DebugLogContentView(lines: $0)
+                }
+            )
 
         default:
             EmptyView()

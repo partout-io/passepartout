@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS && PSP_PROVIDERS
 import CommonProviders
-#endif
 
 extension ProviderID: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         self != .oeck ? [.providers] : []
     }
 }
+#endif

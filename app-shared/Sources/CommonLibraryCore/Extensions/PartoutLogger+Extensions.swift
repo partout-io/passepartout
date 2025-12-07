@@ -18,7 +18,8 @@ extension PartoutLogger {
     public static func register(
         for target: Target,
         with appConfiguration: ABI.AppConfiguration,
-        preferences: ABI.AppPreferenceValues
+        preferences: ABI.AppPreferenceValues,
+        mapper: @escaping (DebugLog.Line) -> String
     ) -> PartoutLoggerContext {
         switch target {
         case .app:
@@ -27,7 +28,8 @@ extension PartoutLogger {
                 let logger = appLogger(
                     to: appConfiguration.urlForAppLog,
                     preferences: preferences,
-                    parameters: appConfiguration.constants.log
+                    parameters: appConfiguration.constants.log,
+                    mapper: mapper
                 )
                 PartoutLogger.register(logger)
                 logger.logPreamble(
@@ -40,7 +42,8 @@ extension PartoutLogger {
             let logger = tunnelLogger(
                 to: appConfiguration.urlForTunnelLog,
                 preferences: preferences,
-                parameters: appConfiguration.constants.log
+                parameters: appConfiguration.constants.log,
+                mapper: mapper
             )
             PartoutLogger.register(logger)
             logger.logPreamble(
@@ -54,7 +57,8 @@ extension PartoutLogger {
                 let logger = tunnelLogger(
                     to: appConfiguration.urlForTunnelLog,
                     preferences: preferences,
-                    parameters: appConfiguration.constants.log
+                    parameters: appConfiguration.constants.log,
+                    mapper: mapper
                 )
                 PartoutLogger.register(logger)
                 logger.logPreamble(
@@ -71,13 +75,15 @@ private extension PartoutLogger {
     static func appLogger(
         to url: URL,
         preferences: ABI.AppPreferenceValues,
-        parameters: ABI.Constants.Log
+        parameters: ABI.Constants.Log,
+        mapper: @escaping (DebugLog.Line) -> String
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: url,
             parameters: parameters,
-            logsPrivateData: preferences.logsPrivateData
+            logsPrivateData: preferences.logsPrivateData,
+            mapper: mapper
         )
         return builder.build()
     }
@@ -85,13 +91,15 @@ private extension PartoutLogger {
     static func tunnelLogger(
         to url: URL,
         preferences: ABI.AppPreferenceValues,
-        parameters: ABI.Constants.Log
+        parameters: ABI.Constants.Log,
+        mapper: @escaping (DebugLog.Line) -> String
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: url,
             parameters: parameters,
-            logsPrivateData: preferences.logsPrivateData
+            logsPrivateData: preferences.logsPrivateData,
+            mapper: mapper
         )
         builder.willPrint = {
             let prefix = "[\($0.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
@@ -122,33 +130,37 @@ private extension PartoutLogger {
 
 extension PartoutLogger {
     public func currentLog(parameters: ABI.Constants.Log) -> [String] {
-        currentLogLines(
-            sinceLast: parameters.sinceLast,
-            maxLevel: parameters.options.maxLevel
-        )
-        .map(parameters.formatter.formattedLine)
+        currentLog(sinceLast: parameters.sinceLast, maxLevel: parameters.options.maxLevel)
     }
 }
 
 private extension PartoutLogger.Builder {
-    mutating func configureLogging(to url: URL, parameters: ABI.Constants.Log, logsPrivateData: Bool) {
+    mutating func configureLogging(
+        to url: URL,
+        parameters: ABI.Constants.Log,
+        logsPrivateData: Bool,
+        mapper: @escaping (DebugLog.Line) -> String
+    ) {
         assertsMissingLoggingCategory = true
-        setDefaultDestination(for: [
+        var list: [LoggerCategory] = [
             .core,
             .os,
             .openvpn,
-            .providers,
             .wireguard,
             .App.core,
             .App.iap,
             .App.profiles,
             .App.web
-        ])
+        ]
+#if PSP_PROVIDERS
+        list.append(.providers)
+#endif
+        setDefaultDestination(for: list)
 
         setLocalLogger(
             url: url,
             options: parameters.options,
-            mapper: parameters.formatter.formattedLine
+            mapper: mapper
         )
 
         if logsPrivateData {

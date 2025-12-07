@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 extension IAPManager: ObservableObject {}
 #endif
 
@@ -33,7 +32,7 @@ public final class IAPManager {
 
     private let productsAtBuild: BuildProducts<ABI.AppProduct>?
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
     // FIXME: #1594, AppContext requires Published
     @Published
 #endif
@@ -50,7 +49,7 @@ public final class IAPManager {
 
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
     // FIXME: #1594, AppContext requires Published
     @Published
 #endif
@@ -64,13 +63,13 @@ public final class IAPManager {
         verificationDelayMinutesBlock(isBeta)
     }
 
-    public let didChange: PassthroughStream<Event>
+    public let didChange: PassthroughStream<UniqueID, Event>
 
     private var isObserving: Bool
 
     private var pendingReceiptTask: Task<Void, Never>? {
         willSet {
-#if !PSP_DYNLIB
+#if !PSP_CROSS
             objectWillChange.send()
 #endif
         }

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
-
 @MainActor
 public protocol Routable {
     associatedtype Flow

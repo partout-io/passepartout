@@ -6,12 +6,14 @@ import CommonLibrary
 import SwiftUI
 
 struct SettingsCoordinator: View {
-
     @EnvironmentObject
     private var iapManager: IAPManager
 
     @Environment(\.appConfiguration)
     private var appConfiguration
+
+    @Environment(\.logFormatterBlock)
+    private var logFormatterBlock
 
     @Environment(\.dismiss)
     private var dismiss
@@ -133,9 +135,12 @@ extension SettingsCoordinator {
     func pushDestination(for item: DiagnosticsRoute?) -> some View {
         switch item {
         case .appLog(let title):
-            DebugLogView(withAppParameters: appConfiguration.constants.log) {
-                DebugLogContentView(lines: $0)
-            }
+            DebugLogView(
+                withAppParameters: appConfiguration.constants.log,
+                content: {
+                    DebugLogContentView(lines: $0)
+                }
+            )
             .navigationTitle(title)
 
         case .profile(let profile):
@@ -148,9 +153,14 @@ extension SettingsCoordinator {
                 }
                 .navigationTitle(title)
             } else {
-                DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
-                    DebugLogContentView(lines: $0)
-                }
+                DebugLogView(
+                    withTunnel: tunnel,
+                    parameters: appConfiguration.constants.log,
+                    logFormatterBlock: logFormatterBlock,
+                    content: {
+                        DebugLogContentView(lines: $0)
+                    }
+                )
                 .navigationTitle(title)
             }
 

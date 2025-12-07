@@ -8,7 +8,7 @@ import Partout
 
 extension Dependencies {
     func appLogger() -> AppLogger {
-        PartoutLoggerStrategy()
+        PartoutLoggerStrategy(formattedLogBlock: formattedLog)
     }
 
     @MainActor

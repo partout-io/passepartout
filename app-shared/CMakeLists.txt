@@ -4,8 +4,8 @@ project(PassepartoutShared LANGUAGES Swift)
 # Include CommonLibrary sources
 file(GLOB_RECURSE PSP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift)
 set(PSP_EXCLUSIONS
-    ".*CommonLibraryApple"
-    ".*CommonProvidersAPI/REST/API\\+Bundle\\.swift"
+    CommonLibraryApple.*
+    CommonProviders.*
 )
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
@@ -18,7 +18,7 @@ else()
     add_library(passepartout_shared STATIC ${PSP_SOURCES})
 endif()
 target_compile_options(passepartout_shared PRIVATE
-    -DPSP_DYNLIB
+    -DPSP_CROSS
 )
 set_target_properties(passepartout_shared PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}

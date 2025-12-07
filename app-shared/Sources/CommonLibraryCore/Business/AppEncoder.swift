@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 public final class AppEncoder: Sendable {
@@ -12,25 +11,32 @@ public final class AppEncoder: Sendable {
         self.registry = registry
     }
 
+    public func defaultFilename(for profile: Profile) -> String {
+        "\(profile.name).json"
+    }
+
     public func profile(fromString string: String) throws -> Profile {
+#if !PSP_CROSS
         try registry.fallbackProfile(fromString: string)
+#else
+        try registry.profile(fromJSON: string)
+#endif
     }
 
     public func json(fromProfile profile: Profile) throws -> String {
         try registry.json(fromProfile: profile)
     }
 
-    public func defaultFilename(for profile: Profile) -> String {
-        profile.name.appending(".json")
-    }
-
-    public func writeToURL(_ profile: Profile) throws -> URL {
+    public func writeToFile(_ profile: Profile) throws -> String {
         let json = try json(fromProfile: profile)
+#if !PSP_CROSS
         let data = Data(json.utf8)
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent(profile.id.uuidString)
-            .appendingPathExtension("json")
-        try data.write(to: url, options: .atomic)
-        return url
+#else
+        let data = Data([UInt8](json.utf8))
+#endif
+        let filename = "\(profile.id.uuidString).json"
+        let path = FileManager.default.makeTemporaryURL(filename: filename).filePath()
+        try data.write(toFile: path)
+        return path
     }
 }

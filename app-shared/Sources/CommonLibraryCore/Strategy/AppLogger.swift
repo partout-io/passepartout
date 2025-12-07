@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public protocol AppLogger: Sendable {
     func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
+    func formattedLog(timestamp: Date, message: String) -> String
 }

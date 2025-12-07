@@ -7,6 +7,7 @@
 #ifndef __PARTOUT_H
 #define __PARTOUT_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 /*
@@ -44,7 +45,7 @@ typedef struct {
     partout_tun_ctrl *ctrl;
 } partout_daemon_start_args;
 
-int partout_daemon_start(void *ctx, const partout_daemon_start_args *args);
+bool partout_daemon_start(void *ctx, const partout_daemon_start_args *args);
 void partout_daemon_stop(void *ctx);
 
 #endif

@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 import CommonProvidersAPI
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 public final class DefaultAPIMapper: APIMapper {
@@ -188,7 +187,7 @@ extension DefaultAPIMapper {
     }
 
     func data(for resource: API.REST.Resource) async throws -> Data {
-        let url = baseURL.appendingPathComponent(resource.path)
+        let url = baseURL.miniAppending(path: resource.path)
         pp_log(ctx, .providers, .info, "Fetch data for \(resource): \(url)")
         let cfg: URLSessionConfiguration = .default
         cfg.requestCachePolicy = .reloadRevalidatingCacheData

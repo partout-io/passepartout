@@ -41,6 +41,9 @@ extension TunnelObservable {
 
     public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
         await extendedTunnel.currentLog(parameters: parameters)
+            .map {
+                logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
     }
 
 //    public func onUpdate(_ event: ABI.Event) {

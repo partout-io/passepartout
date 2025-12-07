@@ -2,19 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import CommonLibraryCore
+import Partout
 
-public final class SystemExtensionManager: NSObject, @unchecked Sendable {
-    public enum Result: Sendable {
-        case unknown
-
-        case success
-
-        case needsApproval
-
-        case requiresRestart
-    }
-
+public final class SystemExtensionManager: NSObject, ExtensionInstaller, @unchecked Sendable {
     private let queue: DispatchQueue
 
     fileprivate let identifier: String
@@ -23,11 +14,11 @@ public final class SystemExtensionManager: NSObject, @unchecked Sendable {
 
     fileprivate let build: Int
 
-    private var result: Result
+    private var result: ExtensionInstallerResult
 
     private var isPending: Bool
 
-    private var pendingContinuation: CheckedContinuation<Result, Error>?
+    private var pendingContinuation: CheckedContinuation<ExtensionInstallerResult, Error>?
 
     public init(identifier: String, version: String, build: Int) {
         queue = DispatchQueue(label: "SystemExtensionManager")
@@ -37,6 +28,12 @@ public final class SystemExtensionManager: NSObject, @unchecked Sendable {
         result = .unknown
         isPending = false
     }
+
+#if !os(macOS)
+    public var currentResult: ExtensionInstallerResult {
+        .unknown
+    }
+#endif
 }
 
 #if os(macOS)
@@ -44,13 +41,13 @@ public final class SystemExtensionManager: NSObject, @unchecked Sendable {
 import SystemExtensions
 
 extension SystemExtensionManager {
-    public var currentResult: Result {
+    public var currentResult: ExtensionInstallerResult {
         queue.sync {
             result
         }
     }
 
-    public func load() async throws -> Result {
+    public func load() async throws -> ExtensionInstallerResult {
         queue.sync {
             guard !isPending else {
                 assertionFailure("Loading twice: \(identifier)")
@@ -76,7 +73,7 @@ extension SystemExtensionManager {
         return result
     }
 
-    public func install() async throws -> Result {
+    public func install() async throws -> ExtensionInstallerResult {
         queue.sync {
             guard !isPending else {
                 assertionFailure("Installing twice: \(identifier)")
@@ -121,7 +118,7 @@ extension SystemExtensionManager: OSSystemExtensionRequestDelegate {
             return
         }
         NSLog("SystemExtensionManager: matching = \(matching.localDescription)")
-        let result: Result = matching.isAwaitingUserApproval ? .needsApproval : matching.isEnabled ? .success : .unknown
+        let result: ExtensionInstallerResult = matching.isAwaitingUserApproval ? .needsApproval : matching.isEnabled ? .success : .unknown
         reportResult(result)
     }
 
@@ -147,7 +144,7 @@ extension SystemExtensionManager: OSSystemExtensionRequestDelegate {
 }
 
 private extension SystemExtensionManager {
-    func reportResult(_ result: Result) {
+    func reportResult(_ result: ExtensionInstallerResult) {
         guard let continuation = pendingContinuation else {
             return
         }
@@ -195,12 +192,12 @@ private extension OSSystemExtensionProperties {
 #else
 
 extension SystemExtensionManager {
-    public func load() async throws -> Result {
+    public func load() async throws -> ExtensionInstallerResult {
         assertionFailure("SystemExtensionManager called on non-macOS")
         return .unknown
     }
 
-    public func install() async throws -> Result {
+    public func install() async throws -> ExtensionInstallerResult {
         assertionFailure("SystemExtensionManager called on non-macOS")
         return .unknown
     }

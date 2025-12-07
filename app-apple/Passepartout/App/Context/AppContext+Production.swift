@@ -27,7 +27,10 @@ extension AppContext {
         let ctx = PartoutLogger.register(
             for: .app,
             with: appConfiguration,
-            preferences: kvManager.preferences
+            preferences: kvManager.preferences,
+            mapper: {
+                dependencies.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
         )
 
         // MARK: Core Data
@@ -105,6 +108,11 @@ extension AppContext {
                 ttl: appConfiguration.constants.websites.configTTL,
                 isBeta: { [weak iapManager] in
                     await iapManager?.isBeta == true
+                },
+                fetcher: {
+                    var request = URLRequest(url: $0)
+                    request.cachePolicy = .reloadIgnoringCacheData
+                    return try await URLSession.shared.data(for: request).0
                 }
             ),
             buildNumber: appConfiguration.buildNumber
@@ -272,7 +280,12 @@ extension AppContext {
 
         let versionStrategy = GitHubReleaseStrategy(
             releaseURL: appConfiguration.constants.github.latestRelease,
-            rateLimit: appConfiguration.constants.api.versionRateLimit
+            rateLimit: appConfiguration.constants.api.versionRateLimit,
+            fetcher: {
+                var request = URLRequest(url: $0)
+                request.cachePolicy = .useProtocolCachePolicy
+                return try await URLSession.shared.data(for: request).0
+            }
         )
         let versionChecker: VersionChecker
         if !iapManager.isBeta {

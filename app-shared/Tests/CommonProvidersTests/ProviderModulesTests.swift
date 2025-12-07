@@ -69,7 +69,7 @@ struct ProviderModulesTests {
 
 private extension ProviderModulesTests {
     func openVPNEntity() throws -> ProviderEntity {
-        let presetURL = try #require(resourcesURL?.appendingPathComponent("preset.openvpn.json"))
+        let presetURL = try #require(resourcesURL?.miniAppending(path: "preset.openvpn.json"))
         let templateData = try Data(contentsOf: presetURL)
 
         return ProviderEntity(
@@ -86,7 +86,7 @@ private extension ProviderModulesTests {
     }
 
     func wireGuardEntity() throws -> ProviderEntity {
-        let presetURL = try #require(resourcesURL?.appendingPathComponent("preset.wireguard.json"))
+        let presetURL = try #require(resourcesURL?.miniAppending(path: "preset.wireguard.json"))
         let templateData = try Data(contentsOf: presetURL)
 
         return ProviderEntity(

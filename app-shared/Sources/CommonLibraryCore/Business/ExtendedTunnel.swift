@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@preconcurrency import Foundation
-import Partout
+@preconcurrency import Partout
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS
 extension ExtendedTunnel: ObservableObject {}
 #endif
 
@@ -22,7 +21,7 @@ public final class ExtendedTunnel {
 
     private let tunnel: Tunnel
 
-    private let sysex: SystemExtensionManager?
+    private let sysex: ExtensionInstaller?
 
     private let kvManager: KeyValueManager?
 
@@ -30,14 +29,14 @@ public final class ExtendedTunnel {
 
     private let interval: TimeInterval
 
-    public let didChange: PassthroughStream<Event>
+    public let didChange: PassthroughStream<UniqueID, Event>
 
     private var subscriptions: [Task<Void, Never>]
 
     // TODO: #218, keep "last used profile" until .multiple
     public init(
         tunnel: Tunnel,
-        sysex: SystemExtensionManager? = nil,
+        sysex: ExtensionInstaller? = nil,
         kvManager: KeyValueManager? = nil,
         processor: AppTunnelProcessor? = nil,
         interval: TimeInterval
@@ -72,11 +71,16 @@ extension ExtendedTunnel {
         if connect && !force && newProfile.isInteractive {
             throw ABI.AppError.interactiveLogin
         }
+#if !PSP_CROSS
         var options: [String: NSObject] = [Self.isManualKey: true as NSNumber]
         if let preferences = kvManager?.preferences {
             let encodedPreferences = try JSONEncoder().encode(preferences)
             options[Self.appPreferences] = encodedPreferences as NSData
         }
+#else
+        // FIXME: #228, Cross sends no .isManualKey to startTunnel()
+        var options: Sendable? = nil
+#endif
 
 #if os(macOS)
         if let sysex {
@@ -113,7 +117,7 @@ extension ExtendedTunnel {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
+    public func currentLog(parameters: ABI.Constants.Log) async -> [ABI.AppLogLine] {
         guard let anyProfile = tunnel.activeProfiles.first?.value else {
             return []
         }
@@ -123,7 +127,9 @@ extension ExtendedTunnel {
         ), to: anyProfile.id)
         switch output {
         case .debugLog(let log):
-            return log.lines.map(parameters.formatter.formattedLine)
+            return log.lines.map {
+                ABI.AppLogLine(timestamp: $0.timestamp, message: $0.message)
+            }
         default:
             return []
         }
@@ -157,7 +163,7 @@ private extension ExtendedTunnel {
                     pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.tunnelSubscription")
                     break
                 }
-#if !PSP_DYNLIB
+#if !PSP_CROSS
                 objectWillChange.send()
 #endif
 
@@ -180,7 +186,7 @@ private extension ExtendedTunnel {
                     pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.timerSubscription")
                     break
                 }
-#if !PSP_DYNLIB
+#if !PSP_CROSS
                 objectWillChange.send()
 #endif
                 didChange.send(.dataCount)

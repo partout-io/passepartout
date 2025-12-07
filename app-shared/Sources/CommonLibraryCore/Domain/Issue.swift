@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_DYNLIB
+#if !PSP_CROSS && PSP_PROVIDERS
 import CommonProvidersCore
 #endif
-import Foundation
+import Partout
 
 extension ABI {
     public struct Issue: Identifiable, Sendable {

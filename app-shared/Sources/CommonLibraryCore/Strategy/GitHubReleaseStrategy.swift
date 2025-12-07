@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 @MainActor
@@ -11,9 +10,16 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
 
     private let rateLimit: TimeInterval
 
-    public init(releaseURL: URL, rateLimit: TimeInterval) {
+    private let fetcher: @Sendable (URL) async throws -> Data
+
+    public init(
+        releaseURL: URL,
+        rateLimit: TimeInterval,
+        fetcher: @escaping @Sendable (URL) async throws -> Data
+    ) {
         self.releaseURL = releaseURL
         self.rateLimit = rateLimit
+        self.fetcher = fetcher
     }
 
     public func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
@@ -24,12 +30,8 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
                 throw ABI.AppError.rateLimit
             }
         }
-
-        var request = URLRequest(url: releaseURL)
-        request.cachePolicy = .useProtocolCachePolicy
-        let result = try await URLSession.shared.data(for: request)
-
-        let json = try JSONDecoder().decode(VersionJSON.self, from: result.0)
+        let data = try await fetcher(releaseURL)
+        let json = try JSONDecoder().decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
             pp_log_g(.App.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
@@ -39,14 +41,16 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     }
 }
 
-private struct VersionJSON: Decodable, Sendable {
-    enum CodingKeys: String, CodingKey {
-        case name
+private extension GitHubReleaseStrategy {
+    struct VersionJSON: Decodable, Sendable {
+        enum CodingKeys: String, CodingKey {
+            case name
 
-        case tagName = "tag_name"
+            case tagName = "tag_name"
+        }
+
+        let name: String
+
+        let tagName: String
     }
-
-    let name: String
-
-    let tagName: String
 }
