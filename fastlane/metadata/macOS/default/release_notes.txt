@@ -1,2 +1,3 @@
+* WireGuard: Prefer IPv4 over IPv6 (#1630)
 * Relax requirements on iOS/macOS targets (#1626)
 * Drop legacy VPN code and LZO support (#1615)

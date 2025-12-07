@@ -24,7 +24,8 @@ struct PreferencesAdvancedView: View {
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
-        .neSocketTCP
+        .neSocketTCP,
+        .wgV4OverV6
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
@@ -34,6 +35,8 @@ private extension PreferencesAdvancedView {
             return V.neSocketUDP
         case .neSocketTCP:
             return V.neSocketTCP
+        case .wgV4OverV6:
+            return "WireGuard IPv4 > IPv6"
         default:
             assertionFailure()
             return ""
