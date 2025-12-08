@@ -1,7 +1,7 @@
 $cwd = Get-Location
 $build_dir = ".cmake"
 $bin_dir = "bin"
-$build_type = "Debug"
+$build_type = "Release"
 
 $swift_arch = switch ($env:PROCESSOR_ARCHITECTURE) {
     "ARM64" { "aarch64" }
@@ -25,7 +25,6 @@ try {
 
     # Change directory to build
     Set-Location -Path "$build_dir"
-    Get-ChildItem -Path "*.txt" -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 
     # Run CMake
     #cmake -G "Visual Studio 17 2022" -DBUILD_APP=ON ..

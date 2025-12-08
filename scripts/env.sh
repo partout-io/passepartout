@@ -5,7 +5,7 @@ metadata_root="fastlane/metadata"
 metadata_path="default/release_notes.txt"
 translations_input_path="l10n"
 translations_output_path="app-shared/Sources/AppStrings/Resources"
-build_type="Debug"
+build_type=Release
 
 # Required by Swift on non-Apple
 export SWIFT_SDK=~/.local/share/swiftly/toolchains/6.2.0/usr/lib/swift/linux
