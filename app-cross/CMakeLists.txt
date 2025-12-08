@@ -12,16 +12,34 @@ set_target_properties(passepartout PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PSP_OUT}
 )
 
-include("passepartout.cmake")
-include("wx.cmake")
-include("swift.cmake")
+# Compile app files
+file(GLOB_RECURSE PSP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
+target_sources(passepartout PRIVATE ${PSP_SOURCES})
 
-# Distribute with dependencies
-add_custom_command(
-    TARGET passepartout
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake" "${OUTPUT_DIR}" "${PSP_OUT}"
+# Include app headers plus former ABI outputs
+target_include_directories(passepartout PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${OUTPUT_DIR}
 )
+
+if(WIN32)
+    # Build WinMain app
+    set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
+elseif(LINUX)
+    # Configure Linux RPATH stuff
+     set_target_properties(passepartout PROPERTIES
+        BUILD_RPATH "\$ORIGIN"
+        INSTALL_RPATH "\$ORIGIN"
+        SKIP_BUILD_RPATH OFF
+    )
+endif()
+
+# Link to shared library
+target_link_directories(passepartout PRIVATE ${OUTPUT_DIR})
+target_link_libraries(passepartout PRIVATE passepartout_shared)
+
+# Link to wxWidgets
+include("wx.cmake")
 
 # Strip executable except on Windows
 if(NOT WIN32)

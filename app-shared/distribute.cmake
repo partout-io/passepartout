@@ -1,5 +1,5 @@
 set(OUTPUT_DIR ${CMAKE_ARGV3})
-set(APP_DIR ${CMAKE_ARGV4})
+set(APP_DIR ${OUTPUT_DIR}/app)
 
 if(WIN32)
     set(OPENSSL_FOLDER bin)
@@ -8,11 +8,11 @@ else()
 endif()
 
 # Bundle compiled binaries
-file(GLOB LIBPARTOUT "${OUTPUT_DIR}/partout/libpartout*")
+file(GLOB LIBPASSEPARTOUT "${OUTPUT_DIR}/*passepartout*")
 file(GLOB LIBSSL "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libssl*")
 file(GLOB LIBCRYPTO "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libcrypto*")
 file(GLOB LIBWGGO "${OUTPUT_DIR}/wg-go/lib/*wg-go*")
-file(COPY ${LIBPARTOUT} DESTINATION ${APP_DIR})
+file(COPY ${LIBPASSEPARTOUT} DESTINATION ${APP_DIR})
 file(COPY ${LIBSSL} DESTINATION ${APP_DIR})
 file(COPY ${LIBCRYPTO} DESTINATION ${APP_DIR})
 file(COPY ${LIBWGGO} DESTINATION ${APP_DIR})
@@ -20,7 +20,11 @@ file(COPY ${LIBWGGO} DESTINATION ${APP_DIR})
 # Clean up static libs and metadata
 file(GLOB CLEANUP
     ${APP_DIR}/*.a
+    ${APP_DIR}/*.d
+    ${APP_DIR}/*.h
     ${APP_DIR}/*.lib
+    # Keep for debugging
+    ${APP_DIR}/*.exp
     ${APP_DIR}/*.pdb
     ${APP_DIR}/*.ilk
 )
@@ -46,8 +50,6 @@ if(WIN32)
         swift_RegexParser.dll
         swift_StringProcessing.dll
     )
-elseif(LINUX)
-    # Link statically, see swift.cmake
 endif()
 
 foreach(lib ${PREBUILT_LIBS})

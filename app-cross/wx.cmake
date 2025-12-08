@@ -26,6 +26,7 @@ if(APPLE)
     target_link_libraries(passepartout PRIVATE
         "-framework Cocoa"
         "-framework Carbon"
+        "-framework QuartzCore"
         "-framework CoreFoundation"
         "-framework CoreGraphics"
         "-framework CoreServices"

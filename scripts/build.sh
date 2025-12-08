@@ -11,21 +11,30 @@ if [[ -n "$android_flag" && "$android_flag" != "-android" ]]; then
 fi
 
 build_dir=".cmake${android_flag}"
+toolchain_dir=`realpath submodules/partout/toolchains`
 if [ ! -d $build_dir ]; then
     mkdir $build_dir
 fi
 mkdir -p bin
-pushd $build_dir
-rm -f *.txt
 
 if [ "$android_flag" == "-android" ]; then
+    source $cwd/env-android.sh
+    toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"
     PATH=$ANDROID_NDK_TOOLCHAIN:$PATH
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=submodules/partout/android.toolchain.cmake ..
+    pushd $build_dir
+    #rm -f *.txt
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg ..
     cmake --build .
     popd
     $cwd/pull-android-libraries.sh
 else
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type -DBUILD_APP=ON ..
+    if [ $(uname -s) == "Linux" ]; then
+        source $cwd/env-linux.sh
+        toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/linux.toolchain.cmake"
+    fi
+    pushd $build_dir
+    #rm -f *.txt
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg -DBUILD_APP=ON ..
     cmake --build .
     popd
 fi

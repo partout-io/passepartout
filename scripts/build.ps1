@@ -1,7 +1,7 @@
 $cwd = Get-Location
 $build_dir = ".cmake"
 $bin_dir = "bin"
-$build_type = "Release"
+$build_type = "Debug"
 
 $swift_arch = switch ($env:PROCESSOR_ARCHITECTURE) {
     "ARM64" { "aarch64" }
