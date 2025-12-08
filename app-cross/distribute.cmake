@@ -45,28 +45,9 @@ if(WIN32)
         swift_Concurrency.dll
         swift_RegexParser.dll
         swift_StringProcessing.dll
-        Foundation.dll
-        FoundationEssentials.dll
-        FoundationInternationalization.dll
-        _FoundationICU.dll
     )
 elseif(LINUX)
-    list(APPEND SWIFT_LIBS
-        libBlocksRuntime.so
-        libdispatch.so
-        libswiftCore.so
-        libswiftDispatch.so
-        libswiftGlibc.so
-        libswiftSwiftOnoneSupport.so
-        libswiftSynchronization.so
-        libswift_Concurrency.so
-        libswift_RegexParser.so
-        libswift_StringProcessing.so
-        libFoundation.so
-        libFoundationEssentials.so
-        libFoundationInternationalization.so
-        lib_FoundationICU.so
-    )
+    # Link statically, see swift.cmake
 endif()
 
 foreach(lib ${PREBUILT_LIBS})

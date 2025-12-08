@@ -25,6 +25,7 @@ set_target_properties(passepartout_shared PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
+include("swift.cmake")
 
 # Import Partout as a Swift module plus the modulemap for the C ABI
 target_include_directories(passepartout_shared PRIVATE
@@ -34,3 +35,6 @@ target_include_directories(passepartout_shared PRIVATE
 target_link_directories(passepartout_shared PRIVATE
     ${OUTPUT_DIR}/partout
 )
+
+# Link Partout static library into dynamic library
+target_link_libraries(passepartout_shared PRIVATE partout partout_c)

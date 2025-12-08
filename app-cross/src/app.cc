@@ -11,6 +11,10 @@ extern "C" {
 
 bool MyApp::OnInit()
 {
+#ifdef _WIN32
+    // Per-monitor DPI awareness (v2)
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+#endif
     MyFrame* frame = new MyFrame();
     frame->Show(true);
     return true;

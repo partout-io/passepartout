@@ -20,7 +20,7 @@ rm -f *.txt
 
 if [ "$android_flag" == "-android" ]; then
     PATH=$ANDROID_NDK_TOOLCHAIN:$PATH
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=submodules/partout/android.cmake ..
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=submodules/partout/android.toolchain.cmake ..
     cmake --build .
     popd
     $cwd/pull-android-libraries.sh

@@ -18,6 +18,8 @@ if(WIN32)
         ${OUTPUT_DIR}/partout/libpartout_c.lib
         ${OUTPUT_DIR}/openssl/lib/libssl.lib
         ${OUTPUT_DIR}/openssl/lib/libcrypto.lib
+        # wg-go has no export library
+        #${OUTPUT_DIR}/wg-go/lib/libwg-go.lib
     )
 else()
     target_link_directories(passepartout PRIVATE
@@ -32,6 +34,7 @@ else()
         partout_c
         ssl
         crypto
+        wg-go
     )
 endif()
 
@@ -43,17 +46,5 @@ if(LINUX)
         BUILD_RPATH "\$ORIGIN"
         INSTALL_RPATH "\$ORIGIN"
         SKIP_BUILD_RPATH OFF
-    )
-endif()
-
-# Link to Swift runtime
-if(NOT APPLE)
-    target_link_directories(passepartout PRIVATE
-        $ENV{SWIFT_SDK}
-    )
-    target_link_libraries(passepartout PRIVATE
-        swiftCore
-        FoundationEssentials
-        FoundationNetworking
     )
 endif()

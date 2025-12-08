@@ -14,6 +14,7 @@ set_target_properties(passepartout PROPERTIES
 
 include("passepartout.cmake")
 include("wx.cmake")
+include("swift.cmake")
 
 # Distribute with dependencies
 add_custom_command(
