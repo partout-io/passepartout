@@ -46,10 +46,12 @@ elseif(LINUX)
 endif()
 
 # Link to shared library
-target_link_directories(passepartout PRIVATE ${OUTPUT_DIR})
-target_link_directories(passepartout-tunnel PRIVATE ${OUTPUT_DIR})
-target_link_libraries(passepartout PRIVATE passepartout_shared)
-target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
+find_library(LIBSHARED REQUIRED
+    NAMES passepartout libpassepartout
+    HINTS ${OUTPUT_DIR}
+)
+target_link_libraries(passepartout PRIVATE ${LIBSHARED})
+target_link_libraries(passepartout-tunnel PRIVATE ${LIBSHARED})
 
 # Link to wxWidgets
 include("wx.cmake")

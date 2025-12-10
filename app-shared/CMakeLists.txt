@@ -20,6 +20,7 @@ set_target_properties(passepartout_shared PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    OUTPUT_NAME passepartout
 )
 
 include("distribute.cmake")

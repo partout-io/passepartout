@@ -20,7 +20,7 @@ rm -rf $cpp_path/libs/swift-*
 libs_path="$cpp_path/libs/passepartout-${passepartout_sha1}/arm64-v8a"
 mkdir -p $libs_path
 cp $cmake_bin_path/passepartout.h $headers_path
-cp $cmake_bin_path/libpassepartout_shared.so $libs_path
+cp $cmake_bin_path/libpassepartout.so $libs_path
 cp $cmake_bin_path/openssl/lib/lib*.so $libs_path
 cp $cmake_bin_path/wg-go/lib/lib*.so $libs_path
 # Pull C++ runtime (Swift runtime linked statically)
