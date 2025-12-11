@@ -20,18 +20,15 @@ public func psp_partout_version() -> UnsafePointer<CChar>! {
 
 @_cdecl("psp_init")
 public func psp_init() -> Bool {
-    // FIXME: ###, Maybe this is broken
-    // let tmpDir = FileManager.default.miniTemporaryDirectory.filePath()
-    let tmpDir = "C:\\repos\\passepartout"
-    var args = partout_init_args()
-    let cacheDir = strdup(tmpDir)
-    args.cache_dir = cacheDir.map {
-        UnsafePointer($0)
+    let tmpDir = FileManager.default.miniTemporaryDirectory.filePath()
+    ctx = tmpDir.withCString { tmpDir in
+        var args = partout_init_args()
+        args.cache_dir = tmpDir
+        args.test_callback = testInit
+        return partout_init(&args)
     }
-    args.test_callback = testInit
-    ctx = partout_init(&args)
-    free(cacheDir)
-    return ctx != nil
+    assert(ctx != nil)
+    return true
 }
 
 @_cdecl("psp_deinit")
