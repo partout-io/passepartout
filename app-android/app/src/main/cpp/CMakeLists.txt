@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(Partout)
+project(Passepartout)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -12,9 +12,8 @@ set(PASSEPARTOUT_SHA1 a1c041d4b)
 set(SWIFT_VERSION 6_2)
 set(JNI_DIR ${CMAKE_SOURCE_DIR}/libs)
 
-# Partout + Swift runtime libs (dynamic, will be loaded at runtime)
+# Partout + dependencies (dynamic, will be loaded at runtime)
 file(GLOB PASSEPARTOUT_SOS "${JNI_DIR}/passepartout-${PASSEPARTOUT_SHA1}/${ANDROID_ABI}/lib*.so")
-file(GLOB SWIFT_SOS "${JNI_DIR}/swift-${SWIFT_VERSION}/${ANDROID_ABI}/lib*.so")
 set(ALL_SOS ${PASSEPARTOUT_SOS} ${SWIFT_SOS})
 
 foreach(SO_FILE ${ALL_SOS})
@@ -29,12 +28,11 @@ foreach(SO_FILE ${ALL_SOS})
 endforeach()
 
 # Native library for JNI
-add_library(PassepartoutNative SHARED
+add_library(passepartout SHARED
     src/vpn.c
     src/wrapper.c
 )
-target_link_libraries(
-    PassepartoutNative
-    log
+
+target_link_libraries(passepartout PRIVATE
     ${AUTO_LIBS}
 )

@@ -25,7 +25,6 @@ try {
 
     # Change directory to build
     Set-Location -Path "$build_dir"
-    Get-ChildItem -Path "*.txt" -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 
     # Run CMake
     #cmake -G "Visual Studio 17 2022" -DBUILD_APP=ON ..

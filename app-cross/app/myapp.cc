@@ -4,13 +4,18 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
-#include "app.h"
+#include "myapp.h"
 extern "C" {
 #include "passepartout.h"
 }
 
 bool MyApp::OnInit()
 {
+#ifdef _WIN32
+    // Per-monitor DPI awareness (v2)
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+#endif
+    psp_init();
     MyFrame* frame = new MyFrame();
     frame->Show(true);
     return true;
@@ -28,7 +33,8 @@ MyFrame::MyFrame()
     appMenu->Append(wxID_EXIT, "Quit");
 
     char buf[100];
-    snprintf(buf, sizeof(buf), "Hello %d", psp_example_sum(10, 20));
+    // snprintf(buf, sizeof(buf), "Hello %d", psp_example_sum(10, 20));
+    snprintf(buf, sizeof(buf), "Partout %s", psp_partout_version());
 
     // Dummy menu
     wxMenu* dummyMenu = new wxMenu;

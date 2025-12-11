@@ -80,7 +80,7 @@ if(BUILD_APP)
         CMAKE_GENERATOR ${WX_GENERATOR}
         CMAKE_ARGS ${WX_ARGS}
         BUILD_COMMAND ""
-        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config Release
+        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
     )
     ExternalProject_Add(
         PassepartoutApp

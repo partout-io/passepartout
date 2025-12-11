@@ -18,7 +18,7 @@ class NativeLibraryWrapper {
         init {
             try {
                 // Name of the NDK .so without "lib" prefix or ".so"
-                System.loadLibrary("PassepartoutNative")
+                System.loadLibrary("passepartout")
             } catch (e: Exception) {
                 Log.e("Passepartout", e.localizedMessage ?: "")
             }
