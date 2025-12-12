@@ -370,6 +370,7 @@ private extension Dependencies {
         false
     }
 
+    // swiftlint:disable function_parameter_count
     func backupProfileRepository(
         _ ctx: PartoutLoggerContext,
         logger: AppLogger,
@@ -395,6 +396,7 @@ private extension Dependencies {
             }
         )
     }
+    // swiftlint:enable function_parameter_count
 
     func webPasscodeGenerator() -> String {
         let length = appConfiguration.constants.webReceiver.passcodeLength

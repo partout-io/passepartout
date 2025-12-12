@@ -6,8 +6,8 @@ included:
   - Passepartout/Tests
   - Passepartout/Tunnel
   - Passepartout/UITests
-  - Packages/App/Sources
-  - Packages/App/Tests
+  - Sources
+  - Tests
 analyzer_rules:
   - unused_declaration
   - unused_import
@@ -20,7 +20,8 @@ disabled_rules:
   - function_body_length
   - generic_type_name
   - identifier_name
-  - line_length
   - inclusive_language
+  - line_length
   - nesting
+  - optional_data_string_conversion
   - todo

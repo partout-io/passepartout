@@ -20,7 +20,7 @@ extension AppContext {
         let ctx: PartoutLoggerContext = .global
 
         var logger = PartoutLogger.Builder()
-        logger.setDestination(NSLogDestination(), for: [.App.core, .App.profiles])
+        logger.setDestination(SimpleLogDestination(), for: [.App.core, .App.profiles])
         PartoutLogger.register(logger.build())
 
         let kvManager = KeyValueManager()

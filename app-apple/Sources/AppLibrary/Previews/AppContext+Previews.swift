@@ -13,7 +13,7 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let appLogger = PartoutLoggerStrategy() { _, _ in "" }
+        let appLogger = PartoutLoggerStrategy { _, _ in "" }
         let registry = Registry()
         let appEncoder = AppEncoder(registry: registry)
         let kvManager = KeyValueManager()

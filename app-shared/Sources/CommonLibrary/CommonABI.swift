@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if PSP_CROSS
 import Partout
 import PartoutABI_C
 
@@ -67,3 +68,4 @@ public func __psp_example_json() -> UnsafeMutablePointer<CChar> {
     let json = try! registry.json(fromProfile: profile)
     return strdup(json)
 }
+#endif
