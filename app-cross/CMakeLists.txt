@@ -1,21 +1,18 @@
 cmake_minimum_required(VERSION 3.27)
 project(PassepartoutCross LANGUAGES C CXX)
 
-# Output
-set(PSP_OUT "${OUTPUT_DIR}/app")
-
 # Define target and output
 add_executable(passepartout "")
 add_executable(passepartout-tunnel "")
 set_target_properties(passepartout PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${PSP_OUT}
-    ARCHIVE_OUTPUT_DIRECTORY ${PSP_OUT}
-    RUNTIME_OUTPUT_DIRECTORY ${PSP_OUT}
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
 set_target_properties(passepartout-tunnel PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${PSP_OUT}
-    ARCHIVE_OUTPUT_DIRECTORY ${PSP_OUT}
-    RUNTIME_OUTPUT_DIRECTORY ${PSP_OUT}
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
 
 # Compile app files
@@ -57,15 +54,21 @@ target_link_libraries(passepartout-tunnel PRIVATE ${LIBSHARED})
 include("wx.cmake")
 
 # Strip executables except on Windows
-if(NOT WIN32)
-    add_custom_command(
-        TARGET passepartout
-        POST_BUILD
-        COMMAND ${CMAKE_STRIP} $<TARGET_FILE:passepartout>
-    )
-    add_custom_command(
-        TARGET passepartout-tunnel
-        POST_BUILD
-        COMMAND ${CMAKE_STRIP} $<TARGET_FILE:passepartout-tunnel>
-    )
+set(APP_DIR ${OUTPUT_DIR}/${DIST_DIR})
+if(WIN32)
+    set(STRIP rem)
+else()
+    set(STRIP ${CMAKE_STRIP})
 endif()
+add_custom_command(
+    TARGET passepartout
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:passepartout> ${APP_DIR}
+    COMMAND ${STRIP} ${APP_DIR}/passepartout
+)
+add_custom_command(
+    TARGET passepartout-tunnel
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:passepartout-tunnel> ${APP_DIR}
+    COMMAND ${STRIP} ${APP_DIR}/passepartout-tunnel
+)

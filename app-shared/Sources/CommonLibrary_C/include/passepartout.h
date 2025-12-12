@@ -10,10 +10,11 @@
 #include <stdbool.h>
 
 const char *psp_partout_version();
-bool psp_init();
+void psp_init(const char *cache_dir);
 void psp_deinit();
+bool psp_daemon_start(const char *profile, void *jni_wrapper);
+void psp_daemon_stop();
 
 int psp_example_sum(int a, int b);
-const char *psp_example_json();
 
 #endif

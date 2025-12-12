@@ -17,6 +17,9 @@ if [ ! -d $build_dir ]; then
 fi
 mkdir -p bin
 
+# To be 100% sure
+rm -f bin/*/libpassepartout.*
+
 if [ "$android_flag" == "-android" ]; then
     source $cwd/env-android.sh
     toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"

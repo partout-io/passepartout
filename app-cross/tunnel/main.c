@@ -8,6 +8,6 @@
 #include "passepartout.h"
 
 int main() {
-    puts("hello tunnel");
+    printf("Hello Passepartout (Partout %s)\n", psp_partout_version());
     return 0;
 }

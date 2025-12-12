@@ -1,5 +1,4 @@
-set(OUTPUT_DIR ${CMAKE_ARGV3})
-set(APP_DIR ${OUTPUT_DIR}/app)
+set(APP_DIR ${OUTPUT_DIR}/${DIST_DIR})
 
 if(WIN32)
     set(OPENSSL_FOLDER bin)
@@ -58,3 +57,10 @@ endforeach()
 foreach(lib ${SWIFT_LIBS})
     file(COPY "$ENV{SWIFT_RUNTIME}/${lib}" DESTINATION ${APP_DIR})
 endforeach()
+
+if(STRIP AND NOT WIN32)
+    execute_process(COMMAND ${STRIP} ${APP_DIR}/libpassepartout.${LIBEXT})
+    execute_process(COMMAND ${STRIP} ${APP_DIR}/libssl.${LIBEXT})
+    execute_process(COMMAND ${STRIP} ${APP_DIR}/libcrypto.${LIBEXT})
+    execute_process(COMMAND ${STRIP} ${APP_DIR}/libwg-go.${LIBEXT})
+endif()
