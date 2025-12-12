@@ -80,12 +80,8 @@ endif()
 target_link_libraries(passepartout_shared PRIVATE
     ${OUTPUT_DIR}/openssl/lib/libssl.${LIBEXT}
     ${OUTPUT_DIR}/openssl/lib/libcrypto.${LIBEXT}
+    ${OUTPUT_DIR}/wg-go/lib/libwg-go.${LIBEXT}
 )
-if(NOT WIN32)
-    target_link_libraries(passepartout_shared PRIVATE
-        ${OUTPUT_DIR}/wg-go/lib/libwg-go.${LIBEXT}
-    )
-endif()
 
 # Distribute with dependencies
 if(ANDROID)
