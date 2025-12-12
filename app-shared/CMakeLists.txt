@@ -34,32 +34,71 @@ target_link_directories(passepartout_shared PRIVATE
     ${OUTPUT_DIR}/partout
 )
 
-# Link Partout static library into dynamic library
-if(WIN32)
-    target_link_libraries(passepartout_shared PRIVATE
-        ${OUTPUT_DIR}/partout/libpartout.lib
-        ${OUTPUT_DIR}/partout/libpartout_c.lib
-        ${OUTPUT_DIR}/openssl/lib/libssl.lib
-        ${OUTPUT_DIR}/openssl/lib/libcrypto.lib
-    )
-else()
-    target_link_directories(passepartout_shared PRIVATE
-        ${OUTPUT_DIR}/partout
-        ${OUTPUT_DIR}/openssl/lib
-        ${OUTPUT_DIR}/wg-go/lib
-    )
+# Link Partout static library
+message(STATUS "Searching for libraries in ${OUTPUT_DIR}")
+
+# Android CMake can't seem to find static libraries, smh
+if(ANDROID)
     target_link_libraries(passepartout_shared PRIVATE
         partout
         partout_c
-        ssl
-        crypto
-        wg-go
+    )
+else()
+    find_library(LIBPARTOUT REQUIRED
+        NAMES partout libpartout
+        HINTS ${OUTPUT_DIR}/partout
+    )
+    find_library(LIBPARTOUT_C REQUIRED
+        NAMES partout_c libpartout_c
+        HINTS ${OUTPUT_DIR}/partout
+    )
+    target_link_libraries(passepartout_shared PRIVATE
+        ${LIBPARTOUT}
+        ${LIBPARTOUT_C}
+    )
+endif()
+
+# Link dynamic vendors
+#
+# CAVEATS:
+# - libs order MATTERS!
+# - use explicit paths to avoid linking issues at runtime
+# - find_library() works around OS-specific extensions
+#
+# For example, passing "ssl" and "crypto" would likely link
+# to the system-wide OpenSSL and result in obscure crashes
+# at runtime due to binary mismatch
+#
+# Damn it, find_library() is unreliable
+if(WIN32)
+    set(LIBEXT lib)
+elseif(APPLE)
+    set(LIBEXT dylib)
+else()
+    set(LIBEXT so)
+endif()
+target_link_libraries(passepartout_shared PRIVATE
+    ${OUTPUT_DIR}/openssl/lib/libssl.${LIBEXT}
+    ${OUTPUT_DIR}/openssl/lib/libcrypto.${LIBEXT}
+)
+if(NOT WIN32)
+    target_link_libraries(passepartout_shared PRIVATE
+        ${OUTPUT_DIR}/wg-go/lib/libwg-go.${LIBEXT}
     )
 endif()
 
 # Distribute with dependencies
+if(ANDROID)
+    set(STRIP llvm-strip)
+else()
+    set(STRIP ${CMAKE_STRIP})
+endif()
+
 add_custom_command(
     TARGET passepartout_shared
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake" "${OUTPUT_DIR}"
+    COMMAND ${CMAKE_COMMAND}
+        -DOUTPUT_DIR=${OUTPUT_DIR} -DDIST_DIR=${DIST_DIR}
+        -DSTRIP=${STRIP} -DLIBEXT=${LIBEXT}
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )

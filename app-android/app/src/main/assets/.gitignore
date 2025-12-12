@@ -1,1 +1,4 @@
+*.ovpn
+*.wg
+*.conf
 *.json

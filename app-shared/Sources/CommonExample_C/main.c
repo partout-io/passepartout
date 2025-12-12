@@ -8,6 +8,7 @@
 #include "passepartout.h"
 
 int main() {
-    printf("Hello %d\n", psp_example_sum(10, 20));
+    printf("Hello Partout %s\n", psp_partout_version());
+    psp_init("");
     return 0;
 }

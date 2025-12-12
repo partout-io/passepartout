@@ -24,11 +24,6 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "ABI",
-            type: .dynamic,
-            targets: ["ABI"]
-        ),
-        .library(
             name: "CommonLibrary",
             targets: ["CommonLibrary"]
         )
@@ -39,15 +34,11 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "ABIExample_C",
-            dependencies: ["ABI"]
+            name: "CommonExample_C",
+            dependencies: ["CommonLibrary_C"]
         ),
         .target(
-            name: "ABI",
-            dependencies: ["ABI_C"]
-        ),
-        .target(
-            name: "ABI_C",
+            name: "CommonLibrary_C",
             dependencies: ["CommonLibrary"]
         ),
         .target(

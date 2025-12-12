@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.DummyVPNService
-import com.algoritmico.partout.NativeLibraryWrapper
+import com.algoritmico.passepartout.NativeLibraryWrapper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,11 +31,8 @@ class MainActivity : ComponentActivity() {
 
         val wrapper = NativeLibraryWrapper()
         val version = wrapper.partoutVersion()
-        val sum = wrapper.passepartoutExampleSum()
-        val json = wrapper.passepartoutExampleJSON()
+        wrapper.initialize("")
         Log.e("Passepartout", ">>> $version")
-        Log.e("Passepartout", ">>> psp_example_sum: $sum")
-        Log.e("Passepartout", ">>> psp_example_json: $json")
 
         setContent {
             HelloWorld(

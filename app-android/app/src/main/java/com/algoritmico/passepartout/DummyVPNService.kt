@@ -7,21 +7,18 @@ import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.algoritmico.partout.NativeLibraryWrapper
-import com.algoritmico.partout.VpnWrapper
+import io.partout.PartoutVpnWrapper
 
 class DummyVPNService: VpnService() {
     private val library = NativeLibraryWrapper()
-    private val vpnWrapper = VpnWrapper(this)
-    private var ctx: Long? = null
+    private val vpnWrapper = PartoutVpnWrapper(this)
     private var isRunning = false
 
     override fun onCreate() {
         super.onCreate()
         val cachePath = cacheDir.absolutePath
         Log.e("Passepartout", ">>> $cachePath")
-        ctx = library.partoutInitialize(cachePath)
-        logLibraryContext()
+        library.initialize(cachePath)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -37,9 +34,7 @@ class DummyVPNService: VpnService() {
 
     override fun onDestroy() {
         stopVpn()
-        ctx?.let {
-            library.partoutDeinitialize(it)
-        }
+        library.deinitialize()
         super.onDestroy()
     }
 
@@ -49,19 +44,16 @@ class DummyVPNService: VpnService() {
 
         // FIXME: read from intent
         val inputStream = assets.open("vps-tcp.ovpn")
-//        val inputStream = assets.open("vps.json")
+//        val inputStream = assets.open("vps.conf")
         val testProfileString = inputStream.bufferedReader().use { it.readText() }
 
-        // FIXME: initialize inside NativeWrapper and never expose ctx
-        ctx?.let {
-
-            // FIXME: protect main socket from VPN to avoid circular
-            // register daemon callback to report any new
-            // descriptor (pp_socket or wg) in order to update the "protection list"
-            // You need to call back into Kotlin and protect it before connecting
+        // FIXME: protect main socket from VPN to avoid circular
+        // register daemon callback to report any new
+        // descriptor (pp_socket or wg) in order to update the "protection list"
+        // You need to call back into Kotlin and protect it before connecting
 //            protect(fd)
 
-            // FIXME: the daemon requires access to Builder as TunnelController
+        // FIXME: the daemon requires access to Builder as TunnelController
 //                val builder = Builder()
 //                    .setSession("MyVPN")
 //                    .addAddress("10.0.0.2", 24) // Example VPN interface address
@@ -71,23 +63,19 @@ class DummyVPNService: VpnService() {
 //                val tun = builder.establish()
 //            tun?.fd
 
-            logLibraryContext()
-            Log.e("Passepartout", ">>> Starting daemon")
-            library.partoutDaemonStart(it, testProfileString, vpnWrapper)
-            Log.e("Passepartout", ">>> Started daemon")
-        }
+        Log.e("Passepartout", ">>> Starting daemon")
+        library.daemonStart(testProfileString, vpnWrapper)
+        Log.e("Passepartout", ">>> Started daemon")
+
         isRunning = true
     }
 
     private fun stopVpn() {
         if (!isRunning) { return }
         isRunning = false
-        ctx?.let {
-            logLibraryContext()
-            Log.e("Passepartout", ">>> Stopping daemon")
-            library.partoutDaemonStop(it)
-            Log.e("Passepartout", ">>> Stopped daemon")
-        }
+        Log.e("Passepartout", ">>> Stopping daemon")
+        library.daemonStop()
+        Log.e("Passepartout", ">>> Stopped daemon")
 
         // FIXME: add callback to partout_daemon_start and partout_daemon_stop
         Thread.sleep(3000)
@@ -121,11 +109,5 @@ class DummyVPNService: VpnService() {
             .setContentText("VPN is running")
             .setOngoing(true)
             .build()
-    }
-
-    private fun logLibraryContext() {
-        ctx?.let {
-            Log.e("Passepartout", ">>> CTX = " + String.format("0x%016x", it))
-        }
     }
 }

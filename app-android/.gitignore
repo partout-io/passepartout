@@ -7,5 +7,3 @@
 build
 captures
 local.properties
-*.ovpn
-*.wg

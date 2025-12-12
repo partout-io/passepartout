@@ -7,6 +7,7 @@ option(BUILD_APP "Build app executable" 0)
 # Configure output location
 get_filename_component(OUTPUT_DIR "bin/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" ABSOLUTE)
 string(TOLOWER "${OUTPUT_DIR}" OUTPUT_DIR)
+set(DIST_DIR "dist")
 
 # Options
 message(STATUS "Option OUTPUT_DIR = ${OUTPUT_DIR}")
@@ -41,12 +42,13 @@ ExternalProject_Add(
 )
 
 # Build Passepartout shared library
-set(ABI_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/app-shared/Sources/ABI_C/include/passepartout.h)
+set(ABI_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/app-shared/Sources/CommonLibrary_C/include/passepartout.h)
 set(ABI_ARGS
     ${BUILD_ARGS}
     ${TOOLCHAIN_ARGS}
     ${SWIFTLY_ARGS}
     -DOUTPUT_DIR=${OUTPUT_DIR}
+    -DDIST_DIR=${DIST_DIR}
 )
 ExternalProject_Add(
     PassepartoutShared
@@ -85,7 +87,7 @@ if(BUILD_APP)
     ExternalProject_Add(
         PassepartoutApp
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app-cross
-        CMAKE_ARGS ${BUILD_ARGS} -DOUTPUT_DIR=${OUTPUT_DIR}
+        CMAKE_ARGS ${BUILD_ARGS} -DOUTPUT_DIR=${OUTPUT_DIR} -DDIST_DIR=${DIST_DIR}
         INSTALL_COMMAND ""
         BUILD_ALWAYS 1
         DEPENDS wxWidgets PassepartoutShared

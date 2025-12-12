@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Library versions
-set(PASSEPARTOUT_SHA1 a1c041d4b)
+set(PASSEPARTOUT_SHA1 2d7a85f97)
 set(SWIFT_VERSION 6_2)
 set(JNI_DIR ${CMAKE_SOURCE_DIR}/libs)
 
@@ -27,12 +27,6 @@ foreach(SO_FILE ${ALL_SOS})
     list(APPEND AUTO_LIBS ${lib})
 endforeach()
 
-# Native library for JNI
-add_library(passepartout SHARED
-    src/vpn.c
-    src/wrapper.c
-)
-
-target_link_libraries(passepartout PRIVATE
-    ${AUTO_LIBS}
-)
+# Native wrappings for JNI
+add_library(passepartout_wrapper SHARED src/wrapper.c)
+target_link_libraries(passepartout_wrapper PRIVATE ${AUTO_LIBS})
