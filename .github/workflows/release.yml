@@ -112,10 +112,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate_codebase, build_upload]
     continue-on-error: true
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: ["iOS", "macOS", "tvOS"]
     environment:
       name: app_review
     env:
@@ -127,9 +123,15 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Submit for App Review
+      - name: Submit for App Review (iOS)
         run: |
-          bundle exec fastlane --env ${{ matrix.platform }} asc_review
+          bundle exec fastlane --env iOS asc_review
+      - name: Submit for App Review (macOS)
+        run: |
+          bundle exec fastlane --env macOS asc_review
+      - name: Submit for App Review (tvOS)
+        run: |
+          bundle exec fastlane --env tvOS asc_review
   distribute_dmg:
     name: Distribute Mac .dmg
     runs-on: macos-26
