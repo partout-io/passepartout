@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "fastlane", :github => "keeshux/fastlane", :ref => "6f26127e60b953d58e4a6a3064613fd784d0af61"
+gem "fastlane", :github => "keeshux/fastlane", :ref => "775406fc38ea41b627e9f1bc2f07314f2df8cf4c"
 gem "dotenv"
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
