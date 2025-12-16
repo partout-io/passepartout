@@ -7,14 +7,6 @@ import CommonProvidersCore
 #endif
 import Partout
 
-public enum ProviderSortField: Sendable {
-    case localizedCountry
-
-    case area
-
-    case serverId
-}
-
 public struct ProviderServerParameters: Sendable {
     public typealias Sorter = @Sendable (inout [ProviderServer], [ProviderSortField]) -> Void
 
@@ -43,6 +35,14 @@ public struct ProviderFilters: Equatable, Sendable {
 
     public init() {
     }
+}
+
+public enum ProviderSortField: Sendable {
+    case localizedCountry
+
+    case area
+
+    case serverId
 }
 
 public struct ProviderFilterOptions: Sendable {
