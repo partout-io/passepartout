@@ -10,11 +10,6 @@ extension ExtendedTunnel: ObservableObject {}
 
 @MainActor
 public final class ExtendedTunnel {
-    public enum Event: Sendable {
-        case refresh([ABI.AppIdentifier: ABI.AppProfile.Info])
-        case dataCount
-    }
-
     public static nonisolated let isManualKey = "isManual"
 
     public static nonisolated let appPreferences = "appPreferences"
@@ -29,7 +24,7 @@ public final class ExtendedTunnel {
 
     private let interval: TimeInterval
 
-    public let didChange: PassthroughStream<UniqueID, Event>
+    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.TunnelEvent>
 
     private var subscriptions: [Task<Void, Never>]
 
@@ -245,10 +240,10 @@ private extension ExtendedTunnel {
 
     func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [ABI.AppIdentifier: ABI.AppProfile.Info] {
         var info = activeProfiles.mapValues {
-            let profileStatus = self.profileStatus(ofProfileId: $0.id)
+            let profileStatus = profileStatus(ofProfileId: $0.id)
             return ABI.AppProfile.Info(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
         }
-        if info.isEmpty, let last = self.lastUsedProfile {
+        if info.isEmpty, let last = lastUsedProfile {
             info = [last.id: last.abiInfo]
         }
         return info

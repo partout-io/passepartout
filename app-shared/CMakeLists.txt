@@ -5,7 +5,6 @@ project(PassepartoutShared LANGUAGES Swift)
 file(GLOB_RECURSE PSP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift)
 set(PSP_EXCLUSIONS
     CommonLibraryApple.*
-    CommonProviders.*
 )
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
@@ -14,7 +13,9 @@ endforeach()
 # Configure as static library except on Android
 add_library(passepartout_shared SHARED ${PSP_SOURCES})
 target_compile_options(passepartout_shared PRIVATE
+    -DPSP_MONOLITH
     -DPSP_CROSS
+    -DPSP_PROVIDERS
 )
 set_target_properties(passepartout_shared PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
@@ -23,10 +24,10 @@ set_target_properties(passepartout_shared PROPERTIES
     OUTPUT_NAME passepartout
 )
 
-include("distribute.cmake")
-
 # Import Partout as a Swift module plus the modulemap for the C ABI
+set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibraryCore_C/include)
 target_include_directories(passepartout_shared PRIVATE
+    ${ABI_INCLUDE}
     ${OUTPUT_DIR}/partout
     ${OUTPUT_DIR}/partout/modules
 )
@@ -94,7 +95,9 @@ add_custom_command(
     TARGET passepartout_shared
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-        -DOUTPUT_DIR=${OUTPUT_DIR} -DDIST_DIR=${DIST_DIR}
+        -DABI_INCLUDE=${ABI_INCLUDE}
+        -DOUTPUT_DIR=${OUTPUT_DIR}
+        -DDIST_DIR=${DIST_DIR}
         -DSTRIP=${STRIP} -DLIBEXT=${LIBEXT}
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )

@@ -4,7 +4,6 @@
 
 import CommonProvidersAPI
 import CommonProvidersCore
-import Foundation
 import Partout
 import Testing
 
@@ -93,7 +92,7 @@ private extension ProviderManagerTests {
             let module = try ProviderModule(emptyWithProviderId: .mock)
             try await providerManager.fetchInfrastructure(for: module)
 
-            return repository.providerRepository(for: providerId)
+            return repository.providerRepository(for: providerId, sort: { _, _ in })
         } catch {
             print("Unable to fetch API: \(error)")
             throw error

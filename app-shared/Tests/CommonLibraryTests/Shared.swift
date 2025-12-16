@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 @_exported import Partout
 
 enum CommonLibraryTests {
-    static let timeout: TimeInterval = .infinity
+    static let timeout: Int = .max
 }

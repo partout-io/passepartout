@@ -2,10 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonProviders
-@testable import CommonProvidersAPI
-@testable import CommonProvidersCore
-import Foundation
+@testable import CommonProviders
 import Partout
 
 protocol APITestSuite {

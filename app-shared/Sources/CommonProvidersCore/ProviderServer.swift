@@ -2,10 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
+public enum ProviderSortField: Sendable {
+    case localizedCountry
+    case area
+    case serverId
+}
+
 public struct ProviderServer: Identifiable, Hashable, Codable, Sendable {
+    public typealias Sorter = @Sendable (inout [ProviderServer], [ProviderSortField]) -> Void
+
     public struct Metadata: Hashable, Codable, Sendable {
         public let providerId: ProviderID
 
@@ -73,9 +80,5 @@ extension ProviderServer {
             })
         }
         return list
-    }
-
-    public var localizedCountry: String? {
-        Locale.current.localizedString(forRegionCode: metadata.countryCode)
     }
 }

@@ -13,7 +13,7 @@ public final class AppLibraryMain: AppLibraryConfiguring {
     }
 
     public func configure(with context: AppContext) {
-        assertMissingImplementations(with: context.registry)
+        context.assertMissingImplementations()
 
         // For debugging
 //        Tips.showAllTipsForTesting()
@@ -24,18 +24,5 @@ public final class AppLibraryMain: AppLibraryConfiguring {
         try? Tips.configure([
             .displayFrequency(.immediate)
         ])
-    }
-}
-
-private extension AppLibraryMain {
-    func assertMissingImplementations(with registry: Registry) {
-        ModuleType.allCases.forEach { moduleType in
-            let builder = moduleType.newModule(with: registry)
-
-            // ModuleViewProviding
-            guard builder is any ModuleViewProviding else {
-                fatalError("\(moduleType): is not ModuleViewProviding")
-            }
-        }
     }
 }

@@ -310,7 +310,7 @@ extension AppContext {
 
         // MARK: Build
 
-        return AppContext(
+        let abi = CommonABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
@@ -318,7 +318,6 @@ extension AppContext {
             iapManager: iapManager,
             kvManager: kvManager,
             logger: appLogger,
-            onboardingObservable: onboardingObservable,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
@@ -327,6 +326,10 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
+        )
+        return AppContext(
+            abi: abi,
+            onboardingObservable: onboardingObservable
         )
     }
 }

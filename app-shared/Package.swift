@@ -35,11 +35,15 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "CommonExample_C",
-            dependencies: ["CommonLibrary_C"]
+            dependencies: ["CommonLibrary"]
         ),
         .target(
-            name: "CommonLibrary_C",
-            dependencies: ["CommonLibrary"]
+            name: "CommonLibrary",
+            dependencies: [
+                "CommonLibraryCore",
+                .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
+            ],
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CommonLibraryApple",
@@ -53,6 +57,7 @@ let package = Package(
                     .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                     "partout"
                 ]
+                list.append("CommonLibraryCore_C")
                 if withProviders {
                     list.append(
                         .target(name: "CommonProviders")
@@ -63,19 +68,15 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
-            name: "CommonLibrary",
-            dependencies: [
-                "CommonLibraryCore",
-                .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
-            ],
-            swiftSettings: swiftSettings
+            name: "CommonLibraryCore_C"
         ),
         .testTarget(
             name: "CommonLibraryTests",
             dependencies: ["CommonLibrary"],
             resources: [
                 .process("Resources")
-            ]
+            ],
+            swiftSettings: swiftSettings
         )
     ]
 )
@@ -90,36 +91,37 @@ if withProviders {
     package.targets.append(contentsOf: [
         .target(
             name: "CommonProviders",
-            dependencies: ["CommonProvidersAPI"]
+            dependencies: ["CommonProvidersAPI"],
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CommonProvidersAPI",
             dependencies: ["CommonProvidersCore"],
             resources: [
                 .copy("JSON")
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CommonProvidersCore",
-            dependencies: ["partout"]
-        ),
-        .testTarget(
-            name: "CommonProvidersTests",
-            dependencies: ["CommonProviders"],
-            resources: [
-                .copy("Resources")
-            ]
-        ),
-        .testTarget(
-            name: "CommonProvidersAPITests",
-            dependencies: ["CommonProvidersAPI"]
-        ),
-        .testTarget(
-            name: "CommonProvidersCoreTests",
-            dependencies: ["CommonProvidersCore"],
-            resources: [
-                .process("Resources")
-            ]
+            dependencies: ["partout"],
+            swiftSettings: swiftSettings
         )
     ])
 }
+
+#if canImport(Darwin)
+package.targets.append(contentsOf: [
+    .testTarget(
+        name: "CommonProvidersTests",
+        dependencies: ["CommonProviders"],
+        resources: [
+            .copy("Resources")
+        ]
+    ),
+    .testTarget(
+        name: "CommonProvidersAPITests",
+        dependencies: ["CommonProvidersAPI"]
+    )
+])
+#endif

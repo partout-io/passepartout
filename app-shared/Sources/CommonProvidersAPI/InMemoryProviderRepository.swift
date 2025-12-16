@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 public final class InMemoryProviderRepository: ProviderRepository {
@@ -15,14 +14,18 @@ public final class InMemoryProviderRepository: ProviderRepository {
 
     private let allServers: [ProviderServer]
 
+    private let sort: ProviderServer.Sorter
+
     public init(
         providerId: ProviderID,
         allPresets: [ProviderPreset],
-        allServers: [ProviderServer]
+        allServers: [ProviderServer],
+        sort: @escaping ProviderServer.Sorter
     ) {
         self.providerId = providerId
         self.allPresets = allPresets
         self.allServers = allServers
+        self.sort = sort
     }
 
     public func availableOptions(for moduleType: ModuleType) async throws -> ProviderFilterOptions {
@@ -60,7 +63,7 @@ public final class InMemoryProviderRepository: ProviderRepository {
 
                 // this may be VERY slow
                 if !parameters.sorting.isEmpty {
-                    servers.sort(using: parameters.sortingComparators)
+                    self.sort(&servers, parameters.sorting)
                 }
             } else {
                 servers = all
@@ -106,23 +109,5 @@ private extension ProviderFilters {
             }
         }
         return true
-    }
-}
-
-private extension ProviderServerParameters {
-    var sortingComparators: [KeyPathComparator<ProviderServer>] {
-        sorting
-            .map {
-                switch $0 {
-                case .localizedCountry:
-                    return KeyPathComparator(\.localizedCountry)
-
-                case .area:
-                    return KeyPathComparator(\.metadata.area)
-
-                case .serverId:
-                    return KeyPathComparator(\.serverId)
-                }
-            }
     }
 }

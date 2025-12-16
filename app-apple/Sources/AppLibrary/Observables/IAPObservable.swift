@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
+import Observation
 
 @MainActor @Observable
 public final class IAPObservable {
@@ -22,8 +22,6 @@ public final class IAPObservable {
         isEnabled = true
         eligibleFeatures = []
         isLoadingReceipt = false
-
-        observeEvents()
     }
 }
 
@@ -45,23 +43,15 @@ extension IAPObservable {
     public var verificationDelayMinutes: Int {
         iapManager.verificationDelayMinutes
     }
-}
 
-private extension IAPObservable {
-    func observeEvents() {
-        let iapEvents = iapManager.didChange.subscribe()
-        subscription = Task { [weak self] in
-            guard let self else { return }
-            for await event in iapEvents {
-                switch event {
-                case .status(let isEnabled):
-                    self.isEnabled = isEnabled
-                case .eligibleFeatures(let features):
-                    eligibleFeatures = features
-                case .loadReceipt(let isLoading):
-                    isLoadingReceipt = isLoading
-                }
-            }
+    func onUpdate(_ event: ABI.IAPEvent) {
+        switch event {
+        case .status(let isEnabled):
+            self.isEnabled = isEnabled
+        case .eligibleFeatures(let features):
+            eligibleFeatures = features
+        case .loadReceipt(let isLoading):
+            isLoadingReceipt = isLoading
         }
     }
 }

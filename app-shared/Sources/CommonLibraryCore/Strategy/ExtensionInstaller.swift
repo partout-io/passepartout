@@ -5,6 +5,8 @@
 public protocol ExtensionInstaller: Sendable {
     var currentResult: ExtensionInstallerResult { get }
 
+    func load() async throws -> ExtensionInstallerResult
+
     func install() async throws -> ExtensionInstallerResult
 }
 

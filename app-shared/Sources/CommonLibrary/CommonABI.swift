@@ -2,70 +2,390 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if PSP_CROSS
 import Partout
-import PartoutABI_C
 
-nonisolated(unsafe)
-var ctx: UnsafeMutableRawPointer? = nil
+public final class CommonABI: ABIProtocol, Sendable {
+    // MARK: Business
 
-func testInit() {
-    pp_log_g(.core, .error, "(Running test init callback)")
-}
+    // FIXME: #1594, Make these private after observables
+    public let apiManager: APIManager
+    public let appConfiguration: ABI.AppConfiguration
+    public let appEncoder: AppEncoder
+    public let configManager: ConfigManager
+    public let iapManager: IAPManager
+    public let kvManager: KeyValueManager
+    public let logger: AppLogger
+    public let preferencesManager: PreferencesManager
+    public let profileManager: ProfileManager
+    public let registry: Registry
+    public let sysexManager: ExtensionInstaller?
+    public let tunnel: ExtendedTunnel
+    public let versionChecker: VersionChecker
+    public let webReceiverManager: WebReceiverManager
+    private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
-@_cdecl("psp_partout_version")
-public func psp_partout_version() -> UnsafePointer<CChar>! {
-    // PARTOUT_VERSION
-    partout_version()
-}
+    // MARK: Internal state
 
-@_cdecl("psp_init")
-public func psp_init(cacheDir: UnsafePointer<CChar>!) {
-    let tmpDir = FileManager.default.miniTemporaryDirectory.filePath()
-    ctx = tmpDir.withCString { tmpDir in
-        var args = partout_init_args()
-        args.cache_dir = cacheDir ?? tmpDir
-        args.test_callback = testInit
-        return partout_init(&args)
+    private var launchTask: Task<Void, Error>?
+    private var pendingTask: Task<Void, Never>?
+    private var didLoadReceiptDate: Date?
+    private var subscriptions: [Task<Void, Never>]
+
+    public init(
+        apiManager: APIManager,
+        appConfiguration: ABI.AppConfiguration,
+        appEncoder: AppEncoder,
+        configManager: ConfigManager,
+        iapManager: IAPManager,
+        kvManager: KeyValueManager,
+        logger: AppLogger,
+        preferencesManager: PreferencesManager,
+        profileManager: ProfileManager,
+        registry: Registry,
+        sysexManager: ExtensionInstaller?,
+        tunnel: ExtendedTunnel,
+        versionChecker: VersionChecker,
+        webReceiverManager: WebReceiverManager,
+        onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
+    ) {
+        self.apiManager = apiManager
+        self.appConfiguration = appConfiguration
+        self.appEncoder = appEncoder
+        self.configManager = configManager
+        self.iapManager = iapManager
+        self.kvManager = kvManager
+        self.logger = logger
+        self.preferencesManager = preferencesManager
+        self.profileManager = profileManager
+        self.registry = registry
+        self.sysexManager = sysexManager
+        self.tunnel = tunnel
+        self.versionChecker = versionChecker
+        self.webReceiverManager = webReceiverManager
+        self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
+        subscriptions = []
     }
-    assert(ctx != nil)
+
+    public func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback) {
+        let profileEvents = profileManager.didChange.subscribe()
+        let tunnelEvents = tunnel.didChange.subscribe()
+        let iapEvents = iapManager.didChange.subscribe()
+        subscriptions.append(Task {
+            for await event in profileEvents {
+                callback(context, .profile(event))
+            }
+        })
+        subscriptions.append(Task {
+            for await event in tunnelEvents {
+                callback(context, .tunnel(event))
+            }
+        })
+        subscriptions.append(Task { [weak self] in
+            guard let self else { return }
+            for await event in iapEvents {
+                callback(context, .iap(event))
+            }
+        })
+    }
 }
 
-@_cdecl("psp_deinit")
-public func psp_deinit() {
-    guard let ctx else { return }
-    partout_deinit(ctx)
+// MARK: - Actions
+
+//extension CommonABI {
+//    public func profile(withId id: ABI.AppIdentifier) async -> ABI.AppProfile? {
+//        fatalError()
+//    }
+//
+//    public func profileSave(_ profile: ABI.AppProfile) async throws {
+//        fatalError()
+//    }
+//
+//    public func profileNew(named name: String) async throws {
+//        fatalError()
+//    }
+//
+//    public func profileDup(_ id: ABI.AppIdentifier) async throws {
+//        fatalError()
+//    }
+//
+//    public func profileImportText(_ text: String) async throws {
+//        fatalError()
+//    }
+//
+//    public func profileRemove(_ id: ABI.AppIdentifier) async {
+//        fatalError()
+//    }
+//
+//    public func profileRemove(_ ids: [ABI.AppIdentifier]) async {
+//        fatalError()
+//    }
+//
+//    public func profileRemoveAllRemote() async throws {
+//        fatalError()
+//    }
+//
+//    public func tunnelConnect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
+//        fatalError()
+//    }
+//
+//    public func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
+//        fatalError()
+//    }
+//
+//    public func tunnelCurrentLog() async -> [String] {
+//        fatalError()
+//    }
+//}
+
+// MARK: - Observation
+
+// Invoked by AppDelegate
+extension CommonABI {
+    public func onApplicationActive() {
+        Task {
+            // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
+            try await onForeground()
+
+            await configManager.refreshBundle()
+            await versionChecker.checkLatestRelease()
+
+            // Propagate active config flags to tunnel via preferences
+            kvManager.preferences.configFlags = configManager.activeFlags
+
+            // Disable .relaxedVerification if ABI.ConfigFlag disallows it
+            if !configManager.isActive(.allowsRelaxedVerification) {
+                kvManager.set(false, forAppPreference: .relaxedVerification)
+            }
+        }
+    }
 }
 
-@_cdecl("psp_daemon_start")
-public func psp_daemon_start(
-    profile: UnsafePointer<CChar>!,
-    jniWrapper: UnsafeMutableRawPointer?
-) -> Bool {
-    var args = partout_daemon_start_args()
-    args.profile = profile
-    args.ctrl_impl = jniWrapper
-    return partout_daemon_start(ctx, &args)
+// Invoked on internal events
+private extension CommonABI {
+    func onLaunch() async throws {
+        logger.log(.core, .notice, "Application did launch")
+
+        logger.log(.profiles, .info, "\tRead and observe local profiles...")
+        try await profileManager.observeLocal()
+
+        logger.log(.profiles, .info, "\tObserve in-app events...")
+        iapManager.observeObjects(withProducts: true)
+
+        // Defer loads to not block app launch
+        Task {
+            await iapManager.reloadReceipt()
+            didLoadReceiptDate = Date()
+        }
+        Task {
+            await reloadSystemExtension()
+        }
+
+        logger.log(.iap, .info, "\tObserve changes in IAPManager...")
+        let iapEvents = iapManager.didChange.subscribe()
+        subscriptions.append(Task { [weak self] in
+            guard let self else { return }
+            for await event in iapEvents {
+                switch event {
+                case .status(let isEnabled):
+                    // FIXME: #1594, .dropFirst() + .removeDuplicates()
+                    logger.log(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
+                    kvManager.set(!isEnabled, forAppPreference: .skipsPurchases)
+                    await iapManager.reloadReceipt()
+                    didLoadReceiptDate = Date()
+                case .eligibleFeatures(let features):
+                    // FIXME: #1594, .dropFirst() + .removeDuplicates()
+                    do {
+                        logger.log(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
+                        try await onEligibleFeatures(features)
+                    } catch {
+                        logger.log(.iap, .error, "Unable to react to eligible features: \(error)")
+                    }
+                default:
+                    break
+                }
+            }
+        })
+
+        logger.log(.profiles, .info, "\tObserve changes in ProfileManager...")
+        let profileEvents = profileManager.didChange.subscribe()
+        subscriptions.append(Task { [weak self] in
+            guard let self else { return }
+            for await event in profileEvents {
+                switch event {
+                case .save(let profile, let previousProfile):
+                    do {
+                        try await onSaveProfile(profile, previous: previousProfile)
+                    } catch {
+                        logger.log(.profiles, .error, "Unable to react to saved profile: \(error)")
+                    }
+                default:
+                    break
+                }
+            }
+        })
+
+        do {
+            logger.log(.core, .info, "\tFetch providers index...")
+            try await apiManager.fetchIndex()
+        } catch {
+            logger.log(.core, .error, "\tUnable to fetch providers index: \(error)")
+        }
+    }
+
+    func onForeground() async throws {
+
+        // onForeground() is redundant after launch
+        let didLaunch = try await waitForTasks()
+        guard !didLaunch else {
+            return
+        }
+
+        logger.log(.core, .notice, "Application did enter foreground")
+        pendingTask = Task {
+            await reloadSystemExtension()
+
+            // Do not reload the receipt unconditionally
+            if shouldInvalidateReceipt {
+                await iapManager.reloadReceipt()
+                self.didLoadReceiptDate = Date()
+            }
+        }
+        await pendingTask?.value
+        pendingTask = nil
+    }
+
+    func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
+        try await waitForTasks()
+
+        logger.log(.core, .notice, "Application did update eligible features")
+        pendingTask = Task {
+            await onEligibleFeaturesBlock?(features)
+        }
+        await pendingTask?.value
+        pendingTask = nil
+    }
+
+    func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
+        try await waitForTasks()
+
+        logger.log(.core, .notice, "Application did save profile (\(profile.id))")
+        guard let previous else {
+            logger.log(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            return
+        }
+        let diff = profile.differences(from: previous)
+        guard diff.isRelevantForReconnecting(to: profile) else {
+            logger.log(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            return
+        }
+        guard tunnel.isActiveProfile(withId: profile.id) else {
+            logger.log(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
+            return
+        }
+        let status = tunnel.status(ofProfileId: profile.id)
+        guard [.active, .activating].contains(status) else {
+            logger.log(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            return
+        }
+
+        pendingTask = Task {
+            do {
+                logger.log(.core, .info, "\tReconnect profile \(profile.id)")
+                try await tunnel.disconnect(from: profile.id)
+                do {
+                    try await tunnel.connect(with: profile)
+                } catch ABI.AppError.interactiveLogin {
+                    logger.log(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                } catch {
+                    logger.log(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                }
+            } catch {
+                logger.log(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+            }
+        }
+        await pendingTask?.value
+        pendingTask = nil
+    }
+
+    @discardableResult
+    func waitForTasks() async throws -> Bool {
+        var didLaunch = false
+
+        // Require launch task to complete before performing anything else
+        if launchTask == nil {
+            launchTask = Task {
+                do {
+                    try await onLaunch()
+                } catch {
+                    launchTask = nil // Redo the launch task
+                    throw ABI.AppError.couldNotLaunch(reason: error)
+                }
+            }
+            didLaunch = true
+        }
+
+        // Will throw on .couldNotLaunch, and the next await
+        // will re-attempt launch because launchTask == nil
+        try await launchTask?.value
+
+        // Wait for pending task if any
+        await pendingTask?.value
+        pendingTask = nil
+
+        return didLaunch
+    }
+
+    func reloadSystemExtension() async {
+        guard let sysexManager else { return }
+        logger.log(.core, .info, "System Extension: load current status...")
+        do {
+            let result = try await sysexManager.load()
+            logger.log(.core, .info, "System Extension: load result is \(result)")
+        } catch {
+            logger.log(.core, .error, "System Extension: load error: \(error)")
+        }
+    }
+
+    var shouldInvalidateReceipt: Bool {
+        // Always invalidate if "old" verification strategy
+        guard kvManager.bool(forAppPreference: .relaxedVerification) else {
+            return true
+        }
+        // Receipt never loaded, force load
+        guard let didLoadReceiptDate else {
+            return true
+        }
+        // Always force a reload if purchased products are
+        // empty, because StoreKit may fail silently at times
+        if iapManager.purchasedProducts.isEmpty {
+            return true
+        }
+        // Must have elapsed more than invalidation period
+        let elapsed = -didLoadReceiptDate.timeIntervalSinceNow
+        return elapsed >= appConfiguration.constants.iap.receiptInvalidationInterval
+    }
 }
 
-@_cdecl("psp_daemon_stop")
-public func psp_daemon_stop() {
-    partout_daemon_stop(ctx)
+extension Collection where Element == Profile.DiffResult {
+    func isRelevantForReconnecting(to profile: Profile) -> Bool {
+        contains {
+            switch $0 {
+            case .changedName:
+                // Do not reconnect on profile rename
+                return false
+            case .changedBehavior(let changes):
+                // Reconnect on changes to "Enforce tunnel"
+                return changes.contains(.includesAllNetworks)
+            case .changedModules(let ids):
+                // Do not reconnect if only an on-demand module was changed
+                if ids.count == 1, let onlyID = ids.first,
+                   profile.module(withId: onlyID) is OnDemandModule {
+                    return false
+                }
+                return true
+            default:
+                return true
+            }
+        }
+    }
 }
-
-// MARK: - Test
-
-@_cdecl("psp_example_sum")
-public func __psp_example_sum(a: Int, b: Int) -> Int {
-    a + b
-}
-
-@_cdecl("psp_example_json")
-public func __psp_example_json() -> UnsafeMutablePointer<CChar> {
-    let module = try! DNSModule.Builder().build()
-    let registry = Registry()
-    let profile = try! Profile.Builder(name: "zio", modules: [module]).build()
-    let json = try! registry.json(fromProfile: profile)
-    return strdup(json)
-}
-#endif

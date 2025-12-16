@@ -43,7 +43,7 @@ private extension ABI.AppLogLevel {
     }
 }
 
-// FIXME: #1594, Make internal
+// FIXME: #1594, Make internal, use AppLogger not pp_log
 extension LoggerCategory {
     public enum App {
         public static let core = LoggerCategory(appCategory: .core)

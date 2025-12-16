@@ -5,11 +5,13 @@
 import Combine
 import CommonLibrary
 import Dispatch
-import Foundation
+import Observation
 
 @MainActor @Observable
 public final class ProfileObservable {
     private let logger: AppLogger
+    // FIXME: #1594: Replace manager with ABI
+//    private let abi: ABIProfileProtocol
     private let profileManager: ProfileManager
 
     private var allHeaders: [ABI.AppIdentifier: ABI.AppProfileHeader] {
@@ -20,7 +22,6 @@ public final class ProfileObservable {
     public private(set) var filteredHeaders: [ABI.AppProfileHeader]
     public private(set) var isReady: Bool
     public private(set) var isRemoteImportingEnabled: Bool
-    private var eventSubscription: Task<Void, Never>?
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
@@ -33,8 +34,6 @@ public final class ProfileObservable {
         isReady = false
         isRemoteImportingEnabled = false
         searchSubject = CurrentValueSubject("")
-
-        observeEvents()
     }
 }
 
@@ -99,42 +98,25 @@ extension ProfileObservable {
         !searchSubject.value.isEmpty
     }
 
-//    public func onUpdate(_ event: ABI.Event) {
-//        guard case .profiles(let profileEvent) = event else {
-//            return
-//        }
-//        print("ProfileObserver.onUpdate()")
-//        switch profileEvent {
-//        case .ready:
-//            isReady = true
-//        case .refresh(let headers):
-//            allHeaders = headers
-//        }
-//    }
+    func onUpdate(_ event: ABI.ProfileEvent) {
+        logger.log(.core, .debug, "ProfileObservable.onUpdate(): \(event)")
+        switch event {
+        case .ready:
+            isReady = true
+        case .refresh(let headers):
+            allHeaders = headers
+        case .changeRemoteImport:
+            // Later, set this property directly on ProfileObservable
+            isRemoteImportingEnabled = profileManager.isRemoteImportingEnabled
+        default:
+            break
+        }
+    }
 }
 
 private extension ProfileObservable {
     func observeEvents(debounce: Int = 200) {
         // No need for observeLocal/observeRemote, done by AppContext/ABI
-
-        let profileEvents = profileManager.didChange.subscribe()
-        eventSubscription = Task { [weak self] in
-            guard let self else { return }
-            for await event in profileEvents {
-                switch event {
-                case .ready:
-                    isReady = true
-                case .refresh(let headers):
-                    allHeaders = headers
-                case .changeRemoteImport:
-                    // Later, set this property directly on ProfileObservable
-                    isRemoteImportingEnabled = profileManager.isRemoteImportingEnabled
-                default:
-                    break
-                }
-            }
-        }
-
         searchSubscription = searchSubject
             .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
             .sink { [weak self] in

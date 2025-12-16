@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 #if canImport(Combine)
@@ -152,11 +151,11 @@ public final class APIManager {
         cache[providerId]
     }
 
-    public func providerRepository(for module: ProviderModule) async throws -> ProviderRepository {
+    public func providerRepository(for module: ProviderModule, sort: @escaping ProviderServer.Sorter) async throws -> ProviderRepository {
         if cache(for: module.providerId) == nil {
             try await fetchInfrastructure(for: module)
         }
-        return repository.providerRepository(for: module.providerId)
+        return repository.providerRepository(for: module.providerId, sort: sort)
     }
 
     public func resetCacheForAllProviders() async {

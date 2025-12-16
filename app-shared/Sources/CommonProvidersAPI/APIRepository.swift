@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 public typealias APIRepository = APIRepositoryReader & APIRepositoryWriter
@@ -17,7 +16,7 @@ public protocol APIRepositoryReader: Sendable {
 
     func presets(for server: ProviderServer, moduleType: ModuleType) async throws -> [ProviderPreset]
 
-    func providerRepository(for providerId: ProviderID) -> ProviderRepository
+    func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository
 }
 
 public protocol APIRepositoryWriter: Sendable {

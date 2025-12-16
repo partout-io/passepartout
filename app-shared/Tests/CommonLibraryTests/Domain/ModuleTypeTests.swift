@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibrary
-import Foundation
-import XCTest
+import Testing
 
-final class ModuleTypeTests: XCTestCase {
-    func test_givenModuleType_whenModuleIsConnectionType_thenIsConnection() {
-        XCTAssertTrue(ModuleType.openVPN.isConnection)
-        XCTAssertTrue(ModuleType.wireGuard.isConnection)
+struct ModuleTypeTests {
+    @Test
+    func givenModuleType_whenModuleIsConnectionType_thenIsConnection() {
+        #expect(ModuleType.openVPN.isConnection)
+        #expect(ModuleType.wireGuard.isConnection)
     }
 }

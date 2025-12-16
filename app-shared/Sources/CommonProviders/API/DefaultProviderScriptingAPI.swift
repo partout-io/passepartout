@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !PSP_CROSS
 import Partout
 
 public final class DefaultProviderScriptingAPI {
@@ -356,3 +357,4 @@ extension ProviderScriptResult: @unchecked Sendable {
         error?.hasPrefix(Self.apiPrefix) == true
     }
 }
+#endif

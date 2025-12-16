@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonProvidersCore
-import Foundation
+@testable import CommonProviders
 import Partout
 import Testing
 
@@ -18,7 +17,7 @@ struct ProviderScriptingAPITests {
     func givenAPI_whenProviderGetResult_thenIsMapped() {
         let sut: ProviderScriptingAPI
         do {
-            let url = try #require(Bundle.module.url(forResource: "mapped", withExtension: "txt"))
+            let url = try #require(Bundle.module.url(forResource: "Resources/mapped", withExtension: "txt"))
             let data = try Data(contentsOf: url)
             sut = DefaultProviderScriptingAPI(.global, timeout: 3.0) {
                 #expect($0 == "GET")

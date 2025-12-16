@@ -64,7 +64,7 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager()
         let versionChecker = VersionChecker()
 
-        return AppContext(
+        let abi = CommonABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
@@ -80,5 +80,6 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
+        return AppContext(abi: abi)
     }
 }

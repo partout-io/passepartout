@@ -26,7 +26,6 @@ final class AppDelegate: NSObject {
 #endif
 
     func configure(with uiConfiguring: AppLibraryConfiguring?) {
-        CommonLibrary.assertMissingImplementations(with: context.registry)
         context.appearanceObservable.apply()
         uiConfiguring?.configure(with: context)
     }

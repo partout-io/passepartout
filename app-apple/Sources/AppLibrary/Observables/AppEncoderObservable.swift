@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
+import MiniFoundation
+import Observation
 
 @MainActor @Observable
 public final class AppEncoderObservable {

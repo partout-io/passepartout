@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 import CommonProvidersCore
 #endif
-import Foundation
 
 public struct ProviderInfrastructure: Decodable, Sendable {
     public let presets: [ProviderPreset]

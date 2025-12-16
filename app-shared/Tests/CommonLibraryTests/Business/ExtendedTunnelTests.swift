@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-import Foundation
 import Testing
 
 struct ExtendedTunnelTests {

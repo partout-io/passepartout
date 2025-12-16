@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Combine
 import CommonLibrary
-import Foundation
 import Partout
 
 // FIXME: #1594, Bound to objectWillChange.send()

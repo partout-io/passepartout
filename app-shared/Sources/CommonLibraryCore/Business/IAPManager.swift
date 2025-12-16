@@ -10,12 +10,6 @@ extension IAPManager: ObservableObject {}
 
 @MainActor
 public final class IAPManager {
-    public enum Event: Sendable {
-        case status(isEnabled: Bool)
-        case eligibleFeatures(Set<ABI.AppFeature>)
-        case loadReceipt(isLoading: Bool)
-    }
-
     private let customUserLevel: ABI.AppUserLevel?
 
     private let inAppHelper: any AppProductHelper
@@ -63,7 +57,7 @@ public final class IAPManager {
         verificationDelayMinutesBlock(isBeta)
     }
 
-    public let didChange: PassthroughStream<UniqueID, Event>
+    public let didChange: PassthroughStream<UniqueID, ABI.IAPEvent>
 
     private var isObserving: Bool
 

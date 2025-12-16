@@ -5,7 +5,6 @@
 #if !PSP_CROSS
 import CommonProvidersAPI
 import CommonProvidersCore
-#endif
 import Partout
 
 public final class DefaultAPIMapper: APIMapper {
@@ -214,3 +213,4 @@ private struct ScriptResult<T>: Decodable where T: Decodable {
 
     let error: String?
 }
+#endif

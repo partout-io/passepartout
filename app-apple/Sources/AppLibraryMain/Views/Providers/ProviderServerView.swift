@@ -135,7 +135,10 @@ private extension ProviderServerView {
             pp_log_g(.App.core, .error, "Unable to load preferences for provider \(providerId): \(error)")
         }
         do {
-            let repository = try await apiManager.providerRepository(for: module)
+            let repository = try await apiManager.providerRepository(for: module) {
+                guard !$1.isEmpty else { return }
+                $0.sort(using: $1.sortingComparators)
+            }
             try await providerManager.setRepository(repository, for: moduleType)
             filtersViewModel.load(options: providerManager.options, initialFilters: initialFilters)
             await reloadServers(filters: filtersViewModel.filters)

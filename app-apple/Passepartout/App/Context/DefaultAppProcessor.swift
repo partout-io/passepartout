@@ -120,7 +120,9 @@ private extension ProviderModule.Builder {
             return
         }
         let module = try ProviderModule.Builder(providerId: providerId, providerModuleType: providerModuleType).build()
-        let repo = try await apiManager.providerRepository(for: module)
+        let repo = try await apiManager.providerRepository(for: module) {
+            $0.sort(using: $1.sortingComparators)
+        }
         let providerManager = ProviderManager()
         try await providerManager.setRepository(repo, for: providerModuleType)
 

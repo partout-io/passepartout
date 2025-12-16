@@ -3,32 +3,33 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-import Foundation
-import XCTest
+import Partout
+import Testing
 
-final class WebReceiverManagerTests: XCTestCase {
+struct WebReceiverManagerTests {
 }
 
 @MainActor
 extension WebReceiverManagerTests {
-    func test_givenUploader_whenStart_thenReceivesFiles() async throws {
+    @Test
+    func givenUploader_whenStart_thenReceivesFiles() async throws {
         let webReceiver = MockWebReceiver(file: ABI.WebFileUpload(name: "name", contents: "contents"))
         let sut = WebReceiverManager(webReceiver: webReceiver)
         let stream = sut.files
-        let expReceive = expectation(description: "UploadReceive")
-        let expEnd = expectation(description: "UploadEnd")
+        let expReceive = Expectation()
+        let expEnd = Expectation()
         Task {
             for await file in stream {
-                XCTAssertEqual(file.name, "name")
-                XCTAssertEqual(file.contents, "contents")
-                expReceive.fulfill()
+                #expect(file.name == "name")
+                #expect(file.contents == "contents")
+                await expReceive.fulfill()
             }
-            expEnd.fulfill()
+            await expEnd.fulfill()
         }
         try sut.start()
-        await fulfillment(of: [expReceive])
+        try await expReceive.fulfillment(timeout: 100)
         sut.destroy()
-        await fulfillment(of: [expEnd])
+        try await expEnd.fulfillment(timeout: 100)
     }
 }
 

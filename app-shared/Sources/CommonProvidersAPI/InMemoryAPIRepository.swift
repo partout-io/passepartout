@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWriter {
@@ -47,14 +46,15 @@ public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWrit
         return infra.presets
     }
 
-    public func providerRepository(for providerId: ProviderID) -> ProviderRepository {
+    public func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository {
         let infra = infrastructuresSubject.value[providerId]
         let servers = infra?.servers ?? []
         let presets = infra?.presets ?? []
         return InMemoryProviderRepository(
             providerId: providerId,
             allPresets: presets,
-            allServers: servers
+            allServers: servers,
+            sort: sort
         )
     }
 

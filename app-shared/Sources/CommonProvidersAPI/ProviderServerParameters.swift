@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 import CommonProvidersCore
 #endif
-import Foundation
 import Partout
 
 public struct ProviderServerParameters: Sendable {
@@ -34,14 +33,6 @@ public struct ProviderFilters: Equatable, Sendable {
 
     public init() {
     }
-}
-
-public enum ProviderSortField: Sendable {
-    case localizedCountry
-
-    case area
-
-    case serverId
 }
 
 public struct ProviderFilterOptions: Sendable {

@@ -2,13 +2,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
-import Foundation
+#if !PSP_MONOLITH
+import CommonProviders
+#endif
 import Partout
 
-// FIXME: #1594, Improve preferences design
+#if !PSP_CROSS
+import Combine
+extension PreferencesManager: ObservableObject {}
+#endif
+
 @MainActor
-public final class PreferencesManager: ObservableObject {
+public final class PreferencesManager {
     public var modulesRepositoryFactory: (UUID) throws -> ModulePreferencesRepository
 
     public var providersRepositoryFactory: (ProviderID) throws -> ProviderPreferencesRepository

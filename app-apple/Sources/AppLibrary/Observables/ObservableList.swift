@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+import Combine
 
 @MainActor
 public final class ObservableList<T>: ObservableObject where T: Equatable {

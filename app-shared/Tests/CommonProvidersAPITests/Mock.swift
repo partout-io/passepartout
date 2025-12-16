@@ -4,7 +4,6 @@
 
 import CommonProvidersAPI
 import CommonProvidersCore
-import Foundation
 import Partout
 
 struct MockModule: Module {
@@ -91,7 +90,7 @@ final class MockRepository: APIRepository {
         []
     }
 
-    func providerRepository(for providerId: ProviderID) -> ProviderRepository {
+    func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository {
         let infra = infrastructuresSubject.value[providerId]
         let repo = MockVPNRepository(providerId: providerId)
         repo.allServers = infra?.servers ?? []
