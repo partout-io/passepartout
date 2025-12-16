@@ -46,7 +46,7 @@ public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWrit
         return infra.presets
     }
 
-    public func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository {
+    public func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServerParameters.Sorter) -> ProviderRepository {
         let infra = infrastructuresSubject.value[providerId]
         let servers = infra?.servers ?? []
         let presets = infra?.presets ?? []

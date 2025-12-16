@@ -151,7 +151,7 @@ public final class APIManager {
         cache[providerId]
     }
 
-    public func providerRepository(for module: ProviderModule, sort: @escaping ProviderServer.Sorter) async throws -> ProviderRepository {
+    public func providerRepository(for module: ProviderModule, sort: @escaping ProviderServerParameters.Sorter) async throws -> ProviderRepository {
         if cache(for: module.providerId) == nil {
             try await fetchInfrastructure(for: module)
         }

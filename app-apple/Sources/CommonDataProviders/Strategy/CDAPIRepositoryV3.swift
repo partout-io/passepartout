@@ -177,7 +177,7 @@ private final class CDAPIRepositoryV3: NSObject, APIRepository {
         }
     }
 
-    nonisolated func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository {
+    nonisolated func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServerParameters.Sorter) -> ProviderRepository {
         CDProviderRepositoryV3(context: context, providerId: providerId)
     }
 }

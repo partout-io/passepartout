@@ -4,15 +4,7 @@
 
 import Partout
 
-public enum ProviderSortField: Sendable {
-    case localizedCountry
-    case area
-    case serverId
-}
-
 public struct ProviderServer: Identifiable, Hashable, Codable, Sendable {
-    public typealias Sorter = @Sendable (inout [ProviderServer], [ProviderSortField]) -> Void
-
     public struct Metadata: Hashable, Codable, Sendable {
         public let providerId: ProviderID
 

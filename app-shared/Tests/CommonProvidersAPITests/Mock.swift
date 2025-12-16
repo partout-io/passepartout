@@ -90,7 +90,7 @@ final class MockRepository: APIRepository {
         []
     }
 
-    func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository {
+    func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServerParameters.Sorter) -> ProviderRepository {
         let infra = infrastructuresSubject.value[providerId]
         let repo = MockVPNRepository(providerId: providerId)
         repo.allServers = infra?.servers ?? []

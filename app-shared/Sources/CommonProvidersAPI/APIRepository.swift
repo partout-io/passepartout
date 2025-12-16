@@ -16,7 +16,7 @@ public protocol APIRepositoryReader: Sendable {
 
     func presets(for server: ProviderServer, moduleType: ModuleType) async throws -> [ProviderPreset]
 
-    func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServer.Sorter) -> ProviderRepository
+    func providerRepository(for providerId: ProviderID, sort: @escaping ProviderServerParameters.Sorter) -> ProviderRepository
 }
 
 public protocol APIRepositoryWriter: Sendable {

@@ -14,13 +14,13 @@ public final class InMemoryProviderRepository: ProviderRepository {
 
     private let allServers: [ProviderServer]
 
-    private let sort: ProviderServer.Sorter
+    private let sort: ProviderServerParameters.Sorter
 
     public init(
         providerId: ProviderID,
         allPresets: [ProviderPreset],
         allServers: [ProviderServer],
-        sort: @escaping ProviderServer.Sorter
+        sort: @escaping ProviderServerParameters.Sorter
     ) {
         self.providerId = providerId
         self.allPresets = allPresets
