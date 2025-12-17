@@ -45,19 +45,21 @@ extension AppContext {
             processor: processor,
             interval: 10.0
         )
-        let apiManager = APIManager(
-            .global,
-            from: API.bundled,
-            repository: InMemoryAPIRepository(.global)
-        )
         let configManager = ConfigManager()
-        let preferencesManager = PreferencesManager()
 
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        return AppContext(
+        // Redesign
+        let apiManager = APIManager(
+            .global,
+            from: API.bundled,
+            repository: InMemoryAPIRepository(.global)
+        )
+        let preferencesManager = PreferencesManager()
+
+        let abi = CommonABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
@@ -73,6 +75,7 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
+        return AppContext(abi: abi)
     }()
 }
 

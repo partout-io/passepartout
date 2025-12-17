@@ -2,17 +2,19 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if canImport(CommonLibraryApple)
 @testable import CommonLibraryApple
-import Foundation
-import XCTest
+import Testing
 
-final class HTMLTemplateTests: XCTestCase {
-    func test_givenTemplate_whenInjectKey_thenReturnsLocalizedHTML() throws {
+struct HTMLTemplateTests {
+    @Test
+    func givenTemplate_whenInjectKey_thenReturnsLocalizedHTML() throws {
         let html = """
 Hey show some #{web_uploader.success}
 """
         let sut = HTMLTemplate(html: html)
         let localized = sut.withLocalizedKeys(in: .module)
-        XCTAssertEqual(localized, "Hey show some Upload complete!")
+        #expect(localized == "Hey show some Upload complete!")
     }
 }
+#endif

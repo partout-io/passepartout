@@ -10,12 +10,6 @@ extension VersionChecker: ObservableObject {}
 
 @MainActor
 public final class VersionChecker {
-    public struct Release: Hashable, Sendable {
-        public let version: ABI.SemanticVersion
-
-        public let url: URL
-    }
-
     private let kvManager: KeyValueManager
 
     private let strategy: VersionCheckerStrategy
@@ -25,6 +19,8 @@ public final class VersionChecker {
     private let downloadURL: URL
 
     private var isPending = false
+
+    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.VersionEvent>
 
     public init(
         kvManager: KeyValueManager,
@@ -39,14 +35,15 @@ public final class VersionChecker {
         self.strategy = strategy
         self.currentVersion = semCurrent
         self.downloadURL = downloadURL
+        didChange = PassthroughStream()
     }
 
-    public var latestRelease: Release? {
+    public var latestRelease: ABI.VersionRelease? {
         guard let latestVersionDescription = kvManager.string(forAppPreference: .lastCheckedVersion),
               let latestVersion = ABI.SemanticVersion(latestVersionDescription) else {
             return nil
         }
-        return latestVersion > currentVersion ? Release(version: latestVersion, url: downloadURL) : nil
+        return latestVersion > currentVersion ? ABI.VersionRelease(version: latestVersion, url: downloadURL) : nil
     }
 
     public func checkLatestRelease() async {
@@ -71,6 +68,7 @@ public final class VersionChecker {
 #if !PSP_CROSS
             objectWillChange.send()
 #endif
+            didChange.send(.new)
 
             if let latestRelease {
                 pp_log_g(.App.core, .info, "Version: new version available at \(latestRelease.url)")

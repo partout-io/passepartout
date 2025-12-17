@@ -38,11 +38,10 @@ ExternalProject_Add(
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodules/partout
     CMAKE_ARGS ${PARTOUT_ARGS}
     INSTALL_COMMAND ""
-    BUILD_ALWAYS 1
+    BUILD_ALWAYS 0
 )
 
 # Build Passepartout shared library
-set(ABI_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/app-shared/Sources/CommonLibrary_C/include/passepartout.h)
 set(ABI_ARGS
     ${BUILD_ARGS}
     ${TOOLCHAIN_ARGS}
@@ -54,7 +53,7 @@ ExternalProject_Add(
     PassepartoutShared
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app-shared
     CMAKE_ARGS ${ABI_ARGS}
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${ABI_HEADER} ${OUTPUT_DIR}
+    INSTALL_COMMAND ""
     BUILD_ALWAYS 1
     DEPENDS PartoutProject
 )

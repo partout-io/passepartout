@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
-import XCTest
+import Testing
 
-final class MultipartFormTests: XCTestCase {
-    func test_givenBody_whenParseForm_thenReturnsFields() throws {
+struct MultipartFormTests {
+    @Test
+    func givenBody_whenParseForm_thenReturnsFields() throws {
         let passcode = "123"
         let fileName = "some-filename.txt"
         let fileContents = "This is the file content"
@@ -25,11 +25,11 @@ Content-Type: application/octet-stream\r
 ------WebKitFormBoundaryUtFggDFvBDn88T9z--\r
 """
 
-        let sut = try XCTUnwrap(MultipartForm(body: body))
+        let sut = try #require(MultipartForm(body: body))
 
-        XCTAssertNil(sut.fields["passcode"]?.filename)
-        XCTAssertEqual(sut.fields["passcode"]?.value, passcode)
-        XCTAssertEqual(sut.fields["file"]?.filename, fileName)
-        XCTAssertEqual(sut.fields["file"]?.value, fileContents)
+        #expect(sut.fields["passcode"]?.filename == nil)
+        #expect(sut.fields["passcode"]?.value == passcode)
+        #expect(sut.fields["file"]?.filename == fileName)
+        #expect(sut.fields["file"]?.value == fileContents)
     }
 }

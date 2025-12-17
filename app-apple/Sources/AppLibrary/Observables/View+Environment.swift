@@ -24,13 +24,12 @@ extension View {
             .environment(context.userPreferences)
             .environment(context.versionObservable)
             .environment(context.viewLogger)
-            // Redesign
+            // Deprecated
             .environmentObject(context.apiManager)
-            .environmentObject(context.preferencesManager)
-            // Deprecate
             .environmentObject(context.configManager)
             .environmentObject(context.iapManager)
             .environmentObject(context.kvManager)
+            .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)
             .environmentObject(context.versionChecker)
     }

@@ -245,7 +245,7 @@ function getInfrastructure(module, headers) {
         const hostname = `${id.toLowerCase()}.mullvad.net`;
         const addresses = [
             relay.ipv4_addr_in,
-//            relay.ipv6_addr_in // FIXME: ###, IPv6 encoding?
+//            relay.ipv6_addr_in // FIXME: #507, IPv6 encoding?
         ].map((a) => api.ipV4ToBase64(a));
 
         const code = id.split("-")[0].toUpperCase();

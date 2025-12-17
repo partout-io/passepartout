@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if !PSP_MONOLITH
 @_exported import CommonLibraryCore
 #if canImport(CommonLibraryApple)
 @_exported import CommonLibraryApple

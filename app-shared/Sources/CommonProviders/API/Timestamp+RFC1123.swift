@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
+#if !PSP_CROSS
 import Partout
 
 private let rfc1123: DateFormatter = {
@@ -27,3 +27,4 @@ extension String {
             .map(\.timestamp)
     }
 }
+#endif

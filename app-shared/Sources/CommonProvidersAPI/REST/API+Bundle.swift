@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !PSP_CROSS
 import Foundation
 
 extension API {
@@ -9,3 +10,4 @@ extension API {
         Bundle.module.url(forResource: "JSON/v\(version)", withExtension: nil)
     }
 }
+#endif

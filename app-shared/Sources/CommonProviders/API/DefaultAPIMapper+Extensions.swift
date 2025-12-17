@@ -4,7 +4,6 @@
 
 #if !PSP_CROSS
 import CommonProvidersCore
-#endif
 import Partout
 
 extension DefaultAPIMapper {
@@ -28,3 +27,4 @@ extension DefaultAPIMapper {
         }
     }
 }
+#endif

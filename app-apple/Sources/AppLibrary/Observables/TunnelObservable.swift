@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
+import Observation
 
 @MainActor @Observable
 public final class TunnelObservable {
     private let logger: AppLogger
+    // FIXME: #1594: Replace manager with ABI
+//    private let abi: ABIProfileProtocol
     private let extendedTunnel: ExtendedTunnel
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
@@ -19,8 +21,6 @@ public final class TunnelObservable {
         self.extendedTunnel = extendedTunnel
         activeProfiles = [:]
         transfers = [:]
-
-        observeEvents()
     }
 }
 
@@ -45,17 +45,6 @@ extension TunnelObservable {
                 logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
             }
     }
-
-//    public func onUpdate(_ event: ABI.Event) {
-//        guard case .tunnel(let tunnelEvent) = event else {
-//            return
-//        }
-//        print("TunnelObserver.onUpdate()")
-//        switch tunnelEvent {
-//        case .refresh:
-//            break
-//        }
-//    }
 }
 
 // MARK: - State
@@ -76,22 +65,15 @@ extension TunnelObservable {
     public func lastError(for profileId: ABI.AppIdentifier) -> ABI.AppError? {
         extendedTunnel.lastError(ofProfileId: profileId)
     }
-}
 
-private extension TunnelObservable {
-    func observeEvents() {
-        let tunnelEvents = extendedTunnel.didChange.subscribe()
-        subscription = Task { [weak self] in
-            guard let self else { return }
-            for await event in tunnelEvents {
-                switch event {
-                case .refresh(let active):
-                    activeProfiles = active
-                case .dataCount:
-                    transfers = activeProfiles.compactMapValues {
-                        self.extendedTunnel.transfer(ofProfileId: $0.id)
-                    }
-                }
+    func onUpdate(_ event: ABI.TunnelEvent) {
+        logger.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+        switch event {
+        case .refresh(let active):
+            activeProfiles = active
+        case .dataCount:
+            transfers = activeProfiles.compactMapValues {
+                extendedTunnel.transfer(ofProfileId: $0.id)
             }
         }
     }

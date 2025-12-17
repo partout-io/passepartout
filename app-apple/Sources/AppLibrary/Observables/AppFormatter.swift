@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Foundation
+import Observation
 
 @MainActor @Observable
 public final class AppFormatter {

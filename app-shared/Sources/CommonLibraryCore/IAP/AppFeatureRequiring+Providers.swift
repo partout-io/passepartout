@@ -2,8 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS && PSP_PROVIDERS
+#if PSP_PROVIDERS
+#if !PSP_MONOLITH
 import CommonProviders
+#endif
 
 extension ProviderID: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {

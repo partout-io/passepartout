@@ -8,7 +8,11 @@
 #include "passepartout.h"
 
 int main() {
+    psp_init_args args = { 0 };
     printf("Hello Partout %s\n", psp_partout_version());
-    psp_init("");
+    args.cache_dir = ".";
+    args.event_ctx = NULL;
+    args.event_cb = NULL;
+    psp_init(&args);
     return 0;
 }

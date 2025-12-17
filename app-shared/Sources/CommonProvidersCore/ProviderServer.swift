@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 public struct ProviderServer: Identifiable, Hashable, Codable, Sendable {
@@ -73,9 +72,5 @@ extension ProviderServer {
             })
         }
         return list
-    }
-
-    public var localizedCountry: String? {
-        Locale.current.localizedString(forRegionCode: metadata.countryCode)
     }
 }

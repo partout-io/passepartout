@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-import Foundation
-import XCTest
+import Testing
 
-final class ProfileAttributesTests: XCTestCase {
-    func test_givenUserInfo_whenInit_thenReturnsAttributes() throws {
+struct ProfileAttributesTests {
+    @Test
+    func givenUserInfo_whenInit_thenReturnsAttributes() throws {
         let fingerprint = UUID()
         let lastUpdate = Date()
         let isAvailableForTV = true
@@ -18,13 +18,14 @@ final class ProfileAttributesTests: XCTestCase {
         ])
 
         let sut = ProfileAttributes(userInfo: userInfo)
-        XCTAssertEqual(sut.userInfo, userInfo)
-        XCTAssertEqual(sut.fingerprint, fingerprint)
-        XCTAssertEqual(sut.lastUpdate, lastUpdate)
-        XCTAssertEqual(sut.isAvailableForTV, isAvailableForTV)
+        #expect(sut.userInfo == userInfo)
+        #expect(sut.fingerprint == fingerprint)
+        #expect(sut.lastUpdate == lastUpdate)
+        #expect(sut.isAvailableForTV == isAvailableForTV)
     }
 
-    func test_givenUserInfo_whenSet_thenReturnsAttributes() throws {
+    @Test
+    func givenUserInfo_whenSet_thenReturnsAttributes() throws {
         let fingerprint = UUID()
         let lastUpdate = Date()
         let isAvailableForTV = true
@@ -38,13 +39,14 @@ final class ProfileAttributesTests: XCTestCase {
         sut.fingerprint = fingerprint
         sut.lastUpdate = lastUpdate
         sut.isAvailableForTV = isAvailableForTV
-        XCTAssertEqual(sut.userInfo, userInfo)
-        XCTAssertEqual(sut.fingerprint, fingerprint)
-        XCTAssertEqual(sut.lastUpdate, lastUpdate)
-        XCTAssertEqual(sut.isAvailableForTV, isAvailableForTV)
+        #expect(sut.userInfo == userInfo)
+        #expect(sut.fingerprint == fingerprint)
+        #expect(sut.lastUpdate == lastUpdate)
+        #expect(sut.isAvailableForTV == isAvailableForTV)
     }
 
-    func test_givenUserInfo_whenInit_thenReturnsModulePreferences() throws {
+    @Test
+    func givenUserInfo_whenInit_thenReturnsModulePreferences() throws {
         let moduleId1 = UUID()
         let moduleId2 = UUID()
         let excludedEndpoints: [String] = [
@@ -63,15 +65,17 @@ final class ProfileAttributesTests: XCTestCase {
         ])
 
         let sut = ProfileAttributes(userInfo: userInfo)
-        XCTAssertEqual(sut.userInfo, userInfo)
+        #expect(sut.userInfo == userInfo)
         for moduleId in [moduleId1, moduleId2] {
             let module = sut.preferences(inModule: moduleId)
-            XCTAssertEqual(module.userInfo, try JSON(moduleUserInfo))
-            XCTAssertEqual(module.rawExcludedEndpoints, excludedEndpoints)
+            let reversedUserInfo = try JSON(moduleUserInfo)
+            #expect(module.userInfo == reversedUserInfo)
+            #expect(module.rawExcludedEndpoints == excludedEndpoints)
         }
     }
 
-    func test_givenUserInfo_whenSet_thenReturnsModulePreferences() throws {
+    @Test
+    func givenUserInfo_whenSet_thenReturnsModulePreferences() throws {
         let moduleId1 = UUID()
         let moduleId2 = UUID()
         let excludedEndpoints: [String] = [
@@ -93,9 +97,10 @@ final class ProfileAttributesTests: XCTestCase {
         for moduleId in [moduleId1, moduleId2] {
             var module = sut.preferences(inModule: moduleId1)
             module.rawExcludedEndpoints = excludedEndpoints
-            XCTAssertEqual(module.userInfo, try JSON(moduleUserInfo))
+            let reversedUserInfo = try JSON(moduleUserInfo)
+            #expect(module.userInfo == reversedUserInfo)
             sut.setPreferences(module, inModule: moduleId)
         }
-        XCTAssertEqual(sut.userInfo, userInfo)
+        #expect(sut.userInfo == userInfo)
     }
 }

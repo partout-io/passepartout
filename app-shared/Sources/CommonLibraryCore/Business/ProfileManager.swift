@@ -18,26 +18,6 @@ public final class ProfileManager {
         case remote
     }
 
-    public enum Event: Equatable, Sendable {
-        case ready
-        case refresh([ABI.AppIdentifier: ABI.AppProfileHeader])
-        case startRemoteImport
-        case stopRemoteImport
-
-        @available(*, deprecated, message: "#1594")
-        case localProfiles
-        @available(*, deprecated, message: "#1594")
-        case remoteProfiles
-        @available(*, deprecated, message: "#1594")
-        case filteredProfiles
-        @available(*, deprecated, message: "#1594")
-        case save(Profile, previous: Profile?)
-        @available(*, deprecated, message: "#1594")
-        case remove([Profile.ID])
-        @available(*, deprecated, message: "#1594")
-        case changeRemoteImport
-    }
-
     // MARK: Dependencies
 
     private let registry: Registry
@@ -106,7 +86,7 @@ public final class ProfileManager {
 
     // MARK: Publishers
 
-    public let didChange: PassthroughStream<UniqueID, Event>
+    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.ProfileEvent>
     private var localSubscription: Task<Void, Never>?
     private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
