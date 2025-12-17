@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonData
+import AppData
 import CommonLibrary
 @preconcurrency import CoreData
 import Foundation
 import Partout
 
-extension CommonData {
+extension AppData {
     public static func cdAPIRepositoryV3(context: NSManagedObjectContext) -> APIRepository {
         CDAPIRepositoryV3(context: context)
     }

@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Combine
-import CommonData
+import AppData
 import CommonLibrary
 import CoreData
 import Foundation
 import Partout
 
-extension CommonData {
+extension AppData {
     public static func cdProfileRepositoryV3(
         encoder: AppEncoder,
         context: NSManagedObjectContext,
@@ -39,7 +39,7 @@ extension CommonData {
     }
 }
 
-private extension CommonData {
+private extension AppData {
     static func fromMapper(
         _ cdEntity: CDProfileV3,
         encoder: AppEncoder

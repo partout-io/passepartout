@@ -9,7 +9,7 @@
 import Testing
 
 @MainActor
-struct IAPManagerNewSuggestionsTests {
+struct IAPManagerSuggestionsTests {
     @Test
     func givenFree_thenSuggestsEssentialsAllAndPlatform() async {
         let sut = await IAPManager(products: [])

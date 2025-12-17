@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonData
+import AppData
 import CommonLibrary
 import CoreData
 import Foundation
 import Partout
 
-extension CommonData {
+extension AppData {
 
     @MainActor
     public static func cdProviderPreferencesRepositoryV3(context: NSManagedObjectContext, providerId: ProviderID) throws -> ProviderPreferencesRepository {

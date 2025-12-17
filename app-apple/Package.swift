@@ -23,24 +23,24 @@ let package = Package(
         .library(
             name: "AppLibraryMain",
             targets: [
-                "CommonDataPreferences",
-                "CommonDataProfiles",
-                "CommonDataProviders",
+                "AppDataPreferences",
+                "AppDataProfiles",
+                "AppDataProviders",
                 "AppLibraryMainWrapper"
             ]
         ),
         .library(
             name: "AppLibraryTV",
             targets: [
-                "CommonDataPreferences",
-                "CommonDataProfiles",
-                "CommonDataProviders",
+                "AppDataPreferences",
+                "AppDataProfiles",
+                "AppDataProviders",
                 "AppLibraryTVWrapper"
             ]
         ),
         .library(
             name: "TunnelLibrary",
-            targets: ["CommonResources"]
+            targets: ["AppResources"]
         )
     ],
     dependencies: [
@@ -51,11 +51,44 @@ let package = Package(
             name: "AppAccessibility"
         ),
         .target(
+            name: "AppData"
+        ),
+        .target(
+            name: "AppDataPreferences",
+            dependencies: [
+                "AppData",
+                .product(name: "CommonLibrary", package: "app-shared")
+            ],
+            resources: [
+                .process("Preferences.xcdatamodeld")
+            ]
+        ),
+        .target(
+            name: "AppDataProfiles",
+            dependencies: [
+                "AppData",
+                .product(name: "CommonLibrary", package: "app-shared")
+            ],
+            resources: [
+                .process("Profiles.xcdatamodeld")
+            ]
+        ),
+        .target(
+            name: "AppDataProviders",
+            dependencies: [
+                "AppData",
+                .product(name: "CommonLibrary", package: "app-shared")
+            ],
+            resources: [
+                .process("Providers.xcdatamodeld")
+            ]
+        ),
+        .target(
             name: "AppLibrary",
             dependencies: [
                 "AppStrings",
                 "AppAccessibility",
-                "CommonResources"
+                "AppResources"
             ]
         ),
         .target(
@@ -86,49 +119,16 @@ let package = Package(
             path: "Sources/Empty/AppLibraryTVWrapper"
         ),
         .target(
-            name: "AppStrings",
+            name: "AppResources",
+            dependencies: [
+                .product(name: "CommonLibrary", package: "app-shared")
+            ],
             resources: [
                 .process("Resources")
             ]
         ),
         .target(
-            name: "CommonData"
-        ),
-        .target(
-            name: "CommonDataPreferences",
-            dependencies: [
-                "CommonData",
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
-            resources: [
-                .process("Preferences.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "CommonDataProfiles",
-            dependencies: [
-                "CommonData",
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
-            resources: [
-                .process("Profiles.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "CommonDataProviders",
-            dependencies: [
-                "CommonData",
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
-            resources: [
-                .process("Providers.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "CommonResources",
-            dependencies: [
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
+            name: "AppStrings",
             resources: [
                 .process("Resources")
             ]

@@ -4,12 +4,12 @@
 
 import AppAccessibility
 import AppLibrary
-import CommonData
-import CommonDataPreferences
-import CommonDataProfiles
-import CommonDataProviders
+import AppData
+import AppDataPreferences
+import AppDataProfiles
+import AppDataProviders
 import CommonLibrary
-import CommonResources
+import AppResources
 import CoreData
 import Foundation
 import Partout
@@ -36,13 +36,13 @@ extension AppContext {
         // MARK: Core Data
 
         guard let cdLocalModel = NSManagedObjectModel.mergedModel(from: [
-            CommonData.providersBundle
+            AppData.providersBundle
         ]) else {
             fatalError("Unable to load local model")
         }
         guard let cdRemoteModel = NSManagedObjectModel.mergedModel(from: [
-            CommonData.profilesBundle,
-            CommonData.preferencesBundle
+            AppData.profilesBundle,
+            AppData.preferencesBundle
         ]) else {
             fatalError("Unable to load remote model")
         }
@@ -73,7 +73,7 @@ extension AppContext {
         // MARK: API/IAP
 
         let apiManager: APIManager = {
-            let repository = CommonData.cdAPIRepositoryV3(context: localStore.backgroundContext())
+            let repository = AppData.cdAPIRepositoryV3(context: localStore.backgroundContext())
             return APIManager(ctx, from: API.shared, repository: repository)
         }()
         let iapManager = IAPManager(
@@ -241,7 +241,7 @@ extension AppContext {
 
                     pp_log(ctx, .App.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
                     try await profileManager.observeRemote(repository: {
-                        CommonData.cdProfileRepositoryV3(
+                        AppData.cdProfileRepositoryV3(
                             encoder: appEncoder,
                             context: remoteStore.context,
                             observingResults: true,
@@ -258,7 +258,7 @@ extension AppContext {
 
             pp_log(ctx, .App.core, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
-                try CommonData.cdModulePreferencesRepositoryV3(
+                try AppData.cdModulePreferencesRepositoryV3(
                     context: remoteStore.context,
                     moduleId: $0
                 )
@@ -266,7 +266,7 @@ extension AppContext {
 
             pp_log(ctx, .App.core, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
-                try CommonData.cdProviderPreferencesRepositoryV3(
+                try AppData.cdProviderPreferencesRepositoryV3(
                     context: remoteStore.context,
                     providerId: $0
                 )
@@ -389,7 +389,7 @@ private extension Dependencies {
             cloudKitIdentifier: nil,
             author: nil
         )
-        return CommonData.cdProfileRepositoryV3(
+        return AppData.cdProfileRepositoryV3(
             encoder: encoder,
             context: store.context,
             observingResults: observingResults,
