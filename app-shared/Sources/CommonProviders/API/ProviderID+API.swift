@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !PSP_CROSS
 extension ProviderID {
     public static let hideme = Self(rawValue: "hideme")
 
@@ -25,3 +26,4 @@ extension ProviderID {
 
     public static let windscribe = Self(rawValue: "windscribe")
 }
+#endif
