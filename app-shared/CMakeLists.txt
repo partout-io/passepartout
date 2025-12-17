@@ -13,7 +13,7 @@ endforeach()
 # Configure as static library except on Android
 add_library(passepartout_shared SHARED ${PSP_SOURCES})
 target_compile_options(passepartout_shared PRIVATE
-    -DPSP_MONOLITH
+    -DUSE_CMAKE
     -DPSP_CROSS
     -DPSP_PROVIDERS
 )

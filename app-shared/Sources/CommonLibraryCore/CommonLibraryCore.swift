@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
+#if !USE_CMAKE
 #if PSP_PROVIDERS
 @_exported import CommonProviders
 #endif

@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
+#if !USE_CMAKE
 @_exported import Partout
 #endif
