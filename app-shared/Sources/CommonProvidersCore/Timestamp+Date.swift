@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public typealias Timestamp = UInt32
 
 // seconds since the epoch

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension Registry: ProfileImporter {
     public nonisolated func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
         let name: String

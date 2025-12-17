@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-import Partout
 import Testing
 
 struct WebReceiverManagerTests {

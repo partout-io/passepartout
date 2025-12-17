@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 // FIXME: #1594, Subject for search through manager (debounce not trivial)
 
 #if !PSP_CROSS

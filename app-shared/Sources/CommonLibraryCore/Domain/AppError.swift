@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension ABI {
     // FIXME: #1594, Exposes Partout (Module, ModuleBuilder)
     public enum AppError: Error {

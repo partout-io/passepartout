@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension TunnelStatus {
     var abiStatus: ABI.AppProfile.Status {
         switch self {

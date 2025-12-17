@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension String {
     public var nilIfEmpty: String? {
         !isEmpty ? self : nil

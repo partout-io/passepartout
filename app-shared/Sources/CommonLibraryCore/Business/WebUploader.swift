@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public final class WebUploader: Sendable {
     private let logger: AppLogger
 

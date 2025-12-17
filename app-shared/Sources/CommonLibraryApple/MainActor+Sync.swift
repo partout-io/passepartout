@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 // XXX: Trick to call MainActor code synchronously
 extension MainActor {
     public static func sync<T>(_ block: @escaping @Sendable @MainActor () throws -> T) rethrows -> T where T: Sendable {

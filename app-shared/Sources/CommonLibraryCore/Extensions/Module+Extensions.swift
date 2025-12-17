@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension Module {
     public var moduleType: ModuleType {
         moduleHandler.id

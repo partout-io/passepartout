@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 #if !PSP_CROSS
 extension WebReceiverManager: ObservableObject {}
 #endif

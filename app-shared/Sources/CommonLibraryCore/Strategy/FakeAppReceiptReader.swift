@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public actor FakeAppReceiptReader: AppReceiptReader {
     private var localReceipt: InAppReceipt?
 

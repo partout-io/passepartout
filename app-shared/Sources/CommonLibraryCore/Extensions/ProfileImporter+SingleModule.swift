@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension ProfileImporter {
     public func profile(withName name: String, singleModule module: Module) throws -> Profile {
         try Profile(withName: name, singleModule: module)

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension Data {
     public func toTemporaryURL(withFilename filename: String) -> URL? {
         let url = FileManager.default.makeTemporaryURL(filename: filename)
