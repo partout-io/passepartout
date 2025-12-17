@@ -13,8 +13,9 @@ extension Registry: ProfileImporter {
             name = filename
             contents = data
         case .file(let url):
+            var encoding: StringEncoding = .utf8
             // XXX: This may be very inefficient
-            contents = try String(contentsOf: url, encoding: .utf8)
+            contents = try String(contentsOf: url, usedEncoding: &encoding)
             name = url.lastPathComponent
         }
 
