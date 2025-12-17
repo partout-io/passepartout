@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 3.27)
 project(PassepartoutShared LANGUAGES Swift)
 
-# Include CommonLibrary sources
-file(GLOB_RECURSE PSP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift)
+# Configure as shared library
+add_library(passepartout_shared SHARED "")
+file(GLOB_RECURSE PSP_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift
+)
 set(PSP_EXCLUSIONS
     CommonLibraryApple.*
 )
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
-
-# Configure as static library except on Android
-add_library(passepartout_shared SHARED ${PSP_SOURCES})
+target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
 target_compile_options(passepartout_shared PRIVATE
     -DUSE_CMAKE
     -DPSP_CROSS
@@ -36,7 +37,6 @@ target_link_directories(passepartout_shared PRIVATE
 
 # Link Partout static library
 message(STATUS "Searching for libraries in ${OUTPUT_DIR}")
-
 # Android CMake can't seem to find static libraries, smh
 if(ANDROID)
     target_link_libraries(passepartout_shared PRIVATE
@@ -89,7 +89,6 @@ if(ANDROID)
 else()
     set(STRIP ${CMAKE_STRIP})
 endif()
-
 add_custom_command(
     TARGET passepartout_shared
     POST_BUILD
