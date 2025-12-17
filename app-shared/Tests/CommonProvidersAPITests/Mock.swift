@@ -4,6 +4,7 @@
 
 import CommonProvidersAPI
 import CommonProvidersCore
+
 struct MockModule: Module {
     static let moduleHandler = ModuleHandler(ModuleType("mock-module"), decoder: nil, factory: nil)
 

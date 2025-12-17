@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
-
 final class MockBetaChecker: BetaChecker, @unchecked Sendable {
     var isBeta = false
 

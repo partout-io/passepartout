@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
 public final class URLSessionUploaderStrategy: WebUploaderStrategy {
     private let timeout: TimeInterval
 

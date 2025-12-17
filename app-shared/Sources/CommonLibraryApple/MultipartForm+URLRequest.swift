@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
-import Foundation
-
 extension MultipartForm {
     public func toURLRequest(url: URL) -> URLRequest {
         var request = URLRequest(url: url)
