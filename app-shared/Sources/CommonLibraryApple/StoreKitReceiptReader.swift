@@ -2,10 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonLibraryCore
-#endif
-import Foundation
 import StoreKit
 
 public final class StoreKitReceiptReader: InAppReceiptReader, Sendable {

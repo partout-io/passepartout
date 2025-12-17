@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonProviders
-#endif
-import Partout
-
 #if !PSP_CROSS
 import Combine
 extension PreferencesManager: ObservableObject {}

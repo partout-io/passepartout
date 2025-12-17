@@ -2,12 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonLibraryCore
-#endif
-import Foundation
 import NetworkExtension
-import Partout
 
 // Only @unchecked for the managersSubscription initialization
 public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {

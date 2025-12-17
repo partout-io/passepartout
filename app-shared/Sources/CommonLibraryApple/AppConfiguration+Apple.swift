@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonLibraryCore
-#endif
-import Partout
-
 extension ABI.AppConfiguration {
     public enum BundleKey: String, CaseIterable, Decodable, Sendable {
         // These cases are all strings

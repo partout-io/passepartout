@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public final class CommonABI: ABIProtocol, Sendable {
     // MARK: Business
 

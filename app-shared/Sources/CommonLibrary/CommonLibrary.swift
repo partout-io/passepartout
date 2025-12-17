@@ -12,8 +12,6 @@
 #endif
 #endif
 
-import Partout
-
 public enum CommonLibrary {
     public static func assertMissingImplementations(with registry: Registry) {
         ModuleType.allCases.forEach { moduleType in

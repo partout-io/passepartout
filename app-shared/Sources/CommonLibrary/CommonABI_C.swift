@@ -5,7 +5,6 @@
 #if !os(iOS) && !os(tvOS)
 
 import CommonLibraryCore_C
-import Partout
 import PartoutABI_C
 
 nonisolated(unsafe)

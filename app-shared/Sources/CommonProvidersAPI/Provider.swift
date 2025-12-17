@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonProvidersCore
-#endif
-import Partout
-
 public struct Provider: Identifiable, Hashable, CustomStringConvertible, Sendable {
     public let id: ProviderID
 

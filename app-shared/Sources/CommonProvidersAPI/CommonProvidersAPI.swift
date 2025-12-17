@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if !PSP_MONOLITH
-@_exported import CommonProvidersAPI
 @_exported import CommonProvidersCore
 @_exported import Partout
 #endif
+
+public enum API {
+}

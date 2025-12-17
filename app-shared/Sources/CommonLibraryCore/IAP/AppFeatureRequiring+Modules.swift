@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH && PSP_PROVIDERS
-import CommonProvidersCore
-#endif
-import Partout
-
 extension DNSModule.Builder: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         [.dns]

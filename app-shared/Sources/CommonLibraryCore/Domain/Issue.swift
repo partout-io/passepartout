@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH && PSP_PROVIDERS
-import CommonProvidersCore
-#endif
-import Partout
-
 extension ABI {
     public struct Issue: Identifiable, Sendable {
         public let id: UUID
