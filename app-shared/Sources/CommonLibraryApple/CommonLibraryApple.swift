@@ -2,5 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum API {
-}
+#if !USE_CMAKE
+@_exported import CommonLibraryCore
+#endif

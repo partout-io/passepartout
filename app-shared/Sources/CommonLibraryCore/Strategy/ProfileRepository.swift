@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public protocol ProfileRepository: Sendable {
     nonisolated var profilesPublisher: AsyncStream<[Profile]> { get }
 

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension ProfileAttributes {
     public struct ModulePreferences {
         private enum Key: String {

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension ModuleType: @retroactive CaseIterable {
     public static let allCases: [ModuleType] = {
         var list: [ModuleType] = [
@@ -14,9 +12,7 @@ extension ModuleType: @retroactive CaseIterable {
             .ip,
             .onDemand
         ]
-#if PSP_PROVIDERS
         list.append(.provider)
-#endif
         return list
     }()
 }

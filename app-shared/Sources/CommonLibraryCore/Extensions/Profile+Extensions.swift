@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 @available(*, deprecated, message: "#1594")
 extension Profile {
     public static func sorting(lhs: Self, rhs: Self) -> Bool {

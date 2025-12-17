@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public final class AppEncoder: Sendable {
     private let registry: Registry
 

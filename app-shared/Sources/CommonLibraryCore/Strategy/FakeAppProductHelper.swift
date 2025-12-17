@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public actor FakeAppProductHelper: AppProductHelper {
     private let purchase: OriginalPurchase
 

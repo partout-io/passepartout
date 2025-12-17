@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if !PSP_CROSS
-import Partout
-
 private let rfc1123: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")

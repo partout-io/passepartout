@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension Profile: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         let builders = activeModules.compactMap { module in

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 // treat as a "C union"
 public struct ProviderAuthentication: Hashable, Codable, Sendable {
     public struct Credentials: Hashable, Codable, Sendable {

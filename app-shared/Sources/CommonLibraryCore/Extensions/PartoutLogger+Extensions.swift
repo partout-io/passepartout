@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension PartoutLogger {
     public enum Target {
         case app
@@ -152,9 +150,7 @@ private extension PartoutLogger.Builder {
             .App.profiles,
             .App.web
         ]
-#if PSP_PROVIDERS
         list.append(.providers)
-#endif
         setDefaultDestination(for: list)
 
         setLocalLogger(

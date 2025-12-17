@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
-import Foundation
-
 public final class UserDefaultsStore: KeyValueStore {
     private let defaults: UserDefaults
 

@@ -3,10 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if !PSP_CROSS
-import CommonProvidersAPI
-import CommonProvidersCore
-import Partout
-
 public final class DefaultAPIMapper: APIMapper {
     private let ctx: PartoutLoggerContext
 

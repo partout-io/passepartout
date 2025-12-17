@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension ModuleType {
     public func newModule(with registry: Registry) -> any ModuleBuilder {
         guard var newBuilder = registry.newModuleBuilder(withModuleType: self) else {

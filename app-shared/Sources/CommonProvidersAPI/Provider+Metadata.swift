@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonProvidersCore
-#endif
-import Partout
-
 extension Provider {
     public struct Metadata: Hashable, Codable, Sendable {
         public let userInfo: JSON?

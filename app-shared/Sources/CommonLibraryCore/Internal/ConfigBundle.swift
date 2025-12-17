@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 // FIXME: #1594, Make internal
 extension ABI {
     public struct ConfigBundle: Decodable, Sendable {

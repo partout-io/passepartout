@@ -2,11 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH && PSP_PROVIDERS
-import CommonProvidersCore
-#endif
-import Partout
-
 extension DNSModule.Builder: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         [.dns]
@@ -54,7 +49,6 @@ extension WireGuardModule.Builder: AppFeatureRequiring {
     }
 }
 
-#if PSP_PROVIDERS
 extension ProviderModule.Builder: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         var list: Set<ABI.AppFeature> = []
@@ -64,4 +58,3 @@ extension ProviderModule.Builder: AppFeatureRequiring {
         return list
     }
 }
-#endif

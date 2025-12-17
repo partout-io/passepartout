@@ -2,10 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonProvidersCore
-#endif
-
 extension ProviderID {
     public static let hideme = Self(rawValue: "hideme")
 

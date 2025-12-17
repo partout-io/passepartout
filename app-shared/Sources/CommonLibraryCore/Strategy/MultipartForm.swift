@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension MultipartForm {
     public struct Builder {
         public var fields: [String: Field]

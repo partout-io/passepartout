@@ -2,11 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonLibraryCore
-#endif
 import CoreData
-import Foundation
 
 public final class CoreDataPersistentStore: Sendable {
     private let logger: AppLogger?

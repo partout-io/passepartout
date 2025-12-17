@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension Profile {
     func abiHeader(
         sharingFlags: [ABI.ProfileSharingFlag],

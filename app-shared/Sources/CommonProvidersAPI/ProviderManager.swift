@@ -2,14 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonProvidersCore
-#endif
-import Partout
-
 #if canImport(Combine)
 import Combine
-
 extension ProviderManager: ObservableObject {
 }
 #endif

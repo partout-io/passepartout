@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 @MainActor
 public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     private let releaseURL: URL

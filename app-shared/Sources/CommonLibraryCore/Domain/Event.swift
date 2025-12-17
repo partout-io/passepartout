@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 // FIXME: #1594, Delete import after deleting deprecated events
-import Partout
-
 extension ABI {
     public enum Event: Sendable {
         case iap(IAPEvent)

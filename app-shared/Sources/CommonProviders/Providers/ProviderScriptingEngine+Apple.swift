@@ -2,12 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if canImport(Darwin)
-#if !PSP_MONOLITH
-import CommonProvidersCore
-#endif
+#if canImport(JavaScriptCore)
 import JavaScriptCore
-import Partout
 
 extension AppleJavaScriptEngine: ProviderScriptingEngine {
 

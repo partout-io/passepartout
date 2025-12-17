@@ -2,12 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_MONOLITH
-import CommonLibraryCore
-#endif
 @preconcurrency import CoreData
-import Foundation
-import Partout
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {
     // Core Data entity must have a unique "uuid" field

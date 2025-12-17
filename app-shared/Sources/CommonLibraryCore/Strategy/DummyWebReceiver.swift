@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 public final class DummyWebReceiver: WebReceiver {
     private let url: URL
 

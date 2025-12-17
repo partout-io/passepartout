@@ -3,10 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore_C
-#if !PSP_MONOLITH
-import CommonProviders
-#endif
-import Partout
 
 // FIXME: #1594, use typealias for string IDs like ProfileID
 

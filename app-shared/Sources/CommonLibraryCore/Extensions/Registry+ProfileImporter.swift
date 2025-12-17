@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension Registry: ProfileImporter {
     public nonisolated func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
         let name: String
@@ -13,7 +11,7 @@ extension Registry: ProfileImporter {
             name = filename
             contents = data
         case .file(let url):
-            var encoding: StringEncoding = .utf8
+            var encoding: String.Encoding = .utf8
             // XXX: This may be very inefficient
             contents = try String(contentsOf: url, usedEncoding: &encoding)
             name = url.lastPathComponent
