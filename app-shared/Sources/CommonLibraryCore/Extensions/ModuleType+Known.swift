@@ -12,9 +12,7 @@ extension ModuleType: @retroactive CaseIterable {
             .ip,
             .onDemand
         ]
-#if PSP_PROVIDERS
         list.append(.provider)
-#endif
         return list
     }()
 }

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension Registry {
-#if PSP_PROVIDERS
     public convenience init(
         providerResolvers: [ProviderModuleResolver],
         allImplementations: [ModuleImplementation]
@@ -25,18 +24,8 @@ extension Registry {
             }
         )
     }
-#else
-    public convenience init(allImplementations: [ModuleImplementation]) {
-        self.init(
-            withKnown: true,
-            allImplementations: allImplementations,
-            resolvedModuleBlock: nil
-        )
-    }
-#endif
 }
 
-#if PSP_PROVIDERS
 private extension Registry {
 
     @Sendable
@@ -65,4 +54,3 @@ private extension Registry {
         }
     }
 }
-#endif

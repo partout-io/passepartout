@@ -150,9 +150,7 @@ private extension PartoutLogger.Builder {
             .App.profiles,
             .App.web
         ]
-#if PSP_PROVIDERS
         list.append(.providers)
-#endif
         setDefaultDestination(for: list)
 
         setLocalLogger(

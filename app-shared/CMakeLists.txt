@@ -15,7 +15,6 @@ add_library(passepartout_shared SHARED ${PSP_SOURCES})
 target_compile_options(passepartout_shared PRIVATE
     -DUSE_CMAKE
     -DPSP_CROSS
-    -DPSP_PROVIDERS
 )
 set_target_properties(passepartout_shared PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}

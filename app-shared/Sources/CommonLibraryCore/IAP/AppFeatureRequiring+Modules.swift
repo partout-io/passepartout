@@ -49,7 +49,6 @@ extension WireGuardModule.Builder: AppFeatureRequiring {
     }
 }
 
-#if PSP_PROVIDERS
 extension ProviderModule.Builder: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         var list: Set<ABI.AppFeature> = []
@@ -59,4 +58,3 @@ extension ProviderModule.Builder: AppFeatureRequiring {
         return list
     }
 }
-#endif

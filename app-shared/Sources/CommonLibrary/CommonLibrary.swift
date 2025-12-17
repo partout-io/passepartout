@@ -7,9 +7,7 @@
 #if canImport(CommonLibraryApple)
 @_exported import CommonLibraryApple
 #endif
-#if PSP_PROVIDERS
 @_exported import CommonProviders
-#endif
 #endif
 
 public enum CommonLibrary {

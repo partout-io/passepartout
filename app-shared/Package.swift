@@ -3,14 +3,10 @@
 
 import PackageDescription
 
-let withProviders = true
 let swiftSettings = {
     var list: [SwiftSetting] = [
         .define("PSP_CROSS", .when(platforms: [.android, .linux, .windows]))
     ]
-    if withProviders {
-        list.append(.define("PSP_PROVIDERS"))
-    }
     return list
 }()
 
