@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 // FIXME: #1594, Drop true because Partout ABI is not available on iOS/tvOS
-#if true || PSP_CROSS
+#if PSP_CROSS
 
 import CommonLibraryCore_C
 import Partout
