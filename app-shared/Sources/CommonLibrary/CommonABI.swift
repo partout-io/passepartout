@@ -80,8 +80,7 @@ public final class CommonABI: ABIProtocol, Sendable {
                 callback(context, .tunnel(event))
             }
         })
-        subscriptions.append(Task { [weak self] in
-            guard let self else { return }
+        subscriptions.append(Task {
             for await event in iapEvents {
                 callback(context, .iap(event))
             }
