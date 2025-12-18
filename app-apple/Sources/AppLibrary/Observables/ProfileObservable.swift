@@ -9,10 +9,8 @@ import Observation
 
 @MainActor @Observable
 public final class ProfileObservable {
+    private let abi: ABIProtocol
     private let logger: AppLogger
-    // FIXME: #1594: Replace manager with ABI
-//    private let abi: ABIProfileProtocol
-    private let profileManager: ProfileManager
 
     private var allHeaders: [ABI.AppIdentifier: ABI.AppProfileHeader] {
         didSet {
@@ -25,9 +23,9 @@ public final class ProfileObservable {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init(logger: AppLogger, profileManager: ProfileManager) {
-        self.logger = logger
-        self.profileManager = profileManager
+    public init(abi: ABIProtocol) {
+        self.abi = abi
+        logger = abi.logger
 
         allHeaders = [:]
         filteredHeaders = []
@@ -40,22 +38,26 @@ public final class ProfileObservable {
 // MARK: - Actions
 
 extension ProfileObservable {
-
     // To avoid dup/expensive tracking of localProfiles
     public func profile(withId profileId: ABI.AppIdentifier) -> ABI.AppProfile? {
-        profileManager.profile(withId: profileId)
+        abi.profile(withId: profileId)
     }
 
-    public func save(_ profile: ABI.AppProfile, isLocal: Bool = false, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
-        try await profileManager.save(profile.native, isLocal: isLocal, remotelyShared: sharingFlag != nil)
+    public func save(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag = .local) async throws {
+        try await abi.profileSave(profile, sharingFlag: sharingFlag)
     }
 
-    public func `import`(_ input: ABI.ProfileImporterInput, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
-        try await profileManager.import(input, sharingFlag: sharingFlag)
+    public func `import`(_ input: ABI.ProfileImporterInput) async throws {
+        switch input {
+        case .contents(let filename, let data):
+            try await abi.profileImportText(data, filename: filename, passphrase: nil)
+        case .file(let url):
+            try await abi.profileImportFile(url.filePath(), passphrase: nil)
+        }
     }
 
     public func duplicate(profileWithId profileId: ABI.AppIdentifier) async throws {
-        try await profileManager.duplicate(profileWithId: profileId)
+        try await abi.profileDup(profileId)
     }
 
     public func search(byName name: String) {
@@ -63,24 +65,20 @@ extension ProfileObservable {
     }
 
     public func remove(withId profileId: ABI.AppIdentifier) async {
-        await profileManager.remove(withId: profileId)
+        await abi.profileRemove(profileId)
     }
 
     public func remove(withIds profileIds: [ABI.AppIdentifier]) async {
-        await profileManager.remove(withIds: profileIds)
+        await abi.profileRemove(profileIds)
     }
 
     public func removeRemotelyShared() async throws {
-        try await profileManager.eraseRemotelySharedProfiles()
+        try await abi.profileRemoveAllRemote()
     }
 
-    public func resaveAllProfiles() async {
-        await profileManager.resaveAllProfiles()
-    }
-
-    public func setRemoteImportingEnabled(_ isEnabled: Bool) {
-        profileManager.isRemoteImportingEnabled = isEnabled
-    }
+//    public func setRemoteImportingEnabled(_ isEnabled: Bool) {
+//        profileManager.isRemoteImportingEnabled = isEnabled
+//    }
 }
 
 // MARK: - State
@@ -105,9 +103,10 @@ extension ProfileObservable {
             isReady = true
         case .refresh(let headers):
             allHeaders = headers
-        case .changeRemoteImport:
-            // Later, set this property directly on ProfileObservable
-            isRemoteImportingEnabled = profileManager.isRemoteImportingEnabled
+//        case .changeRemoteImport:
+//            // Later, set this property directly on ProfileObservable
+//            isRemoteImportingEnabled = profileManager.isRemoteImportingEnabled
+//            break
         default:
             break
         }

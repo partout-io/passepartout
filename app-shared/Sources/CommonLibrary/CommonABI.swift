@@ -6,14 +6,12 @@ public final class CommonABI: ABIProtocol, Sendable {
     // MARK: Business
 
     // FIXME: #1594, Make these private after observables
-    public let apiManager: APIManager
     public let appConfiguration: ABI.AppConfiguration
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
     public let kvManager: KeyValueManager
     public let logger: AppLogger
-    public let preferencesManager: PreferencesManager
     public let profileManager: ProfileManager
     public let registry: Registry
     public let sysexManager: ExtensionInstaller?
@@ -21,6 +19,9 @@ public final class CommonABI: ABIProtocol, Sendable {
     public let versionChecker: VersionChecker
     public let webReceiverManager: WebReceiverManager
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
+    // Legacy
+    public let apiManager: APIManager
+    public let preferencesManager: PreferencesManager
 
     // MARK: Internal state
 
@@ -68,6 +69,7 @@ public final class CommonABI: ABIProtocol, Sendable {
         let profileEvents = profileManager.didChange.subscribe()
         let tunnelEvents = tunnel.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
+        let webReceiverUploads = webReceiverManager.files
         subscriptions.append(Task {
             for await event in profileEvents {
                 callback(context, .profile(event))
@@ -83,56 +85,172 @@ public final class CommonABI: ABIProtocol, Sendable {
                 callback(context, .iap(event))
             }
         })
+        subscriptions.append(Task {
+            for await upload in webReceiverUploads {
+                callback(context, .webReceiver(.newUpload(upload)))
+            }
+        })
     }
 }
 
 // MARK: - Actions
 
-//extension CommonABI {
-//    public func profile(withId id: ABI.AppIdentifier) async -> ABI.AppProfile? {
-//        fatalError()
-//    }
-//
-//    public func profileSave(_ profile: ABI.AppProfile) async throws {
-//        fatalError()
-//    }
-//
-//    public func profileNew(named name: String) async throws {
-//        fatalError()
-//    }
-//
-//    public func profileDup(_ id: ABI.AppIdentifier) async throws {
-//        fatalError()
-//    }
-//
-//    public func profileImportText(_ text: String) async throws {
-//        fatalError()
-//    }
-//
-//    public func profileRemove(_ id: ABI.AppIdentifier) async {
-//        fatalError()
-//    }
-//
-//    public func profileRemove(_ ids: [ABI.AppIdentifier]) async {
-//        fatalError()
-//    }
-//
-//    public func profileRemoveAllRemote() async throws {
-//        fatalError()
-//    }
-//
-//    public func tunnelConnect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
-//        fatalError()
-//    }
-//
-//    public func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
-//        fatalError()
-//    }
-//
-//    public func tunnelCurrentLog() async -> [String] {
-//        fatalError()
-//    }
-//}
+extension CommonABI {
+    // MARK: Config
+
+    public func configRefreshBundle() async {
+        await configManager.refreshBundle()
+    }
+
+    public func configIsActive(_ flag: ABI.ConfigFlag) -> Bool {
+        configManager.isActive(flag)
+    }
+
+    public func configData(for flag: ABI.ConfigFlag) -> JSON? {
+        configManager.data(for: flag)
+    }
+
+    public var configActiveFlags: Set<ABI.ConfigFlag> {
+        configManager.activeFlags
+    }
+
+    // MARK: Encoder
+
+    public func encoderDefaultFilename(for profile: ABI.AppProfile) -> String {
+        appEncoder.defaultFilename(for: profile.native)
+    }
+
+    public func encoderProfile(fromString string: String) throws -> ABI.AppProfile {
+        try ABI.AppProfile(native: appEncoder.profile(fromString: string))
+    }
+
+    public func encoderJSON(fromProfile profile: ABI.AppProfile) throws -> String {
+        try appEncoder.json(fromProfile: profile.native)
+    }
+
+    public func encoderWriteToFile(_ profile: ABI.AppProfile) throws -> String {
+        try appEncoder.writeToFile(profile.native)
+    }
+
+    // MARK: IAP
+
+    public func iapVerify(_ profile: ABI.AppProfile) throws {
+        try iapManager.verify(profile.native)
+    }
+
+    public var iapIsBeta: Bool {
+        iapManager.isBeta
+    }
+
+    public var iapVerificationDelayMinutes: Int {
+        iapManager.verificationDelayMinutes
+    }
+
+    // MARK: Profile
+
+    public func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile? {
+        profileManager.profile(withId: id)
+    }
+
+    public func profileNew(named name: String) async throws {
+        var builder = Profile.Builder()
+        builder.name = name
+        let profile = try builder.build()
+        try await profileManager.save(profile, isLocal: true)
+    }
+
+    public func profileSave(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag) async throws {
+        var partoutProfile = profile.native
+        if sharingFlag == .tv {
+            var builder = partoutProfile.builder()
+            builder.attributes.isAvailableForTV = true
+            partoutProfile = try builder.build()
+        }
+        try await profileManager.save(partoutProfile, isLocal: true, remotelyShared: sharingFlag != nil)
+    }
+
+    public func profileImportText(_ text: String, filename: String, passphrase: String?) async throws {
+        try await profileManager.import(.contents(filename: filename, data: text), passphrase: passphrase)
+    }
+
+    public func profileImportFile(_ path: String, passphrase: String?) async throws {
+        try await profileManager.import(.file(URL(fileURLWithPath: path)), passphrase: passphrase)
+    }
+
+    public func profileDup(_ id: ABI.AppIdentifier) async throws {
+        try await profileManager.duplicate(profileWithId: id)
+    }
+
+    public func profileRemove(_ id: ABI.AppIdentifier) async {
+        await profileManager.remove(withId: id)
+    }
+
+    public func profileRemove(_ ids: [ABI.AppIdentifier]) async {
+        await profileManager.remove(withIds: ids)
+    }
+
+    public func profileRemoveAllRemote() async throws {
+        try await profileManager.eraseRemotelySharedProfiles()
+    }
+
+    // MARK: Tunnel
+
+    public func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws {
+        try await tunnel.connect(with: profile.native, force: force)
+    }
+
+    //    public func tunnelReconnect(to profileId: ABI.Identifier) async throws {
+    //        try await tunnel.
+    //    }
+
+    public func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
+        try await tunnel.disconnect(from: profileId)
+    }
+
+    public func tunnelCurrentLog() async -> [ABI.AppLogLine] {
+        await tunnel.currentLog(parameters: appConfiguration.constants.log)
+    }
+
+    public func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
+        tunnel.lastError(ofProfileId: profileId)
+    }
+
+    public func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
+        tunnel.transfer(ofProfileId: profileId)
+    }
+
+    // MARK: Version
+
+    public func versionCheckLatestRelease() async {
+        await versionChecker.checkLatestRelease()
+    }
+
+    public var versionLatestRelease: ABI.VersionRelease? {
+        versionChecker.latestRelease
+    }
+
+    // MARK: Web receiver
+
+    public func webReceiverStart() throws {
+        try webReceiverManager.start()
+    }
+
+    public func webReceiverStop() {
+        webReceiverManager.stop()
+    }
+
+    public func webReceiverRefresh() {
+        webReceiverManager.renewPasscode()
+    }
+
+    public var webReceiverIsStarted: Bool {
+        webReceiverManager.isStarted
+    }
+
+    public var webReceiverWebsite: ABI.WebsiteWithPasscode? {
+        webReceiverManager.website
+    }
+}
 
 // MARK: - Observation
 

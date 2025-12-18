@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public enum ProfileSharingFlag: String, Codable, Sendable {
+    public enum ProfileSharingFlag: Int, Codable, Sendable {
+        case local
         case shared
         case tv
     }

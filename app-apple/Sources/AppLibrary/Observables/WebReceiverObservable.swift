@@ -7,10 +7,12 @@ import Observation
 
 @MainActor @Observable
 public final class WebReceiverObservable {
-    private let webReceiverManager: WebReceiverManager
+    private let abi: ABIProtocol
+    public let uploads: PassthroughStream<UniqueID, ABI.WebFileUpload>
 
-    public init(webReceiverManager: WebReceiverManager) {
-        self.webReceiverManager = webReceiverManager
+    public init(abi: ABIProtocol) {
+        self.abi = abi
+        uploads = PassthroughStream()
     }
 }
 
@@ -18,15 +20,15 @@ public final class WebReceiverObservable {
 
 extension WebReceiverObservable {
     public func start() throws {
-        try webReceiverManager.start()
+        try abi.webReceiverStart()
     }
 
     public func stop() {
-        webReceiverManager.stop()
+        abi.webReceiverStop()
     }
 
-    public func renewPasscode() {
-        webReceiverManager.renewPasscode()
+    public func refresh() {
+        abi.webReceiverRefresh()
     }
 }
 
@@ -34,14 +36,17 @@ extension WebReceiverObservable {
 
 extension WebReceiverObservable {
     public var isStarted: Bool {
-        webReceiverManager.isStarted
+        abi.webReceiverIsStarted
     }
 
     public var website: ABI.WebsiteWithPasscode? {
-        webReceiverManager.website
+        abi.webReceiverWebsite
     }
 
-    public var files: AsyncStream<ABI.WebFileUpload> {
-        webReceiverManager.files
+    func onUpdate(_ event: ABI.WebReceiverEvent) {
+        switch event {
+        case .newUpload(let upload):
+            uploads.send(upload)
+        }
     }
 }

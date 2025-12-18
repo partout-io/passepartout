@@ -49,14 +49,15 @@ public struct ProfileSharingView: View {
 
 private extension ProfileSharingView {
     var imageModels: [(name: Theme.ImageName, help: String)] {
-        flags.map {
+        flags.compactMap {
             switch $0 {
+            case .local:
+                return nil
             case .shared:
                 return (
                     isRemoteImportingEnabled ? .cloudOn : .cloudOff,
                     Strings.Unlocalized.iCloud
                 )
-
             case .tv:
                 return (
                     isRemoteImportingEnabled ? .tvOn : .tvOff,
