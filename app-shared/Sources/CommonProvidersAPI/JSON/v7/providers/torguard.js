@@ -171,8 +171,6 @@ c183f65da5d3c9001a8cbdb96c793d93
 
     const cfg = {
         ca: ca,
-        compressionFraming: 1,
-        compressionAlgorithm: 1,
         keepAliveInterval: 5,
         keepAliveTimeout: 30,
         checksEKU: true
