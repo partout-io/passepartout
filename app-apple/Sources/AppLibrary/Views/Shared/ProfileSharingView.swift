@@ -49,10 +49,8 @@ public struct ProfileSharingView: View {
 
 private extension ProfileSharingView {
     var imageModels: [(name: Theme.ImageName, help: String)] {
-        flags.compactMap {
+        flags.map {
             switch $0 {
-            case .local:
-                return nil
             case .shared:
                 return (
                     isRemoteImportingEnabled ? .cloudOn : .cloudOff,
