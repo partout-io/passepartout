@@ -159,7 +159,7 @@ extension CommonABI {
         try await profileManager.save(profile, isLocal: true)
     }
 
-    public func profileSave(_ profile: ABI.AppProfile, sharing: ABI.ProfileSharingFlag?) async throws {
+    public func profileSave(_ profile: ABI.AppProfile, sharing: ABI.ProfileSharingFlag) async throws {
         try await profileManager.save(profile.native, isLocal: true, sharing: sharing)
     }
 

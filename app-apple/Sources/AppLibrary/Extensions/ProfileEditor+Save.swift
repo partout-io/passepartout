@@ -40,8 +40,7 @@ extension ProfileEditor {
         }
 
         // persist (optional)
-        let sharing: ABI.ProfileSharingFlag = isShared ? (isAvailableForTV ? .tv : .shared) : .disabled
-        try await profileManager?.save(profileToSave, isLocal: true, sharing: sharing)
+        try await profileManager?.save(profileToSave, isLocal: true, remotelyShared: isShared)
 
         // clean up module preferences
         removedModules.keys.forEach {
