@@ -160,13 +160,7 @@ extension CommonABI {
     }
 
     public func profileSave(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag) async throws {
-        var partoutProfile = profile.native
-        if sharingFlag == .tv {
-            var builder = partoutProfile.builder()
-            builder.attributes.isAvailableForTV = true
-            partoutProfile = try builder.build()
-        }
-        try await profileManager.save(partoutProfile, isLocal: true, remotelyShared: sharingFlag != nil)
+        try await profileManager.save(profile.native, isLocal: true, sharingFlag: sharingFlag)
     }
 
     public func profileImportText(_ text: String, filename: String, passphrase: String?) async throws {

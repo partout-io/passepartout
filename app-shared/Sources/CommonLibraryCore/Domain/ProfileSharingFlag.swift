@@ -4,8 +4,12 @@
 
 extension ABI {
     public enum ProfileSharingFlag: Int, Codable, Sendable {
-        case local
+        case disabled
         case shared
         case tv
+
+        public var isEnabled: Bool {
+            self != .disabled
+        }
     }
 }

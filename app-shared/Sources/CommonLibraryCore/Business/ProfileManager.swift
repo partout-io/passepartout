@@ -139,8 +139,8 @@ public final class ProfileManager {
 // MARK: - Actions
 
 extension ProfileManager {
-    // FIXME: #1594, Profile in public
-    public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
+    // FIXME: #1594, Partout Profile in public signature
+    public func save(_ originalProfile: Profile, isLocal: Bool = false, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
         let profile: Profile
         if isLocal {
             var builder = originalProfile.builder()
@@ -149,6 +149,9 @@ extension ProfileManager {
             }
             builder.attributes.lastUpdate = Date()
             builder.attributes.fingerprint = UUID()
+            if sharingFlag == .tv {
+                builder.attributes.isAvailableForTV = true
+            }
             profile = try builder.build()
         } else {
             profile = originalProfile
@@ -173,8 +176,8 @@ extension ProfileManager {
             throw error
         }
         if let remoteRepository {
-            let enableSharing = remotelyShared == true || (remotelyShared == nil && isLocal && isRemotelyShared(profileWithId: profile.id))
-            let disableSharing = remotelyShared == false
+            let enableSharing = sharingFlag?.isEnabled == true || (sharingFlag == nil && isLocal && isRemotelyShared(profileWithId: profile.id))
+            let disableSharing = sharingFlag?.isEnabled == false
             do {
                 if enableSharing {
                     pp_log_g(.App.profiles, .notice, "\tEnable remote sharing of profile \(profile.id)...")
@@ -194,16 +197,11 @@ extension ProfileManager {
     public func `import`(
         _ input: ABI.ProfileImporterInput,
         passphrase: String? = nil,
-        sharingFlag: ABI.ProfileSharingFlag = .local
+        sharingFlag: ABI.ProfileSharingFlag = .disabled
     ) async throws {
         var profile = try registry.importedProfile(from: input, passphrase: passphrase)
         pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
-        if sharingFlag == .tv {
-            var builder = profile.builder()
-            builder.attributes.isAvailableForTV = true
-            profile = try builder.build()
-        }
-        try await save(profile, isLocal: true, remotelyShared: sharingFlag != .local)
+        try await save(profile, isLocal: true, sharingFlag: sharingFlag)
     }
 
     // FIXME: #1594, Profile.ID in public
