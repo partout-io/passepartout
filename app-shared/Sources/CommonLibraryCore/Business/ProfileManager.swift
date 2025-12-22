@@ -194,7 +194,7 @@ extension ProfileManager {
     public func `import`(
         _ input: ABI.ProfileImporterInput,
         passphrase: String? = nil,
-        sharingFlag: ABI.ProfileSharingFlag = .local
+        sharingFlag: ABI.ProfileSharingFlag? = nil
     ) async throws {
         var profile = try registry.importedProfile(from: input, passphrase: passphrase)
         pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
@@ -203,7 +203,7 @@ extension ProfileManager {
             builder.attributes.isAvailableForTV = true
             profile = try builder.build()
         }
-        try await save(profile, isLocal: true, remotelyShared: sharingFlag != .local)
+        try await save(profile, isLocal: true, remotelyShared: sharingFlag != nil)
     }
 
     // FIXME: #1594, Profile.ID in public

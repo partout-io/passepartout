@@ -52,7 +52,7 @@ public protocol ABIProtocol {
     // MARK: Profile
     func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
     func profileNew(named name: String) async throws
-    func profileSave(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag) async throws
+    func profileSave(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag?) async throws
     func profileImportText(_ text: String, filename: String, passphrase: String?) async throws
     func profileImportFile(_ path: String, passphrase: String?) async throws
     func profileDup(_ id: ABI.AppIdentifier) async throws

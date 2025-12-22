@@ -43,7 +43,7 @@ extension ProfileObservable {
         abi.profile(withId: profileId)
     }
 
-    public func save(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag = .local) async throws {
+    public func save(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
         try await abi.profileSave(profile, sharingFlag: sharingFlag)
     }
 
