@@ -273,7 +273,7 @@ extension ProfileManagerTests {
             }
         }
 
-        try await sut.save(profile, remotelyShared: true)
+        try await sut.save(profile, sharing: .shared)
         try await exp.fulfillment(timeout: CommonLibraryTests.timeout)
 
         #expect(sut.isRemotelyShared(profileWithId: profile.id))
@@ -299,7 +299,7 @@ extension ProfileManagerTests {
             }
         }
 
-        try await sut.save(profile, remotelyShared: false)
+        try await sut.save(profile, sharing: .disabled)
         try await exp.fulfillment(timeout: CommonLibraryTests.timeout)
 
         #expect(!sut.isRemotelyShared(profileWithId: profile.id))
