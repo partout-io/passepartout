@@ -100,7 +100,7 @@ private extension ProfileRowView {
     .task {
         do {
             try await profileManager.observeRemote(repository: InMemoryProfileRepository())
-            try await profileManager.save(profile, isLocal: true, remotelyShared: true)
+            try await profileManager.save(profile, isLocal: true, sharing: .shared)
         } catch {
             fatalError(error.localizedDescription)
         }

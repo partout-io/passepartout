@@ -51,7 +51,7 @@ private extension ProfileSharingView {
     var imageModels: [(name: Theme.ImageName, help: String)] {
         flags.compactMap {
             switch $0 {
-            case .local:
+            case .disabled:
                 return nil
             case .shared:
                 return (
