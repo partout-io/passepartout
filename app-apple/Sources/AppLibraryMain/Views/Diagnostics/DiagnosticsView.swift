@@ -29,9 +29,6 @@ struct DiagnosticsView: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @EnvironmentObject
-    private var kvManager: KeyValueManager
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
