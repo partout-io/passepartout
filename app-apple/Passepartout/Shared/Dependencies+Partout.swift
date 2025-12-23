@@ -12,8 +12,11 @@ extension Dependencies {
     }
 
     @MainActor
-    var kvManager: KeyValueManager {
-        Self.sharedKVStore
+    func newKVManager() -> KeyValueManager {
+        KeyValueManager(
+            store: UserDefaultsStore(.standard),
+            fallback: ABI.AppPreferenceValues()
+        )
     }
 
     func newRegistry(
@@ -72,12 +75,4 @@ extension Dependencies {
         }
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
     }
-}
-
-private extension Dependencies {
-    @MainActor
-    static let sharedKVStore: KeyValueManager = KeyValueManager(
-        store: UserDefaultsStore(.standard),
-        fallback: ABI.AppPreferenceValues()
-    )
 }

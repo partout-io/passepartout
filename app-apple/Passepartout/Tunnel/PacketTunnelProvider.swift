@@ -68,7 +68,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
         // Update or fetch existing preferences
         let (kvManager, preferences) = await MainActor.run {
-            let kvManager = dependencies.kvManager
+            let kvManager = dependencies.newKVManager()
             if let startPreferences {
                 kvManager.preferences = startPreferences
                 return (kvManager, startPreferences)

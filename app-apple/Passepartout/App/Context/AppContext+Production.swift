@@ -22,7 +22,7 @@ extension AppContext {
         let dependencies = Dependencies(buildTarget: .app)
         let appConfiguration = dependencies.appConfiguration
         let appLogger = dependencies.appLogger()
-        let kvManager = dependencies.kvManager
+        let kvManager = dependencies.newKVManager()
 
         let ctx = PartoutLogger.register(
             for: .app,
