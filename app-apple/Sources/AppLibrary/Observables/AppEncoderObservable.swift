@@ -8,26 +8,26 @@ import Observation
 
 @MainActor @Observable
 public final class AppEncoderObservable {
-    private let encoder: AppEncoder
+    private let abi: ABIProtocol
 
-    public init(encoder: AppEncoder) {
-        self.encoder = encoder
+    public init(abi: ABIProtocol) {
+        self.abi = abi
     }
 
     public func profile(fromString string: String) throws -> ABI.AppProfile {
-        try ABI.AppProfile(native: encoder.profile(fromString: string))
+        try abi.encoderProfile(fromString: string)
     }
 
     public func json(fromProfile profile: ABI.AppProfile) throws -> String {
-        try encoder.json(fromProfile: profile.native)
+        try abi.encoderJSON(fromProfile: profile)
     }
 
     public func defaultFilename(for profile: ABI.AppProfile) -> String {
-        encoder.defaultFilename(for: profile.native)
+        abi.encoderDefaultFilename(for: profile)
     }
 
     public func writeToURL(_ profile: ABI.AppProfile) throws -> URL {
-        let path = try encoder.writeToFile(profile.native)
+        let path = try abi.encoderWriteToFile(profile)
         // Make sure to convert to URL to share actual file content
         return URL(fileURLWithPath: path)
     }

@@ -7,17 +7,15 @@ import Observation
 
 @MainActor @Observable
 public final class IAPObservable {
-    private let logger: AppLogger
-    private let iapManager: IAPManager
+    private let abi: ABIProtocol
 
     public private(set) var isEnabled: Bool
     public private(set) var eligibleFeatures: Set<ABI.AppFeature>
     public private(set) var isLoadingReceipt: Bool
     private var subscription: Task<Void, Never>?
 
-    public init(logger: AppLogger, iapManager: IAPManager) {
-        self.logger = logger
-        self.iapManager = iapManager
+    public init(abi: ABIProtocol) {
+        self.abi = abi
 
         isEnabled = true
         eligibleFeatures = []
@@ -29,7 +27,7 @@ public final class IAPObservable {
 
 extension IAPObservable {
     public func verify(_ profile: ABI.AppProfile) throws {
-        try iapManager.verify(profile.native)
+        try abi.iapVerify(profile)
     }
 }
 
@@ -37,11 +35,11 @@ extension IAPObservable {
 
 extension IAPObservable {
     public var isBeta: Bool {
-        iapManager.isBeta
+        abi.iapIsBeta
     }
 
     public var verificationDelayMinutes: Int {
-        iapManager.verificationDelayMinutes
+        abi.iapVerificationDelayMinutes
     }
 
     func onUpdate(_ event: ABI.IAPEvent) {

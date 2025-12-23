@@ -56,7 +56,6 @@ private extension ProfileSharingView {
                     isRemoteImportingEnabled ? .cloudOn : .cloudOff,
                     Strings.Unlocalized.iCloud
                 )
-
             case .tv:
                 return (
                     isRemoteImportingEnabled ? .tvOn : .tvOff,

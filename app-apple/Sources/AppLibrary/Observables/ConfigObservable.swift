@@ -7,9 +7,9 @@ import Observation
 
 @MainActor @Observable
 public final class ConfigObservable {
-    private let configManager: ConfigManager
+    private let abi: ABIProtocol
 
-    public init(configManager: ConfigManager) {
-        self.configManager = configManager
+    public init(abi: ABIProtocol) {
+        self.abi = abi
     }
 }

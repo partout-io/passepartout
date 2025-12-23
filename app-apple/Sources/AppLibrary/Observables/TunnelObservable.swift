@@ -7,18 +7,17 @@ import Observation
 
 @MainActor @Observable
 public final class TunnelObservable {
+    private let abi: ABIProtocol
     private let logger: AppLogger
-    // FIXME: #1594: Replace manager with ABI
-//    private let abi: ABIProfileProtocol
-    private let extendedTunnel: ExtendedTunnel
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(logger: AppLogger, extendedTunnel: ExtendedTunnel) {
-        self.logger = logger
-        self.extendedTunnel = extendedTunnel
+    public init(abi: ABIProtocol) {
+        self.abi = abi
+        logger = abi.logger
+
         activeProfiles = [:]
         transfers = [:]
     }
@@ -27,8 +26,12 @@ public final class TunnelObservable {
 // MARK: - Actions
 
 extension TunnelObservable {
+    public func connect(to profileId: ABI.AppIdentifier, force: Bool = false) async throws {
+        try await abi.tunnelConnect(to: profileId, force: force)
+    }
+
     public func connect(to profile: ABI.AppProfile, force: Bool = false) async throws {
-        try await extendedTunnel.connect(with: profile.native, force: force)
+        try await abi.tunnelConnect(to: profile, force: force)
     }
 
 //    public func reconnect(to profileId: ABI.AppIdentifier) async throws {
@@ -36,11 +39,11 @@ extension TunnelObservable {
 //    }
 
     public func disconnect(from profileId: ABI.AppIdentifier) async throws {
-        try await extendedTunnel.disconnect(from: profileId)
+        try await abi.tunnelDisconnect(from: profileId)
     }
 
     public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
-        await extendedTunnel.currentLog(parameters: parameters)
+        await abi.tunnelCurrentLog()
             .map {
                 logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
             }
@@ -63,7 +66,7 @@ extension TunnelObservable {
     }
 
     public func lastError(for profileId: ABI.AppIdentifier) -> ABI.AppError? {
-        extendedTunnel.lastError(ofProfileId: profileId)
+        abi.tunnelLastError(ofProfileId: profileId)
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
@@ -73,7 +76,7 @@ extension TunnelObservable {
             activeProfiles = active
         case .dataCount:
             transfers = activeProfiles.compactMapValues {
-                extendedTunnel.transfer(ofProfileId: $0.id)
+                abi.tunnelTransfer(ofProfileId: $0.id)
             }
         }
     }

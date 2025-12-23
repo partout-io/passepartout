@@ -9,6 +9,7 @@ extension ABI {
         case profile(ProfileEvent)
         case tunnel(TunnelEvent)
         case version(VersionEvent)
+        case webReceiver(WebReceiverEvent)
     }
 
     public enum IAPEvent: Sendable {
@@ -44,5 +45,9 @@ extension ABI {
 
     public enum VersionEvent: Sendable {
         case new
+    }
+
+    public enum WebReceiverEvent: Sendable {
+        case newUpload(ABI.WebFileUpload)
     }
 }

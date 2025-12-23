@@ -70,7 +70,6 @@ struct DiagnosticsView: View {
         .task {
             tunnelLogs = await computedTunnelLogs()
         }
-        .themeKeyValue(kvManager, ABI.AppPreference.logsPrivateData.key, $logsPrivateData, default: false)
         .themeForm()
         .alert(Strings.Views.Diagnostics.ReportIssue.title, isPresented: $isPresentingUnableToEmail) {
             Button(Strings.Global.Nouns.ok, role: .cancel) {
