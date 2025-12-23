@@ -19,7 +19,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
     @Environment(\.verticalSizeClass)
     public var vsClass
 
-    @AppStorage(ABI.UIPreference.profilesLayout.key)
+    @AppStorage(UIPreference.profilesLayout.key)
     private var layout: ProfilesLayout = .list
 
     private let profileManager: ProfileManager

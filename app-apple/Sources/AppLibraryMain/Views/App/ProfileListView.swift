@@ -19,7 +19,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
     @Environment(\.isSearching)
     private var isSearching
 
-    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
+    @AppStorage(UIPreference.pinsActiveProfile.key)
     private var pinsActiveProfile = true
 
     @ObservedObject

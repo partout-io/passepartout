@@ -23,7 +23,7 @@ public struct PreferencesView: View {
     private var configManager: ConfigManager
 
 #if os(iOS)
-    @AppStorage(ABI.UIPreference.locksInBackground.key)
+    @AppStorage(UIPreference.locksInBackground.key)
     private var locksInBackground = false
 #elseif os(macOS)
     @Environment(MacSettings.self)
