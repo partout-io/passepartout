@@ -4,7 +4,7 @@
 
 extension ABI {
     public enum ProfileSharingFlag: Int, Codable, Sendable {
-        case shared
+        case shared = 1
         case tv
     }
 }
