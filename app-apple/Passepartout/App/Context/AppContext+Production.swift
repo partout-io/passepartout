@@ -204,9 +204,12 @@ extension AppContext {
             processor: processor,
             interval: appConfiguration.constants.tunnel.refreshInterval
         )
-
-        let onboardingObservable = OnboardingObservable(kvManager: kvManager)
         let preferencesManager = PreferencesManager()
+
+        // View
+        let appearanceObservable = AppearanceObservable(kvManager: kvManager)
+        let onboardingObservable = OnboardingObservable(kvManager: kvManager)
+        let userPreferences = UserPreferencesObservable(kvManager: kvManager)
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(

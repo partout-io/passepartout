@@ -10,7 +10,7 @@ public final class CommonABI: ABIProtocol, Sendable {
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
-    public let kvManager: KeyValueManager
+    private let kvStore: KeyValueStore
     public let logger: AppLogger
     public let profileManager: ProfileManager
     public let registry: Registry
@@ -36,7 +36,7 @@ public final class CommonABI: ABIProtocol, Sendable {
         appEncoder: AppEncoder,
         configManager: ConfigManager,
         iapManager: IAPManager,
-        kvManager: KeyValueManager,
+        kvStore: KeyValueStore,
         logger: AppLogger,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
@@ -52,7 +52,7 @@ public final class CommonABI: ABIProtocol, Sendable {
         self.appEncoder = appEncoder
         self.configManager = configManager
         self.iapManager = iapManager
-        self.kvManager = kvManager
+        self.kvStore = kvStore
         self.logger = logger
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
@@ -265,11 +265,11 @@ extension CommonABI {
             await versionChecker.checkLatestRelease()
 
             // Propagate active config flags to tunnel via preferences
-            kvManager.preferences.configFlags = configManager.activeFlags
+            kvStore.preferences.configFlags = configManager.activeFlags
 
             // Disable .relaxedVerification if ABI.ConfigFlag disallows it
             if !configManager.isActive(.allowsRelaxedVerification) {
-                kvManager.set(false, forAppPreference: .relaxedVerification)
+                kvStore.set(false, forAppPreference: .relaxedVerification)
             }
         }
     }
@@ -304,7 +304,7 @@ private extension CommonABI {
                 case .status(let isEnabled):
                     // FIXME: #1594, .dropFirst() + .removeDuplicates()
                     logger.log(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
-                    kvManager.set(!isEnabled, forAppPreference: .skipsPurchases)
+                    kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let features):
@@ -463,7 +463,7 @@ private extension CommonABI {
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard kvManager.bool(forAppPreference: .relaxedVerification) else {
+        guard kvStore.bool(forAppPreference: .relaxedVerification) else {
             return true
         }
         // Receipt never loaded, force load
@@ -481,7 +481,7 @@ private extension CommonABI {
     }
 }
 
-extension Collection where Element == Profile.DiffResult {
+private extension Collection where Element == Profile.DiffResult {
     func isRelevantForReconnecting(to profile: Profile) -> Bool {
         contains {
             switch $0 {

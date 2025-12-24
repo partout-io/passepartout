@@ -13,7 +13,6 @@ extension View {
             .environment(\.logFormatterBlock) { [weak context] in
                 context?.viewLogger.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
-            .environment(context.appearanceObservable)
             .environment(context.appEncoderObservable)
             .environment(context.appFormatter)
             .environment(context.configObservable)
@@ -28,7 +27,6 @@ extension View {
             .environmentObject(context.apiManager)
             .environmentObject(context.configManager)
             .environmentObject(context.iapManager)
-            .environmentObject(context.kvManager)
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)
             .environmentObject(context.versionChecker)

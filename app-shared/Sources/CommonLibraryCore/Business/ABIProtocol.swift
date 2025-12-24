@@ -6,7 +6,7 @@ import CommonLibraryCore_C
 
 // FIXME: #1594, use typealias for string IDs like ProfileID
 
-#if !PSP_CROSS
+#if true || !PSP_CROSS
 public typealias ABICallbackEvent = ABI.Event
 #else
 public typealias ABICallbackEvent = UnsafePointer<psp_event>
@@ -49,6 +49,9 @@ public protocol ABIProtocol {
     var iapIsBeta: Bool { get }
     var iapVerificationDelayMinutes: Int { get }
 
+    // MARK: Options
+//    func optionSet<T>(_ pref: ABI.AppPreference, value: T)
+
     // MARK: Profile
     func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
     func profileNew(named name: String) async throws
@@ -83,7 +86,6 @@ public protocol ABIProtocol {
     var appEncoder: AppEncoder { get }
     var configManager: ConfigManager { get }
     var iapManager: IAPManager { get }
-    var kvManager: KeyValueManager { get }
     var profileManager: ProfileManager { get }
     var registry: Registry { get }
     var tunnel: ExtendedTunnel { get }

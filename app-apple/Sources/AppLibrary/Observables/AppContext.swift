@@ -28,7 +28,6 @@ public final class AppContext {
     public let webReceiverObservable: WebReceiverObservable
 
     // View concerns (app-specific)
-    public let appearanceObservable: AppearanceObservable
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
     public let viewLogger: ViewLogger
@@ -36,6 +35,7 @@ public final class AppContext {
     public init(
         abi: ABIProtocol,
         onboardingObservable: OnboardingObservable? = nil,
+        userPreferences: UserPreferencesObservable
     ) {
         self.abi = abi
 
@@ -45,14 +45,13 @@ public final class AppContext {
         iapObservable = IAPObservable(abi: abi)
         profileObservable = ProfileObservable(abi: abi)
         tunnelObservable = TunnelObservable(abi: abi)
-        userPreferences = UserPreferencesObservable(kvManager: abi.kvManager)
         versionObservable = VersionObservable(abi: abi)
         webReceiverObservable = WebReceiverObservable(abi: abi)
 
         // View
-        appearanceObservable = AppearanceObservable(kvManager: abi.kvManager)
         appFormatter = AppFormatter(constants: abi.appConfiguration.constants)
         self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
+        self.userPreferences = userPreferences
         viewLogger = ViewLogger(strategy: abi.logger)
 
         // Register for ABI events
@@ -111,8 +110,6 @@ extension AppContext {
     public var configManager: ConfigManager { abi.configManager }
     @available(*, deprecated, message: "#1594")
     public var iapManager: IAPManager { abi.iapManager }
-    @available(*, deprecated, message: "#1594")
-    public var kvManager: KeyValueManager { abi.kvManager }
     @available(*, deprecated, message: "#1594")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
     @available(*, deprecated, message: "#1594")

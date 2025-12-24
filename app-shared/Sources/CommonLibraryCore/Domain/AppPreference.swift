@@ -35,6 +35,7 @@ extension ABI {
         // Override config flags only if non-nil
         public struct Experimental: Hashable, Codable, Sendable {
             public var ignoredConfigFlags: Set<ConfigFlag> = []
+            public init() {}
         }
 
         public var deviceId: String?

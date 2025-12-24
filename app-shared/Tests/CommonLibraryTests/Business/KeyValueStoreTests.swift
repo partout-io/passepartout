@@ -6,10 +6,10 @@
 import Testing
 
 @MainActor
-struct KeyValueManagerTests {
+struct KeyValueStoreTests {
     @Test
     func givenKeyValue_whenSet_thenGets() {
-        let sut = KeyValueManager()
+        let sut = InMemoryStore()
 
         sut.set("foobar", forKey: "string")
         sut.set(true, forKey: "boolean")
@@ -31,7 +31,7 @@ struct KeyValueManagerTests {
 
     @Test
     func givenKeyValue_whenSetFallback_thenGetsFallback() {
-        let sut = KeyValueManager(fallback: [
+        let sut = InMemoryStore(fallback: [
             "string": "foobar",
             "boolean": true,
             "number": 123
@@ -47,7 +47,7 @@ struct KeyValueManagerTests {
     @Test
     func givenKeyValue_whenSetConfigFlags_thenIsExpected() throws {
         let flags: Set<ABI.ConfigFlag> = [.neSocketUDP, .allowsRelaxedVerification]
-        let sut = KeyValueManager()
+        let sut = InMemoryStore()
         sut.preferences.configFlags = flags
         #expect(sut.preferences.configFlags == flags)
 

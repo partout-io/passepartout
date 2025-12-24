@@ -4,17 +4,7 @@
 
 import CommonLibrary
 
-extension KeyValueManager {
-    public func object<T>(forUIPreference pref: UIPreference) -> T? {
-        object(forKey: pref.key)
-    }
-
-    public func set<T>(_ value: T?, forUIPreference pref: UIPreference) {
-        set(value, forKey: pref.key)
-    }
-}
-
-extension KeyValueManager {
+extension KeyValueStore {
     public func bool(forUIPreference pref: UIPreference) -> Bool {
         bool(forKey: pref.key)
     }

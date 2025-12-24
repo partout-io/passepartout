@@ -26,7 +26,7 @@ final class AppDelegate: NSObject {
 #endif
 
     func configure(with uiConfiguring: AppLibraryConfiguring?) {
-        context.appearanceObservable.apply()
+        context.userPreferences.applyAppearance()
         uiConfiguring?.configure(with: context)
     }
 }

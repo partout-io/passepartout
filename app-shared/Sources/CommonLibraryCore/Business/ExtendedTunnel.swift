@@ -18,7 +18,7 @@ public final class ExtendedTunnel {
 
     private let sysex: ExtensionInstaller?
 
-    private let kvManager: KeyValueManager?
+    private let kvStore: KeyValueStore?
 
     private let processor: AppTunnelProcessor?
 
@@ -32,13 +32,13 @@ public final class ExtendedTunnel {
     public init(
         tunnel: Tunnel,
         sysex: ExtensionInstaller? = nil,
-        kvManager: KeyValueManager? = nil,
+        kvStore: KeyValueStore? = nil,
         processor: AppTunnelProcessor? = nil,
         interval: TimeInterval
     ) {
         self.tunnel = tunnel
         self.sysex = sysex
-        self.kvManager = kvManager
+        self.kvStore = kvStore
         self.processor = processor
         self.interval = interval
         didChange = PassthroughStream()
@@ -68,7 +68,7 @@ extension ExtendedTunnel {
         }
 #if !PSP_CROSS
         var options: [String: NSObject] = [Self.isManualKey: true as NSNumber]
-        if let preferences = kvManager?.preferences {
+        if let preferences = kvStore?.preferences {
             let encodedPreferences = try JSONEncoder().encode(preferences)
             options[Self.appPreferences] = encodedPreferences as NSData
         }
@@ -164,7 +164,7 @@ private extension ExtendedTunnel {
 
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = newActiveProfiles.first {
-                    kvManager?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
+                    kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
 
                 // Publish compound statuses
@@ -219,7 +219,7 @@ private extension ExtendedTunnel {
 // TODO: #218, keep "last used profile" until .multiple
 private extension ExtendedTunnel {
     var lastUsedProfile: TunnelActiveProfile? {
-        guard let uuidString = kvManager?.string(forAppPreference: .lastUsedProfileId),
+        guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
               let uuid = UUID(uuidString: uuidString) else {
             return nil
         }

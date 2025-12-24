@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension KeyValueManager {
-
+extension KeyValueStore {
     // TODO: #1513, refactor to keep automatically in sync with AppPreference
     public var preferences: ABI.AppPreferenceValues {
         get {
@@ -34,28 +33,26 @@ extension KeyValueManager {
         }
     }
 
-    public convenience init(store: KeyValueStore, fallback: ABI.AppPreferenceValues) {
-        let values = [
-            ABI.AppPreference.dnsFallsBack.key: fallback.dnsFallsBack,
-            ABI.AppPreference.logsPrivateData.key: fallback.logsPrivateData
-        ]
-        self.init(store: store, fallback: values)
-    }
+//    public convenience init(store: KeyValueStore, fallback: ABI.AppPreferenceValues) {
+//        let values = [
+//            ABI.AppPreference.dnsFallsBack.key: fallback.dnsFallsBack,
+//            ABI.AppPreference.logsPrivateData.key: fallback.logsPrivateData
+//        ]
+//        self.init(store: store, fallback: values)
+//    }
 }
 
-// MARK: - Shortcuts
-
-extension KeyValueManager {
-    public func object<T>(forAppPreference pref: ABI.AppPreference) -> T? {
+extension KeyValueStore {
+    public func object<V>(forAppPreference pref: ABI.AppPreference) -> V? {
         object(forKey: pref.key)
     }
 
-    public func set<T>(_ value: T?, forAppPreference pref: ABI.AppPreference) {
-        set(value, forKey: pref.key)
+    public func set<V>(_ object: V?, forAppPreference pref: ABI.AppPreference) {
+        set(object, forKey: pref.key)
     }
 }
 
-extension KeyValueManager {
+extension KeyValueStore {
     public func bool(forAppPreference pref: ABI.AppPreference) -> Bool {
         bool(forKey: pref.key)
     }

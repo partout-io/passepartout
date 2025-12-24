@@ -46,7 +46,7 @@ struct ProviderServerView: View {
 
     @StateObject
     private var filtersViewModel = ProviderFiltersView.Model(
-        kvManager: KeyValueManager(store: UserDefaultsStore(.standard))
+        userPreferences: UserPreferencesObservable(kvStore: UserDefaultsStore(.standard))
     )
 
     @State

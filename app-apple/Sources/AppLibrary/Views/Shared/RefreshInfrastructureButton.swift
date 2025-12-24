@@ -12,8 +12,8 @@ public struct RefreshInfrastructureButton<Label>: View where Label: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    @EnvironmentObject
-    private var kvManager: KeyValueManager
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -84,7 +84,7 @@ private extension RefreshInfrastructureButton {
     }
 
     func loadLastUpdate() {
-        guard let map = kvManager.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]? else {
+        guard let map = userPreferences.lastInfrastructureRefresh else {
             elapsed = .infinity
             return
         }
@@ -96,9 +96,9 @@ private extension RefreshInfrastructureButton {
     }
 
     func saveLastUpdate() {
-        var map = kvManager.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]? ?? [:]
+        var map = userPreferences.lastInfrastructureRefresh ?? [:]
         map[module.providerId.rawValue] = Date.timeIntervalSinceReferenceDate
-        kvManager.set(map, forUIPreference: .lastInfrastructureRefresh)
+        userPreferences.lastInfrastructureRefresh = map
         elapsed = .zero
     }
 }

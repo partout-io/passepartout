@@ -6,12 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 struct PreferencesAdvancedView: View {
-
     @EnvironmentObject
     private var configManager: ConfigManager
 
     @Binding
-    var experimental: ABI.AppPreferenceValues.Experimental
+    var experimental: UserPreferencesObservable.Experimental
 
     var body: some View {
         Form {
@@ -72,7 +71,7 @@ private extension PreferencesAdvancedView {
     }
 }
 
-private extension ABI.AppPreferenceValues.Experimental {
+private extension UserPreferencesObservable.Experimental {
     func isUsed(_ flag: ABI.ConfigFlag) -> Bool {
         !ignoredConfigFlags.contains(flag)
     }

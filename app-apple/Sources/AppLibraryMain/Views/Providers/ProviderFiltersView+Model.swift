@@ -14,7 +14,7 @@ extension ProviderFiltersView {
     final class Model: ObservableObject {
         typealias CodeWithDescription = (code: String, description: String)
 
-        private let kvManager: KeyValueManager
+        private let userPreferences: UserPreferencesObservable
 
         private var options: ProviderFilterOptions
 
@@ -35,8 +35,8 @@ extension ProviderFiltersView {
 
         private var subscriptions: Set<AnyCancellable>
 
-        init(kvManager: KeyValueManager) {
-            self.kvManager = kvManager
+        init(userPreferences: UserPreferencesObservable) {
+            self.userPreferences = userPreferences
             options = ProviderFilterOptions()
             categories = []
             countries = []
@@ -116,27 +116,16 @@ private extension ProviderFiltersView.Model {
         $onlyShowsFavorites
             .dropFirst()
             .sink { [weak self] in
-                self?.kvManager.onlyShowsFavorites = $0
+                self?.userPreferences.onlyShowsFavorites = $0
             }
             .store(in: &subscriptions)
 
-        // send initial value
-        onlyShowsFavorites = kvManager.onlyShowsFavorites
+        // Send initial value
+        onlyShowsFavorites = userPreferences.onlyShowsFavorites
     }
 }
 
 // MARK: -
-
-private extension KeyValueManager {
-    var onlyShowsFavorites: Bool {
-        get {
-            bool(forUIPreference: .onlyShowsFavorites)
-        }
-        set {
-            set(newValue, forUIPreference: .onlyShowsFavorites)
-        }
-    }
-}
 
 private extension String {
     var asCountryCodeWithDescription: ProviderFiltersView.Model.CodeWithDescription {
