@@ -98,7 +98,7 @@ private extension PreferencesView {
     }
 
     var keepsInMenuSection: some View {
-        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: settings.binding(\.keepsInMenu))
+        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: userPreferences.binding(\.keepsInMenu))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.KeepsInMenu.footer)
     }
 #endif
@@ -174,9 +174,6 @@ public struct PreferencesView: View {
 
     private let profileManager: ProfileManager
 
-    @State
-    private var relaxedVerification = false
-
     public init(profileManager: ProfileManager) {
         self.profileManager = profileManager
     }
@@ -189,13 +186,12 @@ public struct PreferencesView: View {
             }
         }
         .themeSection(header: Strings.Global.Nouns.preferences)
-        .themeKeyValue(kvManager, ABI.AppPreference.relaxedVerification.key, $relaxedVerification, default: false)
     }
 }
 
 private extension PreferencesView {
     var relaxedVerificationToggle: some View {
-        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: $relaxedVerification)
+        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: userPreferences.binding(\.relaxedVerification))
     }
 }
 

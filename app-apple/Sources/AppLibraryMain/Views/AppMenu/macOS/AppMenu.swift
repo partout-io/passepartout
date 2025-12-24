@@ -9,6 +9,8 @@ import CommonLibrary
 import SwiftUI
 
 public struct AppMenu: View {
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @Environment(MacSettings.self)
     private var settings
@@ -70,7 +72,7 @@ private extension AppMenu {
     }
 
     var keepToggle: some View {
-        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: settings.binding(\.keepsInMenu))
+        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: userPreferences.binding(\.keepsInMenu))
     }
 
     var reconnectButton: some View {
