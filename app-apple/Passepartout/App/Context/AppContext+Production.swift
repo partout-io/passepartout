@@ -3,15 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppAccessibility
-import AppLibrary
 import AppData
 import AppDataPreferences
 import AppDataProfiles
 import AppDataProviders
-import CommonLibrary
+import AppLibrary
 import AppResources
+import CommonLibrary
 import CoreData
-import Foundation
 import Partout
 
 extension AppContext {
@@ -22,12 +21,12 @@ extension AppContext {
         let dependencies = Dependencies(buildTarget: .app)
         let appConfiguration = dependencies.appConfiguration
         let appLogger = dependencies.appLogger()
-        let kvManager = dependencies.newKVManager()
+        let kvStore = dependencies.newKVStore()
 
         let ctx = PartoutLogger.register(
             for: .app,
             with: appConfiguration,
-            preferences: kvManager.preferences,
+            preferences: kvStore.preferences,
             mapper: {
                 dependencies.formattedLog(timestamp: $0.timestamp, message: $0.message)
             }
@@ -88,7 +87,7 @@ extension AppContext {
             productsAtBuild: dependencies.productsAtBuild()
         )
         if appConfiguration.distributionTarget.supportsIAP {
-            iapManager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
+            iapManager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
         } else {
             iapManager.isEnabled = false
         }
@@ -121,21 +120,21 @@ extension AppContext {
         // MARK: Registry
 
         let deviceId = {
-            if let existingId = kvManager.string(forAppPreference: .deviceId) {
+            if let existingId = kvStore.string(forAppPreference: .deviceId) {
                 pp_log_g(.App.core, .info, "Device ID: \(existingId)")
                 return existingId
             }
             let newId = String.random(count: appConfiguration.constants.deviceIdLength)
-            kvManager.set(newId, forAppPreference: .deviceId)
+            kvStore.set(newId, forAppPreference: .deviceId)
             pp_log_g(.App.core, .info, "Device ID (new): \(newId)")
             return newId
         }()
         let registry = dependencies.newRegistry(
             deviceId: deviceId,
-            configBlock: { [weak configManager, weak kvManager] in
-                guard let configManager, let kvManager else { return [] }
+            configBlock: { [weak configManager, weak kvStore] in
+                guard let configManager, let kvStore else { return [] }
                 return MainActor.sync {
-                    kvManager.preferences.enabledFlags(of: configManager.activeFlags)
+                    kvStore.preferences.enabledFlags(of: configManager.activeFlags)
                 }
             }
         )
@@ -200,16 +199,15 @@ extension AppContext {
                 dependencies.appTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             },
             sysex: sysexManager,
-            kvManager: kvManager,
+            kvStore: kvStore,
             processor: processor,
             interval: appConfiguration.constants.tunnel.refreshInterval
         )
         let preferencesManager = PreferencesManager()
 
         // View
-        let appearanceObservable = AppearanceObservable(kvManager: kvManager)
-        let onboardingObservable = OnboardingObservable(kvManager: kvManager)
-        let userPreferences = UserPreferencesObservable(kvManager: kvManager)
+        let userPreferences = UserPreferencesObservable(kvStore: kvStore)
+        let onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
 
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
@@ -293,7 +291,7 @@ extension AppContext {
         let versionChecker: VersionChecker
         if !iapManager.isBeta {
             versionChecker = VersionChecker(
-                kvManager: kvManager,
+                kvStore: kvStore,
                 strategy: versionStrategy,
                 currentVersion: appConfiguration.versionNumber,
                 downloadURL: {
@@ -319,7 +317,7 @@ extension AppContext {
             appEncoder: appEncoder,
             configManager: configManager,
             iapManager: iapManager,
-            kvManager: kvManager,
+            kvStore: kvStore,
             logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
@@ -332,7 +330,8 @@ extension AppContext {
         )
         return AppContext(
             abi: abi,
-            onboardingObservable: onboardingObservable
+            onboardingObservable: onboardingObservable,
+            userPreferences: userPreferences
         )
     }
 }

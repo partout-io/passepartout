@@ -32,27 +32,17 @@ extension KeyValueStore {
             set(newValue.experimentalData, forAppPreference: .experimental)
         }
     }
-
-//    public convenience init(store: KeyValueStore, fallback: ABI.AppPreferenceValues) {
-//        let values = [
-//            ABI.AppPreference.dnsFallsBack.key: fallback.dnsFallsBack,
-//            ABI.AppPreference.logsPrivateData.key: fallback.logsPrivateData
-//        ]
-//        self.init(store: store, fallback: values)
-//    }
 }
 
 extension KeyValueStore {
+    public func set<V>(_ object: V?, forAppPreference pref: ABI.AppPreference) {
+        set(object, forKey: pref.key)
+    }
+
     public func object<V>(forAppPreference pref: ABI.AppPreference) -> V? {
         object(forKey: pref.key)
     }
 
-    public func set<V>(_ object: V?, forAppPreference pref: ABI.AppPreference) {
-        set(object, forKey: pref.key)
-    }
-}
-
-extension KeyValueStore {
     public func bool(forAppPreference pref: ABI.AppPreference) -> Bool {
         bool(forKey: pref.key)
     }

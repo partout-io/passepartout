@@ -23,7 +23,7 @@ extension AppContext {
         logger.setDestination(SimpleLogDestination(), for: [.App.core, .App.profiles])
         PartoutLogger.register(logger.build())
 
-        let kvManager = KeyValueManager()
+        let kvStore = InMemoryStore()
         let apiManager = APIManager(
             ctx,
             from: API.bundled,
@@ -63,6 +63,7 @@ extension AppContext {
         let preferencesManager = PreferencesManager()
         let webReceiverManager = WebReceiverManager()
         let versionChecker = VersionChecker()
+        let userPreferences = UserPreferencesObservable(kvStore: kvStore)
 
         let abi = CommonABI(
             apiManager: apiManager,
@@ -70,7 +71,7 @@ extension AppContext {
             appEncoder: appEncoder,
             configManager: configManager,
             iapManager: iapManager,
-            kvManager: kvManager,
+            kvStore: kvStore,
             logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
@@ -80,6 +81,6 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
-        return AppContext(abi: abi)
+        return AppContext(abi: abi, userPreferences: userPreferences)
     }
 }

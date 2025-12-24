@@ -67,15 +67,15 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let appLogger = dependencies.appLogger()
 
         // Update or fetch existing preferences
-        let (kvManager, preferences) = await MainActor.run {
-            let kvManager = dependencies.newKVManager()
+        let (kvStore, preferences) = {
+            let kvStore = dependencies.newKVStore()
             if let startPreferences {
-                kvManager.preferences = startPreferences
-                return (kvManager, startPreferences)
+                kvStore.preferences = startPreferences
+                return (kvStore, startPreferences)
             } else {
-                return (kvManager, kvManager.preferences)
+                return (kvStore, kvStore.preferences)
             }
-        }
+        }()
 
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
@@ -169,7 +169,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 productsAtBuild: dependencies.productsAtBuild()
             )
             if appConfiguration.distributionTarget.supportsIAP {
-                manager.isEnabled = !kvManager.bool(forAppPreference: .skipsPurchases)
+                manager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
             } else {
                 manager.isEnabled = false
             }
@@ -231,7 +231,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             }
 
             // Relax verification strategy based on AppPreference
-            let isRelaxedVerification = await kvManager.bool(forAppPreference: .relaxedVerification)
+            let isRelaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may

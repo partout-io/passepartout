@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public final class UserDefaultsStore: KeyValueStore {
+public final class UserDefaultsStore: KeyValueStore, @unchecked Sendable {
     private let defaults: UserDefaults
 
     public let fallback: [String: Any]

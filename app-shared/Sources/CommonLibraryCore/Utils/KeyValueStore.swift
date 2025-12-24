@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol KeyValueStore: AnyObject {
+public protocol KeyValueStore: AnyObject, Sendable {
     var fallback: [String: Any] { get }
 
     func strictObject<V>(forKey key: String) -> V?

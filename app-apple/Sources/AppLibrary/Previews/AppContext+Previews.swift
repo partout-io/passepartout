@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
 import AppResources
-import Foundation
+import CommonLibrary
 import Partout
 
 extension AppContext {

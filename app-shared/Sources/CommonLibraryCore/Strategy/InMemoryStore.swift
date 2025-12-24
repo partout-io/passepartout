@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public final class InMemoryStore: KeyValueStore {
+public final class InMemoryStore: KeyValueStore, @unchecked Sendable {
     private var map: [String: Any]
 
     public let fallback: [String: Any]

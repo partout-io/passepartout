@@ -18,27 +18,7 @@ struct Dependencies {
         logFormatter.dateFormat = appConfiguration.constants.log.formatter.timestamp
     }
 
-    // MARK: Logging
-
-    func appLogger() -> AppLogger {
-        PartoutLoggerStrategy(formattedLogBlock: formattedLog)
-    }
-
-    func formattedLog(timestamp: Date, message: String) -> String {
-        let messageFormat = appConfiguration.constants.log.formatter.message
-        let formattedTimestamp = logFormatter.string(from: timestamp)
-        return String(format: messageFormat, formattedTimestamp, message)
-    }
-
     // MARK: Partout
-
-    @MainActor
-    func newKVManager() -> KeyValueManager {
-        KeyValueManager(
-            store: UserDefaultsStore(.standard),
-            fallback: ABI.AppPreferenceValues()
-        )
-    }
 
     func newRegistry(
         deviceId: String,
@@ -97,7 +77,21 @@ struct Dependencies {
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
     }
 
-    // MARK: IAP
+    // MARK: CommonLibrary
+
+    func newKVStore() -> KeyValueStore {
+        UserDefaultsStore(.standard)
+    }
+
+    func appLogger() -> AppLogger {
+        PartoutLoggerStrategy(formattedLogBlock: formattedLog)
+    }
+
+    func formattedLog(timestamp: Date, message: String) -> String {
+        let messageFormat = appConfiguration.constants.log.formatter.message
+        let formattedTimestamp = logFormatter.string(from: timestamp)
+        return String(format: messageFormat, formattedTimestamp, message)
+    }
 
     @MainActor
     func appProductHelper() -> any AppProductHelper {
