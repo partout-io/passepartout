@@ -16,6 +16,8 @@ public final class UserPreferencesObservable {
 
     // MARK: Preferences
 
+    // FIXME: ###, Computed variables do not update UI like objectWillChange.send()
+
     public var dnsFallsBack: Bool {
         get {
             kvStore.bool(forAppPreference: .dnsFallsBack)
@@ -106,18 +108,6 @@ public final class UserPreferencesObservable {
             kvStore.set(newValue?.rawValue, forUIPreference: .systemAppearance)
             applyAppearance()
         }
-    }
-}
-
-// MARK: - Config flags
-
-extension UserPreferencesObservable {
-    public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
-        kvStore.preferences.isFlagEnabled(flag)
-    }
-
-    public func enabledFlags(of flags: Set<ABI.ConfigFlag>) -> Set<ABI.ConfigFlag> {
-        kvStore.preferences.enabledFlags(of: flags)
     }
 }
 
