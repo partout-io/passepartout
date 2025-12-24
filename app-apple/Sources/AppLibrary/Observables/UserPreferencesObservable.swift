@@ -12,100 +12,79 @@ public final class UserPreferencesObservable {
 
     public init(kvStore: KeyValueStore) {
         self.kvStore = kvStore
+
+        dnsFallsBack = kvStore.bool(forAppPreference: .dnsFallsBack)
+        experimental = kvStore.object(forAppPreference: .experimental) as ABI.AppPreferenceValues.Experimental? ?? ABI.AppPreferenceValues.Experimental()
+        keepsInMenu = kvStore.bool(forUIPreference: .keepsInMenu)
+        lastInfrastructureRefresh = kvStore.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]?
+        logsPrivateData = kvStore.bool(forAppPreference: .logsPrivateData)
+        onboardingStep = kvStore.string(forUIPreference: .onboardingStep).flatMap {
+            OnboardingStep(rawValue: $0)
+        }
+        onlyShowsFavorites = kvStore.bool(forUIPreference: .onlyShowsFavorites)
+        relaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
+        systemAppearance = kvStore.string(forUIPreference: .systemAppearance).flatMap {
+            SystemAppearance(rawValue: $0)
+        }
     }
 
     // MARK: Preferences
 
-    // FIXME: ###, Computed variables do not update UI like objectWillChange.send()
-
     public var dnsFallsBack: Bool {
-        get {
-            kvStore.bool(forAppPreference: .dnsFallsBack)
-        }
-        set {
-            kvStore.set(newValue, forAppPreference: .dnsFallsBack)
+        didSet {
+            kvStore.set(dnsFallsBack, forAppPreference: .dnsFallsBack)
         }
     }
 
     public var experimental: ABI.AppPreferenceValues.Experimental {
-        get {
-            kvStore.object(forAppPreference: .experimental) as ABI.AppPreferenceValues.Experimental? ?? ABI.AppPreferenceValues.Experimental()
-        }
-        set {
-            kvStore.set(newValue, forAppPreference: .experimental)
+        didSet {
+            kvStore.set(experimental, forAppPreference: .experimental)
         }
     }
 
     public var keepsInMenu: Bool {
-        get {
-            kvStore.bool(forUIPreference: .keepsInMenu)
-        }
-        set {
-            kvStore.set(newValue, forUIPreference: .keepsInMenu)
+        didSet {
+            kvStore.set(keepsInMenu, forUIPreference: .keepsInMenu)
         }
     }
 
     public var lastInfrastructureRefresh: [String: TimeInterval]? {
-        get {
-            kvStore.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]?
-        }
-        set {
-            kvStore.set(newValue, forUIPreference: .lastInfrastructureRefresh)
+        didSet {
+            kvStore.set(lastInfrastructureRefresh, forUIPreference: .lastInfrastructureRefresh)
         }
     }
 
     public var logsPrivateData: Bool {
-        get {
-            kvStore.bool(forAppPreference: .logsPrivateData)
-        }
-        set {
-            kvStore.set(newValue, forAppPreference: .logsPrivateData)
+        didSet {
+            kvStore.set(logsPrivateData, forAppPreference: .logsPrivateData)
         }
     }
 
     public var onboardingStep: OnboardingStep? {
-        get {
-            guard let rawValue = kvStore.string(forUIPreference: .onboardingStep) else {
-                return nil
-            }
-            return OnboardingStep(rawValue: rawValue)
-        }
-        set {
-            guard let newValue else {
+        didSet {
+            guard let onboardingStep else {
                 kvStore.set(nil as String?, forUIPreference: .onboardingStep)
                 return
             }
-            kvStore.set(newValue.rawValue, forUIPreference: .onboardingStep)
+            kvStore.set(onboardingStep.rawValue, forUIPreference: .onboardingStep)
         }
     }
 
     public var onlyShowsFavorites: Bool {
-        get {
-            kvStore.bool(forUIPreference: .onlyShowsFavorites)
-        }
-        set {
-            kvStore.set(newValue, forUIPreference: .onlyShowsFavorites)
+        didSet {
+            kvStore.set(onlyShowsFavorites, forUIPreference: .onlyShowsFavorites)
         }
     }
 
     public var relaxedVerification: Bool {
-        get {
-            kvStore.bool(forAppPreference: .relaxedVerification)
-        }
-        set {
-            kvStore.set(newValue, forAppPreference: .relaxedVerification)
+        didSet {
+            kvStore.set(relaxedVerification, forAppPreference: .relaxedVerification)
         }
     }
 
     public var systemAppearance: SystemAppearance? {
-        get {
-            guard let rawValue = kvStore.string(forUIPreference: .systemAppearance) else {
-                return nil
-            }
-            return SystemAppearance(rawValue: rawValue)
-        }
-        set {
-            kvStore.set(newValue?.rawValue, forUIPreference: .systemAppearance)
+        didSet {
+            kvStore.set(systemAppearance?.rawValue, forUIPreference: .systemAppearance)
             applyAppearance()
         }
     }
