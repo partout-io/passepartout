@@ -63,7 +63,6 @@ extension AppContext {
         let preferencesManager = PreferencesManager()
         let webReceiverManager = WebReceiverManager()
         let versionChecker = VersionChecker()
-        let userPreferences = UserPreferencesObservable(kvStore: kvStore)
 
         let abi = CommonABI(
             apiManager: apiManager,
@@ -81,6 +80,6 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
-        return AppContext(abi: abi, userPreferences: userPreferences)
+        return AppContext(abi: abi)
     }
 }

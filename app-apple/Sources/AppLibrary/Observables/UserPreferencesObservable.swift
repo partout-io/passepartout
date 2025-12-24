@@ -14,12 +14,23 @@ public final class UserPreferencesObservable {
         self.kvStore = kvStore
     }
 
+    // MARK: Preferences
+
     public var dnsFallsBack: Bool {
         get {
             kvStore.bool(forAppPreference: .dnsFallsBack)
         }
         set {
             kvStore.set(newValue, forAppPreference: .dnsFallsBack)
+        }
+    }
+
+    public var experimental: ABI.AppPreferenceValues.Experimental {
+        get {
+            kvStore.object(forAppPreference: .experimental) as ABI.AppPreferenceValues.Experimental? ?? ABI.AppPreferenceValues.Experimental()
+        }
+        set {
+            kvStore.set(newValue, forAppPreference: .experimental)
         }
     }
 
@@ -98,33 +109,19 @@ public final class UserPreferencesObservable {
     }
 }
 
+// MARK: - Config flags
+
 extension UserPreferencesObservable {
-    public struct Experimental: Hashable, Codable, Sendable {
-        public var ignoredConfigFlags: Set<ABI.ConfigFlag> = []
+    public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        kvStore.preferences.isFlagEnabled(flag)
     }
 
-    public var experimental: Experimental {
-        get {
-            guard let experimentalData = kvStore.object(forAppPreference: .experimental) as Data? else {
-                return Experimental()
-            }
-            do {
-                return try JSONDecoder().decode(Experimental.self, from: experimentalData)
-            } catch {
-                pp_log_g(.App.core, .error, "Unable to decode experimental: \(error)")
-                return Experimental()
-            }
-        }
-        set {
-            do {
-                let experimentalData = try JSONEncoder().encode(newValue)
-                kvStore.set(experimentalData, forAppPreference: .experimental)
-            } catch {
-                pp_log_g(.App.core, .error, "Unable to encode experimental: \(error)")
-            }
-        }
+    public func enabledFlags(of flags: Set<ABI.ConfigFlag>) -> Set<ABI.ConfigFlag> {
+        kvStore.preferences.enabledFlags(of: flags)
     }
 }
+
+// MARK: - Appearance
 
 extension UserPreferencesObservable {
     public func applyAppearance() {
@@ -157,15 +154,5 @@ extension UserPreferencesObservable {
             app.appearance = nil
         }
 #endif
-    }
-}
-
-private extension KeyValueStore {
-    func object<T>(forUIPreference pref: UIPreference) -> T? {
-        object(forKey: pref.key)
-    }
-
-    func set<T>(_ value: T?, forUIPreference pref: UIPreference) {
-        set(value, forKey: pref.key)
     }
 }

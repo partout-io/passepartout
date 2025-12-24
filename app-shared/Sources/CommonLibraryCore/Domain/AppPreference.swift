@@ -4,14 +4,13 @@
 
 extension ABI {
     public enum AppPreference: String, PreferenceProtocol {
-
         // Not directly accessible
         case deviceId
         case configFlags
 
         // Manual
         case dnsFallsBack
-        //    case dnsFallbackServers
+//        case dnsFallbackServers
         case lastCheckedVersionDate
         case lastCheckedVersion
         case lastUsedProfileId
@@ -26,24 +25,10 @@ extension ABI {
             "App.\(rawValue)"
         }
     }
-}
 
-// WARNING: Field types must be scalar to fit UserDefaults
-extension ABI {
+    // WARNING: Field types must be scalar to fit UserDefaults
     public struct AppPreferenceValues: Hashable, Codable, Sendable {
-
-        // Override config flags only if non-nil
-        public struct Experimental: Hashable, Codable, Sendable {
-            public var ignoredConfigFlags: Set<ConfigFlag> = []
-            public init() {}
-        }
-
         public var deviceId: String?
-        // XXX: These are copied from ConfigManager.activeFlags for use
-        // in the PacketTunnelProvider (see AppContext.onApplicationActive).
-        // In the app, use ConfigManager.activeFlags directly.
-        public var configFlagsData: Data?
-
         public var dnsFallsBack = true
         public var lastCheckedVersionDate: TimeInterval?
         public var lastCheckedVersion: String?
@@ -52,14 +37,24 @@ extension ABI {
         public var relaxedVerification = false
         public var skipsPurchases = false
 
+        // XXX: These are copied from ConfigManager.activeFlags for use
+        // in the PacketTunnelProvider (see CommonABI.onApplicationActive).
+        // In the app, use ConfigManager.activeFlags directly.
+        public var configFlagsData: Data?
+
+        // Encoded of type Experimental
         public var experimentalData: Data?
 
-        public init() {
-        }
+        public init() {}
     }
 }
 
 extension ABI.AppPreferenceValues {
+    public struct Experimental: Hashable, Codable, Sendable {
+        public var ignoredConfigFlags: Set<ABI.ConfigFlag> = []
+        public init() {}
+    }
+
     public var configFlags: Set<ABI.ConfigFlag> {
         get {
             guard let configFlagsData else { return [] }
@@ -78,9 +73,7 @@ extension ABI.AppPreferenceValues {
             }
         }
     }
-}
 
-extension ABI.AppPreferenceValues {
     public var experimental: Experimental {
         get {
             guard let experimentalData else { return Experimental() }

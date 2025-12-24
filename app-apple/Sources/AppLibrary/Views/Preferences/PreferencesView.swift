@@ -155,8 +155,7 @@ private extension PreferencesView {
     }
 
     func advancedView() -> some View {
-        @Bindable var userPreferences = userPreferences
-        return PreferencesAdvancedView(experimental: $userPreferences.experimental)
+        PreferencesAdvancedView(experimental: userPreferences.binding(\.experimental))
             .navigationTitle(advancedTitle)
     }
 }

@@ -56,9 +56,6 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        // View
-        let userPreferences = UserPreferencesObservable(kvStore: kvStore)
-
         let abi = CommonABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
@@ -75,10 +72,7 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
-        return AppContext(
-            abi: abi,
-            userPreferences: userPreferences
-        )
+        return AppContext(abi: abi)
     }()
 }
 

@@ -5,6 +5,14 @@
 import CommonLibrary
 
 extension KeyValueStore {
+    public func set<V>(_ value: V?, forUIPreference pref: UIPreference) {
+        set(value, forKey: pref.key)
+    }
+
+    public func object<V>(forUIPreference pref: UIPreference) -> V? {
+        object(forKey: pref.key)
+    }
+
     public func bool(forUIPreference pref: UIPreference) -> Bool {
         bool(forKey: pref.key)
     }

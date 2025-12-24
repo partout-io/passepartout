@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, This is not Sendable, but only used in tests/previews
 public final class InMemoryStore: KeyValueStore, @unchecked Sendable {
     private var map: [String: Any]
 

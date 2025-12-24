@@ -205,10 +205,6 @@ extension AppContext {
         )
         let preferencesManager = PreferencesManager()
 
-        // View
-        let userPreferences = UserPreferencesObservable(kvStore: kvStore)
-        let onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
-
 #if os(tvOS)
         let webReceiver = NIOWebReceiver(
             logger: appLogger,
@@ -328,11 +324,7 @@ extension AppContext {
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
-        return AppContext(
-            abi: abi,
-            onboardingObservable: onboardingObservable,
-            userPreferences: userPreferences
-        )
+        return AppContext(abi: abi)
     }
 }
 

@@ -32,11 +32,7 @@ public final class AppContext {
     public let onboardingObservable: OnboardingObservable
     public let viewLogger: ViewLogger
 
-    public init(
-        abi: ABIProtocol,
-        onboardingObservable: OnboardingObservable? = nil,
-        userPreferences: UserPreferencesObservable
-    ) {
+    public init(abi: ABIProtocol) {
         self.abi = abi
 
         // ABI
@@ -50,8 +46,8 @@ public final class AppContext {
 
         // View
         appFormatter = AppFormatter(constants: abi.appConfiguration.constants)
-        self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
-        self.userPreferences = userPreferences
+        userPreferences = UserPreferencesObservable(kvStore: abi.kvStore)
+        onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
         viewLogger = ViewLogger(strategy: abi.logger)
 
         // Register for ABI events

@@ -86,6 +86,7 @@ public protocol ABIProtocol {
     var appEncoder: AppEncoder { get }
     var configManager: ConfigManager { get }
     var iapManager: IAPManager { get }
+    var kvStore: KeyValueStore { get }
     var profileManager: ProfileManager { get }
     var registry: Registry { get }
     var tunnel: ExtendedTunnel { get }

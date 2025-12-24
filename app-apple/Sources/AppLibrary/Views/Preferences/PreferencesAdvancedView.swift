@@ -10,7 +10,7 @@ struct PreferencesAdvancedView: View {
     private var configManager: ConfigManager
 
     @Binding
-    var experimental: UserPreferencesObservable.Experimental
+    var experimental: ABI.AppPreferenceValues.Experimental
 
     var body: some View {
         Form {
@@ -71,7 +71,7 @@ private extension PreferencesAdvancedView {
     }
 }
 
-private extension UserPreferencesObservable.Experimental {
+private extension ABI.AppPreferenceValues.Experimental {
     func isUsed(_ flag: ABI.ConfigFlag) -> Bool {
         !ignoredConfigFlags.contains(flag)
     }

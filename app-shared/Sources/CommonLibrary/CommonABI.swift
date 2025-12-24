@@ -10,7 +10,7 @@ public final class CommonABI: ABIProtocol, Sendable {
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
-    private let kvStore: KeyValueStore
+    public let kvStore: KeyValueStore
     public let logger: AppLogger
     public let profileManager: ProfileManager
     public let registry: Registry
