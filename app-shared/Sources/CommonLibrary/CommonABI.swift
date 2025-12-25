@@ -10,7 +10,6 @@ public final class CommonABI: ABIProtocol, Sendable {
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
-    public let kvStore: KeyValueStore
     public let logger: AppLogger
     public let profileManager: ProfileManager
     public let registry: Registry
@@ -25,6 +24,7 @@ public final class CommonABI: ABIProtocol, Sendable {
 
     // MARK: Internal state
 
+    private let kvStore: KeyValueStore
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?

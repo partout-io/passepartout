@@ -324,7 +324,7 @@ extension AppContext {
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
-        return AppContext(abi: abi)
+        return AppContext(abi: abi, kvStore: kvStore)
     }
 }
 
