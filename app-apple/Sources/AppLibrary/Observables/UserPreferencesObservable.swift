@@ -62,11 +62,7 @@ public final class UserPreferencesObservable {
 
     public var onboardingStep: OnboardingStep? {
         didSet {
-            guard let onboardingStep else {
-                kvStore.set(nil as String?, forUIPreference: .onboardingStep)
-                return
-            }
-            kvStore.set(onboardingStep.rawValue, forUIPreference: .onboardingStep)
+            kvStore.set(onboardingStep?.rawValue, forUIPreference: .onboardingStep)
         }
     }
 
