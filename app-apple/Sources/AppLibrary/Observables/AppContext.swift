@@ -19,13 +19,13 @@ public final class AppContext {
     public let iapObservable: IAPObservable
     public let profileObservable: ProfileObservable
     public let tunnelObservable: TunnelObservable
-    public let userPreferences: UserPreferencesObservable
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
 
     // View concerns (app-specific)
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
+    public let userPreferences: UserPreferencesObservable
     public let viewLogger: ViewLogger
 
     public init(abi: ABIProtocol, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
