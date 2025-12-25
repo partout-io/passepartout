@@ -8,7 +8,6 @@ import Observation
 @MainActor @Observable
 public final class TunnelObservable {
     private let abi: ABIProtocol
-    private let logger: AppLogger
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
@@ -16,8 +15,6 @@ public final class TunnelObservable {
 
     public init(abi: ABIProtocol) {
         self.abi = abi
-        logger = abi.logger
-
         activeProfiles = [:]
         transfers = [:]
     }
@@ -44,9 +41,6 @@ extension TunnelObservable {
 
     public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
         await abi.tunnelCurrentLog()
-            .map {
-                logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
     }
 }
 
@@ -70,7 +64,7 @@ extension TunnelObservable {
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
-        logger.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let active):
             activeProfiles = active

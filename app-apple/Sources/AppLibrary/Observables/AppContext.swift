@@ -10,14 +10,10 @@ import Partout
 public final class AppContext {
     private let abi: ABIProtocol
 
-    // Global configuration
-    public var appConfiguration: ABI.AppConfiguration {
-        abi.appConfiguration
-    }
-
     // Observables (yet unused in Main app and active TV app)
 
     // ABI concerns (reusable cross-platform)
+    public let appConfiguration: ABI.AppConfiguration
     public let appEncoderObservable: AppEncoderObservable
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
@@ -32,8 +28,9 @@ public final class AppContext {
     public let onboardingObservable: OnboardingObservable
     public let viewLogger: ViewLogger
 
-    public init(abi: ABIProtocol, kvStore: KeyValueStore) {
+    public init(abi: ABIProtocol, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
         self.abi = abi
+        self.appConfiguration = appConfiguration
 
         // ABI
         appEncoderObservable = AppEncoderObservable(abi: abi)
@@ -45,10 +42,10 @@ public final class AppContext {
         webReceiverObservable = WebReceiverObservable(abi: abi)
 
         // View
-        appFormatter = AppFormatter(constants: abi.appConfiguration.constants)
+        appFormatter = AppFormatter(constants: appConfiguration.constants)
         userPreferences = UserPreferencesObservable(kvStore: kvStore)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
-        viewLogger = ViewLogger(strategy: abi.logger)
+        viewLogger = ViewLogger(abi: abi)
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()

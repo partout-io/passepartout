@@ -10,7 +10,6 @@ import Observation
 @MainActor @Observable
 public final class ProfileObservable {
     private let abi: ABIProtocol
-    private let logger: AppLogger
 
     private var allHeaders: [ABI.AppIdentifier: ABI.AppProfileHeader] {
         didSet {
@@ -25,7 +24,6 @@ public final class ProfileObservable {
 
     public init(abi: ABIProtocol) {
         self.abi = abi
-        logger = abi.logger
 
         allHeaders = [:]
         filteredHeaders = []
@@ -97,7 +95,7 @@ extension ProfileObservable {
     }
 
     func onUpdate(_ event: ABI.ProfileEvent) {
-        logger.log(.core, .debug, "ProfileObservable.onUpdate(): \(event)")
+        abi.log(.core, .debug, "ProfileObservable.onUpdate(): \(event)")
         switch event {
         case .ready:
             isReady = true
@@ -136,6 +134,6 @@ private extension ProfileObservable {
             // FIXME: #1594, localized module types
 //            processor?.preview(from: $0) ?? ABI.ProfilePreview($0)
 
-        logger.log(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
+        abi.log(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
     }
 }

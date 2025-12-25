@@ -72,7 +72,7 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
-        return AppContext(abi: abi, kvStore: kvStore)
+        return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
     }()
 }
 

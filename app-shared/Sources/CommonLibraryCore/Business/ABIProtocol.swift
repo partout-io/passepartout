@@ -20,11 +20,7 @@ public struct ABIEventContext: @unchecked Sendable {
 }
 
 @MainActor
-public protocol ABIProtocol {
-    // MARK: Global
-    var appConfiguration: ABI.AppConfiguration { get }
-    var logger: AppLogger { get }
-
+public protocol ABIProtocol: AppLogger, Sendable {
     // MARK: Events
     typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
     func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback)
@@ -49,6 +45,8 @@ public protocol ABIProtocol {
     var iapIsBeta: Bool { get }
     var iapVerificationDelayMinutes: Int { get }
 
+    // MARK: Logging
+
     // MARK: Options
 //    func optionSet<T>(_ pref: ABI.AppPreference, value: T)
 
@@ -67,7 +65,7 @@ public protocol ABIProtocol {
     func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
 //    func tunnelReconnect(to profileId: ABI.AppIdentifier) async throws
     func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws
-    func tunnelCurrentLog() async -> [ABI.AppLogLine]
+    func tunnelCurrentLog() async -> [String]
     func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError?
     func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer?
 

@@ -6,11 +6,9 @@ public final class CommonABI: ABIProtocol, Sendable {
     // MARK: Business
 
     // FIXME: #1594, Make these private after observables
-    public let appConfiguration: ABI.AppConfiguration
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
-    public let logger: AppLogger
     public let profileManager: ProfileManager
     public let registry: Registry
     public let sysexManager: ExtensionInstaller?
@@ -24,7 +22,10 @@ public final class CommonABI: ABIProtocol, Sendable {
 
     // MARK: Internal state
 
+    private let appConfiguration: ABI.AppConfiguration
     private let kvStore: KeyValueStore
+    private let logger: AppLogger
+
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?
@@ -146,6 +147,16 @@ extension CommonABI {
         iapManager.verificationDelayMinutes
     }
 
+    // MARK: Logging
+
+    public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
+        logger.log(category, level, message)
+    }
+
+    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
+        logger.formattedLog(timestamp: timestamp, message: message)
+    }
+
     // MARK: Profile
 
     public func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile? {
@@ -199,16 +210,19 @@ extension CommonABI {
         try await tunnel.connect(with: profile.native, force: force)
     }
 
-    //    public func tunnelReconnect(to profileId: ABI.Identifier) async throws {
-    //        try await tunnel.
-    //    }
+//    public func tunnelReconnect(to profileId: ABI.Identifier) async throws {
+//        try await tunnel.
+//    }
 
     public func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func tunnelCurrentLog() async -> [ABI.AppLogLine] {
+    public func tunnelCurrentLog() async -> [String] {
         await tunnel.currentLog(parameters: appConfiguration.constants.log)
+            .map {
+                logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
     }
 
     public func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
