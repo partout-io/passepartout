@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public final class PartoutLoggerStrategy: AppLogger, Sendable {
+public final class PartoutAppLogger: AppLogger, Sendable {
     private let formattedLogBlock: @Sendable (Date, String) -> String
 
     public init(formattedLogBlock: @escaping @Sendable (Date, String) -> String) {

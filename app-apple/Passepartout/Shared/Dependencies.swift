@@ -84,7 +84,7 @@ struct Dependencies {
     }
 
     func appLogger() -> AppLogger {
-        PartoutLoggerStrategy(formattedLogBlock: formattedLog)
+        PartoutAppLogger(formattedLogBlock: formattedLog)
     }
 
     func formattedLog(timestamp: Date, message: String) -> String {
