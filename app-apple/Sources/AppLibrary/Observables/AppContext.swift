@@ -9,11 +9,11 @@ import Partout
 @MainActor
 public final class AppContext {
     private let abi: ABIProtocol
+    public let appConfiguration: ABI.AppConfiguration
 
     // Observables (yet unused in Main app and active TV app)
 
     // ABI concerns (reusable cross-platform)
-    public let appConfiguration: ABI.AppConfiguration
     public let appEncoderObservable: AppEncoderObservable
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
