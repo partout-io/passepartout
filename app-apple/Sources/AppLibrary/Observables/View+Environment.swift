@@ -13,15 +13,17 @@ extension View {
             .environment(\.logFormatterBlock) { [weak context] in
                 context?.viewLogger.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
+            // ABI-specific
             .environment(context.appEncoderObservable)
-            .environment(context.appFormatter)
             .environment(context.configObservable)
             .environment(context.iapObservable)
-            .environment(context.onboardingObservable)
             .environment(context.profileObservable)
             .environment(context.tunnelObservable)
-            .environment(context.userPreferences)
             .environment(context.versionObservable)
+            // View-specific
+            .environment(context.appFormatter)
+            .environment(context.onboardingObservable)
+            .environment(context.userPreferences)
             .environment(context.viewLogger)
             // Deprecated
             .environmentObject(context.apiManager)

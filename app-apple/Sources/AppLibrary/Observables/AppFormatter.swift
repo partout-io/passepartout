@@ -15,7 +15,7 @@ public final class AppFormatter {
         dateFormatter.dateFormat = constants.formats.timestamp
     }
 
-    public func string(from date: Date) -> String {
+    public nonisolated func string(from date: Date) -> String {
         dateFormatter.string(from: date)
     }
 }
