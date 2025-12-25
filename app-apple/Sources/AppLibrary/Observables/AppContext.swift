@@ -8,7 +8,7 @@ import Partout
 
 @MainActor
 public final class AppContext {
-    private let abi: ABIProtocol
+    private let abi: AppABIProtocol
     public let appConfiguration: ABI.AppConfiguration
 
     // Observables (yet unused in Main app and active TV app)
@@ -28,7 +28,7 @@ public final class AppContext {
     public let userPreferences: UserPreferencesObservable
     public let viewLogger: ViewLogger
 
-    public init(abi: ABIProtocol, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
+    public init(abi: AppABIProtocol, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
         self.abi = abi
         self.appConfiguration = appConfiguration
 

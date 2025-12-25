@@ -56,7 +56,7 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        let abi = CommonABI(
+        let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,

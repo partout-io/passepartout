@@ -7,14 +7,14 @@ import Observation
 
 @MainActor @Observable
 public final class IAPObservable {
-    private let abi: ABIProtocol
+    private let abi: AppABIProtocol
 
     public private(set) var isEnabled: Bool
     public private(set) var eligibleFeatures: Set<ABI.AppFeature>
     public private(set) var isLoadingReceipt: Bool
     private var subscription: Task<Void, Never>?
 
-    public init(abi: ABIProtocol) {
+    public init(abi: AppABIProtocol) {
         self.abi = abi
 
         isEnabled = true

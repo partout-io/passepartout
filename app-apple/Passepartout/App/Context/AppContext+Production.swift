@@ -307,7 +307,7 @@ extension AppContext {
 
         // MARK: Build
 
-        let abi = CommonABI(
+        let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,

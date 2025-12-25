@@ -7,10 +7,10 @@ import Observation
 
 @MainActor @Observable
 public final class VersionObservable {
-    private let abi: ABIProtocol
+    private let abi: AppABIProtocol
     private var latestRelease: ABI.VersionRelease?
 
-    public init(abi: ABIProtocol) {
+    public init(abi: AppABIProtocol) {
         self.abi = abi
         latestRelease = nil
     }

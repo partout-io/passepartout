@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public final class CommonABI: ABIProtocol, Sendable {
+public final class AppABI: AppABIProtocol, Sendable {
     // MARK: Business
 
     // FIXME: #1594, Make these private after observables
@@ -96,7 +96,7 @@ public final class CommonABI: ABIProtocol, Sendable {
 
 // MARK: - Actions
 
-extension CommonABI {
+extension AppABI {
     // MARK: Config
 
     public func configRefreshBundle() async {
@@ -269,7 +269,7 @@ extension CommonABI {
 // MARK: - Observation
 
 // Invoked by AppDelegate
-extension CommonABI {
+extension AppABI {
     public func onApplicationActive() {
         Task {
             // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
@@ -290,7 +290,7 @@ extension CommonABI {
 }
 
 // Invoked on internal events
-private extension CommonABI {
+private extension AppABI {
     func onLaunch() async throws {
         logger.log(.core, .notice, "Application did launch")
 

@@ -38,7 +38,7 @@ extension ABI {
         public var skipsPurchases = false
 
         // XXX: These are copied from ConfigManager.activeFlags for use
-        // in the PacketTunnelProvider (see CommonABI.onApplicationActive).
+        // in the PacketTunnelProvider (see AppABI.onApplicationActive).
         // In the app, use ConfigManager.activeFlags directly.
         public var configFlagsData: Data?
 

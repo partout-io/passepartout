@@ -8,9 +8,9 @@ import Observation
 
 @MainActor @Observable
 public final class AppEncoderObservable {
-    private let abi: ABIProtocol
+    private let abi: AppABIProtocol
 
-    public init(abi: ABIProtocol) {
+    public init(abi: AppABIProtocol) {
         self.abi = abi
     }
 

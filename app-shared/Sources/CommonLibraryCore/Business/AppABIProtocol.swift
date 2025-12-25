@@ -20,7 +20,7 @@ public struct ABIEventContext: @unchecked Sendable {
 }
 
 @MainActor
-public protocol ABIProtocol: AppLogger, Sendable {
+public protocol AppABIProtocol: AppLogger, Sendable {
     // MARK: Events
     typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
     func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback)
@@ -94,7 +94,7 @@ public protocol ABIProtocol: AppLogger, Sendable {
     var preferencesManager: PreferencesManager { get }
 }
 
-extension ABIProtocol {
+extension AppABIProtocol {
     public func tunnelConnect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
         guard let profile = profileManager.partoutProfile(withId: profileId) else {
             throw ABI.AppError.notFound

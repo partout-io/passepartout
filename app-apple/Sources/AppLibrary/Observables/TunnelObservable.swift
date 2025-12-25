@@ -7,13 +7,13 @@ import Observation
 
 @MainActor @Observable
 public final class TunnelObservable {
-    private let abi: ABIProtocol
+    private let abi: AppABIProtocol
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(abi: ABIProtocol) {
+    public init(abi: AppABIProtocol) {
         self.abi = abi
         activeProfiles = [:]
         transfers = [:]
