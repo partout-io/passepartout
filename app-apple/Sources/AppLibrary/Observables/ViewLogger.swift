@@ -7,17 +7,17 @@ import Observation
 
 @MainActor @Observable
 public final class ViewLogger: AppLogger {
-    private let abi: ABIProtocol
+    private let logger: AppLogger
 
-    public init(abi: ABIProtocol) {
-        self.abi = abi
+    public init(logger: AppLogger) {
+        self.logger = logger
     }
 
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        abi.log(category, level, message)
+        logger.log(category, level, message)
     }
 
     public func formattedLog(timestamp: Date, message: String) -> String {
-        abi.formattedLog(timestamp: timestamp, message: message)
+        logger.formattedLog(timestamp: timestamp, message: message)
     }
 }
