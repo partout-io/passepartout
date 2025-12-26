@@ -85,20 +85,6 @@ extension View {
         formStyle(.grouped)
     }
 
-    public func themeKeyValue<T>(
-        _ store: KeyValueManager,
-        _ key: String,
-        _ value: Binding<T>,
-        default defaultValue: T
-    ) -> some View where T: Equatable {
-        modifier(ThemeKeyValueModifier(
-            store: store,
-            key: key,
-            value: value,
-            defaultValue: defaultValue
-        ))
-    }
-
     public func themeList() -> some View {
 #if os(tvOS)
         listStyle(.grouped)

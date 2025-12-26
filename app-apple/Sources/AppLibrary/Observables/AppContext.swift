@@ -8,12 +8,8 @@ import Partout
 
 @MainActor
 public final class AppContext {
-    private let abi: ABIProtocol
-
-    // Global configuration
-    public var appConfiguration: ABI.AppConfiguration {
-        abi.appConfiguration
-    }
+    private let abi: AppABIProtocol
+    public let appConfiguration: ABI.AppConfiguration
 
     // Observables (yet unused in Main app and active TV app)
 
@@ -23,21 +19,18 @@ public final class AppContext {
     public let iapObservable: IAPObservable
     public let profileObservable: ProfileObservable
     public let tunnelObservable: TunnelObservable
-    public let userPreferences: UserPreferencesObservable
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
 
     // View concerns (app-specific)
-    public let appearanceObservable: AppearanceObservable
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
+    public let userPreferences: UserPreferencesObservable
     public let viewLogger: ViewLogger
 
-    public init(
-        abi: ABIProtocol,
-        onboardingObservable: OnboardingObservable? = nil,
-    ) {
+    public init(abi: AppABIProtocol, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
         self.abi = abi
+        self.appConfiguration = appConfiguration
 
         // ABI
         appEncoderObservable = AppEncoderObservable(abi: abi)
@@ -45,15 +38,14 @@ public final class AppContext {
         iapObservable = IAPObservable(abi: abi)
         profileObservable = ProfileObservable(abi: abi)
         tunnelObservable = TunnelObservable(abi: abi)
-        userPreferences = UserPreferencesObservable(kvManager: abi.kvManager)
         versionObservable = VersionObservable(abi: abi)
         webReceiverObservable = WebReceiverObservable(abi: abi)
 
         // View
-        appearanceObservable = AppearanceObservable(kvManager: abi.kvManager)
-        appFormatter = AppFormatter(constants: abi.appConfiguration.constants)
-        self.onboardingObservable = onboardingObservable ?? OnboardingObservable()
-        viewLogger = ViewLogger(strategy: abi.logger)
+        appFormatter = AppFormatter(constants: appConfiguration.constants)
+        userPreferences = UserPreferencesObservable(kvStore: kvStore)
+        onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
+        viewLogger = ViewLogger(logger: abi)
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
@@ -111,8 +103,6 @@ extension AppContext {
     public var configManager: ConfigManager { abi.configManager }
     @available(*, deprecated, message: "#1594")
     public var iapManager: IAPManager { abi.iapManager }
-    @available(*, deprecated, message: "#1594")
-    public var kvManager: KeyValueManager { abi.kvManager }
     @available(*, deprecated, message: "#1594")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
     @available(*, deprecated, message: "#1594")

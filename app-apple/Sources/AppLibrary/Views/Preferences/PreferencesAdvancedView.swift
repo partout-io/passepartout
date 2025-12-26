@@ -6,7 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct PreferencesAdvancedView: View {
-
     @EnvironmentObject
     private var configManager: ConfigManager
 

@@ -100,7 +100,7 @@ private extension ProviderFiltersView {
     NavigationStack {
         ProviderFiltersView(
             module: ProviderID.mullvad.asPreviewModule,
-            model: .init(kvManager: KeyValueManager()),
+            model: .init(userPreferences: UserPreferencesObservable(kvStore: InMemoryStore())),
             heuristic: .constant(nil)
         )
     }

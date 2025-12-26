@@ -19,7 +19,7 @@ extension AppDelegate: NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         AppWindow.shared.isVisible = false
-        return !macSettings.keepsInMenu
+        return !context.userPreferences.keepsInMenu
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {

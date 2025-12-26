@@ -6,13 +6,10 @@
 
 import AppKit
 import CommonLibrary
-import Partout
 import ServiceManagement
 
 @MainActor @Observable
 public final class MacSettings {
-    private let kvManager: KeyValueManager?
-
     private let appService: SMAppService?
 
     public var isStartedFromLoginItem: Bool {
@@ -34,26 +31,14 @@ public final class MacSettings {
         }
     }
 
-    public var keepsInMenu: Bool = false {
-        didSet {
-            kvManager?.set(keepsInMenu, forUIPreference: .keepsInMenu)
-        }
-    }
-
     public init() {
-        kvManager = nil
         appService = nil
-
         launchesOnLogin = false
-        keepsInMenu = false
     }
 
-    public init(kvManager: KeyValueManager, loginItemId: String) {
-        self.kvManager = kvManager
+    public init(loginItemId: String) {
         appService = SMAppService.loginItem(identifier: loginItemId)
-
         launchesOnLogin = appService?.status == .enabled
-        keepsInMenu = kvManager.bool(forUIPreference: .keepsInMenu)
     }
 }
 

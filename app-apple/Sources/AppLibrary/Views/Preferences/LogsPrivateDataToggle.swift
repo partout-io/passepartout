@@ -6,21 +6,13 @@ import CommonLibrary
 import SwiftUI
 
 public struct LogsPrivateDataToggle: View {
-
-    @EnvironmentObject
-    private var kvManager: KeyValueManager
-
-    @State
-    private var logsPrivateData = false
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     public init() {
     }
 
     public var body: some View {
-        Toggle(Strings.Views.Diagnostics.Rows.includePrivateData, isOn: $logsPrivateData)
-            .themeKeyValue(kvManager, ABI.AppPreference.logsPrivateData.key, $logsPrivateData, default: false)
-            .onChange(of: logsPrivateData) {
-                kvManager.set($0, forAppPreference: .logsPrivateData)
-            }
+        Toggle(Strings.Views.Diagnostics.Rows.includePrivateData, isOn: userPreferences.binding(\.logsPrivateData))
     }
 }

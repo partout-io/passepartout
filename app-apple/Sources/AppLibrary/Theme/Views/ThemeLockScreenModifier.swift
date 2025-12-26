@@ -11,9 +11,8 @@ import LocalAuthentication
 import SwiftUI
 
 struct ThemeLockScreenModifier<LockedContent>: ViewModifier where LockedContent: View {
-
-    @AppStorage(ABI.UIPreference.locksInBackground.key)
-    private var locksInBackground = false
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @Environment(Theme.self)
     private var theme
@@ -23,7 +22,7 @@ struct ThemeLockScreenModifier<LockedContent>: ViewModifier where LockedContent:
 
     func body(content: Content) -> some View {
         LockableView(
-            locksInBackground: locksInBackground,
+            locksInBackground: userPreferences.locksInBackground,
             content: {
                 content
             },

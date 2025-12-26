@@ -3,22 +3,21 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import MiniFoundation
 import Observation
 
-@Observable
+@MainActor @Observable
 public final class ViewLogger: AppLogger {
-    private let strategy: AppLogger
+    private let logger: AppLogger
 
-    public init(strategy: AppLogger) {
-        self.strategy = strategy
+    public init(logger: AppLogger) {
+        self.logger = logger
     }
 
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        strategy.log(category, level, message)
+        logger.log(category, level, message)
     }
 
     public func formattedLog(timestamp: Date, message: String) -> String {
-        strategy.formattedLog(timestamp: timestamp, message: message)
+        logger.formattedLog(timestamp: timestamp, message: message)
     }
 }

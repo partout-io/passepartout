@@ -52,6 +52,17 @@ const char *psp_partout_version();
 void psp_init(const psp_init_args *args);
 void psp_deinit();
 
+/* Options. */
+typedef enum {
+    PSPOptionDNSFallsBack,
+    PSPOptionLogsPrivateData,
+    PSPOptionSkipsPurchases
+} psp_option;
+void psp_option_set_bool(psp_option, bool);
+//void psp_option_set_int(psp_option, int);
+//void psp_option_set_string(psp_option, const char *);
+//void psp_option_set_object(psp_option, const psp_json *);
+
 ///* Profiles. */
 //psp_json psp_profile_get_headers();
 //void psp_profile_new(psp_completion);

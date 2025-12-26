@@ -9,23 +9,16 @@ import SwiftUI
 #if !os(tvOS)
 
 public struct PreferencesView: View {
-
-    @Environment(AppearanceObservable.self)
-    private var appearanceObservable
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @EnvironmentObject
     private var iapManager: IAPManager
 
     @EnvironmentObject
-    private var kvManager: KeyValueManager
-
-    @EnvironmentObject
     private var configManager: ConfigManager
 
-#if os(iOS)
-    @AppStorage(ABI.UIPreference.locksInBackground.key)
-    private var locksInBackground = false
-#elseif os(macOS)
+#if os(macOS)
     @Environment(MacSettings.self)
     private var settings
 #endif
@@ -34,9 +27,6 @@ public struct PreferencesView: View {
     private var appConfiguration
 
     private let profileManager: ProfileManager
-
-    @State
-    private var preferences = ABI.AppPreferenceValues()
 
     @State
     private var isConfirmingEraseiCloud = false
@@ -72,13 +62,6 @@ public struct PreferencesView: View {
             NavigationLink(advancedTitle, destination: advancedView)
         }
         .themeForm()
-        // These bindings are necessary to propagate the changes to the KeyValueManager
-        .onLoad {
-            preferences = kvManager.preferences
-        }
-        .onChange(of: preferences) {
-            kvManager.preferences = $0
-        }
     }
 }
 
@@ -91,7 +74,7 @@ private extension PreferencesView {
 
     var systemAppearanceSection: some View {
         Section {
-            Picker(Strings.Views.Preferences.systemAppearance, selection: appearanceObservable.binding(\.systemAppearance)) {
+            Picker(Strings.Views.Preferences.systemAppearance, selection: userPreferences.binding(\.systemAppearance)) {
                 ForEach(Self.systemAppearances, id: \.self) {
                     Text($0?.localizedDescription ?? Strings.Entities.Ui.SystemAppearance.system)
                 }
@@ -101,7 +84,7 @@ private extension PreferencesView {
 
 #if os(iOS)
     var lockInBackgroundSection: some View {
-        Toggle(Strings.Views.Preferences.locksInBackground, isOn: $locksInBackground)
+        Toggle(Strings.Views.Preferences.locksInBackground, isOn: userPreferences.binding(\.locksInBackground))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.LocksInBackground.footer)
     }
 
@@ -112,7 +95,7 @@ private extension PreferencesView {
     }
 
     var keepsInMenuSection: some View {
-        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: settings.binding(\.keepsInMenu))
+        Toggle(Strings.Views.Preferences.keepsInMenu, isOn: userPreferences.binding(\.keepsInMenu))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.KeepsInMenu.footer)
     }
 #endif
@@ -123,7 +106,7 @@ private extension PreferencesView {
     }
 
     var dnsFallsBackSection: some View {
-        Toggle(Strings.Views.Preferences.dnsFallsBack, isOn: $preferences.dnsFallsBack)
+        Toggle(Strings.Views.Preferences.dnsFallsBack, isOn: userPreferences.binding(\.dnsFallsBack))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.DnsFallsBack.footer)
     }
 
@@ -133,7 +116,7 @@ private extension PreferencesView {
     }
 
     var relaxedVerificationSection: some View {
-        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: $preferences.relaxedVerification)
+        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: userPreferences.binding(\.relaxedVerification))
     }
 
     var eraseCloudKitSection: some View {
@@ -169,20 +152,16 @@ private extension PreferencesView {
     }
 
     func advancedView() -> some View {
-        PreferencesAdvancedView(experimental: $preferences.experimental)
+        PreferencesAdvancedView(experimental: userPreferences.binding(\.experimental))
             .navigationTitle(advancedTitle)
-            .onChange(of: preferences.experimental) {
-                kvManager.preferences.experimental = $0
-            }
     }
 }
 
 #else
 
 public struct PreferencesView: View {
-
-    @EnvironmentObject
-    private var kvManager: KeyValueManager
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @EnvironmentObject
     private var configManager: ConfigManager
@@ -191,9 +170,6 @@ public struct PreferencesView: View {
     private var appConfiguration
 
     private let profileManager: ProfileManager
-
-    @State
-    private var relaxedVerification = false
 
     public init(profileManager: ProfileManager) {
         self.profileManager = profileManager
@@ -207,13 +183,12 @@ public struct PreferencesView: View {
             }
         }
         .themeSection(header: Strings.Global.Nouns.preferences)
-        .themeKeyValue(kvManager, ABI.AppPreference.relaxedVerification.key, $relaxedVerification, default: false)
     }
 }
 
 private extension PreferencesView {
     var relaxedVerificationToggle: some View {
-        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: $relaxedVerification)
+        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: userPreferences.binding(\.relaxedVerification))
     }
 }
 

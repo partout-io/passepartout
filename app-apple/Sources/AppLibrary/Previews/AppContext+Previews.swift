@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
 import AppResources
-import Foundation
+import CommonLibrary
 import Partout
 
 extension AppContext {
@@ -13,10 +12,16 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let appLogger = PartoutLoggerStrategy { _, _ in "" }
+        let appLogger = PartoutAppLogger { _, _ in "" }
         let registry = Registry()
         let appEncoder = AppEncoder(registry: registry)
-        let kvManager = KeyValueManager()
+        let kvStore = InMemoryStore()
+        let configManager = ConfigManager()
+        let apiManager = APIManager(
+            .global,
+            from: API.bundled,
+            repository: InMemoryAPIRepository(.global)
+        )
         let iapManager = IAPManager(
             customUserLevel: .complete,
             inAppHelper: FakeAppProductHelper(),
@@ -45,27 +50,19 @@ extension AppContext {
             processor: processor,
             interval: 10.0
         )
-        let configManager = ConfigManager()
+        let preferencesManager = PreferencesManager()
 
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
-        // Redesign
-        let apiManager = APIManager(
-            .global,
-            from: API.bundled,
-            repository: InMemoryAPIRepository(.global)
-        )
-        let preferencesManager = PreferencesManager()
-
-        let abi = CommonABI(
+        let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
             iapManager: iapManager,
-            kvManager: kvManager,
+            kvStore: kvStore,
             logger: appLogger,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
@@ -75,7 +72,7 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
-        return AppContext(abi: abi)
+        return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
     }()
 }
 

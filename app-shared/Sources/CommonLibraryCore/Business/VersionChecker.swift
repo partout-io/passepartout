@@ -8,7 +8,7 @@ extension VersionChecker: ObservableObject {}
 
 @MainActor
 public final class VersionChecker {
-    private let kvManager: KeyValueManager
+    private let kvStore: KeyValueStore
 
     private let strategy: VersionCheckerStrategy
 
@@ -21,7 +21,7 @@ public final class VersionChecker {
     public nonisolated let didChange: PassthroughStream<UniqueID, ABI.VersionEvent>
 
     public init(
-        kvManager: KeyValueManager,
+        kvStore: KeyValueStore,
         strategy: VersionCheckerStrategy,
         currentVersion: String,
         downloadURL: URL
@@ -29,7 +29,7 @@ public final class VersionChecker {
         guard let semCurrent = ABI.SemanticVersion(currentVersion) else {
             preconditionFailure("Unparsable current version: \(currentVersion)")
         }
-        self.kvManager = kvManager
+        self.kvStore = kvStore
         self.strategy = strategy
         self.currentVersion = semCurrent
         self.downloadURL = downloadURL
@@ -37,7 +37,7 @@ public final class VersionChecker {
     }
 
     public var latestRelease: ABI.VersionRelease? {
-        guard let latestVersionDescription = kvManager.string(forAppPreference: .lastCheckedVersion),
+        guard let latestVersionDescription = kvStore.string(forAppPreference: .lastCheckedVersion),
               let latestVersion = ABI.SemanticVersion(latestVersionDescription) else {
             return nil
         }
@@ -54,13 +54,13 @@ public final class VersionChecker {
         }
         let now = Date()
         do {
-            let lastCheckedInterval = kvManager.double(forAppPreference: .lastCheckedVersionDate)
+            let lastCheckedInterval = kvStore.double(forAppPreference: .lastCheckedVersionDate)
             let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSinceReferenceDate: lastCheckedInterval) : .distantPast
 
             pp_log_g(.App.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
-            kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
-            kvManager.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
+            kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
+            kvStore.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
             pp_log_g(.App.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
 #if !PSP_CROSS
@@ -77,7 +77,7 @@ public final class VersionChecker {
             pp_log_g(.App.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // save the check date regardless because the service call succeeded
-            kvManager.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
+            kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
 
             pp_log_g(.App.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
@@ -98,7 +98,7 @@ extension VersionChecker {
         currentVersion: String = "255.255.255" // An update is never available
     ) {
         self.init(
-            kvManager: KeyValueManager(),
+            kvStore: InMemoryStore(),
             strategy: DummyStrategy(),
             currentVersion: currentVersion,
             downloadURL: downloadURL

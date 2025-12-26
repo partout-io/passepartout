@@ -2,16 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public final class CommonABI: ABIProtocol, Sendable {
+public final class AppABI: AppABIProtocol, Sendable {
     // MARK: Business
 
     // FIXME: #1594, Make these private after observables
-    public let appConfiguration: ABI.AppConfiguration
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
-    public let kvManager: KeyValueManager
-    public let logger: AppLogger
     public let profileManager: ProfileManager
     public let registry: Registry
     public let sysexManager: ExtensionInstaller?
@@ -25,6 +22,10 @@ public final class CommonABI: ABIProtocol, Sendable {
 
     // MARK: Internal state
 
+    private let appConfiguration: ABI.AppConfiguration
+    private let kvStore: KeyValueStore
+    private let logger: AppLogger
+
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?
@@ -36,7 +37,7 @@ public final class CommonABI: ABIProtocol, Sendable {
         appEncoder: AppEncoder,
         configManager: ConfigManager,
         iapManager: IAPManager,
-        kvManager: KeyValueManager,
+        kvStore: KeyValueStore,
         logger: AppLogger,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
@@ -52,7 +53,7 @@ public final class CommonABI: ABIProtocol, Sendable {
         self.appEncoder = appEncoder
         self.configManager = configManager
         self.iapManager = iapManager
-        self.kvManager = kvManager
+        self.kvStore = kvStore
         self.logger = logger
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
@@ -95,7 +96,7 @@ public final class CommonABI: ABIProtocol, Sendable {
 
 // MARK: - Actions
 
-extension CommonABI {
+extension AppABI {
     // MARK: Config
 
     public func configRefreshBundle() async {
@@ -144,6 +145,16 @@ extension CommonABI {
 
     public var iapVerificationDelayMinutes: Int {
         iapManager.verificationDelayMinutes
+    }
+
+    // MARK: Logging
+
+    public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
+        logger.log(category, level, message)
+    }
+
+    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
+        logger.formattedLog(timestamp: timestamp, message: message)
     }
 
     // MARK: Profile
@@ -199,16 +210,19 @@ extension CommonABI {
         try await tunnel.connect(with: profile.native, force: force)
     }
 
-    //    public func tunnelReconnect(to profileId: ABI.Identifier) async throws {
-    //        try await tunnel.
-    //    }
+//    public func tunnelReconnect(to profileId: ABI.Identifier) async throws {
+//        try await tunnel.
+//    }
 
     public func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func tunnelCurrentLog() async -> [ABI.AppLogLine] {
+    public func tunnelCurrentLog() async -> [String] {
         await tunnel.currentLog(parameters: appConfiguration.constants.log)
+            .map {
+                logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            }
     }
 
     public func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
@@ -255,7 +269,7 @@ extension CommonABI {
 // MARK: - Observation
 
 // Invoked by AppDelegate
-extension CommonABI {
+extension AppABI {
     public func onApplicationActive() {
         Task {
             // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
@@ -265,18 +279,18 @@ extension CommonABI {
             await versionChecker.checkLatestRelease()
 
             // Propagate active config flags to tunnel via preferences
-            kvManager.preferences.configFlags = configManager.activeFlags
+            kvStore.preferences.configFlags = configManager.activeFlags
 
             // Disable .relaxedVerification if ABI.ConfigFlag disallows it
             if !configManager.isActive(.allowsRelaxedVerification) {
-                kvManager.set(false, forAppPreference: .relaxedVerification)
+                kvStore.set(false, forAppPreference: .relaxedVerification)
             }
         }
     }
 }
 
 // Invoked on internal events
-private extension CommonABI {
+private extension AppABI {
     func onLaunch() async throws {
         logger.log(.core, .notice, "Application did launch")
 
@@ -304,7 +318,7 @@ private extension CommonABI {
                 case .status(let isEnabled):
                     // FIXME: #1594, .dropFirst() + .removeDuplicates()
                     logger.log(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
-                    kvManager.set(!isEnabled, forAppPreference: .skipsPurchases)
+                    kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let features):
@@ -463,7 +477,7 @@ private extension CommonABI {
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard kvManager.bool(forAppPreference: .relaxedVerification) else {
+        guard kvStore.bool(forAppPreference: .relaxedVerification) else {
             return true
         }
         // Receipt never loaded, force load
@@ -481,7 +495,7 @@ private extension CommonABI {
     }
 }
 
-extension Collection where Element == Profile.DiffResult {
+private extension Collection where Element == Profile.DiffResult {
     func isRelevantForReconnecting(to profile: Profile) -> Bool {
         contains {
             switch $0 {

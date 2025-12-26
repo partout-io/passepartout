@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeClassProviding {
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @EnvironmentObject
     public var iapManager: IAPManager
@@ -18,9 +20,6 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
 
     @Environment(\.verticalSizeClass)
     public var vsClass
-
-    @AppStorage(ABI.UIPreference.profilesLayout.key)
-    private var layout: ProfilesLayout = .list
 
     private let profileManager: ProfileManager
 
@@ -142,14 +141,14 @@ extension LegacyAppCoordinator {
         guard isBigDevice else {
             return .list
         }
-        return layout
+        return userPreferences.profilesLayout
     }
 
     func toolbarContent() -> some ToolbarContent {
         AppToolbar(
             profileManager: profileManager,
             registry: registry,
-            layout: $layout,
+            layout: userPreferences.binding(\.profilesLayout),
             importAction: importActionBinding,
             onSettings: {
                 present(.settings)

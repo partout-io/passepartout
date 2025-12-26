@@ -6,15 +6,14 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileGridView: View, Routable, TunnelInstallationProviding {
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @Environment(\.isUITesting)
     private var isUITesting
 
     @Environment(\.isSearching)
     private var isSearching
-
-    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
-    private var pinsActiveProfile = true
 
     @ObservedObject
     var profileManager: ProfileManager
@@ -33,7 +32,7 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
             VStack(spacing: .zero) {
                 AppNotWorkingButton(tunnel: tunnel)
                     .padding(.bottom)
-                if !isUITesting && !isSearching && pinsActiveProfile {
+                if !isUITesting && !isSearching && userPreferences.pinsActiveProfile {
                     headerView
                         .padding(.bottom)
                         .unanimated()

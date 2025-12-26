@@ -8,7 +8,7 @@ import Partout
 
 @MainActor @Observable
 public final class OnboardingObservable {
-    private let kvManager: KeyValueManager?
+    private let userPreferences: UserPreferencesObservable?
 
     private let initialStep: OnboardingStep
 
@@ -17,25 +17,23 @@ public final class OnboardingObservable {
             pp_log_g(.App.core, .info, "Current step: \(step)")
         }
         didSet {
-            kvManager?.set(step.rawValue, forUIPreference: .onboardingStep)
+            userPreferences?.onboardingStep = step
             pp_log_g(.App.core, .info, "Next step: \(step)")
         }
     }
 
-    public init(kvManager: KeyValueManager? = nil, initialStep: OnboardingStep? = nil) {
-        self.kvManager = kvManager
-        self.initialStep = initialStep ?? .first
-        step = self.initialStep
+    public convenience init(initialStep: OnboardingStep? = nil) {
+        self.init(userPreferences: nil, initialStep: initialStep)
     }
 
-    public convenience init(kvManager: KeyValueManager) {
-        let initialStep: OnboardingStep?
-        if let rawStep = kvManager.string(forUIPreference: .onboardingStep) {
-            initialStep = OnboardingStep(rawValue: rawStep)
-        } else {
-            initialStep = nil
-        }
-        self.init(kvManager: kvManager, initialStep: initialStep)
+    public convenience init(userPreferences: UserPreferencesObservable) {
+        self.init(userPreferences: userPreferences, initialStep: userPreferences.onboardingStep)
+    }
+
+    private init(userPreferences: UserPreferencesObservable?, initialStep: OnboardingStep?) {
+        self.userPreferences = userPreferences
+        self.initialStep = initialStep ?? .first
+        step = self.initialStep
     }
 
     public func advance() {

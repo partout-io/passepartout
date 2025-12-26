@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.27)
 project(PassepartoutCross LANGUAGES C CXX)
 
+set(CMAKE_C_FLAGS "-Wall -W -pedantic")
+set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
+
 # Define target and output
 add_executable(passepartout "")
 add_executable(passepartout-tunnel "")

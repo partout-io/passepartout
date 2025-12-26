@@ -20,13 +20,12 @@ final class AppDelegate: NSObject {
 
 #if os(macOS)
     lazy var macSettings = MacSettings(
-        kvManager: context.kvManager,
         loginItemId: context.appConfiguration.bundleString(for: .loginItemId)
     )
 #endif
 
     func configure(with uiConfiguring: AppLibraryConfiguring?) {
-        context.appearanceObservable.apply()
+        context.userPreferences.applyAppearance()
         uiConfiguring?.configure(with: context)
     }
 }

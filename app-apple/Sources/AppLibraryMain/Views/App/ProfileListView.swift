@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileListView: View, Routable, TunnelInstallationProviding {
+    @Environment(UserPreferencesObservable.self)
+    private var userPreferences
 
     @Environment(\.isUITesting)
     private var isUITesting
@@ -18,9 +20,6 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
 
     @Environment(\.isSearching)
     private var isSearching
-
-    @AppStorage(ABI.UIPreference.pinsActiveProfile.key)
-    private var pinsActiveProfile = true
 
     @ObservedObject
     var profileManager: ProfileManager
@@ -37,7 +36,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
             Section {
                 AppNotWorkingButton(tunnel: tunnel)
             }
-            if !isUITesting && !isSearching && pinsActiveProfile {
+            if !isUITesting && !isSearching && userPreferences.pinsActiveProfile {
                 headerView
                     .unanimated()
             }

@@ -10,9 +10,9 @@ struct VersionCheckerTests {
 
     @Test
     func detectUpdate() async throws {
-        let kv = KeyValueManager()
+        let kv = InMemoryStore()
         let sut = VersionChecker(
-            kvManager: kv,
+            kvStore: kv,
             strategy: MockStrategy(),
             currentVersion: "1.2.3",
             downloadURL: downloadURL
@@ -27,9 +27,9 @@ struct VersionCheckerTests {
 
     @Test
     func ignoreUpdateIfUpToDate() async throws {
-        let kv = KeyValueManager()
+        let kv = InMemoryStore()
         let sut = VersionChecker(
-            kvManager: kv,
+            kvStore: kv,
             strategy: MockStrategy(),
             currentVersion: "5.0.0",
             downloadURL: downloadURL
@@ -43,10 +43,10 @@ struct VersionCheckerTests {
 
     @Test
     func triggerRateLimitOnMultipleChecks() async throws {
-        let kv = KeyValueManager()
+        let kv = InMemoryStore()
         let strategy = MockStrategy()
         let sut = VersionChecker(
-            kvManager: kv,
+            kvStore: kv,
             strategy: strategy,
             currentVersion: "5.0.0",
             downloadURL: downloadURL
