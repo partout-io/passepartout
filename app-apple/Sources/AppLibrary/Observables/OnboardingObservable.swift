@@ -22,15 +22,18 @@ public final class OnboardingObservable {
         }
     }
 
-    public init(userPreferences: UserPreferencesObservable? = nil, initialStep: OnboardingStep? = nil) {
-        self.userPreferences = userPreferences
-        self.initialStep = initialStep ?? .first
-        step = self.initialStep
+    public convenience init(initialStep: OnboardingStep? = nil) {
+        self.init(userPreferences: nil, initialStep: initialStep)
     }
 
     public convenience init(userPreferences: UserPreferencesObservable) {
-        let initialStep = userPreferences.onboardingStep
-        self.init(userPreferences: userPreferences, initialStep: initialStep)
+        self.init(userPreferences: userPreferences, initialStep: userPreferences.onboardingStep)
+    }
+
+    private init(userPreferences: UserPreferencesObservable?, initialStep: OnboardingStep?) {
+        self.userPreferences = userPreferences
+        self.initialStep = initialStep ?? .first
+        step = self.initialStep
     }
 
     public func advance() {
