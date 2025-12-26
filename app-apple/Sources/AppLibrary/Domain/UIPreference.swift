@@ -12,7 +12,7 @@ enum UIPreference: String {
     case profilesLayout
     case systemAppearance
 
-    public var key: String {
+    var key: String {
         "UI.\(rawValue)"
     }
 }
