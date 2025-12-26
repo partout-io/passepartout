@@ -73,15 +73,17 @@ private extension ProfileListView {
             flow: flow
         )
         .contextMenu {
-            installedProfiles.first.map {
+            if let profile = installedProfiles.first {
                 ProfileContextMenu(
                     style: .installedProfile,
                     profileManager: profileManager,
                     tunnel: tunnel,
-                    preview: .init($0),
+                    preview: .init(profile),
                     errorHandler: errorHandler,
                     flow: flow
                 )
+            } else {
+                HideActiveProfileButton()
             }
         }
         .modifier(HideActiveProfileModifier())
