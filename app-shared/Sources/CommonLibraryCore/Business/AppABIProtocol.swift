@@ -6,7 +6,7 @@ import CommonLibraryCore_C
 
 // FIXME: #1594, use typealias for string IDs like ProfileID
 
-#if true || !PSP_CROSS
+#if !PSP_CROSS
 public typealias ABICallbackEvent = ABI.Event
 #else
 public typealias ABICallbackEvent = UnsafePointer<psp_event>
