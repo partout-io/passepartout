@@ -17,11 +17,16 @@ public final class UserPreferencesObservable {
         experimental = kvStore.object(forAppPreference: .experimental) as ABI.AppPreferenceValues.Experimental? ?? ABI.AppPreferenceValues.Experimental()
         keepsInMenu = kvStore.bool(forUIPreference: .keepsInMenu)
         lastInfrastructureRefresh = kvStore.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]?
+        locksInBackground = kvStore.bool(forUIPreference: .locksInBackground)
         logsPrivateData = kvStore.bool(forAppPreference: .logsPrivateData)
         onboardingStep = kvStore.string(forUIPreference: .onboardingStep).flatMap {
             OnboardingStep(rawValue: $0)
         }
         onlyShowsFavorites = kvStore.bool(forUIPreference: .onlyShowsFavorites)
+        pinsActiveProfile = kvStore.bool(forUIPreference: .pinsActiveProfile)
+        profilesLayout = kvStore.string(forUIPreference: .profilesLayout).flatMap {
+            ProfilesLayout(rawValue: $0)
+        } ?? .list
         relaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
         systemAppearance = kvStore.string(forUIPreference: .systemAppearance).flatMap {
             SystemAppearance(rawValue: $0)
@@ -54,6 +59,12 @@ public final class UserPreferencesObservable {
         }
     }
 
+    public var locksInBackground: Bool {
+        didSet {
+            kvStore.set(locksInBackground, forUIPreference: .locksInBackground)
+        }
+    }
+
     public var logsPrivateData: Bool {
         didSet {
             kvStore.set(logsPrivateData, forAppPreference: .logsPrivateData)
@@ -69,6 +80,18 @@ public final class UserPreferencesObservable {
     public var onlyShowsFavorites: Bool {
         didSet {
             kvStore.set(onlyShowsFavorites, forUIPreference: .onlyShowsFavorites)
+        }
+    }
+
+    public var pinsActiveProfile: Bool {
+        didSet {
+            kvStore.set(pinsActiveProfile, forUIPreference: .pinsActiveProfile)
+        }
+    }
+
+    public var profilesLayout: ProfilesLayout {
+        didSet {
+            kvStore.set(profilesLayout.rawValue, forUIPreference: .profilesLayout)
         }
     }
 

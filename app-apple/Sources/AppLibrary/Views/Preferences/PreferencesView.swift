@@ -18,10 +18,7 @@ public struct PreferencesView: View {
     @EnvironmentObject
     private var configManager: ConfigManager
 
-#if os(iOS)
-    @AppStorage(UIPreference.locksInBackground.key)
-    private var locksInBackground = false
-#elseif os(macOS)
+#if os(macOS)
     @Environment(MacSettings.self)
     private var settings
 #endif
@@ -87,7 +84,7 @@ private extension PreferencesView {
 
 #if os(iOS)
     var lockInBackgroundSection: some View {
-        Toggle(Strings.Views.Preferences.locksInBackground, isOn: $locksInBackground)
+        Toggle(Strings.Views.Preferences.locksInBackground, isOn: userPreferences.binding(\.locksInBackground))
             .themeContainerEntry(subtitle: Strings.Views.Preferences.LocksInBackground.footer)
     }
 
