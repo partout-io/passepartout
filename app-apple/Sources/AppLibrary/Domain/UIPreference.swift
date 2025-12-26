@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum UIPreference: String {
+enum UIPreference: String {
     case keepsInMenu
     case lastInfrastructureRefresh
     case locksInBackground
