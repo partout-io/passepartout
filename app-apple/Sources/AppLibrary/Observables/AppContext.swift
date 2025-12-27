@@ -55,18 +55,6 @@ public final class AppContext {
 }
 
 extension AppContext {
-    public func assertMissingImplementations() {
-        CommonLibrary.assertMissingImplementations(with: abi.registry)
-        ModuleType.allCases.forEach { moduleType in
-            let builder = moduleType.newModule(with: abi.registry)
-
-            // ModuleViewProviding
-            guard builder is any ModuleViewProviding else {
-                fatalError("\(moduleType): is not ModuleViewProviding")
-            }
-        }
-    }
-
     public func onApplicationActive() {
         abi.onApplicationActive()
     }

@@ -22,21 +22,11 @@ let package = Package(
         ),
         .library(
             name: "AppLibraryMain",
-            targets: [
-                "AppDataPreferences",
-                "AppDataProfiles",
-                "AppDataProviders",
-                "AppLibraryMainWrapper"
-            ]
+            targets: ["AppLibraryMainWrapper"]
         ),
         .library(
             name: "AppLibraryTV",
-            targets: [
-                "AppDataPreferences",
-                "AppDataProfiles",
-                "AppDataProviders",
-                "AppLibraryTVWrapper"
-            ]
+            targets: ["AppLibraryTVWrapper"]
         ),
         .library(
             name: "TunnelLibrary",
@@ -86,9 +76,12 @@ let package = Package(
         .target(
             name: "AppLibrary",
             dependencies: [
-                "AppStrings",
                 "AppAccessibility",
-                "AppResources"
+                "AppDataPreferences",
+                "AppDataProfiles",
+                "AppDataProviders",
+                "AppResources",
+                "AppStrings"
             ]
         ),
         .target(

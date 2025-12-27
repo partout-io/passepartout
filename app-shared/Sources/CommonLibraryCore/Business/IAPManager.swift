@@ -72,6 +72,24 @@ public final class IAPManager {
 
     private var receiptSubscription: Task<Void, Never>?
 
+    // Dummy
+    public init() {
+        customUserLevel = nil
+        inAppHelper = FakeAppProductHelper()
+        receiptReader = FakeAppReceiptReader()
+        betaChecker = FakeBetaChecker()
+        unrestrictedFeatures = []
+        timeoutInterval = 0.0
+        verificationDelayMinutesBlock = { _ in 0 }
+        productsAtBuild = nil
+        userLevel = .undefined
+        purchasedProducts = []
+        eligibleFeatures = []
+        didChange = PassthroughStream()
+        isObserving = false
+        isEnabled = false
+    }
+
     public init(
         customUserLevel: ABI.AppUserLevel? = nil,
         inAppHelper: any AppProductHelper,

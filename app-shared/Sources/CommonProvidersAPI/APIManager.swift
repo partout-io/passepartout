@@ -20,7 +20,7 @@ public final class APIManager {
 
     private let apis: [APIMapper]
 
-    private let repository: APIRepository
+    private let repository: APIRepository?
 
 #if canImport(Combine)
     @Published
@@ -35,12 +35,23 @@ public final class APIManager {
 #if canImport(Combine)
     @Published
 #endif
-    private var pendingServices: Set<PendingService> = []
+    private var pendingServices: Set<PendingService>
 
     private var subscriptions: [Task<Void, Never>]
 
     public var isLoading: Bool {
         !pendingServices.isEmpty
+    }
+
+    // Dummy
+    public init() {
+        ctx = .global
+        apis = []
+        repository = nil
+        providers = []
+        cache = [:]
+        pendingServices = []
+        subscriptions = []
     }
 
     public init(_ ctx: PartoutLoggerContext, from apis: [APIMapper], repository: APIRepository) {
@@ -49,12 +60,16 @@ public final class APIManager {
         self.repository = repository
         providers = []
         cache = [:]
+        pendingServices = []
         subscriptions = []
 
         observeObjects()
     }
 
     public func fetchIndex() async throws {
+        guard let repository else {
+            throw PartoutError(.notFound)
+        }
         let service: PendingService = .index
         guard !pendingServices.contains(service) else {
             pp_log(ctx, .providers, .error, "Discard fetchIndex, another .index is pending")
@@ -95,6 +110,9 @@ public final class APIManager {
     }
 
     public func fetchInfrastructure(for module: ProviderModule) async throws {
+        guard let repository else {
+            throw PartoutError(.notFound)
+        }
         let service: PendingService = .provider(module.providerId)
         guard !pendingServices.contains(service) else {
             pp_log(ctx, .providers, .error, "Discard fetchProviderInfrastructure, another .provider(\(module.providerId)) is pending")
@@ -138,7 +156,10 @@ public final class APIManager {
     }
 
     public func presets(for server: ProviderServer, moduleType: ModuleType) async throws -> [ProviderPreset] {
-        try await repository.presets(for: server, moduleType: moduleType)
+        guard let repository else {
+            throw PartoutError(.notFound)
+        }
+        return try await repository.presets(for: server, moduleType: moduleType) ?? []
     }
 
     public func cache(for providerId: ProviderID) -> ProviderCache? {
@@ -146,6 +167,9 @@ public final class APIManager {
     }
 
     public func providerRepository(for module: ProviderModule, sort: @escaping ProviderServerParameters.Sorter) async throws -> ProviderRepository {
+        guard let repository else {
+            throw PartoutError(.notFound)
+        }
         if cache(for: module.providerId) == nil {
             try await fetchInfrastructure(for: module)
         }
@@ -153,6 +177,7 @@ public final class APIManager {
     }
 
     public func resetCacheForAllProviders() async {
+        guard let repository else { return }
         await repository.resetCache()
     }
 }
@@ -161,6 +186,7 @@ public final class APIManager {
 
 private extension APIManager {
     func observeObjects() {
+        guard let repository else { return }
         subscriptions.forEach {
             $0.cancel()
         }

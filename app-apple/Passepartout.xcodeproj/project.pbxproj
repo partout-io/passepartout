@@ -10,11 +10,6 @@
 		0E08447C2CF86F2A00ECED7C /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E08447B2CF86F2A00ECED7C /* XCTestCase+Extensions.swift */; };
 		0E2306142DC2BF6B002D70D7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2306102DC2BF6B002D70D7 /* main.swift */; };
 		0E2306162DC2C00B002D70D7 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */; };
-		0E23061F2DC2C2CB002D70D7 /* DefaultTunnelProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAEC8A72D05DB8D001AA50C /* DefaultTunnelProcessor.swift */; };
-		0E2306222DC2C2DC002D70D7 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8195592CFDA75200CC8FFD /* Dependencies.swift */; };
-		0E2BA91D2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
-		0E2BA91E2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
-		0E2BA91F2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */; };
 		0E418AB52D074F0E00D33D47 /* ProviderServersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */; platformFilters = (ios, macos, ); };
 		0E6EEEE32CF8CABA0076E2B0 /* AppContext+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */; };
 		0E6EEEE42CF8CABA0076E2B0 /* ProfileManager+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE22CF8CABA0076E2B0 /* ProfileManager+Testing.swift */; };
@@ -26,24 +21,13 @@
 		0E7F460E2CF7F01600B1C53A /* MainFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F460B2CF7F01600B1C53A /* MainFlowTests.swift */; platformFilters = (ios, macos, ); };
 		0E7F460F2CF7F01600B1C53A /* XCUIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F460C2CF7F01600B1C53A /* XCUIApplication+Extensions.swift */; };
 		0E7F46122CF7F44C00B1C53A /* AppScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F46102CF7F44C00B1C53A /* AppScreen.swift */; platformFilters = (ios, macos, ); };
-		0E81955A2CFDA75200CC8FFD /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8195592CFDA75200CC8FFD /* Dependencies.swift */; };
-		0E81955B2CFDA7BF00CC8FFD /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8195592CFDA75200CC8FFD /* Dependencies.swift */; };
-		0E8DFD502D05FE5A00531CDE /* Dependencies+Processors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8DFD4D2D05FE5A00531CDE /* Dependencies+Processors.swift */; };
 		0E916B782CF80FD60072921A /* ProfileEditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E916B772CF80FD60072921A /* ProfileEditorScreen.swift */; platformFilters = (ios, macos, ); };
 		0E916B7C2CF811EB0072921A /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E916B7B2CF811EB0072921A /* XCUIElement+Extensions.swift */; };
 		0E94EE582B93554B00588243 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */; };
-		0E9805992E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9805982E1D291500808635 /* OpenVPNImplementationBuilder.swift */; };
-		0E98059A2E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9805982E1D291500808635 /* OpenVPNImplementationBuilder.swift */; };
-		0E98059B2E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9805982E1D291500808635 /* OpenVPNImplementationBuilder.swift */; };
-		0E98059D2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E98059C2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift */; };
-		0E98059E2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E98059C2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift */; };
-		0E98059F2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E98059C2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift */; };
 		0EA6340E2D08995800180D7C /* TVScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA6340D2D08995800180D7C /* TVScreenshotTests.swift */; platformFilters = (tvos, ); };
 		0EA634122D08997300180D7C /* TVFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA634112D08997300180D7C /* TVFlowTests.swift */; platformFilters = (tvos, ); };
 		0EA634142D08998700180D7C /* AppScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA634132D08998700180D7C /* AppScreen.swift */; platformFilters = (tvos, ); };
 		0EAD6A1B2CF7F79A00CC1F02 /* MainScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD6A1A2CF7F79A00CC1F02 /* MainScreenshotTests.swift */; platformFilters = (ios, macos, ); };
-		0EAEC8A92D05DB8D001AA50C /* DefaultAppProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAEC8A62D05DB8D001AA50C /* DefaultAppProcessor.swift */; };
-		0EAEC8AA2D05DB8D001AA50C /* DefaultTunnelProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAEC8A72D05DB8D001AA50C /* DefaultTunnelProcessor.swift */; };
 		0EB08B982CA46F4900A02591 /* AppPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0EB08B962CA46F4900A02591 /* AppPlist.strings */; };
 		0EC066D12C7DC47600D88A94 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EC066D02C7DC47600D88A94 /* LaunchScreen.storyboard */; platformFilter = ios; };
 		0EC332CA2B8A1808000B9C2F /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EC332C92B8A1808000B9C2F /* NetworkExtension.framework */; };
@@ -122,7 +106,6 @@
 		0E29E7202D0B7D06003294CA /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AppPlist.strings; sourceTree = "<group>"; };
 		0E29E7212D0B7D09003294CA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/AppPlist.strings; sourceTree = "<group>"; };
 		0E29E7262D0B7D75003294CA /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/AppPlist.strings; sourceTree = "<group>"; };
-		0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppRelease+BusinessChanges.swift"; sourceTree = "<group>"; };
 		0E3DC7CF2D347FAA003F1C4B /* Demo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Demo.xcodeproj; sourceTree = "<group>"; };
 		0E3FF4AE2CE3AF6F00BFF640 /* PassepartoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PassepartoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderServersScreen.swift; sourceTree = "<group>"; };
@@ -144,20 +127,14 @@
 		0E7F460B2CF7F01600B1C53A /* MainFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlowTests.swift; sourceTree = "<group>"; };
 		0E7F460C2CF7F01600B1C53A /* XCUIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		0E7F46102CF7F44C00B1C53A /* AppScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreen.swift; sourceTree = "<group>"; };
-		0E8195592CFDA75200CC8FFD /* Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
 		0E8D852F2C328CA1005493DE /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
-		0E8DFD4D2D05FE5A00531CDE /* Dependencies+Processors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dependencies+Processors.swift"; sourceTree = "<group>"; };
 		0E916B772CF80FD60072921A /* ProfileEditorScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditorScreen.swift; sourceTree = "<group>"; };
 		0E916B7B2CF811EB0072921A /* XCUIElement+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIElement+Extensions.swift"; sourceTree = "<group>"; };
 		0E94EE5C2B93570600588243 /* Tunnel.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Tunnel.plist; sourceTree = "<group>"; };
-		0E9805982E1D291500808635 /* OpenVPNImplementationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenVPNImplementationBuilder.swift; sourceTree = "<group>"; };
-		0E98059C2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireGuardImplementationBuilder.swift; sourceTree = "<group>"; };
 		0EA6340D2D08995800180D7C /* TVScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVScreenshotTests.swift; sourceTree = "<group>"; };
 		0EA634112D08997300180D7C /* TVFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVFlowTests.swift; sourceTree = "<group>"; };
 		0EA634132D08998700180D7C /* AppScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreen.swift; sourceTree = "<group>"; };
 		0EAD6A1A2CF7F79A00CC1F02 /* MainScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenshotTests.swift; sourceTree = "<group>"; };
-		0EAEC8A62D05DB8D001AA50C /* DefaultAppProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAppProcessor.swift; sourceTree = "<group>"; };
-		0EAEC8A72D05DB8D001AA50C /* DefaultTunnelProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTunnelProcessor.swift; sourceTree = "<group>"; };
 		0EB08B972CA46F4900A02591 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AppPlist.strings; sourceTree = "<group>"; };
 		0EC066D02C7DC47600D88A94 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PassepartoutTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -309,7 +286,6 @@
 				0E7E3D5A2B9345FD002BBDB4 /* App */,
 				0EDE56E82CABE40D0082D21C /* Intents */,
 				0E757F112CD0CFFC006E13E1 /* LoginItem */,
-				0E7E3D612B9345FD002BBDB4 /* Shared */,
 				0E3FF4A92CE3AF4700BFF640 /* Tests */,
 				0E7E3D652B9345FD002BBDB4 /* Tunnel */,
 				0E7F460D2CF7F01600B1C53A /* UITests */,
@@ -334,17 +310,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		0E7E3D612B9345FD002BBDB4 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				0E2BA91C2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift */,
-				0E8195592CFDA75200CC8FFD /* Dependencies.swift */,
-				0E9805982E1D291500808635 /* OpenVPNImplementationBuilder.swift */,
-				0E98059C2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		0E7E3D652B9345FD002BBDB4 /* Tunnel */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,7 +317,6 @@
 				0E23060F2DC2BF6B002D70D7 /* TunnelMac.plist */,
 				0E7E3D662B9345FD002BBDB4 /* Tunnel.entitlements */,
 				0E2306102DC2BF6B002D70D7 /* main.swift */,
-				0EAEC8A72D05DB8D001AA50C /* DefaultTunnelProcessor.swift */,
 				0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */,
 			);
 			path = Tunnel;
@@ -376,8 +340,6 @@
 				0EF74A772E2D774600AF7614 /* test-bundle.json */,
 				0EC797402B9378E000C093B7 /* AppContext+Production.swift */,
 				0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */,
-				0EAEC8A62D05DB8D001AA50C /* DefaultAppProcessor.swift */,
-				0E8DFD4D2D05FE5A00531CDE /* Dependencies+Processors.swift */,
 				0E6EEEE22CF8CABA0076E2B0 /* ProfileManager+Testing.swift */,
 			);
 			path = Context;
@@ -774,19 +736,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0ED61CF82CD0418C008FE259 /* App+macOS.swift in Sources */,
-				0E8DFD502D05FE5A00531CDE /* Dependencies+Processors.swift in Sources */,
-				0E98059A2E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */,
 				0E7C3CCD2C9AF44600B72E69 /* AppDelegate.swift in Sources */,
-				0E2BA91D2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */,
 				0ED61CFA2CD04192008FE259 /* App+iOS.swift in Sources */,
 				0E7E3D6B2B9345FD002BBDB4 /* PassepartoutApp.swift in Sources */,
-				0EAEC8A92D05DB8D001AA50C /* DefaultAppProcessor.swift in Sources */,
 				0EC797422B9378E000C093B7 /* AppContext+Production.swift in Sources */,
 				0EE8D7E12CD112C200F6600C /* App+tvOS.swift in Sources */,
-				0E81955A2CFDA75200CC8FFD /* Dependencies.swift in Sources */,
 				0E6EEEE32CF8CABA0076E2B0 /* AppContext+Testing.swift in Sources */,
 				0E6EEEE42CF8CABA0076E2B0 /* ProfileManager+Testing.swift in Sources */,
-				0E98059D2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -830,12 +786,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E2BA91F2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */,
-				0E81955B2CFDA7BF00CC8FFD /* Dependencies.swift in Sources */,
-				0EAEC8AA2D05DB8D001AA50C /* DefaultTunnelProcessor.swift in Sources */,
 				0E94EE582B93554B00588243 /* PacketTunnelProvider.swift in Sources */,
-				0E98059E2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */,
-				0E9805992E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -851,11 +802,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E2306222DC2C2DC002D70D7 /* Dependencies.swift in Sources */,
-				0E23061F2DC2C2CB002D70D7 /* DefaultTunnelProcessor.swift in Sources */,
-				0E98059B2E1D291500808635 /* OpenVPNImplementationBuilder.swift in Sources */,
-				0E2BA91E2DF46C0C0000F169 /* AppRelease+BusinessChanges.swift in Sources */,
-				0E98059F2E1D2D1D00808635 /* WireGuardImplementationBuilder.swift in Sources */,
 				0E2306142DC2BF6B002D70D7 /* main.swift in Sources */,
 				0E2306162DC2C00B002D70D7 /* PacketTunnelProvider.swift in Sources */,
 			);
@@ -1446,7 +1392,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(CFG_TUNNEL_INFO_PLIST)";
 				INFOPLIST_KEY_CFBundleDisplayName = PassepartoutTunnel;
-				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "";
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = .;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1567,7 +1513,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(CFG_TUNNEL_INFO_PLIST)";
 				INFOPLIST_KEY_CFBundleDisplayName = PassepartoutTunnel;
-				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "";
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = .;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1595,7 +1541,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(CFG_TUNNEL_INFO_PLIST)";
 				INFOPLIST_KEY_CFBundleDisplayName = PassepartoutTunnel;
-				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "";
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = .;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

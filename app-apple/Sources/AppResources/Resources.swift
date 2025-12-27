@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
-import Partout
 
 public enum Resources {
     public static func newAppConfiguration(

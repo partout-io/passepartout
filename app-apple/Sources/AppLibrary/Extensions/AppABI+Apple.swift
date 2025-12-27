@@ -1,0 +1,364 @@
+// SPDX-FileCopyrightText: 2025 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+import AppAccessibility
+import AppData
+import AppDataPreferences
+import AppDataProfiles
+import AppDataProviders
+import AppResources
+import CommonLibrary
+import CoreData
+
+extension AppABI {
+    public static func forProduction(
+        appConfiguration: ABI.AppConfiguration,
+        kvStore: KeyValueStore
+    ) -> AppABI {
+        let appLogger = appConfiguration.newAppLogger()
+        let ctx = PartoutLogger.register(
+            for: .app,
+            with: appConfiguration,
+            preferences: kvStore.preferences,
+            mapper: { [weak appLogger] in
+                appLogger?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            }
+        )
+
+        // MARK: Config (GitHub)
+
+        let betaChecker = appConfiguration.newBetaChecker()
+        let configManager = appConfiguration.newConfigManager(isBeta: {
+            await betaChecker.isBeta()
+        })
+
+        // MARK: Registry
+
+        let registry = appConfiguration.newAppRegistry(
+            appLogger: appLogger,
+            configManager: configManager,
+            kvStore: kvStore
+        )
+        CommonLibrary.assertMissingImplementations(with: registry)
+
+        // Ensure that all module builders can be rendered in the profile editor
+        ModuleType.allCases.forEach { moduleType in
+            let builder = moduleType.newModule(with: registry)
+            guard builder is any ModuleViewProviding else {
+                fatalError("\(moduleType): is not ModuleViewProviding")
+            }
+        }
+
+        // MARK: Persistence (Core Data)
+
+        guard let cdLocalModel = NSManagedObjectModel.mergedModel(from: [
+            AppData.providersBundle
+        ]) else {
+            fatalError("Unable to load local model")
+        }
+        guard let cdRemoteModel = NSManagedObjectModel.mergedModel(from: [
+            AppData.profilesBundle,
+            AppData.preferencesBundle
+        ]) else {
+            fatalError("Unable to load remote model")
+        }
+        let localStore = CoreDataPersistentStore(
+            logger: appLogger,
+            containerName: appConfiguration.constants.containers.local,
+            model: cdLocalModel,
+            cloudKitIdentifier: nil,
+            author: nil
+        )
+        let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
+            let cloudKitIdentifier: String?
+            if isEnabled && appConfiguration.distributionTarget.supportsCloudKit {
+                cloudKitIdentifier = appConfiguration.bundleString(for: .cloudKitId)
+            } else {
+                cloudKitIdentifier = nil
+            }
+            return CoreDataPersistentStore(
+                logger: appLogger,
+                containerName: appConfiguration.constants.containers.remote,
+                model: cdRemoteModel,
+                cloudKitIdentifier: cloudKitIdentifier,
+                author: nil
+            )
+        }
+
+        // MARK: IAP (StoreKit)
+
+        let iapManager = IAPManager(
+            customUserLevel: appConfiguration.customUserLevel,
+            inAppHelper: appConfiguration.simulatedAppProductHelper(),
+            receiptReader: appConfiguration.simulatedAppReceiptReader(logger: appLogger),
+            betaChecker: betaChecker,
+            timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: {
+                appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
+            },
+            productsAtBuild: appConfiguration.newProductsAtBuild
+        )
+        if appConfiguration.distributionTarget.supportsIAP {
+            iapManager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
+        } else {
+            iapManager.isEnabled = false
+        }
+
+        // MARK: API
+
+        let apiManager = APIManager(
+            .global,
+            from: API.shared,
+            repository: AppData.cdAPIRepositoryV3(
+                context: localStore.backgroundContext()
+            )
+        )
+
+        // MARK: Profiles and Tunnel (NE)
+
+        let appEncoder = AppEncoder(registry: registry)
+        let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
+#if targetEnvironment(simulator)
+        let tunnelStrategy = FakeTunnelStrategy()
+        let mainProfileRepository = appConfiguration.newBackupProfileRepository(
+            logger: appLogger,
+            encoder: appEncoder,
+            model: cdRemoteModel,
+            name: appConfiguration.constants.containers.backup,
+            observingResults: true
+        )
+        let backupProfileRepository: ProfileRepository? = nil
+#else
+        let tunnelStrategy = NETunnelStrategy(
+            ctx,
+            bundleIdentifier: tunnelIdentifier,
+            coder: appConfiguration.newNEProtocolCoder(ctx, registry: registry)
+        )
+        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) {
+            appConfiguration.newProfileTitle(for: $0)
+        }
+        let backupProfileRepository = appConfiguration.newBackupProfileRepository(
+            logger: appLogger,
+            encoder: appEncoder,
+            model: cdRemoteModel,
+            name: appConfiguration.constants.containers.backup,
+            observingResults: false
+        )
+#endif
+        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) {
+            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+        }
+        let processor = appConfiguration.newAppProcessor(
+            apiManager: apiManager,
+            iapManager: iapManager,
+            registry: registry,
+            preview: \.localizedPreview,
+            providerServerSorter: {
+                $0.sort(using: $1.sortingComparators)
+            }
+        )
+        let profileManager = ProfileManager(
+            registry: registry,
+            processor: processor,
+            repository: mainProfileRepository,
+            backupRepository: backupProfileRepository,
+            mirrorsRemoteRepository: false
+        )
+        let sysexManager: ExtensionInstaller?
+        if appConfiguration.distributionTarget == .developerID {
+            sysexManager = SystemExtensionManager(
+                identifier: tunnelIdentifier,
+                version: appConfiguration.versionNumber,
+                build: appConfiguration.buildNumber
+            )
+        } else {
+            sysexManager = nil
+        }
+        let extendedTunnel = ExtendedTunnel(
+            tunnel: tunnel,
+            sysex: sysexManager,
+            kvStore: kvStore,
+            processor: processor,
+            interval: appConfiguration.constants.tunnel.refreshInterval
+        )
+
+        // MARK: Preferences (Core Data)
+
+        let preferencesManager = PreferencesManager()
+
+        // MARK: Version (GitHub)
+
+        let versionChecker = {
+            let versionStrategy = GitHubReleaseStrategy(
+                releaseURL: appConfiguration.constants.github.latestRelease,
+                rateLimit: appConfiguration.constants.api.versionRateLimit,
+                fetcher: {
+                    var request = URLRequest(url: $0)
+                    request.cachePolicy = .useProtocolCachePolicy
+                    return try await URLSession.shared.data(for: request).0
+                }
+            )
+            return VersionChecker(
+                kvStore: kvStore,
+                strategy: versionStrategy,
+                currentVersion: appConfiguration.versionNumber,
+                downloadURL: {
+                    switch appConfiguration.distributionTarget {
+                    case .appStore:
+                        return appConfiguration.constants.websites.appStoreDownload
+                    case .developerID:
+                        return appConfiguration.constants.websites.macDownload
+                    case .enterprise:
+                        fatalError("No URL for enterprise distribution")
+                    }
+                }()
+            )
+        }()
+
+        // MARK: Web (NIO)
+
+        let webReceiverManager = {
+#if os(tvOS)
+            let receiver = NIOWebReceiver(
+                logger: appLogger,
+                htmlPath: Resources.webUploaderPath,
+                stringsBundle: AppStrings.bundle,
+                port: appConfiguration.constants.webReceiver.port
+            )
+            return WebReceiverManager(webReceiver: receiver) {
+                appConfiguration.newWebPasscodeGenerator()
+            }
+#else
+            return WebReceiverManager()
+#endif
+        }()
+
+        // MARK: Sync (CloudKit)
+
+        // Remote profiles and preferences are (re)created on updates to synchronization
+        let onEligibleFeaturesBlock: (Set<ABI.AppFeature>) async -> Void = { @MainActor features in
+            let isEligibleForSharing = features.contains(.sharing)
+            let isRemoteImportingEnabled = isEligibleForSharing
+            let remoteStore = newRemoteStore(isRemoteImportingEnabled)
+
+            appLogger.log(.core, .info, "\tRefresh remote sync (CloudKit=\(appConfiguration.isCloudKitEnabled))...")
+            appLogger.log(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
+
+            let remoteProfileRepository = AppData.cdProfileRepositoryV3(
+                encoder: appEncoder,
+                context: remoteStore.context,
+                observingResults: true,
+                onResultError: { [weak appLogger] in
+                    appLogger?.log(.profiles, .error, "Unable to decode remote profile: \($0)")
+                    return .ignore
+                }
+            )
+            let modulePreferencesFactory = {
+                try AppData.cdModulePreferencesRepositoryV3(
+                    context: remoteStore.context,
+                    moduleId: $0
+                )
+            }
+            let providerPreferencesFactory = {
+                try AppData.cdProviderPreferencesRepositoryV3(
+                    context: remoteStore.context,
+                    providerId: $0
+                )
+            }
+
+            // Toggle CloudKit sync based on .sharing eligibility (@Published)
+            profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
+            do {
+                appLogger.log(.core, .info, "\tRefresh remote sync (eligible=\(isEligibleForSharing)...")
+                try await profileManager.observeRemote(repository: remoteProfileRepository)
+            } catch {
+                appLogger.log(.profiles, .error, "\tUnable to re-observe remote profiles: \(error)")
+            }
+            appLogger.log(.core, .info, "\tRefresh modules preferences repository...")
+            preferencesManager.modulesRepositoryFactory = modulePreferencesFactory
+            appLogger.log(.core, .info, "\tRefresh providers preferences repository...")
+            preferencesManager.providersRepositoryFactory = providerPreferencesFactory
+
+            appLogger.log(.profiles, .info, "\tReload profiles required features...")
+            profileManager.reloadRequiredFeatures()
+        }
+
+        return AppABI(
+            apiManager: apiManager,
+            appConfiguration: appConfiguration,
+            appEncoder: appEncoder,
+            appLogger: appLogger,
+            configManager: configManager,
+            extensionInstaller: sysexManager,
+            iapManager: iapManager,
+            kvStore: kvStore,
+            preferencesManager: preferencesManager,
+            profileManager: profileManager,
+            registry: registry,
+            tunnel: extendedTunnel,
+            versionChecker: versionChecker,
+            webReceiverManager: webReceiverManager,
+            onEligibleFeaturesBlock: onEligibleFeaturesBlock
+        )
+    }
+}
+
+private extension ABI.AppConfiguration {
+    var isCloudKitEnabled: Bool {
+#if os(tvOS)
+        true
+#else
+        if AppCommandLine.contains(.uiTesting) {
+            return true
+        }
+        return FileManager.default.ubiquityIdentityToken != nil
+#endif
+    }
+
+    func newBackupProfileRepository(
+        logger: AppLogger,
+        encoder: AppEncoder,
+        model: NSManagedObjectModel,
+        name: String,
+        observingResults: Bool
+    ) -> ProfileRepository {
+        let store = CoreDataPersistentStore(
+            logger: logger,
+            containerName: name,
+            model: model,
+            cloudKitIdentifier: nil,
+            author: nil
+        )
+        return AppData.cdProfileRepositoryV3(
+            encoder: encoder,
+            context: store.context,
+            observingResults: observingResults,
+            onResultError: {
+                logger.log(.profiles, .error, "Unable to decode local profile: \($0)")
+                return .ignore
+            }
+        )
+    }
+
+    @MainActor
+    func simulatedAppProductHelper() -> any AppProductHelper {
+        if AppCommandLine.contains(.fakeIAP) {
+            return FakeAppProductHelper()
+        }
+        return newAppProductHelper()
+    }
+
+    @MainActor
+    func simulatedAppReceiptReader(logger: AppLogger) -> AppReceiptReader {
+        if AppCommandLine.contains(.fakeIAP) {
+            guard let mockHelper = simulatedAppProductHelper() as? FakeAppProductHelper else {
+                fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
+            }
+            return mockHelper.receiptReader
+        }
+        return SharedReceiptReader(
+            reader: StoreKitReceiptReader(logger: logger)
+        )
+    }
+}

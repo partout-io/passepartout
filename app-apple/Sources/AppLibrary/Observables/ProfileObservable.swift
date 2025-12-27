@@ -42,7 +42,13 @@ extension ProfileObservable {
     }
 
     public func save(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
-        try await abi.profileSave(profile, sharingFlag: sharingFlag)
+        var partoutProfile = profile.native
+        if sharingFlag == .tv {
+            var builder = partoutProfile.builder()
+            builder.attributes.isAvailableForTV = true
+            partoutProfile = try builder.build()
+        }
+        try await abi.profileSave(ABI.AppProfile(native: partoutProfile), remotelyShared: sharingFlag != nil)
     }
 
     public func `import`(_ input: ABI.ProfileImporterInput) async throws {
