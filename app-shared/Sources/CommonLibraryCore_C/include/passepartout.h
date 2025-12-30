@@ -14,7 +14,7 @@ int psp_example_sum(int a, int b);
 
 /* Common structures. */
 //typedef const char *psp_id;
-//typedef const char *psp_json;
+typedef const char *psp_json;
 //psp_json psp_json_new(const char *);
 //void psp_json_free(psp_json);
 
@@ -27,30 +27,30 @@ int psp_example_sum(int a, int b);
 //const char *psp_last_error();
 
 /* Events. */
-//typedef enum {
-//    PSPAreaProfile = 1,
-//    PSPAreaTunnel = 2
-//} psp_area;
-//typedef enum {
-//    PSPEventTypeNone,
-//    PSPEventTypeProfileReady,
-//    PSPEventTypeProfileLocal,
-//    PSPEventTypeProfileRemote,
-//    PSPEventTypeProfileRequiredFeatures
-//} psp_event_type;
-//typedef struct {
-//    psp_area area;
-//    psp_event_type type;
-//    const psp_json *object;
-//} psp_event;
-//typedef void (*psp_event_callback)(void *event_ctx, const psp_event *event);
+typedef enum {
+    PSPAreaProfile = 1,
+    PSPAreaTunnel = 2
+} psp_area;
+typedef enum {
+    PSPEventTypeNone,
+    PSPEventTypeProfileReady,
+    PSPEventTypeProfileLocal,
+    PSPEventTypeProfileRemote,
+    PSPEventTypeProfileRequiredFeatures
+} psp_event_type;
+typedef struct {
+    psp_area area;
+    psp_event_type type;
+    const psp_json *object;
+} psp_event;
+typedef void (*psp_event_callback)(void *event_ctx, const psp_event *event);
 
 /* App initialization. */
 typedef struct {
     const char *app_configuration;
     const char *profiles_dir;
-//    void *event_ctx;
-//    psp_event_callback event_cb;
+    void *event_ctx;
+    psp_event_callback event_cb;
 } psp_app_init_args;
 void psp_app_init(const psp_app_init_args *args);
 
