@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2025 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+public protocol LogFormatter: AnyObject, Sendable {
+    nonisolated func formattedLog(timestamp: Date, message: String) -> String
+}
+
+public final class DummyLogFormatter: LogFormatter {
+    public init() {}
+
+    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
+        message
+    }
+}

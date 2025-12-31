@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
 import Partout
 
 struct OpenVPNImplementationBuilder: Sendable {
@@ -26,16 +25,14 @@ struct OpenVPNImplementationBuilder: Sendable {
 }
 
 private extension OpenVPNImplementationBuilder {
-
-    // TODO: #218, this directory must be per-profile
-    var cachesURL: URL {
-        FileManager.default.temporaryDirectory
-    }
-
     func crossConnection(
         with parameters: ConnectionParameters,
         module: OpenVPNModule
     ) throws -> Connection {
+        // TODO: #218, this directory must be per-profile
+        guard let cachesURL = FileManager.default.miniTemporaryDirectory as? URL else {
+            fatalError("Unexpected cachesURL type")
+        }
         let ctx = PartoutLoggerContext(parameters.profile.id)
         var options = OpenVPN.ConnectionOptions()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0

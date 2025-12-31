@@ -11,7 +11,6 @@ public final class AppABI: AppABIProtocol, Sendable {
     public let iapManager: IAPManager
     public let profileManager: ProfileManager
     public let registry: Registry
-    public let sysexManager: ExtensionInstaller?
     public let tunnel: ExtendedTunnel
     public let versionChecker: VersionChecker
     public let webReceiverManager: WebReceiverManager
@@ -23,8 +22,10 @@ public final class AppABI: AppABIProtocol, Sendable {
     // MARK: Internal state
 
     private let appConfiguration: ABI.AppConfiguration
+    private let appLogger: AppLogger
+    private let extensionInstaller: ExtensionInstaller?
     private let kvStore: KeyValueStore
-    private let logger: AppLogger
+    private let logFormatter: LogFormatter
 
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
@@ -35,14 +36,15 @@ public final class AppABI: AppABIProtocol, Sendable {
         apiManager: APIManager,
         appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
+        appLogger: AppLogger,
         configManager: ConfigManager,
+        extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
         kvStore: KeyValueStore,
-        logger: AppLogger,
+        logFormatter: LogFormatter,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
         registry: Registry,
-        sysexManager: ExtensionInstaller?,
         tunnel: ExtendedTunnel,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
@@ -51,19 +53,24 @@ public final class AppABI: AppABIProtocol, Sendable {
         self.apiManager = apiManager
         self.appConfiguration = appConfiguration
         self.appEncoder = appEncoder
+        self.appLogger = appLogger
         self.configManager = configManager
+        self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
         self.kvStore = kvStore
-        self.logger = logger
+        self.logFormatter = logFormatter
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
-        self.sysexManager = sysexManager
         self.tunnel = tunnel
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
         subscriptions = []
+    }
+
+    deinit {
+        subscriptions.forEach { $0.cancel() }
     }
 
     public func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback) {
@@ -150,11 +157,11 @@ extension AppABI {
     // MARK: Logging
 
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        logger.log(category, level, message)
+        appLogger.log(category, level, message)
     }
 
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
-        logger.formattedLog(timestamp: timestamp, message: message)
+        logFormatter.formattedLog(timestamp: timestamp, message: message)
     }
 
     // MARK: Profile
@@ -163,21 +170,8 @@ extension AppABI {
         profileManager.profile(withId: id)
     }
 
-    public func profileNew(named name: String) async throws {
-        var builder = Profile.Builder()
-        builder.name = name
-        let profile = try builder.build()
-        try await profileManager.save(profile, isLocal: true)
-    }
-
-    public func profileSave(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag?) async throws {
-        var partoutProfile = profile.native
-        if sharingFlag == .tv {
-            var builder = partoutProfile.builder()
-            builder.attributes.isAvailableForTV = true
-            partoutProfile = try builder.build()
-        }
-        try await profileManager.save(partoutProfile, isLocal: true, remotelyShared: sharingFlag != nil)
+    public func profileSave(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws {
+        try await profileManager.save(profile.native, isLocal: true, remotelyShared: remotelyShared)
     }
 
     public func profileImportText(_ text: String, filename: String, passphrase: String?) async throws {
@@ -218,11 +212,8 @@ extension AppABI {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func tunnelCurrentLog() async -> [String] {
+    public func tunnelCurrentLog() async -> [ABI.AppLogLine] {
         await tunnel.currentLog(parameters: appConfiguration.constants.log)
-            .map {
-                logger.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
     }
 
     public func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
@@ -292,12 +283,12 @@ extension AppABI {
 // Invoked on internal events
 private extension AppABI {
     func onLaunch() async throws {
-        logger.log(.core, .notice, "Application did launch")
+        appLogger.log(.core, .notice, "Application did launch")
 
-        logger.log(.profiles, .info, "\tRead and observe local profiles...")
+        appLogger.log(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
 
-        logger.log(.profiles, .info, "\tObserve in-app events...")
+        appLogger.log(.profiles, .info, "\tObserve in-app events...")
         iapManager.observeObjects(withProducts: true)
 
         // Defer loads to not block app launch
@@ -306,10 +297,10 @@ private extension AppABI {
             didLoadReceiptDate = Date()
         }
         Task {
-            await reloadSystemExtension()
+            await reloadExtensions()
         }
 
-        logger.log(.iap, .info, "\tObserve changes in IAPManager...")
+        appLogger.log(.iap, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
             guard let self else { return }
@@ -317,17 +308,17 @@ private extension AppABI {
                 switch event {
                 case .status(let isEnabled):
                     // FIXME: #1594, .dropFirst() + .removeDuplicates()
-                    logger.log(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
+                    appLogger.log(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
                     kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let features):
                     // FIXME: #1594, .dropFirst() + .removeDuplicates()
                     do {
-                        logger.log(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
+                        appLogger.log(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
                         try await onEligibleFeatures(features)
                     } catch {
-                        logger.log(.iap, .error, "Unable to react to eligible features: \(error)")
+                        appLogger.log(.iap, .error, "Unable to react to eligible features: \(error)")
                     }
                 default:
                     break
@@ -335,7 +326,7 @@ private extension AppABI {
             }
         })
 
-        logger.log(.profiles, .info, "\tObserve changes in ProfileManager...")
+        appLogger.log(.profiles, .info, "\tObserve changes in ProfileManager...")
         let profileEvents = profileManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
             guard let self else { return }
@@ -345,7 +336,7 @@ private extension AppABI {
                     do {
                         try await onSaveProfile(profile, previous: previousProfile)
                     } catch {
-                        logger.log(.profiles, .error, "Unable to react to saved profile: \(error)")
+                        appLogger.log(.profiles, .error, "Unable to react to saved profile: \(error)")
                     }
                 default:
                     break
@@ -354,10 +345,10 @@ private extension AppABI {
         })
 
         do {
-            logger.log(.core, .info, "\tFetch providers index...")
+            appLogger.log(.core, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
-            logger.log(.core, .error, "\tUnable to fetch providers index: \(error)")
+            appLogger.log(.core, .error, "\tUnable to fetch providers index: \(error)")
         }
     }
 
@@ -369,9 +360,9 @@ private extension AppABI {
             return
         }
 
-        logger.log(.core, .notice, "Application did enter foreground")
+        appLogger.log(.core, .notice, "Application did enter foreground")
         pendingTask = Task {
-            await reloadSystemExtension()
+            await reloadExtensions()
 
             // Do not reload the receipt unconditionally
             if shouldInvalidateReceipt {
@@ -386,7 +377,7 @@ private extension AppABI {
     func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
         try await waitForTasks()
 
-        logger.log(.core, .notice, "Application did update eligible features")
+        appLogger.log(.core, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -397,39 +388,39 @@ private extension AppABI {
     func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
         try await waitForTasks()
 
-        logger.log(.core, .notice, "Application did save profile (\(profile.id))")
+        appLogger.log(.core, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            logger.log(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            appLogger.log(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            logger.log(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            appLogger.log(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
         guard tunnel.isActiveProfile(withId: profile.id) else {
-            logger.log(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
+            appLogger.log(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
             return
         }
         let status = tunnel.status(ofProfileId: profile.id)
         guard [.active, .activating].contains(status) else {
-            logger.log(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            appLogger.log(.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return
         }
 
         pendingTask = Task {
             do {
-                logger.log(.core, .info, "\tReconnect profile \(profile.id)")
+                appLogger.log(.core, .info, "\tReconnect profile \(profile.id)")
                 try await tunnel.disconnect(from: profile.id)
                 do {
                     try await tunnel.connect(with: profile)
                 } catch ABI.AppError.interactiveLogin {
-                    logger.log(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                    appLogger.log(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {
-                    logger.log(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                    appLogger.log(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
                 }
             } catch {
-                logger.log(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+                appLogger.log(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
             }
         }
         await pendingTask?.value
@@ -464,14 +455,14 @@ private extension AppABI {
         return didLaunch
     }
 
-    func reloadSystemExtension() async {
-        guard let sysexManager else { return }
-        logger.log(.core, .info, "System Extension: load current status...")
+    func reloadExtensions() async {
+        guard let extensionInstaller else { return }
+        appLogger.log(.core, .info, "Extensions: load current status...")
         do {
-            let result = try await sysexManager.load()
-            logger.log(.core, .info, "System Extension: load result is \(result)")
+            let result = try await extensionInstaller.load()
+            appLogger.log(.core, .info, "Extensions: load result is \(result)")
         } catch {
-            logger.log(.core, .error, "System Extension: load error: \(error)")
+            appLogger.log(.core, .error, "Extensions: load error: \(error)")
         }
     }
 

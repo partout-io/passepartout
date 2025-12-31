@@ -2,29 +2,35 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
-import Foundation
 import Partout
 
 final class DefaultAppProcessor: Sendable {
-    private let apiManager: APIManager
+    private let apiManager: APIManager?
 
-    private let iapManager: IAPManager
+    private let iapManager: IAPManager?
 
     private let registry: Registry
 
     private let title: @Sendable (Profile) -> String
 
+    private let preview: @Sendable (Profile) -> ABI.ProfilePreview
+
+    private let providerServerSorter: ProviderServerParameters.Sorter
+
     init(
-        apiManager: APIManager,
-        iapManager: IAPManager,
+        apiManager: APIManager?,
+        iapManager: IAPManager?,
         registry: Registry,
-        title: @escaping @Sendable (Profile) -> String
+        title: @escaping @Sendable (Profile) -> String,
+        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview,
+        providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
         self.apiManager = apiManager
         self.iapManager = iapManager
         self.registry = registry
         self.title = title
+        self.preview = preview
+        self.providerServerSorter = providerServerSorter
     }
 }
 
@@ -38,12 +44,12 @@ extension DefaultAppProcessor: ProfileProcessor {
     }
 
     func preview(from profile: Profile) -> ABI.ProfilePreview {
-        profile.localizedPreview
+        preview(profile)
     }
 
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         do {
-            try iapManager.verify(profile)
+            try iapManager?.verify(profile)
             return nil
         } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
             return requiredFeatures
@@ -63,8 +69,11 @@ extension DefaultAppProcessor: AppTunnelProcessor {
     }
 
     nonisolated func willInstall(_ profile: Profile) async throws -> Profile {
+        guard let apiManager else {
+            return profile
+        }
 
-        // apply connection heuristic
+        // Apply connection heuristic
         var newProfile = profile
         do {
             if let builder = newProfile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
@@ -73,7 +82,7 @@ extension DefaultAppProcessor: AppTunnelProcessor {
                 newProfile.activeProviderModule?.entity.map {
                     pp_log_g(.App.core, .info, "\tOld server: \($0.server)")
                 }
-                newProfile = try await profile.withNewServer(using: heuristic, apiManager: apiManager)
+                newProfile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
                 newProfile.activeProviderModule?.entity.map {
                     pp_log_g(.App.core, .info, "\tNew server: \($0.server)")
                 }
@@ -82,7 +91,7 @@ extension DefaultAppProcessor: AppTunnelProcessor {
             pp_log_g(.App.core, .error, "Unable to pick new provider server: \(error)")
         }
 
-        // validate provider modules
+        // Validate provider modules
         do {
             _ = try registry.resolvedProfile(newProfile)
             return newProfile
@@ -98,13 +107,12 @@ extension DefaultAppProcessor: AppTunnelProcessor {
 // TODO: #1263, these should be implemented in the library
 
 private extension Profile {
-
     @MainActor
-    func withNewServer(using heuristic: ProviderHeuristic, apiManager: APIManager) async throws -> Profile {
+    func withNewServer(using heuristic: ProviderHeuristic, apiManager: APIManager, sort: @escaping ProviderServerParameters.Sorter) async throws -> Profile {
         guard var providerModule = activeProviderModule?.moduleBuilder() as? ProviderModule.Builder else {
             return self
         }
-        try await providerModule.setRandomServer(using: heuristic, apiManager: apiManager)
+        try await providerModule.setRandomServer(using: heuristic, apiManager: apiManager, sort: sort)
 
         var newBuilder = builder()
         newBuilder.saveModule(try providerModule.build())
@@ -113,16 +121,13 @@ private extension Profile {
 }
 
 private extension ProviderModule.Builder {
-
     @MainActor
-    mutating func setRandomServer(using heuristic: ProviderHeuristic, apiManager: APIManager) async throws {
+    mutating func setRandomServer(using heuristic: ProviderHeuristic, apiManager: APIManager, sort: @escaping ProviderServerParameters.Sorter) async throws {
         guard let providerId, let providerModuleType, let entity else {
             return
         }
         let module = try ProviderModule.Builder(providerId: providerId, providerModuleType: providerModuleType).build()
-        let repo = try await apiManager.providerRepository(for: module) {
-            $0.sort(using: $1.sortingComparators)
-        }
+        let repo = try await apiManager.providerRepository(for: module, sort: sort)
         let providerManager = ProviderManager()
         try await providerManager.setRepository(repo, for: providerModuleType)
 

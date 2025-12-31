@@ -3,16 +3,18 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppLibrary
+import AppResources
 import CommonLibrary
 import Foundation
 import Partout
 
 extension AppContext {
     static func forUITesting() -> AppContext {
-        let dependencies = Dependencies(buildTarget: .app)
-        let appConfiguration = dependencies.appConfiguration
-        let appLogger = dependencies.appLogger()
-        let registry = dependencies.newRegistry(
+        let appConfiguration = Resources.newAppConfiguration(
+            distributionTarget: .appStore,
+            buildTarget: .app
+        )
+        let registry = appConfiguration.newRegistry(
             deviceId: "TestDeviceID",
             configBlock: { [] }
         )
@@ -22,6 +24,8 @@ extension AppContext {
         var logger = PartoutLogger.Builder()
         logger.setDestination(SimpleLogDestination(), for: [.App.core, .App.profiles])
         PartoutLogger.register(logger.build())
+        let appLogger = PartoutAppLogger()
+        let logFormatter = DummyLogFormatter()
 
         let kvStore = InMemoryStore()
         let apiManager = APIManager(
@@ -31,7 +35,7 @@ extension AppContext {
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
-            inAppHelper: dependencies.appProductHelper(),
+            inAppHelper: appConfiguration.newAppProductHelper(),
             receiptReader: FakeAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
@@ -42,10 +46,14 @@ extension AppContext {
                 []
             }
         )
-        let processor = dependencies.appProcessor(
+        let processor = appConfiguration.newAppProcessor(
             apiManager: apiManager,
             iapManager: iapManager,
-            registry: registry
+            registry: registry,
+            preview: \.localizedPreview,
+            providerServerSorter: {
+                $0.sort(using: $1.sortingComparators)
+            }
         )
         let profileManager: ProfileManager = .forUITesting(
             withRegistry: registry,
@@ -68,14 +76,15 @@ extension AppContext {
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
+            appLogger: appLogger,
             configManager: configManager,
+            extensionInstaller: nil,
             iapManager: iapManager,
             kvStore: kvStore,
-            logger: appLogger,
+            logFormatter: logFormatter,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            sysexManager: nil,
             tunnel: tunnel,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager

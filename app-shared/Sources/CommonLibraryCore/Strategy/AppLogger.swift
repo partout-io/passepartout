@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public protocol AppLogger: Sendable {
+public protocol AppLogger: AnyObject, Sendable {
     nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
-    nonisolated func formattedLog(timestamp: Date, message: String) -> String
 }

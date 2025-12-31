@@ -13,8 +13,6 @@ public final class AppLibraryMain: AppLibraryConfiguring {
     }
 
     public func configure(with context: AppContext) {
-        context.assertMissingImplementations()
-
         // For debugging
 //        Tips.showAllTipsForTesting()
         if AppCommandLine.contains(.uiTesting) {

@@ -8,74 +8,28 @@ import CommonLibraryCore_C
 import PartoutABI_C
 
 nonisolated(unsafe)
-private var partout: UnsafeMutableRawPointer? = nil
+private var abi: AppABIProtocol?
 
-@_cdecl("psp_partout_version")
-public func __psp_partout_version() -> UnsafePointer<CChar>! {
-    // PARTOUT_VERSION
-    partout_version()
-}
-
-@_cdecl("psp_init")
-public func __psp_init(args: UnsafePointer<psp_init_args>!) {
+@_cdecl("psp_app_init")
+@MainActor
+public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
+    guard let args else { fatalError() }
 //    args.pointee.event_cb
 //    args.pointee.event_ctx
-    let tmpDir = FileManager.default.miniTemporaryDirectory.filePath()
-    partout = tmpDir.withCString { tmpDir in
-        var partoutArgs = partout_init_args()
-        partoutArgs.cache_dir = args.pointee.cache_dir ?? tmpDir
-        partoutArgs.test_callback = testInit
-        return partout_init(&partoutArgs)
-    }
-    assert(partout != nil)
+    var appConfiguration: ABI.AppConfiguration!// = args.pointee.app_configuration
+    var kvStore: KeyValueStore!
+    let profilesPath = args.pointee.profiles_dir.flatMap { String(cString: $0) }
+//    abi = AppABI(
+//        appConfiguration: appConfiguration,
+//        kvStore: kvStore,
+//        profilesPath: profilesPath
+//    )
 }
 
-@_cdecl("psp_deinit")
-public func __psp_deinit() {
-    guard let partout else { return }
-    partout_deinit(partout)
-}
-
-// MARK: - Profile
-
-// MARK: - Tunnel
-
-// MARK: - Tunnel daemon
-
-@_cdecl("psp_daemon_start")
-public func __psp_daemon_start(
-    profile: UnsafePointer<CChar>!,
-    jniWrapper: UnsafeMutableRawPointer?
-) -> Bool {
-    var args = partout_daemon_start_args()
-    args.profile = profile
-    args.ctrl_impl = jniWrapper
-    return partout_daemon_start(partout, &args)
-}
-
-@_cdecl("psp_daemon_stop")
-public func __psp_daemon_stop() {
-    partout_daemon_stop(partout)
-}
-
-// MARK: - Test
-
-@_cdecl("psp_example_sum")
-public func __psp_example_sum(a: Int, b: Int) -> Int {
-    a + b
-}
-
-@_cdecl("psp_example_json")
-public func __psp_example_json() -> UnsafeMutablePointer<CChar> {
-    let module = try! DNSModule.Builder().build()
-    let registry = Registry()
-    let profile = try! Profile.Builder(name: "zio", modules: [module]).build()
-    let json = try! registry.json(fromProfile: profile)
-    return strdup(json)
-}
-
-private func testInit() {
-    pp_log_g(.core, .error, "(Running test init callback)")
+@_cdecl("psp_app_deinit")
+@MainActor
+public func __psp_app_deinit() {
+    abi = nil
 }
 
 #endif

@@ -20,7 +20,7 @@ public struct ABIEventContext: @unchecked Sendable {
 }
 
 @MainActor
-public protocol AppABIProtocol: AppLogger, Sendable {
+public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
     // MARK: Events
     typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
     func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback)
@@ -52,8 +52,7 @@ public protocol AppABIProtocol: AppLogger, Sendable {
 
     // MARK: Profile
     func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
-    func profileNew(named name: String) async throws
-    func profileSave(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag?) async throws
+    func profileSave(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws
     func profileImportText(_ text: String, filename: String, passphrase: String?) async throws
     func profileImportFile(_ path: String, passphrase: String?) async throws
     func profileDup(_ id: ABI.AppIdentifier) async throws
@@ -65,7 +64,7 @@ public protocol AppABIProtocol: AppLogger, Sendable {
     func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
 //    func tunnelReconnect(to profileId: ABI.AppIdentifier) async throws
     func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws
-    func tunnelCurrentLog() async -> [String]
+    func tunnelCurrentLog() async -> [ABI.AppLogLine]
     func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError?
     func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer?
 

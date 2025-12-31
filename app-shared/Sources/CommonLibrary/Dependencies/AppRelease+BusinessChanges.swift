@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
-
 extension AppRelease {
     static let freemium = AppRelease("freemium", build: 2016)
 

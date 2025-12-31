@@ -39,8 +39,10 @@ extension TunnelObservable {
         try await abi.tunnelDisconnect(from: profileId)
     }
 
-    public func currentLog(parameters: ABI.Constants.Log) async -> [String] {
-        await abi.tunnelCurrentLog()
+    public func currentLog() async -> [String] {
+        await abi.tunnelCurrentLog().map {
+            abi.formattedLog(timestamp: $0.timestamp, message: $0.message)
+        }
     }
 }
 

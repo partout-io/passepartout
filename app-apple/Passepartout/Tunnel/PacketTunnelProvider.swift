@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
 import Partout
@@ -14,7 +15,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var verifierSubscription: Task<Void, Error>?
 
     override func startTunnel(options: [String: NSObject]? = nil, completionHandler: @escaping @Sendable (Error?) -> Void) {
-        let dependencies = Dependencies(buildTarget: .tunnel)
+        let distributionTarget: ABI.DistributionTarget
+#if PP_BUILD_MAC
+        distributionTarget = .developerID
+#else
+        distributionTarget = .appStore
+#endif
+        let appConfiguration = Resources.newAppConfiguration(
+            distributionTarget: distributionTarget,
+            buildTarget: .tunnel
+        )
+        let logFormatter = appConfiguration.newLogFormatter()
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -22,10 +33,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // profile-aware context later.
         _ = PartoutLogger.register(
             for: .tunnelGlobal,
-            with: dependencies.appConfiguration,
+            with: appConfiguration,
             preferences: ABI.AppPreferenceValues(),
-            mapper: {
-                dependencies.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            mapper: { [weak logFormatter] in
+                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
 
@@ -47,7 +58,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         Task {
             do {
                 try await compatibleStartTunnel(
-                    dependencies: dependencies,
+                    appConfiguration: appConfiguration,
+                    logFormatter: logFormatter,
                     isInteractive: isInteractive,
                     startPreferences: startPreferences
                 )
@@ -59,16 +71,14 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     }
 
     private func compatibleStartTunnel(
-        dependencies: Dependencies,
+        appConfiguration: ABI.AppConfiguration,
+        logFormatter: LogFormatter,
         isInteractive: Bool,
         startPreferences: ABI.AppPreferenceValues?
     ) async throws {
-        let appConfiguration = dependencies.appConfiguration
-        let appLogger = dependencies.appLogger()
-
         // Update or fetch existing preferences
         let (kvStore, preferences) = {
-            let kvStore = dependencies.newKVStore()
+            let kvStore = appConfiguration.newKeyValueStore()
             if let startPreferences {
                 kvStore.preferences = startPreferences
                 return (kvStore, startPreferences)
@@ -79,15 +89,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        let registry = dependencies.newRegistry(
-            deviceId: preferences.deviceId ?? "MissingDeviceID",
-            configBlock: { preferences.enabledFlags(of: preferences.configFlags) }
-        )
+        let registry = appConfiguration.newTunnelRegistry(preferences: preferences)
         pp_log_g(.App.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         CommonLibrary.assertMissingImplementations(with: registry)
 
         // Decode profile from NE provider
-        let decoder = dependencies.neProtocolCoder(.global, registry: registry)
+        let decoder = appConfiguration.newNEProtocolCoder(.global, registry: registry)
         let originalProfile: Profile
         do {
             originalProfile = try Profile(withNEProvider: self, decoder: decoder)
@@ -102,8 +109,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelProfile(originalProfile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                dependencies.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            mapper: { [weak logFormatter] in
+                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
         self.ctx = ctx
@@ -114,7 +121,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let processedProfile: Profile
         do {
             resolvedProfile = try registry.resolvedProfile(originalProfile)
-            let processor = DefaultTunnelProcessor()
+            let processor = appConfiguration.newTunnelProcessor()
             processedProfile = try processor.willProcess(resolvedProfile)
             assert(processedProfile.id == originalProfile.id)
         } catch {
@@ -157,16 +164,16 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let iapManager = await MainActor.run {
             let manager = IAPManager(
                 customUserLevel: appConfiguration.customUserLevel,
-                inAppHelper: dependencies.appProductHelper(),
+                inAppHelper: appConfiguration.newAppProductHelper(),
                 receiptReader: SharedReceiptReader(
-                    reader: StoreKitReceiptReader(logger: appLogger),
+                    reader: StoreKitReceiptReader(logger: PartoutAppLogger()),
                 ),
-                betaChecker: dependencies.betaChecker(),
+                betaChecker: appConfiguration.newBetaChecker(),
                 timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
                 verificationDelayMinutesBlock: {
                     appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
                 },
-                productsAtBuild: dependencies.productsAtBuild()
+                productsAtBuild: appConfiguration.newProductsAtBuild
             )
             if appConfiguration.distributionTarget.supportsIAP {
                 manager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
@@ -182,7 +189,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }
         do {
             // Environment for app/tunnel IPC
-            let environment = dependencies.tunnelEnvironment(profileId: processedProfile.id)
+            let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
 
             // Pick socket and crypto strategy from preferences
             var factoryOptions = NEInterfaceFactory.Options()
