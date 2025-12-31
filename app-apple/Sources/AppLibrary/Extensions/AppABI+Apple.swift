@@ -30,9 +30,16 @@ extension AppABI {
         // MARK: Config (GitHub)
 
         let betaChecker = appConfiguration.newBetaChecker()
-        let configManager = appConfiguration.newConfigManager(isBeta: {
-            await betaChecker.isBeta()
-        })
+        let configManager = appConfiguration.newConfigManager(
+            isBeta: {
+                await betaChecker.isBeta()
+            },
+            fetcher: {
+                var request = URLRequest(url: $0)
+                request.cachePolicy = .reloadIgnoringCacheData
+                return try await URLSession.shared.data(for: request).0
+            }
+        )
 
         // MARK: Registry
 

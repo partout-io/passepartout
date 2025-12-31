@@ -4,7 +4,10 @@
 
 extension ABI.AppConfiguration {
     @MainActor
-    public func newConfigManager(isBeta: @escaping @Sendable () async -> Bool) -> ConfigManager {
+    public func newConfigManager(
+        isBeta: @escaping @Sendable () async -> Bool,
+        fetcher: @escaping @Sendable (URL) async throws -> Data
+    ) -> ConfigManager {
 #if DEBUG
         let configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
 #else
@@ -17,11 +20,7 @@ extension ABI.AppConfiguration {
                 betaURL: betaConfigURL,
                 ttl: constants.websites.configTTL,
                 isBeta: isBeta,
-                fetcher: {
-                    var request = URLRequest(url: $0)
-                    request.cachePolicy = .reloadIgnoringCacheData
-                    return try await URLSession.shared.data(for: request).0
-                }
+                fetcher: fetcher
             ),
             buildNumber: buildNumber
         )
