@@ -4,9 +4,7 @@
 
 #if !os(iOS) && !os(tvOS)
 
-#if !USE_CMAKE
 import PartoutABI_C
-#endif
 
 @_cdecl("psp_partout_version")
 public nonisolated func __psp_partout_version() -> UnsafePointer<CChar>! {

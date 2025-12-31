@@ -5,6 +5,7 @@
 // XXX: Trick to call MainActor code synchronously
 extension MainActor {
     public static func sync<T>(_ block: @escaping @Sendable @MainActor () throws -> T) rethrows -> T where T: Sendable {
+#if canImport(Foundation)
         guard Thread.isMainThread else {
             var result: T!
             let semaphore = DispatchSemaphore(value: 0)
@@ -15,6 +16,7 @@ extension MainActor {
             semaphore.wait()
             return result
         }
+#endif
         return try MainActor.assumeIsolated(block)
     }
 }
