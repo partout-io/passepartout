@@ -8,13 +8,24 @@ import SwiftUI
 
 @MainActor @Observable
 public final class UserPreferencesObservable {
+    private let logger: AppLogger
     private let kvStore: KeyValueStore
 
-    public init(kvStore: KeyValueStore) {
+    public init(logger: AppLogger, kvStore: KeyValueStore) {
+        self.logger = logger
         self.kvStore = kvStore
 
         dnsFallsBack = kvStore.bool(forAppPreference: .dnsFallsBack)
-        experimental = kvStore.object(forAppPreference: .experimental) as ABI.AppPreferenceValues.Experimental? ?? ABI.AppPreferenceValues.Experimental()
+        if let experimentalData = kvStore.object(forAppPreference: .experimental) as Data? {
+            do {
+                experimental = try JSONDecoder().decode(ABI.AppPreferenceValues.Experimental.self, from: experimentalData)
+            } catch {
+                logger.log(.core, .error, "Unable to decode experimental: \(error)")
+                experimental = ABI.AppPreferenceValues.Experimental()
+            }
+        } else {
+            experimental = ABI.AppPreferenceValues.Experimental()
+        }
         keepsInMenu = kvStore.bool(forUIPreference: .keepsInMenu)
         lastInfrastructureRefresh = kvStore.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]?
         locksInBackground = kvStore.bool(forUIPreference: .locksInBackground)
@@ -43,7 +54,12 @@ public final class UserPreferencesObservable {
 
     public var experimental: ABI.AppPreferenceValues.Experimental {
         didSet {
-            kvStore.set(experimental, forAppPreference: .experimental)
+            do {
+                let experimentalData = try JSONEncoder().encode(experimental)
+                kvStore.set(experimentalData, forAppPreference: .experimental)
+            } catch {
+                logger.log(.core, .error, "Unable to encode experimental: \(error)")
+            }
         }
     }
 

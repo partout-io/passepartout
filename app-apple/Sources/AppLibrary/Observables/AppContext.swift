@@ -43,7 +43,7 @@ public final class AppContext {
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
-        userPreferences = UserPreferencesObservable(kvStore: kvStore)
+        userPreferences = UserPreferencesObservable(logger: abi, kvStore: kvStore)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
         viewLogger = ViewLogger(logger: abi, formatter: abi)
 
