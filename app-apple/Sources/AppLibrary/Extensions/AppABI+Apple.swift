@@ -147,9 +147,6 @@ extension AppABI {
             observingResults: false
         )
 #endif
-        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) {
-            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
-        }
         let processor = appConfiguration.newAppProcessor(
             apiManager: apiManager,
             iapManager: iapManager,
@@ -166,19 +163,22 @@ extension AppABI {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let sysexManager: ExtensionInstaller?
-        if appConfiguration.distributionTarget == .developerID {
-            sysexManager = SystemExtensionManager(
+        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) {
+            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+        }
+        let sysexManager: SystemExtensionManager? = {
+            guard appConfiguration.distributionTarget == .developerID else {
+                return nil
+            }
+            return SystemExtensionManager(
                 identifier: tunnelIdentifier,
                 version: appConfiguration.versionNumber,
                 build: appConfiguration.buildNumber
             )
-        } else {
-            sysexManager = nil
-        }
+        }()
         let extendedTunnel = ExtendedTunnel(
             tunnel: tunnel,
-            sysex: sysexManager,
+            extensionInstaller: sysexManager,
             kvStore: kvStore,
             processor: processor,
             interval: appConfiguration.constants.tunnel.refreshInterval
@@ -239,47 +239,49 @@ extension AppABI {
 
         // Remote profiles and preferences are (re)created on updates to synchronization
         let onEligibleFeaturesBlock: (Set<ABI.AppFeature>) async -> Void = { @MainActor features in
-            let isEligibleForSharing = features.contains(.sharing)
-            let isRemoteImportingEnabled = isEligibleForSharing
+            let isRemoteImportingEnabled = features.contains(.sharing)
+
+            // Toggle CloudKit sync based on .sharing eligibility
             let remoteStore = newRemoteStore(isRemoteImportingEnabled)
 
-            appLogger.log(.core, .info, "\tRefresh remote sync (CloudKit=\(appConfiguration.isCloudKitEnabled))...")
-            appLogger.log(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
+            if appConfiguration.distributionTarget.supportsCloudKit {
+                // @Published
+                profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
 
-            let remoteProfileRepository = AppData.cdProfileRepositoryV3(
-                encoder: appEncoder,
-                context: remoteStore.context,
-                observingResults: true,
-                onResultError: { [weak appLogger] in
-                    appLogger?.log(.profiles, .error, "Unable to decode remote profile: \($0)")
-                    return .ignore
+                appLogger.log(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(appConfiguration.isCloudKitEnabled))...")
+                appLogger.log(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
+
+                let remoteProfileRepository = AppData.cdProfileRepositoryV3(
+                    encoder: appEncoder,
+                    context: remoteStore.context,
+                    observingResults: true,
+                    onResultError: { [weak appLogger] in
+                        appLogger?.log(.profiles, .error, "Unable to decode remote profile: \($0)")
+                        return .ignore
+                    }
+                )
+                do {
+                    try await profileManager.observeRemote(repository: remoteProfileRepository)
+                } catch {
+                    appLogger.log(.profiles, .error, "\tUnable to re-observe remote profiles: \(error)")
                 }
-            )
-            let modulePreferencesFactory = {
+            }
+
+            appLogger.log(.core, .info, "\tRefresh modules preferences repository...")
+            preferencesManager.modulesRepositoryFactory = {
                 try AppData.cdModulePreferencesRepositoryV3(
                     context: remoteStore.context,
                     moduleId: $0
                 )
             }
-            let providerPreferencesFactory = {
+
+            appLogger.log(.core, .info, "\tRefresh providers preferences repository...")
+            preferencesManager.providersRepositoryFactory = {
                 try AppData.cdProviderPreferencesRepositoryV3(
                     context: remoteStore.context,
                     providerId: $0
                 )
             }
-
-            // Toggle CloudKit sync based on .sharing eligibility (@Published)
-            profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
-            do {
-                appLogger.log(.core, .info, "\tRefresh remote sync (eligible=\(isEligibleForSharing)...")
-                try await profileManager.observeRemote(repository: remoteProfileRepository)
-            } catch {
-                appLogger.log(.profiles, .error, "\tUnable to re-observe remote profiles: \(error)")
-            }
-            appLogger.log(.core, .info, "\tRefresh modules preferences repository...")
-            preferencesManager.modulesRepositoryFactory = modulePreferencesFactory
-            appLogger.log(.core, .info, "\tRefresh providers preferences repository...")
-            preferencesManager.providersRepositoryFactory = providerPreferencesFactory
 
             appLogger.log(.profiles, .info, "\tReload profiles required features...")
             profileManager.reloadRequiredFeatures()

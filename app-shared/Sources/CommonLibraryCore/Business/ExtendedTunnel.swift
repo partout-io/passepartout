@@ -16,7 +16,7 @@ public final class ExtendedTunnel {
 
     private let tunnel: Tunnel
 
-    private let sysex: ExtensionInstaller?
+    private let extensionInstaller: ExtensionInstaller?
 
     private let kvStore: KeyValueStore?
 
@@ -31,13 +31,13 @@ public final class ExtendedTunnel {
     // TODO: #218, keep "last used profile" until .multiple
     public init(
         tunnel: Tunnel,
-        sysex: ExtensionInstaller? = nil,
+        extensionInstaller: ExtensionInstaller? = nil,
         kvStore: KeyValueStore? = nil,
         processor: AppTunnelProcessor? = nil,
         interval: TimeInterval
     ) {
         self.tunnel = tunnel
-        self.sysex = sysex
+        self.extensionInstaller = extensionInstaller
         self.kvStore = kvStore
         self.processor = processor
         self.interval = interval
@@ -78,22 +78,22 @@ extension ExtendedTunnel {
 #endif
 
 #if os(macOS)
-        if let sysex {
-            if sysex.currentResult == .success {
-                pp_log_g(.App.core, .info, "System Extension: already installed")
+        if let extensionInstaller {
+            if extensionInstaller.currentResult == .success {
+                pp_log_g(.App.core, .info, "Extensions: already installed")
             } else {
-                pp_log_g(.App.core, .info, "System Extension: install...")
+                pp_log_g(.App.core, .info, "Extensions: install...")
                 do {
-                    let result = try await sysex.install()
+                    let result = try await extensionInstaller.install()
                     switch result {
                     case .success:
                         break
                     default:
                         throw ABI.AppError.systemExtension(result)
                     }
-                    pp_log_g(.App.core, .info, "System Extension: installation result is \(result)")
+                    pp_log_g(.App.core, .info, "Extensions: installation result is \(result)")
                 } catch {
-                    pp_log_g(.App.core, .error, "System Extension: installation error: \(error)")
+                    pp_log_g(.App.core, .error, "Extensions: installation error: \(error)")
                 }
             }
         }
