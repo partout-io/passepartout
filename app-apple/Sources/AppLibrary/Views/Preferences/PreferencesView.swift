@@ -15,8 +15,8 @@ public struct PreferencesView: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
 #if os(macOS)
     @Environment(MacSettings.self)
@@ -53,7 +53,7 @@ public struct PreferencesView: View {
                 enablesPurchasesSection
             }
             if appConfiguration.distributionTarget.supportsIAP &&
-                configManager.isActive(.allowsRelaxedVerification) {
+                configObservable.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationSection
             }
             if appConfiguration.distributionTarget.supportsCloudKit {
@@ -163,8 +163,8 @@ public struct PreferencesView: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration

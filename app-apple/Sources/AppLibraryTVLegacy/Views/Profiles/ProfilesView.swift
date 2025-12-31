@@ -6,9 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfilesView: View {
-
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @ObservedObject
     var profileManager: ProfileManager

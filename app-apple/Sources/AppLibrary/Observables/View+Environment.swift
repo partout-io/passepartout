@@ -28,7 +28,6 @@ extension View {
             .environment(context.viewLogger)
             // Deprecated
             .environmentObject(context.apiManager)
-            .environmentObject(context.configManager)
             .environmentObject(context.iapManager)
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)

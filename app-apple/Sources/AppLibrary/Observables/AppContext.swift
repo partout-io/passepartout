@@ -88,8 +88,6 @@ extension AppContext {
     @available(*, deprecated, message: "#1594")
     public var apiManager: APIManager { abi.apiManager }
     @available(*, deprecated, message: "#1594")
-    public var configManager: ConfigManager { abi.configManager }
-    @available(*, deprecated, message: "#1594")
     public var iapManager: IAPManager { abi.iapManager }
     @available(*, deprecated, message: "#1594")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
