@@ -109,7 +109,7 @@ extension AppABI {
         // MARK: API
 
         let apiManager = APIManager(
-            .global,
+            ctx,
             from: API.shared,
             repository: AppData.cdAPIRepositoryV3(
                 context: localStore.backgroundContext()
