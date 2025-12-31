@@ -32,8 +32,8 @@ struct DiagnosticsView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(ConfigObservable.self)
-    private var configObservable
+    @EnvironmentObject
+    private var configManager: ConfigManager
 
     let profileManager: ProfileManager
 
@@ -163,7 +163,7 @@ private extension DiagnosticsView {
     }
 
     var isUsingExperimentalFeatures: Bool {
-        !configObservable.activeFlags.isDisjoint(with: [
+        !configManager.activeFlags.isDisjoint(with: [
             .neSocketUDP,
             .neSocketTCP
         ])

@@ -81,6 +81,7 @@ public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
 
     // FIXME: #1594, Drop these, expose actions via ABI
     var appEncoder: AppEncoder { get }
+    var configManager: ConfigManager { get }
     var iapManager: IAPManager { get }
     var profileManager: ProfileManager { get }
     var registry: Registry { get }

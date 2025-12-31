@@ -201,8 +201,8 @@ extension LegacyAppCoordinator {
 
 private struct DynamicPaywallModifier: ViewModifier {
 
-    @Environment(ConfigObservable.self)
-    private var configObservable
+    @EnvironmentObject
+    private var configManager: ConfigManager
 
     @Binding
     var paywallReason: PaywallReason?

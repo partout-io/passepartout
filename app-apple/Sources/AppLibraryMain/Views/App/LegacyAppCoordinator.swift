@@ -468,8 +468,8 @@ private extension Profile {
 
 private struct DynamicPaywallModifier: ViewModifier {
 
-    @Environment(ConfigObservable.self)
-    private var configObservable
+    @EnvironmentObject
+    private var configManager: ConfigManager
 
     @Binding
     var paywallReason: PaywallReason?

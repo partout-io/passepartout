@@ -6,8 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct PreferencesAdvancedView: View {
-    @Environment(ConfigObservable.self)
-    private var configObservable
+    @EnvironmentObject
+    private var configManager: ConfigManager
 
     @Binding
     var experimental: ABI.AppPreferenceValues.Experimental
@@ -65,7 +65,7 @@ private extension PreferencesAdvancedView {
     func flagView(for flag: ABI.ConfigFlag) -> some View {
         VStack(alignment: .leading) {
             Text(Self.description(for: flag))
-            Text(configObservable.isActive(flag) ? Strings.Global.Nouns.enabled : Strings.Global.Nouns.disabled)
+            Text(configManager.isActive(flag) ? Strings.Global.Nouns.enabled : Strings.Global.Nouns.disabled)
                 .themeSubtitle()
         }
     }

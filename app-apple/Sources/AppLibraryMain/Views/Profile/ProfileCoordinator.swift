@@ -25,8 +25,8 @@ struct ProfileCoordinator: View {
     @EnvironmentObject
     private var preferencesManager: PreferencesManager
 
-    @Environment(ConfigObservable.self)
-    private var configObservable
+    @EnvironmentObject
+    private var configManager: ConfigManager
 
     let profileManager: ProfileManager
 
@@ -53,7 +53,7 @@ struct ProfileCoordinator: View {
     var body: some View {
         contentView
             .modifier(DynamicPaywallModifier(
-                configObservable: configObservable,
+                configManager: configManager,
                 paywallReason: $paywallReason
             ))
             .themeModal(item: $modalRoute, content: modalDestination)
@@ -222,7 +222,9 @@ private extension ProfileCoordinator {
 // MARK: - Paywall
 
 private struct DynamicPaywallModifier: ViewModifier {
-    let configObservable: ConfigObservable
+
+    @ObservedObject
+    var configManager: ConfigManager
 
     @Binding
     var paywallReason: PaywallReason?

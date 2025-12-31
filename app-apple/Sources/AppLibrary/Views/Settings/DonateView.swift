@@ -10,8 +10,8 @@ public struct DonateView<Modifier>: View where Modifier: ViewModifier {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @Environment(ConfigObservable.self)
-    private var configObservable
+    @EnvironmentObject
+    private var configManager: ConfigManager
 
     @Environment(\.dismiss)
     private var dismiss
