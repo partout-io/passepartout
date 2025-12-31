@@ -24,7 +24,8 @@ extension AppContext {
         var logger = PartoutLogger.Builder()
         logger.setDestination(SimpleLogDestination(), for: [.App.core, .App.profiles])
         PartoutLogger.register(logger.build())
-        let appLogger = PartoutAppLogger { _, msg in msg }
+        let appLogger = PartoutAppLogger()
+        let logFormatter = DummyLogFormatter()
 
         let kvStore = InMemoryStore()
         let apiManager = APIManager(
@@ -80,6 +81,7 @@ extension AppContext {
             extensionInstaller: nil,
             iapManager: iapManager,
             kvStore: kvStore,
+            logFormatter: logFormatter,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

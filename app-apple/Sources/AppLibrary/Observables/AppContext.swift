@@ -45,7 +45,7 @@ public final class AppContext {
         appFormatter = AppFormatter(constants: appConfiguration.constants)
         userPreferences = UserPreferencesObservable(kvStore: kvStore)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
-        viewLogger = ViewLogger(logger: abi)
+        viewLogger = ViewLogger(logger: abi, formatter: abi)
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()

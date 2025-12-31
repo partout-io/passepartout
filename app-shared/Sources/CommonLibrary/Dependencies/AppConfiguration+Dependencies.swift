@@ -313,14 +313,11 @@ extension ABI.AppConfiguration {
         UserDefaultsStore(.standard)
     }
 
-    public func newAppLogger() -> AppLogger {
-        let logFormatter = DateFormatter()
-        logFormatter.dateFormat = constants.log.formatter.timestamp
-        return PartoutAppLogger { timestamp, message in
-            let formattedTimestamp = logFormatter.string(from: timestamp)
-            let messageFormat = constants.log.formatter.message
-            return String(format: messageFormat, formattedTimestamp, message)
-        }
+    public func newLogFormatter() -> LogFormatter {
+        FoundationLogFormatter(
+            dateFormat: constants.log.formatter.timestamp,
+            messageFormat: constants.log.formatter.message
+        )
     }
 
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {

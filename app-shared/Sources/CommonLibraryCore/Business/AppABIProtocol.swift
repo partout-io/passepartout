@@ -20,7 +20,7 @@ public struct ABIEventContext: @unchecked Sendable {
 }
 
 @MainActor
-public protocol AppABIProtocol: AppLogger, Sendable {
+public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
     // MARK: Events
     typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
     func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback)

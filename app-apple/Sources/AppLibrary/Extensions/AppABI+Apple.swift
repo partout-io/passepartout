@@ -16,15 +16,16 @@ extension AppABI {
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore
     ) -> AppABI {
-        let appLogger = appConfiguration.newAppLogger()
+        let logFormatter = appConfiguration.newLogFormatter()
         let ctx = PartoutLogger.register(
             for: .app,
             with: appConfiguration,
             preferences: kvStore.preferences,
-            mapper: { [weak appLogger] in
-                appLogger?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            mapper: { [weak logFormatter] in
+                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
+        let appLogger = PartoutAppLogger()
 
         // MARK: Config (GitHub)
 
@@ -293,6 +294,7 @@ extension AppABI {
             extensionInstaller: sysexManager,
             iapManager: iapManager,
             kvStore: kvStore,
+            logFormatter: logFormatter,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

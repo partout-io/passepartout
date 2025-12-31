@@ -25,7 +25,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             distributionTarget: distributionTarget,
             buildTarget: .tunnel
         )
-        let appLogger = appConfiguration.newAppLogger()
+        let logFormatter = appConfiguration.newLogFormatter()
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would
@@ -35,8 +35,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelGlobal,
             with: appConfiguration,
             preferences: ABI.AppPreferenceValues(),
-            mapper: { [weak appLogger] in
-                appLogger?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            mapper: { [weak logFormatter] in
+                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
 
@@ -59,7 +59,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             do {
                 try await compatibleStartTunnel(
                     appConfiguration: appConfiguration,
-                    appLogger: appLogger,
+                    logFormatter: logFormatter,
                     isInteractive: isInteractive,
                     startPreferences: startPreferences
                 )
@@ -72,7 +72,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     private func compatibleStartTunnel(
         appConfiguration: ABI.AppConfiguration,
-        appLogger: AppLogger,
+        logFormatter: LogFormatter,
         isInteractive: Bool,
         startPreferences: ABI.AppPreferenceValues?
     ) async throws {
@@ -109,8 +109,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelProfile(originalProfile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: { [weak appLogger] in
-                appLogger?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            mapper: { [weak logFormatter] in
+                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
         self.ctx = ctx
@@ -166,7 +166,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 customUserLevel: appConfiguration.customUserLevel,
                 inAppHelper: appConfiguration.newAppProductHelper(),
                 receiptReader: SharedReceiptReader(
-                    reader: StoreKitReceiptReader(logger: appLogger),
+                    reader: StoreKitReceiptReader(logger: PartoutAppLogger()),
                 ),
                 betaChecker: appConfiguration.newBetaChecker(),
                 timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,

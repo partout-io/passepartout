@@ -12,7 +12,8 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let appLogger = PartoutAppLogger { _, msg in msg }
+        let appLogger = PartoutAppLogger()
+        let logFormatter = DummyLogFormatter()
         let registry = Registry()
         let appEncoder = AppEncoder(registry: registry)
         let kvStore = InMemoryStore()
@@ -65,6 +66,7 @@ extension AppContext {
             extensionInstaller: nil,
             iapManager: iapManager,
             kvStore: kvStore,
+            logFormatter: logFormatter,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,

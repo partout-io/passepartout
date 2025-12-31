@@ -25,6 +25,7 @@ public final class AppABI: AppABIProtocol, Sendable {
     private let appLogger: AppLogger
     private let extensionInstaller: ExtensionInstaller?
     private let kvStore: KeyValueStore
+    private let logFormatter: LogFormatter
 
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
@@ -40,6 +41,7 @@ public final class AppABI: AppABIProtocol, Sendable {
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
         kvStore: KeyValueStore,
+        logFormatter: LogFormatter,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
         registry: Registry,
@@ -56,6 +58,7 @@ public final class AppABI: AppABIProtocol, Sendable {
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
         self.kvStore = kvStore
+        self.logFormatter = logFormatter
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
@@ -158,7 +161,7 @@ extension AppABI {
     }
 
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
-        appLogger.formattedLog(timestamp: timestamp, message: message)
+        logFormatter.formattedLog(timestamp: timestamp, message: message)
     }
 
     // MARK: Profile

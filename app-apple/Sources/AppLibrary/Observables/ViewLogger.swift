@@ -6,11 +6,13 @@ import CommonLibrary
 import Observation
 
 @MainActor @Observable
-public final class ViewLogger: AppLogger {
+public final class ViewLogger: AppLogger, LogFormatter {
     private let logger: AppLogger
+    private let formatter: LogFormatter
 
-    public init(logger: AppLogger) {
+    public init(logger: AppLogger, formatter: LogFormatter) {
         self.logger = logger
+        self.formatter = formatter
     }
 
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
@@ -18,6 +20,6 @@ public final class ViewLogger: AppLogger {
     }
 
     public func formattedLog(timestamp: Date, message: String) -> String {
-        logger.formattedLog(timestamp: timestamp, message: message)
+        formatter.formattedLog(timestamp: timestamp, message: message)
     }
 }
