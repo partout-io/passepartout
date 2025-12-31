@@ -44,9 +44,7 @@ extension ABI.AppConfiguration {
             }(),
             configBlock: { [weak configManager, weak kvStore] in
                 guard let configManager, let kvStore else { return [] }
-                return MainActor.sync {
-                    kvStore.preferences.enabledFlags(of: configManager.activeFlags)
-                }
+                return kvStore.preferences.enabledFlags(of: configManager.activeFlags)
             }
         )
     }

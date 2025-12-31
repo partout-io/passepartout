@@ -2,12 +2,16 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Dispatch
+
 #if !PSP_CROSS
 extension ConfigManager: ObservableObject {}
 #endif
 
 @MainActor
 public final class ConfigManager {
+    private let queue = DispatchQueue(label: "ConfigManager")
+
     private let strategy: ConfigManagerStrategy?
 
     private let buildNumber: Int
@@ -18,13 +22,24 @@ public final class ConfigManager {
             objectWillChange.send()
 #endif
         }
+        didSet {
+            // Take a snapshot of the active flags
+            queue.sync {
+                synchronousActiveFlags = Set(ABI.ConfigFlag.allCases.filter {
+                    isActive($0)
+                })
+            }
+        }
     }
+
+    nonisolated(unsafe)
+    private var synchronousActiveFlags: Set<ABI.ConfigFlag> = []
 
     private var isPending = false
 
     public init() {
         strategy = nil
-        buildNumber = .max // activate flags regardless of .minBuild
+        buildNumber = .max // Activate flags regardless of .minBuild
     }
 
     public init(strategy: ConfigManagerStrategy, buildNumber: Int) {
@@ -66,10 +81,10 @@ public final class ConfigManager {
         activeMap(for: flag)?.data
     }
 
-    public var activeFlags: Set<ABI.ConfigFlag> {
-        Set(ABI.ConfigFlag.allCases.filter {
-            isActive($0)
-        })
+    public nonisolated var activeFlags: Set<ABI.ConfigFlag> {
+        queue.sync {
+            synchronousActiveFlags
+        }
     }
 }
 
