@@ -159,7 +159,7 @@ public final class APIManager {
         guard let repository else {
             throw PartoutError(.notFound)
         }
-        return try await repository.presets(for: server, moduleType: moduleType) ?? []
+        return try await repository.presets(for: server, moduleType: moduleType)
     }
 
     public func cache(for providerId: ProviderID) -> ProviderCache? {
