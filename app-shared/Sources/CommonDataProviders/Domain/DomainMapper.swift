@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
+import CommonLibraryCore
 import CoreData
 import Foundation
 import Partout

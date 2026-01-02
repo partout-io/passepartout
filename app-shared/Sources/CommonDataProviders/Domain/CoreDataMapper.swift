@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary
+import CommonLibraryCore
 import CoreData
 import Foundation
 
@@ -55,4 +55,14 @@ struct CoreDataMapper {
         entity.templateData = preset.templateData
         return entity
     }
+}
+
+private extension String {
+    var localizedAsRegionCode: String? {
+        Locale
+            .current
+            .localizedString(forRegionCode: self)?
+            .capitalized
+    }
+
 }

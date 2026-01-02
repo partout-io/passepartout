@@ -41,45 +41,9 @@ let package = Package(
             name: "AppAccessibility"
         ),
         .target(
-            name: "AppData"
-        ),
-        .target(
-            name: "AppDataPreferences",
-            dependencies: [
-                "AppData",
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
-            resources: [
-                .process("Preferences.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "AppDataProfiles",
-            dependencies: [
-                "AppData",
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
-            resources: [
-                .process("Profiles.xcdatamodeld")
-            ]
-        ),
-        .target(
-            name: "AppDataProviders",
-            dependencies: [
-                "AppData",
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
-            resources: [
-                .process("Providers.xcdatamodeld")
-            ]
-        ),
-        .target(
             name: "AppLibrary",
             dependencies: [
                 "AppAccessibility",
-                "AppDataPreferences",
-                "AppDataProfiles",
-                "AppDataProviders",
                 "AppResources",
                 "AppStrings"
             ]

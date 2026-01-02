@@ -2,5 +2,5 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public enum AppData {
+public enum CommonData {
 }

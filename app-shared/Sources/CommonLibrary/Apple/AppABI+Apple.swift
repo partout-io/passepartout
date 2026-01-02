@@ -2,19 +2,25 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppAccessibility
-import AppData
-import AppDataPreferences
-import AppDataProfiles
-import AppDataProviders
-import AppResources
+#if canImport(CommonLibraryApple)
+import CommonData
+import CommonDataPreferences
+import CommonDataProfiles
+import CommonDataProviders
 import CommonLibrary
 import CoreData
 
 extension AppABI {
     public static func forProduction(
         appConfiguration: ABI.AppConfiguration,
-        kvStore: KeyValueStore
+        kvStore: KeyValueStore,
+        assertModule: (ModuleType, Registry) -> Void,
+        profilePreview: @escaping @Sendable (Profile) -> ABI.ProfilePreview,
+        apiMappers: [APIMapper],
+        webHTMLPath: String?,
+        webStringsBundle: Bundle?,
+        withUITesting: Bool,
+        withFakeIAPs: Bool
     ) -> AppABI {
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = PartoutLogger.register(
@@ -51,22 +57,19 @@ extension AppABI {
 
         // Ensure that all module builders can be rendered in the profile editor
         ModuleType.allCases.forEach { moduleType in
-            let builder = moduleType.newModule(with: registry)
-            guard builder is any ModuleViewProviding else {
-                fatalError("\(moduleType): is not ModuleViewProviding")
-            }
+            assertModule(moduleType, registry)
         }
 
         // MARK: Persistence (Core Data)
 
         guard let cdLocalModel = NSManagedObjectModel.mergedModel(from: [
-            AppData.providersBundle
+            CommonData.providersBundle
         ]) else {
             fatalError("Unable to load local model")
         }
         guard let cdRemoteModel = NSManagedObjectModel.mergedModel(from: [
-            AppData.profilesBundle,
-            AppData.preferencesBundle
+            CommonData.profilesBundle,
+            CommonData.preferencesBundle
         ]) else {
             fatalError("Unable to load remote model")
         }
@@ -96,8 +99,8 @@ extension AppABI {
         // MARK: IAP (StoreKit)
 
         let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.simulatedAppProductHelper(),
-            receiptReader: appConfiguration.simulatedAppReceiptReader(logger: appLogger),
+            inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
+            receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs, logger: appLogger),
             betaChecker: betaChecker,
             isEnabled: !kvStore.bool(forAppPreference: .skipsPurchases)
         )
@@ -106,8 +109,8 @@ extension AppABI {
 
         let apiManager = APIManager(
             ctx,
-            from: API.shared,
-            repository: AppData.cdAPIRepositoryV3(
+            from: apiMappers,
+            repository: CommonData.cdAPIRepositoryV3(
                 context: localStore.backgroundContext()
             )
         )
@@ -152,7 +155,7 @@ extension AppABI {
 #endif
         let profileProcessor = appConfiguration.newAppProfileProcessor(
             iapManager: iapManager,
-            preview: \.localizedPreview
+            preview: profilePreview
         )
         let profileManager = ProfileManager(
             registry: registry,
@@ -201,14 +204,19 @@ extension AppABI {
 
         // MARK: Web (NIO)
 
+        let webReceiverManager: WebReceiverManager
 #if os(tvOS)
-        let webReceiverManager = appConfiguration.newWebReceiverManager(
-            appLogger: appLogger,
-            htmlPath: Resources.webUploaderPath,
-            stringsBundle: AppStrings.bundle
-        )
+        if let webHTMLPath, let webStringsBundle {
+            webReceiverManager = appConfiguration.newWebReceiverManager(
+                appLogger: appLogger,
+                htmlPath: webHTMLPath,
+                stringsBundle: webStringsBundle
+            )
+        } else {
+            webReceiverManager = WebReceiverManager()
+        }
 #else
-        let webReceiverManager = WebReceiverManager()
+        webReceiverManager = WebReceiverManager()
 #endif
 
         // MARK: Sync (CloudKit)
@@ -224,10 +232,11 @@ extension AppABI {
                 // @Published
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
 
-                appLogger.log(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(appConfiguration.isCloudKitEnabled))...")
+                let isCloudKitEnabled = withUITesting || appConfiguration.isCloudKitEnabled
+                appLogger.log(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 appLogger.log(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
-                let remoteProfileRepository = AppData.cdProfileRepositoryV3(
+                let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
                     encoder: appEncoder,
                     context: remoteStore.context,
                     observingResults: true,
@@ -245,7 +254,7 @@ extension AppABI {
 
             appLogger.log(.core, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
-                try AppData.cdModulePreferencesRepositoryV3(
+                try CommonData.cdModulePreferencesRepositoryV3(
                     context: remoteStore.context,
                     moduleId: $0
                 )
@@ -253,7 +262,7 @@ extension AppABI {
 
             appLogger.log(.core, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
-                try AppData.cdProviderPreferencesRepositoryV3(
+                try CommonData.cdProviderPreferencesRepositoryV3(
                     context: remoteStore.context,
                     providerId: $0
                 )
@@ -289,10 +298,7 @@ private extension ABI.AppConfiguration {
 #if os(tvOS)
         true
 #else
-        if AppCommandLine.contains(.uiTesting) {
-            return true
-        }
-        return FileManager.default.ubiquityIdentityToken != nil
+        FileManager.default.ubiquityIdentityToken != nil
 #endif
     }
 
@@ -310,7 +316,7 @@ private extension ABI.AppConfiguration {
             cloudKitIdentifier: nil,
             author: nil
         )
-        return AppData.cdProfileRepositoryV3(
+        return CommonData.cdProfileRepositoryV3(
             encoder: encoder,
             context: store.context,
             observingResults: observingResults,
@@ -322,17 +328,17 @@ private extension ABI.AppConfiguration {
     }
 
     @MainActor
-    func simulatedAppProductHelper() -> any AppProductHelper {
-        if AppCommandLine.contains(.fakeIAP) {
+    func simulatedAppProductHelper(isFake: Bool) -> any AppProductHelper {
+        guard !isFake else {
             return FakeAppProductHelper()
         }
         return newAppProductHelper()
     }
 
     @MainActor
-    func simulatedAppReceiptReader(logger: AppLogger) -> AppReceiptReader {
-        if AppCommandLine.contains(.fakeIAP) {
-            guard let mockHelper = simulatedAppProductHelper() as? FakeAppProductHelper else {
+    func simulatedAppReceiptReader(isFake: Bool, logger: AppLogger) -> AppReceiptReader {
+        guard !isFake else {
+            guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeAppProductHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
             }
             return mockHelper.receiptReader
@@ -342,3 +348,4 @@ private extension ABI.AppConfiguration {
         )
     }
 }
+#endif

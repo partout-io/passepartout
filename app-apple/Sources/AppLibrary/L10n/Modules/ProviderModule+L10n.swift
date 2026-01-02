@@ -45,26 +45,3 @@ extension ProviderServer: LocalizableEntity {
             .joined(separator: ", ")
     }
 }
-
-extension ProviderServer {
-    public var localizedCountry: String? {
-        metadata.countryCode.localizedAsRegionCode
-    }
-
-    public var address: String {
-        if let hostname {
-            return hostname
-        }
-        if let ipAddresses {
-            return ipAddresses
-                .compactMap {
-                    guard let address = Address(data: $0) else {
-                        return nil
-                    }
-                    return address.description
-                }
-                .joined(separator: ", ")
-        }
-        return ""
-    }
-}

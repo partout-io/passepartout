@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppData
+import CommonData
 import Foundation
 
-extension AppData {
-    public static let profilesBundle: Bundle = .module
+extension CommonData {
+    public static let preferencesBundle: Bundle = .module
 }
