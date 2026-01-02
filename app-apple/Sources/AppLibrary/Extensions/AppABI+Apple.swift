@@ -25,7 +25,7 @@ extension AppABI {
                 logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
-        let appLogger = PartoutAppLogger()
+        let appLogger = appConfiguration.newAppLogger()
 
         // MARK: Config (GitHub)
 
@@ -96,22 +96,12 @@ extension AppABI {
 
         // MARK: IAP (StoreKit)
 
-        let iapManager = IAPManager(
-            customUserLevel: appConfiguration.customUserLevel,
+        let iapManager = appConfiguration.newIAPManager(
             inAppHelper: appConfiguration.simulatedAppProductHelper(),
             receiptReader: appConfiguration.simulatedAppReceiptReader(logger: appLogger),
             betaChecker: betaChecker,
-            timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
-            verificationDelayMinutesBlock: {
-                appConfiguration.constants.tunnel.verificationDelayMinutes(isBeta: $0)
-            },
-            productsAtBuild: appConfiguration.newProductsAtBuild
+            isEnabled: !kvStore.bool(forAppPreference: .skipsPurchases)
         )
-        if appConfiguration.distributionTarget.supportsIAP {
-            iapManager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
-        } else {
-            iapManager.isEnabled = false
-        }
 
         // MARK: API
 
@@ -127,6 +117,13 @@ extension AppABI {
 
         let appEncoder = AppEncoder(registry: registry)
         let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
+        let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
+            apiManager: apiManager,
+            registry: registry,
+            providerServerSorter: {
+                $0.sort(using: $1.sortingComparators)
+            }
+        )
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = appConfiguration.newBackupProfileRepository(
@@ -143,8 +140,8 @@ extension AppABI {
             bundleIdentifier: tunnelIdentifier,
             coder: appConfiguration.newNEProtocolCoder(ctx, registry: registry)
         )
-        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) {
-            appConfiguration.newProfileTitle(for: $0)
+        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
+            tunnelProcessor?.title(for: $0) ?? $0.name
         }
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             logger: appLogger,
@@ -154,18 +151,13 @@ extension AppABI {
             observingResults: false
         )
 #endif
-        let processor = appConfiguration.newAppProcessor(
-            apiManager: apiManager,
+        let profileProcessor = appConfiguration.newAppProfileProcessor(
             iapManager: iapManager,
-            registry: registry,
-            preview: \.localizedPreview,
-            providerServerSorter: {
-                $0.sort(using: $1.sortingComparators)
-            }
+            preview: \.localizedPreview
         )
         let profileManager = ProfileManager(
             registry: registry,
-            processor: processor,
+            processor: profileProcessor,
             repository: mainProfileRepository,
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
@@ -173,22 +165,14 @@ extension AppABI {
         let tunnel = Tunnel(ctx, strategy: tunnelStrategy) {
             appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
         }
-        let sysexManager: SystemExtensionManager? = {
-            guard appConfiguration.distributionTarget == .developerID else {
-                return nil
-            }
-            return SystemExtensionManager(
-                identifier: tunnelIdentifier,
-                version: appConfiguration.versionNumber,
-                build: appConfiguration.buildNumber
-            )
-        }()
-        let extendedTunnel = ExtendedTunnel(
+        let sysexManager = appConfiguration.newSystemExtensionManager(
+            tunnelIdentifier: tunnelIdentifier
+        )
+        let extendedTunnel = appConfiguration.newExtendedTunnel(
             tunnel: tunnel,
             extensionInstaller: sysexManager,
             kvStore: kvStore,
-            processor: processor,
-            interval: appConfiguration.constants.tunnel.refreshInterval
+            processor: tunnelProcessor
         )
 
         // MARK: Preferences (Core Data)
@@ -197,50 +181,36 @@ extension AppABI {
 
         // MARK: Version (GitHub)
 
-        let versionChecker = {
-            let versionStrategy = GitHubReleaseStrategy(
-                releaseURL: appConfiguration.constants.github.latestRelease,
-                rateLimit: appConfiguration.constants.api.versionRateLimit,
-                fetcher: {
-                    var request = URLRequest(url: $0)
-                    request.cachePolicy = .useProtocolCachePolicy
-                    return try await URLSession.shared.data(for: request).0
+        let versionChecker = appConfiguration.newVersionChecker(
+            kvStore: kvStore,
+            downloadURL: {
+                switch appConfiguration.distributionTarget {
+                case .appStore:
+                    return appConfiguration.constants.websites.appStoreDownload
+                case .developerID:
+                    return appConfiguration.constants.websites.macDownload
+                case .enterprise:
+                    fatalError("No URL for enterprise distribution")
                 }
-            )
-            return VersionChecker(
-                kvStore: kvStore,
-                strategy: versionStrategy,
-                currentVersion: appConfiguration.versionNumber,
-                downloadURL: {
-                    switch appConfiguration.distributionTarget {
-                    case .appStore:
-                        return appConfiguration.constants.websites.appStoreDownload
-                    case .developerID:
-                        return appConfiguration.constants.websites.macDownload
-                    case .enterprise:
-                        fatalError("No URL for enterprise distribution")
-                    }
-                }()
-            )
-        }()
+            }(),
+            fetcher: {
+                var request = URLRequest(url: $0)
+                request.cachePolicy = .useProtocolCachePolicy
+                return try await URLSession.shared.data(for: request).0
+            }
+        )
 
         // MARK: Web (NIO)
 
-        let webReceiverManager = {
 #if os(tvOS)
-            let receiver = NIOWebReceiver(
-                logger: appLogger,
-                htmlPath: Resources.webUploaderPath,
-                stringsBundle: AppStrings.bundle,
-                port: appConfiguration.constants.webReceiver.port
-            )
-            return WebReceiverManager(webReceiver: receiver) {
-                appConfiguration.newWebPasscodeGenerator()
-            }
+        let webReceiverManager = appConfiguration.newWebReceiverManager(
+            appLogger: appLogger,
+            htmlPath: Resources.webUploaderPath,
+            stringsBundle: AppStrings.bundle
+        )
 #else
-            return WebReceiverManager()
+        let webReceiverManager = WebReceiverManager()
 #endif
-        }()
 
         // MARK: Sync (CloudKit)
 

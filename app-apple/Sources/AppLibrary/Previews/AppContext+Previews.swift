@@ -12,7 +12,7 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let appLogger = PartoutAppLogger()
+        let appLogger = appConfiguration.newAppLogger()
         let logFormatter = DummyLogFormatter()
         let registry = Registry()
         let appEncoder = AppEncoder(registry: registry)

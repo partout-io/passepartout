@@ -3,6 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI.AppConfiguration {
+    public func newAppLogger() -> AppLogger {
+        PartoutAppLogger()
+    }
+
     @MainActor
     public func newConfigManager(
         isBeta: @escaping @Sendable () async -> Bool,
@@ -79,6 +83,28 @@ extension ABI.AppConfiguration {
         )
     }
 
+    @MainActor
+    public func newIAPManager(
+        inAppHelper: AppProductHelper,
+        receiptReader: AppReceiptReader,
+        betaChecker: BetaChecker,
+        isEnabled: Bool
+    ) -> IAPManager {
+        let iapManager = IAPManager(
+            customUserLevel: customUserLevel,
+            inAppHelper: inAppHelper,
+            receiptReader: receiptReader,
+            betaChecker: betaChecker,
+            timeoutInterval: constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: {
+                constants.tunnel.verificationDelayMinutes(isBeta: $0)
+            },
+            productsAtBuild: newProductsAtBuild
+        )
+        iapManager.isEnabled = distributionTarget.supportsIAP && isEnabled
+        return iapManager
+    }
+
     public func newProductsAtBuild(purchase: OriginalPurchase) -> Set<ABI.AppProduct> {
 #if os(iOS)
         if purchase.isUntil(.freemium) {
@@ -97,19 +123,28 @@ extension ABI.AppConfiguration {
 #endif
     }
 
-    public func newAppProcessor(
-        apiManager: APIManager?,
+    @MainActor
+    public func newAppProfileProcessor(
         iapManager: IAPManager?,
-        registry: Registry,
-        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview,
-        providerServerSorter: @escaping ProviderServerParameters.Sorter
-    ) -> ProfileProcessor & AppTunnelProcessor {
-        DefaultAppProcessor(
-            apiManager: apiManager,
+        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview
+    ) -> ProfileProcessor {
+        DefaultProfileProcessor(
             iapManager: iapManager,
+            preview: preview
+        )
+    }
+
+    public func newAppTunnelProcessor(
+        apiManager: APIManager?,
+        registry: Registry,
+        providerServerSorter: @escaping ProviderServerParameters.Sorter
+    ) -> AppTunnelProcessor {
+        DefaultAppTunnelProcessor(
+            apiManager: apiManager,
             registry: registry,
-            title: newProfileTitle(for:),
-            preview: preview,
+            title: {
+                String(format: constants.tunnel.profileTitleFormat, $0.name)
+            },
             providerServerSorter: providerServerSorter
         )
     }
@@ -118,15 +153,45 @@ extension ABI.AppConfiguration {
         DefaultTunnelProcessor()
     }
 
+    @MainActor
+    public func newExtendedTunnel(
+        tunnel: Tunnel,
+        extensionInstaller: ExtensionInstaller?,
+        kvStore: KeyValueStore,
+        processor: AppTunnelProcessor
+    ) -> ExtendedTunnel {
+        ExtendedTunnel(
+            tunnel: tunnel,
+            extensionInstaller: extensionInstaller,
+            kvStore: kvStore,
+            processor: processor,
+            interval: constants.tunnel.refreshInterval
+        )
+    }
+
+    @MainActor
+    public func newVersionChecker(
+        kvStore: KeyValueStore,
+        downloadURL: URL,
+        fetcher: @escaping @Sendable (URL) async throws -> Data
+    ) -> VersionChecker {
+        let versionStrategy = GitHubReleaseStrategy(
+            releaseURL: constants.github.latestRelease,
+            rateLimit: constants.api.versionRateLimit,
+            fetcher: fetcher
+        )
+        return VersionChecker(
+            kvStore: kvStore,
+            strategy: versionStrategy,
+            currentVersion: versionNumber,
+            downloadURL: downloadURL
+        )
+    }
+
     public func newWebPasscodeGenerator() -> String {
         let length = constants.webReceiver.passcodeLength
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
-    }
-
-    @Sendable
-    public func newProfileTitle(for profile: Profile) -> String {
-        String(format: constants.tunnel.profileTitleFormat, profile.name)
     }
 }
 
@@ -367,6 +432,36 @@ extension ABI.AppConfiguration {
             }
         )
     }
+
+    public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
+        guard distributionTarget == .developerID else {
+            return nil
+        }
+        return SystemExtensionManager(
+            identifier: tunnelIdentifier,
+            version: versionNumber,
+            build: buildNumber
+        )
+    }
+
+#if os(tvOS)
+    @MainActor
+    public func newWebReceiverManager(
+        appLogger: AppLogger,
+        htmlPath: String,
+        stringsBundle: Bundle
+    ) -> WebReceiverManager {
+        let receiver = NIOWebReceiver(
+            logger: appLogger,
+            htmlPath: htmlPath,
+            stringsBundle: stringsBundle,
+            port: constants.webReceiver.port
+        )
+        return WebReceiverManager(webReceiver: receiver) {
+            newWebPasscodeGenerator()
+        }
+    }
+#endif
 }
 
 #endif

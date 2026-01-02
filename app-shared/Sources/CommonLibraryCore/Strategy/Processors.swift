@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @MainActor
-public protocol ProfileProcessor: Sendable {
+public protocol ProfileProcessor: AnyObject, Sendable {
     func isIncluded(_ profile: Profile) -> Bool
 
     func preview(from profile: Profile) -> ABI.ProfilePreview
@@ -13,12 +13,12 @@ public protocol ProfileProcessor: Sendable {
     func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder
 }
 
-public protocol AppTunnelProcessor: Sendable {
+public protocol AppTunnelProcessor: AnyObject, Sendable {
     nonisolated func title(for profile: Profile) -> String
 
     nonisolated func willInstall(_ profile: Profile) async throws -> Profile
 }
 
-public protocol PacketTunnelProcessor: Sendable {
+public protocol PacketTunnelProcessor: AnyObject, Sendable {
     nonisolated func willProcess(_ profile: Profile) throws -> Profile
 }
