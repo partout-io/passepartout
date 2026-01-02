@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
-import Foundation
 
 @objc(CDModulePreferencesV3)
 final class CDModulePreferencesV3: NSManagedObject {

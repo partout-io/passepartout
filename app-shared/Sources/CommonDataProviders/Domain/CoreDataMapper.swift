@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
 import CoreData
-import Foundation
 
 struct CoreDataMapper {
     let context: NSManagedObjectContext

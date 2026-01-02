@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
 import CoreData
 
 public final class CoreDataPersistentStore: Sendable {

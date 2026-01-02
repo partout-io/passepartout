@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
-import Foundation
-
 extension ProviderID {
     var predicate: NSPredicate {
         NSPredicate(format: predicateFormat, predicateArg)

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
 @preconcurrency import CoreData
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {

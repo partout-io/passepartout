@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonData
 import Combine
-import CommonLibraryCore
 import CoreData
 
 extension CommonData {

@@ -2,11 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonData
-import CommonLibraryCore
 import CoreData
-import Foundation
-import Partout
 
 final class CDProviderRepositoryV3: ProviderRepository {
     private nonisolated let context: NSManagedObjectContext

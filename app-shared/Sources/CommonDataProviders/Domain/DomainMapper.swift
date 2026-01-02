@@ -2,10 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore
 import CoreData
-import Foundation
-import Partout
 
 struct DomainMapper {
     func provider(from entity: CDProviderV3) -> Provider? {

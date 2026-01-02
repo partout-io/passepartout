@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
-import Foundation
 
 @objc(CDProviderPresetV3)
 final class CDProviderPresetV3: NSManagedObject {

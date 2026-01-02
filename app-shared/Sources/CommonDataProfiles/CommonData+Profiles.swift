@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonData
-import Foundation
+#if !USE_CMAKE
+@_exported import CommonData
+#endif
 
 extension CommonData {
-    public static let preferencesBundle: Bundle = .module
+    public static let profilesBundle: Bundle = .module
 }
