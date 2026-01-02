@@ -8,22 +8,13 @@ import NetworkExtension
 extension TunnelABI {
     public static func forProduction(
         appConfiguration: ABI.AppConfiguration,
+        kvStore: KeyValueStore,
+        preferences: ABI.AppPreferenceValues,
         startPreferences: ABI.AppPreferenceValues?,
         neProvider: NEPacketTunnelProvider
     ) async throws -> TunnelABI {
         let logFormatter = appConfiguration.newLogFormatter()
         var appLogger = appConfiguration.newAppLogger()
-
-        // Update or fetch existing preferences
-        let (kvStore, preferences) = {
-            let kvStore = appConfiguration.newKeyValueStore()
-            if let startPreferences {
-                kvStore.preferences = startPreferences
-                return (kvStore, startPreferences)
-            } else {
-                return (kvStore, kvStore.preferences)
-            }
-        }()
 
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
@@ -135,8 +126,7 @@ extension TunnelABI {
             environment: environment,
             iap: iap,
             logFormatter: logFormatter,
-            originalProfile: ABI.AppProfile(native: originalProfile),
-            preferences: preferences
+            originalProfile: ABI.AppProfile(native: originalProfile)
         )
     }
 }

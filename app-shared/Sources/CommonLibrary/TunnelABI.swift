@@ -25,7 +25,6 @@ public final class TunnelABI: TunnelABIProtocol {
     private let iap: IAP?
     private let logFormatter: LogFormatter
     private let originalProfile: ABI.AppProfile
-    private let preferences: ABI.AppPreferenceValues
 
     private var verifierSubscription: Task<Void, Error>?
 
@@ -35,8 +34,7 @@ public final class TunnelABI: TunnelABIProtocol {
         environment: TunnelEnvironment,
         iap: IAP?,
         logFormatter: LogFormatter,
-        originalProfile: ABI.AppProfile,
-        preferences: ABI.AppPreferenceValues
+        originalProfile: ABI.AppProfile
     ) {
         self.appLogger = appLogger
         self.daemon = daemon
@@ -44,10 +42,9 @@ public final class TunnelABI: TunnelABIProtocol {
         self.iap = iap
         self.logFormatter = logFormatter
         self.originalProfile = originalProfile
-        self.preferences = preferences
     }
 
-    public func start(isInteractive: Bool, startPreferences: ABI.AppPreferenceValues?) async throws {
+    public func start(isInteractive: Bool) async throws {
         try trackContext()
 
         do {
