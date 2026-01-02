@@ -8,10 +8,14 @@ import CommonLibrary
 import Partout
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
+    private var abi: TunnelABIProtocol?
+
+    // FIXME: #1594, Deprecated state in favor of ABI (config flag)
+    @available(*, deprecated, message: "#1594")
     private var ctx: PartoutLoggerContext?
-
+    @available(*, deprecated, message: "#1594")
     private var fwd: NEPTPForwarder?
-
+    @available(*, deprecated, message: "#1594")
     private var verifierSubscription: Task<Void, Error>?
 
     override func startTunnel(options: [String: NSObject]? = nil, completionHandler: @escaping @Sendable (Error?) -> Void) {
@@ -42,40 +46,19 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[ExtendedTunnel.isManualKey] == true as NSNumber
-        let startPreferences: ABI.AppPreferenceValues?
-        if let encodedPreferences = options?[ExtendedTunnel.appPreferences] as? NSData {
+        let startPreferences: ABI.AppPreferenceValues? = {
+            guard let encodedPreferences = options?[ExtendedTunnel.appPreferences] as? Data else {
+                return nil
+            }
             do {
-                startPreferences = try JSONDecoder()
-                    .decode(ABI.AppPreferenceValues.self, from: encodedPreferences as Data)
+                return try JSONDecoder()
+                    .decode(ABI.AppPreferenceValues.self, from: encodedPreferences)
             } catch {
                 pp_log_g(.App.core, .error, "Unable to decode startTunnel() preferences")
-                startPreferences = nil
+                return nil
             }
-        } else {
-            startPreferences = nil
-        }
+        }()
 
-        Task {
-            do {
-                try await compatibleStartTunnel(
-                    appConfiguration: appConfiguration,
-                    logFormatter: logFormatter,
-                    isInteractive: isInteractive,
-                    startPreferences: startPreferences
-                )
-                completionHandler(nil)
-            } catch {
-                completionHandler(error)
-            }
-        }
-    }
-
-    private func compatibleStartTunnel(
-        appConfiguration: ABI.AppConfiguration,
-        logFormatter: LogFormatter,
-        isInteractive: Bool,
-        startPreferences: ABI.AppPreferenceValues?
-    ) async throws {
         // Update or fetch existing preferences
         let (kvStore, preferences) = {
             let kvStore = appConfiguration.newKeyValueStore()
@@ -86,6 +69,93 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 return (kvStore, kvStore.preferences)
             }
         }()
+
+        // Branch over ABI or deprecated code
+        let usesTunnelABI = preferences.enabledFlags().contains(.tunnelABI)
+        pp_log_g(.core, .notice, "Using Tunnel ABI: \(usesTunnelABI)")
+
+        // Defer to ABI
+        Task { @MainActor in
+            do {
+                if usesTunnelABI {
+                    abi = try await TunnelABI.forProduction(
+                        appConfiguration: appConfiguration,
+                        startPreferences: startPreferences,
+                        neProvider: self
+                    )
+                    abi?.log(.core, .notice, "Start PTP")
+                    try await abi?.start(isInteractive: isInteractive, startPreferences: startPreferences)
+                } else {
+                    abi = nil
+                    try await compatibleStartTunnel(
+                        appConfiguration: appConfiguration,
+                        logFormatter: logFormatter,
+                        isInteractive: isInteractive,
+                        kvStore: kvStore,
+                        preferences: preferences,
+                        startPreferences: startPreferences
+                    )
+                }
+                completionHandler(nil)
+            } catch {
+                completionHandler(error)
+            }
+        }
+    }
+
+    override func stopTunnel(with reason: NEProviderStopReason) async {
+        if let abi {
+            abi.log(.core, .notice, "Stop PTP, reason: \(String(describing: reason))")
+            await abi.stop()
+        } else {
+            verifierSubscription?.cancel()
+            await fwd?.stopTunnel(with: reason)
+            fwd = nil
+            flushLogs()
+            await untrackContext()
+        }
+    }
+
+    override func cancelTunnelWithError(_ error: Error?) {
+        if let abi {
+            abi.log(.core, .info, "Cancel PTP, error: \(String(describing: error))")
+            abi.cancel(error)
+        } else {
+            flushLogs()
+        }
+        super.cancelTunnelWithError(error)
+    }
+
+    override func handleAppMessage(_ messageData: Data) async -> Data? {
+        if let abi {
+            abi.log(.core, .debug, "Handle PTP message")
+            return await abi.sendMessage(messageData)
+        } else {
+            return await fwd?.handleAppMessage(messageData)
+        }
+    }
+
+//    override func wake() {
+//        fwd?.wake()
+//    }
+//
+//    override func sleep() async {
+//        await fwd?.sleep()
+//    }
+}
+
+// MARK: - Deprecated code (#1594)
+
+@available(*, deprecated, message: "Use TunnelABI")
+private extension PacketTunnelProvider {
+    func compatibleStartTunnel(
+        appConfiguration: ABI.AppConfiguration,
+        logFormatter: LogFormatter,
+        isInteractive: Bool,
+        kvStore: KeyValueStore,
+        preferences: ABI.AppPreferenceValues,
+        startPreferences: ABI.AppPreferenceValues?
+    ) async throws {
 
         // Create global registry
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
@@ -131,24 +201,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }
 
         // Create TunnelController for connnection management
-        let neTunnelController: NETunnelController
-        do {
-            neTunnelController = try await NETunnelController(
-                provider: self,
-                profile: processedProfile,
-                options: {
-                    var options = NETunnelController.Options()
-                    if preferences.dnsFallsBack {
-                        options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
-                    }
-                    return options
-                }()
-            )
-        } catch {
-            pp_log(ctx, .App.core, .fault, "Unable to create NETunnelController: \(error)")
-            flushLogs()
-            throw error
-        }
+        let neTunnelController = NETunnelController(
+            provider: self,
+            profile: processedProfile,
+            options: {
+                var options = NETunnelController.Options()
+                if preferences.dnsFallsBack {
+                    options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
+                }
+                return options
+            }()
+        )
 
         pp_log(ctx, .App.core, .info, "Tunnel started")
         if let startPreferences {
@@ -265,31 +328,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             throw error
         }
     }
-
-    override func stopTunnel(with reason: NEProviderStopReason) async {
-        verifierSubscription?.cancel()
-        await fwd?.stopTunnel(with: reason)
-        fwd = nil
-        flushLogs()
-        await untrackContext()
-    }
-
-    override func cancelTunnelWithError(_ error: (any Error)?) {
-        flushLogs()
-        super.cancelTunnelWithError(error)
-    }
-
-    override func handleAppMessage(_ messageData: Data) async -> Data? {
-        await fwd?.handleAppMessage(messageData)
-    }
-
-    override func wake() {
-        fwd?.wake()
-    }
-
-    override func sleep() async {
-        await fwd?.sleep()
-    }
 }
 
 private extension PacketTunnelProvider {
@@ -297,8 +335,6 @@ private extension PacketTunnelProvider {
         PartoutLogger.default.flushLog()
     }
 }
-
-// MARK: - Tracking
 
 @MainActor
 private extension PacketTunnelProvider {
@@ -328,8 +364,6 @@ private extension PacketTunnelProvider {
         Self.activeTunnels.remove(profileId)
     }
 }
-
-// MARK: - Eligibility
 
 private extension PacketTunnelProvider {
 
@@ -387,10 +421,4 @@ private extension PacketTunnelProvider {
 
 private extension TunnelEnvironmentKeys {
     static let holdFlag = TunnelEnvironmentKey<Bool>("Tunnel.onHold")
-}
-
-extension PartoutError: @retroactive LocalizedError {
-    public var errorDescription: String? {
-        debugDescription
-    }
 }

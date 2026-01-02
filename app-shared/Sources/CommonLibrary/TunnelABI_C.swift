@@ -16,7 +16,7 @@ public func __psp_tunnel_start(args: UnsafePointer<psp_tunnel_start_args>?, call
 //    abi = TunnelABI.forCrossPlatform()
     Task {
         do {
-            try await abi?.start()
+//            try await abi?.start()
             callback(0)
         } catch {
             callback(-1)

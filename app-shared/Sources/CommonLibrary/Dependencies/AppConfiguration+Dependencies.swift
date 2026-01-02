@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI.AppConfiguration {
-    public func newAppLogger() -> AppLogger {
-        PartoutAppLogger()
+    public func newAppLogger(profileId: Profile.ID? = nil) -> AppLogger {
+        PartoutAppLogger(profileId: profileId)
     }
 
     @MainActor
@@ -57,7 +57,7 @@ extension ABI.AppConfiguration {
         newRegistry(
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: {
-                preferences.enabledFlags(of: preferences.configFlags)
+                preferences.enabledFlags()
             }
         )
     }

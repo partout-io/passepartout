@@ -1,4 +1,7 @@
 {
+    "tunnelABI": {
+        "rate": 100,
+    },
     "wgV4OverV6": {
         "rate": 100,
     },
