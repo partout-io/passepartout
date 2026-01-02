@@ -48,6 +48,17 @@ extension TunnelABI {
         )
         appLogger = appConfiguration.newAppLogger(profileId: processedProfile.id)
 
+        // Decode preferences and config flags
+        appLogger.log(.core, .info, "Tunnel profile initialized")
+        if let startPreferences {
+            appLogger.log(.core, .info, "\tDecoded preferences: \(startPreferences)")
+        } else {
+            appLogger.log(.core, .info, "\tExisting preferences: \(preferences)")
+        }
+        let configFlags = preferences.configFlags
+        appLogger.log(.core, .info, "\tActive config flags: \(configFlags)")
+        appLogger.log(.core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+
         // Create TunnelController for connnection management
         let neTunnelController = NETunnelController(
             provider: neProvider,
@@ -60,17 +71,6 @@ extension TunnelABI {
                 return options
             }()
         )
-
-        // Decode config flags
-        appLogger.log(.core, .info, "Tunnel started")
-        if let startPreferences {
-            appLogger.log(.core, .info, "\tDecoded preferences: \(startPreferences)")
-        } else {
-            appLogger.log(.core, .info, "\tExisting preferences: \(preferences)")
-        }
-        let configFlags = preferences.configFlags
-        appLogger.log(.core, .info, "\tActive config flags: \(configFlags)")
-        appLogger.log(.core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
 
         // Pick socket and crypto strategy from preferences
         var factoryOptions = NEInterfaceFactory.Options()
