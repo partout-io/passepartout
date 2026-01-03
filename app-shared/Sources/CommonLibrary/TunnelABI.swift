@@ -92,7 +92,7 @@ public final class TunnelABI: TunnelABIProtocol {
             }
         } catch {
             appLogger.log(.core, .fault, "Unable to start tunnel: \(error)")
-            Self.flushLogs()
+            flushLogs()
             throw error
         }
     }
@@ -100,7 +100,7 @@ public final class TunnelABI: TunnelABIProtocol {
     public func stop() async {
         verifierSubscription?.cancel()
         await daemon.stop()
-        Self.flushLogs()
+        flushLogs()
         untrackContext()
     }
 
@@ -124,21 +124,21 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public func cancel(_ error: Error?) {
-        Self.flushLogs()
+        flushLogs()
     }
 
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         appLogger.log(category, level, message)
+    }
+
+    public nonisolated func flushLogs() {
+        appLogger.flushLogs()
     }
 }
 
 // MARK: - Tracking and Logging
 
 private extension TunnelABI {
-    static nonisolated func flushLogs() {
-        PartoutLogger.default.flushLog()
-    }
-
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
             pp_log_g(.App.core, .info, "Active tunnels: \(activeTunnels)")

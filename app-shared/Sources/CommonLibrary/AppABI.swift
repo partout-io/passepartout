@@ -159,6 +159,10 @@ extension AppABI {
         appLogger.log(category, level, message)
     }
 
+    public nonisolated func flushLogs() {
+        appLogger.flushLogs()
+    }
+
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
         logFormatter.formattedLog(timestamp: timestamp, message: message)
     }

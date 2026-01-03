@@ -12,6 +12,10 @@ public final class PartoutAppLogger: AppLogger, Sendable {
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
     }
+
+    public nonisolated func flushLogs() {
+        PartoutLogger.default.flushLog()
+    }
 }
 
 private extension ABI.AppLogCategory {

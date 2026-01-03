@@ -19,6 +19,10 @@ public final class ViewLogger: AppLogger, LogFormatter {
         logger.log(category, level, message)
     }
 
+    public nonisolated func flushLogs() {
+        logger.flushLogs()
+    }
+
     public func formattedLog(timestamp: Date, message: String) -> String {
         formatter.formattedLog(timestamp: timestamp, message: message)
     }
