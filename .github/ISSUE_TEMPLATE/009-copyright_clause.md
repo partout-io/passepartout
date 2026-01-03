@@ -11,7 +11,7 @@ labels: "refactoring"
 - [ ] File headers
 - [ ] fastlane metadata
 
-## TunnelKit
+## Partout
 
 - [ ] README
 - [ ] File headers
