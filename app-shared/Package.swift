@@ -31,6 +31,31 @@ let swiftSettings: [SwiftSetting] = [
 
 package.targets.append(contentsOf: [
     .target(
+        name: "CommonData",
+        dependencies: ["CommonLibraryCore"]
+    ),
+    .target(
+        name: "CommonDataPreferences",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Preferences.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonDataProfiles",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Profiles.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonDataProviders",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Providers.xcdatamodeld")
+        ]
+    ),
+    .target(
         name: "CommonLibrary",
         dependencies: [
             "CommonLibraryCore",
@@ -40,7 +65,12 @@ package.targets.append(contentsOf: [
     ),
     .target(
         name: "CommonLibraryApple",
-        dependencies: ["CommonLibraryCore"]
+        dependencies: [
+            "CommonDataPreferences",
+            "CommonDataProfiles",
+            "CommonDataProviders",
+            "CommonLibraryCore"
+        ]
     ),
     .target(
         name: "CommonLibraryCore",

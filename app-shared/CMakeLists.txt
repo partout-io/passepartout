@@ -7,6 +7,7 @@ file(GLOB_RECURSE PSP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift
 )
 set(PSP_EXCLUSIONS
+    CommonData.*
     CommonLibraryApple.*
 )
 foreach(pattern ${PSP_EXCLUSIONS})
