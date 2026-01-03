@@ -17,7 +17,7 @@ extension PartoutLogger {
         for target: Target,
         with appConfiguration: ABI.AppConfiguration,
         preferences: ABI.AppPreferenceValues,
-        mapper: @escaping (DebugLog.Line) -> String
+        mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) -> PartoutLoggerContext {
         switch target {
         case .app:
@@ -74,7 +74,7 @@ private extension PartoutLogger {
         to url: URL,
         preferences: ABI.AppPreferenceValues,
         parameters: ABI.Constants.Log,
-        mapper: @escaping (DebugLog.Line) -> String
+        mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
@@ -90,7 +90,7 @@ private extension PartoutLogger {
         to url: URL,
         preferences: ABI.AppPreferenceValues,
         parameters: ABI.Constants.Log,
-        mapper: @escaping (DebugLog.Line) -> String
+        mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
@@ -137,7 +137,7 @@ private extension PartoutLogger.Builder {
         to url: URL,
         parameters: ABI.Constants.Log,
         logsPrivateData: Bool,
-        mapper: @escaping (DebugLog.Line) -> String
+        mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) {
         assertsMissingLoggingCategory = true
         var list: [LoggerCategory] = [
