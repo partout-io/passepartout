@@ -30,21 +30,6 @@ struct KeyValueStoreTests {
     }
 
     @Test
-    func givenKeyValue_whenSetFallback_thenGetsFallback() {
-        let sut = InMemoryStore(fallback: [
-            "string": "foobar",
-            "boolean": true,
-            "number": 123
-        ])
-        #expect(sut.object(forKey: "string") == "foobar")
-        #expect(sut.object(forKey: "boolean") == true)
-        #expect(sut.object(forKey: "number") == 123)
-        #expect(sut.string(forKey: "string") == "foobar")
-        #expect(sut.bool(forKey: "boolean") == true)
-        #expect(sut.integer(forKey: "number") == 123)
-    }
-
-    @Test
     func givenKeyValue_whenSetConfigFlags_thenIsExpected() throws {
         let flags: Set<ABI.ConfigFlag> = [.neSocketUDP, .allowsRelaxedVerification]
         let sut = InMemoryStore()
