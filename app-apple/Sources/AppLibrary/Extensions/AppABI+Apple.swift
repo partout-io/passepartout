@@ -48,7 +48,6 @@ extension AppABI {
             configManager: configManager,
             kvStore: kvStore
         )
-        CommonLibrary.assertMissingImplementations(with: registry)
 
         // Ensure that all module builders can be rendered in the profile editor
         ModuleType.allCases.forEach { moduleType in

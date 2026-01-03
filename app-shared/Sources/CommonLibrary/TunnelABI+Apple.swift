@@ -17,10 +17,10 @@ extension TunnelABI {
         var appLogger = appConfiguration.newAppLogger()
 
         // Create global registry
-        assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        let registry = appConfiguration.newTunnelRegistry(preferences: preferences)
-        appLogger.log(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
-        CommonLibrary.assertMissingImplementations(with: registry)
+        let registry = appConfiguration.newTunnelRegistry(
+            appLogger: appLogger,
+            preferences: preferences
+        )
 
         // Decode profile from NE provider
         let originalProfile: Profile

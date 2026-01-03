@@ -91,11 +91,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                     abi = nil
                     try await compatibleStartTunnel(
                         appConfiguration: appConfiguration,
-                        logFormatter: logFormatter,
-                        isInteractive: isInteractive,
                         kvStore: kvStore,
                         preferences: preferences,
-                        startPreferences: startPreferences
+                        startPreferences: startPreferences,
+                        isInteractive: isInteractive
                     )
                 }
                 completionHandler(nil)
@@ -152,18 +151,19 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 private extension PacketTunnelProvider {
     func compatibleStartTunnel(
         appConfiguration: ABI.AppConfiguration,
-        logFormatter: LogFormatter,
-        isInteractive: Bool,
         kvStore: KeyValueStore,
         preferences: ABI.AppPreferenceValues,
-        startPreferences: ABI.AppPreferenceValues?
+        startPreferences: ABI.AppPreferenceValues?,
+        isInteractive: Bool
     ) async throws {
+        let logFormatter = appConfiguration.newLogFormatter()
+        let appLogger = appConfiguration.newAppLogger()
 
         // Create global registry
-        assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        let registry = appConfiguration.newTunnelRegistry(preferences: preferences)
-        pp_log_g(.App.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
-        CommonLibrary.assertMissingImplementations(with: registry)
+        let registry = appConfiguration.newTunnelRegistry(
+            appLogger: appLogger,
+            preferences: preferences
+        )
 
         // Decode profile from NE provider
         let decoder = appConfiguration.newNEProtocolCoder(.global, registry: registry)
