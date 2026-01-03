@@ -10,6 +10,7 @@ extension ABI {
         // These are temporary (older activations come last)
         case neSocketUDP
         case neSocketTCP
+        case tunnelABI
         case wgV4OverV6
         case unknown
     }

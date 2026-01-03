@@ -4,37 +4,21 @@
 
 import Partout
 
-final class DefaultAppProcessor: Sendable {
-    private let apiManager: APIManager?
+// MARK: ProfileProcessor
 
+final class DefaultProfileProcessor: ProfileProcessor, Sendable {
     private let iapManager: IAPManager?
-
-    private let registry: Registry
-
-    private let title: @Sendable (Profile) -> String
 
     private let preview: @Sendable (Profile) -> ABI.ProfilePreview
 
-    private let providerServerSorter: ProviderServerParameters.Sorter
-
     init(
-        apiManager: APIManager?,
         iapManager: IAPManager?,
-        registry: Registry,
-        title: @escaping @Sendable (Profile) -> String,
-        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview,
-        providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
+        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview
     ) {
-        self.apiManager = apiManager
         self.iapManager = iapManager
-        self.registry = registry
-        self.title = title
         self.preview = preview
-        self.providerServerSorter = providerServerSorter
     }
-}
 
-extension DefaultAppProcessor: ProfileProcessor {
     func isIncluded(_ profile: Profile) -> Bool {
 #if os(tvOS)
         profile.attributes.isAvailableForTV == true
@@ -63,7 +47,29 @@ extension DefaultAppProcessor: ProfileProcessor {
     }
 }
 
-extension DefaultAppProcessor: AppTunnelProcessor {
+// MARK: - AppTunnelProcessor
+
+final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
+    private let apiManager: APIManager?
+
+    private let registry: Registry
+
+    private let title: @Sendable (Profile) -> String
+
+    private let providerServerSorter: ProviderServerParameters.Sorter
+
+    init(
+        apiManager: APIManager?,
+        registry: Registry,
+        title: @escaping @Sendable (Profile) -> String,
+        providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
+    ) {
+        self.apiManager = apiManager
+        self.registry = registry
+        self.title = title
+        self.providerServerSorter = providerServerSorter
+    }
+
     nonisolated func title(for profile: Profile) -> String {
         title(profile)
     }
@@ -102,9 +108,7 @@ extension DefaultAppProcessor: AppTunnelProcessor {
     }
 }
 
-// MARK: - Heuristics
-
-// TODO: #1263, these should be implemented in the library
+// MARK: Heuristics
 
 private extension Profile {
     @MainActor

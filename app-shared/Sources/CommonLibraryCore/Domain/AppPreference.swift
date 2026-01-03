@@ -97,8 +97,8 @@ extension ABI.AppPreferenceValues {
         configFlags.contains(flag) && !experimental.ignoredConfigFlags.contains(flag)
     }
 
-    public func enabledFlags(of flags: Set<ABI.ConfigFlag>) -> Set<ABI.ConfigFlag> {
-        flags.subtracting(experimental.ignoredConfigFlags)
+    public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
+        (flags ?? configFlags).subtracting(experimental.ignoredConfigFlags)
     }
 }
 

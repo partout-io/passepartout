@@ -3,10 +3,18 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public final class PartoutAppLogger: AppLogger, Sendable {
-    public init() {}
+    private let profileId: Profile.ID?
+
+    public init(profileId: Profile.ID? = nil) {
+        self.profileId = profileId
+    }
 
     public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        pp_log_g(category.partoutCategory, level.partoutLevel, message)
+        pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
+    }
+
+    public nonisolated func flushLogs() {
+        PartoutLogger.default.flushLog()
     }
 }
 

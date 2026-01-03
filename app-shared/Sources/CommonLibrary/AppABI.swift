@@ -6,18 +6,17 @@ public final class AppABI: AppABIProtocol, Sendable {
     // MARK: Business
 
     // FIXME: #1594, Make these private after observables
+    public let apiManager: APIManager
     public let appEncoder: AppEncoder
     public let configManager: ConfigManager
     public let iapManager: IAPManager
+    public let preferencesManager: PreferencesManager
     public let profileManager: ProfileManager
     public let registry: Registry
     public let tunnel: ExtendedTunnel
     public let versionChecker: VersionChecker
     public let webReceiverManager: WebReceiverManager
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
-    // Legacy
-    public let apiManager: APIManager
-    public let preferencesManager: PreferencesManager
 
     // MARK: Internal state
 
@@ -158,6 +157,10 @@ extension AppABI {
 
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         appLogger.log(category, level, message)
+    }
+
+    public nonisolated func flushLogs() {
+        appLogger.flushLogs()
     }
 
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {

@@ -24,7 +24,7 @@ extension AppContext {
         var logger = PartoutLogger.Builder()
         logger.setDestination(SimpleLogDestination(), for: [.App.core, .App.profiles])
         PartoutLogger.register(logger.build())
-        let appLogger = PartoutAppLogger()
+        let appLogger = appConfiguration.newAppLogger()
         let logFormatter = DummyLogFormatter()
 
         let kvStore = InMemoryStore()
@@ -46,25 +46,28 @@ extension AppContext {
                 []
             }
         )
-        let processor = appConfiguration.newAppProcessor(
-            apiManager: apiManager,
+        let profileProcessor = appConfiguration.newAppProfileProcessor(
             iapManager: iapManager,
+            preview: \.localizedPreview
+        )
+        let profileManager: ProfileManager = .forUITesting(
+            withRegistry: registry,
+            processor: profileProcessor
+        )
+        profileManager.isRemoteImportingEnabled = true
+        let tunnel = Tunnel(ctx, strategy: FakeTunnelStrategy()) { _ in
+            SharedTunnelEnvironment(profileId: nil)
+        }
+        let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
+            apiManager: apiManager,
             registry: registry,
-            preview: \.localizedPreview,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }
         )
-        let profileManager: ProfileManager = .forUITesting(
-            withRegistry: registry,
-            processor: processor
-        )
-        profileManager.isRemoteImportingEnabled = true
-        let tunnel = ExtendedTunnel(
-            tunnel: Tunnel(ctx, strategy: FakeTunnelStrategy()) { _ in
-                SharedTunnelEnvironment(profileId: nil)
-            },
-            processor: processor,
+        let extendedTunnel = ExtendedTunnel(
+            tunnel: tunnel,
+            processor: tunnelProcessor,
             interval: appConfiguration.constants.tunnel.refreshInterval
         )
         let configManager = ConfigManager()
@@ -85,7 +88,7 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnel: tunnel,
+            tunnel: extendedTunnel,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )

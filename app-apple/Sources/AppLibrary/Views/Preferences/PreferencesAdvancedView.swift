@@ -24,6 +24,7 @@ private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
         .neSocketTCP,
+        .tunnelABI,
         .wgV4OverV6
     ]
 
@@ -34,6 +35,8 @@ private extension PreferencesAdvancedView {
             return V.neSocketUDP
         case .neSocketTCP:
             return V.neSocketTCP
+        case .tunnelABI:
+            return "Tunnel ABI"
         case .wgV4OverV6:
             return "WireGuard IPv4 > IPv6"
         default:

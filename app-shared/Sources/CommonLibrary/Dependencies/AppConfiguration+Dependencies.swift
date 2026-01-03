@@ -3,6 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI.AppConfiguration {
+    public func newAppLogger(profileId: Profile.ID? = nil) -> AppLogger {
+        PartoutAppLogger(profileId: profileId)
+    }
+
     @MainActor
     public func newConfigManager(
         isBeta: @escaping @Sendable () async -> Bool,
@@ -49,11 +53,16 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newTunnelRegistry(preferences: ABI.AppPreferenceValues) -> Registry {
-        newRegistry(
+    public func newTunnelRegistry(
+        appLogger: AppLogger,
+        preferences: ABI.AppPreferenceValues
+    ) -> Registry {
+        assert(preferences.deviceId != nil, "No Device ID found in preferences")
+        appLogger.log(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        return newRegistry(
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: {
-                preferences.enabledFlags(of: preferences.configFlags)
+                preferences.enabledFlags()
             }
         )
     }
@@ -62,7 +71,7 @@ extension ABI.AppConfiguration {
         deviceId: String,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
     ) -> Registry {
-        Registry(
+        let registry = Registry(
             providerResolvers: [
                 OpenVPNProviderResolver(.global),
                 WireGuardProviderResolver(.global, deviceId: deviceId)
@@ -77,6 +86,30 @@ extension ABI.AppConfiguration {
                 ).build()
             ]
         )
+        registry.assertMissingImplementations()
+        return registry
+    }
+
+    @MainActor
+    public func newIAPManager(
+        inAppHelper: AppProductHelper,
+        receiptReader: AppReceiptReader,
+        betaChecker: BetaChecker,
+        isEnabled: Bool
+    ) -> IAPManager {
+        let iapManager = IAPManager(
+            customUserLevel: customUserLevel,
+            inAppHelper: inAppHelper,
+            receiptReader: receiptReader,
+            betaChecker: betaChecker,
+            timeoutInterval: constants.iap.productsTimeoutInterval,
+            verificationDelayMinutesBlock: {
+                constants.tunnel.verificationDelayMinutes(isBeta: $0)
+            },
+            productsAtBuild: newProductsAtBuild
+        )
+        iapManager.isEnabled = distributionTarget.supportsIAP && isEnabled
+        return iapManager
     }
 
     public func newProductsAtBuild(purchase: OriginalPurchase) -> Set<ABI.AppProduct> {
@@ -97,19 +130,28 @@ extension ABI.AppConfiguration {
 #endif
     }
 
-    public func newAppProcessor(
-        apiManager: APIManager?,
+    @MainActor
+    public func newAppProfileProcessor(
         iapManager: IAPManager?,
-        registry: Registry,
-        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview,
-        providerServerSorter: @escaping ProviderServerParameters.Sorter
-    ) -> ProfileProcessor & AppTunnelProcessor {
-        DefaultAppProcessor(
-            apiManager: apiManager,
+        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview
+    ) -> ProfileProcessor {
+        DefaultProfileProcessor(
             iapManager: iapManager,
+            preview: preview
+        )
+    }
+
+    public func newAppTunnelProcessor(
+        apiManager: APIManager?,
+        registry: Registry,
+        providerServerSorter: @escaping ProviderServerParameters.Sorter
+    ) -> AppTunnelProcessor {
+        DefaultAppTunnelProcessor(
+            apiManager: apiManager,
             registry: registry,
-            title: newProfileTitle(for:),
-            preview: preview,
+            title: {
+                String(format: constants.tunnel.profileTitleFormat, $0.name)
+            },
             providerServerSorter: providerServerSorter
         )
     }
@@ -118,15 +160,45 @@ extension ABI.AppConfiguration {
         DefaultTunnelProcessor()
     }
 
+    @MainActor
+    public func newExtendedTunnel(
+        tunnel: Tunnel,
+        extensionInstaller: ExtensionInstaller?,
+        kvStore: KeyValueStore,
+        processor: AppTunnelProcessor
+    ) -> ExtendedTunnel {
+        ExtendedTunnel(
+            tunnel: tunnel,
+            extensionInstaller: extensionInstaller,
+            kvStore: kvStore,
+            processor: processor,
+            interval: constants.tunnel.refreshInterval
+        )
+    }
+
+    @MainActor
+    public func newVersionChecker(
+        kvStore: KeyValueStore,
+        downloadURL: URL,
+        fetcher: @escaping @Sendable (URL) async throws -> Data
+    ) -> VersionChecker {
+        let versionStrategy = GitHubReleaseStrategy(
+            releaseURL: constants.github.latestRelease,
+            rateLimit: constants.api.versionRateLimit,
+            fetcher: fetcher
+        )
+        return VersionChecker(
+            kvStore: kvStore,
+            strategy: versionStrategy,
+            currentVersion: versionNumber,
+            downloadURL: downloadURL
+        )
+    }
+
     public func newWebPasscodeGenerator() -> String {
         let length = constants.webReceiver.passcodeLength
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
-    }
-
-    @Sendable
-    public func newProfileTitle(for profile: Profile) -> String {
-        String(format: constants.tunnel.profileTitleFormat, profile.name)
     }
 }
 
@@ -367,6 +439,68 @@ extension ABI.AppConfiguration {
             }
         )
     }
+
+    public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
+        guard distributionTarget == .developerID else {
+            return nil
+        }
+        return SystemExtensionManager(
+            identifier: tunnelIdentifier,
+            version: versionNumber,
+            build: buildNumber
+        )
+    }
+
+#if os(tvOS)
+    @MainActor
+    public func newWebReceiverManager(
+        appLogger: AppLogger,
+        htmlPath: String,
+        stringsBundle: Bundle
+    ) -> WebReceiverManager {
+        let receiver = NIOWebReceiver(
+            logger: appLogger,
+            htmlPath: htmlPath,
+            stringsBundle: stringsBundle,
+            port: constants.webReceiver.port
+        )
+        return WebReceiverManager(webReceiver: receiver) {
+            newWebPasscodeGenerator()
+        }
+    }
+#endif
 }
 
 #endif
+
+private extension Registry {
+    public func assertMissingImplementations() {
+        ModuleType.allCases.forEach { moduleType in
+            let builder = moduleType.newModule(with: self)
+            do {
+                // ModuleBuilder -> Module
+                let module = try builder.build()
+
+                // Module -> ModuleBuilder
+                guard let moduleBuilder = module.moduleBuilder() else {
+                    fatalError("\(moduleType): does not produce a ModuleBuilder")
+                }
+
+                // AppFeatureRequiring
+                guard builder is any AppFeatureRequiring else {
+                    fatalError("\(moduleType): #1 is not AppFeatureRequiring")
+                }
+                guard moduleBuilder is any AppFeatureRequiring else {
+                    fatalError("\(moduleType): #2 is not AppFeatureRequiring")
+                }
+            } catch {
+                switch (error as? PartoutError)?.code {
+                case .incompleteModule, .WireGuard.emptyPeers:
+                    return
+                default:
+                    fatalError("\(moduleType): empty module is not buildable: \(error)")
+                }
+            }
+        }
+    }
+}
