@@ -5,14 +5,11 @@
 public final class UserDefaultsStore: KeyValueStore, @unchecked Sendable {
     private let defaults: UserDefaults
 
-    public let fallback: [String: Any]
-
     public init(_ defaults: UserDefaults) {
         self.defaults = defaults
-        fallback = [:]
     }
 
-    public func strictObject<V>(forKey key: String) -> V? {
+    public func object<V>(forKey key: String) -> V? {
         defaults.object(forKey: key) as? V
     }
 

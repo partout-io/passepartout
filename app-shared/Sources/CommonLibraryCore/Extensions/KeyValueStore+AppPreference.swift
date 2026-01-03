@@ -8,22 +8,22 @@ extension KeyValueStore {
     }
 
     public func object<V>(forAppPreference pref: ABI.AppPreference, fallback: V? = nil) -> V? {
-        object(forKey: pref.key, fallback: fallback)
+        object(forKey: pref.key) ?? fallback
     }
 
     public func bool(forAppPreference pref: ABI.AppPreference, fallback: Bool = false) -> Bool {
-        bool(forKey: pref.key, fallback: fallback)
+        bool(forKey: pref.key) ?? fallback
     }
 
     public func integer(forAppPreference pref: ABI.AppPreference, fallback: Int = 0) -> Int {
-        integer(forKey: pref.key, fallback: fallback)
+        integer(forKey: pref.key) ?? fallback
     }
 
     public func double(forAppPreference pref: ABI.AppPreference, fallback: Double = 0.0) -> Double {
-        double(forKey: pref.key, fallback: fallback)
+        double(forKey: pref.key) ?? fallback
     }
 
     public func string(forAppPreference pref: ABI.AppPreference, fallback: String? = nil) -> String? {
-        string(forKey: pref.key, fallback: fallback)
+        string(forKey: pref.key) ?? fallback
     }
 }

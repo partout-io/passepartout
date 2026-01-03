@@ -14,7 +14,7 @@ public final class InMemoryStore: KeyValueStore, @unchecked Sendable {
         map[key] != nil
     }
 
-    public func strictObject<V>(forKey key: String) -> V? {
+    public func object<V>(forKey key: String) -> V? {
         map[key] as? V
     }
 
