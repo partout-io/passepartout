@@ -6,17 +6,12 @@ add_library(passepartout_shared SHARED "")
 file(GLOB_RECURSE PSP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift
 )
-set(PSP_EXCLUSIONS
-    CommonData.*
-    CommonLibraryApple.*
-)
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
 target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
 target_compile_options(passepartout_shared PRIVATE
     -DUSE_CMAKE
-    -DPSP_CROSS
 )
 set_target_properties(passepartout_shared PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
@@ -24,6 +19,17 @@ set_target_properties(passepartout_shared PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     OUTPUT_NAME passepartout
 )
+
+# Set exclusions and symbols for non-Apple builds
+if(NOT APPLE)
+    target_compile_options(passepartout_shared PRIVATE
+        -DPSP_CROSS
+    )
+    set(PSP_EXCLUSIONS
+        CommonData.*
+        CommonLibraryApple.*
+    )
+endif()
 
 # Import Partout as a Swift module plus the modulemap for the C ABI
 set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibraryCore_C/include)

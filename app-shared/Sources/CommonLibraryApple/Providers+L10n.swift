@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !USE_CMAKE
 import CommonProviders
-import Foundation
+#endif
 
 extension ProviderServer {
     public var localizedCountry: String? {
