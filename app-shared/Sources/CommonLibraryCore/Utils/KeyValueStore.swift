@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public protocol KeyValueStore: AnyObject, Sendable {
-    var fallback: [String: Any] { get }
-
     func strictObject<V>(forKey key: String) -> V?
 
-    func object<V>(forKey key: String) -> V?
+    func object<V>(forKey key: String, fallback: V?) -> V?
 
     func set<V>(_ object: V?, forKey key: String)
 
@@ -17,46 +15,34 @@ public protocol KeyValueStore: AnyObject, Sendable {
 extension KeyValueStore {
     public subscript<V>(_ key: String) -> V? {
         get {
-            object(forKey: key)
+            object(forKey: key, fallback: nil)
         }
         set {
             set(newValue, forKey: key)
         }
     }
 
-    public func object<V>(forKey key: String) -> V? {
-        strictObject(forKey: key) ?? fallback[key] as? V
+    public func object<V>(forKey key: String, fallback: V?) -> V? {
+        strictObject(forKey: key) ?? fallback
     }
 
-    public func bool(forKey key: String) -> Bool {
+    public func bool(forKey key: String, fallback: Bool) -> Bool {
         var value = self[key] as Bool?
-        if value == nil {
-            value = fallback[key] as? Bool
-        }
-        return value ?? false
+        return value ?? fallback
     }
 
-    public func integer(forKey key: String) -> Int {
+    public func integer(forKey key: String, fallback: Int) -> Int {
         var value = self[key] as Int?
-        if value == nil {
-            value = fallback[key] as? Int
-        }
-        return value ?? 0
+        return value ?? fallback
     }
 
-    public func double(forKey key: String) -> Double {
+    public func double(forKey key: String, fallback: Double) -> Double {
         var value = self[key] as Double?
-        if value == nil {
-            value = fallback[key] as? Double
-        }
-        return value ?? 0.0
+        return value ?? fallback
     }
 
-    public func string(forKey key: String) -> String? {
+    public func string(forKey key: String, fallback: String?) -> String? {
         var value = self[key] as String?
-        if value == nil {
-            value = fallback[key] as? String
-        }
-        return value
+        return value ?? fallback
     }
 }

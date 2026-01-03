@@ -15,7 +15,7 @@ public final class UserPreferencesObservable {
         self.logger = logger
         self.kvStore = kvStore
 
-        dnsFallsBack = kvStore.bool(forAppPreference: .dnsFallsBack)
+        dnsFallsBack = kvStore.bool(forAppPreference: .dnsFallsBack, fallback: true)
         if let experimentalData = kvStore.object(forAppPreference: .experimental) as Data? {
             do {
                 experimental = try JSONDecoder().decode(ABI.AppPreferenceValues.Experimental.self, from: experimentalData)
@@ -34,7 +34,7 @@ public final class UserPreferencesObservable {
             OnboardingStep(rawValue: $0)
         }
         onlyShowsFavorites = kvStore.bool(forUIPreference: .onlyShowsFavorites)
-        pinsActiveProfile = kvStore.bool(forUIPreference: .pinsActiveProfile)
+        pinsActiveProfile = kvStore.bool(forUIPreference: .pinsActiveProfile, fallback: true)
         profilesLayout = kvStore.string(forUIPreference: .profilesLayout).flatMap {
             ProfilesLayout(rawValue: $0)
         } ?? .list

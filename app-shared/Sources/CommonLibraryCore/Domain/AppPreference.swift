@@ -108,7 +108,7 @@ extension KeyValueStore {
         get {
             var values = ABI.AppPreferenceValues()
             values.deviceId = string(forAppPreference: .deviceId)
-            values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack)
+            values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack, fallback: true)
             values.lastCheckedVersionDate = double(forAppPreference: .lastCheckedVersionDate)
             values.lastCheckedVersion = object(forAppPreference: .lastCheckedVersion)
             values.lastUsedProfileId = object(forAppPreference: .lastUsedProfileId)
