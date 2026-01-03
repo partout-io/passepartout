@@ -6,18 +6,15 @@
 public final class InMemoryStore: KeyValueStore, @unchecked Sendable {
     private var map: [String: Any]
 
-    public let fallback: [String: Any]
-
-    public init(fallback: [String: Any] = [:]) {
+    public init() {
         map = [:]
-        self.fallback = fallback
     }
 
     public func contains(_ key: String) -> Bool {
         map[key] != nil
     }
 
-    public func strictObject<V>(forKey key: String) -> V? {
+    public func object<V>(forKey key: String) -> V? {
         map[key] as? V
     }
 

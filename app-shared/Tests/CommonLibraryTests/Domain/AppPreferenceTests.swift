@@ -19,6 +19,22 @@ struct AppPreferenceTests {
         #expect(experimental == sut.experimental)
     }
 
+    // Value types don't matter to the test
+    @Test
+    func givenKeyValue_whenSetFallback_thenGetsFallback() {
+        let sut = InMemoryStore()
+        #expect(sut.bool(forAppPreference: .dnsFallsBack, fallback: true))
+        #expect(sut.integer(forAppPreference: .deviceId, fallback: 100) == 100)
+        #expect(sut.double(forAppPreference: .lastUsedProfileId, fallback: 200.55) == 200.55)
+
+        sut.set(false, forAppPreference: .dnsFallsBack)
+        sut.set(500, forAppPreference: .deviceId)
+        sut.set(800.88, forAppPreference: .lastUsedProfileId)
+        #expect(!sut.bool(forAppPreference: .dnsFallsBack, fallback: true))
+        #expect(sut.integer(forAppPreference: .deviceId, fallback: 100) == 500)
+        #expect(sut.double(forAppPreference: .lastUsedProfileId, fallback: 200.55) == 800.88)
+    }
+
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut = ABI.AppPreferenceValues()

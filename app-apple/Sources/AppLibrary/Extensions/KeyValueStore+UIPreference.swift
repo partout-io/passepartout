@@ -13,19 +13,19 @@ extension KeyValueStore {
         object(forKey: pref.key)
     }
 
-    func bool(forUIPreference pref: UIPreference) -> Bool {
-        bool(forKey: pref.key)
-    }
-
-    func integer(forUIPreference pref: UIPreference) -> Int {
-        integer(forKey: pref.key)
-    }
-
-    func double(forUIPreference pref: UIPreference) -> Double {
-        double(forKey: pref.key)
-    }
-
     func string(forUIPreference pref: UIPreference) -> String? {
         string(forKey: pref.key)
+    }
+
+    func bool(forUIPreference pref: UIPreference, fallback: Bool = false) -> Bool {
+        bool(forKey: pref.key) ?? fallback
+    }
+
+    func integer(forUIPreference pref: UIPreference, fallback: Int = 0) -> Int {
+        integer(forKey: pref.key) ?? fallback
+    }
+
+    func double(forUIPreference pref: UIPreference, fallback: Double = 0.0) -> Double {
+        double(forKey: pref.key) ?? fallback
     }
 }
