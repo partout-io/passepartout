@@ -7,8 +7,12 @@ extension KeyValueStore {
         set(object, forKey: pref.key)
     }
 
-    public func object<V>(forAppPreference pref: ABI.AppPreference, fallback: V? = nil) -> V? {
-        object(forKey: pref.key) ?? fallback
+    public func object<V>(forAppPreference pref: ABI.AppPreference) -> V? {
+        object(forKey: pref.key)
+    }
+
+    public func string(forAppPreference pref: ABI.AppPreference) -> String? {
+        string(forKey: pref.key)
     }
 
     public func bool(forAppPreference pref: ABI.AppPreference, fallback: Bool = false) -> Bool {
@@ -21,9 +25,5 @@ extension KeyValueStore {
 
     public func double(forAppPreference pref: ABI.AppPreference, fallback: Double = 0.0) -> Double {
         double(forKey: pref.key) ?? fallback
-    }
-
-    public func string(forAppPreference pref: ABI.AppPreference, fallback: String? = nil) -> String? {
-        string(forKey: pref.key) ?? fallback
     }
 }
