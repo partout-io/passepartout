@@ -9,7 +9,7 @@ CFG_RAW_GROUP_ID = group.com.algoritmico.Passepartout
 CFG_TEAM_ID = DTDYD63ZX9
 
 // Metadata
-CFG_COPYRIGHT = Copyright © 2025 Davide De Rosa. All rights reserved.
+CFG_COPYRIGHT = Copyright © 2026 Davide De Rosa. All rights reserved.
 CFG_DISPLAY_NAME = Passepartout
 CFG_ENTITLEMENTS = Passepartout/App/App.entitlements
 CFG_INFO_PLIST = Passepartout/App/App.plist
