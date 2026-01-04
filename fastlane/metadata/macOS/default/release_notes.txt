@@ -1,3 +1,4 @@
+* Fix missing navigation title when there are no profiles (#1658)
 * Fix races resulting in missing logs (#1652)
 * Fix regression in some default preferences (#1651)
 * Show "Hide" menu even when "No profile"
