@@ -66,9 +66,10 @@ extension TunnelObservable {
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
-        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+//        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let active):
+            abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
             activeProfiles = active
         case .dataCount:
             transfers = activeProfiles.compactMapValues {
