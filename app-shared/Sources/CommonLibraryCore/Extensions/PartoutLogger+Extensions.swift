@@ -166,12 +166,12 @@ private extension PartoutLogger.Builder {
     }
 
     mutating func setDefaultDestination(for categories: [LoggerCategory]) {
-#if canImport(Darwin)
         categories.forEach {
+#if canImport(Darwin)
             setDestination(OSLogDestination($0), for: [$0])
-        }
 #else
-        // TODO: ###, Set default logging destination for other platforms
+            setDestination(SimpleLogDestination(), for: [$0])
 #endif
+        }
     }
 }
