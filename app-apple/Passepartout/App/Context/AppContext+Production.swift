@@ -24,10 +24,10 @@ extension AppContext {
             appConfiguration: appConfiguration,
             kvStore: kvStore,
             assertModule: { moduleType, registry in
+#if !os(tvOS)
                 let builder = moduleType.newModule(with: registry)
-                guard builder is any ModuleViewProviding else {
-                    fatalError("\(moduleType): is not ModuleViewProviding")
-                }
+                assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
+#endif
             },
             profilePreview: \.localizedPreview,
             apiMappers: API.shared,
