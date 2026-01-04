@@ -12,14 +12,12 @@ struct ThemeProgressViewModifier<EmptyContent>: ViewModifier where EmptyContent:
     var emptyContent: (() -> EmptyContent)?
 
     func body(content: Content) -> some View {
-        ZStack {
-            if !isProgressing && isEmpty != true {
-                content
-            } else if isProgressing {
-                ThemeProgressView()
-            } else if let isEmpty, let emptyContent, isEmpty {
-                emptyContent()
-            }
+        if !isProgressing && isEmpty != true {
+            content
+        } else if isProgressing {
+            ThemeProgressView()
+        } else if let isEmpty, let emptyContent, isEmpty {
+            emptyContent()
         }
     }
 }

@@ -93,15 +93,16 @@ private struct ContainerModifier: ViewModifier {
             }
     }
 
-    @ViewBuilder
     private func emptyView() -> some View {
-        VStack(spacing: 16) {
-            Text(Strings.Views.App.Folders.noProfiles)
-                .themeEmptyMessage(fullScreen: false)
-        }
-        VStack {
-            AppNotWorkingButton(tunnel: tunnel)
-            Spacer()
+        ZStack {
+            VStack(spacing: 16) {
+                Text(Strings.Views.App.Folders.noProfiles)
+                    .themeEmptyMessage(fullScreen: false)
+            }
+            VStack {
+                AppNotWorkingButton(tunnel: tunnel)
+                Spacer()
+            }
         }
     }
 }
