@@ -1,33 +1,12 @@
 {
-    "tunnelABI": {
-        "rate": 100,
-    },
-    "wgV4OverV6": {
-        "rate": 100,
-    },
     "neSocketUDP": {
         "rate": 100
     },
     "neSocketTCP": {
         "rate": 100
     },
-    "ovpnCrossConnection": {
-        "rate": 100
-    },
-    "wgCrossParser": {
-        "rate": 100
-    },
-    "wgCrossConnection": {
-        "rate": 100
-    },
-    "tvSendTo": {
-        "rate": 100
-    },
-    "tvWebImport": {
-        "rate": 100
-    },
-    "newPaywall": {
-        "rate": 100
+    "tunnelABI": {
+        "rate": 100,
     },
     "allowsRelaxedVerification": {
         "rate": 100

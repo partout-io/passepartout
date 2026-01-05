@@ -11,7 +11,6 @@ extension ABI {
         case neSocketUDP
         case neSocketTCP
         case tunnelABI
-        case wgV4OverV6
         case unknown
     }
 }
