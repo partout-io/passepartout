@@ -9,6 +9,10 @@
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE"
         }, {
+            "name": "MbedTLS",
+            "licenseName": "Apache-2.0",
+            "licenseURL": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls/refs/heads/master/LICENSE"
+        }, {
             "name": "OpenSSL",
             "licenseName": "OpenSSL",
             "licenseURL": "https://raw.githubusercontent.com/openssl/openssl/master/LICENSE.txt"
@@ -20,6 +24,18 @@
             "name": "SwiftLint",
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/realm/SwiftLint/master/LICENSE"
+        }, {
+            "name": "url.c",
+            "licenseName": "Unlicense",
+            "licenseURL": "https://raw.githubusercontent.com/cozis/url.c/refs/heads/main/UNLICENSE"
+        }, {
+            "name": "Wintun",
+            "licenseName": "Wintun",
+            "licenseURL": "https://raw.githubusercontent.com/WireGuard/wintun/refs/heads/master/prebuilt-binaries-license.txt"
+        }, {
+            "name": "WireGuard (Go)",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/WireGuard/wireguard-go/refs/heads/master/LICENSE"
         }
     ],
     "notices": [

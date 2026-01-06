@@ -93,10 +93,16 @@ By contributing to this project you are agreeing to the terms stated in the [Con
 
 - [fastlane][credits-fastlane]
 - [GenericJSON][credits-genericjson]
+- [MbedTLS][credits-mbedtls]
+- [OpenSSL][credits-openssl]
 - [SwiftGen][credits-swiftgen]
 - [SwiftLint][credits-swiftlint]
 - [Tejas Mehta][credits-tmthecoder] for the implementation of the [OpenVPN XOR patch][credits-tmthecoder-xor]
+- [url.c][credits-url.c]
+- [uuidv4][credits-uuidv4]
 - [vaygr][credits-vaygr] for adding Passepartout to [Homebrew Cask][credits-vaygr-cask]
+- [Wintun][credits-wintun]
+- [WireGuard (Go)][credits-wireguard-go]
 
 The logo is taken from the awesome Circle Icons set by Nick Roach.
 
@@ -170,12 +176,18 @@ Website: [passepartoutvpn.app][web-home] ([FAQ][web-faq])
 [credits-chatgpt]: https://chatgpt.com/
 [credits-fastlane]: https://github.com/fastlane/fastlane
 [credits-genericjson]: https://github.com/iwill/generic-json-swift
+[credits-mbedtls]: https://github.com/Mbed-TLS/mbedtls
+[credits-openssl]: https://github.com/openssl/openssl
 [credits-swiftgen]: https://github.com/SwiftGen/SwiftGen
 [credits-swiftlint]: https://github.com/realm/SwiftLint
 [credits-tmthecoder]: https://github.com/tmthecoder
 [credits-tmthecoder-xor]: https://github.com/partout-io/tunnelkit/pull/255
+[credits-url.c]: https://github.com/cozis/url.c
+[credits-uuidv4]: https://github.com/rxi/uuid4
 [credits-vaygr]: https://github.com/vaygr
 [credits-vaygr-cask]: https://github.com/Homebrew/homebrew-cask/pull/214696
+[credits-wintun]: https://github.com/wireguard/wintun
+[credits-wireguard-go]: https://github.com/wireguard/wireguard-go
 
 [web-home]: https://passepartoutvpn.app
 [web-blog]: https://passepartoutvpn.app/blog/
