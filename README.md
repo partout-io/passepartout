@@ -122,11 +122,9 @@ This product includes software developed by the OpenSSL Project for use in the O
 
 A _huge_ credit goes to:
 
-- My tiny group of 3 private beta testers
-- The 9000+ public testers using the beta on a daily basis
 - The continued support and feedback from the [Passepartout community on Reddit][about-reddit]
 - The overall patience of users affected by my bugs that actively collaborate in resolving them
-- All those who contributed to the amazingly high rating on the App Store
+- All those who contributed to the high rating on the App Store
 
 ## Translations
 
