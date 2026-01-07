@@ -7,6 +7,8 @@ import Foundation
 
 @MainActor @Observable
 final class AppProfileImporter {
+    typealias ImportBlock = @Sendable (URL, String?) async throws -> Void
+
     var isPresentingPassphrase = false
 
     var currentPassphrase = ""
@@ -19,8 +21,7 @@ final class AppProfileImporter {
 
     func tryImport(
         urls: [URL],
-        profileObservable: ProfileObservable,
-        modulesObservable: ModulesObservable? = nil
+        block: @escaping ImportBlock
     ) async throws {
         var withPassphrase: [URL] = []
 
@@ -29,11 +30,10 @@ final class AppProfileImporter {
                 try await importURL(
                     url,
                     withPassphrase: nil,
-                    profileObservable: profileObservable,
-                    modulesObservable: modulesObservable
+                    block: block
                 )
             } catch {
-                if let error = error as? PartoutError, error.code == .OpenVPN.passphraseRequired {
+                if (error as? PartoutError)?.code == .OpenVPN.passphraseRequired {
                     withPassphrase.append(url)
                     continue
                 }
@@ -50,15 +50,13 @@ final class AppProfileImporter {
 
     func reImport(
         url: URL,
-        profileObservable: ProfileObservable,
-        modulesObservable: ModulesObservable? = nil
+        block: @escaping ImportBlock
     ) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
-                profileObservable: profileObservable,
-                modulesObservable: modulesObservable
+                block: block
             )
             urlsRequiringPassphrase.removeFirst()
             scheduleNextImport()
@@ -90,8 +88,7 @@ private extension AppProfileImporter {
     func importURL(
         _ url: URL,
         withPassphrase passphrase: String?,
-        profileObservable: ProfileObservable,
-        modulesObservable: ModulesObservable?
+        block: @escaping ImportBlock
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
@@ -99,14 +96,6 @@ private extension AppProfileImporter {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        if let modulesObservable {
-            let profile = try modulesObservable.importedProfile(
-                from: .file(url),
-                passphrase: passphrase
-            )
-            try await profileObservable.save(ABI.AppProfile(native: profile))
-            return
-        }
-        try await profileObservable.import(.file(url), passphrase: passphrase)
+        try await block(url, passphrase)
     }
 }

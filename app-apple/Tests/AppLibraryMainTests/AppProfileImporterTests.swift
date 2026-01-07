@@ -2,17 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import AppLibraryMainLegacy
+@testable import AppLibraryMain
 import CommonLibrary
 import Foundation
 import Testing
 
-struct AppProfileImporterTests {
-    private let importer = SomeModule.Implementation()
-}
-
 @MainActor
-extension AppProfileImporterTests {
+struct AppProfileImporterTests {
     @Test
     func givenNoURLs_whenImport_thenNothingIsImported() async throws {
         let sut = AppProfileImporter()
@@ -20,12 +16,10 @@ extension AppProfileImporterTests {
 
         try await sut.tryImport(
             urls: [],
-            profileManager: profileManager,
-            registry: Registry(),
-            importer: importer
+            block: profileManager.mockImport
         )
         #expect(sut.nextURL == nil)
-        #expect(profileManager.previews.isEmpty)
+        #expect(!profileManager.hasProfiles)
     }
 
     @Test
@@ -52,9 +46,7 @@ extension AppProfileImporterTests {
 
         try await sut.tryImport(
             urls: [url],
-            profileManager: profileManager,
-            registry: Registry(),
-            importer: importer
+            block: profileManager.mockImport
         )
         #expect(sut.nextURL == nil)
 
@@ -85,18 +77,14 @@ extension AppProfileImporterTests {
 
         try await sut.tryImport(
             urls: [url],
-            profileManager: profileManager,
-            registry: Registry(),
-            importer: importer
+            block: profileManager.mockImport
         )
         #expect(sut.nextURL == url)
 
         sut.currentPassphrase = "passphrase"
         try await sut.reImport(
             url: url,
-            profileManager: profileManager,
-            registry: Registry(),
-            importer: importer
+            block: profileManager.mockImport
         )
         #expect(sut.nextURL == nil)
 
@@ -111,9 +99,7 @@ extension AppProfileImporterTests {
 
         try await sut.tryImport(
             urls: [url, url, url],
-            profileManager: profileManager,
-            registry: Registry(),
-            importer: importer
+            block: profileManager.mockImport
         )
         #expect(sut.nextURL == url)
         #expect(sut.urlsRequiringPassphrase.count == 3)
@@ -130,25 +116,20 @@ private struct SomeModule: Module {
     }
 }
 
-extension SomeModule.Implementation: ProfileImporter {
-    func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
-        let importedModule: Module
-        switch input {
-        case .contents:
-            fatalError()
-        case .file(let url):
-            importedModule = try {
-                if url.absoluteString.hasSuffix(".encrypted") {
-                    guard let passphrase else {
-                        throw PartoutError(.OpenVPN.passphraseRequired)
-                    }
-                    guard passphrase == "passphrase" else {
-                        throw PartoutError(.crypto)
-                    }
+private extension ProfileManager {
+    func mockImport(url: URL, passphrase: String?) async throws {
+        let importedModule = try {
+            if url.absoluteString.hasSuffix(".encrypted") {
+                guard let passphrase else {
+                    throw PartoutError(.OpenVPN.passphraseRequired)
                 }
-                return SomeModule()
-            }()
-        }
-        return try Profile(withName: "foobar", singleModule: importedModule)
+                guard passphrase == "passphrase" else {
+                    throw PartoutError(.crypto)
+                }
+            }
+            return SomeModule()
+        }()
+        let profile = try Profile(withName: "foobar", singleModule: importedModule)
+        try await save(profile, isLocal: true)
     }
 }

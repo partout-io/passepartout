@@ -46,10 +46,7 @@ private extension AppProfileImporterModifier {
         )
         Button(Strings.Alerts.Import.Passphrase.ok) {
             Task {
-                try await importer.reImport(
-                    url: url,
-                    profileObservable: profileObservable
-                )
+                try await importer.reImport(url: url, block: doImport)
             }
         }
         Button(Strings.Global.Actions.cancel, role: .cancel) {
@@ -61,14 +58,15 @@ private extension AppProfileImporterModifier {
         Text(Strings.Alerts.Import.Passphrase.message(url.lastPathComponent))
     }
 
+    func doImport(url: URL, passphrase: String?) async throws {
+        try await profileObservable.import(.file(url), passphrase: passphrase)
+    }
+
     func handleResult(_ result: Result<[URL], Error>) {
         Task.detached {
             do {
                 let urls = try result.get()
-                try await importer.tryImport(
-                    urls: urls,
-                    profileObservable: profileObservable
-                )
+                try await importer.tryImport(urls: urls, block: doImport)
             } catch {
                 await errorHandler.handle(
                     error,
