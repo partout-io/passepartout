@@ -19,7 +19,8 @@ extension ProfileEditor {
         verifyingWith iapObservable: IAPObservable?,
         preferencesManager: PreferencesManager
     ) async throws -> ABI.AppProfile {
-        let profileToSave = ABI.AppProfile(native: try buildAndUpdate(with: observable))
+        let partoutProfile = try buildAndUpdate(with: observable)
+        let profileToSave = ABI.AppProfile(native: partoutProfile)
 
         // Verify profile (optional)
         if let iapObservable, !iapObservable.isBeta {

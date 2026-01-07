@@ -253,12 +253,8 @@ extension ProfileEditorTests {
             }
         }
 
-        _ = try await sut.legacySave(
-            to: manager,
-            buildingWith: Registry(),
-            verifyingWith: nil,
-            preferencesManager: PreferencesManager()
-        )
+        let builtProfile = try sut.buildAndUpdate()
+        try await manager.save(builtProfile)
         try await exp.fulfillment(timeout: 500)
     }
 }
