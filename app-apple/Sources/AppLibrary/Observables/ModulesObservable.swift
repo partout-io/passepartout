@@ -37,4 +37,8 @@ public final class ModulesObservable {
     public func resolvedModule(_ module: ProviderModule) throws -> Module {
         try registry.resolvedModule(module, in: nil)
     }
+
+    public func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
+        try registry.importedProfile(from: input, passphrase: passphrase)
+    }
 }

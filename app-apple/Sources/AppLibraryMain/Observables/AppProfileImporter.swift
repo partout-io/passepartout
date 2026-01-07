@@ -20,7 +20,7 @@ final class AppProfileImporter {
     func tryImport(
         urls: [URL],
         profileObservable: ProfileObservable,
-        importer: ProfileImporter? = nil
+        modulesObservable: ModulesObservable? = nil
     ) async throws {
         var withPassphrase: [URL] = []
 
@@ -30,7 +30,7 @@ final class AppProfileImporter {
                     url,
                     withPassphrase: nil,
                     profileObservable: profileObservable,
-                    importer: importer
+                    modulesObservable: modulesObservable
                 )
             } catch {
                 if let error = error as? PartoutError, error.code == .OpenVPN.passphraseRequired {
@@ -48,13 +48,17 @@ final class AppProfileImporter {
         }
     }
 
-    func reImport(url: URL, profileObservable: ProfileObservable, importer: ProfileImporter? = nil) async throws {
+    func reImport(
+        url: URL,
+        profileObservable: ProfileObservable,
+        modulesObservable: ModulesObservable? = nil
+    ) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
                 profileObservable: profileObservable,
-                importer: importer
+                modulesObservable: modulesObservable
             )
             urlsRequiringPassphrase.removeFirst()
             scheduleNextImport()
@@ -87,7 +91,7 @@ private extension AppProfileImporter {
         _ url: URL,
         withPassphrase passphrase: String?,
         profileObservable: ProfileObservable,
-        importer: ProfileImporter?
+        modulesObservable: ModulesObservable?
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
@@ -95,8 +99,11 @@ private extension AppProfileImporter {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        if let importer {
-            let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
+        if let modulesObservable {
+            let profile = try modulesObservable.importedProfile(
+                from: .file(url),
+                passphrase: passphrase
+            )
             try await profileObservable.save(ABI.AppProfile(native: profile))
             return
         }

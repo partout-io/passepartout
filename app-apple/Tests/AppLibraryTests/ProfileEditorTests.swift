@@ -226,7 +226,7 @@ extension ProfileEditorTests {
 
         _ = try await sut.save(
             to: manager,
-            buildingWith: Registry(),
+            buildingWith: .forPreviews,
             verifyingWith: nil,
             preferencesManager: PreferencesManager()
         )
