@@ -11,15 +11,13 @@ extension View {
             .environment(theme)
             // Constants
             .environment(\.appConfiguration, context.appConfiguration)
-            .environment(\.logFormatterBlock) { [weak context] in
-                context?.viewLogger.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
-            }
             // ABI concerns
             .environment(context.appEncoderObservable)
             .environment(context.configObservable)
             .environment(context.iapObservable)
+            .environment(context.modulesObservable)
             .environment(context.profileObservable)
-            .environment(context.tunnelObservable)
+//            .environment(context.tunnelObservable)
             .environment(context.versionObservable)
             // View concerns
             .environment(context.appFormatter)
@@ -27,12 +25,14 @@ extension View {
             .environment(context.userPreferences)
             .environment(context.viewLogger)
             // Deprecated
+            .environment(\.logFormatterBlock) { [weak context] in
+                context?.viewLogger.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            }
             .environmentObject(context.apiManager)
-            .environmentObject(context.configManager)
             .environmentObject(context.iapManager)
             .environmentObject(context.preferencesManager)
             .environmentObject(context.profileManager)
-            .environmentObject(context.versionChecker)
+//            .environmentObject(context.tunnel)
     }
 
     public func withMockEnvironment() -> some View {

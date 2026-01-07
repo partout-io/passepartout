@@ -29,10 +29,7 @@ public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
     func onApplicationActive()
 
     // MARK: Config
-    func configRefreshBundle() async
-    func configIsActive(_ flag: ABI.ConfigFlag) -> Bool
     func configData(for flag: ABI.ConfigFlag) -> JSON?
-    var configActiveFlags: Set<ABI.ConfigFlag> { get }
 
     // MARK: Encoder
     func encoderDefaultFilename(for profile: ABI.AppProfile) -> String
@@ -41,24 +38,24 @@ public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
     func encoderWriteToFile(_ profile: ABI.AppProfile) throws -> String
 
     // MARK: IAP
-    func iapVerify(_ profile: ABI.AppProfile) throws
+    func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
+    var iapPurchasedProducts: Set<ABI.AppProduct> { get }
     var iapIsBeta: Bool { get }
+    func iapIsEligible(for feature: ABI.AppFeature) -> Bool
+    var iapIsEligibleForFeedback: Bool { get }
     var iapVerificationDelayMinutes: Int { get }
-
-    // MARK: Logging
-
-    // MARK: Options
-//    func optionSet<T>(_ pref: ABI.AppPreference, value: T)
 
     // MARK: Profile
     func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
     func profileSave(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws
+    func profileSaveAll() async
     func profileImportText(_ text: String, filename: String, passphrase: String?) async throws
     func profileImportFile(_ path: String, passphrase: String?) async throws
     func profileDup(_ id: ABI.AppIdentifier) async throws
     func profileRemove(_ id: ABI.AppIdentifier) async
     func profileRemove(_ ids: [ABI.AppIdentifier]) async
     func profileRemoveAllRemote() async throws
+    func profileIsRemotelyShared(_ id: ABI.AppIdentifier) -> Bool
 
     // MARK: Tunnel
     func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
@@ -80,17 +77,14 @@ public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
     var webReceiverWebsite: ABI.WebsiteWithPasscode? { get }
 
     // FIXME: #1594, Drop these, expose actions via ABI
+    var apiManager: APIManager { get }
     var appEncoder: AppEncoder { get }
-    var configManager: ConfigManager { get }
     var iapManager: IAPManager { get }
+    var preferencesManager: PreferencesManager { get }
     var profileManager: ProfileManager { get }
     var registry: Registry { get }
     var tunnel: ExtendedTunnel { get }
-    var versionChecker: VersionChecker { get }
     var webReceiverManager: WebReceiverManager { get }
-    // Legacy
-    var apiManager: APIManager { get }
-    var preferencesManager: PreferencesManager { get }
 }
 
 extension AppABIProtocol {

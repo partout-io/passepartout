@@ -6,14 +6,13 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfilesHeaderView: View {
-
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     var body: some View {
         HStack {
             Text(Strings.Views.App.Folders.default)
-            if iapManager.isBeta && iapManager.isLoadingReceipt {
+            if iapObservable.isBeta && iapObservable.isLoadingReceipt {
                 Spacer()
                 Text(Strings.Views.Verification.message)
             }

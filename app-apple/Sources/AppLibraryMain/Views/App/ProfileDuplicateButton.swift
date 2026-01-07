@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileDuplicateButton<Label>: View where Label: View {
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let preview: ABI.ProfilePreview
 
@@ -18,7 +18,7 @@ struct ProfileDuplicateButton<Label>: View where Label: View {
         Button {
             Task {
                 do {
-                    try await profileManager.duplicate(profileWithId: preview.id)
+                    try await profileObservable.duplicate(profileWithId: preview.id)
                 } catch {
                     errorHandler.handle(
                         error,

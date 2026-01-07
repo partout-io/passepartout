@@ -6,13 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 public struct DiagnosticsProfileView: View {
+    private let tunnel: TunnelObservable
 
-    @ObservedObject
-    private var tunnel: ExtendedTunnel
+    private let profile: Profile
 
-    public let profile: Profile
-
-    public init(tunnel: ExtendedTunnel, profile: Profile) {
+    public init(tunnel: TunnelObservable, profile: Profile) {
         self.tunnel = tunnel
         self.profile = profile
     }
@@ -28,27 +26,33 @@ public struct DiagnosticsProfileView: View {
 }
 
 private extension DiagnosticsProfileView {
+    // FIXME: ###
     var openVPNSection: some View {
-        tunnel.value(
-            forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
-            ofProfileId: profile.id
-        )
-        .map { cfg in
-            Group {
-                NavigationLink(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration) {
-                    OpenVPNView(serverConfiguration: cfg)
-                        .navigationTitle(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration)
-                }
-            }
-            .themeSection(header: Strings.Unlocalized.openVPN)
-        }
+        EmptyView()
+//        tunnel.value(
+//            forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
+//            ofProfileId: profile.id
+//        )
+//        .map { cfg in
+//            Group {
+//                NavigationLink(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration) {
+//                    OpenVPNView(serverConfiguration: cfg)
+//                        .navigationTitle(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration)
+//                }
+//            }
+//            .themeSection(header: Strings.Unlocalized.openVPN)
+//        }
     }
 }
 
 private extension DiagnosticsProfileView {
+    // FIXME: ###
     var isEmpty: Bool {
         [
-            tunnel.value(forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration, ofProfileId: profile.id)
+//            tunnel.value(
+//                forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
+//                ofProfileId: profile.id
+//            )
         ]
             .filter {
                 $0 != nil

@@ -26,18 +26,18 @@ struct DiagnosticsView: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     var availableTunnelLogs: (() async -> [LogEntry])?
 
@@ -52,7 +52,7 @@ struct DiagnosticsView: View {
 
     var body: some View {
         Form {
-            if iapManager.isBeta {
+            if iapObservable.isBeta {
                 BetaSection()
             }
             liveLogSection
@@ -126,7 +126,7 @@ private extension DiagnosticsView {
                 title: Strings.Views.Diagnostics.ReportIssue.title,
                 tunnel: tunnel,
                 apiManager: apiManager,
-                purchasedProducts: iapManager.purchasedProducts,
+                purchasedProducts: iapObservable.purchasedProducts,
                 isUnableToEmail: $isPresentingUnableToEmail
             )
         }
@@ -156,20 +156,20 @@ private extension DiagnosticsView {
         tunnel.activeProfiles
             .values
             .compactMap {
-                profileManager.partoutProfile(withId: $0.id)
+                profileObservable.profile(withId: $0.id)?.native
             }
             .sorted(by: Profile.sorting)
     }
 
     var canReportIssue: Bool {
         AppCommandLine.contains(.withReportIssue) ||
-            iapManager.isEligibleForFeedback ||
+            iapObservable.isEligibleForFeedback ||
             appConfiguration.distributionTarget.canAlwaysReportIssue ||
             isUsingExperimentalFeatures
     }
 
     var isUsingExperimentalFeatures: Bool {
-        !configManager.activeFlags.isDisjoint(with: [
+        !configObservable.activeFlags.isDisjoint(with: [
             .neSocketUDP,
             .neSocketTCP
         ])
@@ -217,7 +217,7 @@ private extension DiagnosticsView {
 }
 
 #Preview {
-    DiagnosticsView(profileManager: .forPreviews, tunnel: .forPreviews) {
+    DiagnosticsView(profileObservable: .forPreviews, tunnel: .forPreviews) {
         [
             .init(date: Date(), url: URL(fileURLWithPath: "one.com")),
             .init(date: Date().addingTimeInterval(-60), url: URL(fileURLWithPath: "two.com")),

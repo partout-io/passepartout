@@ -109,7 +109,7 @@ extension SettingsCoordinator {
                 .navigationTitle(title(for: .links))
 
         case .preferences:
-            PreferencesView(profileManager: profileManager)
+            LegacyPreferencesView(profileManager: profileManager)
                 .navigationTitle(title(for: .preferences))
 
         case .purchased:

@@ -46,6 +46,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
         self.tunnel = tunnel
         self.registry = registry
         self.webReceiverManager = webReceiverManager
+        pp_log_g(.core, .info, "LegacyAppCordinator (ObservableObject)")
     }
 
     public var body: some View {
@@ -201,8 +202,8 @@ extension LegacyAppCoordinator {
 
 private struct DynamicPaywallModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Binding
     var paywallReason: PaywallReason?

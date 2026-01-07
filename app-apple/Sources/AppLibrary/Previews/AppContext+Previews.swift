@@ -80,6 +80,38 @@ extension AppContext {
 
 // MARK: - Shortcuts
 
+extension IAPObservable {
+    public static var forPreviews: IAPObservable {
+        AppContext.forPreviews.iapObservable
+    }
+}
+
+extension ModulesObservable {
+    public static var forPreviews: ModulesObservable {
+        AppContext.forPreviews.modulesObservable
+    }
+}
+
+extension ProfileObservable {
+    public static var forPreviews: ProfileObservable {
+        AppContext.forPreviews.profileObservable
+    }
+}
+
+extension TunnelObservable {
+    public static var forPreviews: TunnelObservable {
+        AppContext.forPreviews.tunnelObservable
+    }
+}
+
+extension WebReceiverObservable {
+    public static var forPreviews: WebReceiverObservable {
+        AppContext.forPreviews.webReceiverObservable
+    }
+}
+
+// MARK: - Shortcuts (deprecated)
+
 extension IAPManager {
     public static var forPreviews: IAPManager {
         AppContext.forPreviews.iapManager
@@ -105,7 +137,5 @@ extension APIManager {
 }
 
 extension WebReceiverManager {
-    public static var forPreviews: WebReceiverManager {
-        AppContext.forPreviews.webReceiverManager
-    }
+    public static let forPreviews = WebReceiverManager()
 }

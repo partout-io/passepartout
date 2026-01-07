@@ -35,6 +35,7 @@ struct ProfileContainerView: View, Routable {
             ))
             .modifier(AppProfileImporterModifier(
                 profileManager: profileManager,
+                registry: registry,
                 isPresented: $isImporting,
                 errorHandler: errorHandler
             ))

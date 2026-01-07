@@ -17,6 +17,7 @@ public final class AppContext {
     public let appEncoderObservable: AppEncoderObservable
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
+    public let modulesObservable: ModulesObservable
     public let profileObservable: ProfileObservable
     public let tunnelObservable: TunnelObservable
     public let versionObservable: VersionObservable
@@ -36,6 +37,7 @@ public final class AppContext {
         appEncoderObservable = AppEncoderObservable(abi: abi)
         configObservable = ConfigObservable(abi: abi)
         iapObservable = IAPObservable(abi: abi)
+        modulesObservable = ModulesObservable(abi: abi)
         profileObservable = ProfileObservable(abi: abi)
         tunnelObservable = TunnelObservable(abi: abi)
         versionObservable = VersionObservable(abi: abi)
@@ -90,8 +92,6 @@ extension AppContext {
     @available(*, deprecated, message: "#1594")
     public var apiManager: APIManager { abi.apiManager }
     @available(*, deprecated, message: "#1594")
-    public var configManager: ConfigManager { abi.configManager }
-    @available(*, deprecated, message: "#1594")
     public var iapManager: IAPManager { abi.iapManager }
     @available(*, deprecated, message: "#1594")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
@@ -101,8 +101,6 @@ extension AppContext {
     public var registry: Registry { abi.registry }
     @available(*, deprecated, message: "#1594")
     public var tunnel: ExtendedTunnel { abi.tunnel }
-    @available(*, deprecated, message: "#1594")
-    public var versionChecker: VersionChecker { abi.versionChecker }
     @available(*, deprecated, message: "#1594")
     public var webReceiverManager: WebReceiverManager { abi.webReceiverManager }
 }

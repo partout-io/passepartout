@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 struct AppProfileImporterModifier: ViewModifier {
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     @Binding
     var isPresented: Bool
@@ -38,7 +38,6 @@ struct AppProfileImporterModifier: ViewModifier {
 }
 
 private extension AppProfileImporterModifier {
-
     @ViewBuilder
     func actions(for url: URL) -> some View {
         SecureField(
@@ -49,7 +48,7 @@ private extension AppProfileImporterModifier {
             Task {
                 try await importer.reImport(
                     url: url,
-                    profileManager: profileManager
+                    profileObservable: profileObservable
                 )
             }
         }
@@ -68,7 +67,7 @@ private extension AppProfileImporterModifier {
                 let urls = try result.get()
                 try await importer.tryImport(
                     urls: urls,
-                    profileManager: profileManager
+                    profileObservable: profileObservable
                 )
             } catch {
                 await errorHandler.handle(

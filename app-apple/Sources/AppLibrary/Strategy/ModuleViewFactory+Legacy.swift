@@ -7,19 +7,19 @@ import Foundation
 import Partout
 import SwiftUI
 
-public final class DefaultModuleViewFactory: ModuleViewFactory {
-    private let observable: ModulesObservable
+public final class LegacyModuleViewFactory: ModuleViewFactory {
+    private let registry: Registry
 
-    public init(observable: ModulesObservable) {
-        self.observable = observable
+    public init(registry: Registry) {
+        self.registry = registry
     }
 
     @ViewBuilder
     public func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
-        let result = editor.moduleViewProvider(withId: moduleId, observable: observable)
+        let result = editor.moduleViewProvider(withId: moduleId, registry: registry)
         if let result {
             AnyView(result.provider.moduleView(with: .init(
-                observable: observable,
+                registry: registry,
                 editor: editor,
                 impl: result.impl
             )))
@@ -29,19 +29,19 @@ public final class DefaultModuleViewFactory: ModuleViewFactory {
 }
 
 private extension ProfileEditor {
-    func moduleViewProvider(withId moduleId: UUID, observable: ModulesObservable) -> ModuleViewProviderResult? {
+    func moduleViewProvider(withId moduleId: UUID, registry: Registry) -> ModuleViewProviderResult? {
         guard let module = module(withId: moduleId) else {
 //            assertionFailure("No module with ID \(moduleId)")
             return nil
         }
-        guard let provider = module as? any ModuleViewProviding else {
+        guard let provider = module as? any LegacyModuleViewProviding else {
             assertionFailure("\(type(of: module)) does not provide a default view")
             return nil
         }
         return ModuleViewProviderResult(
             title: module.moduleType.localizedDescription,
             provider: provider,
-            impl: observable.implementation(for: module)
+            impl: registry.implementation(for: module)
         )
     }
 }
@@ -49,7 +49,7 @@ private extension ProfileEditor {
 private struct ModuleViewProviderResult {
     let title: String
 
-    let provider: any ModuleViewProviding
+    let provider: any LegacyModuleViewProviding
 
     let impl: ModuleImplementation?
 }

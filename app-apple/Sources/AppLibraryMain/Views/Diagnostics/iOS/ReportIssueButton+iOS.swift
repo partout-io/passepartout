@@ -63,7 +63,7 @@ extension ReportIssueButton {
                 providerLastUpdates: providerLastUpdates,
                 tunnel: tunnel,
                 comment: comment
-            ), formatter: logFormatterBlock)
+            ))
             guard MailComposerView.canSendMail() else {
                 openMailTo(with: issue)
                 return

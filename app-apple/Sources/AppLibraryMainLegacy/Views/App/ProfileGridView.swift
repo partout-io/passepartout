@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-struct ProfileGridView: View, Routable, TunnelInstallationProviding {
+struct ProfileGridView: View, Routable, LegacyTunnelInstallationProviding {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 

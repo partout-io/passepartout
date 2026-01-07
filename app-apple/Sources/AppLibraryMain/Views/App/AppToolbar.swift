@@ -6,16 +6,13 @@ import CommonLibrary
 import SwiftUI
 
 struct AppToolbar: ToolbarContent, SizeClassProviding {
-
     @Environment(\.horizontalSizeClass)
     var hsClass
 
     @Environment(\.verticalSizeClass)
     var vsClass
 
-    let profileManager: ProfileManager
-
-    let registry: Registry
+    let profileObservable: ProfileObservable
 
     @Binding
     var layout: ProfilesLayout
@@ -48,8 +45,7 @@ struct AppToolbar: ToolbarContent, SizeClassProviding {
 private extension AppToolbar {
     var addProfileMenu: some View {
         AddProfileMenu(
-            profileManager: profileManager,
-            registry: registry,
+            profileObservable: profileObservable,
             importAction: $importAction,
             onNewProfile: onNewProfile
         )
@@ -71,8 +67,7 @@ private extension AppToolbar {
         Text("AppToolbar")
             .toolbar {
                 AppToolbar(
-                    profileManager: .forPreviews,
-                    registry: Registry(),
+                    profileObservable: .forPreviews,
                     layout: .constant(.list),
                     importAction: .constant(nil),
                     onSettings: {},

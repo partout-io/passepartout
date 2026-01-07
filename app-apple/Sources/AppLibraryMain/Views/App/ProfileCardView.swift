@@ -16,8 +16,7 @@ struct ProfileCardView: View {
 
     let preview: ABI.ProfilePreview
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     var onTap: ((ABI.ProfilePreview) -> Void)?
 
@@ -48,7 +47,7 @@ struct ProfileCardView: View {
 
 private extension ProfileCardView {
     var statusView: some View {
-        LegacyConnectionStatusText(tunnel: tunnel, profileId: preview.id)
+        ConnectionStatusText(tunnel: tunnel, profileId: preview.id)
     }
 }
 

@@ -69,6 +69,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
         self.tunnel = tunnel
         self.registry = registry
         self.webReceiverManager = webReceiverManager
+        pp_log_g(.core, .info, "LegacyAppCordinator (ObservableObject)")
     }
 
     public var body: some View {
@@ -170,7 +171,7 @@ extension LegacyAppCoordinator {
                 profileManager: profileManager,
                 profileEditor: profileEditor,
                 registry: registry,
-                moduleViewFactory: DefaultModuleViewFactory(registry: registry),
+                moduleViewFactory: LegacyModuleViewFactory(registry: registry),
                 path: $profilePath,
                 onDismiss: onDismiss
             )
@@ -274,7 +275,10 @@ extension LegacyAppCoordinator {
                 let filename = profileManager.firstUniqueName(
                     from: Strings.Placeholders.Profile.importedName
                 )
-                try await profileManager.import(.contents(filename: filename, data: text))
+                try await profileManager.legacyImport(
+                    .contents(filename: filename, data: text),
+                    registry: registry
+                )
             } catch {
                 pp_log_g(.App.profiles, .error, "Unable to import text: \(error)")
                 errorHandler.handle(error, title: Strings.Global.Actions.import)
@@ -468,8 +472,8 @@ private extension Profile {
 
 private struct DynamicPaywallModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Binding
     var paywallReason: PaywallReason?

@@ -6,15 +6,14 @@ import CommonLibrary
 import SwiftUI
 
 struct OnboardingModifier: ViewModifier {
-
     @EnvironmentObject
     private var apiManager: APIManager
 
     @Environment(OnboardingObservable.self)
     private var onboardingObservable
 
-    @EnvironmentObject
-    private var profileManager: ProfileManager
+    @Environment(ProfileObservable.self)
+    private var profileObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -122,7 +121,7 @@ private extension OnboardingModifier {
     // 3.5.15
     func migrateProfilesToJSON() {
         Task {
-            await profileManager.resaveAllProfiles()
+            await profileObservable.saveAll()
             advance()
         }
     }

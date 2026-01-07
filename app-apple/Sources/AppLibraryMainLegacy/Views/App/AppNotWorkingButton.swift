@@ -13,8 +13,8 @@ struct AppNotWorkingButton: View {
     @EnvironmentObject
     private var iapManager: IAPManager
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @ObservedObject
     var tunnel: ExtendedTunnel
@@ -23,7 +23,7 @@ struct AppNotWorkingButton: View {
     private var isUnableToEmail = false
 
     var body: some View {
-        if let data = configManager.data(for: .appNotWorking) {
+        if let data = configObservable.data(for: .appNotWorking) {
             ReportIssueButton(
                 title: data.localizedString(forKey: "title"),
                 message: data.localizedString(forKey: "message"),

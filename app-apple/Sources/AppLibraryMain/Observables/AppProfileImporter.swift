@@ -19,7 +19,7 @@ final class AppProfileImporter {
 
     func tryImport(
         urls: [URL],
-        profileManager: ProfileManager,
+        profileObservable: ProfileObservable,
         importer: ProfileImporter? = nil
     ) async throws {
         var withPassphrase: [URL] = []
@@ -29,7 +29,7 @@ final class AppProfileImporter {
                 try await importURL(
                     url,
                     withPassphrase: nil,
-                    profileManager: profileManager,
+                    profileObservable: profileObservable,
                     importer: importer
                 )
             } catch {
@@ -48,12 +48,12 @@ final class AppProfileImporter {
         }
     }
 
-    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter? = nil) async throws {
+    func reImport(url: URL, profileObservable: ProfileObservable, importer: ProfileImporter? = nil) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 importer: importer
             )
             urlsRequiringPassphrase.removeFirst()
@@ -86,7 +86,7 @@ private extension AppProfileImporter {
     func importURL(
         _ url: URL,
         withPassphrase passphrase: String?,
-        profileManager: ProfileManager,
+        profileObservable: ProfileObservable,
         importer: ProfileImporter?
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
@@ -97,9 +97,9 @@ private extension AppProfileImporter {
         }
         if let importer {
             let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
-            try await profileManager.save(profile)
+            try await profileObservable.save(ABI.AppProfile(native: profile))
             return
         }
-        try await profileManager.import(.file(url), passphrase: passphrase)
+        try await profileObservable.import(.file(url), passphrase: passphrase)
     }
 }

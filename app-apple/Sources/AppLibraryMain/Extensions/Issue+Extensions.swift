@@ -31,13 +31,12 @@ extension ABI.Issue {
 
         let providerLastUpdates: [ProviderID: Timestamp]
 
-        let tunnel: ExtendedTunnel
+        let tunnel: TunnelObservable
 
         let comment: String
     }
 
-    @MainActor
-    static func withMetadata(_ metadata: Metadata, formatter: @escaping LogFormatterBlock) async -> ABI.Issue {
+    static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
         let parameters = metadata.appConfiguration.constants.log
         let appLog = metadata.ctx.logger.currentLog(parameters: parameters)
             .joined(separator: "\n")
@@ -46,10 +45,9 @@ extension ABI.Issue {
         let tunnelLog: Data?
 
         // Live tunnel log
-        let rawTunnelLog = await metadata.tunnel.currentLog(parameters: parameters)
+        let rawTunnelLog = await metadata.tunnel.currentLog()
         if !rawTunnelLog.isEmpty {
             tunnelLog = rawTunnelLog
-                .map(formatter)
                 .joined(separator: "\n")
                 .data(using: .utf8)
         }

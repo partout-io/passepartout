@@ -51,12 +51,16 @@ extension ProfileObservable {
         try await abi.profileSave(ABI.AppProfile(native: partoutProfile), remotelyShared: sharingFlag != nil)
     }
 
-    public func `import`(_ input: ABI.ProfileImporterInput) async throws {
+    public func saveAll() async {
+        await abi.profileSaveAll()
+    }
+
+    public func `import`(_ input: ABI.ProfileImporterInput, passphrase: String? = nil) async throws {
         switch input {
         case .contents(let filename, let data):
-            try await abi.profileImportText(data, filename: filename, passphrase: nil)
+            try await abi.profileImportText(data, filename: filename, passphrase: passphrase)
         case .file(let url):
-            try await abi.profileImportFile(url.filePath(), passphrase: nil)
+            try await abi.profileImportFile(url.filePath(), passphrase: passphrase)
         }
     }
 
@@ -90,6 +94,27 @@ extension ProfileObservable {
 extension ProfileObservable {
     public var hasProfiles: Bool {
         !filteredHeaders.isEmpty
+    }
+
+    public func firstUniqueName(from name: String) -> String {
+        let allNames = Set(allHeaders.values.map(\.name))
+        var newName = name
+        var index = 1
+        while true {
+            if !allNames.contains(newName) {
+                return newName
+            }
+            newName = [name, index.description].joined(separator: ".")
+            index += 1
+        }
+    }
+
+    public func isRemotelyShared(profileWithId profileId: ABI.AppIdentifier) -> Bool {
+        abi.profileIsRemotelyShared(profileId)
+    }
+
+    public func sharingFlags(for profileId: ABI.AppIdentifier) -> [ABI.ProfileSharingFlag] {
+        allHeaders[profileId]?.sharingFlags ?? []
     }
 
     public func requiredFeatures(forProfileWithId profileId: ABI.AppIdentifier) -> Set<ABI.AppFeature>? {

@@ -25,8 +25,8 @@ struct ProfileCoordinator: View {
     @EnvironmentObject
     private var preferencesManager: PreferencesManager
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     let profileManager: ProfileManager
 
@@ -53,7 +53,7 @@ struct ProfileCoordinator: View {
     var body: some View {
         contentView
             .modifier(DynamicPaywallModifier(
-                configManager: configManager,
+                configObservable: configObservable,
                 paywallReason: $paywallReason
             ))
             .themeModal(item: $modalRoute, content: modalDestination)
@@ -148,7 +148,7 @@ private extension ProfileCoordinator {
         dismissing: Bool
     ) async throws -> Profile? {
         do {
-            let savedProfile = try await profileEditor.save(
+            let savedProfile = try await profileEditor.legacySave(
                 to: profileManager,
                 buildingWith: registry,
                 verifyingWith: iapManager,
@@ -205,7 +205,7 @@ private extension ProfileCoordinator {
     func sendProfileToTV() {
         Task {
             do {
-                let profile = try await profileEditor.save(
+                let profile = try await profileEditor.legacySave(
                     to: nil,
                     buildingWith: registry,
                     verifyingWith: nil,
@@ -222,9 +222,7 @@ private extension ProfileCoordinator {
 // MARK: - Paywall
 
 private struct DynamicPaywallModifier: ViewModifier {
-
-    @ObservedObject
-    var configManager: ConfigManager
+    let configObservable: ConfigObservable
 
     @Binding
     var paywallReason: PaywallReason?
@@ -261,7 +259,7 @@ private extension ProfileCoordinator {
         profileManager: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
         registry: Registry(),
-        moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
+        moduleViewFactory: LegacyModuleViewFactory(registry: Registry()),
         path: .constant(NavigationPath()),
         onDismiss: {}
     )

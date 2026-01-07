@@ -8,12 +8,13 @@ import SwiftUI
 
 #if !os(tvOS)
 
-public struct PreferencesView: View {
+@available(*, deprecated, message: "#1594")
+public struct LegacyPreferencesView: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
-    @Environment(IAPObservable.self)
-    private var iapObservable
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     @Environment(ConfigObservable.self)
     private var configObservable
@@ -26,7 +27,7 @@ public struct PreferencesView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    private let profileObservable: ProfileObservable
+    private let profileManager: ProfileManager
 
     @State
     private var isConfirmingEraseiCloud = false
@@ -34,8 +35,8 @@ public struct PreferencesView: View {
     @State
     private var isErasingiCloud = false
 
-    public init(profileObservable: ProfileObservable) {
-        self.profileObservable = profileObservable
+    public init(profileManager: ProfileManager) {
+        self.profileManager = profileManager
     }
 
     public var body: some View {
@@ -65,7 +66,7 @@ public struct PreferencesView: View {
     }
 }
 
-private extension PreferencesView {
+private extension LegacyPreferencesView {
     static let systemAppearances: [SystemAppearance?] = [
         nil,
         .light,
@@ -111,7 +112,7 @@ private extension PreferencesView {
     }
 
     var enablesPurchasesSection: some View {
-        Toggle(Strings.Views.Preferences.enablesIap, isOn: iapObservable.binding(\.isEnabled))
+        Toggle(Strings.Views.Preferences.enablesIap, isOn: $iapManager.isEnabled)
             .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
     }
 
@@ -132,7 +133,7 @@ private extension PreferencesView {
             Task {
                 do {
                     pp_log_g(.App.core, .info, "Erase CloudKit profiles...")
-                    try await profileObservable.removeRemotelyShared()
+                    try await profileManager.eraseRemotelySharedProfiles()
                 } catch {
                     pp_log_g(.App.core, .error, "Unable to erase CloudKit store: \(error)")
                 }
@@ -159,7 +160,7 @@ private extension PreferencesView {
 
 #else
 
-public struct PreferencesView: View {
+public struct LegacyPreferencesView: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
@@ -169,10 +170,10 @@ public struct PreferencesView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    private let profileObservable: ProfileObservable
+    private let profileManager: ProfileManager
 
-    public init(profileObservable: ProfileObservable) {
-        self.profileObservable = profileObservable
+    public init(profileManager: ProfileManager) {
+        self.profileManager = profileManager
     }
 
     public var body: some View {
@@ -186,7 +187,7 @@ public struct PreferencesView: View {
     }
 }
 
-private extension PreferencesView {
+private extension LegacyPreferencesView {
     var relaxedVerificationToggle: some View {
         Toggle(Strings.Views.Preferences.relaxedVerification, isOn: userPreferences.binding(\.relaxedVerification))
     }
@@ -195,7 +196,7 @@ private extension PreferencesView {
 #endif
 
 #Preview {
-    PreferencesView(profileObservable: .forPreviews)
+    LegacyPreferencesView(profileManager: .forPreviews)
         .withMockEnvironment()
 #if os(macOS)
         .environment(MacSettings())

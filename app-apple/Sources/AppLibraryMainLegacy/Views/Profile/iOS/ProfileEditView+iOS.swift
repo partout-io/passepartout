@@ -179,7 +179,7 @@ private extension ProfileEditView {
         ProfileEditView(
             profileManager: .forPreviews,
             profileEditor: ProfileEditor(profile: .newMockProfile()),
-            moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
+            moduleViewFactory: LegacyModuleViewFactory(registry: Registry()),
             path: .constant(NavigationPath()),
             paywallReason: .constant(nil),
             errorHandler: .default()

@@ -9,7 +9,8 @@ import Observation
 public final class IAPObservable {
     private let abi: AppABIProtocol
 
-    public private(set) var isEnabled: Bool
+    // FIXME: ###, Apply to IAPManager on didSet and read initial value
+    public var isEnabled: Bool
     public private(set) var eligibleFeatures: Set<ABI.AppFeature>
     public private(set) var isLoadingReceipt: Bool
     private var subscription: Task<Void, Never>?
@@ -26,16 +27,28 @@ public final class IAPObservable {
 // MARK: - Actions
 
 extension IAPObservable {
-    public func verify(_ profile: ABI.AppProfile) throws {
-        try abi.iapVerify(profile)
+    public func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
+        try abi.iapVerify(profile, extra: extra)
     }
 }
 
 // MARK: - State
 
 extension IAPObservable {
+    public var purchasedProducts: Set<ABI.AppProduct> {
+        abi.iapPurchasedProducts
+    }
+
     public var isBeta: Bool {
         abi.iapIsBeta
+    }
+
+    public func isEligible(for feature: ABI.AppFeature) -> Bool {
+        abi.iapIsEligible(for: feature)
+    }
+
+    public var isEligibleForFeedback: Bool {
+        abi.iapIsEligibleForFeedback
     }
 
     public var verificationDelayMinutes: Int {

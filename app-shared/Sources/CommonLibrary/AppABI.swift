@@ -14,7 +14,7 @@ public final class AppABI: AppABIProtocol, Sendable {
     public let profileManager: ProfileManager
     public let registry: Registry
     public let tunnel: ExtendedTunnel
-    public let versionChecker: VersionChecker
+    private let versionChecker: VersionChecker
     public let webReceiverManager: WebReceiverManager
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
@@ -111,20 +111,8 @@ public final class AppABI: AppABIProtocol, Sendable {
 extension AppABI {
     // MARK: Config
 
-    public func configRefreshBundle() async {
-        await configManager.refreshBundle()
-    }
-
-    public func configIsActive(_ flag: ABI.ConfigFlag) -> Bool {
-        configManager.isActive(flag)
-    }
-
     public func configData(for flag: ABI.ConfigFlag) -> JSON? {
         configManager.data(for: flag)
-    }
-
-    public var configActiveFlags: Set<ABI.ConfigFlag> {
-        configManager.activeFlags
     }
 
     // MARK: Encoder
@@ -147,12 +135,24 @@ extension AppABI {
 
     // MARK: IAP
 
-    public func iapVerify(_ profile: ABI.AppProfile) throws {
-        try iapManager.verify(profile.native)
+    public func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
+        try iapManager.verify(profile.native, extra: extra)
+    }
+
+    public var iapPurchasedProducts: Set<ABI.AppProduct> {
+        iapManager.purchasedProducts
     }
 
     public var iapIsBeta: Bool {
         iapManager.isBeta
+    }
+
+    public func iapIsEligible(for feature: ABI.AppFeature) -> Bool {
+        iapManager.isEligible(for: feature)
+    }
+
+    public var iapIsEligibleForFeedback: Bool {
+        iapManager.isEligibleForFeedback
     }
 
     public var iapVerificationDelayMinutes: Int {
@@ -183,12 +183,24 @@ extension AppABI {
         try await profileManager.save(profile.native, isLocal: true, remotelyShared: remotelyShared)
     }
 
+    public func profileSaveAll() async {
+        await profileManager.resaveAllProfiles()
+    }
+
     public func profileImportText(_ text: String, filename: String, passphrase: String?) async throws {
-        try await profileManager.import(.contents(filename: filename, data: text), passphrase: passphrase)
+        let profile = try registry.importedProfile(
+            from: .contents(filename: filename, data: text),
+            passphrase: passphrase
+        )
+        try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
     }
 
     public func profileImportFile(_ path: String, passphrase: String?) async throws {
-        try await profileManager.import(.file(URL(fileURLWithPath: path)), passphrase: passphrase)
+        let profile = try registry.importedProfile(
+            from: .file(URL(fileURLWithPath: path)),
+            passphrase: passphrase
+        )
+        try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
     }
 
     public func profileDup(_ id: ABI.AppIdentifier) async throws {
@@ -205,6 +217,10 @@ extension AppABI {
 
     public func profileRemoveAllRemote() async throws {
         try await profileManager.eraseRemotelySharedProfiles()
+    }
+
+    public func profileIsRemotelyShared(_ id: ABI.AppIdentifier) -> Bool {
+        profileManager.isRemotelyShared(profileWithId: id)
     }
 
     // MARK: Tunnel

@@ -18,7 +18,6 @@ public final class ProfileManager {
 
     // MARK: Dependencies
 
-    private let registry: Registry
     private let repository: ProfileRepository
     private let backupRepository: ProfileRepository?
     private var remoteRepository: ProfileRepository?
@@ -98,21 +97,16 @@ public final class ProfileManager {
 
     // For testing/previews
     public convenience init(profiles: [Profile]) {
-        self.init(
-            registry: Registry(),
-            repository: InMemoryProfileRepository(profiles: profiles)
-        )
+        self.init(repository: InMemoryProfileRepository(profiles: profiles))
     }
 
     public init(
-        registry: Registry,
         processor: ProfileProcessor? = nil,
         repository: ProfileRepository,
         backupRepository: ProfileRepository? = nil,
         mirrorsRemoteRepository: Bool = false,
         readyAfterRemote: Bool = false
     ) {
-        self.registry = registry
         self.processor = processor
         self.repository = repository
         self.backupRepository = backupRepository
@@ -191,8 +185,10 @@ extension ProfileManager {
         pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
-    public func `import`(
+    @available(*, deprecated, message: "#1594")
+    public func legacyImport(
         _ input: ABI.ProfileImporterInput,
+        registry: Registry,
         passphrase: String? = nil,
         sharingFlag: ABI.ProfileSharingFlag? = nil
     ) async throws {

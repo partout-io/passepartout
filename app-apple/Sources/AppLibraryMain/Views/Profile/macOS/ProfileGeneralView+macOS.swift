@@ -8,7 +8,7 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileGeneralView: View {
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
 
@@ -31,7 +31,7 @@ struct ProfileGeneralView: View {
             )
             ProfileBehaviorSection(profileEditor: profileEditor)
             ProfileActionsSection(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 profileEditor: profileEditor,
                 paywallReason: $paywallReason
             )
@@ -42,7 +42,7 @@ struct ProfileGeneralView: View {
 
 #Preview {
     ProfileGeneralView(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         profileEditor: ProfileEditor(),
         path: .constant(NavigationPath()),
         paywallReason: .constant(nil)

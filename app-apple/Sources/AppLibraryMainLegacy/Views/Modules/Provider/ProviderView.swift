@@ -27,7 +27,7 @@ struct ProviderView: View, ModuleDraftEditing {
     @State
     private var paywallReason: PaywallReason?
 
-    init(draft: ModuleDraft<ProviderModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<ProviderModule.Builder>, parameters: LegacyModuleViewParameters) {
         self.draft = draft
         registry = parameters.registry
     }

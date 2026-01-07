@@ -14,8 +14,8 @@ struct ProfileExportButton: View {
     @Environment(AppEncoderObservable.self)
     private var appEncoder
 
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     private let profile: Profile
 
@@ -41,7 +41,7 @@ struct ProfileExportButton: View {
 
     var body: some View {
         Button(action: exportProfiles, label: exportLabel)
-            .disabled(!iapManager.isEligible(for: .sharing))
+            .disabled(!iapObservable.isEligible(for: .sharing))
             .fileExporter(
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(JSONFile.init(string:)),

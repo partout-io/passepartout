@@ -8,7 +8,7 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileSplitView: View, Routable {
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
 
@@ -109,7 +109,7 @@ private extension ProfileSplitView {
         switch detail {
         case .general:
             ProfileGeneralView(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 profileEditor: profileEditor,
                 path: $detailPath,
                 paywallReason: $paywallReason,
@@ -128,9 +128,9 @@ private extension ProfileSplitView {
 
 #Preview {
     ProfileSplitView(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
-        moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
+        moduleViewFactory: DefaultModuleViewFactory(observable: .forPreviews),
         paywallReason: .constant(nil),
         errorHandler: .default()
     )

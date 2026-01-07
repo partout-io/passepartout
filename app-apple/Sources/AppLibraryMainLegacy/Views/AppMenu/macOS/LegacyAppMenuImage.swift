@@ -8,7 +8,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct LegacyAppMenuImage: View {
-
     @ObservedObject
     private var tunnel: ExtendedTunnel
 

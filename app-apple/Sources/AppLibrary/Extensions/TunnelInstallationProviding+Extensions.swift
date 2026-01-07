@@ -4,10 +4,20 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 @MainActor
 extension TunnelInstallationProviding {
+    public var installedProfiles: [ABI.AppProfile] {
+        tunnel
+            .activeProfiles
+            .compactMap {
+                profileObservable.profile(withId: $0.key)
+            }
+    }
+}
+
+@MainActor
+extension LegacyTunnelInstallationProviding {
     public var installedProfiles: [Profile] {
         tunnel
             .activeProfiles

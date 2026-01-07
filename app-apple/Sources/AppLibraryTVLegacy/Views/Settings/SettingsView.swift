@@ -77,7 +77,7 @@ private extension SettingsView {
     }
 
     var preferencesSection: some View {
-        PreferencesView(profileManager: profileManager)
+        LegacyPreferencesView(profileManager: profileManager)
     }
 
     var troubleshootingSection: some View {

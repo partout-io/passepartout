@@ -6,7 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct AppCoordinator: View, AppCoordinatorConforming {
-
     @Environment(ViewLogger.self)
     private var logger
 
@@ -37,11 +36,13 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     public init(
         profileObservable: ProfileObservable,
         tunnel: TunnelObservable,
+        modulesObservable: ModulesObservable,
         webReceiverObservable: WebReceiverObservable
     ) {
         self.profileObservable = profileObservable
         self.tunnel = tunnel
         self.webReceiverObservable = webReceiverObservable
+        pp_log_g(.core, .info, "AppCordinator (Observables)")
     }
 
     public var body: some View {

@@ -7,6 +7,13 @@ import Foundation
 
 @MainActor
 public protocol TunnelInstallationProviding {
+    var profileObservable: ProfileObservable { get }
+
+    var tunnel: TunnelObservable { get }
+}
+
+@MainActor
+public protocol LegacyTunnelInstallationProviding {
     var profileManager: ProfileManager { get }
 
     var tunnel: ExtendedTunnel { get }

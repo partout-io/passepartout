@@ -10,7 +10,7 @@ extension AppCoordinatorConforming {
     public func onConnect(_ profile: ABI.AppProfile, force: Bool, verify: Bool = true) async {
         do {
             if verify {
-                try iapObservable.verify(profile)
+                try iapObservable.verify(profile, extra: nil)
             }
             try await tunnel.connect(to: profile, force: force)
         } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {

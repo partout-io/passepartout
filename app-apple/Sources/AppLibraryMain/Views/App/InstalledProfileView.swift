@@ -7,17 +7,16 @@ import CommonLibrary
 import SwiftUI
 
 struct InstalledProfileView: View, Routable {
-
     @Environment(Theme.self)
     private var theme
 
     let layout: ProfilesLayout
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    let profile: Profile?
+    let profile: ABI.AppProfile?
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let errorHandler: ErrorHandler
 
@@ -63,7 +62,7 @@ private extension InstalledProfileView {
     }
 
     func nameView() -> some View {
-        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(profile?.native.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title2)
             .fontWeight(theme.relevantWeight)
             .themeMultiLine(true)
@@ -81,11 +80,11 @@ private extension InstalledProfileView {
     }
 
     var statusText: some View {
-        LegacyConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
+        ConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
     }
 
     var toggleButton: some View {
-        LegacyTunnelToggle(
+        TunnelToggle(
             tunnel: tunnel,
             profile: profile,
             errorHandler: errorHandler,
@@ -98,9 +97,9 @@ private extension InstalledProfileView {
     func menuContent() -> some View {
         ProfileContextMenu(
             style: .installedProfile,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel,
-            preview: .init(profile ?? .forPreviews),
+            preview: .init(profile?.native ?? .forPreviews),
             errorHandler: errorHandler,
             flow: flow
         )
@@ -183,8 +182,8 @@ private struct HeaderView: View {
     var body: some View {
         InstalledProfileView(
             layout: layout,
-            profileManager: .forPreviews,
-            profile: .forPreviews,
+            profileObservable: .forPreviews,
+            profile: ABI.AppProfile(native: .forPreviews),
             tunnel: .forPreviews,
             errorHandler: .default()
         )
@@ -196,7 +195,7 @@ private struct ContentView: View {
         ForEach(0..<3) { _ in
             ProfileRowView(
                 style: .full,
-                profileManager: .forPreviews,
+                profileObservable: .forPreviews,
                 tunnel: .forPreviews,
                 preview: .init(.forPreviews),
                 errorHandler: .default()

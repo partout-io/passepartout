@@ -6,14 +6,13 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileActionsSection: View {
-
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     @Environment(\.dismissProfile)
     private var dismissProfile
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
 
@@ -52,7 +51,7 @@ struct ProfileActionsSection: View {
 
 private extension ProfileActionsSection {
     var isExistingProfile: Bool {
-        profileManager.profile(withId: profileId) != nil
+        profileObservable.profile(withId: profileId) != nil
     }
 
     var uuidView: some View {
@@ -77,7 +76,7 @@ private extension ProfileActionsSection {
     }
 
     func removeContent() -> some View {
-        profileManager.profile(withId: profileId)
+        profileObservable.profile(withId: profileId)
             .map { _ in
                 removeButton
                     .themeConfirmation(
@@ -87,7 +86,7 @@ private extension ProfileActionsSection {
                         action: {
                             Task {
                                 dismissProfile()
-                                await profileManager.remove(withId: profileId)
+                                await profileObservable.remove(withId: profileId)
                             }
                         }
                     )

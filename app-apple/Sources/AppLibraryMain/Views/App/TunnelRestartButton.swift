@@ -6,11 +6,9 @@ import CommonLibrary
 import SwiftUI
 
 struct TunnelRestartButton<Label>: View where Label: View {
+    let tunnel: TunnelObservable
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
-
-    let profile: Profile?
+    let profile: ABI.AppProfile?
 
     let errorHandler: ErrorHandler
 
@@ -23,11 +21,11 @@ struct TunnelRestartButton<Label>: View where Label: View {
             guard let profile else {
                 return
             }
-            guard tunnel.status(ofProfileId: profile.id) == .active else {
+            guard tunnel.status(for: profile.id) == .connected else {
                 return
             }
             Task {
-                await flow?.onConnect(profile)
+                await flow?.onConnect(profile.native)
             }
         } label: {
             label()
@@ -41,6 +39,6 @@ private extension TunnelRestartButton {
         guard let profile else {
             return true
         }
-        return tunnel.status(ofProfileId: profile.id) != .active
+        return tunnel.status(for: profile.id) != .connected
     }
 }

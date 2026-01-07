@@ -6,15 +6,15 @@ import CommonLibrary
 import Partout
 import SwiftUI
 
-public protocol ModuleViewProviding {
+public protocol LegacyModuleViewProviding {
     associatedtype Content: View
 
     @MainActor
-    func moduleView(with parameters: ModuleViewParameters) -> Content
+    func moduleView(with parameters: LegacyModuleViewParameters) -> Content
 }
 
-public struct ModuleViewParameters {
-    public let observable: ModulesObservable
+public struct LegacyModuleViewParameters {
+    public let registry: Registry
 
     public let editor: ProfileEditor
 
@@ -22,11 +22,11 @@ public struct ModuleViewParameters {
 
     @MainActor
     public init(
-        observable: ModulesObservable,
+        registry: Registry,
         editor: ProfileEditor,
         impl: (any ModuleImplementation)?
     ) {
-        self.observable = observable
+        self.registry = registry
         self.editor = editor
         self.impl = impl
     }

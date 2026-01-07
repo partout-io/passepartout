@@ -6,7 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileRowView: View, Routable, SizeClassProviding {
-
     @Environment(Theme.self)
     private var theme
 
@@ -18,10 +17,9 @@ struct ProfileRowView: View, Routable, SizeClassProviding {
 
     let style: ProfileCardView.Style
 
-    @ObservedObject
-    var profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let preview: ABI.ProfilePreview
 
@@ -54,14 +52,14 @@ private extension ProfileRowView {
 
     var sharingView: some View {
         ProfileSharingView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             profileId: preview.id
         )
         .imageScale(isBigDevice ? .large : .medium)
     }
 
     var tunnelToggle: some View {
-        LegacyTunnelToggle(
+        TunnelToggle(
             tunnel: tunnel,
             profile: profile,
             errorHandler: errorHandler,
@@ -73,34 +71,35 @@ private extension ProfileRowView {
 }
 
 private extension ProfileRowView {
-    var profile: Profile? {
-        profileManager.partoutProfile(withId: preview.id)
+    var profile: ABI.AppProfile? {
+        profileObservable.profile(withId: preview.id)
     }
 
     var requiredFeatures: Set<ABI.AppFeature>? {
-        profileManager.requiredFeatures(forProfileWithId: preview.id)
+        profileObservable.requiredFeatures(forProfileWithId: preview.id)
     }
 }
 
 // MARK: - Previews
 
 #Preview {
-    let profile: Profile = .forPreviews
-    let profileManager: ProfileManager = .forPreviews
+    let profile = ABI.AppProfile(native: .forPreviews)
+    let profileObservable: ProfileObservable = .forPreviews
 
     return Form {
         ProfileRowView(
             style: .full,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: .forPreviews,
-            preview: .init(profile),
+            preview: ABI.ProfilePreview(profile.native),
             errorHandler: .default()
         )
     }
     .task {
         do {
-            try await profileManager.observeRemote(repository: InMemoryProfileRepository())
-            try await profileManager.save(profile, isLocal: true, remotelyShared: true)
+            // FIXME: ###
+//            try await profileObservable.observeRemote(repository: InMemoryProfileRepository())
+            try await profileObservable.save(profile, sharingFlag: .shared)
         } catch {
             fatalError(error.localizedDescription)
         }

@@ -157,7 +157,6 @@ extension AppABI {
             preview: profilePreview
         )
         let profileManager = ProfileManager(
-            registry: registry,
             processor: profileProcessor,
             repository: mainProfileRepository,
             backupRepository: backupProfileRepository,

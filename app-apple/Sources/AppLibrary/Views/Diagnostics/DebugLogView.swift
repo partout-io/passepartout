@@ -67,6 +67,18 @@ extension DebugLogView {
     }
 
     public init(
+        withTunnel tunnel: TunnelObservable,
+        content: @escaping ([String]) -> Content
+    ) {
+        self.init {
+            await tunnel.currentLog()
+        } content: {
+            content($0)
+        }
+    }
+
+    @available(*, deprecated, message: "#1594")
+    public init(
         withTunnel tunnel: ExtendedTunnel,
         parameters: ABI.Constants.Log,
         logFormatterBlock: @escaping LogFormatterBlock,

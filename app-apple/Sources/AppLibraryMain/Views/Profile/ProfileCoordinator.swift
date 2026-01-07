@@ -19,20 +19,20 @@ struct ProfileCoordinator: View {
     @Environment(Theme.self)
     private var theme
 
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     @EnvironmentObject
     private var preferencesManager: PreferencesManager
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
 
-    let registry: Registry
+    let modulesObservable: ModulesObservable
 
     let moduleViewFactory: any ModuleViewFactory
 
@@ -53,7 +53,7 @@ struct ProfileCoordinator: View {
     var body: some View {
         contentView
             .modifier(DynamicPaywallModifier(
-                configManager: configManager,
+                configObservable: configObservable,
                 paywallReason: $paywallReason
             ))
             .themeModal(item: $modalRoute, content: modalDestination)
@@ -68,7 +68,7 @@ private extension ProfileCoordinator {
     var contentView: some View {
 #if os(iOS)
         ProfileEditView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             profileEditor: profileEditor,
             moduleViewFactory: moduleViewFactory,
             path: $path,
@@ -80,7 +80,7 @@ private extension ProfileCoordinator {
         .themeNavigationStack(path: $path)
 #else
         ProfileSplitView(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             profileEditor: profileEditor,
             moduleViewFactory: moduleViewFactory,
             paywallReason: $paywallReason,
@@ -136,7 +136,7 @@ private extension ProfileCoordinator {
 
 private extension ProfileCoordinator {
     func addNewModule(_ moduleType: ModuleType) {
-        let module = moduleType.newModule(with: registry)
+        let module = modulesObservable.newModule(ofType: moduleType)
         withAnimation(theme.animation(for: .modules)) {
             profileEditor.saveModule(module, activating: true)
         }
@@ -149,15 +149,15 @@ private extension ProfileCoordinator {
     ) async throws -> Profile? {
         do {
             let savedProfile = try await profileEditor.save(
-                to: profileManager,
-                buildingWith: registry,
-                verifyingWith: iapManager,
+                to: profileObservable,
+                buildingWith: modulesObservable,
+                verifyingWith: iapObservable,
                 preferencesManager: preferencesManager
             )
             if dismissing {
                 onDismiss()
             }
-            return savedProfile
+            return savedProfile.native
         } catch ABI.AppError.verificationReceiptIsLoading {
             pp_log_g(.App.profiles, .error, "Unable to commit profile: loading receipt")
             let V = Strings.Views.Paywall.Alerts.self
@@ -207,11 +207,11 @@ private extension ProfileCoordinator {
             do {
                 let profile = try await profileEditor.save(
                     to: nil,
-                    buildingWith: registry,
+                    buildingWith: modulesObservable,
                     verifyingWith: nil,
                     preferencesManager: preferencesManager
                 )
-                modalRoute = .sendToTV(profile)
+                modalRoute = .sendToTV(profile.native)
             } catch {
                 errorHandler.handle(error, title: Strings.Views.Profile.SendTv.title_compound)
             }
@@ -222,9 +222,7 @@ private extension ProfileCoordinator {
 // MARK: - Paywall
 
 private struct DynamicPaywallModifier: ViewModifier {
-
-    @ObservedObject
-    var configManager: ConfigManager
+    let configObservable: ConfigObservable
 
     @Binding
     var paywallReason: PaywallReason?
@@ -258,10 +256,10 @@ private extension ProfileCoordinator {
 
 #Preview {
     ProfileCoordinator(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
-        registry: Registry(),
-        moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
+        modulesObservable: .forPreviews,
+        moduleViewFactory: DefaultModuleViewFactory(observable: .forPreviews),
         path: .constant(NavigationPath()),
         onDismiss: {}
     )
