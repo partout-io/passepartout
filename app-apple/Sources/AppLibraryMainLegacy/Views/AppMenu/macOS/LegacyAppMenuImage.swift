@@ -7,7 +7,7 @@
 import CommonLibrary
 import SwiftUI
 
-public struct AppMenuImage: View {
+public struct LegacyAppMenuImage: View {
 
     @ObservedObject
     private var tunnel: ExtendedTunnel
@@ -21,7 +21,7 @@ public struct AppMenuImage: View {
     }
 }
 
-private extension AppMenuImage {
+private extension LegacyAppMenuImage {
     var connectionStatus: TunnelStatus {
         // TODO: #218, must be per-tunnel
         guard let id = tunnel.activeProfiles.first?.value.id else {

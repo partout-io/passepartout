@@ -8,7 +8,7 @@ import Combine
 import CommonLibrary
 import SwiftUI
 
-public struct AppMenu: View {
+public struct LegacyAppMenu: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
@@ -52,7 +52,7 @@ public struct AppMenu: View {
     }
 }
 
-private extension AppMenu {
+private extension LegacyAppMenu {
     var versionItem: some View {
         Text(appConfiguration.versionString)
     }
@@ -109,7 +109,7 @@ private extension AppMenu {
     }
 }
 
-private extension AppMenu {
+private extension LegacyAppMenu {
     var isTunnelActionable: Bool {
         // TODO: #218, must be per-tunnel
         [.activating, .active].contains(tunnelStatus)
@@ -191,7 +191,7 @@ private extension AppMenu {
     }
 }
 
-private extension AppMenu {
+private extension LegacyAppMenu {
 
     // TODO: #218, must be per-tunnel
     var tunnelStatus: TunnelStatus {
