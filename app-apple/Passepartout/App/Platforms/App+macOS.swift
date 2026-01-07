@@ -4,6 +4,7 @@
 
 import AppAccessibility
 import AppLibraryMain
+import AppLibraryMainLegacy
 import Combine
 import CommonLibrary
 import SwiftUI
@@ -53,8 +54,14 @@ extension PassepartoutApp {
                 .keyboardShortcut(",", modifiers: .command)
             }
         }
+        MenuBarExtra(content: menuBarView, label: menuBarImage)
+    }
+}
 
-        MenuBarExtra {
+private extension PassepartoutApp {
+    @ViewBuilder
+    func menuBarView() -> some View {
+        if context.configObservable.isActive(.observableMain) {
             AppMenu(
                 profileManager: context.profileManager,
                 tunnel: context.tunnel
@@ -62,8 +69,24 @@ extension PassepartoutApp {
             .withEnvironment(from: context, theme: theme)
             .environment(macSettings)
             .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
-        } label: {
+        } else {
+            LegacyAppMenu(
+                profileManager: context.profileManager,
+                tunnel: context.tunnel
+            )
+            .withEnvironment(from: context, theme: theme)
+            .environment(macSettings)
+            .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
+        }
+    }
+
+    @ViewBuilder
+    func menuBarImage() -> some View {
+        if context.configObservable.isActive(.observableMain) {
             AppMenuImage(tunnel: context.tunnel)
+                .environment(theme)
+        } else {
+            LegacyAppMenuImage(tunnel: context.tunnel)
                 .environment(theme)
         }
     }

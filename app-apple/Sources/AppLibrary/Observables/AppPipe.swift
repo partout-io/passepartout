@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if !os(tvOS)
 import Combine
 import Foundation
 
@@ -11,3 +12,4 @@ public enum AppPipe {
 
     public static let settings = PassthroughSubject<Void, Never>()
 }
+#endif

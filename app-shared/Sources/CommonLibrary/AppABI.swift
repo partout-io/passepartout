@@ -73,10 +73,21 @@ public final class AppABI: AppABIProtocol, Sendable {
     }
 
     public func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback) {
+        let configEvents = configManager.didChange.subscribe()
+        let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
         let tunnelEvents = tunnel.didChange.subscribe()
-        let iapEvents = iapManager.didChange.subscribe()
         let webReceiverUploads = webReceiverManager.files
+        subscriptions.append(Task {
+            for await event in configEvents {
+                callback(context, .config(event))
+            }
+        })
+        subscriptions.append(Task {
+            for await event in iapEvents {
+                callback(context, .iap(event))
+            }
+        })
         subscriptions.append(Task {
             for await event in profileEvents {
                 callback(context, .profile(event))
@@ -85,11 +96,6 @@ public final class AppABI: AppABIProtocol, Sendable {
         subscriptions.append(Task {
             for await event in tunnelEvents {
                 callback(context, .tunnel(event))
-            }
-        })
-        subscriptions.append(Task {
-            for await event in iapEvents {
-                callback(context, .iap(event))
             }
         })
         subscriptions.append(Task {

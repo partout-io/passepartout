@@ -10,6 +10,8 @@ extension ABI {
         // These are temporary (older activations come last)
         case neSocketUDP
         case neSocketTCP
+        case observableMain
+        case observableTV
         case tunnelABI
         case unknown
     }

@@ -4,6 +4,7 @@
 
 #if os(iOS) || os(macOS)
 import AppLibraryMain
+import AppLibraryMainLegacy
 #elseif os(tvOS)
 import AppLibraryTV
 import AppLibraryTVLegacy
@@ -52,22 +53,36 @@ extension PassepartoutApp {
     }
 #endif
 
+    @ViewBuilder
     func contentView() -> some View {
-        LegacyAppCoordinator(
-            profileManager: context.profileManager,
-            tunnel: context.tunnel,
-            registry: context.registry,
-            webReceiverManager: context.webReceiverManager
-        )
-    }
-
 #if os(tvOS)
-    func newContentView() -> some View {
-        AppCoordinator(
-            profileObservable: context.profileObservable,
-            tunnel: context.tunnelObservable,
-            webReceiverObservable: context.webReceiverObservable
-        )
-    }
+        let flag: ABI.ConfigFlag = .observableTV
+#else
+        let flag: ABI.ConfigFlag = .observableMain
 #endif
+        if context.configObservable.isActive(flag) {
+#if os(tvOS)
+            AppCoordinator(
+                profileObservable: context.profileObservable,
+                tunnel: context.tunnelObservable,
+                webReceiverObservable: context.webReceiverObservable
+            )
+#else
+            // FIXME: #1594, Refactor like TV
+            AppCoordinator(
+                profileManager: context.profileManager,
+                tunnel: context.tunnel,
+                registry: context.registry,
+                webReceiverManager: context.webReceiverManager
+            )
+#endif
+        } else {
+            LegacyAppCoordinator(
+                profileManager: context.profileManager,
+                tunnel: context.tunnel,
+                registry: context.registry,
+                webReceiverManager: context.webReceiverManager
+            )
+        }
+    }
 }

@@ -53,9 +53,14 @@ let package = Package(
             dependencies: ["AppLibrary"]
         ),
         .target(
+            name: "AppLibraryMainLegacy",
+            dependencies: ["AppLibrary"]
+        ),
+        .target(
             name: "AppLibraryMainWrapper",
             dependencies: [
-                .target(name: "AppLibraryMain", condition: .when(platforms: [.iOS, .macOS]))
+                .target(name: "AppLibraryMain", condition: .when(platforms: [.iOS, .macOS])),
+                .target(name: "AppLibraryMainLegacy", condition: .when(platforms: [.iOS, .macOS]))
             ],
             path: "Sources/Empty/AppLibraryMainWrapper"
         ),

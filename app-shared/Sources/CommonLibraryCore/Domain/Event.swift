@@ -5,11 +5,16 @@
 // FIXME: #1594, Delete import after deleting deprecated events
 extension ABI {
     public enum Event: Sendable {
+        case config(ConfigEvent)
         case iap(IAPEvent)
         case profile(ProfileEvent)
         case tunnel(TunnelEvent)
         case version(VersionEvent)
         case webReceiver(WebReceiverEvent)
+    }
+
+    public enum ConfigEvent: Sendable {
+        case refresh(Set<ABI.ConfigFlag>)
     }
 
     public enum IAPEvent: Sendable {

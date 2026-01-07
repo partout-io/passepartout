@@ -68,6 +68,8 @@ private extension AppContext {
         let env = Unmanaged<AppContext>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
         Task { @MainActor in
             switch mainEvent {
+            case .config(let event):
+                env.configObservable.onUpdate(event)
             case .iap(let event):
                 env.iapObservable.onUpdate(event)
             case .profile(let event):
