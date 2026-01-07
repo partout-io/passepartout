@@ -4,11 +4,12 @@
 
 import CommonLibrary
 import Partout
-import XCTest
+import Testing
 
-final class WireGuardParseErrorTests: XCTestCase {
-    func test_givenLocalizable_whenParseError_thenReturnsLocalizedString() {
+struct WireGuardParseErrorTests {
+    @Test
+    func givenLocalizable_whenParseError_thenReturnsLocalizedString() {
         let sut = WireGuardParseError.noInterface
-        XCTAssertEqual(sut.localizedDescription, "Configuration must have an ‘Interface’ section.")
+        #expect(sut.localizedDescription == "Configuration must have an ‘Interface’ section.")
     }
 }

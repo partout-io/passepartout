@@ -101,7 +101,7 @@ let package = Package(
         ),
         .testTarget(
             name: "AppLibraryMainTests",
-            dependencies: ["AppLibraryMain"]
+            dependencies: ["AppLibraryMainWrapper"]
         )
     ]
 )

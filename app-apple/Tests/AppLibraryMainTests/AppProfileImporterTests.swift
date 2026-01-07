@@ -2,41 +2,48 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import AppLibraryMain
+@testable import AppLibraryMainLegacy
 import CommonLibrary
 import Foundation
-import XCTest
+import Testing
 
-final class AppProfileImporterTests: XCTestCase {
+struct AppProfileImporterTests {
     private let importer = SomeModule.Implementation()
 }
 
 @MainActor
 extension AppProfileImporterTests {
-    func test_givenNoURLs_whenImport_thenNothingIsImported() async throws {
+    @Test
+    func givenNoURLs_whenImport_thenNothingIsImported() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
 
-        try await sut.tryImport(urls: [], profileManager: profileManager, importer: importer)
-        XCTAssertEqual(sut.nextURL, nil)
-        XCTAssertTrue(profileManager.previews.isEmpty)
+        try await sut.tryImport(
+            urls: [],
+            profileManager: profileManager,
+            registry: Registry(),
+            importer: importer
+        )
+        #expect(sut.nextURL == nil)
+        #expect(profileManager.previews.isEmpty)
     }
 
-    func test_givenURL_whenImport_thenOneProfileIsImported() async throws {
+    @Test
+    func givenURL_whenImport_thenOneProfileIsImported() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.txt")!
 
-        let exp = expectation(description: "Save")
+        let exp = Expectation()
         let profileEvents = profileManager.didChange.subscribe()
         Task {
             for await event in profileEvents {
                 switch event {
                 case .save(let profile, _):
-                    XCTAssertEqual(profile.modules.count, 2)
-                    XCTAssertTrue(profile.modules.first is SomeModule)
-                    XCTAssertTrue(profile.modules.last is OnDemandModule)
-                    exp.fulfill()
+                    #expect(profile.modules.count == 2)
+                    #expect(profile.modules.first is SomeModule)
+                    #expect(profile.modules.last is OnDemandModule)
+                    await exp.fulfill()
                 default:
                     break
                 }
@@ -46,28 +53,30 @@ extension AppProfileImporterTests {
         try await sut.tryImport(
             urls: [url],
             profileManager: profileManager,
+            registry: Registry(),
             importer: importer
         )
-        XCTAssertEqual(sut.nextURL, nil)
+        #expect(sut.nextURL == nil)
 
-        await fulfillment(of: [exp])
+        try await exp.fulfillment(timeout: 500)
     }
 
-    func test_givenURLRequiringPassphrase_whenImportWithPassphrase_thenProfileIsImported() async throws {
+    @Test
+    func givenURLRequiringPassphrase_whenImportWithPassphrase_thenProfileIsImported() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
 
-        let exp = expectation(description: "Save")
+        let exp = Expectation()
         let profileEvents = profileManager.didChange.subscribe()
         Task {
             for await event in profileEvents {
                 switch event {
                 case .save(let profile, _):
-                    XCTAssertEqual(profile.modules.count, 2)
-                    XCTAssertTrue(profile.modules.first is SomeModule)
-                    XCTAssertTrue(profile.modules.last is OnDemandModule)
-                    exp.fulfill()
+                    #expect(profile.modules.count == 2)
+                    #expect(profile.modules.first is SomeModule)
+                    #expect(profile.modules.last is OnDemandModule)
+                    await exp.fulfill()
                 default:
                     break
                 }
@@ -77,18 +86,25 @@ extension AppProfileImporterTests {
         try await sut.tryImport(
             urls: [url],
             profileManager: profileManager,
+            registry: Registry(),
             importer: importer
         )
-        XCTAssertEqual(sut.nextURL, url)
+        #expect(sut.nextURL == url)
 
         sut.currentPassphrase = "passphrase"
-        try await sut.reImport(url: url, profileManager: profileManager, importer: importer)
-        XCTAssertEqual(sut.nextURL, nil)
+        try await sut.reImport(
+            url: url,
+            profileManager: profileManager,
+            registry: Registry(),
+            importer: importer
+        )
+        #expect(sut.nextURL == nil)
 
-        await fulfillment(of: [exp])
+        try await exp.fulfillment(timeout: 500)
     }
 
-    func test_givenURLsRequiringPassphrase_whenImport_thenURLsArePending() async throws {
+    @Test
+    func givenURLsRequiringPassphrase_whenImport_thenURLsArePending() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
@@ -96,10 +112,11 @@ extension AppProfileImporterTests {
         try await sut.tryImport(
             urls: [url, url, url],
             profileManager: profileManager,
+            registry: Registry(),
             importer: importer
         )
-        XCTAssertEqual(sut.nextURL, url)
-        XCTAssertEqual(sut.urlsRequiringPassphrase.count, 3)
+        #expect(sut.nextURL == url)
+        #expect(sut.urlsRequiringPassphrase.count == 3)
     }
 }
 
@@ -132,6 +149,6 @@ extension SomeModule.Implementation: ProfileImporter {
                 return SomeModule()
             }()
         }
-        return try profile(withName: "foobar", singleModule: importedModule)
+        return try Profile(withName: "foobar", singleModule: importedModule)
     }
 }

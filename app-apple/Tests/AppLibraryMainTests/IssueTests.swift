@@ -5,29 +5,32 @@
 @testable import AppLibraryMain
 import CommonLibrary
 import Foundation
-import XCTest
+import Testing
 
-final class IssueTests: XCTestCase {
+struct IssueTests {
     private let comment = "foobar"
 
     private let appLine = "Passepartout 1.2.3"
 
-    func test_givenNothing_whenCreateIssue_thenCollectsOSAndDevice() {
+    @Test
+    func givenNothing_whenCreateIssue_thenCollectsOSAndDevice() {
         let issue = ABI.Issue(comment: comment, appLine: nil, purchasedProducts: [])
-        XCTAssertNil(issue.appLine)
+        #expect(issue.appLine == nil)
 #if os(iOS)
-        XCTAssertTrue(issue.osLine.hasPrefix("iOS"))
+        #expect(issue.osLine.hasPrefix("iOS"))
 #else
-        XCTAssertTrue(issue.osLine.hasPrefix("macOS"))
+        #expect(issue.osLine.hasPrefix("macOS"))
 #endif
     }
 
-    func test_givenAppLine_whenCreateIssue_thenCollectsAppLine() {
+    @Test
+    func givenAppLine_whenCreateIssue_thenCollectsAppLine() {
         let issue = ABI.Issue(comment: comment, appLine: appLine, purchasedProducts: [])
-        XCTAssertEqual(issue.appLine, appLine)
+        #expect(issue.appLine == appLine)
     }
 
-    func test_givenAppLineAndProducts_whenCreateIssue_thenMatchesTemplate() {
+    @Test
+    func givenAppLineAndProducts_whenCreateIssue_thenMatchesTemplate() {
         let issue = ABI.Issue(comment: comment, appLine: appLine, purchasedProducts: [.Features.appleTV])
         let expected = """
 Hi,
@@ -47,6 +50,6 @@ Providers: [:]
 Regards
 
 """
-        XCTAssertEqual(issue.body, expected)
+        #expect(issue.body == expected)
     }
 }
