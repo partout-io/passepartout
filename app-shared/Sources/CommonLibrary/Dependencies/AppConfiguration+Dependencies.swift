@@ -92,7 +92,7 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newIAPManager(
-        inAppHelper: AppProductHelper,
+        inAppHelper: any AppProductHelper,
         receiptReader: AppReceiptReader,
         betaChecker: BetaChecker,
         isEnabled: Bool
@@ -474,7 +474,7 @@ extension ABI.AppConfiguration {
 #endif
 
 private extension Registry {
-    public func assertMissingImplementations() {
+    func assertMissingImplementations() {
         ModuleType.allCases.forEach { moduleType in
             let builder = moduleType.newModule(with: self)
             do {

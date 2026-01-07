@@ -620,7 +620,7 @@ private extension ProfileManager {
         mirrorsRemoteRepository: Bool = false,
         readyAfterRemote: Bool = false
     ) {
-        self.init(registry: Registry(), processor: processor, repository: repository, backupRepository: backupRepository, mirrorsRemoteRepository: mirrorsRemoteRepository, readyAfterRemote: readyAfterRemote)
+        self.init(processor: processor, repository: repository, backupRepository: backupRepository, mirrorsRemoteRepository: mirrorsRemoteRepository, readyAfterRemote: readyAfterRemote)
     }
 }
 

@@ -12,16 +12,16 @@ private var abi: TunnelABIProtocol? = nil
 @_cdecl("psp_tunnel_start")
 @MainActor
 public func __psp_tunnel_start(args: UnsafePointer<psp_tunnel_start_args>?, callback: @escaping (Int) -> Void) {
-    guard let args else { fatalError() }
+//    guard let args else { fatalError() }
 //    abi = TunnelABI.forCrossPlatform()
-    Task {
-        do {
+//    Task {
+//        do {
 //            try await abi?.start()
-            callback(0)
-        } catch {
-            callback(-1)
-        }
-    }
+//            callback(0)
+//        } catch {
+//            callback(-1)
+//        }
+//    }
 }
 
 @_cdecl("psp_tunnel_stop")
