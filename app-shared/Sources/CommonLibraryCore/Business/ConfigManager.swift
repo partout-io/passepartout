@@ -28,6 +28,7 @@ public final class ConfigManager {
                 synchronousActiveFlags = Set(ABI.ConfigFlag.allCases.filter {
                     isActive($0)
                 })
+                didChange.send(.refresh(synchronousActiveFlags))
             }
         }
     }
@@ -37,14 +38,18 @@ public final class ConfigManager {
 
     private var isPending = false
 
+    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.ConfigEvent>
+
     public init() {
         strategy = nil
         buildNumber = .max // Activate flags regardless of .minBuild
+        didChange = PassthroughStream()
     }
 
     public init(strategy: ConfigManagerStrategy, buildNumber: Int) {
         self.strategy = strategy
         self.buildNumber = buildNumber
+        didChange = PassthroughStream()
     }
 
     // TODO: #1447, handle 0-100 deployment values with local random value
