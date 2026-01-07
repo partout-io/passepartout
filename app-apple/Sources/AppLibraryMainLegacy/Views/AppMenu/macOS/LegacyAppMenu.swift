@@ -8,6 +8,7 @@ import Combine
 import CommonLibrary
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public struct LegacyAppMenu: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences

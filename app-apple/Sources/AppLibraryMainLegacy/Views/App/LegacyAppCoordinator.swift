@@ -5,6 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeClassProviding {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences

@@ -19,6 +19,7 @@ extension ProfileObservable {
     }
 }
 
+@available(*, deprecated, message: "#1594")
 @MainActor
 extension ProfileManager {
     public func removeProfiles(at offsets: IndexSet) async {

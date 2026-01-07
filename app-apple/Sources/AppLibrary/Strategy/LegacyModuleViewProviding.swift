@@ -6,6 +6,7 @@ import CommonLibrary
 import Partout
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public protocol LegacyModuleViewProviding {
     associatedtype Content: View
 
@@ -13,6 +14,7 @@ public protocol LegacyModuleViewProviding {
     func moduleView(with parameters: LegacyModuleViewParameters) -> Content
 }
 
+@available(*, deprecated, message: "#1594")
 public struct LegacyModuleViewParameters {
     public let registry: Registry
 

@@ -7,6 +7,7 @@ import Foundation
 import Partout
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public final class LegacyModuleViewFactory: ModuleViewFactory {
     private let registry: Registry
 
