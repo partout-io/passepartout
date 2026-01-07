@@ -23,7 +23,7 @@ struct OnboardingModifier: ViewModifier {
     private var isUITesting
 
     @Binding
-    var modalRoute: AppCoordinator.ModalRoute?
+    var modalRoute: LegacyAppCoordinator.ModalRoute?
 
     @State
     private var isAlertPresented = false

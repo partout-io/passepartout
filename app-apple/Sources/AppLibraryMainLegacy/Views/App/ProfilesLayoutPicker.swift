@@ -1,0 +1,38 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+import CommonLibrary
+import SwiftUI
+
+struct ProfilesLayoutPicker: View {
+
+    @Environment(Theme.self)
+    private var theme
+
+    @Binding
+    var layout: ProfilesLayout
+
+    var body: some View {
+        Picker(selection: $layout.animation(theme.animation(for: .profilesLayout))) {
+            ForEach(ProfilesLayout.allCases, id: \.self, content: \.image)
+        } label: {
+            layout.image
+        }
+        .pickerStyle(.inline)
+        // Workaround: https://stackoverflow.com/a/79676925/784615
+        .fixedSize()
+    }
+}
+
+@MainActor
+private extension ProfilesLayout {
+    var image: ThemeImage {
+        switch self {
+        case .list:
+            return ThemeImage(.profilesList)
+        case .grid:
+            return ThemeImage(.profilesGrid)
+        }
+    }
+}
