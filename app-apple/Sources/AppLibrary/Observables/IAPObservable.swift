@@ -61,7 +61,7 @@ extension IAPObservable {
     func onUpdate(_ event: ABI.IAPEvent) {
         switch event {
         case .status(let isEnabled):
-            self.isEnabled = isEnabled
+            break
         case .eligibleFeatures(let features):
             eligibleFeatures = features
         case .loadReceipt(let isLoading):
