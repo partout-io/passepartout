@@ -4,7 +4,72 @@
 
 import CommonLibraryCore_C
 
-// FIXME: #1594, use typealias for string IDs like ProfileID
+// MARK: Domains
+
+@MainActor
+public protocol AppABIConfigProtocol: Sendable {
+    var configActiveFlags: Set<ABI.ConfigFlag> { get }
+    func configData(for flag: ABI.ConfigFlag) -> JSON?
+}
+
+@MainActor
+public protocol AppABIEncoderProtocol: Sendable {
+    func encoderDefaultFilename(for profile: ABI.AppProfile) -> String
+    func encoderProfile(fromString string: String) throws -> ABI.AppProfile
+    func encoderJSON(fromProfile profile: ABI.AppProfile) throws -> String
+    func encoderWriteToFile(_ profile: ABI.AppProfile) throws -> String
+}
+
+@MainActor
+public protocol AppABIIAPProtocol: Sendable {
+    func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
+    var iapPurchasedProducts: Set<ABI.AppProduct> { get }
+    var iapIsBeta: Bool { get }
+    func iapIsEligible(for feature: ABI.AppFeature) -> Bool
+    var iapIsEligibleForFeedback: Bool { get }
+    var iapVerificationDelayMinutes: Int { get }
+}
+
+@MainActor
+public protocol AppABIProfileProtocol: Sendable {
+    func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
+    func profileSave(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws
+    func profileSaveAll() async
+    func profileImportText(_ text: String, filename: String, passphrase: String?) async throws
+    func profileImportFile(_ path: String, passphrase: String?) async throws
+    func profileDup(_ id: ABI.AppIdentifier) async throws
+    func profileRemove(_ id: ABI.AppIdentifier) async
+    func profileRemove(_ ids: [ABI.AppIdentifier]) async
+    func profileRemoveAllRemote() async throws
+    func profileIsRemotelyShared(_ id: ABI.AppIdentifier) -> Bool
+}
+
+@MainActor
+public protocol AppABITunnelProtocol: Sendable {
+    func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
+//    func tunnelReconnect(to profileId: ABI.AppIdentifier) async throws
+    func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws
+    func tunnelCurrentLog() async -> [ABI.AppLogLine]
+    func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError?
+    func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer?
+}
+
+@MainActor
+public protocol AppABIVersionProtocol: Sendable {
+    func versionCheckLatestRelease() async
+    var versionLatestRelease: ABI.VersionRelease? { get }
+}
+
+@MainActor
+public protocol AppABIWebReceiverProtocol: Sendable {
+    func webReceiverStart() throws
+    func webReceiverStop()
+    func webReceiverRefresh()
+    var webReceiverIsStarted: Bool { get }
+    var webReceiverWebsite: ABI.WebsiteWithPasscode? { get }
+}
+
+// MARK: - Aggregate
 
 #if !PSP_CROSS
 public typealias ABICallbackEvent = ABI.Event
@@ -20,61 +85,17 @@ public struct ABIEventContext: @unchecked Sendable {
 }
 
 @MainActor
-public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
+public protocol AppABIProtocol: AppLogger, LogFormatter,
+                                AppABIConfigProtocol, AppABIEncoderProtocol,
+                                AppABIIAPProtocol, AppABIProfileProtocol, AppABITunnelProtocol,
+                                AppABIVersionProtocol, AppABIWebReceiverProtocol,
+                                Sendable {
     // MARK: Events
     typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
     func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback)
 
     // MARK: Lifecycle
     func onApplicationActive()
-
-    // MARK: Config
-    func configData(for flag: ABI.ConfigFlag) -> JSON?
-
-    // MARK: Encoder
-    func encoderDefaultFilename(for profile: ABI.AppProfile) -> String
-    func encoderProfile(fromString string: String) throws -> ABI.AppProfile
-    func encoderJSON(fromProfile profile: ABI.AppProfile) throws -> String
-    func encoderWriteToFile(_ profile: ABI.AppProfile) throws -> String
-
-    // MARK: IAP
-    func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
-    var iapPurchasedProducts: Set<ABI.AppProduct> { get }
-    var iapIsBeta: Bool { get }
-    func iapIsEligible(for feature: ABI.AppFeature) -> Bool
-    var iapIsEligibleForFeedback: Bool { get }
-    var iapVerificationDelayMinutes: Int { get }
-
-    // MARK: Profile
-    func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
-    func profileSave(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws
-    func profileSaveAll() async
-    func profileImportText(_ text: String, filename: String, passphrase: String?) async throws
-    func profileImportFile(_ path: String, passphrase: String?) async throws
-    func profileDup(_ id: ABI.AppIdentifier) async throws
-    func profileRemove(_ id: ABI.AppIdentifier) async
-    func profileRemove(_ ids: [ABI.AppIdentifier]) async
-    func profileRemoveAllRemote() async throws
-    func profileIsRemotelyShared(_ id: ABI.AppIdentifier) -> Bool
-
-    // MARK: Tunnel
-    func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
-//    func tunnelReconnect(to profileId: ABI.AppIdentifier) async throws
-    func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws
-    func tunnelCurrentLog() async -> [ABI.AppLogLine]
-    func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError?
-    func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer?
-
-    // MARK: Version
-    func versionCheckLatestRelease() async
-    var versionLatestRelease: ABI.VersionRelease? { get }
-
-    // MARK: Web receiver
-    func webReceiverStart() throws
-    func webReceiverStop()
-    func webReceiverRefresh()
-    var webReceiverIsStarted: Bool { get }
-    var webReceiverWebsite: ABI.WebsiteWithPasscode? { get }
 
     // FIXME: #1594, Drop these, expose actions via ABI
     var apiManager: APIManager { get }
@@ -87,11 +108,11 @@ public protocol AppABIProtocol: AppLogger, LogFormatter, Sendable {
     var webReceiverManager: WebReceiverManager { get }
 }
 
-extension AppABIProtocol {
+extension AppABITunnelProtocol where Self: AppABIProfileProtocol {
     public func tunnelConnect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
-        guard let profile = profileManager.partoutProfile(withId: profileId) else {
+        guard let profile = profile(withId: profileId) else {
             throw ABI.AppError.notFound
         }
-        try await tunnelConnect(to: ABI.AppProfile(native: profile), force: force)
+        try await tunnelConnect(to: profile, force: force)
     }
 }

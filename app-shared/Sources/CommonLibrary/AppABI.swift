@@ -111,6 +111,10 @@ public final class AppABI: AppABIProtocol, Sendable {
 extension AppABI {
     // MARK: Config
 
+    public var configActiveFlags: Set<ABI.ConfigFlag> {
+        configManager.activeFlags
+    }
+
     public func configData(for flag: ABI.ConfigFlag) -> JSON? {
         configManager.data(for: flag)
     }
