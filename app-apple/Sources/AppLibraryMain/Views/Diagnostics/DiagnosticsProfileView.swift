@@ -26,7 +26,7 @@ public struct DiagnosticsProfileView: View {
 }
 
 private extension DiagnosticsProfileView {
-    // FIXME: ###
+    // FIXME: ###, abi.tunnelValue(forKey:) OpenVPN.serverConfiguration
     var openVPNSection: some View {
         EmptyView()
 //        tunnel.value(
@@ -46,7 +46,7 @@ private extension DiagnosticsProfileView {
 }
 
 private extension DiagnosticsProfileView {
-    // FIXME: ###
+    // FIXME: ###, abi.tunnelValue(forKey:) OpenVPN.serverConfiguration
     var isEmpty: Bool {
         [
 //            tunnel.value(
