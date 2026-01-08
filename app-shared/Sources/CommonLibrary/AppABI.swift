@@ -2,7 +2,16 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public final class AppABI: AppABIProtocol, Sendable {
+@MainActor
+public final class AppABI: AppLogger, LogFormatter,
+                           AppABIConfigProtocol, AppABIEncoderProtocol,
+                           AppABIIAPProtocol, AppABIProfileProtocol,
+                           AppABIRegistryProtocol, AppABITunnelProtocol,
+                           AppABIVersionProtocol, AppABIWebReceiverProtocol,
+                           Sendable {
+    // MARK: Events
+    public typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
+
     // MARK: Business
 
     // FIXME: #1594, Make these private after observables

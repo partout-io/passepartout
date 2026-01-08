@@ -8,7 +8,7 @@ import CommonLibraryCore_C
 import PartoutABI_C
 
 nonisolated(unsafe)
-private var abi: AppABIProtocol?
+private var abi: AppABI?
 
 @_cdecl("psp_app_init")
 @MainActor

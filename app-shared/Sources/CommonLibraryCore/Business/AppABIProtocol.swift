@@ -93,31 +93,6 @@ public struct ABIEventContext: @unchecked Sendable {
     }
 }
 
-@MainActor
-public protocol AppABIProtocol: AppLogger, LogFormatter,
-                                AppABIConfigProtocol, AppABIEncoderProtocol,
-                                AppABIIAPProtocol, AppABIProfileProtocol,
-                                AppABIRegistryProtocol, AppABITunnelProtocol,
-                                AppABIVersionProtocol, AppABIWebReceiverProtocol,
-                                Sendable {
-    // MARK: Events
-    typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
-    func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback)
-
-    // MARK: Lifecycle
-    func onApplicationActive()
-
-    // FIXME: #1594, Drop these, expose actions via ABI
-    var apiManager: APIManager { get }
-    var appEncoder: AppEncoder { get }
-    var iapManager: IAPManager { get }
-    var preferencesManager: PreferencesManager { get }
-    var profileManager: ProfileManager { get }
-    var registry: Registry { get }
-    var tunnel: ExtendedTunnel { get }
-    var webReceiverManager: WebReceiverManager { get }
-}
-
 extension AppABITunnelProtocol where Self: AppABIProfileProtocol {
     public func tunnelConnect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
         guard let profile = profile(withId: profileId) else {
