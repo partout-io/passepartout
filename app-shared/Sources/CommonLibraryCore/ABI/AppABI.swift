@@ -268,10 +268,6 @@ extension AppABI {
         try registry.resolvedModule(module, in: nil)
     }
 
-    public func registryImportedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
-        try registry.importedProfile(from: input, passphrase: passphrase)
-    }
-
     // MARK: Tunnel
 
     public func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws {

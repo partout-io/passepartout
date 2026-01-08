@@ -29,8 +29,4 @@ public final class RegistryObservable {
     public func resolvedModule(_ module: ProviderModule) throws -> Module {
         try abi.registryResolvedModule(module)
     }
-
-    public func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
-        try abi.registryImportedProfile(from: input, passphrase: passphrase)
-    }
 }

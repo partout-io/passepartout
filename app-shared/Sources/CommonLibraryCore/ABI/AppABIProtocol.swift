@@ -52,7 +52,6 @@ public protocol AppABIRegistryProtocol: Sendable {
     func registryValidate(_ builder: any ModuleBuilder) throws
     func registryImplementation(for id: ModuleHandler.ID) -> ModuleImplementation?
     func registryResolvedModule(_ module: ProviderModule) throws -> Module
-    func registryImportedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile
 }
 
 @MainActor
