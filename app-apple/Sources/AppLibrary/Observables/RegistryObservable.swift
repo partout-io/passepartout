@@ -7,7 +7,7 @@ import MiniFoundation
 import Observation
 
 @MainActor @Observable
-public final class ModulesObservable {
+public final class RegistryObservable {
     private let registry: Registry
 
     // For previews

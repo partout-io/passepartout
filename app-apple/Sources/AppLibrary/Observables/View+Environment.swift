@@ -15,8 +15,8 @@ extension View {
             .environment(context.appEncoderObservable)
             .environment(context.configObservable)
             .environment(context.iapObservable)
-            .environment(context.modulesObservable)
             .environment(context.profileObservable)
+            .environment(context.registryObservable)
 //            .environment(context.tunnelObservable)
             .environment(context.versionObservable)
             // View concerns

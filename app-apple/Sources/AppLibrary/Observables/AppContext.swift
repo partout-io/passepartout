@@ -17,8 +17,8 @@ public final class AppContext {
     public let appEncoderObservable: AppEncoderObservable
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
-    public let modulesObservable: ModulesObservable
     public let profileObservable: ProfileObservable
+    public let registryObservable: RegistryObservable
     public let tunnelObservable: TunnelObservable
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
@@ -37,8 +37,8 @@ public final class AppContext {
         appEncoderObservable = AppEncoderObservable(abi: abi)
         configObservable = ConfigObservable(abi: abi)
         iapObservable = IAPObservable(abi: abi)
-        modulesObservable = ModulesObservable(abi: abi)
         profileObservable = ProfileObservable(abi: abi)
+        registryObservable = RegistryObservable(abi: abi)
         tunnelObservable = TunnelObservable(abi: abi)
         versionObservable = VersionObservable(abi: abi)
         webReceiverObservable = WebReceiverObservable(abi: abi)

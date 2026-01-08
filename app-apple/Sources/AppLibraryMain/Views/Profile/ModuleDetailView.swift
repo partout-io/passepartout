@@ -48,7 +48,7 @@ private extension ModuleDetailView {
     ModuleDetailView(
         profileEditor: ProfileEditor(profile: .forPreviews),
         moduleId: Profile.forPreviews.modules.first?.id,
-        moduleViewFactory: DefaultModuleViewFactory(observable: .forPreviews)
+        moduleViewFactory: DefaultModuleViewFactory(registryObservable: .forPreviews)
     )
     .withMockEnvironment()
 }

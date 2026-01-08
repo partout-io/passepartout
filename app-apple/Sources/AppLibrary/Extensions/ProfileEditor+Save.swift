@@ -15,11 +15,11 @@ extension ProfileEditor {
 
     public func save(
         to profileObservable: ProfileObservable?,
-        buildingWith observable: ModulesObservable,
+        buildingWith registryObservable: RegistryObservable,
         verifyingWith iapObservable: IAPObservable?,
         preferencesManager: PreferencesManager
     ) async throws -> ABI.AppProfile {
-        let partoutProfile = try buildAndUpdate(with: observable)
+        let partoutProfile = try buildAndUpdate(with: registryObservable)
         let profileToSave = ABI.AppProfile(native: partoutProfile)
 
         // Verify profile (optional)

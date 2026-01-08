@@ -181,14 +181,14 @@ private extension ProfileEditor {
 
 extension ProfileEditor {
     public func buildAndUpdate() throws -> Profile {
-        try buildAndUpdate(with: nil as ModulesObservable?)
+        try buildAndUpdate(with: nil as RegistryObservable?)
     }
 
-    public func buildAndUpdate(with observable: ModulesObservable?) throws -> Profile {
-        try build(with: observable, updating: true)
+    public func buildAndUpdate(with registryObservable: RegistryObservable?) throws -> Profile {
+        try build(with: registryObservable, updating: true)
     }
 
-    public func build(with observable: ModulesObservable?, updating: Bool) throws -> Profile {
+    public func build(with registryObservable: RegistryObservable?, updating: Bool) throws -> Profile {
         // Add this check in the app, the library does not enforce it
         guard !editableProfile.activeModulesIds.isEmpty else {
             throw PartoutError(.noActiveModules)
@@ -197,7 +197,7 @@ extension ProfileEditor {
         // Validate builders if implementation supports it
         try editableProfile.modules.forEach {
             do {
-                try observable?.validate($0)
+                try registryObservable?.validate($0)
             } catch {
                 throw ABI.AppError.malformedModule($0, error: error)
             }

@@ -32,7 +32,7 @@ struct ProfileCoordinator: View {
 
     let profileEditor: ProfileEditor
 
-    let modulesObservable: ModulesObservable
+    let registryObservable: RegistryObservable
 
     let moduleViewFactory: any ModuleViewFactory
 
@@ -136,7 +136,7 @@ private extension ProfileCoordinator {
 
 private extension ProfileCoordinator {
     func addNewModule(_ moduleType: ModuleType) {
-        let module = modulesObservable.newModule(ofType: moduleType)
+        let module = registryObservable.newModule(ofType: moduleType)
         withAnimation(theme.animation(for: .modules)) {
             profileEditor.saveModule(module, activating: true)
         }
@@ -150,7 +150,7 @@ private extension ProfileCoordinator {
         do {
             let savedProfile = try await profileEditor.save(
                 to: profileObservable,
-                buildingWith: modulesObservable,
+                buildingWith: registryObservable,
                 verifyingWith: iapObservable,
                 preferencesManager: preferencesManager
             )
@@ -207,7 +207,7 @@ private extension ProfileCoordinator {
             do {
                 let profile = try await profileEditor.save(
                     to: nil,
-                    buildingWith: modulesObservable,
+                    buildingWith: registryObservable,
                     verifyingWith: nil,
                     preferencesManager: preferencesManager
                 )
@@ -258,8 +258,8 @@ private extension ProfileCoordinator {
     ProfileCoordinator(
         profileObservable: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
-        modulesObservable: .forPreviews,
-        moduleViewFactory: DefaultModuleViewFactory(observable: .forPreviews),
+        registryObservable: .forPreviews,
+        moduleViewFactory: DefaultModuleViewFactory(registryObservable: .forPreviews),
         path: .constant(NavigationPath()),
         onDismiss: {}
     )

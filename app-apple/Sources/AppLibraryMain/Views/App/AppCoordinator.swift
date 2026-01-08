@@ -25,7 +25,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
 
     public let tunnel: TunnelObservable
 
-    private let modulesObservable: ModulesObservable
+    private let registryObservable: RegistryObservable
 
     private let webReceiverObservable: WebReceiverObservable
 
@@ -62,12 +62,12 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
     public init(
         profileObservable: ProfileObservable,
         tunnel: TunnelObservable,
-        modulesObservable: ModulesObservable,
+        registryObservable: RegistryObservable,
         webReceiverObservable: WebReceiverObservable
     ) {
         self.profileObservable = profileObservable
         self.tunnel = tunnel
-        self.modulesObservable = modulesObservable
+        self.registryObservable = registryObservable
         self.webReceiverObservable = webReceiverObservable
         pp_log_g(.core, .info, "AppCordinator (Observables)")
     }
@@ -168,8 +168,8 @@ extension AppCoordinator {
             ProfileCoordinator(
                 profileObservable: profileObservable,
                 profileEditor: profileEditor,
-                modulesObservable: modulesObservable,
-                moduleViewFactory: DefaultModuleViewFactory(observable: modulesObservable),
+                registryObservable: registryObservable,
+                moduleViewFactory: DefaultModuleViewFactory(registryObservable: registryObservable),
                 path: $profilePath,
                 onDismiss: onDismiss
             )
@@ -496,7 +496,7 @@ private struct DynamicPaywallModifier: ViewModifier {
     AppCoordinator(
         profileObservable: .forPreviews,
         tunnel: .forPreviews,
-        modulesObservable: .forPreviews,
+        registryObservable: .forPreviews,
         webReceiverObservable: .forPreviews
     )
     .withMockEnvironment()

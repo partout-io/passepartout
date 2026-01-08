@@ -86,15 +86,15 @@ extension IAPObservable {
     }
 }
 
-extension ModulesObservable {
-    public static var forPreviews: ModulesObservable {
-        AppContext.forPreviews.modulesObservable
-    }
-}
-
 extension ProfileObservable {
     public static var forPreviews: ProfileObservable {
         AppContext.forPreviews.profileObservable
+    }
+}
+
+extension RegistryObservable {
+    public static var forPreviews: RegistryObservable {
+        AppContext.forPreviews.registryObservable
     }
 }
 

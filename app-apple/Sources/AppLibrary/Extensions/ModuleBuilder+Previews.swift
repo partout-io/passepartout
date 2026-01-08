@@ -32,7 +32,7 @@ private struct PreviewView<Builder>: View where Builder: ModuleBuilder & ModuleV
     var body: some View {
         NavigationStack {
             builder.moduleView(with: .init(
-                observable: .forPreviews,
+                registryObservable: .forPreviews,
                 editor: editor,
                 impl: nil
             ))

@@ -36,7 +36,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     public init(
         profileObservable: ProfileObservable,
         tunnel: TunnelObservable,
-        modulesObservable: ModulesObservable,
+        registryObservable: RegistryObservable,
         webReceiverObservable: WebReceiverObservable
     ) {
         self.profileObservable = profileObservable

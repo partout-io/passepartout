@@ -14,7 +14,7 @@ public protocol ModuleViewProviding {
 }
 
 public struct ModuleViewParameters {
-    public let observable: ModulesObservable
+    public let registryObservable: RegistryObservable
 
     public let editor: ProfileEditor
 
@@ -22,11 +22,11 @@ public struct ModuleViewParameters {
 
     @MainActor
     public init(
-        observable: ModulesObservable,
+        registryObservable: RegistryObservable,
         editor: ProfileEditor,
         impl: (any ModuleImplementation)?
     ) {
-        self.observable = observable
+        self.registryObservable = registryObservable
         self.editor = editor
         self.impl = impl
     }
