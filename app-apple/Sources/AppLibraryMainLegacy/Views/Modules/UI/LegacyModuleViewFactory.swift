@@ -3,20 +3,18 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
-import Partout
 import SwiftUI
 
 @available(*, deprecated, message: "#1594")
-public final class LegacyModuleViewFactory: ModuleViewFactory {
+final class LegacyModuleViewFactory: ModuleViewFactory {
     private let registry: Registry
 
-    public init(registry: Registry) {
+    init(registry: Registry) {
         self.registry = registry
     }
 
     @ViewBuilder
-    public func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
+    func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
         let result = editor.moduleViewProvider(withId: moduleId, registry: registry)
         if let result {
             AnyView(result.provider.moduleView(with: .init(

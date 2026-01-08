@@ -3,16 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
-import Partout
 import SwiftUI
 
-public final class DefaultModuleViewFactory: ModuleViewFactory {
-    public init() {
+final class DefaultModuleViewFactory: ModuleViewFactory {
+    init() {
     }
 
     @ViewBuilder
-    public func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
+    func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
         let result = editor.moduleViewProvider(withId: moduleId)
         if let result {
             AnyView(result.provider.moduleView(with: editor))
