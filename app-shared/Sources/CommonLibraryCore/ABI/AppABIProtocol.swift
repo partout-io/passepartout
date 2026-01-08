@@ -44,6 +44,7 @@ public protocol AppABIProfileProtocol: Sendable {
     func profileRemove(_ ids: [ABI.AppIdentifier]) async
     func profileRemoveAllRemote() async throws
     func profileIsRemotelyShared(_ id: ABI.AppIdentifier) -> Bool
+    func profileIsRemoteImportingEnabled() -> Bool
 }
 
 @MainActor

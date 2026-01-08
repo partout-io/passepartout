@@ -28,7 +28,7 @@ public final class ProfileObservable {
         allHeaders = [:]
         filteredHeaders = []
         isReady = false
-        isRemoteImportingEnabled = false
+        isRemoteImportingEnabled = abi.profileIsRemoteImportingEnabled()
         searchSubject = CurrentValueSubject("")
     }
 }
@@ -87,10 +87,6 @@ extension ProfileObservable {
     public func removeAll() async throws {
         try await remove(withIds: filteredHeaders.map(\.id))
     }
-
-//    public func setRemoteImportingEnabled(_ isEnabled: Bool) {
-//        profileManager.isRemoteImportingEnabled = isEnabled
-//    }
 }
 
 // MARK: - State
@@ -136,10 +132,8 @@ extension ProfileObservable {
             isReady = true
         case .refresh(let headers):
             allHeaders = headers
-//        case .changeRemoteImport:
-//            // Later, set this property directly on ProfileObservable
-//            isRemoteImportingEnabled = profileManager.isRemoteImportingEnabled
-//            break
+        case .changeRemoteImporting(let isEnabled):
+            isRemoteImportingEnabled = isEnabled
         default:
             break
         }

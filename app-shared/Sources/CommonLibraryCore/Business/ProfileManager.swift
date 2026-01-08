@@ -61,7 +61,6 @@ public final class ProfileManager {
         }
     }
 
-    @available(*, deprecated, message: "#1594")
     public var isRemoteImportingEnabled = false {
         willSet {
 #if !PSP_CROSS
@@ -69,7 +68,7 @@ public final class ProfileManager {
 #endif
         }
         didSet {
-            didChange.send(.changeRemoteImport)
+            didChange.send(.changeRemoteImporting(isRemoteImportingEnabled))
         }
     }
 

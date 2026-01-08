@@ -28,6 +28,7 @@ extension ABI {
         case refresh([ABI.AppIdentifier: ABI.AppProfileHeader])
         case startRemoteImport
         case stopRemoteImport
+        case changeRemoteImporting(Bool)
 
         @available(*, deprecated, message: "#1594")
         case localProfiles
@@ -39,8 +40,6 @@ extension ABI {
         case save(Profile, previous: Profile?)
         @available(*, deprecated, message: "#1594")
         case remove([Profile.ID])
-        @available(*, deprecated, message: "#1594")
-        case changeRemoteImport
     }
 
     public enum TunnelEvent: Sendable {

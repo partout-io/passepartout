@@ -247,6 +247,10 @@ extension AppABI {
         profileManager.isRemotelyShared(profileWithId: id)
     }
 
+    public func profileIsRemoteImportingEnabled() -> Bool {
+        profileManager.isRemoteImportingEnabled
+    }
+
     // MARK: Registry
 
     public func registryNewModule(ofType type: ModuleType) -> any ModuleBuilder {
