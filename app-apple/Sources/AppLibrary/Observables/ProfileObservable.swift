@@ -84,6 +84,10 @@ extension ProfileObservable {
         try await abi.profileRemoveAllRemote()
     }
 
+    public func removeAll() async throws {
+        try await remove(withIds: filteredHeaders.map(\.id))
+    }
+
 //    public func setRemoteImportingEnabled(_ isEnabled: Bool) {
 //        profileManager.isRemoteImportingEnabled = isEnabled
 //    }

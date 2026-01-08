@@ -157,24 +157,27 @@ private extension ConnectionView {
 // MARK: -
 
 // FIXME: #1594, Previews
-//#Preview("List") {
-//    ConnectionView(
-//        profileObservable: .forPreviews,
-//        tunnel: .forPreviews,
-//        interactiveObservable: InteractiveObservable(),
-//        errorHandler: .default(),
-//        showsSidePanel: true
-//    )
-//    .withMockEnvironment()
-//}
-//
-//#Preview("Empty") {
-//    ConnectionView(
-//        profileObservable: ProfileManager(profiles: []),
-//        tunnel: .forPreviews,
-//        interactiveObservable: InteractiveObservable(),
-//        errorHandler: .default(),
-//        showsSidePanel: true
-//    )
-//    .withMockEnvironment()
-//}
+#Preview("List") {
+    ConnectionView(
+        profileObservable: .forPreviews,
+        tunnel: .forPreviews,
+        interactiveObservable: InteractiveObservable(),
+        errorHandler: .default(),
+        showsSidePanel: true
+    )
+    .withMockEnvironment()
+}
+
+#Preview("Empty") {
+    ConnectionView(
+        profileObservable: .forPreviews,
+        tunnel: .forPreviews,
+        interactiveObservable: InteractiveObservable(),
+        errorHandler: .default(),
+        showsSidePanel: true
+    )
+    .withMockEnvironment()
+    .task {
+        try? await ProfileObservable.forPreviews.removeAll()
+    }
+}

@@ -96,36 +96,36 @@ private extension ConnectionStatusDynamicText {
 }
 
 // FIXME: #1594, Previews
-//#Preview("Status (Static)") {
-//    ConnectionStatusStaticText(status: .disconnecting, color: .cyan)
-//        .frame(width: 400, height: 100)
-//        .withMockEnvironment()
-//}
-//
-//#Preview("Connected (Dynamic)") {
-//    ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
-//        .task {
-//            try? await ExtendedTunnel.forPreviews.connect(with: .forPreviews)
-//        }
-//        .frame(width: 400, height: 100)
-//        .withMockEnvironment()
-//}
-//
-//#Preview("On-Demand (Dynamic)") {
-//    var builder = Profile.Builder()
-//    let onDemand = OnDemandModule.Builder()
-//    builder.modules = [onDemand.build()]
-//    builder.activeModulesIds = [onDemand.id]
-//    let profile: Profile
-//    do {
-//        profile = try builder.build()
-//    } catch {
-//        fatalError()
-//    }
-//    return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
-//        .task {
-//            try? await ExtendedTunnel.forPreviews.connect(with: profile)
-//        }
-//        .frame(width: 400, height: 100)
-//        .withMockEnvironment()
-//}
+#Preview("Status (Static)") {
+    ConnectionStatusStaticText(status: .disconnecting, color: .cyan)
+        .frame(width: 400, height: 100)
+        .withMockEnvironment()
+}
+
+#Preview("Connected (Dynamic)") {
+    ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
+        .task {
+            try? await ExtendedTunnel.forPreviews.connect(with: .forPreviews)
+        }
+        .frame(width: 400, height: 100)
+        .withMockEnvironment()
+}
+
+#Preview("On-Demand (Dynamic)") {
+    var builder = Profile.Builder()
+    let onDemand = OnDemandModule.Builder()
+    builder.modules = [onDemand.build()]
+    builder.activeModulesIds = [onDemand.id]
+    let profile: Profile
+    do {
+        profile = try builder.build()
+    } catch {
+        fatalError()
+    }
+    return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
+        .task {
+            try? await ExtendedTunnel.forPreviews.connect(with: profile)
+        }
+        .frame(width: 400, height: 100)
+        .withMockEnvironment()
+}

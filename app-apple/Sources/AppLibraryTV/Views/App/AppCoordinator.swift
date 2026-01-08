@@ -215,12 +215,12 @@ private struct DynamicPaywallModifier: ViewModifier {
 
 // MARK: - Previews
 
-// FIXME: #1594, Previews
-//#Preview {
-//    AppCoordinator(
-//        profileObservable: .forPreviews,
-//        tunnel: .forPreviews,
-//        webReceiverObservable: WebReceiverObservable()
-//    )
-//    .withMockEnvironment()
-//}
+#Preview {
+    AppCoordinator(
+        profileObservable: .forPreviews,
+        tunnel: .forPreviews,
+        registryObservable: .forPreviews,
+        webReceiverObservable: .forPreviews
+    )
+    .withMockEnvironment()
+}

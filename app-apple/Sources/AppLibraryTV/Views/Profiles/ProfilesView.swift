@@ -158,19 +158,21 @@ private extension DetailView {
 
 // MARK: - Preview
 
-// FIXME: #1594, Previews
-//#Preview("Empty") {
-//    ProfilesView(
-//        profileObservable: ProfileManager(profiles: []),
-//        webReceiverManager: .forPreviews
-//    )
-//    .withMockEnvironment()
-//}
-//
-//#Preview("Profiles") {
-//    ProfilesView(
-//        profileObservable: .forPreviews,
-//        webReceiverManager: .forPreviews
-//    )
-//    .withMockEnvironment()
-//}
+#Preview("Empty") {
+    ProfilesView(
+        profileObservable: .forPreviews,
+        webReceiverObservable: .forPreviews
+    )
+    .withMockEnvironment()
+    .task {
+        try? await ProfileObservable.forPreviews.removeAll()
+    }
+}
+
+#Preview("Profiles") {
+    ProfilesView(
+        profileObservable: .forPreviews,
+        webReceiverObservable: .forPreviews
+    )
+    .withMockEnvironment()
+}

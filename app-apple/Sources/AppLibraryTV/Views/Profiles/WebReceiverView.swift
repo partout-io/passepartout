@@ -78,15 +78,13 @@ private extension WebReceiverView {
 
 // MARK: -
 
-// FIXME: #1594, Previews
-//#Preview {
-//    WebReceiverView(
-//        webReceiverManager: .forPreviews,
-//        registry: Registry(),
-//        profileObservable: .forPreviews,
-//        errorHandler: .default()
-//    )
-//    .task {
-//        try? WebReceiverManager.forPreviews.start()
-//    }
-//}
+#Preview {
+    WebReceiverView(
+        webReceiverObservable: .forPreviews,
+        profileObservable: .forPreviews,
+        errorHandler: .default()
+    )
+    .task {
+        try? WebReceiverObservable.forPreviews.start()
+    }
+}
