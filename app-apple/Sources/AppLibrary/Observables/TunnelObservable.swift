@@ -65,6 +65,10 @@ extension TunnelObservable {
         abi.tunnelLastError(ofProfileId: profileId)
     }
 
+    public func openVPNServerConfiguration(for profileId: ABI.AppIdentifier) -> OpenVPN.Configuration? {
+        abi.tunnelValue(ofProfileId: profileId, key: .openVPNServerConfiguration) as? OpenVPN.Configuration
+    }
+
     func onUpdate(_ event: ABI.TunnelEvent) {
 //        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {

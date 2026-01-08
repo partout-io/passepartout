@@ -55,6 +55,10 @@ public protocol AppABIRegistryProtocol: Sendable {
     func registryResolvedModule(_ module: ProviderModule) throws -> Module
 }
 
+public enum AppABITunnelValueKey: Sendable {
+    case openVPNServerConfiguration
+}
+
 @MainActor
 public protocol AppABITunnelProtocol: Sendable {
     func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
@@ -63,6 +67,7 @@ public protocol AppABITunnelProtocol: Sendable {
     func tunnelCurrentLog() async -> [ABI.AppLogLine]
     func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError?
     func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer?
+    func tunnelValue(ofProfileId profileId: ABI.AppIdentifier, key: AppABITunnelValueKey) -> Any?
 }
 
 @MainActor

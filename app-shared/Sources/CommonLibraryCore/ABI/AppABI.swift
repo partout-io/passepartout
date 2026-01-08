@@ -298,6 +298,16 @@ extension AppABI {
         tunnelManager.transfer(ofProfileId: profileId)
     }
 
+    public func tunnelValue(ofProfileId profileId: ABI.AppIdentifier, key: AppABITunnelValueKey) -> Any? {
+        switch key {
+        case .openVPNServerConfiguration:
+            tunnelManager.value(
+                forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
+                ofProfileId: profileId
+            )
+        }
+    }
+
     // MARK: Version
 
     public func versionCheckLatestRelease() async {

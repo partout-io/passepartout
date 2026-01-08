@@ -26,38 +26,31 @@ public struct DiagnosticsProfileView: View {
 }
 
 private extension DiagnosticsProfileView {
-    // FIXME: ###, abi.tunnelValue(forKey:) OpenVPN.serverConfiguration
     var openVPNSection: some View {
-        EmptyView()
-//        tunnel.value(
-//            forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
-//            ofProfileId: profile.id
-//        )
-//        .map { cfg in
-//            Group {
-//                NavigationLink(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration) {
-//                    OpenVPNView(serverConfiguration: cfg)
-//                        .navigationTitle(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration)
-//                }
-//            }
-//            .themeSection(header: Strings.Unlocalized.openVPN)
-//        }
+        openVPNServerConfiguration
+            .map { cfg in
+                Group {
+                    NavigationLink(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration) {
+                        OpenVPNView(serverConfiguration: cfg)
+                            .navigationTitle(Strings.Views.Diagnostics.Openvpn.Rows.serverConfiguration)
+                    }
+                }
+                .themeSection(header: Strings.Unlocalized.openVPN)
+            }
     }
 }
 
 private extension DiagnosticsProfileView {
-    // FIXME: ###, abi.tunnelValue(forKey:) OpenVPN.serverConfiguration
     var isEmpty: Bool {
-        [
-//            tunnel.value(
-//                forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
-//                ofProfileId: profile.id
-//            )
-        ]
+        [openVPNServerConfiguration]
             .filter {
                 $0 != nil
             }
             .isEmpty
+    }
+
+    var openVPNServerConfiguration: OpenVPN.Configuration? {
+        tunnel.openVPNServerConfiguration(for: profile.id)
     }
 }
 
