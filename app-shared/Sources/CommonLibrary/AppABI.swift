@@ -227,6 +227,31 @@ extension AppABI {
         profileManager.isRemotelyShared(profileWithId: id)
     }
 
+    // MARK: Registry
+
+    public func registryNewModule(ofType type: ModuleType) -> any ModuleBuilder {
+        type.newModule(with: registry)
+    }
+
+    public func registryValidate(_ builder: any ModuleBuilder) throws {
+        guard let impl = registry.implementation(for: builder) as? ModuleBuilderValidator else {
+            return
+        }
+        try impl.validate(builder)
+    }
+
+    public func registryImplementation(for builder: any ModuleBuilder) -> ModuleImplementation? {
+        registry.implementation(for: builder)
+    }
+
+    public func registryResolvedModule(_ module: ProviderModule) throws -> Module {
+        try registry.resolvedModule(module, in: nil)
+    }
+
+    public func registryImportedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
+        try registry.importedProfile(from: input, passphrase: passphrase)
+    }
+
     // MARK: Tunnel
 
     public func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws {

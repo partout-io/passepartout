@@ -63,7 +63,7 @@ extension PassepartoutApp {
             AppCoordinator(
                 profileObservable: context.profileObservable,
                 tunnel: context.tunnelObservable,
-                modulesObservable: context.modulesObservable,
+                registryObservable: context.registryObservable,
                 webReceiverObservable: context.webReceiverObservable
             )
         } else {

@@ -45,6 +45,15 @@ public protocol AppABIProfileProtocol: Sendable {
 }
 
 @MainActor
+public protocol AppABIRegistryProtocol: Sendable {
+    func registryNewModule(ofType type: ModuleType) -> any ModuleBuilder
+    func registryValidate(_ builder: any ModuleBuilder) throws
+    func registryImplementation(for builder: any ModuleBuilder) -> ModuleImplementation?
+    func registryResolvedModule(_ module: ProviderModule) throws -> Module
+    func registryImportedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile
+}
+
+@MainActor
 public protocol AppABITunnelProtocol: Sendable {
     func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws
 //    func tunnelReconnect(to profileId: ABI.AppIdentifier) async throws
@@ -87,7 +96,8 @@ public struct ABIEventContext: @unchecked Sendable {
 @MainActor
 public protocol AppABIProtocol: AppLogger, LogFormatter,
                                 AppABIConfigProtocol, AppABIEncoderProtocol,
-                                AppABIIAPProtocol, AppABIProfileProtocol, AppABITunnelProtocol,
+                                AppABIIAPProtocol, AppABIProfileProtocol,
+                                AppABIRegistryProtocol, AppABITunnelProtocol,
                                 AppABIVersionProtocol, AppABIWebReceiverProtocol,
                                 Sendable {
     // MARK: Events

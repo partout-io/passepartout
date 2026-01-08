@@ -8,37 +8,32 @@ import Observation
 
 @MainActor @Observable
 public final class RegistryObservable {
-    private let registry: Registry
+    private let abi: AppABIRegistryProtocol
 
-    // For previews
-    public init() {
-        registry = Registry()
-    }
-
-    public init(abi: AppABIProtocol) {
-        registry = abi.registry
+    public init(abi: AppABIRegistryProtocol) {
+        self.abi = abi
     }
 
     public func newModule(ofType type: ModuleType) -> any ModuleBuilder {
-        type.newModule(with: registry)
+        abi.registryNewModule(ofType: type)
     }
 
     public func validate(_ builder: any ModuleBuilder) throws {
-        guard let impl = registry.implementation(for: builder) as? ModuleBuilderValidator else {
+        guard let impl = abi.registryImplementation(for: builder) as? ModuleBuilderValidator else {
             return
         }
         try impl.validate(builder)
     }
 
     public func implementation(for builder: any ModuleBuilder) -> ModuleImplementation? {
-        registry.implementation(for: builder)
+        abi.registryImplementation(for: builder)
     }
 
     public func resolvedModule(_ module: ProviderModule) throws -> Module {
-        try registry.resolvedModule(module, in: nil)
+        try abi.registryResolvedModule(module)
     }
 
     public func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
-        try registry.importedProfile(from: input, passphrase: passphrase)
+        try abi.registryImportedProfile(from: input, passphrase: passphrase)
     }
 }
