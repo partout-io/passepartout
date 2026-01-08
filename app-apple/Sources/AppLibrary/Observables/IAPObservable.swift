@@ -9,11 +9,7 @@ import Observation
 public final class IAPObservable {
     private let abi: AppABIIAPProtocol
 
-    public var isEnabled: Bool {
-        didSet {
-            abi.iapEnable(isEnabled)
-        }
-    }
+    public private(set) var isEnabled: Bool
     public private(set) var eligibleFeatures: Set<ABI.AppFeature>
     public private(set) var isLoadingReceipt: Bool
     private var subscription: Task<Void, Never>?
@@ -30,6 +26,10 @@ public final class IAPObservable {
 // MARK: - Actions
 
 extension IAPObservable {
+    public func enable(_ isEnabled: Bool) {
+        abi.iapEnable(isEnabled)
+    }
+
     public func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
         try abi.iapVerify(profile, extra: extra)
     }
@@ -61,7 +61,7 @@ extension IAPObservable {
     func onUpdate(_ event: ABI.IAPEvent) {
         switch event {
         case .status(let isEnabled):
-            break
+            self.isEnabled = isEnabled
         case .eligibleFeatures(let features):
             eligibleFeatures = features
         case .loadReceipt(let isLoading):

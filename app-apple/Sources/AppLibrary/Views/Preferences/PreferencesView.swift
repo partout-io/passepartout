@@ -111,8 +111,12 @@ private extension PreferencesView {
     }
 
     var enablesPurchasesSection: some View {
-        Toggle(Strings.Views.Preferences.enablesIap, isOn: iapObservable.binding(\.isEnabled))
-            .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
+        Toggle(Strings.Views.Preferences.enablesIap, isOn: Binding {
+            iapObservable.isEnabled
+        } set: {
+            iapObservable.enable($0)
+        })
+        .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
     }
 
     var relaxedVerificationSection: some View {
