@@ -7,7 +7,7 @@ import Observation
 
 @MainActor @Observable
 public final class IAPObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABIIAPProtocol
 
     // FIXME: ###, Apply to IAPManager on didSet and read initial value
     public var isEnabled: Bool
@@ -15,7 +15,7 @@ public final class IAPObservable {
     public private(set) var isLoadingReceipt: Bool
     private var subscription: Task<Void, Never>?
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABIIAPProtocol) {
         self.abi = abi
 
         isEnabled = true

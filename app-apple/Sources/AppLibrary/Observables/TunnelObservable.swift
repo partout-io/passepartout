@@ -7,13 +7,13 @@ import Observation
 
 @MainActor @Observable
 public final class TunnelObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABITunnelProtocol & AppLogger & LogFormatter
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABITunnelProtocol & AppLogger & LogFormatter) {
         self.abi = abi
         activeProfiles = [:]
         transfers = [:]
@@ -23,9 +23,9 @@ public final class TunnelObservable {
 // MARK: - Actions
 
 extension TunnelObservable {
-    public func connect(to profileId: ABI.AppIdentifier, force: Bool = false) async throws {
-        try await abi.tunnelConnect(to: profileId, force: force)
-    }
+//    public func connect(to profileId: ABI.AppIdentifier, force: Bool = false) async throws {
+//        try await abi.tunnelConnect(to: profileId, force: force)
+//    }
 
     public func connect(to profile: ABI.AppProfile, force: Bool = false) async throws {
         try await abi.tunnelConnect(to: profile, force: force)

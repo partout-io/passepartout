@@ -9,7 +9,7 @@ import Observation
 
 @MainActor @Observable
 public final class ProfileObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABIProfileProtocol & AppLogger
 
     private var allHeaders: [ABI.AppIdentifier: ABI.AppProfileHeader] {
         didSet {
@@ -22,7 +22,7 @@ public final class ProfileObservable {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABIProfileProtocol & AppLogger) {
         self.abi = abi
 
         allHeaders = [:]

@@ -7,11 +7,11 @@ import Observation
 
 @MainActor @Observable
 public final class ConfigObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABIConfigProtocol & AppLogger
 
     public private(set) var activeFlags: Set<ABI.ConfigFlag>
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABIConfigProtocol & AppLogger) {
         self.abi = abi
         activeFlags = []
     }

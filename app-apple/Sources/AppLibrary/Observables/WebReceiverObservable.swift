@@ -7,10 +7,10 @@ import Observation
 
 @MainActor @Observable
 public final class WebReceiverObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABIWebReceiverProtocol
     public let uploads: PassthroughStream<UniqueID, ABI.WebFileUpload>
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABIWebReceiverProtocol) {
         self.abi = abi
         uploads = PassthroughStream()
     }
