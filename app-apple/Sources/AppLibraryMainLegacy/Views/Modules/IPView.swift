@@ -16,7 +16,7 @@ struct IPView: View, ModuleDraftEditing {
     @State
     private var routePresentation: RoutePresentation?
 
-    init(draft: ModuleDraft<IPModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<IPModule.Builder>) {
         self.draft = draft
     }
 

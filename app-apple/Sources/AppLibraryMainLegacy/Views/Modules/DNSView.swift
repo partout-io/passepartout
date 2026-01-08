@@ -14,7 +14,7 @@ struct DNSView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<DNSModule.Builder>
 
-    init(draft: ModuleDraft<DNSModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<DNSModule.Builder>) {
         self.draft = draft
     }
 

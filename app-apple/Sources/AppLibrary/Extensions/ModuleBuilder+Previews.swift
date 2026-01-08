@@ -31,12 +31,8 @@ private struct PreviewView<Builder>: View where Builder: ModuleBuilder & ModuleV
 
     var body: some View {
         NavigationStack {
-            builder.moduleView(with: .init(
-                registryObservable: .forPreviews,
-                editor: editor,
-                impl: nil
-            ))
-            .navigationTitle(title)
+            builder.moduleView(with: editor)
+                .navigationTitle(title)
         }
         .onLoad {
             editor.saveModule(builder, activating: true)

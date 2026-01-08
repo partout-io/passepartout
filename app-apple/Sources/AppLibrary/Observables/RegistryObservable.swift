@@ -19,14 +19,11 @@ public final class RegistryObservable {
     }
 
     public func validate(_ builder: any ModuleBuilder) throws {
-        guard let impl = abi.registryImplementation(for: builder) as? ModuleBuilderValidator else {
-            return
-        }
-        try impl.validate(builder)
+        try abi.registryValidate(builder)
     }
 
     public func implementation(for builder: any ModuleBuilder) -> ModuleImplementation? {
-        abi.registryImplementation(for: builder)
+        abi.registryImplementation(for: builder.moduleHandler.id)
     }
 
     public func resolvedModule(_ module: ProviderModule) throws -> Module {

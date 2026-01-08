@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 extension WireGuardModule.Builder: ModuleViewProviding {
-    public func moduleView(with parameters: ModuleViewParameters) -> some View {
-        WireGuardView(draft: parameters.editor[self], parameters: parameters)
+    public func moduleView(with editor: ProfileEditor) -> some View {
+        WireGuardView(draft: editor[self])
     }
 }

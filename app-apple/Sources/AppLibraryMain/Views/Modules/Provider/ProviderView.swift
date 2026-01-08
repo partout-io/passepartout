@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct ProviderView: View, ModuleDraftEditing {
+    @Environment(RegistryObservable.self)
+    private var registryObservable
 
     @EnvironmentObject
     private var apiManager: APIManager
@@ -16,8 +18,6 @@ struct ProviderView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<ProviderModule.Builder>
 
-    private let registryObservable: RegistryObservable
-
     @StateObject
     private var providerPreferences = ProviderPreferences()
 
@@ -27,9 +27,8 @@ struct ProviderView: View, ModuleDraftEditing {
     @State
     private var paywallReason: PaywallReason?
 
-    init(draft: ModuleDraft<ProviderModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<ProviderModule.Builder>) {
         self.draft = draft
-        registryObservable = parameters.registryObservable
     }
 
     var body: some View {

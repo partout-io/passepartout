@@ -18,12 +18,8 @@ public final class DefaultModuleViewFactory: ModuleViewFactory {
     public func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
         let result = editor.moduleViewProvider(withId: moduleId, registryObservable: registryObservable)
         if let result {
-            AnyView(result.provider.moduleView(with: .init(
-                registryObservable: registryObservable,
-                editor: editor,
-                impl: result.impl
-            )))
-            .navigationTitle(result.title)
+            AnyView(result.provider.moduleView(with: editor))
+                .navigationTitle(result.title)
         }
     }
 }
@@ -41,7 +37,6 @@ private extension ProfileEditor {
         return ModuleViewProviderResult(
             title: module.moduleType.localizedDescription,
             provider: provider,
-            impl: registryObservable.implementation(for: module)
         )
     }
 }
@@ -50,6 +45,4 @@ private struct ModuleViewProviderResult {
     let title: String
 
     let provider: any ModuleViewProviding
-
-    let impl: ModuleImplementation?
 }

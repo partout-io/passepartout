@@ -6,8 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 extension ProviderModule.Builder: ModuleViewProviding {
-    public func moduleView(with parameters: ModuleViewParameters) -> some View {
-        ProviderView(draft: parameters.editor[self], parameters: parameters)
+    public func moduleView(with editor: ProfileEditor) -> some View {
+        ProviderView(draft: editor[self])
     }
 }
 

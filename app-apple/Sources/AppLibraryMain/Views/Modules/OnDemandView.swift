@@ -23,7 +23,6 @@ struct OnDemandView: View, ModuleDraftEditing {
 
     init(
         draft: ModuleDraft<OnDemandModule.Builder>,
-        parameters: ModuleViewParameters,
         observer: WifiObserver? = nil
     ) {
         self.draft = draft

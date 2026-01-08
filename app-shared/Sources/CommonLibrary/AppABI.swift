@@ -240,8 +240,8 @@ extension AppABI {
         try impl.validate(builder)
     }
 
-    public func registryImplementation(for builder: any ModuleBuilder) -> ModuleImplementation? {
-        registry.implementation(for: builder)
+    public func registryImplementation(for id: ModuleHandler.ID) -> (any ModuleImplementation)? {
+        registry.implementation(for: id)
     }
 
     public func registryResolvedModule(_ module: ProviderModule) throws -> Module {

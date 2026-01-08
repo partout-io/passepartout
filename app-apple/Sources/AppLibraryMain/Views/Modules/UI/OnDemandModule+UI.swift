@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 extension OnDemandModule.Builder: ModuleViewProviding {
-    public func moduleView(with parameters: ModuleViewParameters) -> some View {
-        OnDemandView(draft: parameters.editor[self], parameters: parameters)
+    public func moduleView(with editor: ProfileEditor) -> some View {
+        OnDemandView(draft: editor[self])
     }
 }

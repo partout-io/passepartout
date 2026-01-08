@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct WireGuardView: View, ModuleDraftEditing {
+    @Environment(RegistryObservable.self)
+    private var registryObservable
 
     @Environment(\.navigationPath)
     private var path
@@ -13,7 +15,9 @@ struct WireGuardView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<WireGuardModule.Builder>
 
-    let impl: WireGuardModule.Implementation?
+    var impl: WireGuardModule.Implementation? {
+        registryObservable.implementation(for: draft.module) as? WireGuardModule.Implementation
+    }
 
     @State
     private var paywallReason: PaywallReason?
@@ -27,9 +31,8 @@ struct WireGuardView: View, ModuleDraftEditing {
     @State
     private var errorHandler: ErrorHandler = .default()
 
-    init(draft: ModuleDraft<WireGuardModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<WireGuardModule.Builder>) {
         self.draft = draft
-        impl = parameters.impl as? WireGuardModule.Implementation
     }
 
     var body: some View {

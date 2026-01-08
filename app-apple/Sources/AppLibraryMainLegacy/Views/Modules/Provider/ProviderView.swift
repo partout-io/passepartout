@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct ProviderView: View, ModuleDraftEditing {
+    @Environment(RegistryObservable.self)
+    private var registryObservable
 
     @EnvironmentObject
     private var apiManager: APIManager
@@ -16,8 +18,6 @@ struct ProviderView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<ProviderModule.Builder>
 
-    private let registry: Registry
-
     @StateObject
     private var providerPreferences = ProviderPreferences()
 
@@ -27,9 +27,8 @@ struct ProviderView: View, ModuleDraftEditing {
     @State
     private var paywallReason: PaywallReason?
 
-    init(draft: ModuleDraft<ProviderModule.Builder>, parameters: LegacyModuleViewParameters) {
+    init(draft: ModuleDraft<ProviderModule.Builder>) {
         self.draft = draft
-        registry = parameters.registry
     }
 
     var body: some View {
@@ -235,7 +234,7 @@ private extension ProviderView {
     var resolvedModule: Module? {
         do {
             let module = try draft.module.build()
-            return try registry.resolvedModule(module, in: nil)
+            return try registryObservable.resolvedModule(module)
         } catch {
             pp_log_g(.App.core, .debug, "Unable to resolve provider module: \(error)")
             return nil

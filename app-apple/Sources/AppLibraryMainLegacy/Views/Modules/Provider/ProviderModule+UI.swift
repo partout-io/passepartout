@@ -7,7 +7,7 @@ import SwiftUI
 
 extension ProviderModule.Builder: LegacyModuleViewProviding {
     public func moduleView(with parameters: LegacyModuleViewParameters) -> some View {
-        ProviderView(draft: parameters.editor[self], parameters: parameters)
+        ProviderView(draft: parameters.editor[self])
     }
 }
 
