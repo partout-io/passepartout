@@ -100,8 +100,7 @@ extension AppABI {
         let iapManager = appConfiguration.newIAPManager(
             inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
             receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs, logger: appLogger),
-            betaChecker: betaChecker,
-            isEnabled: !kvStore.bool(forAppPreference: .skipsPurchases)
+            betaChecker: betaChecker
         )
 
         // MARK: API

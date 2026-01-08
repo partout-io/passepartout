@@ -105,8 +105,7 @@ extension TunnelABI {
             receiptReader: SharedReceiptReader(
                 reader: StoreKitReceiptReader(logger: appLogger),
             ),
-            betaChecker: appConfiguration.newBetaChecker(),
-            isEnabled: !kvStore.bool(forAppPreference: .skipsPurchases)
+            betaChecker: appConfiguration.newBetaChecker()
         )
         // Adjust verification parameters if beta
         await iapManager.fetchLevelIfNeeded()

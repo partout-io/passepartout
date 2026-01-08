@@ -94,10 +94,9 @@ extension ABI.AppConfiguration {
     public func newIAPManager(
         inAppHelper: any AppProductHelper,
         receiptReader: AppReceiptReader,
-        betaChecker: BetaChecker,
-        isEnabled: Bool
+        betaChecker: BetaChecker
     ) -> IAPManager {
-        let iapManager = IAPManager(
+        IAPManager(
             customUserLevel: customUserLevel,
             inAppHelper: inAppHelper,
             receiptReader: receiptReader,
@@ -108,8 +107,6 @@ extension ABI.AppConfiguration {
             },
             productsAtBuild: newProductsAtBuild
         )
-        iapManager.isEnabled = distributionTarget.supportsIAP && isEnabled
-        return iapManager
     }
 
     public func newProductsAtBuild(purchase: OriginalPurchase) -> Set<ABI.AppProduct> {

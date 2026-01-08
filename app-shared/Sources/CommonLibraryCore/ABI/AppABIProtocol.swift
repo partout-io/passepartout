@@ -22,6 +22,8 @@ public protocol AppABIEncoderProtocol: Sendable {
 
 @MainActor
 public protocol AppABIIAPProtocol: Sendable {
+    func iapIsEnabled() -> Bool
+    func iapEnable(_ isEnabled: Bool)
     func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
     var iapPurchasedProducts: Set<ABI.AppProduct> { get }
     var iapIsBeta: Bool { get }

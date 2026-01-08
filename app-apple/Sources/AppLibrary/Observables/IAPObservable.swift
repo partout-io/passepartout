@@ -9,8 +9,11 @@ import Observation
 public final class IAPObservable {
     private let abi: AppABIIAPProtocol
 
-    // FIXME: ###, Apply to IAPManager on didSet and read initial value
-    public var isEnabled: Bool
+    public var isEnabled: Bool {
+        didSet {
+            abi.iapEnable(isEnabled)
+        }
+    }
     public private(set) var eligibleFeatures: Set<ABI.AppFeature>
     public private(set) var isLoadingReceipt: Bool
     private var subscription: Task<Void, Never>?
@@ -18,7 +21,7 @@ public final class IAPObservable {
     public init(abi: AppABIIAPProtocol) {
         self.abi = abi
 
-        isEnabled = true
+        isEnabled = abi.iapIsEnabled()
         eligibleFeatures = []
         isLoadingReceipt = false
     }

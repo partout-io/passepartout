@@ -75,6 +75,8 @@ public final class AppABI: AppLogger, LogFormatter,
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
         subscriptions = []
+
+        iapManager.isEnabled = appConfiguration.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
     }
 
     deinit {
@@ -147,6 +149,15 @@ extension AppABI {
     }
 
     // MARK: IAP
+
+    public func iapIsEnabled() -> Bool {
+        iapManager.isEnabled
+    }
+
+    public func iapEnable(_ isEnabled: Bool) {
+        iapManager.isEnabled = appConfiguration.distributionTarget.supportsIAP && isEnabled
+        kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
+    }
 
     public func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
         try iapManager.verify(profile.native, extra: extra)
