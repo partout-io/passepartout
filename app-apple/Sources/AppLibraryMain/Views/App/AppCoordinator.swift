@@ -169,7 +169,7 @@ extension AppCoordinator {
                 profileObservable: profileObservable,
                 profileEditor: profileEditor,
                 registryObservable: registryObservable,
-                moduleViewFactory: DefaultModuleViewFactory(registryObservable: registryObservable),
+                moduleViewFactory: DefaultModuleViewFactory(),
                 path: $profilePath,
                 onDismiss: onDismiss
             )

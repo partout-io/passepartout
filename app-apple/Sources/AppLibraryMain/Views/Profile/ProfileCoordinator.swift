@@ -259,7 +259,7 @@ private extension ProfileCoordinator {
         profileObservable: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
         registryObservable: .forPreviews,
-        moduleViewFactory: DefaultModuleViewFactory(registryObservable: .forPreviews),
+        moduleViewFactory: DefaultModuleViewFactory(),
         path: .constant(NavigationPath()),
         onDismiss: {}
     )

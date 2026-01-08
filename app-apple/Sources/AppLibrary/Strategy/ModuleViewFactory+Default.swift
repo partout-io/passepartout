@@ -8,15 +8,12 @@ import Partout
 import SwiftUI
 
 public final class DefaultModuleViewFactory: ModuleViewFactory {
-    private let registryObservable: RegistryObservable
-
-    public init(registryObservable: RegistryObservable) {
-        self.registryObservable = registryObservable
+    public init() {
     }
 
     @ViewBuilder
     public func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
-        let result = editor.moduleViewProvider(withId: moduleId, registryObservable: registryObservable)
+        let result = editor.moduleViewProvider(withId: moduleId)
         if let result {
             AnyView(result.provider.moduleView(with: editor))
                 .navigationTitle(result.title)
@@ -25,7 +22,7 @@ public final class DefaultModuleViewFactory: ModuleViewFactory {
 }
 
 private extension ProfileEditor {
-    func moduleViewProvider(withId moduleId: UUID, registryObservable: RegistryObservable) -> ModuleViewProviderResult? {
+    func moduleViewProvider(withId moduleId: UUID) -> ModuleViewProviderResult? {
         guard let module = module(withId: moduleId) else {
 //            assertionFailure("No module with ID \(moduleId)")
             return nil
@@ -36,7 +33,7 @@ private extension ProfileEditor {
         }
         return ModuleViewProviderResult(
             title: module.moduleType.localizedDescription,
-            provider: provider,
+            provider: provider
         )
     }
 }
