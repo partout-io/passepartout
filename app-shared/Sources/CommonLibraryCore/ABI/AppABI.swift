@@ -3,13 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @MainActor
-public final class AppABI: AppLogger, LogFormatter,
-                           AppABIConfigProtocol, AppABIEncoderProtocol,
-                           AppABIIAPProtocol, AppABIProfileProtocol,
-                           AppABIRegistryProtocol, AppABITunnelProtocol,
-                           AppABIVersionProtocol, AppABIWebReceiverProtocol,
-                           Sendable {
+public final class AppABI: Sendable {
     // MARK: Events
+
     public typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
 
     // MARK: Business
@@ -119,9 +115,9 @@ public final class AppABI: AppLogger, LogFormatter,
 
 // MARK: - Actions
 
-extension AppABI {
-    // MARK: Config
+// MARK: Config
 
+extension AppABI: AppABIConfigProtocol {
     public var configActiveFlags: Set<ABI.ConfigFlag> {
         configManager.activeFlags
     }
@@ -129,9 +125,11 @@ extension AppABI {
     public func configData(for flag: ABI.ConfigFlag) -> JSON? {
         configManager.data(for: flag)
     }
+}
 
-    // MARK: Encoder
+// MARK: Encoder
 
+extension AppABI: AppABIEncoderProtocol {
     public func encoderDefaultFilename(for profile: ABI.AppProfile) -> String {
         appEncoder.defaultFilename(for: profile.native)
     }
@@ -147,9 +145,11 @@ extension AppABI {
     public func encoderWriteToFile(_ profile: ABI.AppProfile) throws -> String {
         try appEncoder.writeToFile(profile.native)
     }
+}
 
-    // MARK: IAP
+// MARK: IAP
 
+extension AppABI: AppABIIAPProtocol {
     public func iapIsEnabled() -> Bool {
         iapManager.isEnabled
     }
@@ -182,9 +182,11 @@ extension AppABI {
     public var iapVerificationDelayMinutes: Int {
         iapManager.verificationDelayMinutes
     }
+}
 
-    // MARK: Logging
+// MARK: Logging
 
+extension AppABI: AppLogger, LogFormatter {
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         appLogger.log(category, level, message)
     }
@@ -196,9 +198,11 @@ extension AppABI {
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
         logFormatter.formattedLog(timestamp: timestamp, message: message)
     }
+}
 
-    // MARK: Profile
+// MARK: Profile
 
+extension AppABI: AppABIProfileProtocol {
     public func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile? {
         profileManager.profile(withId: id)
     }
@@ -250,9 +254,11 @@ extension AppABI {
     public func profileIsRemoteImportingEnabled() -> Bool {
         profileManager.isRemoteImportingEnabled
     }
+}
 
-    // MARK: Registry
+// MARK: Registry
 
+extension AppABI: AppABIRegistryProtocol {
     public func registryNewModule(ofType type: ModuleType) -> any ModuleBuilder {
         type.newModule(with: registry)
     }
@@ -271,9 +277,11 @@ extension AppABI {
     public func registryResolvedModule(_ module: ProviderModule) throws -> Module {
         try registry.resolvedModule(module, in: nil)
     }
+}
 
-    // MARK: Tunnel
+// MARK: Tunnel
 
+extension AppABI: AppABITunnelProtocol {
     public func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws {
         try await tunnelManager.connect(with: profile.native, force: force)
     }
@@ -307,9 +315,11 @@ extension AppABI {
             )
         }
     }
+}
 
-    // MARK: Version
+// MARK: Version
 
+extension AppABI: AppABIVersionProtocol {
     public func versionCheckLatestRelease() async {
         await versionChecker.checkLatestRelease()
     }
@@ -317,9 +327,11 @@ extension AppABI {
     public var versionLatestRelease: ABI.VersionRelease? {
         versionChecker.latestRelease
     }
+}
 
-    // MARK: Web receiver
+// MARK: Web receiver
 
+extension AppABI: AppABIWebReceiverProtocol {
     public func webReceiverStart() throws {
         try webReceiverManager.start()
     }
