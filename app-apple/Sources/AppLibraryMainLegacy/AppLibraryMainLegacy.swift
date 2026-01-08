@@ -3,4 +3,3 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @_exported import AppLibrary
-@_exported import Partout
