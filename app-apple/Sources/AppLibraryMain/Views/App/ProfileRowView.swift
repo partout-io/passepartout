@@ -97,8 +97,6 @@ private extension ProfileRowView {
     }
     .task {
         do {
-            // FIXME: ###, Preview ProfileManager.observeRemote()
-//            try await profileObservable.observeRemote(repository: InMemoryProfileRepository())
             try await profileObservable.save(profile, sharingFlag: .shared)
         } catch {
             fatalError(error.localizedDescription)

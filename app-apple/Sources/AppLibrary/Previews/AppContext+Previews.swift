@@ -58,6 +58,10 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
 
+        Task {
+            try await profileManager.observeRemote(repository: InMemoryProfileRepository())
+        }
+
         let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
