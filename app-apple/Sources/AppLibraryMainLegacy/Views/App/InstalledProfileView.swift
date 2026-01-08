@@ -17,7 +17,7 @@ struct InstalledProfileView: View, Routable {
 
     let profile: Profile?
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     let errorHandler: ErrorHandler
 

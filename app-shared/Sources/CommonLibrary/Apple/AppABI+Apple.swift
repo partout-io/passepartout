@@ -168,7 +168,7 @@ extension AppABI {
         let sysexManager = appConfiguration.newSystemExtensionManager(
             tunnelIdentifier: tunnelIdentifier
         )
-        let extendedTunnel = appConfiguration.newExtendedTunnel(
+        let tunnelManager = appConfiguration.newTunnelManager(
             tunnel: tunnel,
             extensionInstaller: sysexManager,
             kvStore: kvStore,
@@ -283,7 +283,7 @@ extension AppABI {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnel: extendedTunnel,
+            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock

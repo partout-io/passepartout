@@ -14,7 +14,7 @@ struct ConnectionProfilesView: View {
     var profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     @FocusState.Binding
     var focusedField: ConnectionView.Field?

@@ -79,7 +79,7 @@ extension DebugLogView {
 
     @available(*, deprecated, message: "#1594")
     public init(
-        withTunnel tunnel: ExtendedTunnel,
+        withTunnel tunnel: TunnelManager,
         parameters: ABI.Constants.Log,
         logFormatterBlock: @escaping LogFormatterBlock,
         content: @escaping ([String]) -> Content

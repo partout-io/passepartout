@@ -19,7 +19,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
 
     private let profileManager: ProfileManager
 
-    public let tunnel: ExtendedTunnel
+    public let tunnel: TunnelManager
 
     private let registry: Registry
 
@@ -39,7 +39,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
 
     public init(
         profileManager: ProfileManager,
-        tunnel: ExtendedTunnel,
+        tunnel: TunnelManager,
         registry: Registry,
         webReceiverManager: WebReceiverManager
     ) {

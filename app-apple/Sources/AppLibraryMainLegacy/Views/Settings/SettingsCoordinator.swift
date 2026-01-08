@@ -20,7 +20,7 @@ struct SettingsCoordinator: View {
 
     let profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     @State
     private var path = NavigationPath()

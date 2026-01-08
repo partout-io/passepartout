@@ -31,7 +31,7 @@ extension ABI.Issue {
 
         let providerLastUpdates: [ProviderID: Timestamp]
 
-        let tunnel: ExtendedTunnel
+        let tunnel: TunnelManager
 
         let comment: String
     }

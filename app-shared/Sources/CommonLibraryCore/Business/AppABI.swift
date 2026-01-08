@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @MainActor
-public final class AppABI: AppLogger, LogFormatter,
+public final class AppABI2: AppLogger, LogFormatter,
                            AppABIConfigProtocol, AppABIEncoderProtocol,
                            AppABIIAPProtocol, AppABIProfileProtocol,
                            AppABIRegistryProtocol, AppABITunnelProtocol,
@@ -22,7 +22,7 @@ public final class AppABI: AppLogger, LogFormatter,
     public let preferencesManager: PreferencesManager
     public let profileManager: ProfileManager
     public let registry: Registry
-    public let tunnelManager: TunnelManager
+    public let tunnel: TunnelManager
     private let versionChecker: VersionChecker
     public let webReceiverManager: WebReceiverManager
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
@@ -53,7 +53,7 @@ public final class AppABI: AppLogger, LogFormatter,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
         registry: Registry,
-        tunnelManager: TunnelManager,
+        tunnel: TunnelManager,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
@@ -70,7 +70,7 @@ public final class AppABI: AppLogger, LogFormatter,
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
-        self.tunnelManager = tunnelManager
+        self.tunnel = tunnel
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
@@ -85,7 +85,7 @@ public final class AppABI: AppLogger, LogFormatter,
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
-        let tunnelEvents = tunnelManager.didChange.subscribe()
+        let tunnelEvents = tunnel.didChange.subscribe()
         let webReceiverUploads = webReceiverManager.files
         subscriptions.append(Task {
             for await event in configEvents {
@@ -117,7 +117,7 @@ public final class AppABI: AppLogger, LogFormatter,
 
 // MARK: - Actions
 
-extension AppABI {
+extension AppABI2 {
     // MARK: Config
 
     public var configActiveFlags: Set<ABI.ConfigFlag> {
@@ -264,7 +264,7 @@ extension AppABI {
     // MARK: Tunnel
 
     public func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws {
-        try await tunnelManager.connect(with: profile.native, force: force)
+        try await tunnel.connect(with: profile.native, force: force)
     }
 
 //    public func tunnelReconnect(to profileId: ABI.Identifier) async throws {
@@ -272,19 +272,19 @@ extension AppABI {
 //    }
 
     public func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
-        try await tunnelManager.disconnect(from: profileId)
+        try await tunnel.disconnect(from: profileId)
     }
 
     public func tunnelCurrentLog() async -> [ABI.AppLogLine] {
-        await tunnelManager.currentLog(parameters: appConfiguration.constants.log)
+        await tunnel.currentLog(parameters: appConfiguration.constants.log)
     }
 
     public func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
-        tunnelManager.lastError(ofProfileId: profileId)
+        tunnel.lastError(ofProfileId: profileId)
     }
 
     public func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
-        tunnelManager.transfer(ofProfileId: profileId)
+        tunnel.transfer(ofProfileId: profileId)
     }
 
     // MARK: Version
@@ -323,7 +323,7 @@ extension AppABI {
 // MARK: - Observation
 
 // Invoked by AppDelegate
-extension AppABI {
+extension AppABI2 {
     public func onApplicationActive() {
         Task {
             // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
@@ -344,7 +344,7 @@ extension AppABI {
 }
 
 // Invoked on internal events
-private extension AppABI {
+private extension AppABI2 {
     func onLaunch() async throws {
         appLogger.log(.core, .notice, "Application did launch")
 
@@ -461,11 +461,11 @@ private extension AppABI {
             appLogger.log(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
-        guard tunnelManager.isActiveProfile(withId: profile.id) else {
+        guard tunnel.isActiveProfile(withId: profile.id) else {
             appLogger.log(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
             return
         }
-        let status = tunnelManager.status(ofProfileId: profile.id)
+        let status = tunnel.status(ofProfileId: profile.id)
         guard [.active, .activating].contains(status) else {
             appLogger.log(.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return
@@ -474,9 +474,9 @@ private extension AppABI {
         pendingTask = Task {
             do {
                 appLogger.log(.core, .info, "\tReconnect profile \(profile.id)")
-                try await tunnelManager.disconnect(from: profile.id)
+                try await tunnel.disconnect(from: profile.id)
                 do {
-                    try await tunnelManager.connect(with: profile)
+                    try await tunnel.connect(with: profile)
                 } catch ABI.AppError.interactiveLogin {
                     appLogger.log(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {

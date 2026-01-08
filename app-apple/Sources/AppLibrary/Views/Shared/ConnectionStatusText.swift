@@ -105,7 +105,7 @@ private extension ConnectionStatusDynamicText {
 #Preview("Connected (Dynamic)") {
     ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
         .task {
-            try? await ExtendedTunnel.forPreviews.connect(with: .forPreviews)
+            try? await TunnelManager.forPreviews.connect(with: .forPreviews)
         }
         .frame(width: 400, height: 100)
         .withMockEnvironment()
@@ -124,7 +124,7 @@ private extension ConnectionStatusDynamicText {
     }
     return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
         .task {
-            try? await ExtendedTunnel.forPreviews.connect(with: profile)
+            try? await TunnelManager.forPreviews.connect(with: profile)
         }
         .frame(width: 400, height: 100)
         .withMockEnvironment()

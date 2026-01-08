@@ -45,9 +45,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         )
 
         // The app may propagate its local preferences on manual start
-        let isInteractive = options?[ExtendedTunnel.isManualKey] == true as NSNumber
+        let isInteractive = options?[TunnelManager.isManualKey] == true as NSNumber
         let startPreferences: ABI.AppPreferenceValues? = {
-            guard let encodedPreferences = options?[ExtendedTunnel.appPreferences] as? Data else {
+            guard let encodedPreferences = options?[TunnelManager.appPreferences] as? Data else {
                 return nil
             }
             do {

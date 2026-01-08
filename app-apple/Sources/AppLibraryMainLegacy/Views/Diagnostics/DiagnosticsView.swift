@@ -37,7 +37,7 @@ struct DiagnosticsView: View {
 
     let profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     var availableTunnelLogs: (() async -> [LogEntry])?
 

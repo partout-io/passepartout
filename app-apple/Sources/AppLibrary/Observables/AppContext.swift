@@ -100,7 +100,7 @@ extension AppContext {
     @available(*, deprecated, message: "#1594")
     public var registry: Registry { abi.registry }
     @available(*, deprecated, message: "#1594")
-    public var tunnel: ExtendedTunnel { abi.tunnel }
+    public var tunnel: TunnelManager { abi.tunnelManager }
     @available(*, deprecated, message: "#1594")
     public var webReceiverManager: WebReceiverManager { abi.webReceiverManager }
 }

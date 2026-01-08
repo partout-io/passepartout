@@ -25,7 +25,7 @@ struct ProfileListView: View, Routable, LegacyTunnelInstallationProviding {
     var profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let errorHandler: ErrorHandler
 

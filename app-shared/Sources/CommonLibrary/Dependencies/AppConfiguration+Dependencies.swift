@@ -161,13 +161,13 @@ extension ABI.AppConfiguration {
     }
 
     @MainActor
-    public func newExtendedTunnel(
+    public func newTunnelManager(
         tunnel: Tunnel,
         extensionInstaller: ExtensionInstaller?,
         kvStore: KeyValueStore,
         processor: AppTunnelProcessor
-    ) -> ExtendedTunnel {
-        ExtendedTunnel(
+    ) -> TunnelManager {
+        TunnelManager(
             tunnel: tunnel,
             extensionInstaller: extensionInstaller,
             kvStore: kvStore,

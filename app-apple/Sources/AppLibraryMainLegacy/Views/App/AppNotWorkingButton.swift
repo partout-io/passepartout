@@ -17,7 +17,7 @@ struct AppNotWorkingButton: View {
     private var configObservable
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     @State
     private var isUnableToEmail = false

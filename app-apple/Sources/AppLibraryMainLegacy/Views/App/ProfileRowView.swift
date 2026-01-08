@@ -21,7 +21,7 @@ struct ProfileRowView: View, Routable, SizeClassProviding {
     @ObservedObject
     var profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     let preview: ABI.ProfilePreview
 

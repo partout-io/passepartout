@@ -5,7 +5,7 @@
 @testable import CommonLibraryCore
 import Testing
 
-struct ExtendedTunnelTests {
+struct TunnelManagerTests {
     private let ctx: PartoutLoggerContext = .global
 
     private func newStrategy() -> TunnelObservableStrategy {
@@ -14,15 +14,14 @@ struct ExtendedTunnelTests {
 }
 
 @MainActor
-extension ExtendedTunnelTests {
-
+extension TunnelManagerTests {
     @Test
     func givenTunnel_whenDisconnectWithError_thenPublishesLastErrorCode() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
         let tunnel = Tunnel(ctx, strategy: newStrategy()) { _ in
             env
         }
-        let sut = ExtendedTunnel(tunnel: tunnel, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
@@ -52,7 +51,7 @@ extension ExtendedTunnelTests {
         let tunnel = Tunnel(ctx, strategy: newStrategy()) { _ in
             env
         }
-        let sut = ExtendedTunnel(tunnel: tunnel, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
         let stream = sut.activeProfilesStream
         let expectedDataCount = DataCount(500, 700)
 
@@ -75,7 +74,7 @@ extension ExtendedTunnelTests {
             env
         }
         let processor = MockTunnelProcessor()
-        let sut = ExtendedTunnel(tunnel: tunnel, processor: processor, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
         let stream = sut.activeProfilesStream
 
         let module = try DNSModule.Builder().build()
@@ -97,7 +96,7 @@ extension ExtendedTunnelTests {
             env
         }
         let processor = MockTunnelProcessor()
-        let sut = ExtendedTunnel(tunnel: tunnel, processor: processor, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
         let stream = sut.activeProfilesStream
 
         let module = try DNSModule.Builder().build()

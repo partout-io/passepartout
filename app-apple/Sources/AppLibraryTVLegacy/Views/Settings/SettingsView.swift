@@ -16,7 +16,7 @@ struct SettingsView: View {
     @ObservedObject
     var profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     @FocusState
     private var focus: Detail?

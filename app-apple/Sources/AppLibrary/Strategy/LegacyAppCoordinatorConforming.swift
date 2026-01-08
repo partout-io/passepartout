@@ -11,7 +11,7 @@ import Partout
 public protocol LegacyAppCoordinatorConforming {
     var iapManager: IAPManager { get }
 
-    var tunnel: ExtendedTunnel { get }
+    var tunnel: TunnelManager { get }
 
     func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock)
 

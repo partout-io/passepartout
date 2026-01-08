@@ -78,7 +78,7 @@ private extension ABI.AppProfile.Status {
 }
 
 @available(*, deprecated, message: "#1594")
-extension ExtendedTunnel {
+extension TunnelManager {
     public func statusImageName(ofProfileId profileId: Profile.ID) -> Theme.ImageName? {
         connectionStatus(ofProfileId: profileId).imageName
     }

@@ -17,7 +17,7 @@ struct ProfileCardView: View {
     let preview: ABI.ProfilePreview
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     var onTap: ((ABI.ProfilePreview) -> Void)?
 

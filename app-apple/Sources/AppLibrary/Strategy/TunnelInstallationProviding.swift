@@ -17,5 +17,5 @@ public protocol TunnelInstallationProviding {
 public protocol LegacyTunnelInstallationProviding {
     var profileManager: ProfileManager { get }
 
-    var tunnel: ExtendedTunnel { get }
+    var tunnel: TunnelManager { get }
 }

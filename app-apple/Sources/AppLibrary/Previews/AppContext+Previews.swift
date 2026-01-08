@@ -44,10 +44,11 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = ExtendedTunnel(
-            tunnel: Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
-                SharedTunnelEnvironment(profileId: nil)
-            },
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
+            SharedTunnelEnvironment(profileId: nil)
+        }
+        let tunnelManager = TunnelManager(
+            tunnel: tunnel,
             processor: processor,
             interval: 10.0
         )
@@ -70,7 +71,7 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnel: tunnel,
+            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
@@ -124,8 +125,8 @@ extension ProfileManager {
     }
 }
 
-extension ExtendedTunnel {
-    public static var forPreviews: ExtendedTunnel {
+extension TunnelManager {
+    public static var forPreviews: TunnelManager {
         AppContext.forPreviews.tunnel
     }
 }

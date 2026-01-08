@@ -8,11 +8,11 @@ import SwiftUI
 public struct DiagnosticsProfileView: View {
 
     @ObservedObject
-    private var tunnel: ExtendedTunnel
+    private var tunnel: TunnelManager
 
     public let profile: Profile
 
-    public init(tunnel: ExtendedTunnel, profile: Profile) {
+    public init(tunnel: TunnelManager, profile: Profile) {
         self.tunnel = tunnel
         self.profile = profile
     }

@@ -17,7 +17,7 @@ struct ActiveProfileView: View {
     let profile: Profile?
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     @Binding
     var isSwitching: Bool
