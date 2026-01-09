@@ -8,7 +8,6 @@ import NetworkExtension
 extension TunnelABI {
     public static func forProduction(
         appConfiguration: ABI.AppConfiguration,
-        kvStore: KeyValueStore,
         preferences: ABI.AppPreferenceValues,
         startPreferences: ABI.AppPreferenceValues?,
         neProvider: NEPacketTunnelProvider

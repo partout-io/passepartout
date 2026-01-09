@@ -80,7 +80,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 if usesTunnelABI {
                     abi = try await TunnelABI.forProduction(
                         appConfiguration: appConfiguration,
-                        kvStore: kvStore,
                         preferences: preferences,
                         startPreferences: startPreferences,
                         neProvider: self
