@@ -6,9 +6,11 @@ import CommonLibrary
 import Partout
 import SwiftUI
 
-public struct ProfileSelectorMenu: View {
-    @Environment(ProfileObservable.self)
-    private var profileObservable
+@available(*, deprecated, message: "#1594")
+public struct LegacyProfileSelectorMenu: View {
+
+    @EnvironmentObject
+    private var profileManager: ProfileManager
 
     private let title: String
 
@@ -51,10 +53,10 @@ public struct ProfileSelectorMenu: View {
     }
 }
 
-private extension ProfileSelectorMenu {
+private extension LegacyProfileSelectorMenu {
     var previews: [ABI.ProfilePreview]? {
-        let filtered = profileObservable
-            .filteredHeaders
+        let filtered = profileManager
+            .previews
             .filter {
                 $0.id != excludedProfileId
             }
@@ -63,8 +65,6 @@ private extension ProfileSelectorMenu {
         guard !filtered.isEmpty || newTitle != nil else {
             return nil
         }
-        return filtered.map {
-            ABI.ProfilePreview(id: $0.id, name: $0.name)
-        }
+        return filtered
     }
 }

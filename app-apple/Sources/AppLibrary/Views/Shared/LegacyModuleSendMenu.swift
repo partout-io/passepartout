@@ -6,9 +6,11 @@ import CommonLibrary
 import Partout
 import SwiftUI
 
-public struct ModuleSendMenu: View {
-    @Environment(ProfileObservable.self)
-    private var profileObservable
+@available(*, deprecated, message: "#1594")
+public struct LegacyModuleSendMenu: View {
+
+    @EnvironmentObject
+    private var profileManager: ProfileManager
 
     private let profileId: Profile.ID
 
@@ -23,7 +25,7 @@ public struct ModuleSendMenu: View {
     }
 
     public var body: some View {
-        ProfileSelectorMenu(
+        LegacyProfileSelectorMenu(
             Strings.Views.Ui.ModuleSend.title,
             withNewTitle: newProfileName,
             excluding: profileId,
@@ -32,7 +34,7 @@ public struct ModuleSendMenu: View {
     }
 }
 
-private extension ModuleSendMenu {
+private extension LegacyModuleSendMenu {
     var newProfileName: String {
         Strings.Views.Ui.ModuleSend.newProfileName(module.moduleType)
     }
@@ -42,20 +44,20 @@ private extension ModuleSendMenu {
             do {
                 var destination: Profile.Builder
                 if let preview {
-                    guard let existingDestination = profileObservable.profile(withId: preview.id) else {
+                    guard let existingDestination = profileManager.partoutProfile(withId: preview.id) else {
                         throw PartoutError(.notFound)
                     }
-                    destination = existingDestination.native.builder()
+                    destination = existingDestination.builder()
                 } else {
                     destination = Profile.Builder()
-                    destination.name = profileObservable.firstUniqueName(from: newProfileName)
+                    destination.name = profileManager.firstUniqueName(from: newProfileName)
                 }
                 var moduleCopy = module
                 moduleCopy.id = UUID()
                 let builtModule = try moduleCopy.build()
 
                 destination.modules.append(builtModule)
-                try await profileObservable.save(ABI.AppProfile(native: destination.build()))
+                try await profileManager.save(destination.build())
             } catch {
                 pp_log_g(.App.profiles, .error, "Unable to copy module: \(error)")
                 errorHandler.handle(error)
