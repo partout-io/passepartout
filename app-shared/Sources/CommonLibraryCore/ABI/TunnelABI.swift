@@ -5,15 +5,18 @@
 public final class TunnelABI: TunnelABIProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
+        let skipsPurchases: Bool
         let verificationParameters: ABI.Constants.Tunnel.Verification.Parameters
         let usesRelaxedVerification: Bool
 
         public init(
             manager: IAPManager,
+            skipsPurchases: Bool,
             verificationParameters: ABI.Constants.Tunnel.Verification.Parameters,
             usesRelaxedVerification: Bool
         ) {
             self.manager = manager
+            self.skipsPurchases = skipsPurchases
             self.verificationParameters = verificationParameters
             self.usesRelaxedVerification = usesRelaxedVerification
         }
@@ -42,6 +45,11 @@ public final class TunnelABI: TunnelABIProtocol {
         self.iap = iap
         self.logFormatter = logFormatter
         self.originalProfile = originalProfile
+
+        // Disable if skips purchases
+        if let iap {
+            iap.manager.isEnabled = !iap.skipsPurchases
+        }
     }
 
     public func start(isInteractive: Bool) async throws {
