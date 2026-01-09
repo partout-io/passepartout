@@ -46,12 +46,7 @@ extension TunnelObservable {
     public func statusColor(ofProfileId profileId: Profile.ID, _ theme: Theme) -> Color {
         let info = activeProfiles[profileId]
         if lastError(for: profileId) != nil {
-            switch info?.status {
-            case .disconnected:
-                return theme.inactiveColor
-            default:
-                return theme.errorColor
-            }
+            return theme.errorColor
         }
         switch info?.status {
         case .connected:
