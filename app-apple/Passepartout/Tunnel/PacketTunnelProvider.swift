@@ -241,7 +241,7 @@ private extension PacketTunnelProvider {
                 productsAtBuild: appConfiguration.newProductsAtBuild
             )
             if appConfiguration.distributionTarget.supportsIAP {
-                manager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
+                manager.isEnabled = !preferences.skipsPurchases
             } else {
                 manager.isEnabled = false
             }
@@ -303,7 +303,7 @@ private extension PacketTunnelProvider {
             }
 
             // Relax verification strategy based on AppPreference
-            let isRelaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
+            let isRelaxedVerification = preferences.relaxedVerification
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may

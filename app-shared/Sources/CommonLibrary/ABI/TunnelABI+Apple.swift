@@ -108,10 +108,10 @@ extension TunnelABI {
             betaChecker: appConfiguration.newBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
-        let skipsPurchases = !appConfiguration.distributionTarget.supportsIAP || kvStore.bool(forAppPreference: .skipsPurchases)
+        let skipsPurchases = !appConfiguration.distributionTarget.supportsIAP || preferences.skipsPurchases
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
-        let usesRelaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
+        let usesRelaxedVerification = preferences.relaxedVerification
         // Assemble
         let iap = TunnelABI.IAP(
             manager: iapManager,
