@@ -36,7 +36,6 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     public init(
         profileObservable: ProfileObservable,
         tunnel: TunnelObservable,
-        registryObservable: RegistryObservable,
         webReceiverObservable: WebReceiverObservable
     ) {
         self.profileObservable = profileObservable
@@ -219,7 +218,6 @@ private struct DynamicPaywallModifier: ViewModifier {
     AppCoordinator(
         profileObservable: .forPreviews,
         tunnel: .forPreviews,
-        registryObservable: .forPreviews,
         webReceiverObservable: .forPreviews
     )
     .withMockEnvironment()

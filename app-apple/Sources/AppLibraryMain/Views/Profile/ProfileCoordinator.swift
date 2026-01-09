@@ -28,11 +28,12 @@ struct ProfileCoordinator: View {
     @Environment(ConfigObservable.self)
     private var configObservable
 
+    @Environment(RegistryObservable.self)
+    private var registryObservable
+
     let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
-
-    let registryObservable: RegistryObservable
 
     let moduleViewFactory: any ModuleViewFactory
 
@@ -258,7 +259,6 @@ private extension ProfileCoordinator {
     ProfileCoordinator(
         profileObservable: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
-        registryObservable: .forPreviews,
         moduleViewFactory: DefaultModuleViewFactory(),
         path: .constant(NavigationPath()),
         onDismiss: {}
