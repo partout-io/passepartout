@@ -5,9 +5,10 @@
 import CommonLibrary
 import SwiftUI
 
-public struct PurchasedView: View {
-    @Environment(IAPObservable.self)
-    private var iapObservable
+public struct LegacyPurchasedView: View {
+
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     @State
     private var isLoading = true
@@ -29,8 +30,8 @@ public struct PurchasedView: View {
             .onLoad {
                 Task {
                     do {
-                        products = try await iapObservable
-                            .purchasableProducts(for: Array(iapObservable.purchasedProducts))
+                        products = try await iapManager
+                            .fetchPurchasableProducts(for: Array(iapManager.purchasedProducts))
                             .sorted {
                                 $0.localizedTitle < $1.localizedTitle
                             }
@@ -44,15 +45,15 @@ public struct PurchasedView: View {
     }
 }
 
-private extension PurchasedView {
+private extension LegacyPurchasedView {
     var isEmpty: Bool {
-        iapObservable.originalPurchase == nil && iapObservable.purchasedProducts.isEmpty && iapObservable.eligibleFeatures.isEmpty
+        iapManager.originalPurchase == nil && iapManager.purchasedProducts.isEmpty && iapManager.eligibleFeatures.isEmpty
     }
 
     var allFeatures: [ABI.AppFeature] {
         ABI.AppFeature.allCases.sorted {
-            let lRank = $0.rank(with: iapObservable)
-            let rRank = $1.rank(with: iapObservable)
+            let lRank = $0.rank(with: iapManager)
+            let rRank = $1.rank(with: iapManager)
             if lRank != rRank {
                 return lRank < rRank
             }
@@ -61,7 +62,7 @@ private extension PurchasedView {
     }
 }
 
-private extension PurchasedView {
+private extension LegacyPurchasedView {
     var contentView: some View {
 #if os(macOS)
         Form(content: sectionsGroup)
@@ -81,7 +82,7 @@ private extension PurchasedView {
     }
 
     var downloadSection: some View {
-        iapObservable.originalPurchase.map { purchase in
+        iapManager.originalPurchase.map { purchase in
             Group {
                 ThemeRow(Strings.Views.Purchased.Rows.buildNumber, value: purchase.buildNumber.description)
                     .scrollableOnTV()
@@ -109,7 +110,7 @@ private extension PurchasedView {
     var featuresSection: some View {
         Group {
             ForEach(allFeatures, id: \.self) { feature in
-                PurchasedFeatureView(text: feature.localizedDescription, isEligible: iapObservable.isEligible(for: feature))
+                LegacyPurchasedFeatureView(text: feature.localizedDescription, isEligible: iapManager.isEligible(for: feature))
                     .scrollableOnTV()
             }
         }
@@ -126,7 +127,7 @@ private extension PurchasedView {
     }
 }
 
-private struct PurchasedFeatureView: View {
+private struct LegacyPurchasedFeatureView: View {
     let text: String
 
     let isEligible: Bool
@@ -144,9 +145,10 @@ private struct PurchasedFeatureView: View {
 // MARK: -
 
 private extension ABI.AppFeature {
+
     @MainActor
-    func rank(with iapObservable: IAPObservable) -> Int {
-        iapObservable.isEligible(for: self) ? 0 : 1
+    func rank(with iapManager: IAPManager) -> Int {
+        iapManager.isEligible(for: self) ? 0 : 1
     }
 }
 

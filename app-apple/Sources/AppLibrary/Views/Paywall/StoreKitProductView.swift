@@ -9,20 +9,20 @@ import SwiftUI
 struct StoreKitProductView: View {
     let style: PaywallProductViewStyle
 
-    let product: InAppProduct
+    let storeProduct: ABI.StoreProduct
 
     @Binding
     var purchasingIdentifier: String?
 
-    let onComplete: (String, InAppPurchaseResult) -> Void
+    let onComplete: (String, ABI.StoreResult) -> Void
 
     let onError: (Error) -> Void
 
     var body: some View {
-        ProductView(id: product.productIdentifier)
+        ProductView(id: storeProduct.nativeIdentifier)
             .withPaywallStyle(style)
             .onInAppPurchaseStart { _ in
-                purchasingIdentifier = product.productIdentifier
+                purchasingIdentifier = storeProduct.nativeIdentifier
             }
             .onInAppPurchaseCompletion { skProduct, result in
                 do {
@@ -58,7 +58,7 @@ private extension ProductView {
 }
 
 private extension Product.PurchaseResult {
-    var toResult: InAppPurchaseResult {
+    var toResult: ABI.StoreResult {
         switch self {
         case .success:
             return .done

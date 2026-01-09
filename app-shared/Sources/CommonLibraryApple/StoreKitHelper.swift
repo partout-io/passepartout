@@ -5,13 +5,10 @@
 import StoreKit
 
 @MainActor
-public final class StoreKitHelper<ProductType>: InAppHelper
-        where ProductType: RawRepresentable & Hashable & Sendable,
-              ProductType.RawValue == String {
+public final class StoreKitHelper: InAppHelper {
+    private let products: [ABI.AppProduct]
 
-    private let products: [ProductType]
-
-    private let inAppIdentifier: @Sendable (ProductType) -> String
+    private let inAppIdentifier: @Sendable (ABI.AppProduct) -> String
 
     private var activeTransactions: Set<Transaction>
 
@@ -19,7 +16,7 @@ public final class StoreKitHelper<ProductType>: InAppHelper
 
     private var observer: Task<Void, Never>?
 
-    public init(products: [ProductType], inAppIdentifier: @escaping @Sendable (ProductType) -> String) {
+    public init(products: [ABI.AppProduct], inAppIdentifier: @escaping @Sendable (ABI.AppProduct) -> String) {
         self.products = products
         self.inAppIdentifier = inAppIdentifier
         activeTransactions = []
@@ -33,9 +30,6 @@ public final class StoreKitHelper<ProductType>: InAppHelper
     }
 }
 
-extension StoreKitHelper: AppProductHelper where ProductType == ABI.AppProduct {
-}
-
 extension StoreKitHelper {
     public nonisolated var canMakePurchases: Bool {
         AppStore.canMakePayments
@@ -45,26 +39,27 @@ extension StoreKitHelper {
         didUpdateSubject.subscribe()
     }
 
-    public func fetchProducts(timeout: TimeInterval) async throws -> [ProductType: InAppProduct] {
+    public func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: ABI.StoreProduct] {
         let skProducts = try await performTask(withTimeout: timeout) {
             try await Product.products(for: self.products.map(self.inAppIdentifier))
         }
         return skProducts.reduce(into: [:]) {
-            guard let pid = ProductType(rawValue: $1.id) else {
+            guard let pid = ABI.AppProduct(rawValue: $1.id) else {
                 return
             }
-            $0[pid] = InAppProduct(
-                productIdentifier: $1.id,
+            $0[pid] = ABI.StoreProduct(
+                product: pid,
                 localizedTitle: $1.displayName,
                 localizedDescription: $1.description,
                 localizedPrice: $1.displayPrice,
+                nativeIdentifier: $1.id,
                 native: $1
             )
         }
     }
 
-    public func purchase(_ inAppProduct: InAppProduct) async throws -> InAppPurchaseResult {
-        guard let skProduct = inAppProduct.native as? Product else {
+    public func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
+        guard let skProduct = storeProduct.native as? Product else {
             return .notFound
         }
         switch try await skProduct.purchase() {

@@ -7,16 +7,15 @@ import Foundation
 import Partout
 
 extension PaywallCoordinator {
-
     @MainActor @Observable
     final class Model {
         var isFetchingProducts = true
 
         private(set) var suggestedProducts: Set<ABI.AppProduct> = []
 
-        private(set) var completePurchasable: [InAppProduct] = []
+        private(set) var completePurchasable: [ABI.StoreProduct] = []
 
-        private(set) var individualPurchasable: [InAppProduct] = []
+        private(set) var individualPurchasable: [ABI.StoreProduct] = []
 
         var purchasingIdentifier: String?
 
@@ -25,6 +24,34 @@ extension PaywallCoordinator {
 }
 
 extension PaywallCoordinator.Model {
+    func fetchAvailableProducts(
+        for requiredFeatures: Set<ABI.AppFeature>,
+        with iapObservable: IAPObservable
+    ) async throws {
+        guard isFetchingProducts else {
+            return
+        }
+        isFetchingProducts = true
+        defer {
+            isFetchingProducts = false
+        }
+        do {
+            let rawProducts = iapObservable.suggestedProducts(for: requiredFeatures)
+            guard !rawProducts.isEmpty else {
+                throw ABI.AppError.emptyProducts
+            }
+            let rawSortedProducts = rawProducts.sorted {
+                $0.productRank < $1.productRank
+            }
+            let purchasable = try await iapObservable.purchasableProducts(for: rawSortedProducts)
+            try setSuggestedProducts(rawProducts, purchasable: purchasable)
+        } catch {
+            pp_log_g(.App.iap, .error, "Unable to load purchasable products: \(error)")
+            throw error
+        }
+    }
+
+    @available(*, deprecated, message: "#1594")
     func fetchAvailableProducts(
         for requiredFeatures: Set<ABI.AppFeature>,
         with iapManager: IAPManager
@@ -44,7 +71,7 @@ extension PaywallCoordinator.Model {
             let rawSortedProducts = rawProducts.sorted {
                 $0.productRank < $1.productRank
             }
-            let purchasable = try await iapManager.purchasableProducts(for: rawSortedProducts)
+            let purchasable = try await iapManager.fetchPurchasableProducts(for: rawSortedProducts)
             try setSuggestedProducts(rawProducts, purchasable: purchasable)
         } catch {
             pp_log_g(.App.iap, .error, "Unable to load purchasable products: \(error)")
@@ -54,17 +81,14 @@ extension PaywallCoordinator.Model {
 
     func setSuggestedProducts(
         _ suggestedProducts: Set<ABI.AppProduct>,
-        purchasable: [InAppProduct]
+        purchasable: [ABI.StoreProduct]
     ) throws {
         let completeProducts = suggestedProducts.filter(\.isComplete)
 
-        var completePurchasable: [InAppProduct] = []
-        var individualPurchasable: [InAppProduct] = []
+        var completePurchasable: [ABI.StoreProduct] = []
+        var individualPurchasable: [ABI.StoreProduct] = []
         purchasable.forEach {
-            guard let raw = ABI.AppProduct(rawValue: $0.productIdentifier) else {
-                return
-            }
-            if completeProducts.contains(raw) {
+            if completeProducts.contains($0.product) {
                 completePurchasable.append($0)
             } else {
                 individualPurchasable.append($0)
@@ -115,7 +139,7 @@ extension PaywallCoordinator.Model {
         )
         try? state.setSuggestedProducts(
             suggested,
-            purchasable: suggested.map(\.asFakeIAP)
+            purchasable: suggested.map(\.asFakeStoreProduct)
         )
         return state
     }

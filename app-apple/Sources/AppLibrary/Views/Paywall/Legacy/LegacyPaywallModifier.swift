@@ -6,9 +6,11 @@ import CommonLibrary
 import Partout
 import SwiftUI
 
-public struct PaywallModifier: ViewModifier {
-    @Environment(IAPObservable.self)
-    private var iapObservable
+@available(*, deprecated, message: "#1594")
+public struct LegacyPaywallModifier: ViewModifier {
+
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     @Binding
     private var reason: PaywallReason?
@@ -63,10 +65,10 @@ public struct PaywallModifier: ViewModifier {
                     return
                 }
                 Task {
-                    if !iapObservable.isEnabled {
+                    if !iapManager.isEnabled {
                         pp_log_g(.App.iap, .info, "In-app purchases are disabled, enabling...")
-                        await iapObservable.enable(true)
-                        guard !iapObservable.isEligible(for: reason.requiredFeatures) else {
+                        await iapManager.enable()
+                        guard !iapManager.isEligible(for: reason.requiredFeatures) else {
                             pp_log_g(.App.iap, .info, "Skipping paywall because eligible for features: \(reason.requiredFeatures)")
                             return
                         }
@@ -74,7 +76,7 @@ public struct PaywallModifier: ViewModifier {
                     if reason.needsConfirmation {
                         isConfirming = true
                     } else {
-                        guard !iapObservable.isBeta else {
+                        guard !iapManager.isBeta else {
                             assertionFailure("Purchasing in beta?")
                             return
                         }
@@ -85,7 +87,7 @@ public struct PaywallModifier: ViewModifier {
     }
 }
 
-private extension PaywallModifier {
+private extension LegacyPaywallModifier {
     func alertMessage(startingWith header: String, features: [String]) -> String {
         header + "\n\n" + features.joined(separator: "\n")
     }
@@ -93,7 +95,7 @@ private extension PaywallModifier {
 
 // MARK: - Confirmation alert
 
-private extension PaywallModifier {
+private extension LegacyPaywallModifier {
     func title(forAction action: PaywallAction) -> String {
         switch action {
         case .cancel:
@@ -115,7 +117,7 @@ private extension PaywallModifier {
                         onAction(reason.action, reason.profile)
                     }
                 }
-                if !iapObservable.isBeta {
+                if !iapManager.isBeta {
                     Button(Strings.Global.Actions.purchase) {
                         isPurchasing = true
                     }
@@ -150,12 +152,12 @@ private extension PaywallModifier {
 
 // MARK: - Paywall
 
-private extension PaywallModifier {
+private extension LegacyPaywallModifier {
     func modalDestination() -> some View {
         reason.map {
             PaywallCoordinator(
                 isPresented: $isPurchasing,
-                requiredFeatures: iapObservable.excludingEligible(from: $0.requiredFeatures)
+                requiredFeatures: iapManager.excludingEligible(from: $0.requiredFeatures)
             )
         }
     }
@@ -163,23 +165,23 @@ private extension PaywallModifier {
 
 // MARK: - Logic
 
-private extension PaywallModifier {
+private extension LegacyPaywallModifier {
     var ineligibleFeatures: [String] {
         guard let reason else {
             return []
         }
-        return iapObservable
+        return iapManager
             .excludingEligible(from: reason.requiredFeatures)
             .map(\.localizedDescription)
             .sorted()
     }
 
     var limitedMinutes: Int {
-        iapObservable.verificationDelayMinutes
+        iapManager.verificationDelayMinutes
     }
 }
 
-private extension IAPObservable {
+private extension IAPManager {
     func excludingEligible(from features: Set<ABI.AppFeature>) -> Set<ABI.AppFeature> {
         features.filter {
             !isEligible(for: $0)

@@ -6,12 +6,15 @@ import AppAccessibility
 import CommonLibrary
 import SwiftUI
 
-struct PaywallProductView: View {
-    private let iapObservable: IAPObservable
+@available(*, deprecated, message: "#1594")
+struct LegacyPaywallProductView: View {
+
+    @ObservedObject
+    private var iapManager: IAPManager
 
     private let style: PaywallProductViewStyle
 
-    private let storeProduct: ABI.StoreProduct
+    private let product: ABI.StoreProduct
 
     private let withIncludedFeatures: Bool
 
@@ -28,18 +31,18 @@ struct PaywallProductView: View {
     private var isPresentingFeatures = false
 
     init(
-        iapObservable: IAPObservable,
+        iapManager: IAPManager,
         style: PaywallProductViewStyle,
-        storeProduct: ABI.StoreProduct,
+        product: ABI.StoreProduct,
         withIncludedFeatures: Bool,
         requiredFeatures: Set<ABI.AppFeature> = [],
         purchasingIdentifier: Binding<String?>,
         onComplete: @escaping (String, ABI.StoreResult) -> Void,
         onError: @escaping (Error) -> Void
     ) {
-        self.iapObservable = iapObservable
+        self.iapManager = iapManager
         self.style = style
-        self.storeProduct = storeProduct
+        self.product = product
         self.withIncludedFeatures = withIncludedFeatures
         self.requiredFeatures = requiredFeatures
         _purchasingIdentifier = purchasingIdentifier
@@ -50,9 +53,10 @@ struct PaywallProductView: View {
     var body: some View {
         VStack(alignment: .leading) {
             productView
-            if withIncludedFeatures {
+            if withIncludedFeatures,
+               let product = ABI.AppProduct(rawValue: product.nativeIdentifier) {
                 DisclosingFeaturesView(
-                    product: storeProduct.product,
+                    product: product,
                     requiredFeatures: requiredFeatures,
                     isDisclosing: $isPresentingFeatures
                 )
@@ -63,7 +67,7 @@ struct PaywallProductView: View {
     }
 }
 
-private extension PaywallProductView {
+private extension LegacyPaywallProductView {
     var shouldUseStoreKit: Bool {
 #if os(tvOS)
         if case .donation = style {
@@ -74,14 +78,21 @@ private extension PaywallProductView {
     }
 
     var shouldDisable: Bool {
-        isRedundant || isPurchasing || iapObservable.didPurchase(storeProduct.product)
+        isRedundant || isPurchasing || iapManager.didPurchase(product.product)
+    }
+
+    var rawProduct: ABI.AppProduct? {
+        ABI.AppProduct(rawValue: product.nativeIdentifier)
     }
 
     var isRedundant: Bool {
-        guard !storeProduct.product.isDonation else {
+        guard let rawProduct else {
             return false
         }
-        return storeProduct.product.isRedundant(forRequiredFeatures: requiredFeatures)
+        guard !rawProduct.isDonation else {
+            return false
+        }
+        return rawProduct.isRedundant(forRequiredFeatures: requiredFeatures)
     }
 
     var isPurchasing: Bool {
@@ -93,16 +104,16 @@ private extension PaywallProductView {
         if shouldUseStoreKit {
             StoreKitProductView(
                 style: style,
-                storeProduct: storeProduct,
+                storeProduct: product,
                 purchasingIdentifier: $purchasingIdentifier,
                 onComplete: onComplete,
                 onError: onError
             )
         } else {
-            CustomProductView(
+            LegacyCustomProductView(
                 style: style,
-                iapObservable: iapObservable,
-                storeProduct: storeProduct,
+                iapManager: iapManager,
+                product: product,
                 purchasingIdentifier: $purchasingIdentifier,
                 onComplete: onComplete,
                 onError: onError
@@ -113,15 +124,15 @@ private extension PaywallProductView {
 
 #Preview {
     List {
-        PaywallProductView(
-            iapObservable: .forPreviews,
+        LegacyPaywallProductView(
+            iapManager: .forPreviews,
             style: .paywall(primary: true),
-            storeProduct: ABI.StoreProduct(
+            product: ABI.StoreProduct(
                 product: ABI.AppProduct.Features.appleTV,
                 localizedTitle: "Foo",
                 localizedDescription: "Bar",
                 localizedPrice: "$10",
-                nativeIdentifier: "",
+                nativeIdentifier: ABI.AppProduct.Features.appleTV.rawValue,
                 native: nil
             ),
             withIncludedFeatures: true,

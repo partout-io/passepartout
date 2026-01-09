@@ -14,7 +14,7 @@ public struct AppRelease: Sendable {
     }
 }
 
-extension OriginalPurchase {
+extension ABI.OriginalPurchase {
     public func isUntil(_ release: AppRelease) -> Bool {
         buildNumber <= release.build
     }

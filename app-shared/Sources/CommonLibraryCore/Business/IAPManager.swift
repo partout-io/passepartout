@@ -10,9 +10,9 @@ extension IAPManager: ObservableObject {}
 public final class IAPManager {
     private let customUserLevel: ABI.AppUserLevel?
 
-    private let inAppHelper: any AppProductHelper
+    private let inAppHelper: InAppHelper
 
-    private let receiptReader: AppReceiptReader
+    private let receiptReader: UserInAppReceiptReader
 
     private let betaChecker: BetaChecker
 
@@ -22,7 +22,7 @@ public final class IAPManager {
 
     private let verificationDelayMinutesBlock: @Sendable (Bool) -> Int
 
-    private let productsAtBuild: BuildProducts<ABI.AppProduct>?
+    private let productsAtBuild: BuildProducts?
 
 #if !PSP_CROSS
     // FIXME: #1594, AppContext requires Published
@@ -37,7 +37,9 @@ public final class IAPManager {
 
     private(set) var userLevel: ABI.AppUserLevel
 
-    public private(set) var originalPurchase: OriginalPurchase?
+    public private(set) var originalPurchase: ABI.OriginalPurchase?
+
+    private var purchasableProducts: [ABI.AppProduct: ABI.StoreProduct]
 
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
@@ -75,14 +77,15 @@ public final class IAPManager {
     // Dummy
     public init() {
         customUserLevel = nil
-        inAppHelper = FakeAppProductHelper()
-        receiptReader = FakeAppReceiptReader()
+        inAppHelper = FakeInAppHelper()
+        receiptReader = FakeInAppReceiptReader()
         betaChecker = FakeBetaChecker()
         unrestrictedFeatures = []
         timeoutInterval = 0.0
         verificationDelayMinutesBlock = { _ in 0 }
         productsAtBuild = nil
         userLevel = .undefined
+        purchasableProducts = [:]
         purchasedProducts = []
         eligibleFeatures = []
         didChange = PassthroughStream()
@@ -92,13 +95,13 @@ public final class IAPManager {
 
     public init(
         customUserLevel: ABI.AppUserLevel? = nil,
-        inAppHelper: any AppProductHelper,
-        receiptReader: AppReceiptReader,
+        inAppHelper: InAppHelper,
+        receiptReader: UserInAppReceiptReader,
         betaChecker: BetaChecker,
         unrestrictedFeatures: Set<ABI.AppFeature> = [],
         timeoutInterval: TimeInterval,
         verificationDelayMinutesBlock: @escaping @Sendable (Bool) -> Int,
-        productsAtBuild: BuildProducts<ABI.AppProduct>? = nil
+        productsAtBuild: BuildProducts? = nil
     ) {
         self.customUserLevel = customUserLevel
         self.inAppHelper = inAppHelper
@@ -109,6 +112,7 @@ public final class IAPManager {
         self.verificationDelayMinutesBlock = verificationDelayMinutesBlock
         self.productsAtBuild = productsAtBuild
         userLevel = .undefined
+        purchasableProducts = [:]
         purchasedProducts = []
         eligibleFeatures = []
         didChange = PassthroughStream()
@@ -131,14 +135,17 @@ extension IAPManager {
         await reloadReceipt()
     }
 
-    public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [InAppProduct] {
-        guard isEnabled else {
-            return []
-        }
+    public func fetchPurchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
+        guard isEnabled else { return [] }
         do {
             let inAppProducts = try await inAppHelper.fetchProducts(timeout: timeoutInterval)
+            purchasableProducts = products.reduce(into: [:]) {
+                guard let ip = inAppProducts[$1] else { return }
+                $0[$1] = ip
+            }
             return products.compactMap {
-                inAppProducts[$0]
+                guard let sp = purchasableProducts[$0] else { return nil }
+                return sp
             }
         } catch is TaskTimeoutError {
             throw ABI.AppError.timeout
@@ -148,13 +155,16 @@ extension IAPManager {
         }
     }
 
-    public func purchase(_ purchasableProduct: InAppProduct) async throws -> InAppPurchaseResult {
+    public func purchase(_ product: ABI.AppProduct) async throws -> ABI.StoreResult {
         guard isEnabled else {
             return .cancelled
         }
+        guard let purchasableProduct = purchasableProducts[product] else {
+            return .notFound
+        }
         let result = try await inAppHelper.purchase(purchasableProduct)
         if result == .done {
-            await receiptReader.addPurchase(with: purchasableProduct.productIdentifier)
+            await receiptReader.addPurchase(with: purchasableProduct.nativeIdentifier)
             await reloadReceipt()
         }
         return result
@@ -237,15 +247,12 @@ extension IAPManager {
         purchasedProducts.contains(where: \.isComplete)
     }
 
-    public func didPurchase(_ purchasable: InAppProduct) -> Bool {
-        guard let product = ABI.AppProduct(rawValue: purchasable.productIdentifier) else {
-            return false
-        }
-        return purchasedProducts.contains(product)
+    public func didPurchase(_ product: ABI.AppProduct) -> Bool {
+        purchasedProducts.contains(product)
     }
 
-    public func didPurchase(_ purchasable: [InAppProduct]) -> Bool {
-        purchasable.allSatisfy {
+    public func didPurchase(_ products: [ABI.AppProduct]) -> Bool {
+        products.allSatisfy {
             didPurchase($0)
         }
     }
@@ -257,7 +264,7 @@ private extension IAPManager {
     func asyncReloadReceipt() async {
         pp_log_g(.App.iap, .notice, "Start reloading in-app receipt...")
 
-        var originalPurchase: OriginalPurchase?
+        var originalPurchase: ABI.OriginalPurchase?
         var purchasedProducts: Set<ABI.AppProduct> = []
         var eligibleFeatures: Set<ABI.AppFeature> = []
 

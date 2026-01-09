@@ -5,9 +5,11 @@
 import CommonLibrary
 import SwiftUI
 
-struct PaywallCoordinator: View {
-    @Environment(IAPObservable.self)
-    private var iapObservable
+@available(*, deprecated, message: "#1594")
+struct LegacyPaywallCoordinator: View {
+
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     @Binding
     var isPresented: Bool
@@ -15,7 +17,7 @@ struct PaywallCoordinator: View {
     let requiredFeatures: Set<ABI.AppFeature>
 
     @State
-    private var model = Model()
+    private var model = PaywallCoordinator.Model()
 
     @State
     private var errorHandler: ErrorHandler = .default()
@@ -34,7 +36,7 @@ struct PaywallCoordinator: View {
                 do {
                     try await model.fetchAvailableProducts(
                         for: requiredFeatures,
-                        with: iapObservable
+                        with: iapManager
                     )
                 } catch {
                     onError(error, dismissing: true)
@@ -44,11 +46,11 @@ struct PaywallCoordinator: View {
     }
 }
 
-private extension PaywallCoordinator {
+private extension LegacyPaywallCoordinator {
     var contentView: some View {
-        PaywallView(
+        LegacyPaywallView(
             isPresented: $isPresented,
-            iapObservable: iapObservable,
+            iapManager: iapManager,
             requiredFeatures: requiredFeatures,
             model: model,
             errorHandler: errorHandler,
@@ -77,16 +79,16 @@ private extension PaywallCoordinator {
     }
 }
 
-private extension PaywallCoordinator {
+private extension LegacyPaywallCoordinator {
     var didPurchaseRequired: Bool {
-        iapObservable.isEligible(for: requiredFeatures)
+        iapManager.isEligible(for: requiredFeatures)
     }
 
     func onComplete(_ productIdentifier: String, result: ABI.StoreResult) {
         switch result {
         case .done:
             Task {
-                await iapObservable.reloadReceipt()
+                await iapManager.reloadReceipt()
                 if didPurchaseRequired {
                     isPresented = false
                 }
@@ -116,7 +118,7 @@ private extension PaywallCoordinator {
 // MARK: - Previews
 
 #Preview {
-    PaywallCoordinator(
+    LegacyPaywallCoordinator(
         isPresented: .constant(true),
         requiredFeatures: [.appleTV, .dns, .sharing]
     )

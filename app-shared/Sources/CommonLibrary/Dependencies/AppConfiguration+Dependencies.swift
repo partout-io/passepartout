@@ -92,8 +92,8 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newIAPManager(
-        inAppHelper: any AppProductHelper,
-        receiptReader: AppReceiptReader,
+        inAppHelper: InAppHelper,
+        receiptReader: UserInAppReceiptReader,
         betaChecker: BetaChecker
     ) -> IAPManager {
         IAPManager(
@@ -109,7 +109,7 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newProductsAtBuild(purchase: OriginalPurchase) -> Set<ABI.AppProduct> {
+    public func newProductsAtBuild(purchase: ABI.OriginalPurchase) -> Set<ABI.AppProduct> {
 #if os(iOS)
         if purchase.isUntil(.freemium) {
             return [.Essentials.iOS]
@@ -427,7 +427,7 @@ extension ABI.AppConfiguration {
     }
 
     @MainActor
-    public func newAppProductHelper() -> any AppProductHelper {
+    public func newAppProductHelper() -> InAppHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,
             inAppIdentifier: {

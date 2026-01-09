@@ -2,18 +2,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public actor FakeAppReceiptReader: AppReceiptReader {
-    private var localReceipt: InAppReceipt?
+public actor FakeInAppReceiptReader: UserInAppReceiptReader {
+    private var localReceipt: ABI.StoreReceipt?
 
-    public init(receipt localReceipt: InAppReceipt? = nil) {
+    public init(receipt localReceipt: ABI.StoreReceipt? = nil) {
         self.localReceipt = localReceipt
     }
 
     public func setReceipt(withBuild build: Int, products: Set<ABI.AppProduct>, cancelledProducts: Set<ABI.AppProduct> = []) {
-        setReceipt(withPurchase: OriginalPurchase(buildNumber: build), products: products, cancelledProducts: cancelledProducts)
+        setReceipt(withPurchase: ABI.OriginalPurchase(buildNumber: build), products: products, cancelledProducts: cancelledProducts)
     }
 
-    public func setReceipt(withPurchase purchase: OriginalPurchase, products: Set<ABI.AppProduct>, cancelledProducts: Set<ABI.AppProduct> = []) {
+    public func setReceipt(withPurchase purchase: ABI.OriginalPurchase, products: Set<ABI.AppProduct>, cancelledProducts: Set<ABI.AppProduct> = []) {
         setReceipt(
             withPurchase: purchase,
             identifiers: Set(products.map(\.rawValue)),
@@ -22,11 +22,11 @@ public actor FakeAppReceiptReader: AppReceiptReader {
     }
 
     public func setReceipt(withBuild build: Int, identifiers: Set<String>, cancelledIdentifiers: Set<String> = []) {
-        setReceipt(withPurchase: OriginalPurchase(buildNumber: build), identifiers: identifiers, cancelledIdentifiers: cancelledIdentifiers)
+        setReceipt(withPurchase: ABI.OriginalPurchase(buildNumber: build), identifiers: identifiers, cancelledIdentifiers: cancelledIdentifiers)
     }
 
-    public func setReceipt(withPurchase purchase: OriginalPurchase, identifiers: Set<String>, cancelledIdentifiers: Set<String> = []) {
-        localReceipt = InAppReceipt(originalPurchase: purchase, purchaseReceipts: identifiers.map {
+    public func setReceipt(withPurchase purchase: ABI.OriginalPurchase, identifiers: Set<String>, cancelledIdentifiers: Set<String> = []) {
+        localReceipt = ABI.StoreReceipt(originalPurchase: purchase, purchaseReceipts: identifiers.map {
             .init(
                 productIdentifier: $0,
                 expirationDate: nil,
@@ -36,7 +36,7 @@ public actor FakeAppReceiptReader: AppReceiptReader {
         })
     }
 
-    public func receipt(at userLevel: ABI.AppUserLevel) async -> InAppReceipt? {
+    public func receipt(at userLevel: ABI.AppUserLevel) async -> ABI.StoreReceipt? {
         localReceipt
     }
 
@@ -45,7 +45,7 @@ public actor FakeAppReceiptReader: AppReceiptReader {
     }
 }
 
-extension FakeAppReceiptReader {
+extension FakeInAppReceiptReader {
     public func addPurchase(
         with product: ABI.AppProduct,
         expirationDate: Date? = nil,
@@ -70,7 +70,7 @@ extension FakeAppReceiptReader {
             cancellationDate: cancellationDate,
             originalPurchaseDate: nil
         ))
-        let newReceipt = InAppReceipt(
+        let newReceipt = ABI.StoreReceipt(
             originalPurchase: localReceipt?.originalPurchase,
             purchaseReceipts: purchaseReceipts
         )

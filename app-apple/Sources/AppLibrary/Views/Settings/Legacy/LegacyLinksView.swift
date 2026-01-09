@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import Partout
 import SwiftUI
 
-public struct LinksView: View {
-    @Environment(IAPObservable.self)
-    private var iapObservable
+public struct LegacyLinksView: View {
+
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -25,7 +27,7 @@ public struct LinksView: View {
     }
 }
 
-private extension LinksView {
+private extension LegacyLinksView {
     var constants: ABI.Constants {
         appConfiguration.constants
     }
@@ -37,7 +39,7 @@ private extension LinksView {
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !appConfiguration.distributionTarget.supportsIAP && !iapObservable.isBeta {
+            if !appConfiguration.distributionTarget.supportsIAP && !iapManager.isBeta {
                 WebDonationLink()
             }
         }
@@ -61,5 +63,5 @@ private extension LinksView {
 }
 
 #Preview {
-    LinksView()
+    LegacyLinksView()
 }

@@ -5,7 +5,9 @@
 import CommonLibrary
 import SwiftUI
 
-struct PaywallView: View, SizeClassProviding {
+@available(*, deprecated, message: "#1594")
+struct LegacyPaywallView: View, SizeClassProviding {
+
     @Environment(\.horizontalSizeClass)
     var hsClass
 
@@ -15,7 +17,8 @@ struct PaywallView: View, SizeClassProviding {
     @Binding
     var isPresented: Bool
 
-    let iapObservable: IAPObservable
+    @ObservedObject
+    var iapManager: IAPManager
 
     let requiredFeatures: Set<ABI.AppFeature>
 
@@ -31,9 +34,9 @@ struct PaywallView: View, SizeClassProviding {
 #if os(tvOS)
         // TODO: #1511, use isBigDevice to also use fixed layout on macOS and iPad?
 //        if isBigDevice {
-            PaywallFixedView(
+            LegacyPaywallFixedView(
                 isPresented: $isPresented,
-                iapObservable: iapObservable,
+                iapManager: iapManager,
                 requiredFeatures: requiredFeatures,
                 model: model,
                 errorHandler: errorHandler,
@@ -42,9 +45,9 @@ struct PaywallView: View, SizeClassProviding {
             )
 //        } else {
 #else
-            PaywallScrollableView(
+            LegacyPaywallScrollableView(
                 isPresented: $isPresented,
-                iapObservable: iapObservable,
+                iapManager: iapManager,
                 requiredFeatures: requiredFeatures,
                 model: model,
                 errorHandler: errorHandler,

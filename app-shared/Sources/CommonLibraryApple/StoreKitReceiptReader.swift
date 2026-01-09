@@ -11,12 +11,12 @@ public final class StoreKitReceiptReader: InAppReceiptReader, Sendable {
         self.logger = logger
     }
 
-    public func receipt() async -> InAppReceipt? {
+    public func receipt() async -> ABI.StoreReceipt? {
         let result = await entitlements()
 
         let purchaseReceipts = result.txs
             .compactMap {
-                InAppReceipt.PurchaseReceipt(
+                ABI.StoreReceipt.PurchaseReceipt(
                     productIdentifier: $0.productID,
                     expirationDate: $0.expirationDate,
                     cancellationDate: $0.revocationDate,
@@ -24,16 +24,19 @@ public final class StoreKitReceiptReader: InAppReceiptReader, Sendable {
                 )
             }
 
-        return InAppReceipt(originalPurchase: result.purchase, purchaseReceipts: purchaseReceipts)
+        return ABI.StoreReceipt(
+            originalPurchase: result.purchase,
+            purchaseReceipts: purchaseReceipts
+        )
     }
 }
 
 private extension StoreKitReceiptReader {
-    func entitlements() async -> (purchase: OriginalPurchase?, txs: [Transaction]) {
+    func entitlements() async -> (purchase: ABI.OriginalPurchase?, txs: [Transaction]) {
         async let build = Task {
             let startDate = Date()
             logger.log(.iap, .debug, "Start fetching original build number...")
-            let originalPurchase: OriginalPurchase?
+            let originalPurchase: ABI.OriginalPurchase?
             do {
                 switch try await AppTransaction.shared {
                 case .verified(let tx):
@@ -73,11 +76,11 @@ private extension StoreKitReceiptReader {
 }
 
 private extension AppTransaction {
-    var originalPurchase: OriginalPurchase? {
+    var originalPurchase: ABI.OriginalPurchase? {
         guard ![.sandbox, .xcode].contains(environment) else {
             return nil
         }
-        return OriginalPurchase(
+        return ABI.OriginalPurchase(
             buildNumber: Int(originalAppVersion) ?? .max,
             purchaseDate: originalPurchaseDate
         )
