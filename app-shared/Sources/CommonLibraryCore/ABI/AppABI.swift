@@ -20,15 +20,24 @@ public final class AppABI: Sendable {
     public let webReceiver: AppABIWebReceiverProtocol
 
     // FIXME: #1594, Make these private after observables
+    @available(*, deprecated, message: "#1594")
     public let apiManager: APIManager
+    @available(*, deprecated, message: "#1594")
     public let appEncoder: AppEncoder
+    @available(*, deprecated, message: "#1594")
     public let configManager: ConfigManager
+    @available(*, deprecated, message: "#1594")
     public let iapManager: IAPManager
+    @available(*, deprecated, message: "#1594")
     public let preferencesManager: PreferencesManager
+    @available(*, deprecated, message: "#1594")
     public let profileManager: ProfileManager
+    @available(*, deprecated, message: "#1594")
     public let registry: Registry
+    @available(*, deprecated, message: "#1594")
     public let tunnelManager: TunnelManager
     private let versionChecker: VersionChecker
+    @available(*, deprecated, message: "#1594")
     public let webReceiverManager: WebReceiverManager
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
