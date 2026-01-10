@@ -7,12 +7,14 @@ import Observation
 
 @MainActor @Observable
 public final class ConfigObservable {
-    private let abi: AppABIConfigProtocol & AppLogger
+    private let abi: AppABIConfigProtocol
+    private let logger: AppLogger?
 
     public private(set) var activeFlags: Set<ABI.ConfigFlag>
 
-    public init(abi: AppABIConfigProtocol & AppLogger) {
+    public init(abi: AppABIConfigProtocol, logger: AppLogger?) {
         self.abi = abi
+        self.logger = logger
         activeFlags = []
     }
 
@@ -25,7 +27,7 @@ public final class ConfigObservable {
     }
 
     public func onUpdate(_ event: ABI.ConfigEvent) {
-        abi.log(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
+        logger?.log(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let flags):
             activeFlags = flags

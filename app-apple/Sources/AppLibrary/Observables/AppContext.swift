@@ -34,14 +34,14 @@ public final class AppContext {
         self.appConfiguration = appConfiguration
 
         // ABI
-        appEncoderObservable = AppEncoderObservable(abi: abi)
-        configObservable = ConfigObservable(abi: abi)
-        iapObservable = IAPObservable(abi: abi)
-        profileObservable = ProfileObservable(abi: abi)
-        registryObservable = RegistryObservable(abi: abi)
-        tunnelObservable = TunnelObservable(abi: abi)
-        versionObservable = VersionObservable(abi: abi)
-        webReceiverObservable = WebReceiverObservable(abi: abi)
+        appEncoderObservable = AppEncoderObservable(abi: abi.encoder)
+        configObservable = ConfigObservable(abi: abi.config, logger: abi)
+        iapObservable = IAPObservable(abi: abi.iap)
+        profileObservable = ProfileObservable(abi: abi.profile, logger: abi)
+        registryObservable = RegistryObservable(abi: abi.reg)
+        tunnelObservable = TunnelObservable(abi: abi.tunnel, logger: abi)
+        versionObservable = VersionObservable(abi: abi.version)
+        webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
