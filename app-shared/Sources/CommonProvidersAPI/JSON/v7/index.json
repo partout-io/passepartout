@@ -20,18 +20,6 @@
             }
         },
         {
-            "id": "mullvad",
-            "description": "Mullvad",
-            "metadata": {
-                "OpenVPN": {
-                    "credentials": {
-                        "purpose": "web",
-                        "options": ["noPassword"]
-                    }
-                }
-            }
-        },
-        {
             "id": "nordvpn",
             "description": "NordVPN",
             "metadata": {
