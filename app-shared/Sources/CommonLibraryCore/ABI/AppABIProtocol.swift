@@ -87,12 +87,6 @@ public protocol AppABIWebReceiverProtocol: Sendable {
 
 // MARK: - Aggregate
 
-#if !PSP_CROSS
-public typealias ABICallbackEvent = ABI.Event
-#else
-public typealias ABICallbackEvent = UnsafePointer<psp_event>
-#endif
-
 extension AppABITunnelProtocol where Self: AppABIProfileProtocol {
     public func connect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
         guard let profile = profile(withId: profileId) else {

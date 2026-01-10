@@ -3,14 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public struct EventContext: @unchecked Sendable {
-        public let pointer: UnsafeRawPointer
-        public init(pointer: UnsafeRawPointer) {
-            self.pointer = pointer
-        }
-    }
-    public typealias EventCallback = @Sendable (EventContext?, ABICallbackEvent) -> Void
-
     public enum Event: Sendable {
         case config(ConfigEvent)
         case iap(IAPEvent)
@@ -61,4 +53,23 @@ extension ABI {
     public enum WebReceiverEvent: Sendable {
         case newUpload(ABI.WebFileUpload)
     }
+}
+
+// MARK: - Context and Callbacks
+
+#if !PSP_CROSS
+public typealias ABICallbackEvent = ABI.Event
+#else
+public typealias ABICallbackEvent = UnsafePointer<psp_event>
+#endif
+
+extension ABI {
+    public struct EventContext: @unchecked Sendable {
+        public let pointer: UnsafeRawPointer
+        public init(pointer: UnsafeRawPointer) {
+            self.pointer = pointer
+        }
+    }
+
+    public typealias EventCallback = @Sendable (EventContext?, ABICallbackEvent) -> Void
 }
