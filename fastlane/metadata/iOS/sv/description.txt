@@ -7,7 +7,6 @@ ANSLUT TILL FLERA LEVERANTÖRER
 Passepartout stöder förinställningar för populära VPN-leverantörer, vilket gör det enkelt att ansluta säkert:  
 - Hide.me  
 - IVPN  
-- Mullvad  
 - NordVPN  
 - Oeck  
 - PIA  

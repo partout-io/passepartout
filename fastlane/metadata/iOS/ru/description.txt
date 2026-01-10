@@ -7,7 +7,6 @@
 Passepartout поддерживает предустановки для популярных VPN-провайдеров, что упрощает безопасное подключение:  
 - Hide.me  
 - IVPN  
-- Mullvad  
 - NordVPN  
 - Oeck  
 - PIA  

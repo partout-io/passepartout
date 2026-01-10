@@ -7,7 +7,6 @@ CONNECTEZ-VOUS À PLUSIEURS FOURNISSEURS
 Passepartout prend en charge les préréglages pour les fournisseurs VPN les plus populaires, ce qui facilite une connexion sécurisée :  
 - Hide.me  
 - IVPN  
-- Mullvad  
 - NordVPN  
 - Oeck  
 - PIA  

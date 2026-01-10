@@ -7,7 +7,6 @@ VERBINDUNG MIT VERSCHIEDENEN ANBIETERN
 Passepartout unterstützt Voreinstellungen für beliebte VPN-Anbieter, sodass Sie sich einfach und sicher verbinden können:
 - Hide.me
 - IVPN
-- Mullvad
 - NordVPN
 - Oeck
 - PIA

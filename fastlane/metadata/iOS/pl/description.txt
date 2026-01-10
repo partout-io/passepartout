@@ -7,7 +7,6 @@ DLACZEGO WARTO WYBRAĆ PASSEPARTOUT?
 Passepartout obsługuje konfiguracje dla popularnych dostawców VPN, co ułatwia bezpieczne połączenie:  
 - Hide.me  
 - IVPN  
-- Mullvad  
 - NordVPN  
 - Oeck  
 - PIA  

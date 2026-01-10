@@ -7,7 +7,6 @@ STAY CONNECTED WITH MULTIPLE PROVIDERS
 Passepartout supports presets for popular VPN providers, making it easy to connect securely:
 - Hide.me
 - IVPN
-- Mullvad
 - NordVPN
 - Oeck
 - PIA

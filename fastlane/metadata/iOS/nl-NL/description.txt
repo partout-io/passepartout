@@ -7,7 +7,6 @@ VERBIND MET MEERDERE PROVIDERS
 Passepartout ondersteunt presets voor populaire VPN-providers, zodat je eenvoudig veilig kunt verbinden:  
 - Hide.me  
 - IVPN  
-- Mullvad  
 - NordVPN  
 - Oeck  
 - PIA  

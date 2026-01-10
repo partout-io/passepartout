@@ -7,7 +7,6 @@
 Το Passepartout υποστηρίζει προεπιλογές για δημοφιλείς παρόχους VPN, κάνοντας εύκολη την ασφαλή σύνδεση:
 - Hide.me
 - IVPN
-- Mullvad
 - NordVPN
 - Oeck
 - PIA

@@ -7,7 +7,6 @@ CONÉCTATE CON MÚLTIPLES PROVEEDORES
 Passepartout admite configuraciones para los proveedores de VPN más populares, lo que facilita una conexión segura:  
 - Hide.me  
 - IVPN  
-- Mullvad  
 - NordVPN  
 - Oeck  
 - PIA  
