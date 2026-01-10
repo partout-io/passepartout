@@ -2,8 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Delete import after deleting deprecated events
 extension ABI {
+    public struct EventContext: @unchecked Sendable {
+        public let pointer: UnsafeRawPointer
+        public init(pointer: UnsafeRawPointer) {
+            self.pointer = pointer
+        }
+    }
+    public typealias EventCallback = @Sendable (EventContext?, ABICallbackEvent) -> Void
+
     public enum Event: Sendable {
         case config(ConfigEvent)
         case iap(IAPEvent)

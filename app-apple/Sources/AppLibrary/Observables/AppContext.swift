@@ -51,7 +51,7 @@ public final class AppContext {
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
-        let ctx = ABIEventContext(pointer: opaqueEnvironment)
+        let ctx = ABI.EventContext(pointer: opaqueEnvironment)
         abi.registerEvents(context: ctx, callback: Self.abiCallback)
     }
 }
@@ -63,7 +63,10 @@ extension AppContext {
 }
 
 private extension AppContext {
-    static nonisolated func abiCallback(ctx: ABIEventContext?, event mainEvent: ABI.Event) {
+    static nonisolated func abiCallback(
+        ctx: ABI.EventContext?,
+        event mainEvent: ABI.Event
+    ) {
         guard let opaqueEnvironment = ctx?.pointer else {
             fatalError("Missing AppContext from ctx. Bad arguments to abi.registerEvents?")
         }

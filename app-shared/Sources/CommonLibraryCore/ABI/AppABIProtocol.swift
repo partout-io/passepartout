@@ -93,13 +93,6 @@ public typealias ABICallbackEvent = ABI.Event
 public typealias ABICallbackEvent = UnsafePointer<psp_event>
 #endif
 
-public struct ABIEventContext: @unchecked Sendable {
-    public let pointer: UnsafeRawPointer
-    public init(pointer: UnsafeRawPointer) {
-        self.pointer = pointer
-    }
-}
-
 extension AppABITunnelProtocol where Self: AppABIProfileProtocol {
     public func connect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
         guard let profile = profile(withId: profileId) else {

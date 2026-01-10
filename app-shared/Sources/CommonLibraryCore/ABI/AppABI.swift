@@ -4,10 +4,6 @@
 
 @MainActor
 public final class AppABI: Sendable {
-    // MARK: Events
-
-    public typealias EventCallback = @Sendable (ABIEventContext?, ABICallbackEvent) -> Void
-
     // MARK: Business
 
     public let config: AppABIConfigProtocol
@@ -117,7 +113,10 @@ public final class AppABI: Sendable {
         subscriptions.forEach { $0.cancel() }
     }
 
-    public func registerEvents(context: ABIEventContext?, callback: @escaping EventCallback) {
+    public func registerEvents(
+        context: ABI.EventContext?,
+        callback: @escaping ABI.EventCallback
+    ) {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
