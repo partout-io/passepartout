@@ -18,7 +18,7 @@ struct ConnectionView: View, Routable {
     var profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let interactiveObservable: InteractiveObservable
 

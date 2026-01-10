@@ -16,7 +16,7 @@ struct SettingsView: View {
     @ObservedObject
     var profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     @FocusState
     private var focus: Detail?
@@ -77,7 +77,7 @@ private extension SettingsView {
     }
 
     var preferencesSection: some View {
-        PreferencesView(profileManager: profileManager)
+        LegacyPreferencesView(profileManager: profileManager)
     }
 
     var troubleshootingSection: some View {

@@ -6,12 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileShareButton: View {
-
     @Environment(AppEncoderObservable.self)
     private var appEncoder
 
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     private let profile: Profile
 
@@ -35,7 +34,7 @@ struct ProfileShareButton: View {
             preview: .init(profile.name),
             label: shareLabel
         )
-        .disabled(!iapManager.isEligible(for: .sharing))
+        .disabled(!iapObservable.isEligible(for: .sharing))
     }
 }
 

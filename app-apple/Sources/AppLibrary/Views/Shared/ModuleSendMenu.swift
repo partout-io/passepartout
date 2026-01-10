@@ -7,9 +7,8 @@ import Partout
 import SwiftUI
 
 public struct ModuleSendMenu: View {
-
-    @EnvironmentObject
-    private var profileManager: ProfileManager
+    @Environment(ProfileObservable.self)
+    private var profileObservable
 
     private let profileId: Profile.ID
 
@@ -43,20 +42,20 @@ private extension ModuleSendMenu {
             do {
                 var destination: Profile.Builder
                 if let preview {
-                    guard let existingDestination = profileManager.partoutProfile(withId: preview.id) else {
+                    guard let existingDestination = profileObservable.profile(withId: preview.id) else {
                         throw PartoutError(.notFound)
                     }
-                    destination = existingDestination.builder()
+                    destination = existingDestination.native.builder()
                 } else {
                     destination = Profile.Builder()
-                    destination.name = profileManager.firstUniqueName(from: newProfileName)
+                    destination.name = profileObservable.firstUniqueName(from: newProfileName)
                 }
                 var moduleCopy = module
                 moduleCopy.id = UUID()
                 let builtModule = try moduleCopy.build()
 
                 destination.modules.append(builtModule)
-                try await profileManager.save(destination.build())
+                try await profileObservable.save(ABI.AppProfile(native: destination.build()))
             } catch {
                 pp_log_g(.App.profiles, .error, "Unable to copy module: \(error)")
                 errorHandler.handle(error)

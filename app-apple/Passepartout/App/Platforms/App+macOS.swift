@@ -63,8 +63,8 @@ private extension PassepartoutApp {
     func menuBarView() -> some View {
         if context.configObservable.isActive(.observableMain) {
             AppMenu(
-                profileManager: context.profileManager,
-                tunnel: context.tunnel
+                profileObservable: context.profileObservable,
+                tunnel: context.tunnelObservable
             )
             .withEnvironment(from: context, theme: theme)
             .environment(macSettings)
@@ -83,7 +83,7 @@ private extension PassepartoutApp {
     @ViewBuilder
     func menuBarImage() -> some View {
         if context.configObservable.isActive(.observableMain) {
-            AppMenuImage(tunnel: context.tunnel)
+            AppMenuImage(tunnel: context.tunnelObservable)
                 .environment(theme)
         } else {
             LegacyAppMenuImage(tunnel: context.tunnel)

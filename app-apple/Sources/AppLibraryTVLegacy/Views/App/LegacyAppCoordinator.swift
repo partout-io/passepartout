@@ -5,6 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
 
     @EnvironmentObject
@@ -18,7 +19,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
 
     private let profileManager: ProfileManager
 
-    public let tunnel: ExtendedTunnel
+    public let tunnel: TunnelManager
 
     private let registry: Registry
 
@@ -38,7 +39,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
 
     public init(
         profileManager: ProfileManager,
-        tunnel: ExtendedTunnel,
+        tunnel: TunnelManager,
         registry: Registry,
         webReceiverManager: WebReceiverManager
     ) {
@@ -46,6 +47,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming {
         self.tunnel = tunnel
         self.registry = registry
         self.webReceiverManager = webReceiverManager
+        pp_log_g(.core, .info, "LegacyAppCordinator (ObservableObject)")
     }
 
     public var body: some View {
@@ -201,8 +203,8 @@ extension LegacyAppCoordinator {
 
 private struct DynamicPaywallModifier: ViewModifier {
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Binding
     var paywallReason: PaywallReason?

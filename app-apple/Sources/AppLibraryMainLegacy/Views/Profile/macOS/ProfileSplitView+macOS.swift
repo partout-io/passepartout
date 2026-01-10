@@ -130,7 +130,7 @@ private extension ProfileSplitView {
     ProfileSplitView(
         profileManager: .forPreviews,
         profileEditor: ProfileEditor(profile: .newMockProfile()),
-        moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
+        moduleViewFactory: LegacyModuleViewFactory(registry: Registry()),
         paywallReason: .constant(nil),
         errorHandler: .default()
     )

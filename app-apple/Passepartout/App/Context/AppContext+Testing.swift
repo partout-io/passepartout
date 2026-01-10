@@ -65,7 +65,7 @@ extension AppContext {
                 $0.sort(using: $1.sortingComparators)
             }
         )
-        let extendedTunnel = ExtendedTunnel(
+        let tunnelManager = TunnelManager(
             tunnel: tunnel,
             processor: tunnelProcessor,
             interval: appConfiguration.constants.tunnel.refreshInterval
@@ -88,7 +88,7 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnel: extendedTunnel,
+            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )

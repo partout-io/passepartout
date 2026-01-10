@@ -11,7 +11,7 @@ struct ActiveTunnelButton: View {
     private var theme
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let profile: Profile?
 

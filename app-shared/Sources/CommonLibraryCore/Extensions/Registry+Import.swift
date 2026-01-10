@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension Registry: ProfileImporter {
+extension Registry {
     public nonisolated func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
         let name: String
         let contents: String
@@ -30,6 +30,6 @@ extension Registry: ProfileImporter {
 
         // Fall back to parsing a single module
         let importedModule = try module(fromContents: contents, object: passphrase)
-        return try profile(withName: name, singleModule: importedModule)
+        return try Profile(withName: name, singleModule: importedModule)
     }
 }

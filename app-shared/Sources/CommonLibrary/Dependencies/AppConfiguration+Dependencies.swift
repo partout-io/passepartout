@@ -92,12 +92,11 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newIAPManager(
-        inAppHelper: AppProductHelper,
+        inAppHelper: any AppProductHelper,
         receiptReader: AppReceiptReader,
-        betaChecker: BetaChecker,
-        isEnabled: Bool
+        betaChecker: BetaChecker
     ) -> IAPManager {
-        let iapManager = IAPManager(
+        IAPManager(
             customUserLevel: customUserLevel,
             inAppHelper: inAppHelper,
             receiptReader: receiptReader,
@@ -108,8 +107,6 @@ extension ABI.AppConfiguration {
             },
             productsAtBuild: newProductsAtBuild
         )
-        iapManager.isEnabled = distributionTarget.supportsIAP && isEnabled
-        return iapManager
     }
 
     public func newProductsAtBuild(purchase: OriginalPurchase) -> Set<ABI.AppProduct> {
@@ -161,13 +158,13 @@ extension ABI.AppConfiguration {
     }
 
     @MainActor
-    public func newExtendedTunnel(
+    public func newTunnelManager(
         tunnel: Tunnel,
         extensionInstaller: ExtensionInstaller?,
         kvStore: KeyValueStore,
         processor: AppTunnelProcessor
-    ) -> ExtendedTunnel {
-        ExtendedTunnel(
+    ) -> TunnelManager {
+        TunnelManager(
             tunnel: tunnel,
             extensionInstaller: extensionInstaller,
             kvStore: kvStore,
@@ -474,7 +471,7 @@ extension ABI.AppConfiguration {
 #endif
 
 private extension Registry {
-    public func assertMissingImplementations() {
+    func assertMissingImplementations() {
         ModuleType.allCases.forEach { moduleType in
             let builder = moduleType.newModule(with: self)
             do {

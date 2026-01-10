@@ -7,10 +7,10 @@ import Observation
 
 @MainActor @Observable
 public final class WebReceiverObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABIWebReceiverProtocol
     public let uploads: PassthroughStream<UniqueID, ABI.WebFileUpload>
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABIWebReceiverProtocol) {
         self.abi = abi
         uploads = PassthroughStream()
     }
@@ -20,15 +20,15 @@ public final class WebReceiverObservable {
 
 extension WebReceiverObservable {
     public func start() throws {
-        try abi.webReceiverStart()
+        try abi.start()
     }
 
     public func stop() {
-        abi.webReceiverStop()
+        abi.stop()
     }
 
     public func refresh() {
-        abi.webReceiverRefresh()
+        abi.refresh()
     }
 }
 
@@ -36,11 +36,11 @@ extension WebReceiverObservable {
 
 extension WebReceiverObservable {
     public var isStarted: Bool {
-        abi.webReceiverIsStarted
+        abi.isStarted
     }
 
     public var website: ABI.WebsiteWithPasscode? {
-        abi.webReceiverWebsite
+        abi.website
     }
 
     func onUpdate(_ event: ABI.WebReceiverEvent) {

@@ -20,6 +20,7 @@ final class AppProfileImporter {
     func tryImport(
         urls: [URL],
         profileManager: ProfileManager,
+        registry: Registry,
         importer: ProfileImporter? = nil
     ) async throws {
         var withPassphrase: [URL] = []
@@ -30,6 +31,7 @@ final class AppProfileImporter {
                     url,
                     withPassphrase: nil,
                     profileManager: profileManager,
+                    registry: registry,
                     importer: importer
                 )
             } catch {
@@ -48,12 +50,13 @@ final class AppProfileImporter {
         }
     }
 
-    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter? = nil) async throws {
+    func reImport(url: URL, profileManager: ProfileManager, registry: Registry, importer: ProfileImporter? = nil) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
                 profileManager: profileManager,
+                registry: registry,
                 importer: importer
             )
             urlsRequiringPassphrase.removeFirst()
@@ -87,6 +90,7 @@ private extension AppProfileImporter {
         _ url: URL,
         withPassphrase passphrase: String?,
         profileManager: ProfileManager,
+        registry: Registry,
         importer: ProfileImporter?
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
@@ -100,6 +104,10 @@ private extension AppProfileImporter {
             try await profileManager.save(profile)
             return
         }
-        try await profileManager.import(.file(url), passphrase: passphrase)
+        try await profileManager.legacyImport(
+            .file(url),
+            registry: registry,
+            passphrase: passphrase
+        )
     }
 }

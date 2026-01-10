@@ -13,7 +13,7 @@ struct HTTPProxyView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<HTTPProxyModule.Builder>
 
-    init(draft: ModuleDraft<HTTPProxyModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<HTTPProxyModule.Builder>) {
         self.draft = draft
     }
 

@@ -20,7 +20,7 @@ struct ProfileContextMenu: View, Routable {
     let profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let preview: ABI.ProfilePreview
 

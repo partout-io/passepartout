@@ -32,12 +32,12 @@ struct DiagnosticsView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     let profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     var availableTunnelLogs: (() async -> [LogEntry])?
 
@@ -163,7 +163,7 @@ private extension DiagnosticsView {
     }
 
     var isUsingExperimentalFeatures: Bool {
-        !configManager.activeFlags.isDisjoint(with: [
+        !configObservable.activeFlags.isDisjoint(with: [
             .neSocketUDP,
             .neSocketTCP
         ])

@@ -5,9 +5,9 @@
 import CommonLibrary
 import SwiftUI
 
-extension ProviderModule.Builder: ModuleViewProviding {
-    public func moduleView(with parameters: ModuleViewParameters) -> some View {
-        ProviderView(draft: parameters.editor[self], parameters: parameters)
+extension ProviderModule.Builder: LegacyModuleViewProviding {
+    public func moduleView(with parameters: LegacyModuleViewParameters) -> some View {
+        ProviderView(draft: parameters.editor[self])
     }
 }
 

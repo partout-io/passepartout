@@ -6,9 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 public struct VersionUpdateLink: View {
-
-    @EnvironmentObject
-    private var versionChecker: VersionChecker
+    @Environment(VersionObservable.self)
+    private var versionChecker
 
     private let withIcon: Bool?
 

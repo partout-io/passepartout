@@ -8,7 +8,7 @@ import Partout
 
 @MainActor
 public final class AppContext {
-    private let abi: AppABIProtocol
+    private let abi: AppABI
     public let appConfiguration: ABI.AppConfiguration
 
     // Observables (yet unused in Main app and active TV app)
@@ -18,6 +18,7 @@ public final class AppContext {
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
     public let profileObservable: ProfileObservable
+    public let registryObservable: RegistryObservable
     public let tunnelObservable: TunnelObservable
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
@@ -28,18 +29,19 @@ public final class AppContext {
     public let userPreferences: UserPreferencesObservable
     public let viewLogger: ViewLogger
 
-    public init(abi: AppABIProtocol, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
+    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
         self.abi = abi
         self.appConfiguration = appConfiguration
 
         // ABI
-        appEncoderObservable = AppEncoderObservable(abi: abi)
-        configObservable = ConfigObservable(abi: abi)
-        iapObservable = IAPObservable(abi: abi)
-        profileObservable = ProfileObservable(abi: abi)
-        tunnelObservable = TunnelObservable(abi: abi)
-        versionObservable = VersionObservable(abi: abi)
-        webReceiverObservable = WebReceiverObservable(abi: abi)
+        appEncoderObservable = AppEncoderObservable(abi: abi.encoder)
+        configObservable = ConfigObservable(abi: abi.config, logger: abi)
+        iapObservable = IAPObservable(abi: abi.iap)
+        profileObservable = ProfileObservable(abi: abi.profile, logger: abi)
+        registryObservable = RegistryObservable(abi: abi.registry)
+        tunnelObservable = TunnelObservable(abi: abi.tunnel, logger: abi)
+        versionObservable = VersionObservable(abi: abi.version)
+        webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
@@ -49,7 +51,7 @@ public final class AppContext {
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
-        let ctx = ABIEventContext(pointer: opaqueEnvironment)
+        let ctx = ABI.EventContext(pointer: opaqueEnvironment)
         abi.registerEvents(context: ctx, callback: Self.abiCallback)
     }
 }
@@ -61,7 +63,10 @@ extension AppContext {
 }
 
 private extension AppContext {
-    static nonisolated func abiCallback(ctx: ABIEventContext?, event mainEvent: ABI.Event) {
+    static nonisolated func abiCallback(
+        ctx: ABI.EventContext?,
+        event mainEvent: ABI.Event
+    ) {
         guard let opaqueEnvironment = ctx?.pointer else {
             fatalError("Missing AppContext from ctx. Bad arguments to abi.registerEvents?")
         }
@@ -90,19 +95,15 @@ extension AppContext {
     @available(*, deprecated, message: "#1594")
     public var apiManager: APIManager { abi.apiManager }
     @available(*, deprecated, message: "#1594")
-    public var configManager: ConfigManager { abi.configManager }
-    @available(*, deprecated, message: "#1594")
     public var iapManager: IAPManager { abi.iapManager }
     @available(*, deprecated, message: "#1594")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
     @available(*, deprecated, message: "#1594")
     public var profileManager: ProfileManager { abi.profileManager }
     @available(*, deprecated, message: "#1594")
-    public var registry: Registry { abi.registry }
+    public var registry: Registry { abi.partoutRegistry }
     @available(*, deprecated, message: "#1594")
-    public var tunnel: ExtendedTunnel { abi.tunnel }
-    @available(*, deprecated, message: "#1594")
-    public var versionChecker: VersionChecker { abi.versionChecker }
+    public var tunnel: TunnelManager { abi.tunnelManager }
     @available(*, deprecated, message: "#1594")
     public var webReceiverManager: WebReceiverManager { abi.webReceiverManager }
 }

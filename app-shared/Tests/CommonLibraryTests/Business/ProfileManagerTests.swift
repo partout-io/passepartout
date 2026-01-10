@@ -612,18 +612,6 @@ extension ProfileManagerTests {
 
 // MARK: -
 
-private extension ProfileManager {
-    convenience init(
-        processor: ProfileProcessor? = nil,
-        repository: ProfileRepository,
-        backupRepository: ProfileRepository? = nil,
-        mirrorsRemoteRepository: Bool = false,
-        readyAfterRemote: Bool = false
-    ) {
-        self.init(registry: Registry(), processor: processor, repository: repository, backupRepository: backupRepository, mirrorsRemoteRepository: mirrorsRemoteRepository, readyAfterRemote: readyAfterRemote)
-    }
-}
-
 private extension ProfileManagerTests {
     func newProfile(_ name: String = "", id: UUID? = nil, fingerprint: UUID? = nil) -> Profile {
         do {

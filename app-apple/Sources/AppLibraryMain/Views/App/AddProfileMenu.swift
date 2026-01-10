@@ -18,9 +18,7 @@ struct AddProfileMenu: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    let profileManager: ProfileManager
-
-    let registry: Registry
+    let profileObservable: ProfileObservable
 
     @Binding
     var importAction: Action?
@@ -90,10 +88,9 @@ private extension AddProfileMenu {
     func providerSubmenu(for provider: Provider) -> some View {
         ProviderSubmenu(
             provider: provider,
-            registry: registry,
             onSelect: {
                 var copy = $0
-                copy.name = profileManager.firstUniqueName(from: copy.name)
+                copy.name = profileObservable.firstUniqueName(from: copy.name)
                 onNewProfile(copy)
             }
         )
@@ -102,7 +99,7 @@ private extension AddProfileMenu {
 
 private extension AddProfileMenu {
     var newName: String {
-        profileManager.firstUniqueName(from: Strings.Placeholders.Profile.name)
+        profileObservable.firstUniqueName(from: Strings.Placeholders.Profile.name)
     }
 
     var supportedProviders: [Provider] {
@@ -114,8 +111,6 @@ private extension AddProfileMenu {
 
 private struct ProviderSubmenu: View {
     let provider: Provider
-
-    let registry: Registry
 
     let onSelect: (EditableProfile) -> Void
 

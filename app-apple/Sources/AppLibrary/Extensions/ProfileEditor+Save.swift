@@ -14,6 +14,53 @@ extension ProfileEditor {
     }
 
     public func save(
+        to profileObservable: ProfileObservable?,
+        buildingWith registryObservable: RegistryObservable,
+        verifyingWith iapObservable: IAPObservable?,
+        preferencesManager: PreferencesManager
+    ) async throws -> ABI.AppProfile {
+        let partoutProfile = try buildAndUpdate(with: registryObservable)
+        let profileToSave = ABI.AppProfile(native: partoutProfile)
+
+        // Verify profile (optional)
+        if let iapObservable, !iapObservable.isBeta {
+            do {
+                try iapObservable.verify(profileToSave, extra: extraFeatures)
+            } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
+
+                // still loading receipt
+                guard !iapObservable.isLoadingReceipt else {
+                    throw ABI.AppError.verificationReceiptIsLoading
+                }
+
+                // purchase required
+                guard requiredFeatures.isEmpty else {
+                    throw ABI.AppError.verificationRequiredFeatures(requiredFeatures)
+                }
+            }
+        }
+
+        // Persist (optional)
+        try await profileObservable?.save(profileToSave, sharingFlag: isShared ? .shared : nil)
+
+        // Clean up module preferences
+        removedModules.keys.forEach {
+            do {
+                pp_log_g(.App.profiles, .info, "Erase preferences for removed module \($0)")
+                let repository = try preferencesManager.preferencesRepository(forModuleWithId: $0)
+                repository.erase()
+                try repository.save()
+            } catch {
+                pp_log_g(.App.profiles, .error, "Unable to erase preferences for removed module \($0): \(error)")
+            }
+        }
+        removedModules.removeAll()
+
+        return profileToSave
+    }
+
+    @available(*, deprecated, message: "#1594")
+    public func legacySave(
         to profileManager: ProfileManager?,
         buildingWith registry: Registry,
         verifyingWith iapManager: IAPManager?,

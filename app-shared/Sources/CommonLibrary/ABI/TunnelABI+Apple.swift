@@ -8,7 +8,6 @@ import NetworkExtension
 extension TunnelABI {
     public static func forProduction(
         appConfiguration: ABI.AppConfiguration,
-        kvStore: KeyValueStore,
         preferences: ABI.AppPreferenceValues,
         startPreferences: ABI.AppPreferenceValues?,
         neProvider: NEPacketTunnelProvider
@@ -105,17 +104,17 @@ extension TunnelABI {
             receiptReader: SharedReceiptReader(
                 reader: StoreKitReceiptReader(logger: appLogger),
             ),
-            betaChecker: appConfiguration.newBetaChecker(),
-            isEnabled: !kvStore.bool(forAppPreference: .skipsPurchases)
+            betaChecker: appConfiguration.newBetaChecker()
         )
-        // Adjust verification parameters if beta
         await iapManager.fetchLevelIfNeeded()
+        let skipsPurchases = !appConfiguration.distributionTarget.supportsIAP || preferences.skipsPurchases
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
-        let usesRelaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
+        let usesRelaxedVerification = preferences.relaxedVerification
         // Assemble
         let iap = TunnelABI.IAP(
             manager: iapManager,
+            skipsPurchases: skipsPurchases,
             verificationParameters: verificationParameters,
             usesRelaxedVerification: usesRelaxedVerification
         )

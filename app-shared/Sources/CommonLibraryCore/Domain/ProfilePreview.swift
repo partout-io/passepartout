@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    @available(*, deprecated, message: "#1594")
+    @available(*, deprecated, message: "#1594, Use AppProfileHeader?")
     public struct ProfilePreview: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
 

@@ -8,6 +8,7 @@ import Combine
 import CommonLibrary
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public struct LegacyAppMenu: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
@@ -22,9 +23,9 @@ public struct LegacyAppMenu: View {
     private var profileManager: ProfileManager
 
     @ObservedObject
-    private var tunnel: ExtendedTunnel
+    private var tunnel: TunnelManager
 
-    public init(profileManager: ProfileManager, tunnel: ExtendedTunnel) {
+    public init(profileManager: ProfileManager, tunnel: TunnelManager) {
         self.profileManager = profileManager
         self.tunnel = tunnel
     }

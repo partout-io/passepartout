@@ -10,7 +10,7 @@ import Testing
 @MainActor
 struct OnboardingObservableTests {
     @Test
-    func test_givenStep_whenOrder_thenIsExpected() {
+    func givenStep_whenOrder_thenIsExpected() {
         #expect(OnboardingStep.community.order == 0)
         #expect(OnboardingStep.doneV3.order == 1)
         #expect(OnboardingStep.migrateV3_2_3.order == 2)

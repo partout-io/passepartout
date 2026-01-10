@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Delete import after deleting deprecated events
 extension ABI {
     public enum Event: Sendable {
         case config(ConfigEvent)
@@ -28,6 +27,7 @@ extension ABI {
         case refresh([ABI.AppIdentifier: ABI.AppProfileHeader])
         case startRemoteImport
         case stopRemoteImport
+        case changeRemoteImporting(Bool)
 
         @available(*, deprecated, message: "#1594")
         case localProfiles
@@ -39,8 +39,6 @@ extension ABI {
         case save(Profile, previous: Profile?)
         @available(*, deprecated, message: "#1594")
         case remove([Profile.ID])
-        @available(*, deprecated, message: "#1594")
-        case changeRemoteImport
     }
 
     public enum TunnelEvent: Sendable {
@@ -55,4 +53,23 @@ extension ABI {
     public enum WebReceiverEvent: Sendable {
         case newUpload(ABI.WebFileUpload)
     }
+}
+
+// MARK: - Context and Callbacks
+
+#if !PSP_CROSS
+public typealias ABICallbackEvent = ABI.Event
+#else
+public typealias ABICallbackEvent = UnsafePointer<psp_event>
+#endif
+
+extension ABI {
+    public struct EventContext: @unchecked Sendable {
+        public let pointer: UnsafeRawPointer
+        public init(pointer: UnsafeRawPointer) {
+            self.pointer = pointer
+        }
+    }
+
+    public typealias EventCallback = @Sendable (EventContext?, ABICallbackEvent) -> Void
 }

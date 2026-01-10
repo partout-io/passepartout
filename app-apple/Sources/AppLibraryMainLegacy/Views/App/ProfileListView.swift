@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-struct ProfileListView: View, Routable, TunnelInstallationProviding {
+struct ProfileListView: View, Routable, LegacyTunnelInstallationProviding {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
@@ -25,7 +25,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
     var profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let errorHandler: ErrorHandler
 

@@ -14,7 +14,7 @@ struct ProfileContainerView: View, Routable {
 
     let profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     let registry: Registry
 
@@ -35,6 +35,7 @@ struct ProfileContainerView: View, Routable {
             ))
             .modifier(AppProfileImporterModifier(
                 profileManager: profileManager,
+                registry: registry,
                 isPresented: $isImporting,
                 errorHandler: errorHandler
             ))
@@ -72,7 +73,7 @@ private struct ContainerModifier: ViewModifier {
     var profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let flow: ProfileFlow?
 

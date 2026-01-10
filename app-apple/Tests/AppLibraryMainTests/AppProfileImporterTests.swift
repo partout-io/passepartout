@@ -5,38 +5,39 @@
 @testable import AppLibraryMain
 import CommonLibrary
 import Foundation
-import XCTest
-
-final class AppProfileImporterTests: XCTestCase {
-    private let importer = SomeModule.Implementation()
-}
+import Testing
 
 @MainActor
-extension AppProfileImporterTests {
-    func test_givenNoURLs_whenImport_thenNothingIsImported() async throws {
+struct AppProfileImporterTests {
+    @Test
+    func givenNoURLs_whenImport_thenNothingIsImported() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
 
-        try await sut.tryImport(urls: [], profileManager: profileManager, importer: importer)
-        XCTAssertEqual(sut.nextURL, nil)
-        XCTAssertTrue(profileManager.previews.isEmpty)
+        try await sut.tryImport(
+            urls: [],
+            block: profileManager.mockImport
+        )
+        #expect(sut.nextURL == nil)
+        #expect(!profileManager.hasProfiles)
     }
 
-    func test_givenURL_whenImport_thenOneProfileIsImported() async throws {
+    @Test
+    func givenURL_whenImport_thenOneProfileIsImported() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.txt")!
 
-        let exp = expectation(description: "Save")
+        let exp = Expectation()
         let profileEvents = profileManager.didChange.subscribe()
         Task {
             for await event in profileEvents {
                 switch event {
                 case .save(let profile, _):
-                    XCTAssertEqual(profile.modules.count, 2)
-                    XCTAssertTrue(profile.modules.first is SomeModule)
-                    XCTAssertTrue(profile.modules.last is OnDemandModule)
-                    exp.fulfill()
+                    #expect(profile.modules.count == 2)
+                    #expect(profile.modules.first is SomeModule)
+                    #expect(profile.modules.last is OnDemandModule)
+                    await exp.fulfill()
                 default:
                     break
                 }
@@ -45,29 +46,29 @@ extension AppProfileImporterTests {
 
         try await sut.tryImport(
             urls: [url],
-            profileManager: profileManager,
-            importer: importer
+            block: profileManager.mockImport
         )
-        XCTAssertEqual(sut.nextURL, nil)
+        #expect(sut.nextURL == nil)
 
-        await fulfillment(of: [exp])
+        try await exp.fulfillment(timeout: 500)
     }
 
-    func test_givenURLRequiringPassphrase_whenImportWithPassphrase_thenProfileIsImported() async throws {
+    @Test
+    func givenURLRequiringPassphrase_whenImportWithPassphrase_thenProfileIsImported() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
 
-        let exp = expectation(description: "Save")
+        let exp = Expectation()
         let profileEvents = profileManager.didChange.subscribe()
         Task {
             for await event in profileEvents {
                 switch event {
                 case .save(let profile, _):
-                    XCTAssertEqual(profile.modules.count, 2)
-                    XCTAssertTrue(profile.modules.first is SomeModule)
-                    XCTAssertTrue(profile.modules.last is OnDemandModule)
-                    exp.fulfill()
+                    #expect(profile.modules.count == 2)
+                    #expect(profile.modules.first is SomeModule)
+                    #expect(profile.modules.last is OnDemandModule)
+                    await exp.fulfill()
                 default:
                     break
                 }
@@ -76,30 +77,32 @@ extension AppProfileImporterTests {
 
         try await sut.tryImport(
             urls: [url],
-            profileManager: profileManager,
-            importer: importer
+            block: profileManager.mockImport
         )
-        XCTAssertEqual(sut.nextURL, url)
+        #expect(sut.nextURL == url)
 
         sut.currentPassphrase = "passphrase"
-        try await sut.reImport(url: url, profileManager: profileManager, importer: importer)
-        XCTAssertEqual(sut.nextURL, nil)
+        try await sut.reImport(
+            url: url,
+            block: profileManager.mockImport
+        )
+        #expect(sut.nextURL == nil)
 
-        await fulfillment(of: [exp])
+        try await exp.fulfillment(timeout: 500)
     }
 
-    func test_givenURLsRequiringPassphrase_whenImport_thenURLsArePending() async throws {
+    @Test
+    func givenURLsRequiringPassphrase_whenImport_thenURLsArePending() async throws {
         let sut = AppProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
 
         try await sut.tryImport(
             urls: [url, url, url],
-            profileManager: profileManager,
-            importer: importer
+            block: profileManager.mockImport
         )
-        XCTAssertEqual(sut.nextURL, url)
-        XCTAssertEqual(sut.urlsRequiringPassphrase.count, 3)
+        #expect(sut.nextURL == url)
+        #expect(sut.urlsRequiringPassphrase.count == 3)
     }
 }
 
@@ -113,25 +116,20 @@ private struct SomeModule: Module {
     }
 }
 
-extension SomeModule.Implementation: ProfileImporter {
-    func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
-        let importedModule: Module
-        switch input {
-        case .contents:
-            fatalError()
-        case .file(let url):
-            importedModule = try {
-                if url.absoluteString.hasSuffix(".encrypted") {
-                    guard let passphrase else {
-                        throw PartoutError(.OpenVPN.passphraseRequired)
-                    }
-                    guard passphrase == "passphrase" else {
-                        throw PartoutError(.crypto)
-                    }
+private extension ProfileManager {
+    func mockImport(url: URL, passphrase: String?) async throws {
+        let importedModule = try {
+            if url.absoluteString.hasSuffix(".encrypted") {
+                guard let passphrase else {
+                    throw PartoutError(.OpenVPN.passphraseRequired)
                 }
-                return SomeModule()
-            }()
-        }
-        return try profile(withName: "foobar", singleModule: importedModule)
+                guard passphrase == "passphrase" else {
+                    throw PartoutError(.crypto)
+                }
+            }
+            return SomeModule()
+        }()
+        let profile = try Profile(withName: "foobar", singleModule: importedModule)
+        try await save(profile, isLocal: true)
     }
 }

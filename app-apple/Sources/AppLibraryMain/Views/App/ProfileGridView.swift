@@ -15,11 +15,9 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
     @Environment(\.isSearching)
     private var isSearching
 
-    @ObservedObject
-    var profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let errorHandler: ErrorHandler
 
@@ -41,7 +39,7 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
                     ForEach(allPreviews, content: profileView)
                         .onDelete { offsets in
                             Task {
-                                await profileManager.removeProfiles(at: offsets)
+                                await profileObservable.removeProfiles(at: offsets)
                             }
                         }
                 }
@@ -54,8 +52,8 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
             .padding(.top)
 #endif
         }
-        .themeAnimation(on: profileManager.isReady, category: .profiles)
-        .themeAnimation(on: profileManager.previews, category: .profiles)
+        .themeAnimation(on: profileObservable.isReady, category: .profiles)
+        .themeAnimation(on: profileObservable.filteredHeaders, category: .profiles)
     }
 }
 
@@ -63,14 +61,16 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
 
 private extension ProfileGridView {
     var allPreviews: [ABI.ProfilePreview] {
-        profileManager.previews
+        profileObservable.filteredHeaders.map {
+            ABI.ProfilePreview(id: $0.id, name: $0.name)
+        }
     }
 
     // TODO: #218, move to InstalledProfileView when .multiple
     var headerView: some View {
         InstalledProfileView(
             layout: .grid,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             profile: installedProfiles.first,
             tunnel: tunnel,
             errorHandler: errorHandler,
@@ -80,9 +80,9 @@ private extension ProfileGridView {
             if let profile = installedProfiles.first {
                 ProfileContextMenu(
                     style: .installedProfile,
-                    profileManager: profileManager,
+                    profileObservable: profileObservable,
                     tunnel: tunnel,
-                    preview: .init(profile),
+                    preview: .init(profile.native),
                     errorHandler: errorHandler,
                     flow: flow
                 )
@@ -95,7 +95,7 @@ private extension ProfileGridView {
     func profileView(for preview: ABI.ProfilePreview) -> some View {
         ProfileRowView(
             style: .compact,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel,
             preview: preview,
             errorHandler: errorHandler,
@@ -105,7 +105,7 @@ private extension ProfileGridView {
         .contextMenu {
             ProfileContextMenu(
                 style: .containerContext,
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 tunnel: tunnel,
                 preview: preview,
                 errorHandler: errorHandler,
@@ -120,7 +120,7 @@ private extension ProfileGridView {
 
 #Preview {
     ProfileGridView(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         tunnel: .forPreviews,
         errorHandler: .default()
     )

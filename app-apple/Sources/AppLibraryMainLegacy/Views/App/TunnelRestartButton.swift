@@ -8,7 +8,7 @@ import SwiftUI
 struct TunnelRestartButton<Label>: View where Label: View {
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let profile: Profile?
 

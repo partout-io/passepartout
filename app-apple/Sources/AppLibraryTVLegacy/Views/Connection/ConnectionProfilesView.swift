@@ -7,15 +7,14 @@ import CommonLibrary
 import SwiftUI
 
 struct ConnectionProfilesView: View {
-
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @ObservedObject
     var profileManager: ProfileManager
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     @FocusState.Binding
     var focusedField: ConnectionView.Field?

@@ -10,7 +10,7 @@ import SwiftUI
 public struct LegacyTunnelToggle<Label>: View where Label: View {
 
     @ObservedObject
-    private var tunnel: ExtendedTunnel
+    private var tunnel: TunnelManager
 
     private let profile: Profile?
 
@@ -21,7 +21,7 @@ public struct LegacyTunnelToggle<Label>: View where Label: View {
     private let label: (Binding<Bool>, Bool) -> Label
 
     public init(
-        tunnel: ExtendedTunnel,
+        tunnel: TunnelManager,
         profile: Profile?,
         errorHandler: ErrorHandler,
         flow: ConnectionFlow?,
@@ -57,7 +57,7 @@ public struct LegacyTunnelTextToggle: View {
 }
 
 extension LegacyTunnelToggle where Label == LegacyTunnelTextToggle {
-    public init(_ title: String = "", tunnel: ExtendedTunnel, profile: Profile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
+    public init(_ title: String = "", tunnel: TunnelManager, profile: Profile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
         self.init(tunnel: tunnel, profile: profile, errorHandler: errorHandler, flow: flow) { isOn, _ in
             LegacyTunnelTextToggle(title: title, isOn: isOn)
         }

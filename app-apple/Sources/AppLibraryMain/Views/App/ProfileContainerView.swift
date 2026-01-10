@@ -6,17 +6,14 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileContainerView: View, Routable {
-
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     let layout: ProfilesLayout
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    let tunnel: ExtendedTunnel
-
-    let registry: Registry
+    let tunnel: TunnelObservable
 
     @Binding
     var isImporting: Bool
@@ -29,12 +26,12 @@ struct ProfileContainerView: View, Routable {
         debugChanges()
         return innerView
             .modifier(ContainerModifier(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 tunnel: tunnel,
                 flow: flow
             ))
             .modifier(AppProfileImporterModifier(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 isPresented: $isImporting,
                 errorHandler: errorHandler
             ))
@@ -49,7 +46,7 @@ private extension ProfileContainerView {
         switch layout {
         case .list:
             ProfileListView(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 tunnel: tunnel,
                 errorHandler: errorHandler,
                 flow: flow
@@ -57,7 +54,7 @@ private extension ProfileContainerView {
 
         case .grid:
             ProfileGridView(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 tunnel: tunnel,
                 errorHandler: errorHandler,
                 flow: flow
@@ -67,12 +64,9 @@ private extension ProfileContainerView {
 }
 
 private struct ContainerModifier: ViewModifier {
+    let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var profileManager: ProfileManager
-
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let flow: ProfileFlow?
 
@@ -83,13 +77,13 @@ private struct ContainerModifier: ViewModifier {
         debugChanges()
         return content
             .themeProgress(
-                if: !profileManager.isReady,
-                isEmpty: !profileManager.hasProfiles,
+                if: !profileObservable.isReady,
+                isEmpty: !profileObservable.hasProfiles,
                 emptyContent: emptyView
             )
             .searchable(text: $search)
             .onChange(of: search) {
-                profileManager.search(byName: $0)
+                profileObservable.search(byName: $0)
             }
     }
 
@@ -124,9 +118,8 @@ private struct PreviewView: View {
         NavigationStack {
             ProfileContainerView(
                 layout: layout,
-                profileManager: .forPreviews,
+                profileObservable: .forPreviews,
                 tunnel: .forPreviews,
-                registry: Registry(),
                 isImporting: .constant(false),
                 errorHandler: .default()
             )

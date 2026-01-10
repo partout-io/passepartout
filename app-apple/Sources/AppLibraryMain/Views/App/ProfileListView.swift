@@ -21,11 +21,9 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
     @Environment(\.isSearching)
     private var isSearching
 
-    @ObservedObject
-    var profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let errorHandler: ErrorHandler
 
@@ -44,7 +42,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
                 ForEach(allPreviews, content: profileView)
                     .onDelete { offsets in
                         Task {
-                            await profileManager.removeProfiles(at: offsets)
+                            await profileObservable.removeProfiles(at: offsets)
                         }
                     }
             } header: {
@@ -52,21 +50,23 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
             }
         }
         .themeForm()
-        .themeAnimation(on: profileManager.isReady, category: .profiles)
-        .themeAnimation(on: profileManager.previews, category: .profiles)
+        .themeAnimation(on: profileObservable.isReady, category: .profiles)
+        .themeAnimation(on: profileObservable.filteredHeaders, category: .profiles)
     }
 }
 
 private extension ProfileListView {
     var allPreviews: [ABI.ProfilePreview] {
-        profileManager.previews
+        profileObservable.filteredHeaders.map {
+            ABI.ProfilePreview(id: $0.id, name: $0.name)
+        }
     }
 
     // TODO: #218, move to InstalledProfileView when .multiple
     var headerView: some View {
         InstalledProfileView(
             layout: .list,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             profile: installedProfiles.first,
             tunnel: tunnel,
             errorHandler: errorHandler,
@@ -76,9 +76,9 @@ private extension ProfileListView {
             if let profile = installedProfiles.first {
                 ProfileContextMenu(
                     style: .installedProfile,
-                    profileManager: profileManager,
+                    profileObservable: profileObservable,
                     tunnel: tunnel,
-                    preview: .init(profile),
+                    preview: .init(profile.native),
                     errorHandler: errorHandler,
                     flow: flow
                 )
@@ -92,7 +92,7 @@ private extension ProfileListView {
     func profileView(for preview: ABI.ProfilePreview) -> some View {
         ProfileRowView(
             style: cardStyle,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel,
             preview: preview,
             errorHandler: errorHandler,
@@ -101,7 +101,7 @@ private extension ProfileListView {
         .contextMenu {
             ProfileContextMenu(
                 style: .containerContext,
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 tunnel: tunnel,
                 preview: preview,
                 errorHandler: errorHandler,
@@ -122,7 +122,7 @@ private extension ProfileListView {
 
 #Preview {
     ProfileListView(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         tunnel: .forPreviews,
         errorHandler: .default()
     )

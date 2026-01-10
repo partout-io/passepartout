@@ -6,7 +6,7 @@ import CommonLibrary
 import SwiftUI
 
 extension DNSModule.Builder: ModuleViewProviding {
-    public func moduleView(with parameters: ModuleViewParameters) -> some View {
-        DNSView(draft: parameters.editor[self], parameters: parameters)
+    public func moduleView(with editor: ProfileEditor) -> some View {
+        DNSView(draft: editor[self])
     }
 }

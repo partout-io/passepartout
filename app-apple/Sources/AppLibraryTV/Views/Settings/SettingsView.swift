@@ -136,12 +136,11 @@ private struct DetailView: View {
 
 // MARK: - Preview
 
-// FIXME: #1594, Previews
-//#Preview {
-//    SettingsView(
-//        profileObservable: .forPreviews,
-//        tunnel: .forPreviews
-//    )
-//    .themeNavigationStack()
-//    .withMockEnvironment()
-//}
+#Preview {
+    SettingsView(
+        profileObservable: .forPreviews,
+        tunnel: .forPreviews
+    )
+    .themeNavigationStack()
+    .withMockEnvironment()
+}

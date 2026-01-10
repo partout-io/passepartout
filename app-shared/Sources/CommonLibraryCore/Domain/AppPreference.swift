@@ -111,7 +111,9 @@ extension KeyValueStore {
             values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack, fallback: true)
             values.lastCheckedVersionDate = double(forAppPreference: .lastCheckedVersionDate)
             values.lastCheckedVersion = object(forAppPreference: .lastCheckedVersion)
-            values.lastUsedProfileId = object(forAppPreference: .lastUsedProfileId)
+            values.lastUsedProfileId = string(forAppPreference: .lastUsedProfileId).flatMap {
+                Profile.ID(uuidString: $0)
+            }
             values.logsPrivateData = bool(forAppPreference: .logsPrivateData)
             values.relaxedVerification = bool(forAppPreference: .relaxedVerification)
             values.skipsPurchases = bool(forAppPreference: .skipsPurchases)
@@ -124,7 +126,7 @@ extension KeyValueStore {
             set(newValue.dnsFallsBack, forAppPreference: .dnsFallsBack)
             set(newValue.lastCheckedVersionDate, forAppPreference: .lastCheckedVersionDate)
             set(newValue.lastCheckedVersion, forAppPreference: .lastCheckedVersion)
-            set(newValue.lastUsedProfileId, forAppPreference: .lastUsedProfileId)
+            set(newValue.lastUsedProfileId?.uuidString, forAppPreference: .lastUsedProfileId)
             set(newValue.logsPrivateData, forAppPreference: .logsPrivateData)
             set(newValue.relaxedVerification, forAppPreference: .relaxedVerification)
             set(newValue.skipsPurchases, forAppPreference: .skipsPurchases)

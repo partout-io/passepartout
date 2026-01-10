@@ -18,14 +18,12 @@ public struct AppMenu: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @ObservedObject
-    private var profileManager: ProfileManager
+    private let profileObservable: ProfileObservable
 
-    @ObservedObject
-    private var tunnel: ExtendedTunnel
+    private let tunnel: TunnelObservable
 
-    public init(profileManager: ProfileManager, tunnel: ExtendedTunnel) {
-        self.profileManager = profileManager
+    public init(profileObservable: ProfileObservable, tunnel: TunnelObservable) {
+        self.profileObservable = profileObservable
         self.tunnel = tunnel
     }
 
@@ -42,7 +40,7 @@ public struct AppMenu: View {
             disconnectButton
         }
         .disabled(!isTunnelActionable)
-        if profileManager.hasProfiles {
+        if profileObservable.hasProfiles {
             Divider()
             profilesList
         }
@@ -84,19 +82,19 @@ private extension AppMenu {
     }
 
     var profilesList: some View {
-        ForEach(profileManager.previews, id: \.id, content: profileToggle)
+        ForEach(profileObservable.filteredHeaders, id: \.id, content: profileToggle)
             .themeSection(header: Strings.Views.App.Folders.default)
     }
 
-    func profileToggle(for preview: ABI.ProfilePreview) -> some View {
-        Toggle(preview.name, isOn: profileToggleBinding(for: preview))
+    func profileToggle(for header: ABI.AppProfileHeader) -> some View {
+        Toggle(header.name, isOn: profileToggleBinding(for: header))
     }
 
-    func profileToggleBinding(for preview: ABI.ProfilePreview) -> Binding<Bool> {
+    func profileToggleBinding(for header: ABI.AppProfileHeader) -> Binding<Bool> {
         Binding {
-            isProfileActive(preview)
+            isProfileActive(header)
         } set: { isOn in
-            toggleProfile(isOn, for: preview)
+            toggleProfile(isOn, for: header)
         }
     }
 
@@ -112,7 +110,7 @@ private extension AppMenu {
 private extension AppMenu {
     var isTunnelActionable: Bool {
         // TODO: #218, must be per-tunnel
-        [.activating, .active].contains(tunnelStatus)
+        [.connecting, .connected].contains(tunnelStatus)
     }
 
     func showApp(completion: (() -> Void)? = nil) {
@@ -133,12 +131,12 @@ private extension AppMenu {
             guard let installedProfile else {
                 return
             }
-            guard let profile = profileManager.partoutProfile(withId: installedProfile.id) else {
+            guard let profile = profileObservable.profile(withId: installedProfile.id) else {
                 return
             }
             do {
                 try await tunnel.disconnect(from: installedProfile.id)
-                try await tunnel.connect(with: profile)
+                try await tunnel.connect(to: profile)
             } catch {
                 pp_log_g(.App.core, .error, "Unable to reconnect to profile \(profile.id) from menu: \(error)")
             }
@@ -159,23 +157,23 @@ private extension AppMenu {
         }
     }
 
-    func isProfileActive(_ preview: ABI.ProfilePreview) -> Bool {
-        tunnel.status(ofProfileId: preview.id) != .inactive
+    func isProfileActive(_ header: ABI.AppProfileHeader) -> Bool {
+        tunnel.status(for: header.id) != .disconnected
     }
 
-    func toggleProfile(_ isOn: Bool, for preview: ABI.ProfilePreview) {
+    func toggleProfile(_ isOn: Bool, for header: ABI.AppProfileHeader) {
         Task {
-            guard let profile = profileManager.partoutProfile(withId: preview.id) else {
+            guard let profile = profileObservable.profile(withId: header.id) else {
                 return
             }
             do {
                 if isOn {
-                    try await tunnel.connect(with: profile)
+                    try await tunnel.connect(to: profile)
                 } else {
                     try await tunnel.disconnect(from: profile.id)
                 }
             } catch {
-                pp_log_g(.App.core, .error, "Unable to toggle profile \(preview.id) from menu: \(error)")
+                pp_log_g(.App.core, .error, "Unable to toggle profile \(header.id) from menu: \(error)")
             }
         }
     }
@@ -192,14 +190,13 @@ private extension AppMenu {
 }
 
 private extension AppMenu {
-
     // TODO: #218, must be per-tunnel
-    var tunnelStatus: TunnelStatus {
-        installedProfile?.status ?? .inactive
+    var tunnelStatus: ABI.AppProfile.Status {
+        installedProfile?.status ?? .disconnected
     }
 
     // TODO: #218, must be per-tunnel
-    var installedProfile: TunnelActiveProfile? {
+    var installedProfile: ABI.AppProfile.Info? {
         tunnel.activeProfiles.first?.value
     }
 }

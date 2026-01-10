@@ -3,19 +3,18 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
-import Partout
 import SwiftUI
 
-public final class DefaultModuleViewFactory: ModuleViewFactory {
+@available(*, deprecated, message: "#1594")
+final class LegacyModuleViewFactory: ModuleViewFactory {
     private let registry: Registry
 
-    public init(registry: Registry) {
+    init(registry: Registry) {
         self.registry = registry
     }
 
     @ViewBuilder
-    public func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
+    func view(with editor: ProfileEditor, moduleId: UUID) -> some View {
         let result = editor.moduleViewProvider(withId: moduleId, registry: registry)
         if let result {
             AnyView(result.provider.moduleView(with: .init(
@@ -34,7 +33,7 @@ private extension ProfileEditor {
 //            assertionFailure("No module with ID \(moduleId)")
             return nil
         }
-        guard let provider = module as? any ModuleViewProviding else {
+        guard let provider = module as? any LegacyModuleViewProviding else {
             assertionFailure("\(type(of: module)) does not provide a default view")
             return nil
         }
@@ -49,7 +48,7 @@ private extension ProfileEditor {
 private struct ModuleViewProviderResult {
     let title: String
 
-    let provider: any ModuleViewProviding
+    let provider: any LegacyModuleViewProviding
 
     let impl: ModuleImplementation?
 }

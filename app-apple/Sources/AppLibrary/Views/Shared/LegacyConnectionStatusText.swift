@@ -11,13 +11,13 @@ import SwiftUI
 public struct LegacyConnectionStatusText: View {
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let profileId: Profile.ID?
 
     let withColors: Bool
 
-    public init(tunnel: ExtendedTunnel, profileId: Profile.ID?, withColors: Bool = true) {
+    public init(tunnel: TunnelManager, profileId: Profile.ID?, withColors: Bool = true) {
         self.tunnel = tunnel
         self.profileId = profileId
         self.withColors = withColors
@@ -59,7 +59,7 @@ private struct ConnectionStatusDynamicText: View {
     private var theme
 
     @ObservedObject
-    var tunnel: ExtendedTunnel
+    var tunnel: TunnelManager
 
     let profileId: Profile.ID
 
@@ -110,7 +110,7 @@ private extension ConnectionStatusDynamicText {
 #Preview("Connected (Dynamic)") {
     ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
         .task {
-            try? await ExtendedTunnel.forPreviews.connect(with: .forPreviews)
+            try? await TunnelManager.forPreviews.connect(with: .forPreviews)
         }
         .frame(width: 400, height: 100)
         .withMockEnvironment()
@@ -129,7 +129,7 @@ private extension ConnectionStatusDynamicText {
     }
     return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
         .task {
-            try? await ExtendedTunnel.forPreviews.connect(with: profile)
+            try? await TunnelManager.forPreviews.connect(with: profile)
         }
         .frame(width: 400, height: 100)
         .withMockEnvironment()

@@ -66,8 +66,9 @@ private extension WebReceiverView {
         for await file in webReceiverManager.files {
             pp_log_g(.App.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
-                try await profileManager.import(
+                try await profileManager.legacyImport(
                     .contents(filename: file.name, data: file.contents),
+                    registry: registry,
                     sharingFlag: .tv
                 )
                 webReceiverManager.renewPasscode()

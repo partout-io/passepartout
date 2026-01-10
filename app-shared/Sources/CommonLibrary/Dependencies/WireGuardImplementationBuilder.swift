@@ -17,7 +17,7 @@ struct WireGuardImplementationBuilder: Sendable {
             importerBlock: { newParser() },
             validatorBlock: { newParser() },
             connectionBlock: {
-                let flags = configBlock()
+//                let flags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
                 return try WireGuardConnection(
                     ctx,

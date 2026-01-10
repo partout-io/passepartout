@@ -20,7 +20,7 @@ struct SettingsCoordinator: View {
 
     let profileManager: ProfileManager
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelManager
 
     @State
     private var path = NavigationPath()
@@ -109,7 +109,7 @@ extension SettingsCoordinator {
                 .navigationTitle(title(for: .links))
 
         case .preferences:
-            PreferencesView(profileManager: profileManager)
+            LegacyPreferencesView(profileManager: profileManager)
                 .navigationTitle(title(for: .preferences))
 
         case .purchased:

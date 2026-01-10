@@ -15,7 +15,6 @@ import SwiftUI
 
 @main
 struct PassepartoutApp: App {
-
     @Environment(\.colorScheme)
     var colorScheme
 
@@ -61,21 +60,11 @@ extension PassepartoutApp {
         let flag: ABI.ConfigFlag = .observableMain
 #endif
         if context.configObservable.isActive(flag) {
-#if os(tvOS)
             AppCoordinator(
                 profileObservable: context.profileObservable,
                 tunnel: context.tunnelObservable,
                 webReceiverObservable: context.webReceiverObservable
             )
-#else
-            // FIXME: #1594, Refactor like TV
-            AppCoordinator(
-                profileManager: context.profileManager,
-                tunnel: context.tunnel,
-                registry: context.registry,
-                webReceiverManager: context.webReceiverManager
-            )
-#endif
         } else {
             LegacyAppCoordinator(
                 profileManager: context.profileManager,

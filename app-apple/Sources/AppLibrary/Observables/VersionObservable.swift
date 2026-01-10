@@ -7,22 +7,22 @@ import Observation
 
 @MainActor @Observable
 public final class VersionObservable {
-    private let abi: AppABIProtocol
-    private var latestRelease: ABI.VersionRelease?
+    private let abi: AppABIVersionProtocol
+    public private(set) var latestRelease: ABI.VersionRelease?
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABIVersionProtocol) {
         self.abi = abi
         latestRelease = nil
     }
 
     public func check() async {
-        await abi.versionCheckLatestRelease()
+        await abi.checkLatestRelease()
     }
 
     func onUpdate(_ event: ABI.VersionEvent) {
         switch event {
         case .new:
-            latestRelease = abi.versionLatestRelease
+            latestRelease = abi.latestRelease
         }
     }
 }

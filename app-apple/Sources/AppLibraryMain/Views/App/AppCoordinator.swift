@@ -5,12 +5,12 @@
 import CommonLibrary
 import SwiftUI
 
-public struct AppCoordinator: View, LegacyAppCoordinatorConforming, SizeClassProviding {
+public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
-    @EnvironmentObject
-    public var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    public var iapObservable
 
     @Environment(\.isUITesting)
     private var isUITesting
@@ -21,13 +21,11 @@ public struct AppCoordinator: View, LegacyAppCoordinatorConforming, SizeClassPro
     @Environment(\.verticalSizeClass)
     public var vsClass
 
-    private let profileManager: ProfileManager
+    private let profileObservable: ProfileObservable
 
-    public let tunnel: ExtendedTunnel
+    public let tunnel: TunnelObservable
 
-    private let registry: Registry
-
-    private let webReceiverManager: WebReceiverManager
+    private let webReceiverObservable: WebReceiverObservable
 
     @State
     private var isImportingFile = false
@@ -60,15 +58,14 @@ public struct AppCoordinator: View, LegacyAppCoordinatorConforming, SizeClassPro
     private var errorHandler: ErrorHandler = .default()
 
     public init(
-        profileManager: ProfileManager,
-        tunnel: ExtendedTunnel,
-        registry: Registry,
-        webReceiverManager: WebReceiverManager
+        profileObservable: ProfileObservable,
+        tunnel: TunnelObservable,
+        webReceiverObservable: WebReceiverObservable
     ) {
-        self.profileManager = profileManager
+        self.profileObservable = profileObservable
         self.tunnel = tunnel
-        self.registry = registry
-        self.webReceiverManager = webReceiverManager
+        self.webReceiverObservable = webReceiverObservable
+        pp_log_g(.core, .info, "AppCordinator (Observables)")
     }
 
     public var body: some View {
@@ -114,9 +111,8 @@ extension AppCoordinator {
     var contentView: some View {
         ProfileContainerView(
             layout: overriddenLayout,
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             tunnel: tunnel,
-            registry: registry,
             isImporting: $isImportingFile,
             errorHandler: errorHandler,
             flow: .init(
@@ -124,10 +120,10 @@ extension AppCoordinator {
                 onDeleteProfile: onDeleteProfile,
                 connectionFlow: .init(
                     onConnect: {
-                        await onConnect($0, force: false)
+                        await onConnect(ABI.AppProfile(native: $0), force: false)
                     },
                     onProviderEntityRequired: {
-                        onProviderEntityRequired($0, force: false)
+                        onProviderEntityRequired(ABI.AppProfile(native: $0), force: false)
                     }
                 )
             )
@@ -146,8 +142,7 @@ extension AppCoordinator {
 
     func toolbarContent() -> some ToolbarContent {
         AppToolbar(
-            profileManager: profileManager,
-            registry: registry,
+            profileObservable: profileObservable,
             layout: userPreferences.binding(\.profilesLayout),
             importAction: importActionBinding,
             onSettings: {
@@ -162,15 +157,14 @@ extension AppCoordinator {
         switch item {
         case .settings:
             SettingsCoordinator(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 tunnel: tunnel
             )
         case .editProfile:
             ProfileCoordinator(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 profileEditor: profileEditor,
-                registry: registry,
-                moduleViewFactory: DefaultModuleViewFactory(registry: registry),
+                moduleViewFactory: DefaultModuleViewFactory(),
                 path: $profilePath,
                 onDismiss: onDismiss
             )
@@ -271,10 +265,10 @@ extension AppCoordinator {
     func importText(_ text: String) {
         Task {
             do {
-                let filename = profileManager.firstUniqueName(
+                let filename = profileObservable.firstUniqueName(
                     from: Strings.Placeholders.Profile.importedName
                 )
-                try await profileManager.import(.contents(filename: filename, data: text))
+                try await profileObservable.import(.contents(filename: filename, data: text))
             } catch {
                 pp_log_g(.App.profiles, .error, "Unable to import text: \(error)")
                 errorHandler.handle(error, title: Strings.Global.Actions.import)
@@ -316,27 +310,27 @@ private struct ProviderServerCoordinatorIfSupported: View {
 // MARK: - Handlers
 
 extension AppCoordinator {
-    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         pp_log_g(.App.core, .info, "Present interactive login")
-        interactiveObservable.present(with: ABI.AppProfile(native: profile), onComplete: onComplete)
+        interactiveObservable.present(with: profile, onComplete: onComplete)
     }
 
-    public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
-        guard let module = profile.activeProviderModule else {
+    public func onProviderEntityRequired(_ profile: ABI.AppProfile, force: Bool) {
+        guard let module = profile.native.activeProviderModule else {
             assertionFailure("Editing provider entity, but profile has no selected provider module")
             return
         }
         pp_log_g(.App.core, .info, "Present provider entity selector")
-        present(.editProviderEntity(profile, force, module))
+        present(.editProviderEntity(profile.native, force, module))
     }
 
     public func onPurchaseRequired(
-        for profile: Profile,
+        for profile: ABI.AppProfile,
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
         pp_log_g(.App.core, .info, "Purchase required for features: \(features)")
-        guard !iapManager.isLoadingReceipt else {
+        guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
             pp_log_g(.App.core, .info, "Present verification alert")
             errorHandler.handle(
@@ -345,7 +339,7 @@ extension AppCoordinator {
                     V.Connect._1,
                     V.boot,
                     "\n\n",
-                    V.Connect._2(iapManager.verificationDelayMinutes)
+                    V.Connect._2(iapObservable.verificationDelayMinutes)
                 ].joined(separator: " "),
                 onDismiss: continuation
             )
@@ -354,7 +348,7 @@ extension AppCoordinator {
         pp_log_g(.App.core, .info, "Present paywall")
         paywallContinuation = continuation
 
-        setLater(.init(profile, requiredFeatures: features, action: .connect)) {
+        setLater(.init(profile.native, requiredFeatures: features, action: .connect)) {
             paywallReason = $0
         }
     }
@@ -385,8 +379,8 @@ private extension AppCoordinator {
             builder.saveModule(newModule)
             let newProfile = try builder.build()
 
-            let wasConnected = tunnel.status(ofProfileId: newProfile.id) == .active
-            try await profileManager.save(newProfile, isLocal: true)
+            let wasConnected = tunnel.status(for: newProfile.id) == .connected
+            try await profileObservable.save(ABI.AppProfile(native: newProfile))
 
             guard profile.shouldConnectToProviderServer else {
                 return
@@ -394,7 +388,7 @@ private extension AppCoordinator {
 
             if !wasConnected {
                 pp_log_g(.App.core, .info, "Profile \(newProfile.id) was not connected, will connect to new provider entity")
-                await onConnect(newProfile, force: force)
+                await onConnect(ABI.AppProfile(native: newProfile), force: force)
             } else {
                 pp_log_g(.App.core, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
             }
@@ -409,10 +403,10 @@ private extension AppCoordinator {
     }
 
     func onEditProfile(_ preview: ABI.ProfilePreview) {
-        guard let profile = profileManager.partoutProfile(withId: preview.id) else {
+        guard let profile = profileObservable.profile(withId: preview.id) else {
             return
         }
-        editProfile(profile.editable())
+        editProfile(profile.native.editable())
     }
 
     func onDeleteProfile(_ preview: ABI.ProfilePreview) {
@@ -425,13 +419,13 @@ private extension AppCoordinator {
             return
         }
         Task {
-            await profileManager.remove(withId: profileBeingDeleted.id)
+            await profileObservable.remove(withId: profileBeingDeleted.id)
         }
     }
 
     func editProfile(_ profile: EditableProfile) {
         profilePath = NavigationPath()
-        let isShared = profileManager.isRemotelyShared(profileWithId: profile.id)
+        let isShared = profileObservable.isRemotelyShared(profileWithId: profile.id)
         profileEditor.load(profile, isShared: isShared)
         present(.editProfile)
     }
@@ -467,9 +461,8 @@ private extension Profile {
 // MARK: - Paywall
 
 private struct DynamicPaywallModifier: ViewModifier {
-
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Binding
     var paywallReason: PaywallReason?
@@ -496,10 +489,9 @@ private struct DynamicPaywallModifier: ViewModifier {
 
 #Preview {
     AppCoordinator(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         tunnel: .forPreviews,
-        registry: Registry(),
-        webReceiverManager: WebReceiverManager()
+        webReceiverObservable: .forPreviews
     )
     .withMockEnvironment()
 }

@@ -6,6 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct OpenVPNView: View, ModuleDraftEditing {
+    @Environment(RegistryObservable.self)
+    private var registryObservable
 
     @Environment(\.navigationPath)
     private var path
@@ -13,7 +15,9 @@ struct OpenVPNView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<OpenVPNModule.Builder>
 
-    let impl: OpenVPNModule.Implementation?
+    var impl: OpenVPNModule.Implementation? {
+        registryObservable.implementation(for: draft.module) as? OpenVPNModule.Implementation
+    }
 
     private let isServerPushed: Bool
 
@@ -29,14 +33,12 @@ struct OpenVPNView: View, ModuleDraftEditing {
     init(serverConfiguration: OpenVPN.Configuration) {
         let module = OpenVPNModule.Builder(configurationBuilder: serverConfiguration.builder())
         draft = ModuleDraft(module: module)
-        impl = nil
         isServerPushed = true
         assert(module.configurationBuilder != nil, "isServerPushed must imply module.configurationBuilder != nil")
     }
 
-    init(draft: ModuleDraft<OpenVPNModule.Builder>, parameters: ModuleViewParameters) {
+    init(draft: ModuleDraft<OpenVPNModule.Builder>) {
         self.draft = draft
-        impl = parameters.impl as? OpenVPNModule.Implementation
         isServerPushed = false
     }
 

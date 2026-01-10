@@ -5,11 +5,11 @@
 @preconcurrency import Partout
 
 #if !PSP_CROSS
-extension ExtendedTunnel: ObservableObject {}
+extension TunnelManager: ObservableObject {}
 #endif
 
 @MainActor
-public final class ExtendedTunnel {
+public final class TunnelManager {
     public static nonisolated let isManualKey = "isManual"
 
     public static nonisolated let appPreferences = "appPreferences"
@@ -50,7 +50,7 @@ public final class ExtendedTunnel {
 
 // MARK: - Actions
 
-extension ExtendedTunnel {
+extension TunnelManager {
     public func install(_ profile: Profile) async throws {
         pp_log_g(.App.core, .notice, "Install profile \(profile.id)...")
         try await installAndConnect(false, with: profile, force: false)
@@ -133,7 +133,7 @@ extension ExtendedTunnel {
 
 // MARK: - State
 
-extension ExtendedTunnel {
+extension TunnelManager {
     public func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
         dataCount(ofProfileId: profileId)?.abiTransfer
     }
@@ -146,7 +146,7 @@ extension ExtendedTunnel {
 
 // MARK: - Observation
 
-private extension ExtendedTunnel {
+private extension TunnelManager {
     func observeObjects() {
         let tunnelEvents = tunnel.activeProfilesStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
@@ -155,7 +155,7 @@ private extension ExtendedTunnel {
             }
             for await newActiveProfiles in tunnelEvents {
                 guard !Task.isCancelled else {
-                    pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.tunnelSubscription")
+                    pp_log_g(.App.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break
                 }
 #if !PSP_CROSS
@@ -178,7 +178,7 @@ private extension ExtendedTunnel {
                     return
                 }
                 guard !Task.isCancelled else {
-                    pp_log_g(.App.core, .debug, "Cancelled ExtendedTunnel.timerSubscription")
+                    pp_log_g(.App.core, .debug, "Cancelled TunnelManager.timerSubscription")
                     break
                 }
 #if !PSP_CROSS
@@ -196,7 +196,7 @@ private extension ExtendedTunnel {
 
 // MARK: - Processing
 
-private extension ExtendedTunnel {
+private extension TunnelManager {
     var processedTitle: @Sendable (Profile) -> String {
         if let processor {
             return {
@@ -217,7 +217,7 @@ private extension ExtendedTunnel {
 // MARK: - Helpers
 
 // TODO: #218, keep "last used profile" until .multiple
-private extension ExtendedTunnel {
+private extension TunnelManager {
     var lastUsedProfile: TunnelActiveProfile? {
         guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
               let uuid = UUID(uuidString: uuidString) else {
@@ -272,7 +272,7 @@ extension TunnelStatus {
 // MARK: - Deprecated
 
 @available(*, deprecated, message: "#1594")
-extension ExtendedTunnel {
+extension TunnelManager {
     public var activeProfilesStream: AsyncStream<[Profile.ID: TunnelActiveProfile]> {
         tunnel.activeProfilesStream
     }

@@ -45,9 +45,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         )
 
         // The app may propagate its local preferences on manual start
-        let isInteractive = options?[ExtendedTunnel.isManualKey] == true as NSNumber
+        let isInteractive = options?[TunnelManager.isManualKey] == true as NSNumber
         let startPreferences: ABI.AppPreferenceValues? = {
-            guard let encodedPreferences = options?[ExtendedTunnel.appPreferences] as? Data else {
+            guard let encodedPreferences = options?[TunnelManager.appPreferences] as? Data else {
                 return nil
             }
             do {
@@ -80,7 +80,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 if usesTunnelABI {
                     abi = try await TunnelABI.forProduction(
                         appConfiguration: appConfiguration,
-                        kvStore: kvStore,
                         preferences: preferences,
                         startPreferences: startPreferences,
                         neProvider: self
@@ -241,7 +240,7 @@ private extension PacketTunnelProvider {
                 productsAtBuild: appConfiguration.newProductsAtBuild
             )
             if appConfiguration.distributionTarget.supportsIAP {
-                manager.isEnabled = !kvStore.bool(forAppPreference: .skipsPurchases)
+                manager.isEnabled = !preferences.skipsPurchases
             } else {
                 manager.isEnabled = false
             }
@@ -303,7 +302,7 @@ private extension PacketTunnelProvider {
             }
 
             // Relax verification strategy based on AppPreference
-            let isRelaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
+            let isRelaxedVerification = preferences.relaxedVerification
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may

@@ -7,7 +7,6 @@ import Partout
 import SwiftUI
 
 extension ModuleBuilder where Self: ModuleViewProviding {
-
     @MainActor
     public func preview(title: String = "") -> some View {
         PreviewView(title: title, builder: self)
@@ -23,6 +22,43 @@ extension ModuleBuilder where Self: ModuleViewProviding {
 }
 
 private struct PreviewView<Builder>: View where Builder: ModuleBuilder & ModuleViewProviding {
+    let title: String
+
+    let builder: Builder
+
+    @State
+    private var editor = ProfileEditor()
+
+    var body: some View {
+        NavigationStack {
+            builder.moduleView(with: editor)
+                .navigationTitle(title)
+        }
+        .onLoad {
+            editor.saveModule(builder, activating: true)
+        }
+        .withMockEnvironment()
+    }
+}
+
+@available(*, deprecated, message: "#1594")
+extension ModuleBuilder where Self: LegacyModuleViewProviding {
+    @MainActor
+    public func preview(title: String = "") -> some View {
+        LegacyPreviewView(title: title, builder: self)
+    }
+
+    @MainActor
+    public func preview<C: View>(with content: (Self, ProfileEditor) -> C) -> some View {
+        NavigationStack {
+            content(self, ProfileEditor(modules: [self]))
+        }
+        .withMockEnvironment()
+    }
+}
+
+@available(*, deprecated, message: "#1594")
+private struct LegacyPreviewView<Builder>: View where Builder: ModuleBuilder & LegacyModuleViewProviding {
     let title: String
 
     let builder: Builder

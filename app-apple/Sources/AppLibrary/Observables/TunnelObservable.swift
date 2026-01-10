@@ -7,14 +7,16 @@ import Observation
 
 @MainActor @Observable
 public final class TunnelObservable {
-    private let abi: AppABIProtocol
+    private let abi: AppABITunnelProtocol
+    private let logger: (AppLogger & LogFormatter)?
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(abi: AppABIProtocol) {
+    public init(abi: AppABITunnelProtocol, logger: (AppLogger & LogFormatter)?) {
         self.abi = abi
+        self.logger = logger
         activeProfiles = [:]
         transfers = [:]
     }
@@ -23,25 +25,25 @@ public final class TunnelObservable {
 // MARK: - Actions
 
 extension TunnelObservable {
-    public func connect(to profileId: ABI.AppIdentifier, force: Bool = false) async throws {
-        try await abi.tunnelConnect(to: profileId, force: force)
-    }
+//    public func connect(to profileId: ABI.AppIdentifier, force: Bool = false) async throws {
+//        try await abi.connect(to: profileId, force: force)
+//    }
 
     public func connect(to profile: ABI.AppProfile, force: Bool = false) async throws {
-        try await abi.tunnelConnect(to: profile, force: force)
+        try await abi.connect(to: profile, force: force)
     }
 
 //    public func reconnect(to profileId: ABI.AppIdentifier) async throws {
-//        try await abi.tunnelReconnect(to: profileId)
+//        try await abi.reconnect(to: profileId)
 //    }
 
     public func disconnect(from profileId: ABI.AppIdentifier) async throws {
-        try await abi.tunnelDisconnect(from: profileId)
+        try await abi.disconnect(from: profileId)
     }
 
     public func currentLog() async -> [String] {
-        await abi.tunnelCurrentLog().map {
-            abi.formattedLog(timestamp: $0.timestamp, message: $0.message)
+        await abi.currentLog().map {
+            logger?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
         }
     }
 }
@@ -62,18 +64,22 @@ extension TunnelObservable {
     }
 
     public func lastError(for profileId: ABI.AppIdentifier) -> ABI.AppError? {
-        abi.tunnelLastError(ofProfileId: profileId)
+        abi.lastError(ofProfileId: profileId)
+    }
+
+    public func openVPNServerConfiguration(for profileId: ABI.AppIdentifier) -> OpenVPN.Configuration? {
+        abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
 //        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let active):
-            abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+            logger?.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
             activeProfiles = active
         case .dataCount:
             transfers = activeProfiles.compactMapValues {
-                abi.tunnelTransfer(ofProfileId: $0.id)
+                abi.transfer(ofProfileId: $0.id)
             }
         }
     }

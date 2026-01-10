@@ -6,8 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct SettingsCoordinator: View {
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -18,9 +18,9 @@ struct SettingsCoordinator: View {
     @Environment(\.dismiss)
     private var dismiss
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     @State
     private var path = NavigationPath()
@@ -30,8 +30,8 @@ struct SettingsCoordinator: View {
 
     var body: some View {
         SettingsContentView(
-            profileManager: profileManager,
-            isBeta: iapManager.isBeta,
+            profileObservable: profileObservable,
+            isBeta: iapObservable.isBeta,
             path: $path,
             navigationRoute: $navigationRoute,
             linkContent: linkView(to:),
@@ -97,7 +97,7 @@ extension SettingsCoordinator {
                 .navigationTitle(title(for: .credits))
 
         case .diagnostics:
-            DiagnosticsView(profileManager: profileManager, tunnel: tunnel)
+            DiagnosticsView(profileObservable: profileObservable, tunnel: tunnel)
                 .navigationTitle(title(for: .diagnostics))
 
         case .donate:
@@ -109,7 +109,7 @@ extension SettingsCoordinator {
                 .navigationTitle(title(for: .links))
 
         case .preferences:
-            PreferencesView(profileManager: profileManager)
+            PreferencesView(profileObservable: profileObservable)
                 .navigationTitle(title(for: .preferences))
 
         case .purchased:
@@ -155,8 +155,6 @@ extension SettingsCoordinator {
             } else {
                 DebugLogView(
                     withTunnel: tunnel,
-                    parameters: appConfiguration.constants.log,
-                    logFormatterBlock: logFormatterBlock,
                     content: {
                         DebugLogContentView(lines: $0)
                     }
@@ -173,7 +171,7 @@ extension SettingsCoordinator {
 
 #Preview {
     SettingsCoordinator(
-        profileManager: .forPreviews,
+        profileObservable: .forPreviews,
         tunnel: .forPreviews
     )
     .withMockEnvironment()

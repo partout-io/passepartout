@@ -6,12 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileStorageSection: View {
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
-
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration

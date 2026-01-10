@@ -17,10 +17,9 @@ struct ProfileContextMenu: View, Routable {
 
     let style: Style
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
-    @ObservedObject
-    var tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let preview: ABI.ProfilePreview
 
@@ -45,8 +44,8 @@ struct ProfileContextMenu: View, Routable {
 
 @MainActor
 private extension ProfileContextMenu {
-    var profile: Profile? {
-        profileManager.partoutProfile(withId: preview.id)
+    var profile: ABI.AppProfile? {
+        profileObservable.profile(withId: preview.id)
     }
 
     var providerConnectToButton: some View {
@@ -54,10 +53,10 @@ private extension ProfileContextMenu {
             ProviderConnectToButton(
                 profile: profile,
                 onTap: {
-                    flow?.connectionFlow?.onProviderEntityRequired($0)
+                    flow?.connectionFlow?.onProviderEntityRequired($0.native)
                 },
                 label: {
-                    ThemeImageLabel(profile.providerServerSelectionTitle, .profileProvider)
+                    ThemeImageLabel(profile.native.providerServerSelectionTitle, .profileProvider)
                 }
             )
             .uiAccessibility(.App.ProfileMenu.connectTo)
@@ -87,7 +86,7 @@ private extension ProfileContextMenu {
 
     var profileDuplicateButton: some View {
         ProfileDuplicateButton(
-            profileManager: profileManager,
+            profileObservable: profileObservable,
             preview: preview,
             errorHandler: errorHandler
         ) {
@@ -116,7 +115,7 @@ private extension Profile {
         Menu("Menu") {
             ProfileContextMenu(
                 style: .installedProfile,
-                profileManager: .forPreviews,
+                profileObservable: .forPreviews,
                 tunnel: .forPreviews,
                 preview: .init(.forPreviews),
                 errorHandler: .default()

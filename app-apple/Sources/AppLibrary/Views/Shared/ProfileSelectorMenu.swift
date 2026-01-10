@@ -7,9 +7,8 @@ import Partout
 import SwiftUI
 
 public struct ProfileSelectorMenu: View {
-
-    @EnvironmentObject
-    private var profileManager: ProfileManager
+    @Environment(ProfileObservable.self)
+    private var profileObservable
 
     private let title: String
 
@@ -54,8 +53,8 @@ public struct ProfileSelectorMenu: View {
 
 private extension ProfileSelectorMenu {
     var previews: [ABI.ProfilePreview]? {
-        let filtered = profileManager
-            .previews
+        let filtered = profileObservable
+            .filteredHeaders
             .filter {
                 $0.id != excludedProfileId
             }
@@ -64,6 +63,8 @@ private extension ProfileSelectorMenu {
         guard !filtered.isEmpty || newTitle != nil else {
             return nil
         }
-        return filtered
+        return filtered.map {
+            ABI.ProfilePreview(id: $0.id, name: $0.name)
+        }
     }
 }

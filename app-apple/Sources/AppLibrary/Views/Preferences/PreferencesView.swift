@@ -12,11 +12,11 @@ public struct PreferencesView: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
-    @EnvironmentObject
-    private var iapManager: IAPManager
+    @Environment(IAPObservable.self)
+    private var iapObservable
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
 #if os(macOS)
     @Environment(MacSettings.self)
@@ -26,7 +26,7 @@ public struct PreferencesView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    private let profileManager: ProfileManager
+    private let profileObservable: ProfileObservable
 
     @State
     private var isConfirmingEraseiCloud = false
@@ -34,8 +34,8 @@ public struct PreferencesView: View {
     @State
     private var isErasingiCloud = false
 
-    public init(profileManager: ProfileManager) {
-        self.profileManager = profileManager
+    public init(profileObservable: ProfileObservable) {
+        self.profileObservable = profileObservable
     }
 
     public var body: some View {
@@ -53,7 +53,7 @@ public struct PreferencesView: View {
                 enablesPurchasesSection
             }
             if appConfiguration.distributionTarget.supportsIAP &&
-                configManager.isActive(.allowsRelaxedVerification) {
+                configObservable.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationSection
             }
             if appConfiguration.distributionTarget.supportsCloudKit {
@@ -111,8 +111,12 @@ private extension PreferencesView {
     }
 
     var enablesPurchasesSection: some View {
-        Toggle(Strings.Views.Preferences.enablesIap, isOn: $iapManager.isEnabled)
-            .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
+        Toggle(Strings.Views.Preferences.enablesIap, isOn: Binding {
+            iapObservable.isEnabled
+        } set: {
+            iapObservable.enable($0)
+        })
+        .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
     }
 
     var relaxedVerificationSection: some View {
@@ -132,7 +136,7 @@ private extension PreferencesView {
             Task {
                 do {
                     pp_log_g(.App.core, .info, "Erase CloudKit profiles...")
-                    try await profileManager.eraseRemotelySharedProfiles()
+                    try await profileObservable.removeRemotelyShared()
                 } catch {
                     pp_log_g(.App.core, .error, "Unable to erase CloudKit store: \(error)")
                 }
@@ -163,22 +167,22 @@ public struct PreferencesView: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
-    @EnvironmentObject
-    private var configManager: ConfigManager
+    @Environment(ConfigObservable.self)
+    private var configObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    private let profileManager: ProfileManager
+    private let profileObservable: ProfileObservable
 
-    public init(profileManager: ProfileManager) {
-        self.profileManager = profileManager
+    public init(profileObservable: ProfileObservable) {
+        self.profileObservable = profileObservable
     }
 
     public var body: some View {
         Group {
             if appConfiguration.distributionTarget.supportsIAP &&
-                configManager.isActive(.allowsRelaxedVerification) {
+                configObservable.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationToggle
             }
         }
@@ -195,7 +199,7 @@ private extension PreferencesView {
 #endif
 
 #Preview {
-    PreferencesView(profileManager: .forPreviews)
+    PreferencesView(profileObservable: .forPreviews)
         .withMockEnvironment()
 #if os(macOS)
         .environment(MacSettings())

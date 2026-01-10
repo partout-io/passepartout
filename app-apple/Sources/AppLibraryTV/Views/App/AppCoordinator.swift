@@ -6,7 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct AppCoordinator: View, AppCoordinatorConforming {
-
     @Environment(ViewLogger.self)
     private var logger
 
@@ -42,6 +41,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
         self.profileObservable = profileObservable
         self.tunnel = tunnel
         self.webReceiverObservable = webReceiverObservable
+        pp_log_g(.core, .info, "AppCordinator (Observables)")
     }
 
     public var body: some View {
@@ -214,12 +214,11 @@ private struct DynamicPaywallModifier: ViewModifier {
 
 // MARK: - Previews
 
-// FIXME: #1594, Previews
-//#Preview {
-//    AppCoordinator(
-//        profileObservable: .forPreviews,
-//        tunnel: .forPreviews,
-//        webReceiverObservable: WebReceiverObservable()
-//    )
-//    .withMockEnvironment()
-//}
+#Preview {
+    AppCoordinator(
+        profileObservable: .forPreviews,
+        tunnel: .forPreviews,
+        webReceiverObservable: .forPreviews
+    )
+    .withMockEnvironment()
+}

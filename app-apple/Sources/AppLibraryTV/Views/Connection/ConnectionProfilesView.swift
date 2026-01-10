@@ -86,28 +86,30 @@ private extension ConnectionProfilesView {
 
 // MARK: - Previews
 
-// FIXME: #1594, Previews
-//#Preview("List") {
-//    ContentPreview(profileObservable: .forPreviews)
-//}
-//
-//#Preview("Empty") {
-//    ContentPreview(profileObservable: ProfileManager(profiles: []))
-//}
-//
-//private struct ContentPreview: View {
-//    let profileObservable: ProfileObservable
-//
-//    @FocusState
-//    var focusedField: ConnectionView.Field?
-//
-//    var body: some View {
-//        ConnectionProfilesView(
-//            profileObservable: profileObservable,
-//            tunnel: .forPreviews,
-//            focusedField: $focusedField,
-//            errorHandler: .default()
-//        )
-//        .withMockEnvironment()
-//    }
-//}
+#Preview("List") {
+    ContentPreview(profileObservable: .forPreviews)
+}
+
+#Preview("Empty") {
+    ContentPreview(profileObservable: .forPreviews)
+        .task {
+            try? await ProfileObservable.forPreviews.removeAll()
+        }
+}
+
+private struct ContentPreview: View {
+    let profileObservable: ProfileObservable
+
+    @FocusState
+    var focusedField: ConnectionView.Field?
+
+    var body: some View {
+        ConnectionProfilesView(
+            profileObservable: profileObservable,
+            tunnel: .forPreviews,
+            focusedField: $focusedField,
+            errorHandler: .default()
+        )
+        .withMockEnvironment()
+    }
+}

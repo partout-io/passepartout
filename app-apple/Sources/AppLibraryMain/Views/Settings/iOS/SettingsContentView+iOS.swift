@@ -8,14 +8,13 @@ import CommonLibrary
 import SwiftUI
 
 struct SettingsContentView<LinkContent, SettingsDestination, LogDestination>: View where LinkContent: View, SettingsDestination: View, LogDestination: View {
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
     @Environment(\.dismiss)
     private var dismiss
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let isBeta: Bool
 

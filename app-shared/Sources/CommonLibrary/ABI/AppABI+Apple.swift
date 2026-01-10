@@ -100,8 +100,7 @@ extension AppABI {
         let iapManager = appConfiguration.newIAPManager(
             inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
             receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs, logger: appLogger),
-            betaChecker: betaChecker,
-            isEnabled: !kvStore.bool(forAppPreference: .skipsPurchases)
+            betaChecker: betaChecker
         )
 
         // MARK: API
@@ -157,7 +156,6 @@ extension AppABI {
             preview: profilePreview
         )
         let profileManager = ProfileManager(
-            registry: registry,
             processor: profileProcessor,
             repository: mainProfileRepository,
             backupRepository: backupProfileRepository,
@@ -169,7 +167,7 @@ extension AppABI {
         let sysexManager = appConfiguration.newSystemExtensionManager(
             tunnelIdentifier: tunnelIdentifier
         )
-        let extendedTunnel = appConfiguration.newExtendedTunnel(
+        let tunnelManager = appConfiguration.newTunnelManager(
             tunnel: tunnel,
             extensionInstaller: sysexManager,
             kvStore: kvStore,
@@ -284,7 +282,7 @@ extension AppABI {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnel: extendedTunnel,
+            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock

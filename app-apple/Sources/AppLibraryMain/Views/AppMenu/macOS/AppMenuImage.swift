@@ -8,11 +8,9 @@ import CommonLibrary
 import SwiftUI
 
 public struct AppMenuImage: View {
+    private let tunnel: TunnelObservable
 
-    @ObservedObject
-    private var tunnel: ExtendedTunnel
-
-    public init(tunnel: ExtendedTunnel) {
+    public init(tunnel: TunnelObservable) {
         self.tunnel = tunnel
     }
 
@@ -22,25 +20,25 @@ public struct AppMenuImage: View {
 }
 
 private extension AppMenuImage {
-    var connectionStatus: TunnelStatus {
+    var connectionStatus: ABI.AppProfile.Status {
         // TODO: #218, must be per-tunnel
         guard let id = tunnel.activeProfiles.first?.value.id else {
-            return .inactive
+            return .disconnected
         }
-        return tunnel.connectionStatus(ofProfileId: id)
+        return tunnel.status(for: id)
     }
 }
 
-private extension TunnelStatus {
+private extension ABI.AppProfile.Status {
     var imageName: Theme.MenuImageName {
         switch self {
-        case .active:
+        case .connected:
             return .active
 
-        case .inactive:
+        case .disconnected:
             return .inactive
 
-        case .activating, .deactivating:
+        case .connecting, .disconnecting:
             return .pending
         }
     }

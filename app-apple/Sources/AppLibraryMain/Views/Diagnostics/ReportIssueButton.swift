@@ -16,7 +16,7 @@ struct ReportIssueButton {
 
     var message: String?
 
-    let tunnel: ExtendedTunnel
+    let tunnel: TunnelObservable
 
     let apiManager: APIManager
 

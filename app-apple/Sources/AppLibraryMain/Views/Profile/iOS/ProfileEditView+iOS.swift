@@ -8,11 +8,10 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileEditView: View, Routable {
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    let profileManager: ProfileManager
+    let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
 
@@ -46,7 +45,7 @@ struct ProfileEditView: View, Routable {
             )
             ProfileBehaviorSection(profileEditor: profileEditor)
             ProfileActionsSection(
-                profileManager: profileManager,
+                profileObservable: profileObservable,
                 profileEditor: profileEditor,
                 paywallReason: $paywallReason
             )
@@ -177,9 +176,9 @@ private extension ProfileEditView {
 #Preview {
     NavigationStack {
         ProfileEditView(
-            profileManager: .forPreviews,
+            profileObservable: .forPreviews,
             profileEditor: ProfileEditor(profile: .newMockProfile()),
-            moduleViewFactory: DefaultModuleViewFactory(registry: Registry()),
+            moduleViewFactory: DefaultModuleViewFactory(),
             path: .constant(NavigationPath()),
             paywallReason: .constant(nil),
             errorHandler: .default()

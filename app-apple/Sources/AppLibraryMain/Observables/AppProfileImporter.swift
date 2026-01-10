@@ -7,6 +7,8 @@ import Foundation
 
 @MainActor @Observable
 final class AppProfileImporter {
+    typealias ImportBlock = @Sendable (URL, String?) async throws -> Void
+
     var isPresentingPassphrase = false
 
     var currentPassphrase = ""
@@ -19,8 +21,7 @@ final class AppProfileImporter {
 
     func tryImport(
         urls: [URL],
-        profileManager: ProfileManager,
-        importer: ProfileImporter? = nil
+        block: @escaping ImportBlock
     ) async throws {
         var withPassphrase: [URL] = []
 
@@ -29,11 +30,10 @@ final class AppProfileImporter {
                 try await importURL(
                     url,
                     withPassphrase: nil,
-                    profileManager: profileManager,
-                    importer: importer
+                    block: block
                 )
             } catch {
-                if let error = error as? PartoutError, error.code == .OpenVPN.passphraseRequired {
+                if (error as? PartoutError)?.code == .OpenVPN.passphraseRequired {
                     withPassphrase.append(url)
                     continue
                 }
@@ -48,13 +48,15 @@ final class AppProfileImporter {
         }
     }
 
-    func reImport(url: URL, profileManager: ProfileManager, importer: ProfileImporter? = nil) async throws {
+    func reImport(
+        url: URL,
+        block: @escaping ImportBlock
+    ) async throws {
         do {
             try await importURL(
                 url,
                 withPassphrase: currentPassphrase,
-                profileManager: profileManager,
-                importer: importer
+                block: block
             )
             urlsRequiringPassphrase.removeFirst()
             scheduleNextImport()
@@ -86,8 +88,7 @@ private extension AppProfileImporter {
     func importURL(
         _ url: URL,
         withPassphrase passphrase: String?,
-        profileManager: ProfileManager,
-        importer: ProfileImporter?
+        block: @escaping ImportBlock
     ) async throws {
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
@@ -95,11 +96,6 @@ private extension AppProfileImporter {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        if let importer {
-            let profile = try importer.importedProfile(from: .file(url), passphrase: passphrase)
-            try await profileManager.save(profile)
-            return
-        }
-        try await profileManager.import(.file(url), passphrase: passphrase)
+        try await block(url, passphrase)
     }
 }

@@ -7,12 +7,12 @@
 import CommonLibrary
 import SwiftUI
 
+@available(*, deprecated, message: "#1594")
 public struct LegacyAppMenuImage: View {
-
     @ObservedObject
-    private var tunnel: ExtendedTunnel
+    private var tunnel: TunnelManager
 
-    public init(tunnel: ExtendedTunnel) {
+    public init(tunnel: TunnelManager) {
         self.tunnel = tunnel
     }
 

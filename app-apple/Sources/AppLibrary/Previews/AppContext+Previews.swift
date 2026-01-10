@@ -44,10 +44,11 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = ExtendedTunnel(
-            tunnel: Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
-                SharedTunnelEnvironment(profileId: nil)
-            },
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
+            SharedTunnelEnvironment(profileId: nil)
+        }
+        let tunnelManager = TunnelManager(
+            tunnel: tunnel,
             processor: processor,
             interval: 10.0
         )
@@ -56,6 +57,10 @@ extension AppContext {
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)
         let webReceiverManager = WebReceiverManager(webReceiver: dummyReceiver, passcodeGenerator: { "123456" })
         let versionChecker = VersionChecker()
+
+        Task {
+            try await profileManager.observeRemote(repository: InMemoryProfileRepository())
+        }
 
         let abi = AppABI(
             apiManager: apiManager,
@@ -70,7 +75,7 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnel: tunnel,
+            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
@@ -79,6 +84,38 @@ extension AppContext {
 }
 
 // MARK: - Shortcuts
+
+extension IAPObservable {
+    public static var forPreviews: IAPObservable {
+        AppContext.forPreviews.iapObservable
+    }
+}
+
+extension ProfileObservable {
+    public static var forPreviews: ProfileObservable {
+        AppContext.forPreviews.profileObservable
+    }
+}
+
+extension RegistryObservable {
+    public static var forPreviews: RegistryObservable {
+        AppContext.forPreviews.registryObservable
+    }
+}
+
+extension TunnelObservable {
+    public static var forPreviews: TunnelObservable {
+        AppContext.forPreviews.tunnelObservable
+    }
+}
+
+extension WebReceiverObservable {
+    public static var forPreviews: WebReceiverObservable {
+        AppContext.forPreviews.webReceiverObservable
+    }
+}
+
+// MARK: - Shortcuts (deprecated)
 
 extension IAPManager {
     public static var forPreviews: IAPManager {
@@ -92,8 +129,8 @@ extension ProfileManager {
     }
 }
 
-extension ExtendedTunnel {
-    public static var forPreviews: ExtendedTunnel {
+extension TunnelManager {
+    public static var forPreviews: TunnelManager {
         AppContext.forPreviews.tunnel
     }
 }
@@ -105,7 +142,5 @@ extension APIManager {
 }
 
 extension WebReceiverManager {
-    public static var forPreviews: WebReceiverManager {
-        AppContext.forPreviews.webReceiverManager
-    }
+    public static let forPreviews = WebReceiverManager()
 }
