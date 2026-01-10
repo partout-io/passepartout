@@ -23,10 +23,10 @@ public final class ConfigObservable {
     }
 
     public func data(for flag: ABI.ConfigFlag) -> JSON? {
-        abi.configData(for: flag)
+        abi.data(for: flag)
     }
 
-    public func onUpdate(_ event: ABI.ConfigEvent) {
+    func onUpdate(_ event: ABI.ConfigEvent) {
         logger?.log(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let flags):

@@ -16,13 +16,13 @@ public final class VersionObservable {
     }
 
     public func check() async {
-        await abi.versionCheckLatestRelease()
+        await abi.checkLatestRelease()
     }
 
     func onUpdate(_ event: ABI.VersionEvent) {
         switch event {
         case .new:
-            latestRelease = abi.versionLatestRelease
+            latestRelease = abi.latestRelease
         }
     }
 }

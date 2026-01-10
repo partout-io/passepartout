@@ -160,11 +160,11 @@ extension AppABI: AppLogger, LogFormatter {
 private struct AppABIConfig: AppABIConfigProtocol {
     unowned let configManager: ConfigManager
 
-    var configActiveFlags: Set<ABI.ConfigFlag> {
+    var activeFlags: Set<ABI.ConfigFlag> {
         configManager.activeFlags
     }
 
-    func configData(for flag: ABI.ConfigFlag) -> JSON? {
+    func data(for flag: ABI.ConfigFlag) -> JSON? {
         configManager.data(for: flag)
     }
 }
@@ -172,19 +172,19 @@ private struct AppABIConfig: AppABIConfigProtocol {
 private struct AppABIEncoder: AppABIEncoderProtocol {
     unowned let appEncoder: AppEncoder
 
-    func encoderDefaultFilename(for profile: ABI.AppProfile) -> String {
+    func defaultFilename(for profile: ABI.AppProfile) -> String {
         appEncoder.defaultFilename(for: profile.native)
     }
 
-    func encoderProfile(fromString string: String) throws -> ABI.AppProfile {
+    func profile(fromString string: String) throws -> ABI.AppProfile {
         try ABI.AppProfile(native: appEncoder.profile(fromString: string))
     }
 
-    func encoderJSON(fromProfile profile: ABI.AppProfile) throws -> String {
+    func json(fromProfile profile: ABI.AppProfile) throws -> String {
         try appEncoder.json(fromProfile: profile.native)
     }
 
-    func encoderWriteToFile(_ profile: ABI.AppProfile) throws -> String {
+    func writeToFile(_ profile: ABI.AppProfile) throws -> String {
         try appEncoder.writeToFile(profile.native)
     }
 }
@@ -194,36 +194,36 @@ private struct AppABIIAP: AppABIIAPProtocol {
     unowned let kvStore: KeyValueStore
     let supportsIAP: Bool
 
-    func iapIsEnabled() -> Bool {
+    var isEnabled: Bool {
         iapManager.isEnabled
     }
 
-    func iapEnable(_ isEnabled: Bool) {
+    func enable(_ isEnabled: Bool) {
         iapManager.isEnabled = supportsIAP && isEnabled
         kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
     }
 
-    func iapVerify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
+    func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
         try iapManager.verify(profile.native, extra: extra)
     }
 
-    var iapPurchasedProducts: Set<ABI.AppProduct> {
+    var purchasedProducts: Set<ABI.AppProduct> {
         iapManager.purchasedProducts
     }
 
-    var iapIsBeta: Bool {
+    var isBeta: Bool {
         iapManager.isBeta
     }
 
-    func iapIsEligible(for feature: ABI.AppFeature) -> Bool {
+    func isEligible(for feature: ABI.AppFeature) -> Bool {
         iapManager.isEligible(for: feature)
     }
 
-    var iapIsEligibleForFeedback: Bool {
+    var isEligibleForFeedback: Bool {
         iapManager.isEligibleForFeedback
     }
 
-    var iapVerificationDelayMinutes: Int {
+    var verificationDelayMinutes: Int {
         iapManager.verificationDelayMinutes
     }
 }
@@ -236,15 +236,15 @@ private struct AppABIProfile: AppABIProfileProtocol {
         profileManager.profile(withId: id)
     }
 
-    func profileSave(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws {
+    func save(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws {
         try await profileManager.save(profile.native, isLocal: true, remotelyShared: remotelyShared)
     }
 
-    func profileSaveAll() async {
+    func saveAll() async {
         await profileManager.resaveAllProfiles()
     }
 
-    func profileImportText(_ text: String, filename: String, passphrase: String?) async throws {
+    func importText(_ text: String, filename: String, passphrase: String?) async throws {
         let profile = try registry.importedProfile(
             from: .contents(filename: filename, data: text),
             passphrase: passphrase
@@ -252,7 +252,7 @@ private struct AppABIProfile: AppABIProfileProtocol {
         try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
     }
 
-    func profileImportFile(_ path: String, passphrase: String?) async throws {
+    func importFile(_ path: String, passphrase: String?) async throws {
         let profile = try registry.importedProfile(
             from: .file(URL(fileURLWithPath: path)),
             passphrase: passphrase
@@ -260,27 +260,27 @@ private struct AppABIProfile: AppABIProfileProtocol {
         try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
     }
 
-    func profileDup(_ id: ABI.AppIdentifier) async throws {
+    func duplicate(_ id: ABI.AppIdentifier) async throws {
         try await profileManager.duplicate(profileWithId: id)
     }
 
-    func profileRemove(_ id: ABI.AppIdentifier) async {
+    func remove(_ id: ABI.AppIdentifier) async {
         await profileManager.remove(withId: id)
     }
 
-    func profileRemove(_ ids: [ABI.AppIdentifier]) async {
+    func remove(_ ids: [ABI.AppIdentifier]) async {
         await profileManager.remove(withIds: ids)
     }
 
-    func profileRemoveAllRemote() async throws {
+    func removeAllRemote() async throws {
         try await profileManager.eraseRemotelySharedProfiles()
     }
 
-    func profileIsRemotelyShared(_ id: ABI.AppIdentifier) -> Bool {
+    func isRemotelyShared(_ id: ABI.AppIdentifier) -> Bool {
         profileManager.isRemotelyShared(profileWithId: id)
     }
 
-    func profileIsRemoteImportingEnabled() -> Bool {
+    var isRemoteImportingEnabled: Bool {
         profileManager.isRemoteImportingEnabled
     }
 }
@@ -288,22 +288,22 @@ private struct AppABIProfile: AppABIProfileProtocol {
 private struct AppABIRegistry: AppABIRegistryProtocol {
     unowned let registry: Registry
 
-    func registryNewModule(ofType type: ModuleType) -> any ModuleBuilder {
+    func newModule(ofType type: ModuleType) -> any ModuleBuilder {
         type.newModule(with: registry)
     }
 
-    func registryValidate(_ builder: any ModuleBuilder) throws {
+    func validate(_ builder: any ModuleBuilder) throws {
         guard let impl = registry.implementation(for: builder) as? ModuleBuilderValidator else {
             return
         }
         try impl.validate(builder)
     }
 
-    func registryImplementation(for id: ModuleHandler.ID) -> (any ModuleImplementation)? {
+    func implementation(for id: ModuleHandler.ID) -> (any ModuleImplementation)? {
         registry.implementation(for: id)
     }
 
-    func registryResolvedModule(_ module: ProviderModule) throws -> Module {
+    func resolvedModule(_ module: ProviderModule) throws -> Module {
         try registry.resolvedModule(module, in: nil)
     }
 }
@@ -312,31 +312,31 @@ private struct AppABITunnel: AppABITunnelProtocol {
     unowned let tunnelManager: TunnelManager
     let logParameters: ABI.Constants.Log
 
-    func tunnelConnect(to profile: ABI.AppProfile, force: Bool) async throws {
+    func connect(to profile: ABI.AppProfile, force: Bool) async throws {
         try await tunnelManager.connect(with: profile.native, force: force)
     }
 
-//    func tunnelReconnect(to profileId: ABI.Identifier) async throws {
+//    func reconnect(to profileId: ABI.Identifier) async throws {
 //        try await tunnel.
 //    }
 
-    func tunnelDisconnect(from profileId: ABI.AppIdentifier) async throws {
+    func disconnect(from profileId: ABI.AppIdentifier) async throws {
         try await tunnelManager.disconnect(from: profileId)
     }
 
-    func tunnelCurrentLog() async -> [ABI.AppLogLine] {
+    func currentLog() async -> [ABI.AppLogLine] {
         await tunnelManager.currentLog(parameters: logParameters)
     }
 
-    func tunnelLastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
+    func lastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
         tunnelManager.lastError(ofProfileId: profileId)
     }
 
-    func tunnelTransfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
+    func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
         tunnelManager.transfer(ofProfileId: profileId)
     }
 
-    func tunnelValue(ofProfileId profileId: ABI.AppIdentifier, key: AppABITunnelValueKey) -> Any? {
+    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: ABI.AppIdentifier) -> Any? {
         switch key {
         case .openVPNServerConfiguration:
             tunnelManager.value(
@@ -350,11 +350,11 @@ private struct AppABITunnel: AppABITunnelProtocol {
 private struct AppABIVersion: AppABIVersionProtocol {
     unowned let versionChecker: VersionChecker
 
-    func versionCheckLatestRelease() async {
+    func checkLatestRelease() async {
         await versionChecker.checkLatestRelease()
     }
 
-    var versionLatestRelease: ABI.VersionRelease? {
+    var latestRelease: ABI.VersionRelease? {
         versionChecker.latestRelease
     }
 }
@@ -362,23 +362,23 @@ private struct AppABIVersion: AppABIVersionProtocol {
 private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
     unowned let webReceiverManager: WebReceiverManager
 
-    func webReceiverStart() throws {
+    func start() throws {
         try webReceiverManager.start()
     }
 
-    func webReceiverStop() {
+    func stop() {
         webReceiverManager.stop()
     }
 
-    func webReceiverRefresh() {
+    func refresh() {
         webReceiverManager.renewPasscode()
     }
 
-    var webReceiverIsStarted: Bool {
+    var isStarted: Bool {
         webReceiverManager.isStarted
     }
 
-    var webReceiverWebsite: ABI.WebsiteWithPasscode? {
+    var website: ABI.WebsiteWithPasscode? {
         webReceiverManager.website
     }
 }

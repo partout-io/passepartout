@@ -29,7 +29,7 @@ public final class ProfileObservable {
         allHeaders = [:]
         filteredHeaders = []
         isReady = false
-        isRemoteImportingEnabled = abi.profileIsRemoteImportingEnabled()
+        isRemoteImportingEnabled = abi.isRemoteImportingEnabled
         searchSubject = CurrentValueSubject("")
     }
 }
@@ -49,24 +49,24 @@ extension ProfileObservable {
             builder.attributes.isAvailableForTV = true
             partoutProfile = try builder.build()
         }
-        try await abi.profileSave(ABI.AppProfile(native: partoutProfile), remotelyShared: sharingFlag != nil)
+        try await abi.save(ABI.AppProfile(native: partoutProfile), remotelyShared: sharingFlag != nil)
     }
 
     public func saveAll() async {
-        await abi.profileSaveAll()
+        await abi.saveAll()
     }
 
     public func `import`(_ input: ABI.ProfileImporterInput, passphrase: String? = nil) async throws {
         switch input {
         case .contents(let filename, let data):
-            try await abi.profileImportText(data, filename: filename, passphrase: passphrase)
+            try await abi.importText(data, filename: filename, passphrase: passphrase)
         case .file(let url):
-            try await abi.profileImportFile(url.filePath(), passphrase: passphrase)
+            try await abi.importFile(url.filePath(), passphrase: passphrase)
         }
     }
 
     public func duplicate(profileWithId profileId: ABI.AppIdentifier) async throws {
-        try await abi.profileDup(profileId)
+        try await abi.duplicate(profileId)
     }
 
     public func search(byName name: String) {
@@ -74,15 +74,15 @@ extension ProfileObservable {
     }
 
     public func remove(withId profileId: ABI.AppIdentifier) async {
-        await abi.profileRemove(profileId)
+        await abi.remove(profileId)
     }
 
     public func remove(withIds profileIds: [ABI.AppIdentifier]) async {
-        await abi.profileRemove(profileIds)
+        await abi.remove(profileIds)
     }
 
     public func removeRemotelyShared() async throws {
-        try await abi.profileRemoveAllRemote()
+        try await abi.removeAllRemote()
     }
 
     public func removeAll() async throws {
@@ -111,7 +111,7 @@ extension ProfileObservable {
     }
 
     public func isRemotelyShared(profileWithId profileId: ABI.AppIdentifier) -> Bool {
-        abi.profileIsRemotelyShared(profileId)
+        abi.isRemotelyShared(profileId)
     }
 
     public func sharingFlags(for profileId: ABI.AppIdentifier) -> [ABI.ProfileSharingFlag] {

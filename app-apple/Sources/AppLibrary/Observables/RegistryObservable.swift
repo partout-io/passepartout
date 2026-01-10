@@ -15,18 +15,18 @@ public final class RegistryObservable {
     }
 
     public func newModule(ofType type: ModuleType) -> any ModuleBuilder {
-        abi.registryNewModule(ofType: type)
+        abi.newModule(ofType: type)
     }
 
     public func validate(_ builder: any ModuleBuilder) throws {
-        try abi.registryValidate(builder)
+        try abi.validate(builder)
     }
 
     public func implementation(for builder: any ModuleBuilder) -> ModuleImplementation? {
-        abi.registryImplementation(for: builder.moduleHandler.id)
+        abi.implementation(for: builder.moduleHandler.id)
     }
 
     public func resolvedModule(_ module: ProviderModule) throws -> Module {
-        try abi.registryResolvedModule(module)
+        try abi.resolvedModule(module)
     }
 }

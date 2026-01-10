@@ -16,8 +16,7 @@ public final class IAPObservable {
 
     public init(abi: AppABIIAPProtocol) {
         self.abi = abi
-
-        isEnabled = abi.iapIsEnabled()
+        isEnabled = abi.isEnabled
         eligibleFeatures = []
         isLoadingReceipt = false
     }
@@ -27,11 +26,11 @@ public final class IAPObservable {
 
 extension IAPObservable {
     public func enable(_ isEnabled: Bool) {
-        abi.iapEnable(isEnabled)
+        abi.enable(isEnabled)
     }
 
     public func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
-        try abi.iapVerify(profile, extra: extra)
+        try abi.verify(profile, extra: extra)
     }
 }
 
@@ -39,23 +38,23 @@ extension IAPObservable {
 
 extension IAPObservable {
     public var purchasedProducts: Set<ABI.AppProduct> {
-        abi.iapPurchasedProducts
+        abi.purchasedProducts
     }
 
     public var isBeta: Bool {
-        abi.iapIsBeta
+        abi.isBeta
     }
 
     public func isEligible(for feature: ABI.AppFeature) -> Bool {
-        abi.iapIsEligible(for: feature)
+        abi.isEligible(for: feature)
     }
 
     public var isEligibleForFeedback: Bool {
-        abi.iapIsEligibleForFeedback
+        abi.isEligibleForFeedback
     }
 
     public var verificationDelayMinutes: Int {
-        abi.iapVerificationDelayMinutes
+        abi.verificationDelayMinutes
     }
 
     func onUpdate(_ event: ABI.IAPEvent) {
