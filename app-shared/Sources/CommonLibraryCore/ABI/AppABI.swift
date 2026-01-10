@@ -14,12 +14,13 @@ public final class AppABI: Sendable {
     public let encoder: AppABIEncoderProtocol
     public let iap: AppABIIAPProtocol
     public let profile: AppABIProfileProtocol
-    public let reg: AppABIRegistryProtocol
+    public let registry: AppABIRegistryProtocol
     public let tunnel: AppABITunnelProtocol
     public let version: AppABIVersionProtocol
     public let webReceiver: AppABIWebReceiverProtocol
+    private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
-    // FIXME: #1594, Make these private after observables
+    // FIXME: #1594, Drop these after observables
     @available(*, deprecated, message: "#1594")
     public let apiManager: APIManager
     @available(*, deprecated, message: "#1594")
@@ -33,13 +34,13 @@ public final class AppABI: Sendable {
     @available(*, deprecated, message: "#1594")
     public let profileManager: ProfileManager
     @available(*, deprecated, message: "#1594")
-    public let registry: Registry
+    public let partoutRegistry: Registry
     @available(*, deprecated, message: "#1594")
     public let tunnelManager: TunnelManager
+    @available(*, deprecated, message: "#1594")
     private let versionChecker: VersionChecker
     @available(*, deprecated, message: "#1594")
     public let webReceiverManager: WebReceiverManager
-    private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
     // MARK: Internal state
 
@@ -66,7 +67,7 @@ public final class AppABI: Sendable {
         logFormatter: LogFormatter,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
-        registry: Registry,
+        registry partoutRegistry: Registry,
         tunnelManager: TunnelManager,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
@@ -83,7 +84,7 @@ public final class AppABI: Sendable {
         self.logFormatter = logFormatter
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
-        self.registry = registry
+        self.partoutRegistry = partoutRegistry
         self.tunnelManager = tunnelManager
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
@@ -101,9 +102,9 @@ public final class AppABI: Sendable {
         )
         profile = AppABIProfile(
             profileManager: profileManager,
-            registry: registry
+            registry: partoutRegistry
         )
-        reg = AppABIRegistry(registry: registry)
+        registry = AppABIRegistry(registry: partoutRegistry)
         tunnel = AppABITunnel(
             tunnelManager: tunnelManager,
             logParameters: appConfiguration.constants.log
@@ -167,7 +168,7 @@ extension AppABI: AppLogger, LogFormatter {
 // MARK: - Actions
 
 private struct AppABIConfig: AppABIConfigProtocol {
-    unowned let configManager: ConfigManager
+    let configManager: ConfigManager
 
     var activeFlags: Set<ABI.ConfigFlag> {
         configManager.activeFlags
@@ -179,7 +180,7 @@ private struct AppABIConfig: AppABIConfigProtocol {
 }
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
-    unowned let appEncoder: AppEncoder
+    let appEncoder: AppEncoder
 
     func defaultFilename(for profile: ABI.AppProfile) -> String {
         appEncoder.defaultFilename(for: profile.native)
@@ -199,8 +200,8 @@ private struct AppABIEncoder: AppABIEncoderProtocol {
 }
 
 private struct AppABIIAP: AppABIIAPProtocol {
-    unowned let iapManager: IAPManager
-    unowned let kvStore: KeyValueStore
+    let iapManager: IAPManager
+    let kvStore: KeyValueStore
     let supportsIAP: Bool
 
     var isEnabled: Bool {
@@ -238,8 +239,8 @@ private struct AppABIIAP: AppABIIAPProtocol {
 }
 
 private struct AppABIProfile: AppABIProfileProtocol {
-    unowned let profileManager: ProfileManager
-    unowned let registry: Registry
+    let profileManager: ProfileManager
+    let registry: Registry
 
     func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile? {
         profileManager.profile(withId: id)
@@ -295,7 +296,7 @@ private struct AppABIProfile: AppABIProfileProtocol {
 }
 
 private struct AppABIRegistry: AppABIRegistryProtocol {
-    unowned let registry: Registry
+    let registry: Registry
 
     func newModule(ofType type: ModuleType) -> any ModuleBuilder {
         type.newModule(with: registry)
@@ -318,7 +319,7 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
 }
 
 private struct AppABITunnel: AppABITunnelProtocol {
-    unowned let tunnelManager: TunnelManager
+    let tunnelManager: TunnelManager
     let logParameters: ABI.Constants.Log
 
     func connect(to profile: ABI.AppProfile, force: Bool) async throws {
@@ -357,7 +358,7 @@ private struct AppABITunnel: AppABITunnelProtocol {
 }
 
 private struct AppABIVersion: AppABIVersionProtocol {
-    unowned let versionChecker: VersionChecker
+    let versionChecker: VersionChecker
 
     func checkLatestRelease() async {
         await versionChecker.checkLatestRelease()
@@ -369,7 +370,7 @@ private struct AppABIVersion: AppABIVersionProtocol {
 }
 
 private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
-    unowned let webReceiverManager: WebReceiverManager
+    let webReceiverManager: WebReceiverManager
 
     func start() throws {
         try webReceiverManager.start()

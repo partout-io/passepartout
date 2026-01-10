@@ -38,7 +38,7 @@ public final class AppContext {
         configObservable = ConfigObservable(abi: abi.config, logger: abi)
         iapObservable = IAPObservable(abi: abi.iap)
         profileObservable = ProfileObservable(abi: abi.profile, logger: abi)
-        registryObservable = RegistryObservable(abi: abi.reg)
+        registryObservable = RegistryObservable(abi: abi.registry)
         tunnelObservable = TunnelObservable(abi: abi.tunnel, logger: abi)
         versionObservable = VersionObservable(abi: abi.version)
         webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
@@ -98,7 +98,7 @@ extension AppContext {
     @available(*, deprecated, message: "#1594")
     public var profileManager: ProfileManager { abi.profileManager }
     @available(*, deprecated, message: "#1594")
-    public var registry: Registry { abi.registry }
+    public var registry: Registry { abi.partoutRegistry }
     @available(*, deprecated, message: "#1594")
     public var tunnel: TunnelManager { abi.tunnelManager }
     @available(*, deprecated, message: "#1594")
