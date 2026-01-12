@@ -103,9 +103,7 @@ private extension PaywallProductView {
                 style: style,
                 storeProduct: storeProduct,
                 purchasingIdentifier: $purchasingIdentifier,
-                onPurchase: {
-                    try await iapObservable.purchase($0.product)
-                },
+                onPurchase: iapObservable.purchase,
                 onComplete: onComplete,
                 onError: onError
             )

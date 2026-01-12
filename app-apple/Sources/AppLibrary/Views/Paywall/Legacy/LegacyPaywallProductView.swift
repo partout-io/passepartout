@@ -114,9 +114,7 @@ private extension LegacyPaywallProductView {
                 style: style,
                 storeProduct: product,
                 purchasingIdentifier: $purchasingIdentifier,
-                onPurchase: {
-                    try await iapManager.purchase($0.product)
-                },
+                onPurchase: iapManager.purchase,
                 onComplete: onComplete,
                 onError: onError
             )

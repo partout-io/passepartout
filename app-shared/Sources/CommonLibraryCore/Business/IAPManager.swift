@@ -39,8 +39,6 @@ public final class IAPManager {
 
     public private(set) var originalPurchase: ABI.OriginalPurchase?
 
-    private var purchasableProducts: [ABI.AppProduct: ABI.StoreProduct]
-
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
 #if !PSP_CROSS
@@ -85,7 +83,6 @@ public final class IAPManager {
         verificationDelayMinutesBlock = { _ in 0 }
         productsAtBuild = nil
         userLevel = .undefined
-        purchasableProducts = [:]
         purchasedProducts = []
         eligibleFeatures = []
         didChange = PassthroughStream()
@@ -112,7 +109,6 @@ public final class IAPManager {
         self.verificationDelayMinutesBlock = verificationDelayMinutesBlock
         self.productsAtBuild = productsAtBuild
         userLevel = .undefined
-        purchasableProducts = [:]
         purchasedProducts = []
         eligibleFeatures = []
         didChange = PassthroughStream()
@@ -139,13 +135,8 @@ extension IAPManager {
         guard isEnabled else { return [] }
         do {
             let inAppProducts = try await inAppHelper.fetchProducts(timeout: timeoutInterval)
-            purchasableProducts = products.reduce(into: [:]) {
-                guard let ip = inAppProducts[$1] else { return }
-                $0[$1] = ip
-            }
             return products.compactMap {
-                guard let sp = purchasableProducts[$0] else { return nil }
-                return sp
+                inAppProducts[$0]
             }
         } catch is TaskTimeoutError {
             throw ABI.AppError.timeout
@@ -155,16 +146,13 @@ extension IAPManager {
         }
     }
 
-    public func purchase(_ product: ABI.AppProduct) async throws -> ABI.StoreResult {
+    public func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
         guard isEnabled else {
             return .cancelled
         }
-        guard let purchasableProduct = purchasableProducts[product] else {
-            return .notFound
-        }
-        let result = try await inAppHelper.purchase(purchasableProduct)
+        let result = try await inAppHelper.purchase(storeProduct)
         if result == .done {
-            await receiptReader.addPurchase(with: purchasableProduct.nativeIdentifier)
+            await receiptReader.addPurchase(with: storeProduct.nativeIdentifier)
             await reloadReceipt()
         }
         return result

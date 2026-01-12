@@ -30,8 +30,8 @@ extension IAPObservable {
         abi.enable(isEnabled)
     }
 
-    public func purchase(_ product: ABI.AppProduct) async throws -> ABI.StoreResult {
-        try await abi.purchase(product)
+    public func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
+        try await abi.purchase(storeProduct)
     }
 
     public func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {

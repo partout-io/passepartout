@@ -24,7 +24,7 @@ public protocol AppABIEncoderProtocol: Sendable {
 public protocol AppABIIAPProtocol: Sendable {
     var isEnabled: Bool { get }
     func enable(_ isEnabled: Bool)
-    func purchase(_ product: ABI.AppProduct) async throws -> ABI.StoreResult
+    func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult
     func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
     func reloadReceipt() async
     func restorePurchases() async throws

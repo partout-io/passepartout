@@ -216,8 +216,8 @@ private struct AppABIIAP: AppABIIAPProtocol {
         try iapManager.verify(profile.native, extra: extra)
     }
 
-    func purchase(_ product: ABI.AppProduct) async throws -> ABI.StoreResult {
-        try await iapManager.purchase(product)
+    func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
+        try await iapManager.purchase(storeProduct)
     }
 
     func reloadReceipt() async {
