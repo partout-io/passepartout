@@ -6,6 +6,21 @@ import CommonLibrary
 import SwiftUI
 
 public struct PurchasedView: View {
+    @Environment(ConfigObservable.self)
+    private var configObservable
+
+    public init() {}
+
+    public var body: some View {
+        if configObservable.isUsingObservables {
+            NewPurchasedView()
+        } else {
+            LegacyPurchasedView()
+        }
+    }
+}
+
+public struct NewPurchasedView: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -44,7 +59,7 @@ public struct PurchasedView: View {
     }
 }
 
-private extension PurchasedView {
+private extension NewPurchasedView {
     var isEmpty: Bool {
         iapObservable.originalPurchase == nil && iapObservable.purchasedProducts.isEmpty && iapObservable.eligibleFeatures.isEmpty
     }
@@ -61,7 +76,7 @@ private extension PurchasedView {
     }
 }
 
-private extension PurchasedView {
+private extension NewPurchasedView {
     var contentView: some View {
 #if os(macOS)
         Form(content: sectionsGroup)
@@ -153,6 +168,6 @@ private extension ABI.AppFeature {
 // MARK: - Previews
 
 #Preview {
-    PurchasedView()
+    NewPurchasedView()
         .withMockEnvironment()
 }
