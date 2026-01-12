@@ -50,7 +50,7 @@ extension IAPManagerTests {
         do {
             let purchasable = try await sut.fetchPurchasableProducts(for: [appleTV])
             let purchasableAppleTV = try #require(purchasable.first)
-            let result = try await sut.purchase(purchasableAppleTV.product)
+            let result = try await sut.purchase(purchasableAppleTV)
             if result == .done {
                 #expect(sut.purchasedProducts.contains(appleTV))
             } else {
