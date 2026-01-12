@@ -5,28 +5,12 @@
 import CommonLibrary
 import SwiftUI
 
-public struct DonateView<Modifier>: View where Modifier: ViewModifier {
+public struct LegacyDonateView<Modifier>: View where Modifier: ViewModifier {
+    @EnvironmentObject
+    private var iapManager: IAPManager
+
     @Environment(ConfigObservable.self)
     private var configObservable
-
-    private let modifier: Modifier
-
-    public init(modifier: Modifier) {
-        self.modifier = modifier
-    }
-
-    public var body: some View {
-        if configObservable.isUsingObservables {
-            NewDonateView(modifier: modifier)
-        } else {
-            LegacyDonateView(modifier: modifier)
-        }
-    }
-}
-
-public struct NewDonateView<Modifier>: View where Modifier: ViewModifier {
-    @Environment(IAPObservable.self)
-    private var iapObservable
 
     @Environment(\.dismiss)
     private var dismiss
@@ -70,17 +54,17 @@ public struct NewDonateView<Modifier>: View where Modifier: ViewModifier {
     }
 }
 
-private extension NewDonateView {
+private extension LegacyDonateView {
     var title: String {
         Strings.Views.Donate.title
     }
 
     var productsRows: some View {
         ForEach(availableProducts, id: \.nativeIdentifier) {
-            PaywallProductView(
-                iapObservable: iapObservable,
+            LegacyPaywallProductView(
+                iapManager: iapManager,
                 style: .donation,
-                storeProduct: $0,
+                product: $0,
                 withIncludedFeatures: false,
                 purchasingIdentifier: $purchasingIdentifier,
                 onComplete: onComplete,
@@ -102,14 +86,14 @@ private extension NewDonateView {
 
 // MARK: -
 
-private extension NewDonateView {
+private extension LegacyDonateView {
     func fetchAvailableProducts() async {
         isFetchingProducts = true
         defer {
             isFetchingProducts = false
         }
         do {
-            availableProducts = try await iapObservable.purchasableProducts(for: ABI.AppProduct.Donations.all)
+            availableProducts = try await iapManager.fetchPurchasableProducts(for: ABI.AppProduct.Donations.all)
             guard !availableProducts.isEmpty else {
                 throw ABI.AppError.emptyProducts
             }
@@ -155,6 +139,6 @@ private extension NewDonateView {
         }
     }
 
-    return NewDonateView(modifier: PreviewModifier())
+    return LegacyDonateView(modifier: PreviewModifier())
         .withMockEnvironment()
 }

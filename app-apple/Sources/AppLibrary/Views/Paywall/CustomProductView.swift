@@ -3,26 +3,23 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-
 import StoreKit
 import SwiftUI
 
 struct CustomProductView: View {
-
     @Environment(\.isEnabled)
     private var isEnabled
 
     let style: PaywallProductViewStyle
 
-    @ObservedObject
-    var iapManager: IAPManager
-
-    let product: InAppProduct
+    let storeProduct: ABI.StoreProduct
 
     @Binding
     var purchasingIdentifier: String?
 
-    let onComplete: (String, InAppPurchaseResult) -> Void
+    let onPurchase: (ABI.StoreProduct) async throws -> ABI.StoreResult
+
+    let onComplete: (String, ABI.StoreResult) -> Void
 
     let onError: (Error) -> Void
 
@@ -36,12 +33,12 @@ private extension CustomProductView {
 #if os(tvOS)
         Button(action: purchase) {
             VStack(alignment: .leading) {
-                Text(verbatim: product.localizedTitle)
-                    .themeTrailingValue(product.localizedPrice)
+                Text(verbatim: storeProduct.localizedTitle)
+                    .themeTrailingValue(storeProduct.localizedPrice)
                     .font(withDescription ? .headline : .footnote)
 
                 if withDescription {
-                    Text(verbatim: product.localizedDescription)
+                    Text(verbatim: storeProduct.localizedDescription)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -50,19 +47,19 @@ private extension CustomProductView {
 #else
         HStack {
             VStack(alignment: .leading) {
-                Text(verbatim: product.localizedTitle)
+                Text(verbatim: storeProduct.localizedTitle)
                     .font(isPrimary ? .title2 : withFooter ? .headline : nil)
                     .fontWeight(isPrimary ? .bold : nil)
 
                 if withDescription {
-                    Text(verbatim: product.localizedDescription)
+                    Text(verbatim: storeProduct.localizedDescription)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             }
             Spacer()
             Button(action: purchase) {
-                Text(product.localizedPrice)
+                Text(storeProduct.localizedPrice)
                     .font(.headline)
                     .fontWeight(.bold)
                     .padding(.horizontal, 15)
@@ -127,14 +124,14 @@ private extension CustomProductView {
 
 private extension CustomProductView {
     func purchase() {
-        purchasingIdentifier = product.productIdentifier
+        purchasingIdentifier = storeProduct.nativeIdentifier
         Task {
             defer {
                 purchasingIdentifier = nil
             }
             do {
-                let result = try await iapManager.purchase(product)
-                onComplete(product.productIdentifier, result)
+                let result = try await onPurchase(storeProduct)
+                onComplete(storeProduct.nativeIdentifier, result)
             } catch {
                 onError(error)
             }
@@ -146,9 +143,9 @@ private extension CustomProductView {
     List {
         CustomProductView(
             style: .paywall(primary: true),
-            iapManager: .forPreviews,
-            product: ABI.AppProduct.Complete.OneTime.lifetime.asFakeIAP,
+            storeProduct: ABI.AppProduct.Complete.OneTime.lifetime.asFakeStoreProduct,
             purchasingIdentifier: .constant(nil),
+            onPurchase: { _ in .done },
             onComplete: { _, _ in },
             onError: { _ in }
         )

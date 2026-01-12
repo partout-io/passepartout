@@ -2,20 +2,20 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public actor FakeAppProductHelper: AppProductHelper {
-    private let purchase: OriginalPurchase
+public actor FakeInAppHelper: InAppHelper {
+    private let purchase: ABI.OriginalPurchase
 
-    public private(set) var products: [ABI.AppProduct: InAppProduct]
+    private var products: [ABI.AppProduct: ABI.StoreProduct]
 
-    public nonisolated let receiptReader: FakeAppReceiptReader
+    public nonisolated let receiptReader: FakeInAppReceiptReader
 
     private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
 
     // set .max to skip entitled products
     public init(build: Int = .max) {
-        purchase = OriginalPurchase(buildNumber: build)
+        purchase = ABI.OriginalPurchase(buildNumber: build)
         products = [:]
-        receiptReader = FakeAppReceiptReader()
+        receiptReader = FakeInAppReceiptReader()
         didUpdateSubject = PassthroughStream()
     }
 
@@ -27,17 +27,17 @@ public actor FakeAppProductHelper: AppProductHelper {
         didUpdateSubject.subscribe()
     }
 
-    public func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: InAppProduct] {
+    public func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: ABI.StoreProduct] {
         products = ABI.AppProduct.all.reduce(into: [:]) {
-            $0[$1] = $1.asFakeIAP
+            $0[$1] = $1.asFakeStoreProduct
         }
         await receiptReader.setReceipt(withPurchase: purchase, identifiers: [])
         didUpdateSubject.send()
         return products
     }
 
-    public func purchase(_ inAppProduct: InAppProduct) async throws -> InAppPurchaseResult {
-        await receiptReader.addPurchase(with: inAppProduct.productIdentifier)
+    public func purchase(_ inAppProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
+        await receiptReader.addPurchase(with: inAppProduct.nativeIdentifier)
         didUpdateSubject.send()
         return .done
     }
@@ -48,13 +48,14 @@ public actor FakeAppProductHelper: AppProductHelper {
 }
 
 extension ABI.AppProduct {
-    public var asFakeIAP: InAppProduct {
-        InAppProduct(
-            productIdentifier: rawValue,
+    public var asFakeStoreProduct: ABI.StoreProduct {
+        ABI.StoreProduct(
+            product: self,
             localizedTitle: rawValue,
             localizedDescription: rawValue,
             localizedPrice: "€10.0",
-            native: self
+            nativeIdentifier: rawValue,
+            native: nil
         )
     }
 }

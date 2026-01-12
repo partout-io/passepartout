@@ -24,11 +24,19 @@ public protocol AppABIEncoderProtocol: Sendable {
 public protocol AppABIIAPProtocol: Sendable {
     var isEnabled: Bool { get }
     func enable(_ isEnabled: Bool)
+    func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult
     func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
+    func reloadReceipt() async
+    func restorePurchases() async throws
+    func suggestedProducts(for features: Set<ABI.AppFeature>) -> Set<ABI.AppProduct>
+    func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct]
+    var originalPurchase: ABI.OriginalPurchase? { get }
     var purchasedProducts: Set<ABI.AppProduct> { get }
     var isBeta: Bool { get }
     func isEligible(for feature: ABI.AppFeature) -> Bool
+    func isEligible(for features: Set<ABI.AppFeature>) -> Bool
     var isEligibleForFeedback: Bool { get }
+    var isEligibleForComplete: Bool { get }
     var verificationDelayMinutes: Int { get }
 }
 

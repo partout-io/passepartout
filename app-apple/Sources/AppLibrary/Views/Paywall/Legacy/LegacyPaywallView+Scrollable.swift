@@ -6,14 +6,17 @@ import CommonLibrary
 import StoreKit
 import SwiftUI
 
-struct PaywallScrollableView: View {
+@available(*, deprecated, message: "#1594")
+struct LegacyPaywallScrollableView: View {
+
     @Environment(\.appConfiguration)
     private var appConfiguration
 
     @Binding
     var isPresented: Bool
 
-    let iapObservable: IAPObservable
+    @ObservedObject
+    var iapManager: IAPManager
 
     let requiredFeatures: Set<ABI.AppFeature>
 
@@ -38,14 +41,14 @@ struct PaywallScrollableView: View {
     }
 }
 
-private extension PaywallScrollableView {
+private extension LegacyPaywallScrollableView {
     var completeProductsView: some View {
         Group {
             ForEach(model.completePurchasable, id: \.nativeIdentifier) {
-                PaywallProductView(
-                    iapObservable: iapObservable,
+                LegacyPaywallProductView(
+                    iapManager: iapManager,
                     style: .paywall(primary: true),
-                    storeProduct: $0,
+                    product: $0,
                     withIncludedFeatures: false,
                     requiredFeatures: requiredFeatures,
                     purchasingIdentifier: model.binding(\.purchasingIdentifier),
@@ -65,16 +68,16 @@ private extension PaywallScrollableView {
                 Strings.Views.Paywall.Sections.Products.footer
             ].joined(separator: " ")
         )
-        .themeBlurred(if: !iapObservable.isEligibleForComplete)
-        .disabled(!iapObservable.isEligibleForComplete)
+        .themeBlurred(if: !iapManager.isEligibleForComplete)
+        .disabled(!iapManager.isEligibleForComplete)
     }
 
     var individualProductsView: some View {
         ForEach(model.individualPurchasable, id: \.nativeIdentifier) {
-            PaywallProductView(
-                iapObservable: iapObservable,
+            LegacyPaywallProductView(
+                iapManager: iapManager,
                 style: .paywall(primary: false),
-                storeProduct: $0,
+                product: $0,
                 withIncludedFeatures: true,
                 requiredFeatures: requiredFeatures,
                 purchasingIdentifier: model.binding(\.purchasingIdentifier),
@@ -96,7 +99,7 @@ private extension PaywallScrollableView {
     }
 
     var restoreView: some View {
-        RestorePurchasesButton(errorHandler: errorHandler)
+        LegacyRestorePurchasesButton(errorHandler: errorHandler)
             .themeContainerWithSingleEntry(
                 header: Strings.Views.Paywall.Sections.Restore.header,
                 footer: Strings.Views.Paywall.Sections.Restore.footer,
@@ -109,9 +112,9 @@ private extension PaywallScrollableView {
 
 #Preview {
     let features: Set<ABI.AppFeature> = [.appleTV, .dns, .sharing]
-    PaywallScrollableView(
+    LegacyPaywallScrollableView(
         isPresented: .constant(true),
-        iapObservable: .forPreviews,
+        iapManager: .forPreviews,
         requiredFeatures: features,
         model: .forPreviews(features, including: [.complete]),
         errorHandler: .default(),

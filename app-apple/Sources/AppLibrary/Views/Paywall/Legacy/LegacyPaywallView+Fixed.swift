@@ -5,11 +5,14 @@
 import CommonLibrary
 import SwiftUI
 
-struct PaywallFixedView: View {
+@available(*, deprecated, message: "#1594")
+struct LegacyPaywallFixedView: View {
+
     @Binding
     var isPresented: Bool
 
-    let iapObservable: IAPObservable
+    @ObservedObject
+    var iapManager: IAPManager
 
     let requiredFeatures: Set<ABI.AppFeature>
 
@@ -39,7 +42,7 @@ struct PaywallFixedView: View {
                 // TODO: #1511, add bottom links if !os(tvOS)
             }
             .frame(maxHeight: .infinity)
-            .themeAnimation(on: iapObservable.purchasedProducts, category: .paywall)
+            .themeAnimation(on: iapManager.purchasedProducts, category: .paywall)
 #if os(tvOS)
             .themeGradient()
 #endif
@@ -47,7 +50,7 @@ struct PaywallFixedView: View {
     }
 }
 
-private extension PaywallFixedView {
+private extension LegacyPaywallFixedView {
     var showsComplete: Bool {
         !model.completePurchasable.isEmpty
     }
@@ -58,26 +61,26 @@ private extension PaywallFixedView {
                 .font(.title2)
                 .padding(.bottom, 1)
             ForEach(model.completePurchasable, id: \.nativeIdentifier) { iap in
-                PaywallProductView(
-                    iapObservable: iapObservable,
+                LegacyPaywallProductView(
+                    iapManager: iapManager,
                     style: .paywall(primary: true),
-                    storeProduct: iap,
+                    product: iap,
                     withIncludedFeatures: false,
                     requiredFeatures: requiredFeatures,
                     purchasingIdentifier: model.binding(\.purchasingIdentifier),
                     onComplete: onComplete,
                     onError: onError
                 )
-                .focused($selectedProduct, equals: iap.product)
+                .focused($selectedProduct, equals: ABI.AppProduct(rawValue: iap.nativeIdentifier))
                 .frame(maxWidth: .infinity)
-                .disabled(iapObservable.didPurchase(iap.product))
+                .disabled(iapManager.didPurchase(iap.product))
             }
             Text(Strings.Views.Paywall.Sections.FullProducts.footer)
                 .foregroundStyle(.tertiary)
                 .padding(.bottom)
         }
-        .themeBlurred(if: !iapObservable.isEligibleForComplete)
-        .disabled(!iapObservable.isEligibleForComplete)
+        .themeBlurred(if: !iapManager.isEligibleForComplete)
+        .disabled(!iapManager.isEligibleForComplete)
     }
 
     var individualProductsView: some View {
@@ -92,20 +95,20 @@ private extension PaywallFixedView {
                     .padding(.bottom, 1)
             }
             ForEach(model.individualPurchasable, id: \.nativeIdentifier) { iap in
-                PaywallProductView(
-                    iapObservable: iapObservable,
+                LegacyPaywallProductView(
+                    iapManager: iapManager,
                     style: .paywall(primary: !showsComplete),
-                    storeProduct: iap,
+                    product: iap,
                     withIncludedFeatures: false,
                     requiredFeatures: requiredFeatures,
                     purchasingIdentifier: model.binding(\.purchasingIdentifier),
                     onComplete: onComplete,
                     onError: onError
                 )
-                .focused($selectedProduct, equals: iap.product)
+                .focused($selectedProduct, equals: ABI.AppProduct(rawValue: iap.nativeIdentifier))
                 .frame(maxWidth: .infinity)
-                .themeBlurred(if: iapObservable.didPurchase(iap.product))
-                .disabled(iapObservable.didPurchase(iap.product))
+                .themeBlurred(if: iapManager.didPurchase(iap.product))
+                .disabled(iapManager.didPurchase(iap.product))
             }
         }
     }
@@ -130,9 +133,9 @@ private extension PaywallFixedView {
 
 #Preview("WithComplete") {
     let features: Set<ABI.AppFeature> = [.appleTV, .dns, .sharing]
-    PaywallFixedView(
+    LegacyPaywallFixedView(
         isPresented: .constant(true),
-        iapObservable: .forPreviews,
+        iapManager: .forPreviews,
         requiredFeatures: features,
         model: .forPreviews(features, including: [.complete]),
         errorHandler: .default(),
@@ -144,9 +147,9 @@ private extension PaywallFixedView {
 
 #Preview("WithoutComplete") {
     let features: Set<ABI.AppFeature> = [.appleTV, .dns, .sharing]
-    PaywallFixedView(
+    LegacyPaywallFixedView(
         isPresented: .constant(true),
-        iapObservable: .forPreviews,
+        iapManager: .forPreviews,
         requiredFeatures: features,
         model: .forPreviews(features, including: []),
         errorHandler: .default(),
@@ -158,9 +161,9 @@ private extension PaywallFixedView {
 
 #Preview("Individual") {
     let features: Set<ABI.AppFeature> = [.appleTV]
-    PaywallFixedView(
+    LegacyPaywallFixedView(
         isPresented: .constant(true),
-        iapObservable: .forPreviews,
+        iapManager: .forPreviews,
         requiredFeatures: features,
         model: .forPreviews(features, including: []),
         errorHandler: .default(),

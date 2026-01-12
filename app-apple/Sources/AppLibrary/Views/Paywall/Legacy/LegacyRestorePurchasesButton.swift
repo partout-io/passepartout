@@ -5,9 +5,11 @@
 import CommonLibrary
 import SwiftUI
 
-struct RestorePurchasesButton: View {
-    @Environment(IAPObservable.self)
-    private var iapObservable
+@available(*, deprecated, message: "#1594")
+struct LegacyRestorePurchasesButton: View {
+
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     private let errorHandler: ErrorHandler
 
@@ -19,7 +21,7 @@ struct RestorePurchasesButton: View {
         Button(title) {
             Task {
                 do {
-                    try await iapObservable.restorePurchases()
+                    try await iapManager.restorePurchases()
                 } catch {
                     errorHandler.handle(error, title: title)
                 }
@@ -28,7 +30,7 @@ struct RestorePurchasesButton: View {
     }
 }
 
-private extension RestorePurchasesButton {
+private extension LegacyRestorePurchasesButton {
     var title: String {
         Strings.Views.Paywall.Rows.restorePurchases
     }

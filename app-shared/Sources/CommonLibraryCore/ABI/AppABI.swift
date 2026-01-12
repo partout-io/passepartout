@@ -216,6 +216,30 @@ private struct AppABIIAP: AppABIIAPProtocol {
         try iapManager.verify(profile.native, extra: extra)
     }
 
+    func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
+        try await iapManager.purchase(storeProduct)
+    }
+
+    func reloadReceipt() async {
+        await iapManager.reloadReceipt()
+    }
+
+    func restorePurchases() async throws {
+        try await iapManager.restorePurchases()
+    }
+
+    func suggestedProducts(for features: Set<ABI.AppFeature>) -> Set<ABI.AppProduct> {
+        iapManager.suggestedProducts(for: features)
+    }
+
+    func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
+        try await iapManager.fetchPurchasableProducts(for: products)
+    }
+
+    var originalPurchase: ABI.OriginalPurchase? {
+        iapManager.originalPurchase
+    }
+
     var purchasedProducts: Set<ABI.AppProduct> {
         iapManager.purchasedProducts
     }
@@ -228,8 +252,16 @@ private struct AppABIIAP: AppABIIAPProtocol {
         iapManager.isEligible(for: feature)
     }
 
+    func isEligible(for features: Set<ABI.AppFeature>) -> Bool {
+        iapManager.isEligible(for: features)
+    }
+
     var isEligibleForFeedback: Bool {
         iapManager.isEligibleForFeedback
+    }
+
+    var isEligibleForComplete: Bool {
+        iapManager.isEligibleForComplete
     }
 
     var verificationDelayMinutes: Int {

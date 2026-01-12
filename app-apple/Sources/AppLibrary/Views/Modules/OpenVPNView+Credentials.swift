@@ -16,9 +16,6 @@ public struct OpenVPNCredentialsGroup: View {
     }
 
     @EnvironmentObject
-    private var iapManager: IAPManager
-
-    @EnvironmentObject
     private var apiManager: APIManager
 
     @Environment(\.appConfiguration)

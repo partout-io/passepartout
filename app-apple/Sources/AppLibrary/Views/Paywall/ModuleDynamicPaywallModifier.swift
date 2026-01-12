@@ -17,6 +17,10 @@ public struct ModuleDynamicPaywallModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        content.modifier(PaywallModifier(reason: $paywallReason))
+        if configObservable.isUsingObservables {
+            content.modifier(PaywallModifier(reason: $paywallReason))
+        } else {
+            content.modifier(LegacyPaywallModifier(reason: $paywallReason))
+        }
     }
 }

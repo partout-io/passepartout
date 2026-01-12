@@ -36,7 +36,7 @@ extension AppContext {
         let iapManager = IAPManager(
             customUserLevel: .complete,
             inAppHelper: appConfiguration.newAppProductHelper(),
-            receiptReader: FakeAppReceiptReader(),
+            receiptReader: FakeInAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
             verificationDelayMinutesBlock: { _ in

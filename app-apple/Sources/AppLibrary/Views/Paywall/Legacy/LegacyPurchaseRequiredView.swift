@@ -5,9 +5,11 @@
 import CommonLibrary
 import SwiftUI
 
-public struct PurchaseRequiredView<Content>: View where Content: View {
-    @Environment(ConfigObservable.self)
-    private var configObservable
+@available(*, deprecated, message: "#1594")
+public struct LegacyPurchaseRequiredView<Content>: View where Content: View {
+
+    @EnvironmentObject
+    private var iapManager: IAPManager
 
     let features: Set<ABI.AppFeature>?
 
@@ -17,36 +19,16 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     let content: () -> Content
 
     public var body: some View {
-        if configObservable.isUsingObservables {
-            NewPurchaseRequiredView(features: features, force: force, content: content)
-        } else {
-            LegacyPurchaseRequiredView(features: features, force: force, content: content)
-        }
-    }
-}
-
-public struct NewPurchaseRequiredView<Content>: View where Content: View {
-    @Environment(IAPObservable.self)
-    private var iapObservable
-
-    let features: Set<ABI.AppFeature>?
-
-    var force: Bool = false
-
-    @ViewBuilder
-    let content: () -> Content
-
-    public var body: some View {
-        if !iapObservable.isBeta && (force || !isEligible) {
+        if !iapManager.isBeta && (force || !isEligible) {
             content()
         }
     }
 }
 
-private extension NewPurchaseRequiredView {
+private extension LegacyPurchaseRequiredView {
     var isEligible: Bool {
         if let features {
-            return iapObservable.isEligible(for: features)
+            return iapManager.isEligible(for: features)
         }
         return true
     }
@@ -55,7 +37,7 @@ private extension NewPurchaseRequiredView {
 // MARK: - Initializers
 
 // use for essential paywall, presents without confirmation
-extension PurchaseRequiredView where Content == PurchaseRequiredButton {
+extension LegacyPurchaseRequiredView where Content == LegacyPurchaseRequiredButton {
     public init(
         for requiring: AppFeatureRequiring?,
         reason: Binding<PaywallReason?>
@@ -69,7 +51,7 @@ extension PurchaseRequiredView where Content == PurchaseRequiredButton {
     ) {
         self.features = features
         content = {
-            PurchaseRequiredButton {
+            LegacyPurchaseRequiredButton {
                 reason.wrappedValue = .init(
                     nil,
                     requiredFeatures: features ?? [],
@@ -81,7 +63,7 @@ extension PurchaseRequiredView where Content == PurchaseRequiredButton {
 }
 
 // use for ad hoc feature paywalls, presents without confirmation
-extension PurchaseRequiredView where Content == Button<Text> {
+extension LegacyPurchaseRequiredView where Content == Button<Text> {
     public init(
         requiring features: Set<ABI.AppFeature>,
         reason: Binding<PaywallReason?>,
@@ -103,7 +85,7 @@ extension PurchaseRequiredView where Content == Button<Text> {
 }
 
 // use for upgrade icon only
-extension PurchaseRequiredView where Content == PurchaseRequiredImage {
+extension LegacyPurchaseRequiredView where Content == LegacyPurchaseRequiredImage {
     public init(for requiring: AppFeatureRequiring?) {
         self.init(requiring: requiring?.features)
     }
@@ -111,26 +93,29 @@ extension PurchaseRequiredView where Content == PurchaseRequiredImage {
     public init(requiring features: Set<ABI.AppFeature>?) {
         self.features = features
         content = {
-            PurchaseRequiredImage()
+            LegacyPurchaseRequiredImage()
         }
     }
 }
 
 // MARK: - Labels
 
-public struct PurchaseRequiredButton: View {
+@available(*, deprecated, message: "#1594")
+public struct LegacyPurchaseRequiredButton: View {
     let action: () -> Void
 
     public var body: some View {
         Button(action: action) {
-            PurchaseRequiredImage()
+            LegacyPurchaseRequiredImage()
         }
         .buttonStyle(.plain)
         .cursor(.hand)
     }
 }
 
-public struct PurchaseRequiredImage: View {
+@available(*, deprecated, message: "#1594")
+public struct LegacyPurchaseRequiredImage: View {
+
     @Environment(Theme.self)
     private var theme
 

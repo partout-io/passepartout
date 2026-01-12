@@ -325,17 +325,17 @@ private extension ABI.AppConfiguration {
     }
 
     @MainActor
-    func simulatedAppProductHelper(isFake: Bool) -> any AppProductHelper {
+    func simulatedAppProductHelper(isFake: Bool) -> InAppHelper {
         guard !isFake else {
-            return FakeAppProductHelper()
+            return FakeInAppHelper()
         }
         return newAppProductHelper()
     }
 
     @MainActor
-    func simulatedAppReceiptReader(isFake: Bool, logger: AppLogger) -> AppReceiptReader {
+    func simulatedAppReceiptReader(isFake: Bool, logger: AppLogger) -> UserInAppReceiptReader {
         guard !isFake else {
-            guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeAppProductHelper else {
+            guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeInAppHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
             }
             return mockHelper.receiptReader

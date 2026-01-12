@@ -3,18 +3,16 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 public struct LinksView: View {
-
-    @EnvironmentObject
-    private var iapManager: IAPManager
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    public init() {
+    private let isBeta: Bool
+
+    public init(isBeta: Bool) {
+        self.isBeta = isBeta
     }
 
     public var body: some View {
@@ -39,7 +37,7 @@ private extension LinksView {
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !appConfiguration.distributionTarget.supportsIAP && !iapManager.isBeta {
+            if !appConfiguration.distributionTarget.supportsIAP && !isBeta {
                 WebDonationLink()
             }
         }
@@ -63,5 +61,5 @@ private extension LinksView {
 }
 
 #Preview {
-    LinksView()
+    LinksView(isBeta: false)
 }
