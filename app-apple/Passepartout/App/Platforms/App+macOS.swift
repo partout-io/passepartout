@@ -61,7 +61,7 @@ extension PassepartoutApp {
 private extension PassepartoutApp {
     @ViewBuilder
     func menuBarView() -> some View {
-        if context.configObservable.isActive(.observableMain) {
+        if context.configObservable.isUsingObservables {
             AppMenu(
                 profileObservable: context.profileObservable,
                 tunnel: context.tunnelObservable
@@ -82,7 +82,7 @@ private extension PassepartoutApp {
 
     @ViewBuilder
     func menuBarImage() -> some View {
-        if context.configObservable.isActive(.observableMain) {
+        if context.configObservable.isUsingObservables {
             AppMenuImage(tunnel: context.tunnelObservable)
                 .environment(theme)
         } else {

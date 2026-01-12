@@ -54,12 +54,7 @@ extension PassepartoutApp {
 
     @ViewBuilder
     func contentView() -> some View {
-#if os(tvOS)
-        let flag: ABI.ConfigFlag = .observableTV
-#else
-        let flag: ABI.ConfigFlag = .observableMain
-#endif
-        if context.configObservable.isActive(flag) {
+        if context.configObservable.isUsingObservables {
             AppCoordinator(
                 profileObservable: context.profileObservable,
                 tunnel: context.tunnelObservable,

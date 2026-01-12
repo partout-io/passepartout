@@ -34,3 +34,13 @@ public final class ConfigObservable {
         }
     }
 }
+
+extension ConfigObservable {
+    public var isUsingObservables: Bool {
+#if os(tvOS)
+        isActive(.observableTV)
+#else
+        isActive(.observableMain)
+#endif
+    }
+}
