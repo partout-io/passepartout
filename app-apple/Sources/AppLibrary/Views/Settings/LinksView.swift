@@ -6,13 +6,13 @@ import CommonLibrary
 import SwiftUI
 
 public struct LinksView: View {
-    @Environment(IAPObservable.self)
-    private var iapObservable
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    public init() {
+    private let isBeta: Bool
+
+    public init(isBeta: Bool) {
+        self.isBeta = isBeta
     }
 
     public var body: some View {
@@ -37,7 +37,7 @@ private extension LinksView {
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !appConfiguration.distributionTarget.supportsIAP && !iapObservable.isBeta {
+            if !appConfiguration.distributionTarget.supportsIAP && !isBeta {
                 WebDonationLink()
             }
         }
@@ -61,5 +61,5 @@ private extension LinksView {
 }
 
 #Preview {
-    LinksView()
+    LinksView(isBeta: false)
 }

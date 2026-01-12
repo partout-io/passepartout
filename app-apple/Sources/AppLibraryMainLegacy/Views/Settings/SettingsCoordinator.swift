@@ -105,7 +105,7 @@ extension SettingsCoordinator {
                 .navigationTitle(title(for: .donate))
 
         case .links:
-            LinksView()
+            LinksView(isBeta: iapManager.isBeta)
                 .navigationTitle(title(for: .links))
 
         case .preferences:
