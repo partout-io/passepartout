@@ -6,6 +6,26 @@ import CommonLibrary
 import SwiftUI
 
 public struct PurchaseRequiredView<Content>: View where Content: View {
+    @Environment(ConfigObservable.self)
+    private var configObservable
+
+    let features: Set<ABI.AppFeature>?
+
+    var force: Bool = false
+
+    @ViewBuilder
+    let content: () -> Content
+
+    public var body: some View {
+        if configObservable.isUsingObservables {
+            NewPurchaseRequiredView(features: features, force: force, content: content)
+        } else {
+            LegacyPurchaseRequiredView(features: features, force: force, content: content)
+        }
+    }
+}
+
+public struct NewPurchaseRequiredView<Content>: View where Content: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -23,7 +43,7 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     }
 }
 
-private extension PurchaseRequiredView {
+private extension NewPurchaseRequiredView {
     var isEligible: Bool {
         if let features {
             return iapObservable.isEligible(for: features)
@@ -111,7 +131,6 @@ public struct PurchaseRequiredButton: View {
 }
 
 public struct PurchaseRequiredImage: View {
-
     @Environment(Theme.self)
     private var theme
 
