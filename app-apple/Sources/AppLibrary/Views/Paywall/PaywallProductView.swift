@@ -121,7 +121,7 @@ private extension PaywallProductView {
                 localizedTitle: "Foo",
                 localizedDescription: "Bar",
                 localizedPrice: "$10",
-                nativeIdentifier: "",
+                nativeIdentifier: ABI.AppProduct.Features.appleTV.rawValue,
                 native: nil
             ),
             withIncludedFeatures: true,
