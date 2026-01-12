@@ -110,11 +110,13 @@ private extension LegacyPaywallProductView {
                 onError: onError
             )
         } else {
-            LegacyCustomProductView(
+            CustomProductView(
                 style: style,
-                iapManager: iapManager,
-                product: product,
+                storeProduct: product,
                 purchasingIdentifier: $purchasingIdentifier,
+                onPurchase: {
+                    try await iapManager.purchase($0.product)
+                },
                 onComplete: onComplete,
                 onError: onError
             )

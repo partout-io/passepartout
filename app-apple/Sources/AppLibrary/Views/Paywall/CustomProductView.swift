@@ -12,12 +12,12 @@ struct CustomProductView: View {
 
     let style: PaywallProductViewStyle
 
-    let iapObservable: IAPObservable
-
     let storeProduct: ABI.StoreProduct
 
     @Binding
     var purchasingIdentifier: String?
+
+    let onPurchase: (ABI.StoreProduct) async throws -> ABI.StoreResult
 
     let onComplete: (String, ABI.StoreResult) -> Void
 
@@ -130,7 +130,7 @@ private extension CustomProductView {
                 purchasingIdentifier = nil
             }
             do {
-                let result = try await iapObservable.purchase(storeProduct.product)
+                let result = try await onPurchase(storeProduct)
                 onComplete(storeProduct.nativeIdentifier, result)
             } catch {
                 onError(error)
@@ -143,9 +143,9 @@ private extension CustomProductView {
     List {
         CustomProductView(
             style: .paywall(primary: true),
-            iapObservable: .forPreviews,
             storeProduct: ABI.AppProduct.Complete.OneTime.lifetime.asFakeStoreProduct,
             purchasingIdentifier: .constant(nil),
+            onPurchase: { _ in .done },
             onComplete: { _, _ in },
             onError: { _ in }
         )
