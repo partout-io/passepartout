@@ -32,9 +32,8 @@ extension IAPManagerTests {
         ]
         let storeProducts = try await sut.fetchPurchasableProducts(for: appProducts)
         #expect(storeProducts.count == appProducts.count)
-        #expect(Set(storeProducts.keys) == Set(appProducts))
-        try appProducts.forEach { ap in
-            let sp = try #require(storeProducts[ap])
+        storeProducts.enumerated().forEach { offset, sp in
+            let ap = appProducts[offset]
             #expect(sp.product == ap)
             #expect(sp.nativeIdentifier == ap.rawValue)
         }
@@ -50,7 +49,7 @@ extension IAPManagerTests {
         #expect(!sut.purchasedProducts.contains(appleTV))
         do {
             let purchasable = try await sut.fetchPurchasableProducts(for: [appleTV])
-            let purchasableAppleTV = try #require(purchasable.first?.value)
+            let purchasableAppleTV = try #require(purchasable.first)
             let result = try await sut.purchase(purchasableAppleTV.product)
             if result == .done {
                 #expect(sut.purchasedProducts.contains(appleTV))
