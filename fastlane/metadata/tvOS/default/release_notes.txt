@@ -1,1 +1,2 @@
-* WireGuard: Commit IPv4 preference over IPv6 (#1659)
+* OpenVPN: Deindex Mullvad for discontinued support
+* Fix races on VPN connection/disconnection
