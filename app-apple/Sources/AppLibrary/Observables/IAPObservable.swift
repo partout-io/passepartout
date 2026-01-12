@@ -99,9 +99,7 @@ extension IAPObservable {
     }
 
     public func didPurchase(_ products: [ABI.AppProduct]) -> Bool {
-        products.allSatisfy {
-            didPurchase($0)
-        }
+        products.allSatisfy(didPurchase)
     }
 
     func onUpdate(_ event: ABI.IAPEvent) {
