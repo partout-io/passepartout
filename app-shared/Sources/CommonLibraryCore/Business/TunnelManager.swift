@@ -220,7 +220,7 @@ private extension TunnelManager {
 private extension TunnelManager {
     var lastUsedProfile: TunnelActiveProfile? {
         guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
-              let uuid = UUID(uuidString: uuidString) else {
+              let uuid = UniqueID(uuidString: uuidString) else {
             return nil
         }
         return TunnelActiveProfile(

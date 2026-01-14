@@ -13,7 +13,7 @@ public final class StoreKitHelper: InAppHelper {
 
     private var activeTransactions: Set<Transaction>
 
-    private nonisolated let didUpdateSubject: PassthroughStream<UUID, Void>
+    private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
 
     private var observer: Task<Void, Never>?
 

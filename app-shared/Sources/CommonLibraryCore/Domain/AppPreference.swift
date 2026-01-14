@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import MiniFoundation
-// FIXME: #1594, Drop import (Profile.ID -> UUID)
+// FIXME: #1594, Drop import (Profile.ID -> UniqueID)
 import Partout
 
 extension ABI {

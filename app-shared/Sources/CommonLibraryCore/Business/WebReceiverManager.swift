@@ -16,7 +16,7 @@ public final class WebReceiverManager {
 
     private let passcodeGenerator: PasscodeGenerator?
 
-    private let filesStream: PassthroughStream<UUID, ABI.WebFileUpload>
+    private let filesStream: PassthroughStream<UniqueID, ABI.WebFileUpload>
 
     public var isStarted: Bool {
         website != nil

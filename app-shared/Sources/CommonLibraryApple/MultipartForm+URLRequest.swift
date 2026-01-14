@@ -9,7 +9,7 @@ extension MultipartForm {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
-        let boundary = UUID().uuidString
+        let boundary = UniqueID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         let webData = toWebData()

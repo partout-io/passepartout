@@ -6,7 +6,7 @@ import MiniFoundation
 
 extension ABI {
     public struct Issue: Identifiable, Sendable {
-        public let id: UUID
+        public let id: UniqueID
 
         public let comment: String
 
@@ -32,7 +32,7 @@ extension ABI {
             appLog: Data? = nil,
             tunnelLog: Data? = nil
         ) {
-            id = UUID()
+            id = UniqueID()
             self.comment = comment
             self.appLine = appLine
             self.purchasedProducts = purchasedProducts

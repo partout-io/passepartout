@@ -5,5 +5,5 @@
 import MiniFoundation
 
 extension ABI {
-    public typealias AppIdentifier = UUID
+    public typealias AppIdentifier = UniqueID
 }

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
 // FIXME: #1594, Subject for search through manager (debounce not trivial)
 import Partout
 
@@ -144,7 +145,7 @@ extension ProfileManager {
                 builder = try processor.willRebuild(builder)
             }
             builder.attributes.lastUpdate = Date()
-            builder.attributes.fingerprint = UUID()
+            builder.attributes.fingerprint = UniqueID()
             profile = try builder.build()
         } else {
             profile = originalProfile
@@ -373,12 +374,12 @@ private extension ProfileManager {
         assert(profiles.count == Set(profiles.map(\.id)).count, "Remote repository must not have duplicates")
 
         pspLog(.profiles, .debug, "Local fingerprints:")
-        let localFingerprints: [Profile.ID: UUID] = allProfiles.values.reduce(into: [:]) {
+        let localFingerprints: [Profile.ID: UniqueID] = allProfiles.values.reduce(into: [:]) {
             $0[$1.id] = $1.attributes.fingerprint
             pspLog(.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
         pspLog(.profiles, .debug, "Remote fingerprints:")
-        let remoteFingerprints: [Profile.ID: UUID] = profiles.reduce(into: [:]) {
+        let remoteFingerprints: [Profile.ID: UniqueID] = profiles.reduce(into: [:]) {
             $0[$1.id] = $1.attributes.fingerprint
             pspLog(.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }

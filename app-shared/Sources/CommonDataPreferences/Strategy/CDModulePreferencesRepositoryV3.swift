@@ -11,7 +11,7 @@ extension CommonData {
     @MainActor
     public static func cdModulePreferencesRepositoryV3(
         context: NSManagedObjectContext,
-        moduleId: UUID
+        moduleId: UniqueID
     ) throws -> ModulePreferencesRepository {
         try CDModulePreferencesRepositoryV3(context: context, moduleId: moduleId)
     }
@@ -22,7 +22,7 @@ private final class CDModulePreferencesRepositoryV3: ModulePreferencesRepository
 
     private nonisolated(unsafe) let entity: CDModulePreferencesV3
 
-    init(context: NSManagedObjectContext, moduleId: UUID) throws {
+    init(context: NSManagedObjectContext, moduleId: UniqueID) throws {
         self.context = context
 
         entity = try context.performAndWait {

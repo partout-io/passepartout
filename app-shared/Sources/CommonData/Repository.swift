@@ -5,7 +5,7 @@
 import MiniFoundation
 
 public protocol UniqueEntity: Sendable {
-    var uuid: UUID? { get }
+    var uuid: UniqueID? { get }
 }
 
 public struct EntitiesResult<E>: Sendable where E: UniqueEntity {
@@ -34,5 +34,5 @@ public protocol Repository {
 
     func saveEntities(_ entities: [Entity]) async throws
 
-    func removeEntities(withIds ids: [UUID]?) async throws
+    func removeEntities(withIds ids: [UniqueID]?) async throws
 }

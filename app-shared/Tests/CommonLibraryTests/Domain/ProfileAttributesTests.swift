@@ -9,7 +9,7 @@ import Testing
 struct ProfileAttributesTests {
     @Test
     func givenUserInfo_whenInit_thenReturnsAttributes() throws {
-        let fingerprint = UUID()
+        let fingerprint = UniqueID()
         let lastUpdate = Date()
         let isAvailableForTV = true
         let userInfo = try JSON([
@@ -27,7 +27,7 @@ struct ProfileAttributesTests {
 
     @Test
     func givenUserInfo_whenSet_thenReturnsAttributes() throws {
-        let fingerprint = UUID()
+        let fingerprint = UniqueID()
         let lastUpdate = Date()
         let isAvailableForTV = true
         let userInfo = try JSON([
@@ -48,8 +48,8 @@ struct ProfileAttributesTests {
 
     @Test
     func givenUserInfo_whenInit_thenReturnsModulePreferences() throws {
-        let moduleId1 = UUID()
-        let moduleId2 = UUID()
+        let moduleId1 = UniqueID()
+        let moduleId2 = UniqueID()
         let excludedEndpoints: [String] = [
             "1.1.1.1:UDP6:1000",
             "2.2.2.2:TCP4:2000",
@@ -77,8 +77,8 @@ struct ProfileAttributesTests {
 
     @Test
     func givenUserInfo_whenSet_thenReturnsModulePreferences() throws {
-        let moduleId1 = UUID()
-        let moduleId2 = UUID()
+        let moduleId1 = UniqueID()
+        let moduleId2 = UniqueID()
         let excludedEndpoints: [String] = [
             "1.1.1.1:UDP6:1000",
             "2.2.2.2:TCP4:2000",

@@ -392,10 +392,10 @@ extension ProfileManagerTests {
 
     @Test
     func givenRemoteRepository_whenUpdatesWithExistingProfiles_thenReplacesLocal() async throws {
-        let l1 = UUID()
-        let l2 = UUID()
-        let l3 = UUID()
-        let r3 = UUID()
+        let l1 = UniqueID()
+        let l2 = UniqueID()
+        let l3 = UniqueID()
+        let r3 = UniqueID()
         let localProfiles = [
             newProfile("local1", id: l1),
             newProfile("local2", id: l2),
@@ -474,16 +474,16 @@ extension ProfileManagerTests {
 
     @Test
     func givenRemoteRepository_whenUpdatesWithSameFingerprint_thenDoesNotImport() async throws {
-        let l1 = UUID()
-        let l2 = UUID()
-        let fp1 = UUID()
+        let l1 = UniqueID()
+        let l2 = UniqueID()
+        let fp1 = UniqueID()
         let localProfiles = [
             newProfile("local1", id: l1, fingerprint: fp1),
-            newProfile("local2", id: l2, fingerprint: UUID())
+            newProfile("local2", id: l2, fingerprint: UniqueID())
         ]
         let remoteProfiles = [
             newProfile("remote1", id: l1, fingerprint: fp1),
-            newProfile("remote2", id: l2, fingerprint: UUID())
+            newProfile("remote2", id: l2, fingerprint: UniqueID())
         ]
         let repository = InMemoryProfileRepository(profiles: localProfiles)
         let remoteRepository = InMemoryProfileRepository(profiles: remoteProfiles)
@@ -527,12 +527,12 @@ extension ProfileManagerTests {
         }
         #expect(sut.previews.count == localProfiles.count)
 
-        let r1 = UUID()
-        let r2 = UUID()
-        let r3 = UUID()
-        let fp1 = UUID()
-        let fp2 = UUID()
-        let fp3 = UUID()
+        let r1 = UniqueID()
+        let r2 = UniqueID()
+        let r3 = UniqueID()
+        let fp1 = UniqueID()
+        let fp2 = UniqueID()
+        let fp3 = UniqueID()
 
         try await wait(sut, "Multiple imports", until: .stopRemoteImport) {
             $0.previews.count == 5
@@ -615,9 +615,9 @@ extension ProfileManagerTests {
 // MARK: -
 
 private extension ProfileManagerTests {
-    func newProfile(_ name: String = "", id: UUID? = nil, fingerprint: UUID? = nil) -> Profile {
+    func newProfile(_ name: String = "", id: UniqueID? = nil, fingerprint: UniqueID? = nil) -> Profile {
         do {
-            var builder = Profile.Builder(id: id ?? UUID())
+            var builder = Profile.Builder(id: id ?? UniqueID())
             builder.name = name
             if let fingerprint {
                 builder.attributes.fingerprint = fingerprint

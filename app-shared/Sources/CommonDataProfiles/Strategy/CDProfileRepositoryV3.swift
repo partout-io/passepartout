@@ -76,7 +76,7 @@ extension CDProfileV3: CoreDataUniqueEntity, @unchecked Sendable {
 }
 
 extension Profile: UniqueEntity {
-    public var uuid: UUID? {
+    public var uuid: UniqueID? {
         id
     }
 }
