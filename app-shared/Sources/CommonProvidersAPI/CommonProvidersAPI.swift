@@ -4,8 +4,6 @@
 
 #if !USE_CMAKE
 @_exported import CommonProvidersCore
-@_exported import Partout
 #endif
 
-public enum API {
-}
+public enum API {}
