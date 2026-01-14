@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public typealias APIRepository = APIRepositoryReader & APIRepositoryWriter
 
 public protocol APIRepositoryReader: Sendable {

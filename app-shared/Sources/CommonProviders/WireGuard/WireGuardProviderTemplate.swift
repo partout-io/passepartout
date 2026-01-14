@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public struct WireGuardProviderTemplate: Hashable, Codable, Sendable {
     public struct UserInfo: Sendable {
         public let deviceId: String

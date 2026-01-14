@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public actor FakeInAppReceiptReader: UserInAppReceiptReader {
     private var localReceipt: ABI.StoreReceipt?
 

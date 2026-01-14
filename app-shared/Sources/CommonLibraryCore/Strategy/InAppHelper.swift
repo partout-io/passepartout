@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public protocol InAppHelper: Sendable {
     var canMakePurchases: Bool { get }
 

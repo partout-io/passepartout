@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 extension MultipartForm {
     public struct Builder {
         public var fields: [String: Field]

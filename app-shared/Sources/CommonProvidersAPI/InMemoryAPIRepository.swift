@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (PartoutLoggerContext -> AppLogger, but circular dep)
+import Partout
+
 public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWriter {
     private let ctx: PartoutLoggerContext
 

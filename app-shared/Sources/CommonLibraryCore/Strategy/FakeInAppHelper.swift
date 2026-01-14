@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public actor FakeInAppHelper: InAppHelper {
     private let purchase: ABI.OriginalPurchase
 
@@ -9,7 +11,7 @@ public actor FakeInAppHelper: InAppHelper {
 
     public nonisolated let receiptReader: FakeInAppReceiptReader
 
-    private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
+    private nonisolated let didUpdateSubject: PassthroughStream<UUID, Void>
 
     // set .max to skip entitled products
     public init(build: Int = .max) {

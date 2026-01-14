@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension IAPManager {
-    public func verify(_ profile: Profile, extra: Set<ABI.AppFeature>? = nil) throws {
-        var features = profile.features
+    public func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>? = nil) throws {
+        var features = profile.native.features
         extra?.forEach {
             features.insert($0)
         }

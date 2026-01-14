@@ -3,23 +3,32 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @preconcurrency import CoreData
+import MiniFoundation
+// FIXME: #1594, Drop import (ModuleType)
+import Partout
 
 extension CommonData {
-    public static func cdAPIRepositoryV3(context: NSManagedObjectContext) -> APIRepository {
-        CDAPIRepositoryV3(context: context)
+    public static func cdAPIRepositoryV3(
+        _ logger: AppLogger,
+        context: NSManagedObjectContext
+    ) -> APIRepository {
+        CDAPIRepositoryV3(logger, context: context)
     }
 }
 
 private final class CDAPIRepositoryV3: NSObject, APIRepository {
+    private nonisolated let logger: AppLogger
+
     private nonisolated let context: NSManagedObjectContext
 
-    private nonisolated let providersSubject: CurrentValueStream<UniqueID, [Provider]>
+    private nonisolated let providersSubject: CurrentValueStream<UUID, [Provider]>
 
-    private nonisolated let cacheSubject: CurrentValueStream<UniqueID, [ProviderID: ProviderCache]>
+    private nonisolated let cacheSubject: CurrentValueStream<UUID, [ProviderID: ProviderCache]>
 
     private nonisolated let providersController: NSFetchedResultsController<CDProviderV3>
 
-    init(context: NSManagedObjectContext) {
+    init(_ logger: AppLogger, context: NSManagedObjectContext) {
+        self.logger = logger
         self.context = context
         providersSubject = CurrentValueStream([])
         cacheSubject = CurrentValueStream([:])
@@ -186,7 +195,7 @@ extension CDAPIRepositoryV3: NSFetchedResultsControllerDelegate {
         let mapper = DomainMapper()
         providersSubject.send(entities.compactMap(mapper.provider(from:)))
         let cache = mapper.cache(from: entities)
-        pp_log_g(.App.core, .debug, "Cache metadata: \(cache)")
+        logger.log(.core, .debug, "Cache metadata: \(cache)")
         cacheSubject.send(cache)
     }
 }

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 #if !PSP_CROSS
 extension DefaultAPIMapper {
     public convenience init(

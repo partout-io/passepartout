@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// MARK: - Providers
+import Partout
 
 extension ProfileType where GenericModuleType == Module {
     public var activeProviderModule: ProviderModule? {

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public struct OpenVPNProviderTemplate: Codable, Sendable {
     public let configuration: OpenVPN.Configuration
 

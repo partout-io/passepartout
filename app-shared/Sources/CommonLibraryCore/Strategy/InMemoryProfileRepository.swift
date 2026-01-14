@@ -2,8 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+// FIXME: #1594, Drop import (use AppProfile)
+import Partout
+
 public final class InMemoryProfileRepository: ProfileRepository {
-    private let profilesSubject: CurrentValueStream<UniqueID, [Profile]>
+    private let profilesSubject: CurrentValueStream<UUID, [Profile]>
 
     public init(profiles: [Profile] = []) {
         profilesSubject = CurrentValueStream(profiles)

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
 import StoreKit
 
 @MainActor
@@ -12,7 +13,7 @@ public final class StoreKitHelper: InAppHelper {
 
     private var activeTransactions: Set<Transaction>
 
-    private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
+    private nonisolated let didUpdateSubject: PassthroughStream<UUID, Void>
 
     private var observer: Task<Void, Never>?
 

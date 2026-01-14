@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @preconcurrency import CoreData
+import MiniFoundation
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {
     // Core Data entity must have a unique "uuid" field
@@ -33,7 +34,7 @@ public actor CoreDataRepository<CD, T>: NSObject, Repository, NSFetchedResultsCo
 
     private nonisolated let onResultError: (@Sendable (Error) -> CoreDataResultAction)?
 
-    private nonisolated let entitiesSubject: CurrentValueStream<UniqueID, EntitiesResult<T>>
+    private nonisolated let entitiesSubject: CurrentValueStream<UUID, EntitiesResult<T>>
 
     private var resultsController: NSFetchedResultsController<CD>?
 

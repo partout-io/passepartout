@@ -3,11 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public actor SharedReceiptReader: UserInAppReceiptReader {
+    private let logger: AppLogger
+
     private let reader: InAppReceiptReader
 
     private var pendingTask: Task<ABI.StoreReceipt?, Never>?
 
-    public init(reader: InAppReceiptReader) {
+    public init(_ logger: AppLogger, reader: InAppReceiptReader) {
+        self.logger = logger
         self.reader = reader
     }
 
@@ -30,8 +33,8 @@ public actor SharedReceiptReader: UserInAppReceiptReader {
 
 private extension SharedReceiptReader {
     func asyncReceipt(at userLevel: ABI.AppUserLevel) async -> ABI.StoreReceipt? {
-        pp_log_g(.App.iap, .info, "\tParse receipt for user level \(userLevel)")
-        pp_log_g(.App.iap, .info, "\tRead receipt")
+        logger.log(.iap, .info, "\tParse receipt for user level \(userLevel)")
+        logger.log(.iap, .info, "\tRead receipt")
         return await reader.receipt()
     }
 }

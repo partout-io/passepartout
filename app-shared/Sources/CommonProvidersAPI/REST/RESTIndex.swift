@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension API.REST {
     public struct Index: Decodable {
         public struct Provider: Decodable {

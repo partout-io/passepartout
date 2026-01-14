@@ -2,12 +2,16 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 #if !PSP_CROSS
 extension IAPManager: ObservableObject {}
 #endif
 
 @MainActor
 public final class IAPManager {
+    private let logger: AppLogger
+
     private let customUserLevel: ABI.AppUserLevel?
 
     private let inAppHelper: InAppHelper
@@ -55,7 +59,7 @@ public final class IAPManager {
         verificationDelayMinutesBlock(isBeta)
     }
 
-    public let didChange: PassthroughStream<UniqueID, ABI.IAPEvent>
+    public let didChange: PassthroughStream<UUID, ABI.IAPEvent>
 
     private var isObserving: Bool
 
@@ -74,6 +78,7 @@ public final class IAPManager {
 
     // Dummy
     public init() {
+        logger = PartoutAppLogger()
         customUserLevel = nil
         inAppHelper = FakeInAppHelper()
         receiptReader = FakeInAppReceiptReader()
@@ -91,6 +96,7 @@ public final class IAPManager {
     }
 
     public init(
+        _ logger: AppLogger,
         customUserLevel: ABI.AppUserLevel? = nil,
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
@@ -100,6 +106,7 @@ public final class IAPManager {
         verificationDelayMinutesBlock: @escaping @Sendable (Bool) -> Int,
         productsAtBuild: BuildProducts? = nil
     ) {
+        self.logger = logger
         self.customUserLevel = customUserLevel
         self.inAppHelper = inAppHelper
         self.receiptReader = receiptReader
@@ -141,7 +148,7 @@ extension IAPManager {
         } catch is TaskTimeoutError {
             throw ABI.AppError.timeout
         } catch {
-            pp_log_g(.App.iap, .error, "Unable to fetch in-app products: \(error)")
+            logger.log(.iap, .error, "Unable to fetch in-app products: \(error)")
             throw error
         }
     }
@@ -248,7 +255,7 @@ extension IAPManager {
 
 private extension IAPManager {
     func asyncReloadReceipt() async {
-        pp_log_g(.App.iap, .notice, "Start reloading in-app receipt...")
+        logger.log(.iap, .notice, "Start reloading in-app receipt...")
 
         var originalPurchase: ABI.OriginalPurchase?
         var purchasedProducts: Set<ABI.AppProduct> = []
@@ -258,41 +265,41 @@ private extension IAPManager {
             originalPurchase = receipt.originalPurchase
 
             if let originalPurchase {
-                pp_log_g(.App.iap, .info, "Original purchase: \(originalPurchase)")
+                logger.log(.iap, .info, "Original purchase: \(originalPurchase)")
 
                 // assume some purchases by build number
                 let entitled = productsAtBuild?(originalPurchase) ?? []
-                pp_log_g(.App.iap, .notice, "Entitled features: \(entitled.map(\.rawValue))")
+                logger.log(.iap, .notice, "Entitled features: \(entitled.map(\.rawValue))")
 
                 entitled.forEach {
                     purchasedProducts.insert($0)
                 }
             }
             if let iapReceipts = receipt.purchaseReceipts {
-                pp_log_g(.App.iap, .info, "Process in-app purchase receipts...")
+                logger.log(.iap, .info, "Process in-app purchase receipts...")
 
                 let products: [ABI.AppProduct] = iapReceipts.compactMap {
                     guard let pid = $0.productIdentifier else {
                         return nil
                     }
                     guard let product = ABI.AppProduct(rawValue: pid) else {
-                        pp_log_g(.App.iap, .debug, "\tDiscard unknown product identifier: \(pid)")
+                        logger.log(.iap, .debug, "\tDiscard unknown product identifier: \(pid)")
                         return nil
                     }
                     if let expirationDate = $0.expirationDate {
                         let now = Date()
-                        pp_log_g(.App.iap, .debug, "\t\(pid) [expiration date: \(expirationDate), now: \(now)]")
+                        logger.log(.iap, .debug, "\t\(pid) [expiration date: \(expirationDate), now: \(now)]")
                         if now >= expirationDate {
-                            pp_log_g(.App.iap, .info, "\t\(pid) [expired on: \(expirationDate)]")
+                            logger.log(.iap, .info, "\t\(pid) [expired on: \(expirationDate)]")
                             return nil
                         }
                     }
                     if let cancellationDate = $0.cancellationDate {
-                        pp_log_g(.App.iap, .info, "\t\(pid) [cancelled on: \(cancellationDate)]")
+                        logger.log(.iap, .info, "\t\(pid) [cancelled on: \(cancellationDate)]")
                         return nil
                     }
                     if let purchaseDate = $0.originalPurchaseDate {
-                        pp_log_g(.App.iap, .info, "\t\(pid) [purchased on: \(purchaseDate)]")
+                        logger.log(.iap, .info, "\t\(pid) [purchased on: \(purchaseDate)]")
                     }
                     return product
                 }
@@ -308,7 +315,7 @@ private extension IAPManager {
                 }
             }
         } else {
-            pp_log_g(.App.iap, .error, "Could not parse App Store receipt!")
+            logger.log(.iap, .error, "Could not parse App Store receipt!")
         }
 
         userLevel.features.forEach {
@@ -318,10 +325,10 @@ private extension IAPManager {
             eligibleFeatures.insert($0)
         }
 
-        pp_log_g(.App.iap, .notice, "Finished reloading in-app receipt for user level \(userLevel)")
-        pp_log_g(.App.iap, .notice, "\tOriginal purchase: \(String(describing: originalPurchase))")
-        pp_log_g(.App.iap, .notice, "\tPurchased products: \(purchasedProducts.map(\.rawValue))")
-        pp_log_g(.App.iap, .notice, "\tEligible features: \(eligibleFeatures)")
+        logger.log(.iap, .notice, "Finished reloading in-app receipt for user level \(userLevel)")
+        logger.log(.iap, .notice, "\tOriginal purchase: \(String(describing: originalPurchase))")
+        logger.log(.iap, .notice, "\tPurchased products: \(purchasedProducts.map(\.rawValue))")
+        logger.log(.iap, .notice, "\tEligible features: \(eligibleFeatures)")
 
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
@@ -351,12 +358,12 @@ extension IAPManager {
                 // Fetch the available products
                 if withProducts {
                     let products = try await inAppHelper.fetchProducts(timeout: timeoutInterval)
-                    pp_log_g(.App.iap, .info, "Available in-app products: \(products.map(\.key))")
+                    logger.log(.iap, .info, "Available in-app products: \(products.map(\.key))")
                 }
             } catch is TaskTimeoutError {
                 throw ABI.AppError.timeout
             } catch {
-                pp_log_g(.App.iap, .error, "Unable to fetch in-app products: \(error)")
+                logger.log(.iap, .error, "Unable to fetch in-app products: \(error)")
             }
         }
     }
@@ -371,7 +378,7 @@ extension IAPManager {
         }
         if let customUserLevel {
             userLevel = customUserLevel
-            pp_log_g(.App.iap, .info, "App level (custom): \(userLevel)")
+            logger.log(.iap, .info, "App level (custom): \(userLevel)")
             return
         }
         let isBeta = await betaChecker.isBeta()
@@ -379,6 +386,6 @@ extension IAPManager {
             return
         }
         userLevel = isBeta ? .beta : .freemium
-        pp_log_g(.App.iap, .info, "App level: \(userLevel)")
+        logger.log(.iap, .info, "App level: \(userLevel)")
     }
 }

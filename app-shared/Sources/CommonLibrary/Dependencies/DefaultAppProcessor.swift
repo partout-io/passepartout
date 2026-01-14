@@ -33,7 +33,7 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         do {
-            try iapManager?.verify(profile)
+            try iapManager?.verify(ABI.AppProfile(native: profile))
             return nil
         } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
             return requiredFeatures
@@ -50,6 +50,8 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 // MARK: - AppTunnelProcessor
 
 final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
+    private let logger: AppLogger
+
     private let apiManager: APIManager?
 
     private let registry: Registry
@@ -59,11 +61,13 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
     private let providerServerSorter: ProviderServerParameters.Sorter
 
     init(
+        _ logger: AppLogger,
         apiManager: APIManager?,
         registry: Registry,
         title: @escaping @Sendable (Profile) -> String,
         providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
+        self.logger = logger
         self.apiManager = apiManager
         self.registry = registry
         self.title = title
@@ -84,17 +88,17 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         do {
             if let builder = newProfile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
                let heuristic = builder.entity?.heuristic {
-                pp_log_g(.App.core, .info, "Apply connection heuristic: \(heuristic)")
+                logger.log(.core, .info, "Apply connection heuristic: \(heuristic)")
                 newProfile.activeProviderModule?.entity.map {
-                    pp_log_g(.App.core, .info, "\tOld server: \($0.server)")
+                    logger.log(.core, .info, "\tOld server: \($0.server)")
                 }
                 newProfile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
                 newProfile.activeProviderModule?.entity.map {
-                    pp_log_g(.App.core, .info, "\tNew server: \($0.server)")
+                    logger.log(.core, .info, "\tNew server: \($0.server)")
                 }
             }
         } catch {
-            pp_log_g(.App.core, .error, "Unable to pick new provider server: \(error)")
+            logger.log(.core, .error, "Unable to pick new provider server: \(error)")
         }
 
         // Validate provider modules
@@ -102,7 +106,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
             _ = try registry.resolvedProfile(newProfile)
             return newProfile
         } catch {
-            pp_log_g(.App.core, .error, "Unable to inject provider modules: \(error)")
+            logger.log(.core, .error, "Unable to inject provider modules: \(error)")
             throw error
         }
     }

@@ -4,6 +4,7 @@
 
 #if !os(iOS) && !os(tvOS)
 
+import MiniFoundation
 import PartoutABI_C
 
 @_cdecl("psp_partout_version")
@@ -19,11 +20,12 @@ public nonisolated func __psp_example_sum(a: Int, b: Int) -> Int {
 
 @_cdecl("psp_example_json")
 public nonisolated func __psp_example_json() -> UnsafeMutablePointer<CChar> {
-    let module = try! DNSModule.Builder().build()
-    let registry = Registry()
-    let profile = try! Profile.Builder(name: "zio", modules: [module]).build()
-    let json = try! registry.json(fromProfile: profile)
-    return strdup(json)
+//    let module = try! DNSModule.Builder().build()
+//    let registry = Registry()
+//    let profile = try! Profile.Builder(name: "zio", modules: [module]).build()
+//    let json = try! registry.json(fromProfile: profile)
+//    return strdup(json)
+    return strdup("")
 }
 
 #endif

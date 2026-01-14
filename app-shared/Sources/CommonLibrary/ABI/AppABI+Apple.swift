@@ -8,6 +8,8 @@ import CommonDataPreferences
 import CommonDataProfiles
 import CommonDataProviders
 import CoreData
+// FIXME: #1594, Drop import (Profile, ModuleType, Registry, PartoutLogger)
+import Partout
 
 extension AppABI {
     public static func forProduction(
@@ -36,6 +38,7 @@ extension AppABI {
 
         let betaChecker = appConfiguration.newBetaChecker()
         let configManager = appConfiguration.newConfigManager(
+            appLogger: appLogger,
             isBeta: {
                 await betaChecker.isBeta()
             },
@@ -98,6 +101,7 @@ extension AppABI {
         // MARK: IAP (StoreKit)
 
         let iapManager = appConfiguration.newIAPManager(
+            appLogger: appLogger,
             inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
             receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs, logger: appLogger),
             betaChecker: betaChecker
@@ -109,6 +113,7 @@ extension AppABI {
             ctx,
             from: apiMappers,
             repository: CommonData.cdAPIRepositoryV3(
+                appLogger,
                 context: localStore.backgroundContext()
             )
         )
@@ -118,6 +123,7 @@ extension AppABI {
         let appEncoder = AppEncoder(registry: registry)
         let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
+            appLogger: appLogger,
             apiManager: apiManager,
             registry: registry,
             providerServerSorter: {
@@ -140,7 +146,7 @@ extension AppABI {
             bundleIdentifier: tunnelIdentifier,
             coder: appConfiguration.newNEProtocolCoder(ctx, registry: registry)
         )
-        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
+        let mainProfileRepository = NEProfileRepository(appLogger, repository: tunnelStrategy) { [weak tunnelProcessor] in
             tunnelProcessor?.title(for: $0) ?? $0.name
         }
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
@@ -181,6 +187,7 @@ extension AppABI {
         // MARK: Version (GitHub)
 
         let versionChecker = appConfiguration.newVersionChecker(
+            appLogger: appLogger,
             kvStore: kvStore,
             downloadURL: {
                 switch appConfiguration.distributionTarget {
@@ -251,18 +258,28 @@ extension AppABI {
 
             appLogger.log(.core, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
-                try CommonData.cdModulePreferencesRepositoryV3(
-                    context: remoteStore.context,
-                    moduleId: $0
-                )
+                do {
+                    return try CommonData.cdModulePreferencesRepositoryV3(
+                        context: remoteStore.context,
+                        moduleId: $0
+                    )
+                } catch {
+                    appLogger.log(.core, .error, "Unable to load preferences for module \($0): \(error)")
+                    throw error
+                }
             }
 
             appLogger.log(.core, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
-                try CommonData.cdProviderPreferencesRepositoryV3(
-                    context: remoteStore.context,
-                    providerId: $0
-                )
+                do {
+                    return try CommonData.cdProviderPreferencesRepositoryV3(
+                        context: remoteStore.context,
+                        providerId: $0
+                    )
+                } catch {
+                    appLogger.log(.core, .error, "Unable to load preferences for provider \($0): \(error)")
+                    throw error
+                }
             }
 
             appLogger.log(.profiles, .info, "\tReload profiles required features...")
@@ -341,6 +358,7 @@ private extension ABI.AppConfiguration {
             return mockHelper.receiptReader
         }
         return SharedReceiptReader(
+            logger,
             reader: StoreKitReceiptReader(logger: logger)
         )
     }

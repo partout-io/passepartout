@@ -4,6 +4,8 @@
 
 import Combine
 import CoreData
+// FIXME: #1594, Drop import (use AppProfile)
+import Partout
 
 extension CommonData {
     public static func cdProfileRepositoryV3(

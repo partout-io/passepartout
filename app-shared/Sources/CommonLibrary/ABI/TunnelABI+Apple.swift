@@ -4,6 +4,7 @@
 
 #if canImport(CommonLibraryApple)
 import NetworkExtension
+import Partout
 
 extension TunnelABI {
     public static func forProduction(
@@ -28,7 +29,7 @@ extension TunnelABI {
             let decoder = appConfiguration.newNEProtocolCoder(.global, registry: registry)
             originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
             let resolvedProfile = try registry.resolvedProfile(originalProfile)
-            let processor = appConfiguration.newTunnelProcessor()
+            let processor = appConfiguration.newTunnelProcessor(appLogger: appLogger)
             processedProfile = try processor.willProcess(resolvedProfile)
         } catch {
             appLogger.log(.profiles, .fault, "Unable to decode or process profile: \(error)")
@@ -100,8 +101,10 @@ extension TunnelABI {
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.newIAPManager(
+            appLogger: appLogger,
             inAppHelper: appConfiguration.newAppProductHelper(),
             receiptReader: SharedReceiptReader(
+                appLogger,
                 reader: StoreKitReceiptReader(logger: appLogger),
             ),
             betaChecker: appConfiguration.newBetaChecker()

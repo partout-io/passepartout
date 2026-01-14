@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
+// FIXME: #1594, Drop import (ModuleType)
+import Partout
 
 struct DomainMapper {
     func provider(from entity: CDProviderV3) -> Provider? {

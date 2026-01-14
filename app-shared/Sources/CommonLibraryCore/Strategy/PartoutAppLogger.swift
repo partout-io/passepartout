@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (Profile.ID -> AppIdentifier, do not extend Partout.LoggerCategory)
+import Partout
+
 public final class PartoutAppLogger: AppLogger, Sendable {
     private let profileId: Profile.ID?
 
@@ -24,6 +27,7 @@ private extension ABI.AppLogCategory {
         case .core: .App.core
         case .iap: .App.iap
         case .profiles: .App.profiles
+        case .providers: .App.providers
         case .web: .App.web
         }
     }
@@ -41,16 +45,18 @@ private extension ABI.AppLogLevel {
     }
 }
 
-// FIXME: #1594, Make internal, use AppLogger not pp_log
+// FIXME: #1594, Use AppLogger, not pp_log
 extension LoggerCategory {
-    public enum App {
-        public static let core = LoggerCategory(appCategory: .core)
+    enum App {
+        static let core = LoggerCategory(appCategory: .core)
 
-        public static let iap = LoggerCategory(appCategory: .iap)
+        static let iap = LoggerCategory(appCategory: .iap)
 
-        public static let profiles = LoggerCategory(appCategory: .profiles)
+        static let profiles = LoggerCategory(appCategory: .profiles)
 
-        public static let web = LoggerCategory(appCategory: .web)
+        static let providers = LoggerCategory(appCategory: .providers)
+
+        static let web = LoggerCategory(appCategory: .web)
     }
 
     private init(appCategory: ABI.AppLogCategory) {

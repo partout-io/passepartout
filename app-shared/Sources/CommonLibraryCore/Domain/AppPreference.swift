@@ -2,6 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+// FIXME: #1594, Drop import (Profile.ID -> UUID)
+import Partout
+
 extension ABI {
     public enum AppPreference: String, PreferenceProtocol {
         // Not directly accessible

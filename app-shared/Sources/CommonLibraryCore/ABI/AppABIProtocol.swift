@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore_C
+// FIXME: #1594, Drop import (Module*)
+import Partout
 
 // MARK: Domains
 

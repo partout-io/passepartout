@@ -2,8 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 @MainActor
 public final class GitHubReleaseStrategy: VersionCheckerStrategy {
+    private let logger: AppLogger
+
     private let releaseURL: URL
 
     private let rateLimit: TimeInterval
@@ -11,10 +15,12 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     private let fetcher: @Sendable (URL) async throws -> Data
 
     public init(
+        _ logger: AppLogger,
         releaseURL: URL,
         rateLimit: TimeInterval,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) {
+        self.logger = logger
         self.releaseURL = releaseURL
         self.rateLimit = rateLimit
         self.fetcher = fetcher
@@ -24,7 +30,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         if since > .distantPast {
             let elapsed = -since.timeIntervalSinceNow
             guard elapsed >= rateLimit else {
-                pp_log_g(.App.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
+                logger.log(.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
                 throw ABI.AppError.rateLimit
             }
         }
@@ -32,7 +38,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         let json = try JSONDecoder().decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
-            pp_log_g(.App.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
+            logger.log(.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
             throw ABI.AppError.unexpectedResponse
         }
         return semNew

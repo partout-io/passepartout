@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 #if !PSP_CROSS
 extension WebReceiverManager: ObservableObject {}
 #endif
@@ -14,7 +16,7 @@ public final class WebReceiverManager {
 
     private let passcodeGenerator: PasscodeGenerator?
 
-    private let filesStream: PassthroughStream<UniqueID, ABI.WebFileUpload>
+    private let filesStream: PassthroughStream<UUID, ABI.WebFileUpload>
 
     public var isStarted: Bool {
         website != nil

@@ -2,11 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 extension ABI {
     public enum AppLogCategory: String, Identifiable, Sendable {
         case core
         case iap
         case profiles
+        case providers
         case web
 
         public var id: String {

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Dispatch
+import MiniFoundation
 
 #if !PSP_CROSS
 extension ConfigManager: ObservableObject {}
@@ -11,6 +12,8 @@ extension ConfigManager: ObservableObject {}
 @MainActor
 public final class ConfigManager {
     private let queue = DispatchQueue(label: "ConfigManager")
+
+    private let logger: AppLogger
 
     private let strategy: ConfigManagerStrategy?
 
@@ -38,15 +41,17 @@ public final class ConfigManager {
 
     private var isPending = false
 
-    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.ConfigEvent>
+    public nonisolated let didChange: PassthroughStream<UUID, ABI.ConfigEvent>
 
     public init() {
+        logger = PartoutAppLogger()
         strategy = nil
         buildNumber = .max // Activate flags regardless of .minBuild
         didChange = PassthroughStream()
     }
 
-    public init(strategy: ConfigManagerStrategy, buildNumber: Int) {
+    public init(_ logger: AppLogger, strategy: ConfigManagerStrategy, buildNumber: Int) {
+        self.logger = logger
         self.strategy = strategy
         self.buildNumber = buildNumber
         didChange = PassthroughStream()
@@ -65,16 +70,16 @@ public final class ConfigManager {
             isPending = false
         }
         do {
-            pp_log_g(.App.core, .debug, "Config: refreshing bundle...")
+            logger.log(.core, .debug, "Config: refreshing bundle...")
             let newBundle = try await strategy.bundle()
             bundle = newBundle
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
-            pp_log_g(.App.core, .info, "Config: active flags = \(activeFlags)")
-            pp_log_g(.App.core, .debug, "Config: \(newBundle)")
+            logger.log(.core, .info, "Config: active flags = \(activeFlags)")
+            logger.log(.core, .debug, "Config: \(newBundle)")
         } catch ABI.AppError.rateLimit {
-            pp_log_g(.App.core, .debug, "Config: TTL")
+            logger.log(.core, .debug, "Config: TTL")
         } catch {
-            pp_log_g(.App.core, .error, "Unable to refresh config flags: \(error)")
+            logger.log(.core, .error, "Unable to refresh config flags: \(error)")
         }
     }
 

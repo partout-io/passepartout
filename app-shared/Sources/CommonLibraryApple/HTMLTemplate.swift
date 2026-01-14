@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 struct HTMLTemplate {
     private static let keyPattern: NSRegularExpression = {
         do {

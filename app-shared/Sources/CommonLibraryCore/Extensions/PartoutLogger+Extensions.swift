@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (wrap PartoutLogger)
+import Partout
+
 extension PartoutLogger {
     public enum Target {
         case app
@@ -150,7 +153,7 @@ private extension PartoutLogger.Builder {
             .App.profiles,
             .App.web
         ]
-        list.append(.providers)
+        list.append(.App.providers)
         setDefaultDestination(for: list)
 
         setLocalLogger(

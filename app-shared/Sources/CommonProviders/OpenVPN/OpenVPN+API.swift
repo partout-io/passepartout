@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension OpenVPN {
     public struct ProviderCustomization {
         public struct Credentials {

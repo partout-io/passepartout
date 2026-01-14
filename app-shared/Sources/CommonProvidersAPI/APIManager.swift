@@ -7,6 +7,7 @@ import Combine
 extension APIManager: ObservableObject {
 }
 #endif
+import Partout
 
 @MainActor
 public final class APIManager {

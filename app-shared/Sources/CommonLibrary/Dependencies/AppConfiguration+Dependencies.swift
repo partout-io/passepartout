@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import
+import Partout
+
 extension ABI.AppConfiguration {
     public func newAppLogger(profileId: Profile.ID? = nil) -> AppLogger {
         PartoutAppLogger(profileId: profileId)
@@ -9,6 +12,7 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newConfigManager(
+        appLogger: AppLogger,
         isBeta: @escaping @Sendable () async -> Bool,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> ConfigManager {
@@ -19,7 +23,9 @@ extension ABI.AppConfiguration {
 #endif
         let betaConfigURL = constants.websites.betaConfig
         return ConfigManager(
+            appLogger,
             strategy: GitHubConfigStrategy(
+                appLogger,
                 url: configURL,
                 betaURL: betaConfigURL,
                 ttl: constants.websites.configTTL,
@@ -92,11 +98,13 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newIAPManager(
+        appLogger: AppLogger,
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
         betaChecker: BetaChecker
     ) -> IAPManager {
         IAPManager(
+            appLogger,
             customUserLevel: customUserLevel,
             inAppHelper: inAppHelper,
             receiptReader: receiptReader,
@@ -139,11 +147,13 @@ extension ABI.AppConfiguration {
     }
 
     public func newAppTunnelProcessor(
+        appLogger: AppLogger,
         apiManager: APIManager?,
         registry: Registry,
         providerServerSorter: @escaping ProviderServerParameters.Sorter
     ) -> AppTunnelProcessor {
         DefaultAppTunnelProcessor(
+            appLogger,
             apiManager: apiManager,
             registry: registry,
             title: {
@@ -153,8 +163,8 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newTunnelProcessor() -> PacketTunnelProcessor {
-        DefaultTunnelProcessor()
+    public func newTunnelProcessor(appLogger: AppLogger) -> PacketTunnelProcessor {
+        DefaultTunnelProcessor(appLogger)
     }
 
     @MainActor
@@ -175,16 +185,19 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newVersionChecker(
+        appLogger: AppLogger,
         kvStore: KeyValueStore,
         downloadURL: URL,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
+            appLogger,
             releaseURL: constants.github.latestRelease,
             rateLimit: constants.api.versionRateLimit,
             fetcher: fetcher
         )
         return VersionChecker(
+            appLogger,
             kvStore: kvStore,
             strategy: versionStrategy,
             currentVersion: versionNumber,
@@ -247,10 +260,12 @@ extension ABI.AppConfiguration {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
+        let log = SimpleLogDestination()
+
         let appGroupURL = {
             let groupId = bundle.string(for: .groupId)
             guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
-                pp_log_g(.App.core, .error, "Unable to access App Group container")
+                log.append(.error, "Unable to access App Group container")
                 return FileManager.default.temporaryDirectory
             }
             return url
@@ -267,7 +282,7 @@ extension ABI.AppConfiguration {
                 do {
                     try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
                 } catch {
-                    pp_log_g(.App.core, .error, "Unable to create temporary directory \(baseURL): \(error)")
+                    log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
                 }
             }
             return baseURL.appending(path: constants.log.tunnelPath)
@@ -332,7 +347,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create group caches directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create group caches directory: \(error)")
         }
         return url
     }
@@ -342,7 +357,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create group documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create group documents directory: \(error)")
         }
         return url
     }
@@ -355,7 +370,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -364,7 +379,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }

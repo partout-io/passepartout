@@ -2,12 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public final class WebUploader: Sendable {
     private let logger: AppLogger
 
     private let strategy: WebUploaderStrategy
 
-    public init(logger: AppLogger, strategy: WebUploaderStrategy) {
+    public init(_ logger: AppLogger, strategy: WebUploaderStrategy) {
         self.logger = logger
         self.strategy = strategy
     }

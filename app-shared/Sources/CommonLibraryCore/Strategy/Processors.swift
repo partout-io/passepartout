@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (use AppProfile)
+import Partout
+
 @MainActor
 public protocol ProfileProcessor: AnyObject, Sendable {
     func isIncluded(_ profile: Profile) -> Bool

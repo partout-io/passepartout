@@ -2,13 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension LoggerCategory {
-    public static let providers = Self(rawValue: "providers")
-}
+import Partout
 
 extension PartoutError.Code {
     public enum Providers {
-
         /// A provider module is corrupt.
         public static let corruptModule = PartoutError.Code("Providers.corruptModule")
 

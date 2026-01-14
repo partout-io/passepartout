@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public final class InMemoryProviderRepository: ProviderRepository {
     public let providerId: ProviderID
 

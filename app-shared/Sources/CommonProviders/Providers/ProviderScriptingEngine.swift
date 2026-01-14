@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 protocol ProviderScriptingEngine: ScriptingEngine {
     func inject(from engine: ProviderScriptingAPI)
 }

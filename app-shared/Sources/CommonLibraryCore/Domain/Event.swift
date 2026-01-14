@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (after dropping deprecated events)
+import Partout
+
 extension ABI {
     public enum Event: Sendable {
         case config(ConfigEvent)

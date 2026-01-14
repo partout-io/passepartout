@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (do not expose Partout to UI)
+import Partout
+
 @MainActor
 public final class AppABI: Sendable {
     // MARK: Business
@@ -213,7 +216,7 @@ private struct AppABIIAP: AppABIIAPProtocol {
     }
 
     func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
-        try iapManager.verify(profile.native, extra: extra)
+        try iapManager.verify(profile, extra: extra)
     }
 
     func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {

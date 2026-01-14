@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public final class TunnelABI: TunnelABIProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
@@ -91,7 +93,7 @@ public final class TunnelABI: TunnelABIProtocol {
                 try await Task.sleep(for: .seconds(params.delay))
                 guard !Task.isCancelled else { return }
                 await verifyEligibility(
-                    of: originalProfile.native,
+                    of: originalProfile,
                     iapManager: iap.manager,
                     environment: environment,
                     params: params,
@@ -172,7 +174,7 @@ private extension TunnelABI {
 
 private extension TunnelABI {
     func verifyEligibility(
-        of profile: Profile,
+        of profile: ABI.AppProfile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
         params: ABI.Constants.Tunnel.Verification.Parameters,
@@ -184,7 +186,7 @@ private extension TunnelABI {
                 return
             }
             do {
-                appLogger.log(.iap, .info, "Verify profile, requires: \(profile.features)")
+                appLogger.log(.iap, .info, "Verify profile, requires: \(profile.native.features)")
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {
