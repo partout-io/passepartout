@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonProviders
+import MiniFoundation
+import Partout
 import Testing
 
 struct HideMeProviderTests: APITestSuite {

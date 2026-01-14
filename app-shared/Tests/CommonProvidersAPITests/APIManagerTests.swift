@@ -6,6 +6,7 @@
 
 import Combine
 @testable import CommonProvidersAPI
+import MiniFoundation
 import Testing
 
 @MainActor

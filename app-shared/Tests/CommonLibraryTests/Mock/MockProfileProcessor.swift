@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 final class MockProfileProcessor: ProfileProcessor {
     var isIncludedCount = 0
 

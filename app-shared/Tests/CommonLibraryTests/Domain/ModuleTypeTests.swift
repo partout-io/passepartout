@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibrary
+import Partout
 import Testing
 
 struct ModuleTypeTests {

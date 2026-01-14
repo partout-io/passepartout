@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonProvidersCore
+import Partout
 import Testing
 
 struct RegistryTests {

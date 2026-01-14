@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonProviders
+import MiniFoundation
 
 struct FetchInput {
     let cache: ProviderCache?
