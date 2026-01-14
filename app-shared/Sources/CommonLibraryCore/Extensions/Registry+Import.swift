@@ -27,7 +27,7 @@ extension Registry {
             return try profile(fromJSON: contents)
 #endif
         } catch {
-            pp_log_g(.App.core, .debug, "Unable to decode profile for import: \(error)")
+            pspLog(.core, .debug, "Unable to decode profile for import: \(error)")
         }
 
         // Fall back to parsing a single module

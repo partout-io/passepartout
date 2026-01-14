@@ -44,7 +44,6 @@ public final class AppABI: Sendable {
     // MARK: Internal state
 
     private let appConfiguration: ABI.AppConfiguration
-    private let appLogger: AppLogger
     private let extensionInstaller: ExtensionInstaller?
     private let kvStore: KeyValueStore
     private let logFormatter: LogFormatter
@@ -58,7 +57,6 @@ public final class AppABI: Sendable {
         apiManager: APIManager,
         appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
-        appLogger: AppLogger,
         configManager: ConfigManager,
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
@@ -75,7 +73,6 @@ public final class AppABI: Sendable {
         self.apiManager = apiManager
         self.appConfiguration = appConfiguration
         self.appEncoder = appEncoder
-        self.appLogger = appLogger
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
@@ -153,13 +150,13 @@ public final class AppABI: Sendable {
     }
 }
 
-extension AppABI: AppLogger, LogFormatter {
+extension AppABI: AppABILoggerProtocol, LogFormatter {
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        appLogger.log(category, level, message)
+        pspLog(category, level, message)
     }
 
     public nonisolated func flushLogs() {
-        appLogger.flushLogs()
+        pspLogFlush()
     }
 
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
@@ -453,12 +450,12 @@ extension AppABI {
 // Invoked on internal events
 private extension AppABI {
     func onLaunch() async throws {
-        appLogger.log(.core, .notice, "Application did launch")
+        pspLog(.core, .notice, "Application did launch")
 
-        appLogger.log(.profiles, .info, "\tRead and observe local profiles...")
+        pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
 
-        appLogger.log(.profiles, .info, "\tObserve in-app events...")
+        pspLog(.profiles, .info, "\tObserve in-app events...")
         iapManager.observeObjects(withProducts: true)
 
         // Defer loads to not block app launch
@@ -470,7 +467,7 @@ private extension AppABI {
             await reloadExtensions()
         }
 
-        appLogger.log(.iap, .info, "\tObserve changes in IAPManager...")
+        pspLog(.iap, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
             guard let self else { return }
@@ -478,17 +475,17 @@ private extension AppABI {
                 switch event {
                 case .status(let isEnabled):
                     // FIXME: #1594, .dropFirst() + .removeDuplicates()
-                    appLogger.log(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
+                    pspLog(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
                     kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let features):
                     // FIXME: #1594, .dropFirst() + .removeDuplicates()
                     do {
-                        appLogger.log(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
+                        pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
                         try await onEligibleFeatures(features)
                     } catch {
-                        appLogger.log(.iap, .error, "Unable to react to eligible features: \(error)")
+                        pspLog(.iap, .error, "Unable to react to eligible features: \(error)")
                     }
                 default:
                     break
@@ -496,7 +493,7 @@ private extension AppABI {
             }
         })
 
-        appLogger.log(.profiles, .info, "\tObserve changes in ProfileManager...")
+        pspLog(.profiles, .info, "\tObserve changes in ProfileManager...")
         let profileEvents = profileManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
             guard let self else { return }
@@ -506,7 +503,7 @@ private extension AppABI {
                     do {
                         try await onSaveProfile(profile, previous: previousProfile)
                     } catch {
-                        appLogger.log(.profiles, .error, "Unable to react to saved profile: \(error)")
+                        pspLog(.profiles, .error, "Unable to react to saved profile: \(error)")
                     }
                 default:
                     break
@@ -515,10 +512,10 @@ private extension AppABI {
         })
 
         do {
-            appLogger.log(.core, .info, "\tFetch providers index...")
+            pspLog(.core, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
-            appLogger.log(.core, .error, "\tUnable to fetch providers index: \(error)")
+            pspLog(.core, .error, "\tUnable to fetch providers index: \(error)")
         }
     }
 
@@ -530,7 +527,7 @@ private extension AppABI {
             return
         }
 
-        appLogger.log(.core, .notice, "Application did enter foreground")
+        pspLog(.core, .notice, "Application did enter foreground")
         pendingTask = Task {
             await reloadExtensions()
 
@@ -547,7 +544,7 @@ private extension AppABI {
     func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
         try await waitForTasks()
 
-        appLogger.log(.core, .notice, "Application did update eligible features")
+        pspLog(.core, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -558,39 +555,39 @@ private extension AppABI {
     func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
         try await waitForTasks()
 
-        appLogger.log(.core, .notice, "Application did save profile (\(profile.id))")
+        pspLog(.core, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            appLogger.log(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            pspLog(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            appLogger.log(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
         guard tunnelManager.isActiveProfile(withId: profile.id) else {
-            appLogger.log(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
+            pspLog(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
             return
         }
         let status = tunnelManager.status(ofProfileId: profile.id)
         guard [.active, .activating].contains(status) else {
-            appLogger.log(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return
         }
 
         pendingTask = Task {
             do {
-                appLogger.log(.core, .info, "\tReconnect profile \(profile.id)")
+                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
                 try await tunnelManager.disconnect(from: profile.id)
                 do {
                     try await tunnelManager.connect(with: profile)
                 } catch ABI.AppError.interactiveLogin {
-                    appLogger.log(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {
-                    appLogger.log(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
                 }
             } catch {
-                appLogger.log(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
             }
         }
         await pendingTask?.value
@@ -627,12 +624,12 @@ private extension AppABI {
 
     func reloadExtensions() async {
         guard let extensionInstaller else { return }
-        appLogger.log(.core, .info, "Extensions: load current status...")
+        pspLog(.core, .info, "Extensions: load current status...")
         do {
             let result = try await extensionInstaller.load()
-            appLogger.log(.core, .info, "Extensions: load result is \(result)")
+            pspLog(.core, .info, "Extensions: load result is \(result)")
         } catch {
-            appLogger.log(.core, .error, "Extensions: load error: \(error)")
+            pspLog(.core, .error, "Extensions: load error: \(error)")
         }
     }
 

@@ -2,23 +2,27 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Drop import (Profile.ID -> AppIdentifier, do not extend Partout.LoggerCategory)
 import Partout
 
-public final class PartoutAppLogger: AppLogger, Sendable {
-    private let profileId: Profile.ID?
+public func pspLog(
+    _ category: ABI.AppLogCategory,
+    _ level: ABI.AppLogLevel,
+    _ message: String
+) {
+    pp_log_g(category.partoutCategory, level.partoutLevel, message)
+}
 
-    public init(profileId: Profile.ID? = nil) {
-        self.profileId = profileId
-    }
+public func pspLog(
+    _ profileId: Profile.ID? = nil,
+    _ category: ABI.AppLogCategory,
+    _ level: ABI.AppLogLevel,
+    _ message: String
+) {
+    pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
+}
 
-    public func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
-    }
-
-    public nonisolated func flushLogs() {
-        PartoutLogger.default.flushLog()
-    }
+public func pspLogFlush() {
+    PartoutLogger.default.flushLog()
 }
 
 private extension ABI.AppLogCategory {
@@ -27,7 +31,6 @@ private extension ABI.AppLogCategory {
         case .core: .App.core
         case .iap: .App.iap
         case .profiles: .App.profiles
-        case .providers: .App.providers
         case .web: .App.web
         }
     }
@@ -45,7 +48,6 @@ private extension ABI.AppLogLevel {
     }
 }
 
-// FIXME: #1594, Use AppLogger, not pp_log
 extension LoggerCategory {
     enum App {
         static let core = LoggerCategory(appCategory: .core)
@@ -54,12 +56,10 @@ extension LoggerCategory {
 
         static let profiles = LoggerCategory(appCategory: .profiles)
 
-        static let providers = LoggerCategory(appCategory: .providers)
-
         static let web = LoggerCategory(appCategory: .web)
     }
 
-    private init(appCategory: ABI.AppLogCategory) {
+    init(appCategory: ABI.AppLogCategory) {
         self.init(rawValue: appCategory.id)
     }
 }

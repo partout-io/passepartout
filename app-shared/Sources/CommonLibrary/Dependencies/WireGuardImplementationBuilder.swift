@@ -29,7 +29,6 @@ struct WireGuardImplementationBuilder: Sendable {
     }
 
     private func newParser() -> ModuleImporter & ModuleBuilderValidator {
-        pp_log_g(.wireguard, .notice, "WireGuard: Using cross-platform parser")
-        return StandardWireGuardParser()
+        StandardWireGuardParser()
     }
 }

@@ -26,7 +26,7 @@ extension PartoutLogger {
         case .app:
             if !isDefaultLoggerRegistered {
                 isDefaultLoggerRegistered = true
-                let logger = appLogger(
+                let logger = logger(
                     to: appConfiguration.urlForAppLog,
                     preferences: preferences,
                     parameters: appConfiguration.constants.log,
@@ -73,7 +73,7 @@ extension PartoutLogger {
 }
 
 private extension PartoutLogger {
-    static func appLogger(
+    static func logger(
         to url: URL,
         preferences: ABI.AppPreferenceValues,
         parameters: ABI.Constants.Log,
@@ -124,7 +124,7 @@ private extension PartoutLogger {
         appendLog(level, message: "")
 
         if let localLoggerURL {
-            pp_log_g(.App.core, .debug, "Log to: \(localLoggerURL)")
+            pspLog(.core, .debug, "Log to: \(localLoggerURL)")
         }
     }
 }
@@ -153,7 +153,7 @@ private extension PartoutLogger.Builder {
             .App.profiles,
             .App.web
         ]
-        list.append(.App.providers)
+        list.append(.providers)
         setDefaultDestination(for: list)
 
         setLocalLogger(

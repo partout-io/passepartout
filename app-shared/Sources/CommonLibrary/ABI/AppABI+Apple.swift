@@ -32,13 +32,11 @@ extension AppABI {
                 logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
-        let appLogger = appConfiguration.newAppLogger()
 
         // MARK: Config (GitHub)
 
         let betaChecker = appConfiguration.newBetaChecker()
         let configManager = appConfiguration.newConfigManager(
-            appLogger: appLogger,
             isBeta: {
                 await betaChecker.isBeta()
             },
@@ -52,7 +50,6 @@ extension AppABI {
         // MARK: Registry
 
         let registry = appConfiguration.newAppRegistry(
-            appLogger: appLogger,
             configManager: configManager,
             kvStore: kvStore
         )
@@ -76,7 +73,6 @@ extension AppABI {
             fatalError("Unable to load remote model")
         }
         let localStore = CoreDataPersistentStore(
-            logger: appLogger,
             containerName: appConfiguration.constants.containers.local,
             model: cdLocalModel,
             cloudKitIdentifier: nil,
@@ -90,7 +86,6 @@ extension AppABI {
                 cloudKitIdentifier = nil
             }
             return CoreDataPersistentStore(
-                logger: appLogger,
                 containerName: appConfiguration.constants.containers.remote,
                 model: cdRemoteModel,
                 cloudKitIdentifier: cloudKitIdentifier,
@@ -101,9 +96,8 @@ extension AppABI {
         // MARK: IAP (StoreKit)
 
         let iapManager = appConfiguration.newIAPManager(
-            appLogger: appLogger,
             inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
-            receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs, logger: appLogger),
+            receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs),
             betaChecker: betaChecker
         )
 
@@ -113,7 +107,6 @@ extension AppABI {
             ctx,
             from: apiMappers,
             repository: CommonData.cdAPIRepositoryV3(
-                appLogger,
                 context: localStore.backgroundContext()
             )
         )
@@ -123,7 +116,6 @@ extension AppABI {
         let appEncoder = AppEncoder(registry: registry)
         let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
-            appLogger: appLogger,
             apiManager: apiManager,
             registry: registry,
             providerServerSorter: {
@@ -133,7 +125,6 @@ extension AppABI {
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = appConfiguration.newBackupProfileRepository(
-            logger: appLogger,
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -146,11 +137,10 @@ extension AppABI {
             bundleIdentifier: tunnelIdentifier,
             coder: appConfiguration.newNEProtocolCoder(ctx, registry: registry)
         )
-        let mainProfileRepository = NEProfileRepository(appLogger, repository: tunnelStrategy) { [weak tunnelProcessor] in
+        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
             tunnelProcessor?.title(for: $0) ?? $0.name
         }
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
-            logger: appLogger,
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -187,7 +177,6 @@ extension AppABI {
         // MARK: Version (GitHub)
 
         let versionChecker = appConfiguration.newVersionChecker(
-            appLogger: appLogger,
             kvStore: kvStore,
             downloadURL: {
                 switch appConfiguration.distributionTarget {
@@ -212,7 +201,6 @@ extension AppABI {
 #if os(tvOS)
         if let webHTMLPath, let webStringsBundle {
             webReceiverManager = appConfiguration.newWebReceiverManager(
-                appLogger: appLogger,
                 htmlPath: webHTMLPath,
                 stringsBundle: webStringsBundle
             )
@@ -237,26 +225,26 @@ extension AppABI {
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
 
                 let isCloudKitEnabled = withUITesting || appConfiguration.isCloudKitEnabled
-                appLogger.log(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
-                appLogger.log(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
+                pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
+                pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
                 let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
                     encoder: appEncoder,
                     context: remoteStore.context,
                     observingResults: true,
-                    onResultError: { [weak appLogger] in
-                        appLogger?.log(.profiles, .error, "Unable to decode remote profile: \($0)")
+                    onResultError: {
+                        pspLog(.profiles, .error, "Unable to decode remote profile: \($0)")
                         return .ignore
                     }
                 )
                 do {
                     try await profileManager.observeRemote(repository: remoteProfileRepository)
                 } catch {
-                    appLogger.log(.profiles, .error, "\tUnable to re-observe remote profiles: \(error)")
+                    pspLog(.profiles, .error, "\tUnable to re-observe remote profiles: \(error)")
                 }
             }
 
-            appLogger.log(.core, .info, "\tRefresh modules preferences repository...")
+            pspLog(.core, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
                 do {
                     return try CommonData.cdModulePreferencesRepositoryV3(
@@ -264,12 +252,12 @@ extension AppABI {
                         moduleId: $0
                     )
                 } catch {
-                    appLogger.log(.core, .error, "Unable to load preferences for module \($0): \(error)")
+                    pspLog(.core, .error, "Unable to load preferences for module \($0): \(error)")
                     throw error
                 }
             }
 
-            appLogger.log(.core, .info, "\tRefresh providers preferences repository...")
+            pspLog(.core, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
                 do {
                     return try CommonData.cdProviderPreferencesRepositoryV3(
@@ -277,12 +265,12 @@ extension AppABI {
                         providerId: $0
                     )
                 } catch {
-                    appLogger.log(.core, .error, "Unable to load preferences for provider \($0): \(error)")
+                    pspLog(.core, .error, "Unable to load preferences for provider \($0): \(error)")
                     throw error
                 }
             }
 
-            appLogger.log(.profiles, .info, "\tReload profiles required features...")
+            pspLog(.profiles, .info, "\tReload profiles required features...")
             profileManager.reloadRequiredFeatures()
         }
 
@@ -290,7 +278,6 @@ extension AppABI {
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
-            appLogger: appLogger,
             configManager: configManager,
             extensionInstaller: sysexManager,
             iapManager: iapManager,
@@ -317,14 +304,12 @@ private extension ABI.AppConfiguration {
     }
 
     func newBackupProfileRepository(
-        logger: AppLogger,
         encoder: AppEncoder,
         model: NSManagedObjectModel,
         name: String,
         observingResults: Bool
     ) -> ProfileRepository {
         let store = CoreDataPersistentStore(
-            logger: logger,
             containerName: name,
             model: model,
             cloudKitIdentifier: nil,
@@ -335,7 +320,7 @@ private extension ABI.AppConfiguration {
             context: store.context,
             observingResults: observingResults,
             onResultError: {
-                logger.log(.profiles, .error, "Unable to decode local profile: \($0)")
+                pspLog(.profiles, .error, "Unable to decode local profile: \($0)")
                 return .ignore
             }
         )
@@ -350,7 +335,7 @@ private extension ABI.AppConfiguration {
     }
 
     @MainActor
-    func simulatedAppReceiptReader(isFake: Bool, logger: AppLogger) -> UserInAppReceiptReader {
+    func simulatedAppReceiptReader(isFake: Bool) -> UserInAppReceiptReader {
         guard !isFake else {
             guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeInAppHelper else {
                 fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
@@ -358,8 +343,7 @@ private extension ABI.AppConfiguration {
             return mockHelper.receiptReader
         }
         return SharedReceiptReader(
-            logger,
-            reader: StoreKitReceiptReader(logger: logger)
+            reader: StoreKitReceiptReader()
         )
     }
 }

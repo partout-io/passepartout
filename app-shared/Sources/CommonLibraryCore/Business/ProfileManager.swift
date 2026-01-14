@@ -97,7 +97,9 @@ public final class ProfileManager {
 
     // For testing/previews
     public convenience init(profiles: [Profile]) {
-        self.init(repository: InMemoryProfileRepository(profiles: profiles))
+        self.init(
+            repository: InMemoryProfileRepository(profiles: profiles)
+        )
     }
 
     public init(
@@ -148,7 +150,7 @@ extension ProfileManager {
             profile = originalProfile
         }
 
-        pp_log_g(.App.profiles, .notice, "Save profile \(profile.id)...")
+        pspLog(.profiles, .notice, "Save profile \(profile.id)...")
         do {
             let existingProfile = allProfiles[profile.id]
             if existingProfile == nil || profile != existingProfile {
@@ -160,10 +162,10 @@ extension ProfileManager {
                 }
                 didChange.send(.save(profile, previous: existingProfile))
             } else {
-                pp_log_g(.App.profiles, .notice, "\tProfile \(profile.id) not modified, not saving")
+                pspLog(.profiles, .notice, "\tProfile \(profile.id) not modified, not saving")
             }
         } catch {
-            pp_log_g(.App.profiles, .fault, "\tUnable to save profile \(profile.id): \(error)")
+            pspLog(.profiles, .fault, "\tUnable to save profile \(profile.id): \(error)")
             throw error
         }
         if let remoteRepository {
@@ -171,18 +173,18 @@ extension ProfileManager {
             let disableSharing = remotelyShared == false
             do {
                 if enableSharing {
-                    pp_log_g(.App.profiles, .notice, "\tEnable remote sharing of profile \(profile.id)...")
+                    pspLog(.profiles, .notice, "\tEnable remote sharing of profile \(profile.id)...")
                     try await remoteRepository.saveProfile(profile)
                 } else if disableSharing {
-                    pp_log_g(.App.profiles, .notice, "\tDisable remote sharing of profile \(profile.id)...")
+                    pspLog(.profiles, .notice, "\tDisable remote sharing of profile \(profile.id)...")
                     try await remoteRepository.removeProfiles(withIds: [profile.id])
                 }
             } catch {
-                pp_log_g(.App.profiles, .fault, "\tUnable to save/remove remote profile \(profile.id): \(error)")
+                pspLog(.profiles, .fault, "\tUnable to save/remove remote profile \(profile.id): \(error)")
                 throw error
             }
         }
-        pp_log_g(.App.profiles, .notice, "Finished saving profile \(profile.id)")
+        pspLog(.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
     @available(*, deprecated, message: "#1594")
@@ -193,7 +195,7 @@ extension ProfileManager {
         sharingFlag: ABI.ProfileSharingFlag? = nil
     ) async throws {
         var profile = try registry.importedProfile(from: input, passphrase: passphrase)
-        pp_log_g(.App.profiles, .info, "Import decoded profile: \(profile)")
+        pspLog(.profiles, .info, "Import decoded profile: \(profile)")
         if sharingFlag == .tv {
             var builder = profile.builder()
             builder.attributes.isAvailableForTV = true
@@ -210,7 +212,7 @@ extension ProfileManager {
 
         var builder = profile.builder(withNewId: true)
         builder.name = firstUniqueName(from: profile.name)
-        pp_log_g(.App.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
+        pspLog(.profiles, .notice, "Duplicate profile [\(profileId), \(profile.name)] -> [\(builder.id), \(builder.name)]...")
         let copy = try builder.build()
 
         try await save(copy)
@@ -236,18 +238,18 @@ extension ProfileManager {
 
     // FIXME: #1594, Profile.ID in public
     public func remove(withIds profileIds: [Profile.ID]) async {
-        pp_log_g(.App.profiles, .notice, "Remove profiles \(profileIds)...")
+        pspLog(.profiles, .notice, "Remove profiles \(profileIds)...")
         do {
             try await repository.removeProfiles(withIds: profileIds)
             try? await remoteRepository?.removeProfiles(withIds: profileIds)
             didChange.send(.remove(profileIds))
         } catch {
-            pp_log_g(.App.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
+            pspLog(.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }
     }
 
     public func eraseRemotelySharedProfiles() async throws {
-        pp_log_g(.App.profiles, .notice, "Erase remotely shared profiles...")
+        pspLog(.profiles, .notice, "Erase remotely shared profiles...")
         try await remoteRepository?.removeAllProfiles()
     }
 
@@ -256,7 +258,7 @@ extension ProfileManager {
             do {
                 try await save(profile, isLocal: true)
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to re-save profile \(profile.id): \(error)")
+                pspLog(.profiles, .error, "Unable to re-save profile \(profile.id): \(error)")
             }
         }
     }
@@ -310,7 +312,7 @@ private extension ProfileManager {
 #if !PSP_CROSS
         objectWillChange.send()
 #endif
-        pp_log_g(.App.profiles, .info, "Reload local profiles: \(result.map(\.id))")
+        pspLog(.profiles, .info, "Reload local profiles: \(result.map(\.id))")
 
         let excludedIds = Set(result
             .filter {
@@ -326,14 +328,14 @@ private extension ProfileManager {
                 $0[$1.id] = $1
             }
 
-        pp_log_g(.App.profiles, .info, "Local profiles after exclusions: \(allProfiles.keys)")
+        pspLog(.profiles, .info, "Local profiles after exclusions: \(allProfiles.keys)")
 
         if waitingObservers.contains(.local) {
             waitingObservers.remove(.local)
         }
 
         if !excludedIds.isEmpty {
-            pp_log_g(.App.profiles, .info, "Delete excluded profiles from repository: \(excludedIds)")
+            pspLog(.profiles, .info, "Delete excluded profiles from repository: \(excludedIds)")
             Task {
                 // XXX: ignore this published value
                 try await repository.removeProfiles(withIds: Array(excludedIds))
@@ -345,7 +347,7 @@ private extension ProfileManager {
 #if !PSP_CROSS
         objectWillChange.send()
 #endif
-        pp_log_g(.App.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
+        pspLog(.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
         remoteProfilesIds = Set(result.map(\.id))
         if waitingObservers.contains(.remote) {
@@ -361,24 +363,24 @@ private extension ProfileManager {
 
     func importRemoteProfiles(_ profiles: [Profile]) async {
         if let previousTask = remoteImportTask {
-            pp_log_g(.App.profiles, .info, "Cancel ongoing remote import...")
+            pspLog(.profiles, .info, "Cancel ongoing remote import...")
             previousTask.cancel()
             await previousTask.value
             remoteImportTask = nil
         }
 
-        pp_log_g(.App.profiles, .info, "Start importing remote profiles: \(profiles.map(\.id))")
+        pspLog(.profiles, .info, "Start importing remote profiles: \(profiles.map(\.id))")
         assert(profiles.count == Set(profiles.map(\.id)).count, "Remote repository must not have duplicates")
 
-        pp_log_g(.App.profiles, .debug, "Local fingerprints:")
+        pspLog(.profiles, .debug, "Local fingerprints:")
         let localFingerprints: [Profile.ID: UUID] = allProfiles.values.reduce(into: [:]) {
             $0[$1.id] = $1.attributes.fingerprint
-            pp_log_g(.App.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
+            pspLog(.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
-        pp_log_g(.App.profiles, .debug, "Remote fingerprints:")
+        pspLog(.profiles, .debug, "Remote fingerprints:")
         let remoteFingerprints: [Profile.ID: UUID] = profiles.reduce(into: [:]) {
             $0[$1.id] = $1.attributes.fingerprint
-            pp_log_g(.App.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
+            pspLog(.profiles, .debug, "\t\($1.id) = \($1.attributes.fingerprint.debugDescription)")
         }
 
         let remotelyDeletedIds = Set(allProfiles.keys).subtracting(remoteProfilesIds)
@@ -391,7 +393,7 @@ private extension ProfileManager {
 
             var idsToRemove: [Profile.ID] = []
             if !remotelyDeletedIds.isEmpty {
-                pp_log_g(.App.profiles, .info, "Will \(mirrorsRemoteRepository ? "delete" : "retain") local profiles not present in remote repository: \(remotelyDeletedIds)")
+                pspLog(.profiles, .info, "Will \(mirrorsRemoteRepository ? "delete" : "retain") local profiles not present in remote repository: \(remotelyDeletedIds)")
                 if mirrorsRemoteRepository {
                     idsToRemove.append(contentsOf: remotelyDeletedIds)
                 }
@@ -399,34 +401,34 @@ private extension ProfileManager {
             for remoteProfile in profiles {
                 do {
                     guard await processor?.isIncluded(remoteProfile) ?? true else {
-                        pp_log_g(.App.profiles, .info, "Will delete non-included remote profile \(remoteProfile.id)")
+                        pspLog(.profiles, .info, "Will delete non-included remote profile \(remoteProfile.id)")
                         idsToRemove.append(remoteProfile.id)
                         continue
                     }
                     if let localFingerprint = localFingerprints[remoteProfile.id] {
                         guard let remoteFingerprint = remoteFingerprints[remoteProfile.id],
                               remoteFingerprint != localFingerprint else {
-                            pp_log_g(.App.profiles, .info, "Skip re-importing local profile \(remoteProfile.id)")
+                            pspLog(.profiles, .info, "Skip re-importing local profile \(remoteProfile.id)")
                             continue
                         }
                     }
-                    pp_log_g(.App.profiles, .notice, "Import remote profile \(remoteProfile.id)...")
+                    pspLog(.profiles, .notice, "Import remote profile \(remoteProfile.id)...")
                     try await save(remoteProfile)
                 } catch {
-                    pp_log_g(.App.profiles, .error, "Unable to import remote profile: \(error)")
+                    pspLog(.profiles, .error, "Unable to import remote profile: \(error)")
                 }
                 guard !Task.isCancelled else {
-                    pp_log_g(.App.profiles, .info, "Cancelled import of remote profiles: \(profiles.map(\.id))")
+                    pspLog(.profiles, .info, "Cancelled import of remote profiles: \(profiles.map(\.id))")
                     return
                 }
             }
 
-            pp_log_g(.App.profiles, .notice, "Finished importing remote profiles, delete stale profiles: \(idsToRemove)")
+            pspLog(.profiles, .notice, "Finished importing remote profiles, delete stale profiles: \(idsToRemove)")
             if !idsToRemove.isEmpty {
                 do {
                     try await repository.removeProfiles(withIds: idsToRemove)
                 } catch {
-                    pp_log_g(.App.profiles, .error, "Unable to delete stale profiles: \(error)")
+                    pspLog(.profiles, .error, "Unable to delete stale profiles: \(error)")
                 }
             }
 
@@ -444,7 +446,7 @@ private extension ProfileManager {
                 requiredFeatures: requiredFeatures(for: $1.value)
             )
         }
-        pp_log_g(.App.profiles, .info, "Updated headers: \(allHeaders)")
+        pspLog(.profiles, .info, "Updated headers: \(allHeaders)")
         return allHeaders
     }
 }
@@ -521,7 +523,7 @@ extension ProfileManager {
             }
             $0[$1.key] = ineligible
         }
-        pp_log_g(.App.profiles, .info, "Required features: \(requiredFeatures)")
+        pspLog(.profiles, .info, "Required features: \(requiredFeatures)")
     }
 }
 
@@ -551,6 +553,6 @@ private extension ProfileManager {
             }
             .sorted(by: Profile.sorting)
 
-        pp_log_g(.App.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
+        pspLog(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
     }
 }

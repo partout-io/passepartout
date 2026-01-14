@@ -43,6 +43,12 @@ public protocol AppABIIAPProtocol: Sendable {
 }
 
 @MainActor
+public protocol AppABILoggerProtocol: Sendable {
+    func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
+    func flushLogs()
+}
+
+@MainActor
 public protocol AppABIProfileProtocol: Sendable {
     func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
     func save(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws

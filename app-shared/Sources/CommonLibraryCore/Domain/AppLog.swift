@@ -9,7 +9,6 @@ extension ABI {
         case core
         case iap
         case profiles
-        case providers
         case web
 
         public var id: String {

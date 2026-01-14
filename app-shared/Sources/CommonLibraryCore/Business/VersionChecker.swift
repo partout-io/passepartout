@@ -10,8 +10,6 @@ extension VersionChecker: ObservableObject {}
 
 @MainActor
 public final class VersionChecker {
-    private let logger: AppLogger
-
     private let kvStore: KeyValueStore
 
     private let strategy: VersionCheckerStrategy
@@ -25,7 +23,6 @@ public final class VersionChecker {
     public nonisolated let didChange: PassthroughStream<UUID, ABI.VersionEvent>
 
     public init(
-        _ logger: AppLogger,
         kvStore: KeyValueStore,
         strategy: VersionCheckerStrategy,
         currentVersion: String,
@@ -34,7 +31,6 @@ public final class VersionChecker {
         guard let semCurrent = ABI.SemanticVersion(currentVersion) else {
             preconditionFailure("Unparsable current version: \(currentVersion)")
         }
-        self.logger = logger
         self.kvStore = kvStore
         self.strategy = strategy
         self.currentVersion = semCurrent
@@ -63,11 +59,11 @@ public final class VersionChecker {
             let lastCheckedInterval = kvStore.double(forAppPreference: .lastCheckedVersionDate)
             let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSinceReferenceDate: lastCheckedInterval) : .distantPast
 
-            logger.log(.core, .debug, "Version: checking for updates...")
+            pspLog(.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
             kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
             kvStore.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
-            logger.log(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
+            pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
 #if !PSP_CROSS
             objectWillChange.send()
@@ -75,19 +71,19 @@ public final class VersionChecker {
             didChange.send(.new)
 
             if let latestRelease {
-                logger.log(.core, .info, "Version: new version available at \(latestRelease.url)")
+                pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
             } else {
-                logger.log(.core, .debug, "Version: current is latest version")
+                pspLog(.core, .debug, "Version: current is latest version")
             }
         } catch ABI.AppError.rateLimit {
-            logger.log(.core, .debug, "Version: rate limit")
+            pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // save the check date regardless because the service call succeeded
             kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
 
-            logger.log(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
+            pspLog(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
-            logger.log(.core, .error, "Unable to check version: \(error)")
+            pspLog(.core, .error, "Unable to check version: \(error)")
         }
     }
 }
@@ -104,7 +100,6 @@ extension VersionChecker {
         currentVersion: String = "255.255.255" // An update is never available
     ) {
         self.init(
-            PartoutAppLogger(),
             kvStore: InMemoryStore(),
             strategy: DummyStrategy(),
             currentVersion: currentVersion,

@@ -22,14 +22,18 @@ extension Registry {
             customHandlers: customHandlers,
             allImplementations: allImplementations,
             resolvedModuleBlock: {
-                try Self.resolvedModule($0, in: $1, with: mappedResolvers)
+                do {
+                    return try Self.resolvedModule($0, in: $1, with: mappedResolvers)
+                } catch {
+                    pspLog(.core, .error, "Unable to resolve module: \(error)")
+                    throw error
+                }
             }
         )
     }
 }
 
 private extension Registry {
-
     @Sendable
     static func resolvedModule(
         _ module: Module,
@@ -51,7 +55,6 @@ private extension Registry {
             }
             return try resolver.resolved(from: providerModule)
         } catch {
-            pp_log_id(profile?.id, .core, .error, "Unable to resolve module: \(error)")
             throw error as? PartoutError ?? PartoutError(.Providers.corruptModule, error)
         }
     }

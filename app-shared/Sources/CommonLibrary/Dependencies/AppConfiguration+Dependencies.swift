@@ -6,13 +6,8 @@
 import Partout
 
 extension ABI.AppConfiguration {
-    public func newAppLogger(profileId: Profile.ID? = nil) -> AppLogger {
-        PartoutAppLogger(profileId: profileId)
-    }
-
     @MainActor
     public func newConfigManager(
-        appLogger: AppLogger,
         isBeta: @escaping @Sendable () async -> Bool,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> ConfigManager {
@@ -23,9 +18,7 @@ extension ABI.AppConfiguration {
 #endif
         let betaConfigURL = constants.websites.betaConfig
         return ConfigManager(
-            appLogger,
             strategy: GitHubConfigStrategy(
-                appLogger,
                 url: configURL,
                 betaURL: betaConfigURL,
                 ttl: constants.websites.configTTL,
@@ -37,19 +30,18 @@ extension ABI.AppConfiguration {
     }
 
     public func newAppRegistry(
-        appLogger: AppLogger,
         configManager: ConfigManager,
         kvStore: KeyValueStore
     ) -> Registry {
         newRegistry(
             deviceId: {
                 if let existingId = kvStore.string(forAppPreference: .deviceId) {
-                    appLogger.log(.core, .info, "Device ID: \(existingId)")
+                    pspLog(.core, .info, "Device ID: \(existingId)")
                     return existingId
                 }
                 let newId = String.random(count: constants.deviceIdLength)
                 kvStore.set(newId, forAppPreference: .deviceId)
-                appLogger.log(.core, .info, "Device ID (new): \(newId)")
+                pspLog(.core, .info, "Device ID (new): \(newId)")
                 return newId
             }(),
             configBlock: { [weak configManager, weak kvStore] in
@@ -60,11 +52,10 @@ extension ABI.AppConfiguration {
     }
 
     public func newTunnelRegistry(
-        appLogger: AppLogger,
         preferences: ABI.AppPreferenceValues
     ) -> Registry {
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        appLogger.log(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         return newRegistry(
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: {
@@ -98,13 +89,11 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newIAPManager(
-        appLogger: AppLogger,
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
         betaChecker: BetaChecker
     ) -> IAPManager {
         IAPManager(
-            appLogger,
             customUserLevel: customUserLevel,
             inAppHelper: inAppHelper,
             receiptReader: receiptReader,
@@ -147,13 +136,11 @@ extension ABI.AppConfiguration {
     }
 
     public func newAppTunnelProcessor(
-        appLogger: AppLogger,
         apiManager: APIManager?,
         registry: Registry,
         providerServerSorter: @escaping ProviderServerParameters.Sorter
     ) -> AppTunnelProcessor {
         DefaultAppTunnelProcessor(
-            appLogger,
             apiManager: apiManager,
             registry: registry,
             title: {
@@ -163,8 +150,8 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newTunnelProcessor(appLogger: AppLogger) -> PacketTunnelProcessor {
-        DefaultTunnelProcessor(appLogger)
+    public func newTunnelProcessor() -> PacketTunnelProcessor {
+        DefaultTunnelProcessor()
     }
 
     @MainActor
@@ -185,19 +172,16 @@ extension ABI.AppConfiguration {
 
     @MainActor
     public func newVersionChecker(
-        appLogger: AppLogger,
         kvStore: KeyValueStore,
         downloadURL: URL,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
-            appLogger,
             releaseURL: constants.github.latestRelease,
             rateLimit: constants.api.versionRateLimit,
             fetcher: fetcher
         )
         return VersionChecker(
-            appLogger,
             kvStore: kvStore,
             strategy: versionStrategy,
             currentVersion: versionNumber,
@@ -466,12 +450,10 @@ extension ABI.AppConfiguration {
 #if os(tvOS)
     @MainActor
     public func newWebReceiverManager(
-        appLogger: AppLogger,
         htmlPath: String,
         stringsBundle: Bundle
     ) -> WebReceiverManager {
         let receiver = NIOWebReceiver(
-            logger: appLogger,
             htmlPath: htmlPath,
             stringsBundle: stringsBundle,
             port: constants.webReceiver.port

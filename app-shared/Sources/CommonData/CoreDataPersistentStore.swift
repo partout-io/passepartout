@@ -5,12 +5,9 @@
 import CoreData
 
 public final class CoreDataPersistentStore: Sendable {
-    private let logger: AppLogger?
-
     private let container: NSPersistentContainer
 
     public convenience init(
-        logger: AppLogger? = nil,
         containerName: String,
         baseURL: URL? = nil,
         model: NSManagedObjectModel,
@@ -20,17 +17,16 @@ public final class CoreDataPersistentStore: Sendable {
         let container: NSPersistentContainer
         if let cloudKitIdentifier {
             container = NSPersistentCloudKitContainer(name: containerName, managedObjectModel: model)
-            logger?.log(.core, .debug, "Set up CloudKit container (\(cloudKitIdentifier)): \(containerName)")
+            pspLog(.core, .debug, "Set up CloudKit container (\(cloudKitIdentifier)): \(containerName)")
         } else {
             container = NSPersistentContainer(name: containerName, managedObjectModel: model)
-            logger?.log(.core, .debug, "Set up local container: \(containerName)")
+            pspLog(.core, .debug, "Set up local container: \(containerName)")
         }
         if let baseURL {
             let url = baseURL.appending(component: "\(containerName).sqlite")
             container.persistentStoreDescriptions = [.init(url: url)]
         }
         self.init(
-            logger: logger,
             container: container,
             cloudKitIdentifier: cloudKitIdentifier,
             author: author
@@ -38,18 +34,16 @@ public final class CoreDataPersistentStore: Sendable {
     }
 
     private init(
-        logger: AppLogger?,
         container: NSPersistentContainer,
         cloudKitIdentifier: String?,
         author: String?
     ) {
-        self.logger = logger
         self.container = container
 
         guard let desc = container.persistentStoreDescriptions.first else {
             fatalError("Unable to read persistent store description")
         }
-        logger?.log(.core, .debug, "Container description: \(desc)")
+        pspLog(.core, .debug, "Container description: \(desc)")
 
         // optional container identifier for CloudKit, first in entitlements otherwise
         if let cloudKitIdentifier {
@@ -77,7 +71,7 @@ public final class CoreDataPersistentStore: Sendable {
         container.viewContext.automaticallyMergesChangesFromParent = true
 
         if let author {
-            logger?.log(.core, .debug, "Setting transaction author: \(author)")
+            pspLog(.core, .debug, "Setting transaction author: \(author)")
             container.viewContext.transactionAuthor = author
         }
     }
@@ -116,7 +110,7 @@ extension CoreDataPersistentStore {
                     try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: $0, options: nil)
                 }
             } catch {
-                logger?.log(.core, .error, "Unable to truncate persistent store: \(error)")
+                pspLog(.core, .error, "Unable to truncate persistent store: \(error)")
             }
         }
     }

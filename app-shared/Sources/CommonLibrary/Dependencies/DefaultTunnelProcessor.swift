@@ -5,11 +5,7 @@
 import Partout
 
 final class DefaultTunnelProcessor: Sendable {
-    private let logger: AppLogger
-
-    init(_ logger: AppLogger) {
-        self.logger = logger
-    }
+    init() {}
 }
 
 extension DefaultTunnelProcessor: PacketTunnelProcessor {
@@ -31,7 +27,7 @@ extension DefaultTunnelProcessor: PacketTunnelProcessor {
             }
             return try builder.build()
         } catch {
-            logger.log(.core, .error, "Unable to process profile, revert to original: \(error)")
+            pspLog(.core, .error, "Unable to process profile, revert to original: \(error)")
             return profile
         }
     }

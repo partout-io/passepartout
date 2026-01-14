@@ -7,8 +7,6 @@ import Partout
 
 // Only @unchecked for the managersSubscription initialization
 public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
-    private let logger: AppLogger
-
     private let repository: NETunnelManagerRepository & Sendable
 
     private let title: @Sendable (Profile) -> String
@@ -18,11 +16,9 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
     private var managersSubscription: Task<Void, Never>?
 
     public init(
-        _ logger: AppLogger,
         repository: NETunnelManagerRepository & Sendable,
         title: @escaping @Sendable (Profile) -> String
     ) {
-        self.logger = logger
         self.repository = repository
         self.title = title
         profilesSubject = CurrentValueStream([])
@@ -31,7 +27,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
         managersSubscription = Task { [weak self] in
             for await manager in managers {
                 guard !Task.isCancelled else {
-                    logger.log(.profiles, .debug, "Cancelled NEProfileRepository.managersStream")
+                    pspLog(.profiles, .debug, "Cancelled NEProfileRepository.managersStream")
                     return
                 }
                 self?.onUpdatedManagers(manager)
@@ -49,7 +45,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
             do {
                 return try repository.profile(from: $0)
             } catch {
-                logger.log(.profiles, .error, "Unable to decode profile from NE manager '\($0.localizedDescription ?? "")': \(error)")
+                pspLog(.profiles, .error, "Unable to decode profile from NE manager '\($0.localizedDescription ?? "")': \(error)")
                 return nil
             }
         }
@@ -91,11 +87,11 @@ private extension NEProfileRepository {
                 decodingTime += elapsed
                 return profile
             } catch {
-                logger.log(.profiles, .error, "Unable to decode profile from NE manager '\($0.localizedDescription ?? "")': \(error)")
+                pspLog(.profiles, .error, "Unable to decode profile from NE manager '\($0.localizedDescription ?? "")': \(error)")
                 return nil
             }
         }
-        logger.log(.profiles, .info, "Decoded \(managers.count) managers to \(profiles.count) profiles in \(decodingTime) seconds")
+        pspLog(.profiles, .info, "Decoded \(managers.count) managers to \(profiles.count) profiles in \(decodingTime) seconds")
         profilesSubject.send(profiles)
     }
 }

@@ -13,8 +13,6 @@ extension ConfigManager: ObservableObject {}
 public final class ConfigManager {
     private let queue = DispatchQueue(label: "ConfigManager")
 
-    private let logger: AppLogger
-
     private let strategy: ConfigManagerStrategy?
 
     private let buildNumber: Int
@@ -44,14 +42,12 @@ public final class ConfigManager {
     public nonisolated let didChange: PassthroughStream<UUID, ABI.ConfigEvent>
 
     public init() {
-        logger = PartoutAppLogger()
         strategy = nil
         buildNumber = .max // Activate flags regardless of .minBuild
         didChange = PassthroughStream()
     }
 
-    public init(_ logger: AppLogger, strategy: ConfigManagerStrategy, buildNumber: Int) {
-        self.logger = logger
+    public init(strategy: ConfigManagerStrategy, buildNumber: Int) {
         self.strategy = strategy
         self.buildNumber = buildNumber
         didChange = PassthroughStream()
@@ -70,16 +66,16 @@ public final class ConfigManager {
             isPending = false
         }
         do {
-            logger.log(.core, .debug, "Config: refreshing bundle...")
+            pspLog(.core, .debug, "Config: refreshing bundle...")
             let newBundle = try await strategy.bundle()
             bundle = newBundle
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
-            logger.log(.core, .info, "Config: active flags = \(activeFlags)")
-            logger.log(.core, .debug, "Config: \(newBundle)")
+            pspLog(.core, .info, "Config: active flags = \(activeFlags)")
+            pspLog(.core, .debug, "Config: \(newBundle)")
         } catch ABI.AppError.rateLimit {
-            logger.log(.core, .debug, "Config: TTL")
+            pspLog(.core, .debug, "Config: TTL")
         } catch {
-            logger.log(.core, .error, "Unable to refresh config flags: \(error)")
+            pspLog(.core, .error, "Unable to refresh config flags: \(error)")
         }
     }
 

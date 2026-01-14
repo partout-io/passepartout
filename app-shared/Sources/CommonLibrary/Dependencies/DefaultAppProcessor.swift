@@ -50,8 +50,6 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 // MARK: - AppTunnelProcessor
 
 final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
-    private let logger: AppLogger
-
     private let apiManager: APIManager?
 
     private let registry: Registry
@@ -61,13 +59,11 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
     private let providerServerSorter: ProviderServerParameters.Sorter
 
     init(
-        _ logger: AppLogger,
         apiManager: APIManager?,
         registry: Registry,
         title: @escaping @Sendable (Profile) -> String,
         providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
-        self.logger = logger
         self.apiManager = apiManager
         self.registry = registry
         self.title = title
@@ -88,17 +84,17 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         do {
             if let builder = newProfile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
                let heuristic = builder.entity?.heuristic {
-                logger.log(.core, .info, "Apply connection heuristic: \(heuristic)")
+                pspLog(.core, .info, "Apply connection heuristic: \(heuristic)")
                 newProfile.activeProviderModule?.entity.map {
-                    logger.log(.core, .info, "\tOld server: \($0.server)")
+                    pspLog(.core, .info, "\tOld server: \($0.server)")
                 }
                 newProfile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
                 newProfile.activeProviderModule?.entity.map {
-                    logger.log(.core, .info, "\tNew server: \($0.server)")
+                    pspLog(.core, .info, "\tNew server: \($0.server)")
                 }
             }
         } catch {
-            logger.log(.core, .error, "Unable to pick new provider server: \(error)")
+            pspLog(.core, .error, "Unable to pick new provider server: \(error)")
         }
 
         // Validate provider modules
@@ -106,7 +102,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
             _ = try registry.resolvedProfile(newProfile)
             return newProfile
         } catch {
-            logger.log(.core, .error, "Unable to inject provider modules: \(error)")
+            pspLog(.core, .error, "Unable to inject provider modules: \(error)")
             throw error
         }
     }

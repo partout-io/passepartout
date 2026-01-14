@@ -9,16 +9,13 @@ import Partout
 
 extension CommonData {
     public static func cdAPIRepositoryV3(
-        _ logger: AppLogger,
         context: NSManagedObjectContext
     ) -> APIRepository {
-        CDAPIRepositoryV3(logger, context: context)
+        CDAPIRepositoryV3(context: context)
     }
 }
 
 private final class CDAPIRepositoryV3: NSObject, APIRepository {
-    private nonisolated let logger: AppLogger
-
     private nonisolated let context: NSManagedObjectContext
 
     private nonisolated let providersSubject: CurrentValueStream<UUID, [Provider]>
@@ -27,8 +24,7 @@ private final class CDAPIRepositoryV3: NSObject, APIRepository {
 
     private nonisolated let providersController: NSFetchedResultsController<CDProviderV3>
 
-    init(_ logger: AppLogger, context: NSManagedObjectContext) {
-        self.logger = logger
+    init(context: NSManagedObjectContext) {
         self.context = context
         providersSubject = CurrentValueStream([])
         cacheSubject = CurrentValueStream([:])
@@ -195,7 +191,7 @@ extension CDAPIRepositoryV3: NSFetchedResultsControllerDelegate {
         let mapper = DomainMapper()
         providersSubject.send(entities.compactMap(mapper.provider(from:)))
         let cache = mapper.cache(from: entities)
-        logger.log(.core, .debug, "Cache metadata: \(cache)")
+        pspLog(.core, .debug, "Cache metadata: \(cache)")
         cacheSubject.send(cache)
     }
 }
