@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension Profile {
     public static let forPreviews: Profile = {

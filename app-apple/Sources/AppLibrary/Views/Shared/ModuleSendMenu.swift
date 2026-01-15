@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 public struct ModuleSendMenu: View {
@@ -57,7 +56,7 @@ private extension ModuleSendMenu {
                 destination.modules.append(builtModule)
                 try await profileObservable.save(ABI.AppProfile(native: destination.build()))
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to copy module: \(error)")
+                pspLog(.profiles, .error, "Unable to copy module: \(error)")
                 errorHandler.handle(error)
             }
         }

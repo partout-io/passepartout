@@ -4,7 +4,6 @@
 
 import AppResources
 import CommonLibrary
-import Partout
 
 extension AppContext {
     public static let forPreviews: AppContext = {
@@ -12,7 +11,6 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let appLogger = appConfiguration.newAppLogger()
         let logFormatter = DummyLogFormatter()
         let registry = Registry()
         let appEncoder = AppEncoder(registry: registry)
@@ -66,7 +64,6 @@ extension AppContext {
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
-            appLogger: appLogger,
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,

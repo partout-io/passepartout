@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Foundation
-import Partout
 
 extension WireGuardParseError: @retroactive LocalizedError {
     public var errorDescription: String? {

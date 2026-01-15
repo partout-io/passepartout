@@ -34,7 +34,7 @@ struct ProfileExportButton: View {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
-            pp_log_g(.App.profiles, .error, "Unable to build profile from editor: \(error)")
+            pspLog(.profiles, .error, "Unable to build profile from editor: \(error)")
             return nil
         }
     }

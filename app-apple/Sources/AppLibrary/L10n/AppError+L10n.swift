@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension ABI.AppError: LocalizedError {
     public var errorDescription: String? {

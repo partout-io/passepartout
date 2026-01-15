@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension AppCoordinatorConforming {
     public func onConnect(_ profile: ABI.AppProfile, force: Bool, verify: Bool = true) async {

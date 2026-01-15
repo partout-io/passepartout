@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
+// FIXME: #1594, Drop import
 
 @MainActor
 extension TunnelInstallationProviding {

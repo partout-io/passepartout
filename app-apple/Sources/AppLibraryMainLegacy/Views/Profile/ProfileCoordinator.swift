@@ -159,7 +159,7 @@ private extension ProfileCoordinator {
             }
             return savedProfile
         } catch ABI.AppError.verificationReceiptIsLoading {
-            pp_log_g(.App.profiles, .error, "Unable to commit profile: loading receipt")
+            pspLog(.profiles, .error, "Unable to commit profile: loading receipt")
             let V = Strings.Views.Paywall.Alerts.self
             errorHandler.handle(
                 title: V.Confirmation.title,
@@ -167,7 +167,7 @@ private extension ProfileCoordinator {
             )
             return nil
         } catch ABI.AppError.verificationRequiredFeatures(let requiredFeatures) {
-            pp_log_g(.App.profiles, .error, "Unable to commit profile: required features \(requiredFeatures)")
+            pspLog(.profiles, .error, "Unable to commit profile: required features \(requiredFeatures)")
             let nextReason = PaywallReason(
                 nil,
                 requiredFeatures: requiredFeatures,
@@ -178,7 +178,7 @@ private extension ProfileCoordinator {
             }
             return nil
         } catch {
-            pp_log_g(.App.profiles, .fault, "Unable to commit profile: \(error)")
+            pspLog(.profiles, .fault, "Unable to commit profile: \(error)")
             throw error
         }
     }

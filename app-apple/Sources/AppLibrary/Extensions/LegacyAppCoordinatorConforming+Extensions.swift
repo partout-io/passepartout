@@ -4,13 +4,12 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension LegacyAppCoordinatorConforming {
     public func onConnect(_ profile: Profile, force: Bool, verify: Bool = true) async {
         do {
             if verify {
-                try iapManager.verify(profile)
+                try iapManager.legacyVerify(profile)
             }
             try await tunnel.connect(with: profile, force: force)
         } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {

@@ -5,7 +5,6 @@
 import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
-import Partout
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var abi: TunnelABIProtocol?
@@ -54,7 +53,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 return try JSONDecoder()
                     .decode(ABI.AppPreferenceValues.self, from: encodedPreferences)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to decode startTunnel() preferences")
+                pspLog(.core, .error, "Unable to decode startTunnel() preferences")
                 return nil
             }
         }()
@@ -170,7 +169,7 @@ private extension PacketTunnelProvider {
         do {
             originalProfile = try Profile(withNEProvider: self, decoder: decoder)
         } catch {
-            pp_log_g(.App.profiles, .fault, "Unable to decode profile: \(error)")
+            pspLog(.profiles, .fault, "Unable to decode profile: \(error)")
             flushLogs()
             throw error
         }
@@ -341,7 +340,7 @@ private extension PacketTunnelProvider {
 private extension PacketTunnelProvider {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
-            pp_log_g(.App.core, .info, "Active tunnels: \(activeTunnels)")
+            pspLog(.core, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
@@ -353,7 +352,7 @@ private extension PacketTunnelProvider {
         guard Self.activeTunnels.isEmpty else {
             throw PartoutError(.App.multipleTunnels)
         }
-        pp_log_g(.App.core, .info, "Track context: \(profileId)")
+        pspLog(.core, .info, "Track context: \(profileId)")
         Self.activeTunnels.insert(profileId)
     }
 
@@ -361,7 +360,7 @@ private extension PacketTunnelProvider {
         guard let profileId = ctx?.profileId else {
             return
         }
-        pp_log_g(.App.core, .info, "Untrack context: \(profileId)")
+        pspLog(.core, .info, "Untrack context: \(profileId)")
         Self.activeTunnels.remove(profileId)
     }
 }

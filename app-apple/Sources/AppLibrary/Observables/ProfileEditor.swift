@@ -5,7 +5,6 @@
 import Combine
 import CommonLibrary
 import Observation
-import Partout
 
 @MainActor @Observable
 public final class ProfileEditor {

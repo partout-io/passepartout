@@ -77,7 +77,7 @@ private extension OpenVPNView.ImportModifier {
             do {
                 parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
             } catch let error as PartoutError {
-                pp_log_g(.App.core, .error, "Unable to parse URL: \(error)")
+                pspLog(.core, .error, "Unable to parse URL: \(error)")
 
                 switch error.code {
                 case .OpenVPN.passphraseRequired:
@@ -102,7 +102,7 @@ private extension OpenVPNView.ImportModifier {
             draft.module.configurationBuilder = module.configuration?.builder()
             draft.module.credentials = module.credentials
         } catch {
-            pp_log_g(.App.core, .error, "Unable to import OpenVPN configuration: \(error)")
+            pspLog(.core, .error, "Unable to import OpenVPN configuration: \(error)")
             errorHandler.handle(error, title: draft.module.moduleType.localizedDescription)
         }
     }

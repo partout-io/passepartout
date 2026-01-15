@@ -5,14 +5,13 @@
 import AppAccessibility
 import AppLibrary
 import CommonLibrary
-import Partout
 import SwiftUI
 
 @MainActor
 final class AppDelegate: NSObject {
     let context: AppContext = {
         if AppCommandLine.contains(.uiTesting) {
-            pp_log_g(.App.core, .info, "UI tests: mock AppContext")
+            pspLog(.core, .info, "UI tests: mock AppContext")
             return .forUITesting()
         }
         return .forProduction()

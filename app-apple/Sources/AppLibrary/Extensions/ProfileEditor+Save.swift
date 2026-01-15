@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension ProfileEditor {
     public func load(_ profile: EditableProfile, isShared: Bool) {
@@ -46,12 +45,12 @@ extension ProfileEditor {
         // Clean up module preferences
         removedModules.keys.forEach {
             do {
-                pp_log_g(.App.profiles, .info, "Erase preferences for removed module \($0)")
+                pspLog(.profiles, .info, "Erase preferences for removed module \($0)")
                 let repository = try preferencesManager.preferencesRepository(forModuleWithId: $0)
                 repository.erase()
                 try repository.save()
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to erase preferences for removed module \($0): \(error)")
+                pspLog(.profiles, .error, "Unable to erase preferences for removed module \($0): \(error)")
             }
         }
         removedModules.removeAll()
@@ -71,7 +70,7 @@ extension ProfileEditor {
         // verify profile (optional)
         if let iapManager, !iapManager.isBeta {
             do {
-                try iapManager.verify(profileToSave, extra: extraFeatures)
+                try iapManager.legacyVerify(profileToSave, extra: extraFeatures)
             } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
 
                 // still loading receipt
@@ -92,12 +91,12 @@ extension ProfileEditor {
         // clean up module preferences
         removedModules.keys.forEach {
             do {
-                pp_log_g(.App.profiles, .info, "Erase preferences for removed module \($0)")
+                pspLog(.profiles, .info, "Erase preferences for removed module \($0)")
                 let repository = try preferencesManager.preferencesRepository(forModuleWithId: $0)
                 repository.erase()
                 try repository.save()
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to erase preferences for removed module \($0): \(error)")
+                pspLog(.profiles, .error, "Unable to erase preferences for removed module \($0): \(error)")
             }
         }
         removedModules.removeAll()

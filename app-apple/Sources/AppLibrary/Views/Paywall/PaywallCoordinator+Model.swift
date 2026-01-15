@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension PaywallCoordinator {
     @MainActor @Observable
@@ -46,7 +45,7 @@ extension PaywallCoordinator.Model {
             let purchasable = try await iapObservable.purchasableProducts(for: rawSortedProducts)
             try setSuggestedProducts(rawProducts, purchasable: purchasable)
         } catch {
-            pp_log_g(.App.iap, .error, "Unable to load purchasable products: \(error)")
+            pspLog(.iap, .error, "Unable to load purchasable products: \(error)")
             throw error
         }
     }
@@ -74,7 +73,7 @@ extension PaywallCoordinator.Model {
             let purchasable = try await iapManager.fetchPurchasableProducts(for: rawSortedProducts)
             try setSuggestedProducts(rawProducts, purchasable: purchasable)
         } catch {
-            pp_log_g(.App.iap, .error, "Unable to load purchasable products: \(error)")
+            pspLog(.iap, .error, "Unable to load purchasable products: \(error)")
             throw error
         }
     }
@@ -94,7 +93,7 @@ extension PaywallCoordinator.Model {
                 individualPurchasable.append($0)
             }
         }
-        pp_log_g(.App.iap, .info, "Individual products: \(individualPurchasable)")
+        pspLog(.iap, .info, "Individual products: \(individualPurchasable)")
         guard !completePurchasable.isEmpty || !individualPurchasable.isEmpty else {
             throw ABI.AppError.emptyProducts
         }

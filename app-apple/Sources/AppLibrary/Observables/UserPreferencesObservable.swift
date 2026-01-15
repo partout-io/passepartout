@@ -8,11 +8,9 @@ import SwiftUI
 
 @MainActor @Observable
 public final class UserPreferencesObservable {
-    private let logger: AppLogger
     private let kvStore: KeyValueStore
 
-    public init(logger: AppLogger, kvStore: KeyValueStore) {
-        self.logger = logger
+    public init(kvStore: KeyValueStore) {
         self.kvStore = kvStore
 
         dnsFallsBack = kvStore.bool(forAppPreference: .dnsFallsBack, fallback: true)
@@ -20,7 +18,7 @@ public final class UserPreferencesObservable {
             do {
                 experimental = try JSONDecoder().decode(ABI.AppPreferenceValues.Experimental.self, from: experimentalData)
             } catch {
-                logger.log(.core, .error, "Unable to decode experimental: \(error)")
+                pspLog(.core, .error, "Unable to decode experimental: \(error)")
                 experimental = ABI.AppPreferenceValues.Experimental()
             }
         } else {
@@ -58,7 +56,7 @@ public final class UserPreferencesObservable {
                 let experimentalData = try JSONEncoder().encode(experimental)
                 kvStore.set(experimentalData, forAppPreference: .experimental)
             } catch {
-                logger.log(.core, .error, "Unable to encode experimental: \(error)")
+                pspLog(.core, .error, "Unable to encode experimental: \(error)")
             }
         }
     }

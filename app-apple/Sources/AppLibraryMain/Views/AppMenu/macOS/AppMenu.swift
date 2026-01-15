@@ -119,7 +119,7 @@ private extension AppMenu {
                 try await AppWindow.shared.show()
                 completion?()
             } catch {
-                pp_log_g(.App.core, .error, "Unable to launch app: \(error)")
+                pspLog(.core, .error, "Unable to launch app: \(error)")
             }
         }
     }
@@ -138,7 +138,7 @@ private extension AppMenu {
                 try await tunnel.disconnect(from: installedProfile.id)
                 try await tunnel.connect(to: profile)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to reconnect to profile \(profile.id) from menu: \(error)")
+                pspLog(.core, .error, "Unable to reconnect to profile \(profile.id) from menu: \(error)")
             }
         }
     }
@@ -152,7 +152,7 @@ private extension AppMenu {
                 }
                 try await tunnel.disconnect(from: installedProfile.id)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to disconnect from menu: \(error)")
+                pspLog(.core, .error, "Unable to disconnect from menu: \(error)")
             }
         }
     }
@@ -173,7 +173,7 @@ private extension AppMenu {
                     try await tunnel.disconnect(from: profile.id)
                 }
             } catch {
-                pp_log_g(.App.core, .error, "Unable to toggle profile \(header.id) from menu: \(error)")
+                pspLog(.core, .error, "Unable to toggle profile \(header.id) from menu: \(error)")
             }
         }
     }

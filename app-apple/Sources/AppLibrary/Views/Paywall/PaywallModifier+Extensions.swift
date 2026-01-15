@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 public typealias PaywallAction = PaywallModifier.Action
 

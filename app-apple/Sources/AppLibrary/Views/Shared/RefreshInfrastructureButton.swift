@@ -4,7 +4,6 @@
 
 import AppAccessibility
 import CommonLibrary
-import Partout
 import SwiftUI
 
 public struct RefreshInfrastructureButton<Label>: View where Label: View {
@@ -44,7 +43,7 @@ public struct RefreshInfrastructureButton<Label>: View where Label: View {
             loadLastUpdate()
         }
         .onChange(of: elapsed) {
-            pp_log_g(.App.core, .info, "Elapsed since last update of \(module.providerId): \($0)")
+            pspLog(.core, .info, "Elapsed since last update of \(module.providerId): \($0)")
         }
     }
 }
