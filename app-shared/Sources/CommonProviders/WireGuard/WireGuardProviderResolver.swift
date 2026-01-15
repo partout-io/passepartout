@@ -5,22 +5,18 @@
 import Partout
 
 public struct WireGuardProviderResolver: ProviderModuleResolver {
-    private let ctx: PartoutLoggerContext
-
     private let deviceId: String
 
     public var moduleType: ModuleType {
         .wireGuard
     }
 
-    public init(_ ctx: PartoutLoggerContext, deviceId: String) {
-        self.ctx = ctx
+    public init(deviceId: String) {
         self.deviceId = deviceId
     }
 
     public func resolved(from providerModule: ProviderModule) throws -> Module {
         try providerModule.compiled(
-            ctx,
             withTemplate: WireGuardProviderTemplate.self,
             userInfo: WireGuardProviderTemplate.UserInfo(deviceId: deviceId)
         )

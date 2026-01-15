@@ -28,7 +28,6 @@ extension OpenVPNProviderTemplate {
 
 extension OpenVPNProviderTemplate: ProviderTemplateCompiler {
     public func compiled(
-        _ ctx: PartoutLoggerContext,
         moduleId: UniqueID,
         entity: ProviderEntity,
         options: Options?,

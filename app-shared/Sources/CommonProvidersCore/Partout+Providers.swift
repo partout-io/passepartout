@@ -4,6 +4,10 @@
 
 import Partout
 
+extension LoggerCategory {
+    public static let providers = LoggerCategory(rawValue: "providers")
+}
+
 extension PartoutError.Code {
     public enum Providers {
         /// A provider module is corrupt.

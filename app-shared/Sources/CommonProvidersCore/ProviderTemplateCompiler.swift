@@ -12,7 +12,6 @@ public protocol ProviderTemplateCompiler {
     associatedtype UserInfo
 
     func compiled(
-        _ ctx: PartoutLoggerContext,
         moduleId: UniqueID,
         entity: ProviderEntity,
         options: Options?,
@@ -28,7 +27,6 @@ extension ProviderTemplateCompiler {
 
 extension ProviderModule {
     public func compiled<T>(
-        _ ctx: PartoutLoggerContext,
         withTemplate templateType: T.Type,
         userInfo: T.UserInfo?
     ) throws -> Module where T: ProviderTemplateCompiler & Decodable {
@@ -38,7 +36,6 @@ extension ProviderModule {
         let template = try entity.preset.template(ofType: templateType)
         let options: T.Options? = try options(for: providerModuleType)
         return try template.compiled(
-            ctx,
             moduleId: id,
             entity: entity,
             options: options,

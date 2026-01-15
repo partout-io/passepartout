@@ -70,8 +70,8 @@ extension ABI.AppConfiguration {
     ) -> Registry {
         let registry = Registry(
             providerResolvers: [
-                OpenVPNProviderResolver(.global),
-                WireGuardProviderResolver(.global, deviceId: deviceId)
+                OpenVPNProviderResolver(),
+                WireGuardProviderResolver(deviceId: deviceId)
             ],
             allImplementations: [
                 OpenVPNImplementationBuilder(
