@@ -18,7 +18,6 @@ extension AppContext {
             configBlock: { [] }
         )
         let appEncoder = AppEncoder(registry: registry)
-        let ctx: PartoutLoggerContext = .global
 
         let logFormatter = DummyLogFormatter()
         pspLogRegister(
