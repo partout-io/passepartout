@@ -25,7 +25,11 @@ public func pspLogCurrent(_ parameters: ABI.Constants.Log) -> [String] {
     PartoutLogger.default.currentLog(parameters: parameters)
 }
 
-public func pspLogAvailableEntries(at url: URL) -> [ABI.LogEntry] {
+public func pspLogFlush() {
+    PartoutLogger.default.flushLog()
+}
+
+public func pspLogEntriesAvailable(at url: URL) -> [ABI.LogEntry] {
     LocalLogger.FileStrategy()
         .availableLogs(at: url)
         .sorted {
@@ -36,8 +40,9 @@ public func pspLogAvailableEntries(at url: URL) -> [ABI.LogEntry] {
         }
 }
 
-public func pspLogFlush() {
-    PartoutLogger.default.flushLog()
+public func pspLogEntriesPurge(at url: URL) {
+    LocalLogger.FileStrategy()
+        .purgeLogs(at: url)
 }
 
 // MARK: - Registration

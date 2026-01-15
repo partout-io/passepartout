@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import MiniFoundation
-// FIXME: #1594, Drop import (wrap LocalLogger.Options)
 import Partout
 
 extension ABI {

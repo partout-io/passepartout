@@ -51,11 +51,9 @@ extension ABI.Issue {
                 .data(using: .utf8)
         }
         // Latest persisted tunnel log
-        else if let latestTunnelEntry = LocalLogger.FileStrategy()
-            .availableLogs(at: metadata.appConfiguration.urlForTunnelLog)
-            .max(by: { $0.key < $1.key }) {
-
-            tunnelLog = try? Data(contentsOf: latestTunnelEntry.value)
+        else if let latestTunnelEntry = pspLogEntriesAvailable(at: metadata.appConfiguration.urlForTunnelLog)
+            .max(by: { $0.date < $1.date }) {
+            tunnelLog = try? Data(contentsOf: latestTunnelEntry.url)
         }
         // Nothing
         else {
