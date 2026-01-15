@@ -22,7 +22,10 @@ public func pspLog(
 }
 
 public func pspLogCurrent(_ parameters: ABI.Constants.Log) -> [String] {
-    PartoutLogger.default.currentLog(parameters: parameters)
+    PartoutLogger.default.currentLog(
+        sinceLast: parameters.sinceLast,
+        maxLevel: parameters.options.maxLevel
+    )
 }
 
 public func pspLogFlush() {
