@@ -2,8 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (Module, ModuleBuilder, PartoutError)
+import Partout
+
 extension ABI {
-    // FIXME: #1594, Exposes Partout (Module, ModuleBuilder)
     public enum AppError: Error {
         case couldNotLaunch(reason: Error)
 
@@ -53,7 +55,6 @@ extension ABI {
     }
 }
 
-// FIXME: #1594, Exposes Partout (PartoutError)
 extension PartoutError.Code {
     public enum App {
         public static let ineligibleProfile = PartoutError.Code("App.ineligibleProfile")

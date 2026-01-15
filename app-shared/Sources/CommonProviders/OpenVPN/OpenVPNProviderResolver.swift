@@ -2,20 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public struct OpenVPNProviderResolver: ProviderModuleResolver {
-    private let ctx: PartoutLoggerContext
+import Partout
 
+public struct OpenVPNProviderResolver: ProviderModuleResolver {
     public var moduleType: ModuleType {
         .openVPN
     }
 
-    public init(_ ctx: PartoutLoggerContext) {
-        self.ctx = ctx
-    }
+    public init() {}
 
     public func resolved(from providerModule: ProviderModule) throws -> Module {
         try providerModule.compiled(
-            ctx,
             withTemplate: OpenVPNProviderTemplate.self,
             userInfo: nil
         )

@@ -4,9 +4,9 @@
 
 #if canImport(JavaScriptCore)
 import JavaScriptCore
+import Partout
 
 extension AppleJavaScriptEngine: ProviderScriptingEngine {
-
     @objc
     protocol ObjCProviderAPIProtocol: JSExport {
         func getResult(_ method: JSValue, _ url: JSValue, _ headers: JSValue, _ body: JSValue) -> Any?

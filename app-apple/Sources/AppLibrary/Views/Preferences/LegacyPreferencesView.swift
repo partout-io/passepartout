@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 #if !os(tvOS)
@@ -132,10 +131,10 @@ private extension LegacyPreferencesView {
             isErasingiCloud = true
             Task {
                 do {
-                    pp_log_g(.App.core, .info, "Erase CloudKit profiles...")
+                    pspLog(.core, .info, "Erase CloudKit profiles...")
                     try await profileManager.eraseRemotelySharedProfiles()
                 } catch {
-                    pp_log_g(.App.core, .error, "Unable to erase CloudKit store: \(error)")
+                    pspLog(.core, .error, "Unable to erase CloudKit store: \(error)")
                 }
                 isErasingiCloud = false
             }

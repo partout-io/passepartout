@@ -8,6 +8,8 @@ extension ProviderManager: ObservableObject {
 }
 #endif
 
+import Partout
+
 @MainActor
 public final class ProviderManager {
     private let sorting: [ProviderSortField]

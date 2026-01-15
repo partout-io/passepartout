@@ -3,12 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonProviders
+import Partout
 import Testing
 
 struct ProviderScriptingAPITests {
     @Test
     func givenAPI_whenGetVersion_thenIsExpected() {
-        let sut = DefaultProviderScriptingAPI(.global, timeout: 3.0)
+        let sut = DefaultProviderScriptingAPI(timeout: 3.0)
         #expect(sut.version == "20250718")
     }
 
@@ -18,7 +19,7 @@ struct ProviderScriptingAPITests {
         do {
             let url = try #require(Bundle.module.url(forResource: "Resources/mapped", withExtension: "txt"))
             let data = try Data(contentsOf: url)
-            sut = DefaultProviderScriptingAPI(.global, timeout: 3.0) {
+            sut = DefaultProviderScriptingAPI(timeout: 3.0) {
                 #expect($0 == "GET")
                 #expect($1 == "doesntmatter")
                 return (200, data)

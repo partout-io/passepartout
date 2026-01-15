@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppLibrary
 import CommonLibrary
-import Foundation
 
 extension ProfileManager {
     public static func forUITesting(withRegistry registry: Registry, processor: ProfileProcessor) -> ProfileManager {
@@ -20,7 +20,7 @@ extension ProfileManager {
                     var builder = Profile.Builder()
                     builder.name = parameters.name
                     builder.attributes.isAvailableForTV = parameters.isTV
-                    var onDemandIdIfDisabled: UUID?
+                    var onDemandIdIfDisabled: UniqueID?
 
                     for moduleType in parameters.moduleTypes {
                         var moduleBuilder = moduleType.newModule(with: registry)
@@ -90,7 +90,7 @@ extension ProfileManager {
                     try await manager.save(profile, isLocal: true, remotelyShared: parameters.isShared)
                 }
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to build ProfileManager for UI testing: \(error)")
+                pspLog(.profiles, .error, "Unable to build ProfileManager for UI testing: \(error)")
             }
         }
 

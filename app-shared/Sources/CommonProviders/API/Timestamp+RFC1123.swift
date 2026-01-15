@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 #if !PSP_CROSS
 private let rfc1123: DateFormatter = {
     let formatter = DateFormatter()

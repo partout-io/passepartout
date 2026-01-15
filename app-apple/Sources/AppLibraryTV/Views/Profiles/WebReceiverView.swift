@@ -6,10 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct WebReceiverView: View {
-
-    @Environment(ViewLogger.self)
-    private var logger
-
     let webReceiverObservable: WebReceiverObservable
 
     let profileObservable: ProfileObservable
@@ -63,13 +59,13 @@ private extension WebReceiverView {
     @Sendable
     func handleUploadedFile() async {
         for await file in webReceiverObservable.uploads.subscribe() {
-            logger.log(.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
+            pspLog(.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
                 // TODO: #1512, import encrypted OpenVPN profiles over the web
                 try await profileObservable.import(.contents(filename: file.name, data: file.contents))
                 webReceiverObservable.refresh()
             } catch {
-                logger.log(.web, .error, "Unable to import uploaded profile: \(error)")
+                pspLog(.web, .error, "Unable to import uploaded profile: \(error)")
                 errorHandler.handle(error)
             }
         }

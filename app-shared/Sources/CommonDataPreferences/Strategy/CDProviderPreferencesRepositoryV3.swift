@@ -5,9 +5,11 @@
 import CoreData
 
 extension CommonData {
-
     @MainActor
-    public static func cdProviderPreferencesRepositoryV3(context: NSManagedObjectContext, providerId: ProviderID) throws -> ProviderPreferencesRepository {
+    public static func cdProviderPreferencesRepositoryV3(
+        context: NSManagedObjectContext,
+        providerId: ProviderID
+    ) throws -> ProviderPreferencesRepository {
         try CDProviderPreferencesRepositoryV3(context: context, providerId: providerId)
     }
 }
@@ -24,39 +26,34 @@ private final class CDProviderPreferencesRepositoryV3: ProviderPreferencesReposi
             let request = CDProviderPreferencesV3.fetchRequest()
             request.predicate = NSPredicate(format: "providerId == %@", providerId.rawValue)
             request.sortDescriptors = [.init(key: "lastUpdate", ascending: false)]
-            do {
-                let entities = try request.execute()
+            let entities = try request.execute()
 
-                // dedup by lastUpdate
-                entities.enumerated().forEach {
-                    guard $0.offset > 0 else {
-                        return
-                    }
-                    $0.element.favoriteServers?.forEach(context.delete(_:))
-                    context.delete($0.element)
+            // Dedup by lastUpdate
+            entities.enumerated().forEach {
+                guard $0.offset > 0 else {
+                    return
                 }
-
-                let entity = entities.first ?? CDProviderPreferencesV3(context: context)
-                entity.providerId = providerId.rawValue
-                entity.lastUpdate = Date()
-
-                // migrate favorite server ids
-                if let favoriteServerIds = entity.favoriteServerIds {
-                    let mapper = CoreDataMapper(context: context)
-                    let ids = try? JSONDecoder().decode(Set<String>.self, from: favoriteServerIds)
-                    var favoriteServers: Set<CDFavoriteServer> = []
-                    ids?.forEach {
-                        favoriteServers.insert(mapper.cdFavoriteServer(from: $0))
-                    }
-                    entity.favoriteServers = favoriteServers
-                    entity.favoriteServerIds = nil
-                }
-
-                return entity
-            } catch {
-                pp_log_g(.App.core, .error, "Unable to load preferences for provider \(providerId): \(error)")
-                throw error
+                $0.element.favoriteServers?.forEach(context.delete(_:))
+                context.delete($0.element)
             }
+
+            let entity = entities.first ?? CDProviderPreferencesV3(context: context)
+            entity.providerId = providerId.rawValue
+            entity.lastUpdate = Date()
+
+            // migrate favorite server ids
+            if let favoriteServerIds = entity.favoriteServerIds {
+                let mapper = CoreDataMapper(context: context)
+                let ids = try? JSONDecoder().decode(Set<String>.self, from: favoriteServerIds)
+                var favoriteServers: Set<CDFavoriteServer> = []
+                ids?.forEach {
+                    favoriteServers.insert(mapper.cdFavoriteServer(from: $0))
+                }
+                entity.favoriteServers = favoriteServers
+                entity.favoriteServerIds = nil
+            }
+
+            return entity
         }
     }
 

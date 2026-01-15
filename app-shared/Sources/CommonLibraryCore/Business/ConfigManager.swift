@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Dispatch
+import MiniFoundation
 
 #if !PSP_CROSS
 extension ConfigManager: ObservableObject {}
@@ -65,16 +66,16 @@ public final class ConfigManager {
             isPending = false
         }
         do {
-            pp_log_g(.App.core, .debug, "Config: refreshing bundle...")
+            pspLog(.core, .debug, "Config: refreshing bundle...")
             let newBundle = try await strategy.bundle()
             bundle = newBundle
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
-            pp_log_g(.App.core, .info, "Config: active flags = \(activeFlags)")
-            pp_log_g(.App.core, .debug, "Config: \(newBundle)")
+            pspLog(.core, .info, "Config: active flags = \(activeFlags)")
+            pspLog(.core, .debug, "Config: \(newBundle)")
         } catch ABI.AppError.rateLimit {
-            pp_log_g(.App.core, .debug, "Config: TTL")
+            pspLog(.core, .debug, "Config: TTL")
         } catch {
-            pp_log_g(.App.core, .error, "Unable to refresh config flags: \(error)")
+            pspLog(.core, .error, "Unable to refresh config flags: \(error)")
         }
     }
 

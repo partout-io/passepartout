@@ -36,7 +36,7 @@ private extension ProviderServerCoordinator {
                 dismiss()
                 try await onSelect(entity)
             } catch {
-                pp_log_g(.App.core, .fault, "Unable to select server \(entity.server.serverId) for provider \(entity.server.metadata.providerId): \(error)")
+                pspLog(.core, .fault, "Unable to select server \(entity.server.serverId) for provider \(entity.server.metadata.providerId): \(error)")
                 errorHandler.handle(error, title: Strings.Views.Providers.selectEntity)
             }
         }

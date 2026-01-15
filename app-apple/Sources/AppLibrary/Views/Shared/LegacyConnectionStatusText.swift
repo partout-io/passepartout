@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 import SwiftUI
 
 @available(*, deprecated, message: "#1594")

@@ -64,7 +64,7 @@ private extension WebReceiverView {
     @Sendable
     func handleUploadedFile() async {
         for await file in webReceiverManager.files {
-            pp_log_g(.App.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
+            pspLog(.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
                 try await profileManager.legacyImport(
                     .contents(filename: file.name, data: file.contents),
@@ -73,7 +73,7 @@ private extension WebReceiverView {
                 )
                 webReceiverManager.renewPasscode()
             } catch {
-                pp_log_g(.App.web, .error, "Unable to import uploaded profile: \(error)")
+                pspLog(.web, .error, "Unable to import uploaded profile: \(error)")
                 errorHandler.handle(error)
             }
         }

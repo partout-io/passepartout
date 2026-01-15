@@ -3,9 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @preconcurrency import CoreData
+import MiniFoundation
+// FIXME: #1594, Drop import (ModuleType)
+import Partout
 
 extension CommonData {
-    public static func cdAPIRepositoryV3(context: NSManagedObjectContext) -> APIRepository {
+    public static func cdAPIRepositoryV3(
+        context: NSManagedObjectContext
+    ) -> APIRepository {
         CDAPIRepositoryV3(context: context)
     }
 }
@@ -186,7 +191,7 @@ extension CDAPIRepositoryV3: NSFetchedResultsControllerDelegate {
         let mapper = DomainMapper()
         providersSubject.send(entities.compactMap(mapper.provider(from:)))
         let cache = mapper.cache(from: entities)
-        pp_log_g(.App.core, .debug, "Cache metadata: \(cache)")
+        pspLog(.core, .debug, "Cache metadata: \(cache)")
         cacheSubject.send(cache)
     }
 }

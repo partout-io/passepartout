@@ -5,6 +5,7 @@
 #if !USE_CMAKE
 import CommonProviders
 #endif
+import Partout
 
 extension ProviderServer {
     public var localizedCountry: String? {

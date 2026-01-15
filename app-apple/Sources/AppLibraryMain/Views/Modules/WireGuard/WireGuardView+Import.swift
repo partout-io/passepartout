@@ -53,7 +53,7 @@ private extension WireGuardView.ImportModifier {
             do {
                 parsed = try impl.importerBlock().module(fromURL: url, object: nil)
             } catch let error as PartoutError {
-                pp_log_g(.App.core, .error, "Unable to parse URL: \(error)")
+                pspLog(.core, .error, "Unable to parse URL: \(error)")
 
                 switch error.code {
                 case .unknownImportedModule:
@@ -69,7 +69,7 @@ private extension WireGuardView.ImportModifier {
             draft.module.configurationBuilder = module.configuration?.builder()
             onImport(draft.module.configurationBuilder)
         } catch {
-            pp_log_g(.App.core, .error, "Unable to import WireGuard configuration: \(error)")
+            pspLog(.core, .error, "Unable to import WireGuard configuration: \(error)")
             errorHandler.handle(error, title: draft.module.moduleType.localizedDescription)
         }
     }

@@ -2,6 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+// FIXME: #1594, Drop import (Profile.ID -> UniqueID)
+import Partout
+
 extension ABI {
     public enum AppPreference: String, PreferenceProtocol {
         // Not directly accessible
@@ -61,7 +65,7 @@ extension ABI.AppPreferenceValues {
             do {
                 return try JSONDecoder().decode(Set<ABI.ConfigFlag>.self, from: configFlagsData)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to decode config flags: \(error)")
+                pspLog(.core, .error, "Unable to decode config flags: \(error)")
                 return []
             }
         }
@@ -69,7 +73,7 @@ extension ABI.AppPreferenceValues {
             do {
                 configFlagsData = try JSONEncoder().encode(newValue)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to encode config flags: \(error)")
+                pspLog(.core, .error, "Unable to encode config flags: \(error)")
             }
         }
     }
@@ -80,7 +84,7 @@ extension ABI.AppPreferenceValues {
             do {
                 return try JSONDecoder().decode(Experimental.self, from: experimentalData)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to decode experimental: \(error)")
+                pspLog(.core, .error, "Unable to decode experimental: \(error)")
                 return Experimental()
             }
         }
@@ -88,7 +92,7 @@ extension ABI.AppPreferenceValues {
             do {
                 experimentalData = try JSONEncoder().encode(newValue)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to encode experimental: \(error)")
+                pspLog(.core, .error, "Unable to encode experimental: \(error)")
             }
         }
     }

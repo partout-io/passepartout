@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 #if !PSP_CROSS
 extension WebReceiverManager: ObservableObject {}
 #endif

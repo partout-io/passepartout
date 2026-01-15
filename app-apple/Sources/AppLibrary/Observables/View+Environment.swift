@@ -23,10 +23,9 @@ extension View {
             .environment(context.appFormatter)
             .environment(context.onboardingObservable)
             .environment(context.userPreferences)
-            .environment(context.viewLogger)
             // Deprecated
             .environment(\.logFormatterBlock) { [weak context] in
-                context?.viewLogger.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+                context?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
             .environmentObject(context.apiManager)
             .environmentObject(context.iapManager)

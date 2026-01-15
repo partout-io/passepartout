@@ -3,18 +3,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import MiniFoundation
 import Observation
 
 @MainActor @Observable
 public final class ConfigObservable {
     private let abi: AppABIConfigProtocol
-    private let logger: AppLogger?
 
     public private(set) var activeFlags: Set<ABI.ConfigFlag>
 
-    public init(abi: AppABIConfigProtocol, logger: AppLogger?) {
+    public init(abi: AppABIConfigProtocol) {
         self.abi = abi
-        self.logger = logger
         activeFlags = []
     }
 
@@ -27,7 +26,7 @@ public final class ConfigObservable {
     }
 
     func onUpdate(_ event: ABI.ConfigEvent) {
-        logger?.log(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
+        pspLog(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let flags):
             activeFlags = flags

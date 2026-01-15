@@ -5,6 +5,7 @@
 import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
+// FIXME: #1594, Drop import
 import Partout
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
@@ -35,7 +36,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // can only be defined after decoding the profile. We would
         // in fact miss profile decoding errors. Re-register the
         // profile-aware context later.
-        _ = PartoutLogger.register(
+        _ = pspLogRegister(
             for: .tunnelGlobal,
             with: appConfiguration,
             preferences: ABI.AppPreferenceValues(),
@@ -54,7 +55,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
                 return try JSONDecoder()
                     .decode(ABI.AppPreferenceValues.self, from: encodedPreferences)
             } catch {
-                pp_log_g(.App.core, .error, "Unable to decode startTunnel() preferences")
+                pspLog(.core, .error, "Unable to decode startTunnel() preferences")
                 return nil
             }
         }()
@@ -105,7 +106,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func stopTunnel(with reason: NEProviderStopReason) async {
         if let abi {
-            abi.log(.core, .notice, "Stop PTP, reason: \(String(describing: reason))")
+            pspLog(.core, .notice, "Stop PTP, reason: \(String(describing: reason))")
             await abi.stop()
         } else {
             verifierSubscription?.cancel()
@@ -118,7 +119,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func cancelTunnelWithError(_ error: Error?) {
         if let abi {
-            abi.log(.core, .info, "Cancel PTP, error: \(String(describing: error))")
+            pspLog(.core, .info, "Cancel PTP, error: \(String(describing: error))")
             abi.cancel(error)
         } else {
             flushLogs()
@@ -128,7 +129,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func handleAppMessage(_ messageData: Data) async -> Data? {
         if let abi {
-            abi.log(.core, .debug, "Handle PTP message")
+            pspLog(.core, .debug, "Handle PTP message")
             return await abi.sendMessage(messageData)
         } else {
             return await fwd?.handleAppMessage(messageData)
@@ -156,11 +157,9 @@ private extension PacketTunnelProvider {
         isInteractive: Bool
     ) async throws {
         let logFormatter = appConfiguration.newLogFormatter()
-        let appLogger = appConfiguration.newAppLogger()
 
         // Create global registry
         let registry = appConfiguration.newTunnelRegistry(
-            appLogger: appLogger,
             preferences: preferences
         )
 
@@ -170,13 +169,13 @@ private extension PacketTunnelProvider {
         do {
             originalProfile = try Profile(withNEProvider: self, decoder: decoder)
         } catch {
-            pp_log_g(.App.profiles, .fault, "Unable to decode profile: \(error)")
+            pspLog(.profiles, .fault, "Unable to decode profile: \(error)")
             flushLogs()
             throw error
         }
 
         // Update the logger now that we have a context
-        let ctx = PartoutLogger.register(
+        let ctx = pspLogRegister(
             for: .tunnelProfile(originalProfile.id),
             with: appConfiguration,
             preferences: preferences,
@@ -196,7 +195,7 @@ private extension PacketTunnelProvider {
             processedProfile = try processor.willProcess(resolvedProfile)
             assert(processedProfile.id == originalProfile.id)
         } catch {
-            pp_log(ctx, .App.profiles, .fault, "Unable to process profile: \(error)")
+            pspLog(ctx.profileId, .profiles, .fault, "Unable to process profile: \(error)")
             flushLogs()
             throw error
         }
@@ -214,15 +213,15 @@ private extension PacketTunnelProvider {
             }()
         )
 
-        pp_log(ctx, .App.core, .info, "Tunnel started")
+        pspLog(ctx.profileId, .core, .info, "Tunnel started")
         if let startPreferences {
-            pp_log(ctx, .App.core, .info, "\tDecoded preferences: \(startPreferences)")
+            pspLog(ctx.profileId, .core, .info, "\tDecoded preferences: \(startPreferences)")
         } else {
-            pp_log(ctx, .App.core, .info, "\tExisting preferences: \(preferences)")
+            pspLog(ctx.profileId, .core, .info, "\tExisting preferences: \(preferences)")
         }
         let configFlags = preferences.configFlags
-        pp_log(ctx, .App.core, .info, "\tActive config flags: \(configFlags)")
-        pp_log(ctx, .App.core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
 
         // Create IAPManager for receipt verification
         let iapManager = await MainActor.run {
@@ -230,7 +229,7 @@ private extension PacketTunnelProvider {
                 customUserLevel: appConfiguration.customUserLevel,
                 inAppHelper: appConfiguration.newAppProductHelper(),
                 receiptReader: SharedReceiptReader(
-                    reader: StoreKitReceiptReader(logger: PartoutAppLogger()),
+                    reader: StoreKitReceiptReader(),
                 ),
                 betaChecker: appConfiguration.newBetaChecker(),
                 timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
@@ -274,12 +273,12 @@ private extension PacketTunnelProvider {
 
             // Check hold flag and hang the tunnel if set
             if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
-                pp_log(ctx, .App.core, .info, "Tunnel is on hold")
+                pspLog(ctx.profileId, .core, .info, "Tunnel is on hold")
                 guard isInteractive else {
-                    pp_log(ctx, .App.core, .error, "Tunnel was started non-interactively, hang here")
+                    pspLog(ctx.profileId, .core, .error, "Tunnel was started non-interactively, hang here")
                     return
                 }
-                pp_log(ctx, .App.core, .info, "Tunnel was started interactively, clear hold flag")
+                pspLog(ctx.profileId, .core, .info, "Tunnel was started interactively, clear hold flag")
                 environment.removeEnvironmentValue(forKey: TunnelEnvironmentKeys.holdFlag)
             }
 
@@ -287,7 +286,7 @@ private extension PacketTunnelProvider {
             await iapManager.fetchLevelIfNeeded()
             let isBeta = await iapManager.isBeta
             let params = appConfiguration.constants.tunnel.verificationParameters(isBeta: isBeta)
-            pp_log(ctx, .App.iap, .info, "Will start profile verification in \(params.delay) seconds")
+            pspLog(ctx.profileId, .iap, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Start the tunnel (ignore all start options)
             try await fwd.startTunnel(options: [:])
@@ -324,7 +323,7 @@ private extension PacketTunnelProvider {
                 )
             }
         } catch {
-            pp_log(ctx, .App.core, .fault, "Unable to start tunnel: \(error)")
+            pspLog(ctx.profileId, .core, .fault, "Unable to start tunnel: \(error)")
             flushLogs()
             throw error
         }
@@ -341,7 +340,7 @@ private extension PacketTunnelProvider {
 private extension PacketTunnelProvider {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
-            pp_log_g(.App.core, .info, "Active tunnels: \(activeTunnels)")
+            pspLog(.core, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
@@ -353,7 +352,7 @@ private extension PacketTunnelProvider {
         guard Self.activeTunnels.isEmpty else {
             throw PartoutError(.App.multipleTunnels)
         }
-        pp_log_g(.App.core, .info, "Track context: \(profileId)")
+        pspLog(.core, .info, "Track context: \(profileId)")
         Self.activeTunnels.insert(profileId)
     }
 
@@ -361,7 +360,7 @@ private extension PacketTunnelProvider {
         guard let profileId = ctx?.profileId else {
             return
         }
-        pp_log_g(.App.core, .info, "Untrack context: \(profileId)")
+        pspLog(.core, .info, "Untrack context: \(profileId)")
         Self.activeTunnels.remove(profileId)
     }
 }
@@ -385,9 +384,9 @@ private extension PacketTunnelProvider {
                 return
             }
             do {
-                pp_log(ctx, .App.iap, .info, "Verify profile, requires: \(profile.features)")
+                pspLog(ctx.profileId, .iap, .info, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
-                try iapManager.verify(profile)
+                try iapManager.legacyVerify(profile)
             } catch {
                 if isRelaxed {
                     // Mitigate the StoreKit inability to report errors, sometimes it
@@ -395,7 +394,7 @@ private extension PacketTunnelProvider {
                     // cases, retry a few times before failing
                     if attempts > 0 {
                         attempts -= 1
-                        pp_log(ctx, .App.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(iapManager.purchasedProducts))")
+                        pspLog(ctx.profileId, .iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(iapManager.purchasedProducts))")
                         try? await Task.sleep(interval: params.retryInterval)
                         continue
                     }
@@ -403,7 +402,7 @@ private extension PacketTunnelProvider {
 
                 let error = PartoutError(.App.ineligibleProfile)
                 environment.setEnvironmentValue(error.code, forKey: TunnelEnvironmentKeys.lastErrorCode)
-                pp_log(ctx, .App.iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
+                pspLog(ctx.profileId, .iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
@@ -411,7 +410,7 @@ private extension PacketTunnelProvider {
                 return
             }
 
-            pp_log(ctx, .App.iap, .info, "Will verify profile again in \(params.interval) seconds...")
+            pspLog(ctx.profileId, .iap, .info, "Will verify profile again in \(params.interval) seconds...")
             try? await Task.sleep(interval: params.interval)
 
             // On successful verification, reset attempts for the next verification

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension DNSModule.Builder: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
         [.dns]

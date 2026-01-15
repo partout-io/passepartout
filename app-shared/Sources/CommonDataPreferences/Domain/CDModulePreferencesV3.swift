@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
+import MiniFoundation
 
 @objc(CDModulePreferencesV3)
 final class CDModulePreferencesV3: NSManagedObject {
@@ -10,7 +11,7 @@ final class CDModulePreferencesV3: NSManagedObject {
         NSFetchRequest<CDModulePreferencesV3>(entityName: "CDModulePreferencesV3")
     }
 
-    @NSManaged var moduleId: UUID?
+    @NSManaged var moduleId: UniqueID?
     @NSManaged var lastUpdate: Date?
     @NSManaged var excludedEndpoints: Set<CDExcludedEndpoint>?
 }

@@ -4,12 +4,11 @@
 
 #if os(tvOS)
 
+import MiniFoundation
 import NIO
 import NIOHTTP1
 
 public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
-    private let logger: AppLogger
-
     private let html: String
 
     private let port: Int
@@ -18,8 +17,7 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
 
     private var group: EventLoopGroup?
 
-    public init(logger: AppLogger, htmlPath: String, stringsBundle: Bundle, port: Int) {
-        self.logger = logger
+    public init(htmlPath: String, stringsBundle: Bundle, port: Int) {
         html = {
             do {
                 let contents = try String(contentsOfFile: htmlPath)
@@ -35,11 +33,11 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
     // onReceive(filename, content)
     public func start(passcode: String?, onReceive: @escaping @Sendable (String, String) -> Void) throws -> URL {
         guard channel == nil else {
-            logger.log(.web, .error, "Web server is already started")
+            pspLog(.web, .error, "Web server is already started")
             throw WebReceiverError()
         }
         guard let host = firstIPv4Address(withInterfacePrefix: "en") else {
-            logger.log(.web, .error, "Web server has no IPv4 Ethernet addresses to listen on")
+            pspLog(.web, .error, "Web server has no IPv4 Ethernet addresses to listen on")
             throw WebReceiverError()
         }
         do {
@@ -66,24 +64,24 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
             channel = try bootstrap.bind(host: host, port: port).wait()
             self.group = group
         } catch {
-            logger.log(.web, .error, "Web server could not bind: \(error)")
+            pspLog(.web, .error, "Web server could not bind: \(error)")
             throw WebReceiverError(error)
         }
         guard let address = channel?.localAddress?.ipAddress else {
-            logger.log(.web, .error, "Web server has no bound IP address")
+            pspLog(.web, .error, "Web server has no bound IP address")
             throw WebReceiverError()
         }
         guard let url = URL(string: "http://\(address):\(port)") else {
-            logger.log(.web, .error, "Web server URL could not be built")
+            pspLog(.web, .error, "Web server URL could not be built")
             throw WebReceiverError()
         }
-        logger.log(.web, .notice, "Web server did start: \(url)")
+        pspLog(.web, .notice, "Web server did start: \(url)")
         return url
     }
 
     public func stop() {
         guard let channel else {
-            logger.log(.web, .error, "Web server is not started")
+            pspLog(.web, .error, "Web server is not started")
             return
         }
         defer {
@@ -93,9 +91,9 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
         do {
             try channel.close().wait()
             try group?.syncShutdownGracefully()
-            logger.log(.web, .notice, "Web server did stop")
+            pspLog(.web, .notice, "Web server did stop")
         } catch {
-            logger.log(.web, .error, "Unable to stop web server: \(error)")
+            pspLog(.web, .error, "Unable to stop web server: \(error)")
         }
     }
 }
@@ -173,7 +171,7 @@ private extension NIOWebReceiver {
                 // stop at first success
                 break
             } catch {
-                logger.log(.web, .debug, "Skip invalid interface: \(error)")
+                pspLog(.web, .debug, "Skip invalid interface: \(error)")
             }
 
             // leave if no more addresses

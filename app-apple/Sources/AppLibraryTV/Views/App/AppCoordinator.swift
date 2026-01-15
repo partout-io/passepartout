@@ -6,9 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct AppCoordinator: View, AppCoordinatorConforming {
-    @Environment(ViewLogger.self)
-    private var logger
-
     @Environment(IAPObservable.self)
     public var iapObservable
 
@@ -119,14 +116,10 @@ private extension AppCoordinator {
             DebugLogView(withAppParameters: appConfiguration.constants.log) {
                 DebugLogContentView(lines: $0)
             }
-
         case .tunnelLog:
-            // FIXME: #1594, DebugLog
-            EmptyView()
-//            DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
-//                DebugLogContentView(lines: $0)
-//            }
-
+            DebugLogView(withTunnel: tunnel) {
+                DebugLogContentView(lines: $0)
+            }
         default:
             EmptyView()
         }
@@ -137,7 +130,7 @@ private extension AppCoordinator {
 
 extension AppCoordinator {
     public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
-        logger.log(.core, .info, "Present interactive login")
+        pspLog(.core, .info, "Present interactive login")
         interactiveObservable.present(
             with: profile,
             onComplete: onComplete
@@ -156,10 +149,10 @@ extension AppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        logger.log(.core, .info, "Purchase required for features: \(features)")
+        pspLog(.core, .info, "Purchase required for features: \(features)")
         guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            logger.log(.core, .info, "Present verification alert")
+            pspLog(.core, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -172,7 +165,7 @@ extension AppCoordinator {
             )
             return
         }
-        logger.log(.core, .info, "Present paywall")
+        pspLog(.core, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile.native, requiredFeatures: features, action: .connect)) {

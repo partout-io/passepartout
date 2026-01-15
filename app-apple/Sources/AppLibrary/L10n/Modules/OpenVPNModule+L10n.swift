@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 extension OpenVPN.PullMask: LocalizableEntity {
     public var localizedDescription: String {

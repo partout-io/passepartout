@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public protocol WebUploaderStrategy: Sendable {
     func upload(_ form: MultipartForm, to url: URL) async throws
 }

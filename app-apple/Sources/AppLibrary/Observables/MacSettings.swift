@@ -26,7 +26,7 @@ public final class MacSettings {
                     try appService.unregister()
                 }
             } catch {
-                pp_log_g(.App.core, .error, "Unable to (un)register login item: \(error)")
+                pspLog(.core, .error, "Unable to (un)register login item: \(error)")
             }
         }
     }

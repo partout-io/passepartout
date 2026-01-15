@@ -4,7 +4,6 @@
 
 import AppResources
 import CommonLibrary
-import Foundation
 
 extension ABI.Issue {
     var body: String {

@@ -2,6 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+// FIXME: #1594, Drop import (wrap ExtendedEndpoint)
+import Partout
+
 #if !PSP_CROSS
 import Combine
 extension PreferencesManager: ObservableObject {}
@@ -9,7 +13,7 @@ extension PreferencesManager: ObservableObject {}
 
 @MainActor
 public final class PreferencesManager {
-    public var modulesRepositoryFactory: (UUID) throws -> ModulePreferencesRepository
+    public var modulesRepositoryFactory: (UniqueID) throws -> ModulePreferencesRepository
 
     public var providersRepositoryFactory: (ProviderID) throws -> ProviderPreferencesRepository
 
@@ -24,7 +28,7 @@ public final class PreferencesManager {
 }
 
 extension PreferencesManager {
-    public func preferencesRepository(forModuleWithId moduleId: UUID) throws -> ModulePreferencesRepository {
+    public func preferencesRepository(forModuleWithId moduleId: UniqueID) throws -> ModulePreferencesRepository {
         try modulesRepositoryFactory(moduleId)
     }
 

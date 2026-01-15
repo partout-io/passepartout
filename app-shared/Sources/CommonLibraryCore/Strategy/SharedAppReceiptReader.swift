@@ -30,8 +30,8 @@ public actor SharedReceiptReader: UserInAppReceiptReader {
 
 private extension SharedReceiptReader {
     func asyncReceipt(at userLevel: ABI.AppUserLevel) async -> ABI.StoreReceipt? {
-        pp_log_g(.App.iap, .info, "\tParse receipt for user level \(userLevel)")
-        pp_log_g(.App.iap, .info, "\tRead receipt")
+        pspLog(.iap, .info, "\tParse receipt for user level \(userLevel)")
+        pspLog(.iap, .info, "\tRead receipt")
         return await reader.receipt()
     }
 }

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 extension ABI {
     public struct VersionRelease: Hashable, Sendable {
         public let version: ABI.SemanticVersion

@@ -52,12 +52,12 @@ public final class TunnelManager {
 
 extension TunnelManager {
     public func install(_ profile: Profile) async throws {
-        pp_log_g(.App.core, .notice, "Install profile \(profile.id)...")
+        pspLog(.core, .notice, "Install profile \(profile.id)...")
         try await installAndConnect(false, with: profile, force: false)
     }
 
     public func connect(with profile: Profile, force: Bool = false) async throws {
-        pp_log_g(.App.core, .notice, "Connect to profile \(profile.id)...")
+        pspLog(.core, .notice, "Connect to profile \(profile.id)...")
         try await installAndConnect(true, with: profile, force: force)
     }
 
@@ -80,9 +80,9 @@ extension TunnelManager {
 #if os(macOS)
         if let extensionInstaller {
             if extensionInstaller.currentResult == .success {
-                pp_log_g(.App.core, .info, "Extensions: already installed")
+                pspLog(.core, .info, "Extensions: already installed")
             } else {
-                pp_log_g(.App.core, .info, "Extensions: install...")
+                pspLog(.core, .info, "Extensions: install...")
                 do {
                     let result = try await extensionInstaller.install()
                     switch result {
@@ -91,9 +91,9 @@ extension TunnelManager {
                     default:
                         throw ABI.AppError.systemExtension(result)
                     }
-                    pp_log_g(.App.core, .info, "Extensions: installation result is \(result)")
+                    pspLog(.core, .info, "Extensions: installation result is \(result)")
                 } catch {
-                    pp_log_g(.App.core, .error, "Extensions: installation error: \(error)")
+                    pspLog(.core, .error, "Extensions: installation error: \(error)")
                 }
             }
         }
@@ -108,7 +108,7 @@ extension TunnelManager {
     }
 
     public func disconnect(from profileId: Profile.ID) async throws {
-        pp_log_g(.App.core, .notice, "Disconnect...")
+        pspLog(.core, .notice, "Disconnect...")
         try await tunnel.disconnect(from: profileId)
     }
 
@@ -155,7 +155,7 @@ private extension TunnelManager {
             }
             for await newActiveProfiles in tunnelEvents {
                 guard !Task.isCancelled else {
-                    pp_log_g(.App.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
+                    pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break
                 }
 #if !PSP_CROSS
@@ -178,7 +178,7 @@ private extension TunnelManager {
                     return
                 }
                 guard !Task.isCancelled else {
-                    pp_log_g(.App.core, .debug, "Cancelled TunnelManager.timerSubscription")
+                    pspLog(.core, .debug, "Cancelled TunnelManager.timerSubscription")
                     break
                 }
 #if !PSP_CROSS
@@ -220,7 +220,7 @@ private extension TunnelManager {
 private extension TunnelManager {
     var lastUsedProfile: TunnelActiveProfile? {
         guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
-              let uuid = UUID(uuidString: uuidString) else {
+              let uuid = UniqueID(uuidString: uuidString) else {
             return nil
         }
         return TunnelActiveProfile(

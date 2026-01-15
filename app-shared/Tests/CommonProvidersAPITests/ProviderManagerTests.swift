@@ -4,6 +4,7 @@
 
 import CommonProvidersAPI
 import CommonProvidersCore
+import Partout
 import Testing
 
 @MainActor
@@ -87,7 +88,7 @@ private extension ProviderManagerTests {
             let api = MockAPI()
             let repository = MockRepository()
 
-            let providerManager = APIManager(.global, from: [api], repository: repository)
+            let providerManager = APIManager(from: [api], repository: repository)
             let module = try ProviderModule(emptyWithProviderId: .mock)
             try await providerManager.fetchInfrastructure(for: module)
 

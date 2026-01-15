@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Observation
-import Partout
 
 @MainActor @Observable
 public final class OnboardingObservable {
@@ -14,11 +13,11 @@ public final class OnboardingObservable {
 
     public private(set) var step: OnboardingStep {
         willSet {
-            pp_log_g(.App.core, .info, "Current step: \(step)")
+            pspLog(.core, .info, "Current step: \(step)")
         }
         didSet {
             userPreferences?.onboardingStep = step
-            pp_log_g(.App.core, .info, "Next step: \(step)")
+            pspLog(.core, .info, "Next step: \(step)")
         }
     }
 

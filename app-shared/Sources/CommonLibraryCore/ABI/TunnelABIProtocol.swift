@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore_C
+import MiniFoundation
 
 @MainActor
-public protocol TunnelABIProtocol: AppLogger, Sendable {
+public protocol TunnelABIProtocol: AppABILoggerProtocol, Sendable {
     func start(isInteractive: Bool) async throws
     func stop() async
     func sendMessage(_ messageData: Data) async -> Data?

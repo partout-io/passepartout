@@ -5,8 +5,7 @@
 import Partout
 
 final class DefaultTunnelProcessor: Sendable {
-    init() {
-    }
+    init() {}
 }
 
 extension DefaultTunnelProcessor: PacketTunnelProcessor {
@@ -28,7 +27,7 @@ extension DefaultTunnelProcessor: PacketTunnelProcessor {
             }
             return try builder.build()
         } catch {
-            pp_log_id(profile.id, .App.core, .error, "Unable to process profile, revert to original: \(error)")
+            pspLog(profile.id, .core, .error, "Unable to process profile, revert to original: \(error)")
             return profile
         }
     }

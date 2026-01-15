@@ -5,7 +5,6 @@
 @testable import AppLibrary
 import CommonLibrary
 import Foundation
-import Partout
 import Testing
 
 struct ProfileEditorTests {

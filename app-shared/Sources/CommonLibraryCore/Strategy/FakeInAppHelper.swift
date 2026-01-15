@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public actor FakeInAppHelper: InAppHelper {
     private let purchase: ABI.OriginalPurchase
 

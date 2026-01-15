@@ -8,15 +8,15 @@ import Observation
 @MainActor @Observable
 public final class TunnelObservable {
     private let abi: AppABITunnelProtocol
-    private let logger: (AppLogger & LogFormatter)?
+    private let formatter: LogFormatter?
 
     public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
     public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
-    public init(abi: AppABITunnelProtocol, logger: (AppLogger & LogFormatter)?) {
+    public init(abi: AppABITunnelProtocol, formatter: LogFormatter?) {
         self.abi = abi
-        self.logger = logger
+        self.formatter = formatter
         activeProfiles = [:]
         transfers = [:]
     }
@@ -43,7 +43,7 @@ extension TunnelObservable {
 
     public func currentLog() async -> [String] {
         await abi.currentLog().map {
-            logger?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            formatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
         }
     }
 }
@@ -75,7 +75,7 @@ extension TunnelObservable {
 //        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let active):
-            logger?.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+            pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
             activeProfiles = active
         case .dataCount:
             transfers = activeProfiles.compactMapValues {

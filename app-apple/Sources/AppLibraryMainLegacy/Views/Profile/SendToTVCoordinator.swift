@@ -6,10 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct SendToTVCoordinator: View {
-
-    @Environment(ViewLogger.self)
-    private var logger
-
     @Environment(AppEncoderObservable.self)
     private var appEncoder
 
@@ -34,7 +30,6 @@ struct SendToTVCoordinator: View {
 private extension SendToTVCoordinator {
     func upload(_ profile: Profile, to url: URL, with passcode: String) async throws {
         let client = WebUploader(
-            logger: logger,
             strategy: URLSessionUploaderStrategy(
                 timeout: appConfiguration.constants.api.timeoutInterval
             )
@@ -49,7 +44,7 @@ private extension SendToTVCoordinator {
             )
             isPresented = false
         } catch {
-            pp_log_g(.App.core, .error, "Unable to upload profile: \(error)")
+            pspLog(.core, .error, "Unable to upload profile: \(error)")
             throw error
         }
     }

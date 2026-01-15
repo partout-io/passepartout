@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 // FIXME: #1594, Make internal
+import Partout
 
 extension ProfileType where UserInfoType == JSON {
     public var attributes: ProfileAttributes {
@@ -44,12 +45,12 @@ public struct ProfileAttributes {
 // MARK: Basic
 
 extension ProfileAttributes {
-    public var fingerprint: UUID? {
+    public var fingerprint: UniqueID? {
         get {
             guard let string = userInfo[Key.fingerprint.rawValue]?.stringValue else {
                 return nil
             }
-            return UUID(uuidString: string)
+            return UniqueID(uuidString: string)
         }
         set {
             userInfo[Key.fingerprint.rawValue] = newValue.map {
@@ -87,20 +88,20 @@ extension ProfileAttributes {
 // MARK: Preferences
 
 extension ProfileAttributes {
-    public func preferences(inModule moduleId: UUID) -> ModulePreferences {
+    public func preferences(inModule moduleId: UniqueID) -> ModulePreferences {
         ModulePreferences(userInfo: allPreferences[moduleId.uuidString])
     }
 
-    public mutating func setPreferences(_ module: ModulePreferences, inModule moduleId: UUID) {
+    public mutating func setPreferences(_ module: ModulePreferences, inModule moduleId: UniqueID) {
         allPreferences[moduleId.uuidString] = module.userInfo
     }
 
-    public func preference<T>(inModule moduleId: UUID, block: (ModulePreferences) -> T) -> T? {
+    public func preference<T>(inModule moduleId: UniqueID, block: (ModulePreferences) -> T) -> T? {
         let module = preferences(inModule: moduleId)
         return block(module)
     }
 
-    public mutating func editPreferences(inModule moduleId: UUID, block: (inout ModulePreferences) -> Void) {
+    public mutating func editPreferences(inModule moduleId: UniqueID, block: (inout ModulePreferences) -> Void) {
         var module = preferences(inModule: moduleId)
         block(&module)
         setPreferences(module, inModule: moduleId)

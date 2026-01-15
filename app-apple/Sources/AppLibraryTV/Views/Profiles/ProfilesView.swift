@@ -6,9 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfilesView: View {
-    @Environment(ViewLogger.self)
-    private var logger
-
     let profileObservable: ProfileObservable
 
     let webReceiverObservable: WebReceiverObservable
@@ -97,7 +94,7 @@ private extension ProfilesView {
                 do {
                     try webReceiverObservable.start()
                 } catch {
-                    logger.log(.core, .error, "Unable to start web receiver: \(error)")
+                    pspLog(.core, .error, "Unable to start web receiver: \(error)")
                     errorHandler.handle(error)
                 }
             } else {

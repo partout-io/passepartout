@@ -7,16 +7,6 @@ import CommonLibrary
 import SwiftUI
 
 struct DiagnosticsView: View {
-    struct LogEntry: Identifiable, Equatable {
-        let date: Date
-
-        let url: URL
-
-        var id: Date {
-            date
-        }
-    }
-
     @Environment(Theme.self)
     private var theme
 
@@ -39,13 +29,13 @@ struct DiagnosticsView: View {
 
     let tunnel: TunnelObservable
 
-    var availableTunnelLogs: (() async -> [LogEntry])?
+    var availableTunnelLogs: (() async -> [ABI.LogEntry])?
 
     @State
     private var logsPrivateData = false
 
     @State
-    private var tunnelLogs: [LogEntry] = []
+    private var tunnelLogs: [ABI.LogEntry] = []
 
     @State
     var isPresentingUnableToEmail = false
@@ -132,7 +122,7 @@ private extension DiagnosticsView {
         }
     }
 
-    func logView(for item: LogEntry) -> some View {
+    func logView(for item: ABI.LogEntry) -> some View {
         ThemeRemovableItemRow(isEditing: true) {
             let dateString = appFormatter.string(from: item.date)
             navLink(dateString, to: .tunnelLog(title: dateString, url: item.url))
@@ -175,20 +165,14 @@ private extension DiagnosticsView {
         ])
     }
 
-    func computedTunnelLogs() async -> [LogEntry] {
+    func computedTunnelLogs() async -> [ABI.LogEntry] {
         await (availableTunnelLogs ?? defaultTunnelLogs)()
     }
 
-    func defaultTunnelLogs() async -> [LogEntry] {
-        await Task.detached {
-            LocalLogger.FileStrategy()
-                .availableLogs(at: await appConfiguration.urlForTunnelLog)
-                .sorted {
-                    $0.key > $1.key
-                }
-                .map {
-                    LogEntry(date: $0, url: $1)
-                }
+    func defaultTunnelLogs() async -> [ABI.LogEntry] {
+        let url = appConfiguration.urlForTunnelLog
+        return await Task.detached {
+            pspLogEntriesAvailable(at: url)
         }.value
     }
 
@@ -208,8 +192,7 @@ private extension DiagnosticsView {
     }
 
     func removeTunnelLogs() {
-        LocalLogger.FileStrategy()
-            .purgeLogs(at: appConfiguration.urlForTunnelLog)
+        pspLogEntriesPurge(at: appConfiguration.urlForTunnelLog)
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

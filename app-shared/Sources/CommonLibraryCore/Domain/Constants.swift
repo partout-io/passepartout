@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+import Partout
+
 extension ABI {
     public struct Constants: Decodable, Sendable {
         public struct Containers: Decodable, Sendable {

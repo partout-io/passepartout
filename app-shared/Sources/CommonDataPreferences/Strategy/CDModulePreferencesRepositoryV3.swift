@@ -3,11 +3,16 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
+// FIXME: #1594, Drop import (wrap ExtendedEndpoint)
+import Partout
 
 extension CommonData {
 
     @MainActor
-    public static func cdModulePreferencesRepositoryV3(context: NSManagedObjectContext, moduleId: UUID) throws -> ModulePreferencesRepository {
+    public static func cdModulePreferencesRepositoryV3(
+        context: NSManagedObjectContext,
+        moduleId: UniqueID
+    ) throws -> ModulePreferencesRepository {
         try CDModulePreferencesRepositoryV3(context: context, moduleId: moduleId)
     }
 }
@@ -17,33 +22,28 @@ private final class CDModulePreferencesRepositoryV3: ModulePreferencesRepository
 
     private nonisolated(unsafe) let entity: CDModulePreferencesV3
 
-    init(context: NSManagedObjectContext, moduleId: UUID) throws {
+    init(context: NSManagedObjectContext, moduleId: UniqueID) throws {
         self.context = context
 
         entity = try context.performAndWait {
             let request = CDModulePreferencesV3.fetchRequest()
             request.predicate = NSPredicate(format: "moduleId == %@", moduleId.uuidString)
             request.sortDescriptors = [.init(key: "lastUpdate", ascending: false)]
-            do {
-                let entities = try request.execute()
+            let entities = try request.execute()
 
-                // dedup by lastUpdate
-                entities.enumerated().forEach {
-                    guard $0.offset > 0 else {
-                        return
-                    }
-                    $0.element.excludedEndpoints?.forEach(context.delete(_:))
-                    context.delete($0.element)
+            // Dedup by lastUpdate
+            entities.enumerated().forEach {
+                guard $0.offset > 0 else {
+                    return
                 }
-
-                let entity = entities.first ?? CDModulePreferencesV3(context: context)
-                entity.moduleId = moduleId
-                entity.lastUpdate = Date()
-                return entity
-            } catch {
-                pp_log_g(.App.core, .error, "Unable to load preferences for module \(moduleId): \(error)")
-                throw error
+                $0.element.excludedEndpoints?.forEach(context.delete(_:))
+                context.delete($0.element)
             }
+
+            let entity = entities.first ?? CDModulePreferencesV3(context: context)
+            entity.moduleId = moduleId
+            entity.lastUpdate = Date()
+            return entity
         }
     }
 

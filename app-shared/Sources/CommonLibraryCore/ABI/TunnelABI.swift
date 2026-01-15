@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public final class TunnelABI: TunnelABIProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
@@ -22,7 +24,6 @@ public final class TunnelABI: TunnelABIProtocol {
         }
     }
 
-    private let appLogger: AppLogger
     private let daemon: ConnectionDaemon
     private let environment: TunnelEnvironment
     private let iap: IAP?
@@ -32,14 +33,12 @@ public final class TunnelABI: TunnelABIProtocol {
     private var verifierSubscription: Task<Void, Error>?
 
     public init(
-        appLogger: AppLogger,
         daemon: ConnectionDaemon,
         environment: TunnelEnvironment,
         iap: IAP?,
         logFormatter: LogFormatter,
         originalProfile: ABI.AppProfile
     ) {
-        self.appLogger = appLogger
         self.daemon = daemon
         self.environment = environment
         self.iap = iap
@@ -58,12 +57,12 @@ public final class TunnelABI: TunnelABIProtocol {
         do {
             // Check hold flag and hang the tunnel if set
             if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
-                appLogger.log(.core, .info, "Tunnel is on hold")
+                pspLog(.core, .info, "Tunnel is on hold")
                 guard isInteractive else {
-                    appLogger.log(.core, .error, "Tunnel was started non-interactively, hang here")
+                    pspLog(.core, .error, "Tunnel was started non-interactively, hang here")
                     return
                 }
-                appLogger.log(.core, .info, "Tunnel was started interactively, clear hold flag")
+                pspLog(.core, .info, "Tunnel was started interactively, clear hold flag")
                 environment.removeEnvironmentValue(forKey: TunnelEnvironmentKeys.holdFlag)
             }
 
@@ -81,7 +80,7 @@ public final class TunnelABI: TunnelABIProtocol {
 
             // Prepare for periodic receipt verification
             let params = iap.verificationParameters
-            appLogger.log(.iap, .info, "Will start profile verification in \(params.delay) seconds")
+            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may
@@ -91,7 +90,7 @@ public final class TunnelABI: TunnelABIProtocol {
                 try await Task.sleep(for: .seconds(params.delay))
                 guard !Task.isCancelled else { return }
                 await verifyEligibility(
-                    of: originalProfile.native,
+                    of: originalProfile,
                     iapManager: iap.manager,
                     environment: environment,
                     params: params,
@@ -99,7 +98,7 @@ public final class TunnelABI: TunnelABIProtocol {
                 )
             }
         } catch {
-            appLogger.log(.core, .fault, "Unable to start tunnel: \(error)")
+            pspLog(.core, .fault, "Unable to start tunnel: \(error)")
             flushLogs()
             throw error
         }
@@ -113,7 +112,7 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public func sendMessage(_ messageData: Data) async -> Data? {
-        appLogger.log(.core, .debug, "Handle PTP message")
+        pspLog(.core, .debug, "Handle PTP message")
         do {
             let input = try JSONDecoder().decode(Message.Input.self, from: messageData)
             let output = try await daemon.sendMessage(input)
@@ -122,11 +121,11 @@ public final class TunnelABI: TunnelABIProtocol {
             case .environment:
                 break
             default:
-                appLogger.log(.core, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
+                pspLog(.core, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
             }
             return encodedOutput
         } catch {
-            appLogger.log(.core, .error, "Unable to decode message: \(messageData)")
+            pspLog(.core, .error, "Unable to decode message: \(messageData)")
             return nil
         }
     }
@@ -136,11 +135,11 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        appLogger.log(category, level, message)
+        pspLog(category, level, message)
     }
 
     public nonisolated func flushLogs() {
-        appLogger.flushLogs()
+        pspLogFlush()
     }
 }
 
@@ -149,7 +148,7 @@ public final class TunnelABI: TunnelABIProtocol {
 private extension TunnelABI {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
-            pp_log_g(.App.core, .info, "Active tunnels: \(activeTunnels)")
+            pspLog(.core, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
@@ -158,12 +157,12 @@ private extension TunnelABI {
         guard Self.activeTunnels.isEmpty else {
             throw PartoutError(.App.multipleTunnels)
         }
-        appLogger.log(.core, .info, "Track context: \(daemon.profile.id)")
+        pspLog(.core, .info, "Track context: \(daemon.profile.id)")
         Self.activeTunnels.insert(daemon.profile.id)
     }
 
     func untrackContext() {
-        appLogger.log(.core, .info, "Untrack context: \(daemon.profile.id)")
+        pspLog(.core, .info, "Untrack context: \(daemon.profile.id)")
         Self.activeTunnels.remove(daemon.profile.id)
     }
 }
@@ -172,7 +171,7 @@ private extension TunnelABI {
 
 private extension TunnelABI {
     func verifyEligibility(
-        of profile: Profile,
+        of profile: ABI.AppProfile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
         params: ABI.Constants.Tunnel.Verification.Parameters,
@@ -184,7 +183,7 @@ private extension TunnelABI {
                 return
             }
             do {
-                appLogger.log(.iap, .info, "Verify profile, requires: \(profile.features)")
+                pspLog(.iap, .info, "Verify profile, requires: \(profile.native.features)")
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {
@@ -194,7 +193,7 @@ private extension TunnelABI {
                     // cases, retry a few times before failing
                     if attempts > 0 {
                         attempts -= 1
-                        appLogger.log(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(iapManager.purchasedProducts))")
+                        pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(iapManager.purchasedProducts))")
                         try? await Task.sleep(interval: params.retryInterval)
                         continue
                     }
@@ -202,7 +201,7 @@ private extension TunnelABI {
 
                 let error = PartoutError(.App.ineligibleProfile)
                 environment.setEnvironmentValue(error.code, forKey: TunnelEnvironmentKeys.lastErrorCode)
-                appLogger.log(.iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
+                pspLog(.iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
@@ -210,7 +209,7 @@ private extension TunnelABI {
                 return
             }
 
-            appLogger.log(.iap, .info, "Will verify profile again in \(params.interval) seconds...")
+            pspLog(.iap, .info, "Will verify profile again in \(params.interval) seconds...")
             try? await Task.sleep(interval: params.interval)
 
             // On successful verification, reset attempts for the next verification

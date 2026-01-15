@@ -5,6 +5,7 @@
 #if !USE_CMAKE
 @_exported import CommonData
 #endif
+import MiniFoundation
 
 extension CommonData {
     public static let profilesBundle: Bundle = .module

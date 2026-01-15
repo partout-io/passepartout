@@ -23,7 +23,7 @@ struct ProfileShareButton: View {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
-            pp_log_g(.App.profiles, .error, "Unable to build profile from editor: \(error)")
+            pspLog(.profiles, .error, "Unable to build profile from editor: \(error)")
             return nil
         }
     }
@@ -49,12 +49,12 @@ private extension ProfileShareButton {
 
     func toURL() throws -> URL {
         do {
-            pp_log_g(.App.profiles, .debug, "Writing profile \(profile.id) for sharing...")
+            pspLog(.profiles, .debug, "Writing profile \(profile.id) for sharing...")
             let url = try appEncoder.writeToURL(ABI.AppProfile(native: profile))
-            pp_log_g(.App.profiles, .debug, "Written profile to: \(url)")
+            pspLog(.profiles, .debug, "Written profile to: \(url)")
             return url
         } catch {
-            pp_log_g(.App.profiles, .error, "Unable to write profile \(profile.id): \(error)")
+            pspLog(.profiles, .error, "Unable to write profile \(profile.id): \(error)")
             throw error
         }
     }

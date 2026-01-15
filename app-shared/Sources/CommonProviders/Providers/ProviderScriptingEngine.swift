@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 protocol ProviderScriptingEngine: ScriptingEngine {
     func inject(from engine: ProviderScriptingAPI)
 }
@@ -9,10 +11,10 @@ protocol ProviderScriptingEngine: ScriptingEngine {
 // inject ProviderEngine functions into the ScriptingEngine
 // available on the current platform
 extension ProviderScriptingAPI {
-    func newScriptingEngine(_ ctx: PartoutLoggerContext) -> ScriptingEngine {
+    func newScriptingEngine() -> ScriptingEngine {
         let engine: ProviderScriptingEngine
 #if canImport(Darwin)
-        engine = AppleJavaScriptEngine(ctx)
+        engine = AppleJavaScriptEngine()
 #else
         fatalError("Unsupported platform")
 #endif

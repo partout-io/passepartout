@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
+import MiniFoundation
 
 @objc(CDProfileV3)
 final class CDProfileV3: NSManagedObject {
@@ -10,10 +11,10 @@ final class CDProfileV3: NSManagedObject {
         NSFetchRequest<CDProfileV3>(entityName: "CDProfileV3")
     }
 
-    @NSManaged var uuid: UUID?
+    @NSManaged var uuid: UniqueID?
     @NSManaged var name: String?
     @NSManaged var encoded: String?
     @NSManaged var isAvailableForTV: NSNumber?
     @NSManaged var lastUpdate: Date?
-    @NSManaged var fingerprint: UUID?
+    @NSManaged var fingerprint: UniqueID?
 }

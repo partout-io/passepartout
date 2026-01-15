@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension Profile {
     func abiHeader(
         sharingFlags: [ABI.ProfileSharingFlag],
@@ -11,7 +13,7 @@ extension Profile {
             id: id,
             name: name,
             moduleTypes: modules.map(\.moduleType.rawValue),
-            fingerprint: (attributes.fingerprint ?? UUID()).uuidString,
+            fingerprint: (attributes.fingerprint ?? UniqueID()).uuidString,
             sharingFlags: sharingFlags,
             requiredFeatures: requiredFeatures
         )

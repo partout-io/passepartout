@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonProviders
+import Partout
+
 protocol APITestSuite {
 }
 
@@ -12,11 +14,9 @@ extension APITestSuite {
             fatalError("Could not find resource path")
         }
         return DefaultAPIMapper(
-            .global,
             baseURL: baseURL,
             timeout: 3.0,
             api: DefaultProviderScriptingAPI(
-                .global,
                 timeout: 3.0,
                 requestHijacker: requestHijacker
             )

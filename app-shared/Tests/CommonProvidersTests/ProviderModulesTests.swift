@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonProviders
+import MiniFoundation
+import Partout
 import Testing
 
 struct ProviderModulesTests {
@@ -19,7 +21,7 @@ struct ProviderModulesTests {
 
         let module = try sut.build()
         #expect(!module.isFinal)
-        let resolvedModule = try OpenVPNProviderResolver(.global).resolved(from: module)
+        let resolvedModule = try OpenVPNProviderResolver().resolved(from: module)
         #expect(resolvedModule.isFinal)
         let typedModule = try #require(resolvedModule as? OpenVPNModule)
 
@@ -50,7 +52,7 @@ struct ProviderModulesTests {
         sut.entity = try wireGuardEntity()
 
         let module = try sut.build()
-        let resolvedModule = try WireGuardProviderResolver(.global, deviceId: deviceId)
+        let resolvedModule = try WireGuardProviderResolver(deviceId: deviceId)
             .resolved(from: module)
         #expect(resolvedModule is WireGuardModule)
 

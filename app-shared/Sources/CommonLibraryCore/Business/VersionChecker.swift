@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 #if !PSP_CROSS
 extension VersionChecker: ObservableObject {}
 #endif
@@ -57,11 +59,11 @@ public final class VersionChecker {
             let lastCheckedInterval = kvStore.double(forAppPreference: .lastCheckedVersionDate)
             let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSinceReferenceDate: lastCheckedInterval) : .distantPast
 
-            pp_log_g(.App.core, .debug, "Version: checking for updates...")
+            pspLog(.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
             kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
             kvStore.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
-            pp_log_g(.App.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
+            pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
 #if !PSP_CROSS
             objectWillChange.send()
@@ -69,19 +71,19 @@ public final class VersionChecker {
             didChange.send(.new)
 
             if let latestRelease {
-                pp_log_g(.App.core, .info, "Version: new version available at \(latestRelease.url)")
+                pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
             } else {
-                pp_log_g(.App.core, .debug, "Version: current is latest version")
+                pspLog(.core, .debug, "Version: current is latest version")
             }
         } catch ABI.AppError.rateLimit {
-            pp_log_g(.App.core, .debug, "Version: rate limit")
+            pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // save the check date regardless because the service call succeeded
             kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
 
-            pp_log_g(.App.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
+            pspLog(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
-            pp_log_g(.App.core, .error, "Unable to check version: \(error)")
+            pspLog(.core, .error, "Unable to check version: \(error)")
         }
     }
 }

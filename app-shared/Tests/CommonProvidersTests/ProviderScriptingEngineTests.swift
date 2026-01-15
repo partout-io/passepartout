@@ -8,8 +8,8 @@ import Testing
 struct ProviderScriptingEngineTests {
     @Test
     func givenEngine_whenUseAPI_thenWorks() async throws {
-        let api = DefaultProviderScriptingAPI(.global, timeout: 3.0)
-        let sut = api.newScriptingEngine(.global)
+        let api = DefaultProviderScriptingAPI(timeout: 3.0)
+        let sut = api.newScriptingEngine()
 
         let version = try await sut.execute("JSON.stringify(api.version())", after: nil, returning: String.self)
         #expect(version == "20250718")

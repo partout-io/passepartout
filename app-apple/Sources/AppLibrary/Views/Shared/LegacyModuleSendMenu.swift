@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 @available(*, deprecated, message: "#1594")
@@ -59,7 +58,7 @@ private extension LegacyModuleSendMenu {
                 destination.modules.append(builtModule)
                 try await profileManager.save(destination.build())
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to copy module: \(error)")
+                pspLog(.profiles, .error, "Unable to copy module: \(error)")
                 errorHandler.handle(error)
             }
         }

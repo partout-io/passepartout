@@ -4,7 +4,6 @@
 
 import AppLibrary
 import Foundation
-import Partout
 import Testing
 
 final class LocalizationTests {

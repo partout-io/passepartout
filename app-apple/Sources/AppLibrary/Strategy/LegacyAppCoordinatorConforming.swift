@@ -4,7 +4,6 @@
 
 import CommonLibrary
 import Foundation
-import Partout
 
 @available(*, deprecated, message: "#1594")
 @MainActor

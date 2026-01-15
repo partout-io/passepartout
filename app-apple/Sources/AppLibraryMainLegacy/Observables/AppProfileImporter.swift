@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Foundation
 
 @MainActor @Observable
 final class AppProfileImporter {
@@ -39,7 +38,7 @@ final class AppProfileImporter {
                     withPassphrase.append(url)
                     continue
                 }
-                pp_log_g(.App.core, .fault, "Unable to import URL: \(error)")
+                pspLog(.core, .fault, "Unable to import URL: \(error)")
                 throw error
             }
         }

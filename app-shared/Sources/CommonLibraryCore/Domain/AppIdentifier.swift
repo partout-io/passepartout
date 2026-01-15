@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 extension ABI {
-    public typealias AppIdentifier = UUID
+    public typealias AppIdentifier = UniqueID
 }

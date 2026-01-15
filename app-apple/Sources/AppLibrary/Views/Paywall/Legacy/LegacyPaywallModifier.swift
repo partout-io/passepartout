@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 @available(*, deprecated, message: "#1594")
@@ -66,10 +65,10 @@ public struct LegacyPaywallModifier: ViewModifier {
                 }
                 Task {
                     if !iapManager.isEnabled {
-                        pp_log_g(.App.iap, .info, "In-app purchases are disabled, enabling...")
+                        pspLog(.iap, .info, "In-app purchases are disabled, enabling...")
                         await iapManager.enable()
                         guard !iapManager.isEligible(for: reason.requiredFeatures) else {
-                            pp_log_g(.App.iap, .info, "Skipping paywall because eligible for features: \(reason.requiredFeatures)")
+                            pspLog(.iap, .info, "Skipping paywall because eligible for features: \(reason.requiredFeatures)")
                             return
                         }
                     }

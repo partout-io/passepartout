@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public protocol ProviderRepository: AnyObject, Sendable {
     var providerId: ProviderID { get }
 

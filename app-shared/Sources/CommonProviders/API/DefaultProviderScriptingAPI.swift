@@ -2,27 +2,24 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 #if !PSP_CROSS
 public final class DefaultProviderScriptingAPI {
-    private let ctx: PartoutLoggerContext
-
     private let timeout: TimeInterval
 
     private let requestHijacker: (@Sendable (String, String) -> (Int, Data))?
 
     public convenience init(
-        _ ctx: PartoutLoggerContext,
         timeout: TimeInterval
     ) {
-        self.init(ctx, timeout: timeout, requestHijacker: nil)
+        self.init(timeout: timeout, requestHijacker: nil)
     }
 
     init(
-        _ ctx: PartoutLoggerContext,
         timeout: TimeInterval,
         requestHijacker: (@Sendable (_ method: String, _ urlString: String) -> (httpStatus: Int, responseData: Data))? = nil
     ) {
-        self.ctx = ctx
         self.timeout = timeout
         self.requestHijacker = requestHijacker
     }
@@ -45,11 +42,11 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
                 return result
             }
             guard let text = result.response as? Data else {
-                pp_log(ctx, .providers, .error, "API.getResult: Response is not Data")
+                pp_log_g(.providers, .error, "API.getResult: Response is not Data")
                 return ProviderScriptResult.notData
             }
             guard let string = String(data: text, encoding: .utf8) else {
-                pp_log(ctx, .providers, .error, "API.getResult: Response is not String")
+                pp_log_g(.providers, .error, "API.getResult: Response is not String")
                 return ProviderScriptResult.notString
             }
             return result.with(response: string)
@@ -68,14 +65,14 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
                 return result
             }
             guard let text = result.response as? Data else {
-                pp_log(ctx, .providers, .error, "API.getJSON: Response is not Data")
+                pp_log_g(.providers, .error, "API.getJSON: Response is not Data")
                 return ProviderScriptResult.notData
             }
             do {
                 let object = try JSONSerialization.jsonObject(with: text)
                 return result.with(response: object)
             } catch {
-                pp_log(ctx, .providers, .error, "API.getJSON: Unable to parse JSON: \(error)")
+                pp_log_g(.providers, .error, "API.getJSON: Unable to parse JSON: \(error)")
                 return ProviderScriptResult(error.localizedDescription)
             }
         }()
@@ -89,7 +86,7 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
             }
             return try JSONSerialization.jsonObject(with: data)
         } catch {
-            pp_log(ctx, .providers, .error, "API.jsonFromBase64: Unable to serialize: \(error)")
+            pp_log_g(.providers, .error, "API.jsonFromBase64: Unable to serialize: \(error)")
             return nil
         }
     }
@@ -99,7 +96,7 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
             return try JSONSerialization.data(withJSONObject: object)
                 .base64EncodedString()
         } catch {
-            pp_log(ctx, .providers, .error, "API.jsonToBase64: Unable to serialize: \(error)")
+            pp_log_g(.providers, .error, "API.jsonToBase64: Unable to serialize: \(error)")
             return nil
         }
     }
@@ -119,7 +116,7 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
                 UInt8($0)
             }
         guard bytes.count == 4 else {
-            pp_log(ctx, .providers, .error, "API.ipV4ToBase64: Not a IPv4 string")
+            pp_log_g(.providers, .error, "API.ipV4ToBase64: Not a IPv4 string")
             return nil
         }
         return Data(bytes)
@@ -133,7 +130,7 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
             .joined()
         let key = Data(hex: hex)
         guard key.count == 256 else {
-            pp_log(ctx, .providers, .error, "API.openVPNTLSWrap: Static key must be 64 bytes long")
+            pp_log_g(.providers, .error, "API.openVPNTLSWrap: Static key must be 64 bytes long")
             return nil
         }
         return [
@@ -150,7 +147,7 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
     }
 
     public func debug(message: String) {
-        pp_log(ctx, .providers, .debug, message)
+        pp_log_g(.providers, .debug, message)
     }
 }
 
@@ -173,7 +170,7 @@ private extension DefaultProviderScriptingAPI {
         headers: [String: String]?,
         body: String?
     ) -> ProviderScriptResult {
-        pp_log(ctx, .providers, .info, "API.sendRequest: \(method) \(urlString)")
+        pp_log_g(.providers, .info, "API.sendRequest: \(method) \(urlString)")
 
         // hijack requests (for testing)
         if let requestHijacker {
@@ -181,7 +178,7 @@ private extension DefaultProviderScriptingAPI {
             let fakeResponseStatus = pair.0
             let fakeResponseData = pair.1
 
-            pp_log(ctx, .providers, .info, "API.sendRequest: Success (mapped)")
+            pp_log_g(.providers, .info, "API.sendRequest: Success (mapped)")
             return ProviderScriptResult(
                 fakeResponseData,
                 status: fakeResponseStatus,
@@ -207,7 +204,7 @@ private extension DefaultProviderScriptingAPI {
                     return ($0.key, $0.value)
                 }
             }
-            pp_log(ctx, .providers, .info, "API.sendRequest: Headers: \(redactedHeaders)")
+            pp_log_g(.providers, .info, "API.sendRequest: Headers: \(redactedHeaders)")
         }
 
         // use external caching (e.g. Core Data)
@@ -222,22 +219,21 @@ private extension DefaultProviderScriptingAPI {
         let semaphore = DispatchSemaphore(value: 0)
         let storage = ResultStorage()
         let statusHolder = StatusHolder()
-        let ctx = self.ctx // to avoid capturing self
         let task = session.dataTask(with: request) { data, response, error in
             if let error {
-                pp_log(ctx, .providers, .error, "API.sendRequest: Unable to execute: \(error)")
+                pp_log_g(.providers, .error, "API.sendRequest: Unable to execute: \(error)")
             } else if let httpResponse = response as? HTTPURLResponse {
                 let lastModifiedHeader = httpResponse.value(forHTTPHeaderField: "last-modified")
                 let tag = httpResponse.value(forHTTPHeaderField: "etag")
 
-                pp_log(ctx, .providers, .debug, "API.sendRequest: Response: \(httpResponse)")
-                pp_log(ctx, .providers, .info, "API.sendRequest: HTTP \(httpResponse.statusCode)")
+                pp_log_g(.providers, .debug, "API.sendRequest: Response: \(httpResponse)")
+                pp_log_g(.providers, .info, "API.sendRequest: HTTP \(httpResponse.statusCode)")
                 if let lastModifiedHeader {
-                    pp_log(ctx, .providers, .info, "API.sendRequest: Last-Modified: \(lastModifiedHeader)")
+                    pp_log_g(.providers, .info, "API.sendRequest: Last-Modified: \(lastModifiedHeader)")
                     storage.lastModified = lastModifiedHeader.fromRFC1123()
                 }
                 if let tag {
-                    pp_log(ctx, .providers, .info, "API.sendRequest: ETag: \(tag)")
+                    pp_log_g(.providers, .info, "API.sendRequest: ETag: \(tag)")
                     storage.tag = tag
                 }
                 statusHolder.status = httpResponse.statusCode
@@ -250,7 +246,7 @@ private extension DefaultProviderScriptingAPI {
         semaphore.wait()
 
         if storage.isCached {
-            pp_log(ctx, .providers, .info, "API.sendRequest: Success (cached)")
+            pp_log_g(.providers, .info, "API.sendRequest: Success (cached)")
 
             // nil response but no error = result.isCached
             return ProviderScriptResult(
@@ -261,10 +257,10 @@ private extension DefaultProviderScriptingAPI {
             )
         }
         guard let textData = storage.textData else {
-            pp_log(ctx, .providers, .error, "API.sendRequest: Empty response")
+            pp_log_g(.providers, .error, "API.sendRequest: Empty response")
             return ProviderScriptResult.notData
         }
-        pp_log(ctx, .providers, .info, "API.sendRequest: Success")
+        pp_log_g(.providers, .info, "API.sendRequest: Success")
         return ProviderScriptResult(
             textData,
             status: statusHolder.status,

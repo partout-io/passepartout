@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (use AppProfile)
+import Partout
+
 public protocol ProfileRepository: Sendable {
     nonisolated var profilesPublisher: AsyncStream<[Profile]> { get }
 

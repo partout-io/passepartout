@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension ABI.AppConfiguration {
-    public func newAppLogger(profileId: Profile.ID? = nil) -> AppLogger {
-        PartoutAppLogger(profileId: profileId)
-    }
+// FIXME: #1594, Drop import
+import Partout
 
+extension ABI.AppConfiguration {
     @MainActor
     public func newConfigManager(
         isBeta: @escaping @Sendable () async -> Bool,
@@ -31,19 +30,18 @@ extension ABI.AppConfiguration {
     }
 
     public func newAppRegistry(
-        appLogger: AppLogger,
         configManager: ConfigManager,
         kvStore: KeyValueStore
     ) -> Registry {
         newRegistry(
             deviceId: {
                 if let existingId = kvStore.string(forAppPreference: .deviceId) {
-                    appLogger.log(.core, .info, "Device ID: \(existingId)")
+                    pspLog(.core, .info, "Device ID: \(existingId)")
                     return existingId
                 }
                 let newId = String.random(count: constants.deviceIdLength)
                 kvStore.set(newId, forAppPreference: .deviceId)
-                appLogger.log(.core, .info, "Device ID (new): \(newId)")
+                pspLog(.core, .info, "Device ID (new): \(newId)")
                 return newId
             }(),
             configBlock: { [weak configManager, weak kvStore] in
@@ -54,11 +52,10 @@ extension ABI.AppConfiguration {
     }
 
     public func newTunnelRegistry(
-        appLogger: AppLogger,
         preferences: ABI.AppPreferenceValues
     ) -> Registry {
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        appLogger.log(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         return newRegistry(
             deviceId: preferences.deviceId ?? "MissingDeviceID",
             configBlock: {
@@ -73,8 +70,8 @@ extension ABI.AppConfiguration {
     ) -> Registry {
         let registry = Registry(
             providerResolvers: [
-                OpenVPNProviderResolver(.global),
-                WireGuardProviderResolver(.global, deviceId: deviceId)
+                OpenVPNProviderResolver(),
+                WireGuardProviderResolver(deviceId: deviceId)
             ],
             allImplementations: [
                 OpenVPNImplementationBuilder(
@@ -247,10 +244,12 @@ extension ABI.AppConfiguration {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
+        let log = SimpleLogDestination()
+
         let appGroupURL = {
             let groupId = bundle.string(for: .groupId)
             guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
-                pp_log_g(.App.core, .error, "Unable to access App Group container")
+                log.append(.error, "Unable to access App Group container")
                 return FileManager.default.temporaryDirectory
             }
             return url
@@ -267,7 +266,7 @@ extension ABI.AppConfiguration {
                 do {
                     try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
                 } catch {
-                    pp_log_g(.App.core, .error, "Unable to create temporary directory \(baseURL): \(error)")
+                    log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
                 }
             }
             return baseURL.appending(path: constants.log.tunnelPath)
@@ -332,7 +331,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create group caches directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create group caches directory: \(error)")
         }
         return url
     }
@@ -342,7 +341,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create group documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create group documents directory: \(error)")
         }
         return url
     }
@@ -355,7 +354,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -364,7 +363,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            pp_log_g(.App.core, .fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -451,12 +450,10 @@ extension ABI.AppConfiguration {
 #if os(tvOS)
     @MainActor
     public func newWebReceiverManager(
-        appLogger: AppLogger,
         htmlPath: String,
         stringsBundle: Bundle
     ) -> WebReceiverManager {
         let receiver = NIOWebReceiver(
-            logger: appLogger,
             htmlPath: htmlPath,
             stringsBundle: stringsBundle,
             port: constants.webReceiver.port

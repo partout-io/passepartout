@@ -5,7 +5,6 @@
 #if !os(tvOS)
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 public struct ChangelogView: View {
@@ -56,9 +55,9 @@ private extension ChangelogView {
 
     func loadChangelog() async {
         do {
-            pp_log_g(.App.core, .info, "CHANGELOG: Load for version \(versionNumber)")
+            pspLog(.core, .info, "CHANGELOG: Load for version \(versionNumber)")
             let url = appConfiguration.constants.github.urlForChangelog(ofVersion: versionNumber)
-            pp_log_g(.App.core, .info, "CHANGELOG: Fetching \(url)")
+            pspLog(.core, .info, "CHANGELOG: Fetching \(url)")
             let result = try await URLSession.shared.data(from: url)
             guard let text = String(data: result.0, encoding: .utf8) else {
                 throw ABI.AppError.notFound
@@ -70,7 +69,7 @@ private extension ChangelogView {
                     ABI.ChangelogEntry($0.offset, line: String($0.element))
                 }
         } catch {
-            pp_log_g(.App.core, .error, "CHANGELOG: Unable to load: \(error)")
+            pspLog(.core, .error, "CHANGELOG: Unable to load: \(error)")
         }
         isLoading = false
     }

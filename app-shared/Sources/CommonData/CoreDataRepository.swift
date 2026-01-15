@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @preconcurrency import CoreData
+import MiniFoundation
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {
     // Core Data entity must have a unique "uuid" field
@@ -100,7 +101,7 @@ public actor CoreDataRepository<CD, T>: NSObject, Repository, NSFetchedResultsCo
         }
     }
 
-    public func removeEntities(withIds ids: [UUID]?) async throws {
+    public func removeEntities(withIds ids: [UniqueID]?) async throws {
         try await context.perform { [weak self] in
             guard let self else {
                 return
@@ -185,17 +186,17 @@ private extension CoreDataRepository {
         var entitiesToDelete: [CD] = []
 
         // strip duplicates by sort order (first entry wins)
-        var knownUUIDs = Set<UUID>()
+        var knownUniqueIDs = Set<UniqueID>()
         cdEntities.forEach {
             guard let uuid = $0.uuid else {
                 return
             }
-            guard !knownUUIDs.contains(uuid) else {
-                NSLog("Strip duplicate \(String(describing: CD.self)) with UUID \(uuid)")
+            guard !knownUniqueIDs.contains(uuid) else {
+                NSLog("Strip duplicate \(String(describing: CD.self)) with UniqueID \(uuid)")
                 entitiesToDelete.append($0)
                 return
             }
-            knownUUIDs.insert(uuid)
+            knownUniqueIDs.insert(uuid)
         }
 
         do {

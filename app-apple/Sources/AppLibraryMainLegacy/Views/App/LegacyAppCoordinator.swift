@@ -281,7 +281,7 @@ extension LegacyAppCoordinator {
                     registry: registry
                 )
             } catch {
-                pp_log_g(.App.profiles, .error, "Unable to import text: \(error)")
+                pspLog(.profiles, .error, "Unable to import text: \(error)")
                 errorHandler.handle(error, title: Strings.Global.Actions.import)
             }
         }
@@ -322,7 +322,7 @@ private struct ProviderServerCoordinatorIfSupported: View {
 
 extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
-        pp_log_g(.App.core, .info, "Present interactive login")
+        pspLog(.core, .info, "Present interactive login")
         interactiveObservable.present(with: ABI.AppProfile(native: profile), onComplete: onComplete)
     }
 
@@ -331,7 +331,7 @@ extension LegacyAppCoordinator {
             assertionFailure("Editing provider entity, but profile has no selected provider module")
             return
         }
-        pp_log_g(.App.core, .info, "Present provider entity selector")
+        pspLog(.core, .info, "Present provider entity selector")
         present(.editProviderEntity(profile, force, module))
     }
 
@@ -340,10 +340,10 @@ extension LegacyAppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pp_log_g(.App.core, .info, "Purchase required for features: \(features)")
+        pspLog(.core, .info, "Purchase required for features: \(features)")
         guard !iapManager.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pp_log_g(.App.core, .info, "Present verification alert")
+            pspLog(.core, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -356,7 +356,7 @@ extension LegacyAppCoordinator {
             )
             return
         }
-        pp_log_g(.App.core, .info, "Present paywall")
+        pspLog(.core, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile, requiredFeatures: features, action: .connect)) {
@@ -383,7 +383,7 @@ private extension LegacyAppCoordinator {
         // XXX: select entity after dismissing
         try await Task.sleep(for: .milliseconds(500))
 
-        pp_log_g(.App.core, .info, "Select new provider entity: (profile=\(profile.id), module=\(newModule.id))")
+        pspLog(.core, .info, "Select new provider entity: (profile=\(profile.id), module=\(newModule.id))")
 
         do {
             var builder = profile.builder()
@@ -398,13 +398,13 @@ private extension LegacyAppCoordinator {
             }
 
             if !wasConnected {
-                pp_log_g(.App.core, .info, "Profile \(newProfile.id) was not connected, will connect to new provider entity")
+                pspLog(.core, .info, "Profile \(newProfile.id) was not connected, will connect to new provider entity")
                 await onConnect(newProfile, force: force)
             } else {
-                pp_log_g(.App.core, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
+                pspLog(.core, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
             }
         } catch {
-            pp_log_g(.App.core, .error, "Unable to save new provider entity: \(error)")
+            pspLog(.core, .error, "Unable to save new provider entity: \(error)")
             throw error
         }
     }

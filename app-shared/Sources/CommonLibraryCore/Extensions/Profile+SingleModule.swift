@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension Profile {
     public init(withName name: String, singleModule: Module) throws {
         let onDemandModule = OnDemandModule.Builder().build()

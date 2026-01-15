@@ -147,7 +147,7 @@ private extension LegacyAppCoordinator {
 
 extension LegacyAppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
-        pp_log_g(.App.core, .info, "Present interactive login")
+        pspLog(.core, .info, "Present interactive login")
         interactiveObservable.present(
             with: ABI.AppProfile(native: profile),
             onComplete: onComplete
@@ -166,10 +166,10 @@ extension LegacyAppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pp_log_g(.App.core, .info, "Purchase required for features: \(features)")
+        pspLog(.core, .info, "Purchase required for features: \(features)")
         guard !iapManager.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pp_log_g(.App.core, .info, "Present verification alert")
+            pspLog(.core, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -182,7 +182,7 @@ extension LegacyAppCoordinator {
             )
             return
         }
-        pp_log_g(.App.core, .info, "Present paywall")
+        pspLog(.core, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile, requiredFeatures: features, action: .connect)) {

@@ -4,7 +4,6 @@
 
 import AppAccessibility
 import CommonLibrary
-import Partout
 
 @MainActor
 public final class AppContext {
@@ -27,7 +26,8 @@ public final class AppContext {
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
-    public let viewLogger: ViewLogger
+    @available(*, deprecated, message: "#1594")
+    private let logFormatter: LogFormatter
 
     public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
         self.abi = abi
@@ -35,24 +35,30 @@ public final class AppContext {
 
         // ABI
         appEncoderObservable = AppEncoderObservable(abi: abi.encoder)
-        configObservable = ConfigObservable(abi: abi.config, logger: abi)
+        configObservable = ConfigObservable(abi: abi.config)
         iapObservable = IAPObservable(abi: abi.iap)
-        profileObservable = ProfileObservable(abi: abi.profile, logger: abi)
+        profileObservable = ProfileObservable(abi: abi.profile)
         registryObservable = RegistryObservable(abi: abi.registry)
-        tunnelObservable = TunnelObservable(abi: abi.tunnel, logger: abi)
+        tunnelObservable = TunnelObservable(abi: abi.tunnel, formatter: abi)
         versionObservable = VersionObservable(abi: abi.version)
         webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
-        userPreferences = UserPreferencesObservable(logger: abi, kvStore: kvStore)
+        logFormatter = appConfiguration.newLogFormatter()
+        userPreferences = UserPreferencesObservable(kvStore: kvStore)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
-        viewLogger = ViewLogger(logger: abi, formatter: abi)
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
         let ctx = ABI.EventContext(pointer: opaqueEnvironment)
         abi.registerEvents(context: ctx, callback: Self.abiCallback)
+    }
+}
+
+extension AppContext: LogFormatter {
+    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
+        logFormatter.formattedLog(timestamp: timestamp, message: message)
     }
 }
 

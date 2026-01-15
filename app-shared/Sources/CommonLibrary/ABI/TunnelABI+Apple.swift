@@ -4,6 +4,7 @@
 
 #if canImport(CommonLibraryApple)
 import NetworkExtension
+import Partout
 
 extension TunnelABI {
     public static func forProduction(
@@ -13,11 +14,9 @@ extension TunnelABI {
         neProvider: NEPacketTunnelProvider
     ) async throws -> TunnelABI {
         let logFormatter = appConfiguration.newLogFormatter()
-        var appLogger = appConfiguration.newAppLogger()
 
         // Create global registry
         let registry = appConfiguration.newTunnelRegistry(
-            appLogger: appLogger,
             preferences: preferences
         )
 
@@ -31,13 +30,13 @@ extension TunnelABI {
             let processor = appConfiguration.newTunnelProcessor()
             processedProfile = try processor.willProcess(resolvedProfile)
         } catch {
-            appLogger.log(.profiles, .fault, "Unable to decode or process profile: \(error)")
+            pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
             throw error
         }
 
         // Update the logger now that we have a context
         assert(processedProfile.id == originalProfile.id)
-        let ctx = PartoutLogger.register(
+        let ctx = pspLogRegister(
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
             preferences: preferences,
@@ -45,18 +44,17 @@ extension TunnelABI {
                 logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
             }
         )
-        appLogger = appConfiguration.newAppLogger(profileId: processedProfile.id)
 
         // Decode preferences and config flags
-        appLogger.log(.core, .info, "Tunnel profile initialized")
+        pspLog(ctx.profileId, .core, .info, "Tunnel profile initialized")
         if let startPreferences {
-            appLogger.log(.core, .info, "\tDecoded preferences: \(startPreferences)")
+            pspLog(ctx.profileId, .core, .info, "\tDecoded preferences: \(startPreferences)")
         } else {
-            appLogger.log(.core, .info, "\tExisting preferences: \(preferences)")
+            pspLog(ctx.profileId, .core, .info, "\tExisting preferences: \(preferences)")
         }
         let configFlags = preferences.configFlags
-        appLogger.log(.core, .info, "\tActive config flags: \(configFlags)")
-        appLogger.log(.core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
 
         // Create TunnelController for connnection management
         let neTunnelController = NETunnelController(
@@ -102,7 +100,7 @@ extension TunnelABI {
         let iapManager = appConfiguration.newIAPManager(
             inAppHelper: appConfiguration.newAppProductHelper(),
             receiptReader: SharedReceiptReader(
-                reader: StoreKitReceiptReader(logger: appLogger),
+                reader: StoreKitReceiptReader(),
             ),
             betaChecker: appConfiguration.newBetaChecker()
         )
@@ -120,7 +118,6 @@ extension TunnelABI {
         )
 
         return TunnelABI(
-            appLogger: appLogger,
             daemon: daemon,
             environment: environment,
             iap: iap,

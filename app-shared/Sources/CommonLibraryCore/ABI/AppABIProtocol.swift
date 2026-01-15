@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore_C
+// FIXME: #1594, Drop import (Module*)
+import Partout
 
 // MARK: Domains
 
@@ -38,6 +40,12 @@ public protocol AppABIIAPProtocol: Sendable {
     var isEligibleForFeedback: Bool { get }
     var isEligibleForComplete: Bool { get }
     var verificationDelayMinutes: Int { get }
+}
+
+@MainActor
+public protocol AppABILoggerProtocol: Sendable {
+    func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
+    func flushLogs()
 }
 
 @MainActor

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 extension ErrorHandler {
@@ -15,7 +14,7 @@ extension ErrorHandler {
                 ABI.AppError($0).localizedDescription
             },
             beforeAlert: {
-                pp_log_g(.App.core, .error, "Error handler being presented: \($0)")
+                pspLog(.core, .error, "Error handler being presented: \($0)")
             }
         )
     }

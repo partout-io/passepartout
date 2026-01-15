@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
+// FIXME: #1594, Drop import (ModuleType)
+import Partout
 
 struct DomainMapper {
     func provider(from entity: CDProviderV3) -> Provider? {
@@ -42,7 +44,7 @@ struct DomainMapper {
             do {
                 $0[.init(rawValue: id)] = try decoder.decode(ProviderCache.self, from: cache)
             } catch {
-                pp_log_g(.providers, .error, "Unable to decode cache: \(error)")
+                pspLog(.core, .error, "Unable to decode cache: \(error)")
             }
         }
     }

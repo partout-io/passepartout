@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 extension Bundle {
     public func unsafeDecode<T: Decodable>(_ type: T.Type, filename: String) -> T {
         guard let jsonURL = url(forResource: filename, withExtension: "json") else {

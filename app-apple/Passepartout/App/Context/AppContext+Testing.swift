@@ -6,7 +6,6 @@ import AppLibrary
 import AppResources
 import CommonLibrary
 import Foundation
-import Partout
 
 extension AppContext {
     static func forUITesting() -> AppContext {
@@ -19,19 +18,19 @@ extension AppContext {
             configBlock: { [] }
         )
         let appEncoder = AppEncoder(registry: registry)
-        let ctx: PartoutLoggerContext = .global
 
-        var logger = PartoutLogger.Builder()
-        logger.setDestination(SimpleLogDestination(), for: [.App.core, .App.profiles])
-        PartoutLogger.register(logger.build())
-        let appLogger = appConfiguration.newAppLogger()
         let logFormatter = DummyLogFormatter()
+        pspLogRegister(
+            for: .app,
+            with: appConfiguration,
+            preferences: .init(),
+            mapper: \.message
+        )
 
         let kvStore = InMemoryStore()
         let apiManager = APIManager(
-            ctx,
             from: API.bundled,
-            repository: InMemoryAPIRepository(ctx)
+            repository: InMemoryAPIRepository()
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
@@ -55,7 +54,7 @@ extension AppContext {
             processor: profileProcessor
         )
         profileManager.isRemoteImportingEnabled = true
-        let tunnel = Tunnel(ctx, strategy: FakeTunnelStrategy()) { _ in
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
@@ -79,7 +78,6 @@ extension AppContext {
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
-            appLogger: appLogger,
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,

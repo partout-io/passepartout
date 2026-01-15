@@ -5,11 +5,7 @@
 import StoreKit
 
 public final class StoreKitReceiptReader: InAppReceiptReader, Sendable {
-    private let logger: AppLogger
-
-    public init(logger: AppLogger) {
-        self.logger = logger
-    }
+    public init() {}
 
     public func receipt() async -> ABI.StoreReceipt? {
         let result = await entitlements()
@@ -35,28 +31,28 @@ private extension StoreKitReceiptReader {
     func entitlements() async -> (purchase: ABI.OriginalPurchase?, txs: [Transaction]) {
         async let build = Task {
             let startDate = Date()
-            logger.log(.iap, .debug, "Start fetching original build number...")
+            pspLog(.iap, .debug, "Start fetching original build number...")
             let originalPurchase: ABI.OriginalPurchase?
             do {
                 switch try await AppTransaction.shared {
                 case .verified(let tx):
-                    logger.log(.iap, .debug, "Fetched AppTransaction: \(tx)")
+                    pspLog(.iap, .debug, "Fetched AppTransaction: \(tx)")
                     originalPurchase = tx.originalPurchase
                 case .unverified(let tx, let error):
                     let json = String(data: tx.jsonRepresentation, encoding: .utf8)
-                    logger.log(.iap, .error, "Unable to process transaction: \(error), json=\(json ?? "")")
+                    pspLog(.iap, .error, "Unable to process transaction: \(error), json=\(json ?? "")")
                     originalPurchase = nil
                 }
             } catch {
                 originalPurchase = nil
             }
             let elapsed = -startDate.timeIntervalSinceNow
-            logger.log(.iap, .debug, "Fetched original build number: \(elapsed)")
+            pspLog(.iap, .debug, "Fetched original build number: \(elapsed)")
             return originalPurchase
         }
         async let txs = Task {
             let startDate = Date()
-            logger.log(.iap, .debug, "Start fetching transactions...")
+            pspLog(.iap, .debug, "Start fetching transactions...")
             var transactions: [Transaction] = []
             for await entitlement in Transaction.currentEntitlements {
                 switch entitlement {
@@ -64,11 +60,11 @@ private extension StoreKitReceiptReader {
                     transactions.append(tx)
                 case .unverified(let tx, let error):
                     let json = String(data: tx.jsonRepresentation, encoding: .utf8)
-                    logger.log(.iap, .error, "Unable to process transaction: \(error), json=\(json ?? "")")
+                    pspLog(.iap, .error, "Unable to process transaction: \(error), json=\(json ?? "")")
                 }
             }
             let elapsed = -startDate.timeIntervalSinceNow
-            logger.log(.iap, .debug, "Fetched transactions: \(elapsed)")
+            pspLog(.iap, .debug, "Fetched transactions: \(elapsed)")
             return transactions
         }
         return await (build.value, txs.value)

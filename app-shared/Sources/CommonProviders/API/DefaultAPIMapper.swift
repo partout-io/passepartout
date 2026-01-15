@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 #if !PSP_CROSS
 public final class DefaultAPIMapper: APIMapper {
-    private let ctx: PartoutLoggerContext
-
     private let baseURL: URL
 
     private let timeout: TimeInterval
@@ -15,13 +15,11 @@ public final class DefaultAPIMapper: APIMapper {
     private let engineFactory: @Sendable (ProviderScriptingAPI) -> ScriptingEngine
 
     public init(
-        _ ctx: PartoutLoggerContext,
         baseURL: URL,
         timeout: TimeInterval = 10.0,
         api: ProviderScriptingAPI,
         engineFactory: @escaping @Sendable (ProviderScriptingAPI) -> ScriptingEngine
     ) {
-        self.ctx = ctx
         self.baseURL = baseURL
         self.timeout = timeout
         self.api = api
@@ -61,13 +59,13 @@ public final class DefaultAPIMapper: APIMapper {
 
         let library = try await scriptLibrary(at: .provider(module.providerId))
         let engine = engineFactory(api)
-        return try await engine.authenticate(ctx, module, on: deviceId, with: library)
+        return try await engine.authenticate(module, on: deviceId, with: library)
     }
 
     public func infrastructure(for module: ProviderModule, cache: ProviderCache?) async throws -> ProviderInfrastructure {
         let library = try await scriptLibrary(at: .provider(module.providerId))
         let engine = engineFactory(api)
-        return try await engine.infrastructure(ctx, module, with: library, cache: cache)
+        return try await engine.infrastructure(module, with: library, cache: cache)
     }
 }
 
@@ -75,8 +73,8 @@ public final class DefaultAPIMapper: APIMapper {
 
 // TODO: #54/partout, assumes engine to be JavaScript
 extension ScriptingEngine {
-    func authenticate(_ ctx: PartoutLoggerContext, _ module: ProviderModule, on deviceId: String, with library: String) async throws -> ProviderModule {
-        let script = try scriptCall(ctx, withName: "authenticate", args: [
+    func authenticate(_ module: ProviderModule, on deviceId: String, with library: String) async throws -> ProviderModule {
+        let script = try scriptCall(withName: "authenticate", args: [
             module.stripped(),
             deviceId
         ])
@@ -94,7 +92,7 @@ extension ScriptingEngine {
         return response
     }
 
-    func infrastructure(_ ctx: PartoutLoggerContext, _ module: ProviderModule, with library: String, cache: ProviderCache?) async throws -> ProviderInfrastructure {
+    func infrastructure(_ module: ProviderModule, with library: String, cache: ProviderCache?) async throws -> ProviderInfrastructure {
         var headers: [String: String] = [:]
         if let lastUpdate = cache?.lastUpdate {
             headers["If-Modified-Since"] = lastUpdate.toRFC1123()
@@ -102,7 +100,7 @@ extension ScriptingEngine {
         if let tag = cache?.tag {
             headers["If-None-Match"] = tag
         }
-        let script = try scriptCall(ctx, withName: "getInfrastructure", args: [
+        let script = try scriptCall(withName: "getInfrastructure", args: [
             module.stripped(),
             headers,
             true
@@ -124,7 +122,7 @@ extension ScriptingEngine {
         return response
     }
 
-    func scriptCall(_ ctx: PartoutLoggerContext, withName name: String, args: [Any]) throws -> String {
+    func scriptCall(withName name: String, args: [Any]) throws -> String {
         let argsString = try args
             .map {
                 if let value = $0 as? String {
@@ -138,8 +136,8 @@ extension ScriptingEngine {
                     guard let json = String(data: encoded, encoding: .utf8) else {
                         throw PartoutError(.encoding)
                     }
-//                    pp_log(ctx, .api, .debug, "Argument: \(json)")
-//                    pp_log(ctx, .api, .debug, "Argument (escaped): \(json.jsEscaped)")
+//                    pp_log_g(.api, .debug, "Argument: \(json)")
+//                    pp_log_g(.api, .debug, "Argument (escaped): \(json.jsEscaped)")
                     return "JSON.parse('\(json.jsEscaped)')"
                 } else {
                     assertionFailure("Unhandled argument type")
@@ -183,7 +181,7 @@ extension DefaultAPIMapper {
 
     func data(for resource: API.REST.Resource) async throws -> Data {
         let url = baseURL.miniAppending(path: resource.path)
-        pp_log(ctx, .providers, .info, "Fetch data for \(resource): \(url)")
+        pp_log_g(.providers, .info, "Fetch data for \(resource): \(url)")
         let cfg: URLSessionConfiguration = .default
         cfg.requestCachePolicy = .reloadRevalidatingCacheData
         cfg.urlCache = .shared
@@ -193,11 +191,11 @@ extension DefaultAPIMapper {
         do {
             let result = try await session.data(for: request)
             if URLCache.shared.cachedResponse(for: request) != nil {
-                pp_log(ctx, .providers, .info, "Data was cached: \(url)")
+                pp_log_g(.providers, .info, "Data was cached: \(url)")
             }
             return result.0
         } catch {
-            pp_log(ctx, .providers, .error, "Unable to fetch data: \(url), \(error)")
+            pp_log_g(.providers, .error, "Unable to fetch data: \(url), \(error)")
             throw error
         }
     }

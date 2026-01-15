@@ -2,6 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+// FIXME: #1594, Drop import (use AppProfile)
+import Partout
+
 public final class InMemoryProfileRepository: ProfileRepository {
     private let profilesSubject: CurrentValueStream<UniqueID, [Profile]>
 
@@ -27,7 +31,7 @@ public final class InMemoryProfileRepository: ProfileRepository {
     }
 
     public func saveProfile(_ profile: Profile) {
-        pp_log_g(.App.profiles, .info, "Save profile to repository: \(profile.id)")
+        pspLog(.profiles, .info, "Save profile to repository: \(profile.id)")
         if let index = profiles.firstIndex(where: { $0.id == profile.id }) {
             profiles[index] = profile
         } else {
@@ -36,7 +40,7 @@ public final class InMemoryProfileRepository: ProfileRepository {
     }
 
     public func removeProfiles(withIds ids: [Profile.ID]) {
-        pp_log_g(.App.profiles, .info, "Remove profiles from repository: \(ids)")
+        pspLog(.profiles, .info, "Remove profiles from repository: \(ids)")
         let newProfiles = profiles.filter {
             !ids.contains($0.id)
         }
@@ -47,7 +51,7 @@ public final class InMemoryProfileRepository: ProfileRepository {
     }
 
     public func removeAllProfiles() async throws {
-        pp_log_g(.App.profiles, .info, "Remove all profiles from repository")
+        pspLog(.profiles, .info, "Remove all profiles from repository")
         profiles = []
     }
 }

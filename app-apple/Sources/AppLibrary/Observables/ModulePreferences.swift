@@ -4,7 +4,6 @@
 
 import Combine
 import CommonLibrary
-import Partout
 
 // FIXME: #1594, Improve preferences design
 public final class ModulePreferences: ObservableObject, ModulePreferencesRepository {

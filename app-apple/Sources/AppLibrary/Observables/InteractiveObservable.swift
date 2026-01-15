@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 
 @MainActor @Observable
 public final class InteractiveObservable {

@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// FIXME: #1594, Drop import (use domain entity)
+import Partout
+
 extension ModuleType: @retroactive CaseIterable {
     public static let allCases: [ModuleType] = {
         var list: [ModuleType] = [

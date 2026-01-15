@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 @MainActor
 public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     private let releaseURL: URL
@@ -24,7 +26,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         if since > .distantPast {
             let elapsed = -since.timeIntervalSinceNow
             guard elapsed >= rateLimit else {
-                pp_log_g(.App.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
+                pspLog(.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
                 throw ABI.AppError.rateLimit
             }
         }
@@ -32,7 +34,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         let json = try JSONDecoder().decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
-            pp_log_g(.App.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
+            pspLog(.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
             throw ABI.AppError.unexpectedResponse
         }
         return semNew

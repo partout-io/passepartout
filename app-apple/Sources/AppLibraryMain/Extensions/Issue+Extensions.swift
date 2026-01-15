@@ -23,8 +23,6 @@ extension ABI.Issue {
 
 extension ABI.Issue {
     struct Metadata {
-        let ctx: PartoutLoggerContext
-
         let appConfiguration: ABI.AppConfiguration
 
         let purchasedProducts: Set<ABI.AppProduct>
@@ -38,7 +36,7 @@ extension ABI.Issue {
 
     static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
         let parameters = metadata.appConfiguration.constants.log
-        let appLog = metadata.ctx.logger.currentLog(parameters: parameters)
+        let appLog = pspLogCurrent(parameters)
             .joined(separator: "\n")
             .data(using: .utf8)
 
@@ -52,11 +50,9 @@ extension ABI.Issue {
                 .data(using: .utf8)
         }
         // Latest persisted tunnel log
-        else if let latestTunnelEntry = LocalLogger.FileStrategy()
-            .availableLogs(at: metadata.appConfiguration.urlForTunnelLog)
-            .max(by: { $0.key < $1.key }) {
-
-            tunnelLog = try? Data(contentsOf: latestTunnelEntry.value)
+        else if let latestTunnelEntry = pspLogEntriesAvailable(at: metadata.appConfiguration.urlForTunnelLog)
+            .max(by: { $0.date < $1.date }) {
+            tunnelLog = try? Data(contentsOf: latestTunnelEntry.url)
         }
         // Nothing
         else {

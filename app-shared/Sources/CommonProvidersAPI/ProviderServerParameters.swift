@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 public struct ProviderServerParameters: Sendable {
     public typealias Sorter = @Sendable (inout [ProviderServer], [ProviderSortField]) -> Void
 

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 @MainActor
 public final class GitHubConfigStrategy: ConfigManagerStrategy {
     private let url: URL
@@ -33,17 +35,17 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
 
     public func bundle() async throws -> ABI.ConfigBundle {
         let isBeta = await isBeta()
-        pp_log_g(.App.core, .debug, "Config (GitHub): beta = \(isBeta)")
+        pspLog(.core, .debug, "Config (GitHub): beta = \(isBeta)")
         if lastUpdated > .distantPast {
             let elapsed = -lastUpdated.timeIntervalSinceNow
             let ttl = isBeta ? ttl / 10.0 : ttl
             guard elapsed >= ttl else {
-                pp_log_g(.App.core, .debug, "Config (GitHub): elapsed \(elapsed) < \(ttl)")
+                pspLog(.core, .debug, "Config (GitHub): elapsed \(elapsed) < \(ttl)")
                 throw ABI.AppError.rateLimit
             }
         }
         let targetURL = isBeta ? betaURL : url
-        pp_log_g(.App.core, .info, "Config (GitHub): fetching bundle from \(targetURL)")
+        pspLog(.core, .info, "Config (GitHub): fetching bundle from \(targetURL)")
         let data = try await fetcher(targetURL)
         let json = try JSONDecoder().decode(ABI.ConfigBundle.self, from: data)
         lastUpdated = Date()

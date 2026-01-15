@@ -4,6 +4,8 @@
 
 import Combine
 import CoreData
+// FIXME: #1594, Drop import (use AppProfile)
+import Partout
 
 extension CommonData {
     public static func cdProfileRepositoryV3(
@@ -74,7 +76,7 @@ extension CDProfileV3: CoreDataUniqueEntity, @unchecked Sendable {
 }
 
 extension Profile: UniqueEntity {
-    public var uuid: UUID? {
+    public var uuid: UniqueID? {
         id
     }
 }

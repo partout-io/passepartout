@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
-import Partout
 import SwiftUI
 
 public struct DebugLogView<Content>: View where Content: View {
@@ -26,7 +25,6 @@ public struct DebugLogView<Content>: View where Content: View {
 }
 
 private extension DebugLogView {
-
     @ViewBuilder
     func toolbarContent() -> some View {
 #if !os(tvOS)
@@ -60,7 +58,7 @@ extension DebugLogView {
         content: @escaping ([String]) -> Content
     ) {
         self.init {
-            PartoutLogger.default.currentLog(parameters: parameters)
+            pspLogCurrent(parameters)
         } content: {
             content($0)
         }

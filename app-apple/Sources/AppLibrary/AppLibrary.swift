@@ -4,7 +4,7 @@
 
 @_exported import AppStrings
 import CommonLibrary
-import Foundation
+@_exported import Partout
 
 @MainActor
 public protocol AppLibraryConfiguring {
