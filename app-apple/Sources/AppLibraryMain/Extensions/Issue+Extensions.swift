@@ -34,7 +34,6 @@ extension ABI.Issue {
         let comment: String
     }
 
-    @MainActor
     static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
         let parameters = metadata.appConfiguration.constants.log
         let appLog = pspLogCurrent(parameters)
