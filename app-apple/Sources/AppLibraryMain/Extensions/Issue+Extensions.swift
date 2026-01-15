@@ -37,7 +37,7 @@ extension ABI.Issue {
     @MainActor
     static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
         let parameters = metadata.appConfiguration.constants.log
-        let appLog = await metadata.tunnel.currentLog()
+        let appLog = pspLogCurrent(parameters)
             .joined(separator: "\n")
             .data(using: .utf8)
 
