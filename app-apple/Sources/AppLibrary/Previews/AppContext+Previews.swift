@@ -17,9 +17,8 @@ extension AppContext {
         let kvStore = InMemoryStore()
         let configManager = ConfigManager()
         let apiManager = APIManager(
-            .global,
             from: API.bundled,
-            repository: InMemoryAPIRepository(.global)
+            repository: InMemoryAPIRepository()
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,

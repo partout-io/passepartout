@@ -17,8 +17,6 @@ public final class APIManager {
         case provider(ProviderID)
     }
 
-    private let ctx: PartoutLoggerContext
-
     private let apis: [APIMapper]
 
     private let repository: APIRepository?
@@ -46,7 +44,6 @@ public final class APIManager {
 
     // Dummy
     public init() {
-        ctx = .global
         apis = []
         repository = nil
         providers = []
@@ -55,8 +52,7 @@ public final class APIManager {
         subscriptions = []
     }
 
-    public init(_ ctx: PartoutLoggerContext, from apis: [APIMapper], repository: APIRepository) {
-        self.ctx = ctx
+    public init(from apis: [APIMapper], repository: APIRepository) {
         self.apis = apis
         self.repository = repository
         providers = []
@@ -73,7 +69,7 @@ public final class APIManager {
         }
         let service: PendingService = .index
         guard !pendingServices.contains(service) else {
-            pp_log(ctx, .providers, .error, "Discard fetchIndex, another .index is pending")
+            pp_log_g(.providers, .error, "Discard fetchIndex, another .index is pending")
             return
         }
         pendingServices.insert(service)
@@ -93,7 +89,7 @@ public final class APIManager {
                 return
             } catch {
                 lastError = error
-                pp_log(ctx, .providers, .error, "Unable to fetch index: \(error)")
+                pp_log_g(.providers, .error, "Unable to fetch index: \(error)")
                 try Task.checkCancellation()
             }
         }
@@ -106,7 +102,7 @@ public final class APIManager {
         guard let api = apis.first else {
             throw PartoutError(.authentication)
         }
-        pp_log(ctx, .providers, .info, "Authenticating with \(module.providerId) for \(module.providerModuleType)")
+        pp_log_g(.providers, .info, "Authenticating with \(module.providerId) for \(module.providerModuleType)")
         return try await api.authenticate(module, on: deviceId)
     }
 
@@ -116,7 +112,7 @@ public final class APIManager {
         }
         let service: PendingService = .provider(module.providerId)
         guard !pendingServices.contains(service) else {
-            pp_log(ctx, .providers, .error, "Discard fetchProviderInfrastructure, another .provider(\(module.providerId)) is pending")
+            pp_log_g(.providers, .error, "Discard fetchProviderInfrastructure, another .provider(\(module.providerId)) is pending")
             return
         }
         pendingServices.insert(service)
@@ -137,11 +133,11 @@ public final class APIManager {
                 return
             } catch {
                 if (error as? PartoutError)?.code == .cached {
-                    pp_log(ctx, .providers, .info, "VPN infrastructure for \(module.providerId) is up to date")
+                    pp_log_g(.providers, .info, "VPN infrastructure for \(module.providerId) is up to date")
                     return
                 }
                 lastError = error
-                pp_log(ctx, .providers, .error, "Unable to fetch VPN infrastructure for \(module.providerId): \(error)")
+                pp_log_g(.providers, .error, "Unable to fetch VPN infrastructure for \(module.providerId): \(error)")
                 try Task.checkCancellation()
             }
         }

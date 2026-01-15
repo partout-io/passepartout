@@ -6,14 +6,11 @@
 import Partout
 
 public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWriter {
-    private let ctx: PartoutLoggerContext
-
     private let providersSubject: CurrentValueStream<UniqueID, [Provider]>
 
     private let infrastructuresSubject: CurrentValueStream<UniqueID, [ProviderID: ProviderInfrastructure]>
 
-    public init(_ ctx: PartoutLoggerContext) {
-        self.ctx = ctx
+    public init() {
         providersSubject = CurrentValueStream([])
         infrastructuresSubject = CurrentValueStream([:])
     }
@@ -66,7 +63,7 @@ public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWrit
         if let newDate = infrastructure.cache?.lastUpdate,
            let currentDate = infrastructuresSubject.value[providerId]?.cache?.lastUpdate {
             guard newDate > currentDate else {
-                pp_log(ctx, .providers, .info, "Discard infrastructure older than stored one (\(newDate) <= \(currentDate))")
+                pp_log_g(.providers, .info, "Discard infrastructure older than stored one (\(newDate) <= \(currentDate))")
                 return
             }
         }

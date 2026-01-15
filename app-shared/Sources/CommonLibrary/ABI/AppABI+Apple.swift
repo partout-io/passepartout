@@ -104,7 +104,6 @@ extension AppABI {
         // MARK: API
 
         let apiManager = APIManager(
-            ctx,
             from: apiMappers,
             repository: CommonData.cdAPIRepositoryV3(
                 context: localStore.backgroundContext()

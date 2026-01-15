@@ -29,9 +29,8 @@ extension AppContext {
 
         let kvStore = InMemoryStore()
         let apiManager = APIManager(
-            ctx,
             from: API.bundled,
-            repository: InMemoryAPIRepository(ctx)
+            repository: InMemoryAPIRepository()
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
@@ -55,7 +54,7 @@ extension AppContext {
             processor: profileProcessor
         )
         profileManager.isRemoteImportingEnabled = true
-        let tunnel = Tunnel(ctx, strategy: FakeTunnelStrategy()) { _ in
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
