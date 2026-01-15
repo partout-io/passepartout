@@ -26,19 +26,19 @@ extension API {
 private extension API {
     static let version = 7
 
-    // use local JS (baseURL = local)
-    // fetch remote JSON (URL in scripts)
+    // Use local JS (baseURL = local)
+    // Fetch remote JSON (URL in scripts)
     static let bundledV7: APIMapper = {
         guard let bundledURL = API.url(forVersion: version) else {
             fatalError("Unable to find bundled API")
         }
-        return DefaultAPIMapper(.global, baseURL: bundledURL, timeout: Resources.constants.api.timeoutInterval)
+        return DefaultAPIMapper(baseURL: bundledURL, timeout: Resources.constants.api.timeoutInterval)
     }()
 
-    // fetch remote JS (baseURL = remote)
-    // fetch remote JSON (URL in scripts)
+    // Fetch remote JS (baseURL = remote)
+    // Fetch remote JSON (URL in scripts)
     static let remoteV7: APIMapper = {
         let remoteURL = Resources.constants.websites.api.miniAppending(path: "v\(version)")
-        return DefaultAPIMapper(.global, baseURL: remoteURL, timeout: Resources.constants.api.timeoutInterval)
+        return DefaultAPIMapper(baseURL: remoteURL, timeout: Resources.constants.api.timeoutInterval)
     }()
 }
