@@ -27,7 +27,7 @@ extension DefaultTunnelProcessor: PacketTunnelProcessor {
             }
             return try builder.build()
         } catch {
-            pspLog(.core, .error, "Unable to process profile, revert to original: \(error)")
+            pspLog(profile.id, .core, .error, "Unable to process profile, revert to original: \(error)")
             return profile
         }
     }

@@ -25,7 +25,7 @@ extension Registry {
                 do {
                     return try Self.resolvedModule($0, in: $1, with: mappedResolvers)
                 } catch {
-                    pspLog(.core, .error, "Unable to resolve module: \(error)")
+                    pspLog($1?.id, .core, .error, "Unable to resolve module: \(error)")
                     throw error
                 }
             }
