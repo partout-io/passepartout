@@ -36,7 +36,7 @@ extension TunnelABI {
 
         // Update the logger now that we have a context
         assert(processedProfile.id == originalProfile.id)
-        let ctx = PartoutLogger.register(
+        let ctx = pspLogRegister(
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
             preferences: preferences,

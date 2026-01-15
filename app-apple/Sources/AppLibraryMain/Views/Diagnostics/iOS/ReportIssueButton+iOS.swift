@@ -57,7 +57,6 @@ extension ReportIssueButton {
                 isPending = false
             }
             let issue = await ABI.Issue.withMetadata(.init(
-                ctx: .global,
                 appConfiguration: appConfiguration,
                 purchasedProducts: purchasedProducts,
                 providerLastUpdates: providerLastUpdates,

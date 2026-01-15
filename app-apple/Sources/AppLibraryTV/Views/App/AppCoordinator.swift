@@ -116,14 +116,10 @@ private extension AppCoordinator {
             DebugLogView(withAppParameters: appConfiguration.constants.log) {
                 DebugLogContentView(lines: $0)
             }
-
         case .tunnelLog:
-            // FIXME: #1594, DebugLog
-            EmptyView()
-//            DebugLogView(withTunnel: tunnel, parameters: appConfiguration.constants.log) {
-//                DebugLogContentView(lines: $0)
-//            }
-
+            DebugLogView(withTunnel: tunnel) {
+                DebugLogContentView(lines: $0)
+            }
         default:
             EmptyView()
         }

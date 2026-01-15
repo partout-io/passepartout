@@ -24,7 +24,7 @@ extension AppABI {
         withFakeIAPs: Bool
     ) -> AppABI {
         let logFormatter = appConfiguration.newLogFormatter()
-        let ctx = PartoutLogger.register(
+        let ctx = pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: kvStore.preferences,

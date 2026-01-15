@@ -23,8 +23,6 @@ extension ABI.Issue {
 
 extension ABI.Issue {
     struct Metadata {
-        let ctx: PartoutLoggerContext
-
         let appConfiguration: ABI.AppConfiguration
 
         let purchasedProducts: Set<ABI.AppProduct>
@@ -36,9 +34,10 @@ extension ABI.Issue {
         let comment: String
     }
 
+    @MainActor
     static func withMetadata(_ metadata: Metadata) async -> ABI.Issue {
         let parameters = metadata.appConfiguration.constants.log
-        let appLog = metadata.ctx.logger.currentLog(parameters: parameters)
+        let appLog = await metadata.tunnel.currentLog()
             .joined(separator: "\n")
             .data(using: .utf8)
 

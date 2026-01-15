@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import MiniFoundation
+
 public final class SystemExtensionManager: NSObject, ExtensionInstaller, @unchecked Sendable {
     private let queue: DispatchQueue
 
