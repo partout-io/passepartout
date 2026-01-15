@@ -64,7 +64,7 @@ struct APIManagerTests {
 @MainActor
 private extension APIManagerTests {
     static func manager() -> APIManager {
-        APIManager(.global, from: [MockAPI()], repository: MockRepository())
+        APIManager(from: [MockAPI()], repository: MockRepository())
     }
 }
 

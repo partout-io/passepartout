@@ -37,7 +37,6 @@ extension OpenVPNProviderTemplate: ProviderTemplateCompiler {
         var configurationBuilder = configuration.builder()
         configurationBuilder.authUserPass = true
         configurationBuilder.remotes = try remotes(
-            ctx,
             with: entity.server,
             excludingHostname: options?.excludingHostname == true
         )
@@ -55,7 +54,7 @@ extension OpenVPNProviderTemplate: ProviderTemplateCompiler {
 }
 
 private extension OpenVPNProviderTemplate {
-    func remotes(_ ctx: PartoutLoggerContext, with server: ProviderServer, excludingHostname: Bool) throws -> [ExtendedEndpoint] {
+    func remotes(with server: ProviderServer, excludingHostname: Bool) throws -> [ExtendedEndpoint] {
         var remotes: [ExtendedEndpoint] = []
 
         if !excludingHostname, let hostname = server.hostname {
@@ -70,7 +69,7 @@ private extension OpenVPNProviderTemplate {
             }
         }
         guard !remotes.isEmpty else {
-            pp_log(ctx, .providers, .error, "Excluding hostname but server has no ipAddresses either")
+            pp_log_g(.providers, .error, "Excluding hostname but server has no ipAddresses either")
             throw PartoutError(.exhaustedEndpoints)
         }
 
