@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore_C
-import MiniFoundation
+import Partout
 
 @MainActor
 public protocol TunnelABIProtocol: AppABILoggerProtocol, Sendable {

@@ -4,7 +4,7 @@
 
 #if os(tvOS)
 
-import MiniFoundation
+import Partout
 import NIO
 import NIOHTTP1
 

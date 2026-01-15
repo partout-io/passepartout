@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @preconcurrency import CoreData
-import MiniFoundation
 // FIXME: #1594, Drop import (ModuleType)
 import Partout
 

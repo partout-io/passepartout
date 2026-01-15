@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
-import MiniFoundation
+import Partout
 
 @objc(CDProfileV3)
 final class CDProfileV3: NSManagedObject {

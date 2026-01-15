@@ -74,7 +74,7 @@ extension TunnelManager {
         }
 #else
         // FIXME: #228, Cross sends no .isManualKey to startTunnel()
-        var options: Sendable? = nil
+        var options: Sendable?
 #endif
 
 #if os(macOS)

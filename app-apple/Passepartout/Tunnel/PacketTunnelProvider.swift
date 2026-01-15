@@ -73,7 +73,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
         // Branch over ABI or deprecated code
         let usesTunnelABI = preferences.enabledFlags().contains(.tunnelABI)
-        pp_log_g(.core, .notice, "Using Tunnel ABI: \(usesTunnelABI)")
+        pspLog(.core, .notice, "Using Tunnel ABI: \(usesTunnelABI)")
 
         // Defer to ABI
         Task { @MainActor in

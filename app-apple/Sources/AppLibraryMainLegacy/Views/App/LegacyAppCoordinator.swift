@@ -70,7 +70,7 @@ public struct LegacyAppCoordinator: View, LegacyAppCoordinatorConforming, SizeCl
         self.tunnel = tunnel
         self.registry = registry
         self.webReceiverManager = webReceiverManager
-        pp_log_g(.core, .info, "LegacyAppCordinator (ObservableObject)")
+        pspLog(.core, .info, "LegacyAppCordinator (ObservableObject)")
     }
 
     public var body: some View {

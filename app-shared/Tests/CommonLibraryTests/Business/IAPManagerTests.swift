@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-import MiniFoundation
+import Partout
 import Testing
 
 @MainActor

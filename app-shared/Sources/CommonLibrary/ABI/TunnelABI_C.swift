@@ -7,7 +7,7 @@
 import CommonLibraryCore_C
 
 nonisolated(unsafe)
-private var abi: TunnelABIProtocol? = nil
+private var abi: TunnelABIProtocol?
 
 @_cdecl("psp_tunnel_start")
 @MainActor

@@ -65,7 +65,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
         self.profileObservable = profileObservable
         self.tunnel = tunnel
         self.webReceiverObservable = webReceiverObservable
-        pp_log_g(.core, .info, "AppCordinator (Observables)")
+        pspLog(.core, .info, "AppCordinator (Observables)")
     }
 
     public var body: some View {

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 // https://stackoverflow.com/a/32238344/784615
 // https://gist.github.com/lukaskubanek/cbfcab29c0c93e0e9e0a16ab09586996

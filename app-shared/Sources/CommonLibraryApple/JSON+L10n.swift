@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 extension JSON {
     public func localizedString(forKey key: String) -> String {

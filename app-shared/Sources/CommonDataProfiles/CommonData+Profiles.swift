@@ -5,7 +5,7 @@
 #if !USE_CMAKE
 @_exported import CommonData
 #endif
-import MiniFoundation
+import Partout
 
 extension CommonData {
     public static let profilesBundle: Bundle = .module

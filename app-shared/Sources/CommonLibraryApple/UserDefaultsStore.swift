@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 public final class UserDefaultsStore: KeyValueStore, @unchecked Sendable {
     private let defaults: UserDefaults

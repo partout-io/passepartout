@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 @MainActor
 public final class GitHubConfigStrategy: ConfigManagerStrategy {

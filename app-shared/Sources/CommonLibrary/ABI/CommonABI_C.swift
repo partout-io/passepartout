@@ -4,7 +4,6 @@
 
 #if !os(iOS) && !os(tvOS)
 
-import MiniFoundation
 import PartoutABI_C
 
 @_cdecl("psp_partout_version")
@@ -25,7 +24,7 @@ public nonisolated func __psp_example_json() -> UnsafeMutablePointer<CChar> {
 //    let profile = try! Profile.Builder(name: "zio", modules: [module]).build()
 //    let json = try! registry.json(fromProfile: profile)
 //    return strdup(json)
-    return strdup("")
+    fatalError()
 }
 
 #endif

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppKit
-import Foundation
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {

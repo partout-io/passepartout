@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 extension Data {
     public func toTemporaryURL(withFilename filename: String) -> URL? {

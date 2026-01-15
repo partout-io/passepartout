@@ -5,7 +5,6 @@
 import AppLibrary
 import AppResources
 import CommonLibrary
-import Foundation
 
 extension AppContext {
     static func forUITesting() -> AppContext {

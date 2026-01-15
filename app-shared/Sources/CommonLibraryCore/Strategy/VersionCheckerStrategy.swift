@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 public protocol VersionCheckerStrategy: Sendable {
     func latestVersion(since: Date) async throws -> ABI.SemanticVersion

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @preconcurrency import CoreData
-import MiniFoundation
+import Partout
 
 public protocol CoreDataUniqueEntity: NSManagedObject, UniqueEntity {
     // Core Data entity must have a unique "uuid" field

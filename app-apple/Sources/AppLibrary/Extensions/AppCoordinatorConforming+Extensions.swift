@@ -24,7 +24,9 @@ extension AppCoordinatorConforming {
                     await onConnect(newProfile, force: true, verify: verify)
                 }
             }
-        } catch let ppError as PartoutError {
+        }
+        // FIXME: #1594, Map this inside TunnelManager
+        catch let ppError as PartoutError {
             switch ppError.code {
             case .Providers.missingEntity:
                 onProviderEntityRequired(profile, force: force)

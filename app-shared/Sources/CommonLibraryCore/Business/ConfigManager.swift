@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import Dispatch
-import MiniFoundation
+import Partout
 
 #if !PSP_CROSS
 extension ConfigManager: ObservableObject {}

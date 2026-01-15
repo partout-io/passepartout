@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import MiniFoundation
+import Partout
 
 public protocol LogFormatter: AnyObject, Sendable {
     nonisolated func formattedLog(timestamp: Date, message: String) -> String

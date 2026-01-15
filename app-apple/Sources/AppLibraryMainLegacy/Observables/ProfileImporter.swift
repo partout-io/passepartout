@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore
+import Partout
 
 protocol ProfileImporter {
     func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile

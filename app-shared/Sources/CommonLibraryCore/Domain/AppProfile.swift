@@ -4,9 +4,9 @@
 
 import Partout
 
+// FIXME: #1594, Dumb wrappings, should not be public
 extension ABI {
     public struct AppProfile: Identifiable, Hashable, Sendable {
-        // FIXME: #1594, Dumb wrapping, should not be public
         public let native: Profile
 
         public var id: ABI.AppIdentifier {
@@ -14,6 +14,18 @@ extension ABI {
         }
 
         public init(native: Profile) {
+            self.native = native
+        }
+    }
+
+    public struct AppModule: Identifiable, Sendable {
+        public let native: Module
+
+        public var id: ABI.AppIdentifier {
+            native.id
+        }
+
+        public init(native: Module) {
             self.native = native
         }
     }
