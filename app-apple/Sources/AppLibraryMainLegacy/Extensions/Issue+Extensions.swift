@@ -4,7 +4,6 @@
 
 import AppResources
 import CommonLibrary
-// FIXME: #1594, Drop import (PartoutLoggerContext, LocalLogger)
 
 extension ABI.Issue {
     var body: String {
