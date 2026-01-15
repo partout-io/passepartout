@@ -247,7 +247,7 @@ private extension ABI.AppLogLevel {
     }
 }
 
-extension LoggerCategory {
+private extension LoggerCategory {
     enum App {
         static let core = LoggerCategory(appCategory: .core)
 
