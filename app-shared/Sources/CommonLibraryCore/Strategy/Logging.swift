@@ -25,6 +25,17 @@ public func pspLogCurrent(_ parameters: ABI.Constants.Log) -> [String] {
     PartoutLogger.default.currentLog(parameters: parameters)
 }
 
+public func pspLogAvailableEntries(at url: URL) -> [ABI.LogEntry] {
+    LocalLogger.FileStrategy()
+        .availableLogs(at: url)
+        .sorted {
+            $0.key > $1.key
+        }
+        .map {
+            ABI.LogEntry(date: $0, url: $1)
+        }
+}
+
 public func pspLogFlush() {
     PartoutLogger.default.flushLog()
 }
