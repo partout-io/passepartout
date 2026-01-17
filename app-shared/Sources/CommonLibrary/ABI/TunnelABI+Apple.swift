@@ -40,8 +40,8 @@ extension TunnelABI {
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: { [weak logFormatter] in
-                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            mapper: {
+                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
             }
         )
 

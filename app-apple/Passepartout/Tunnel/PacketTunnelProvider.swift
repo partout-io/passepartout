@@ -40,8 +40,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelGlobal,
             with: appConfiguration,
             preferences: ABI.AppPreferenceValues(),
-            mapper: { [weak logFormatter] in
-                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            mapper: {
+                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
             }
         )
 
@@ -179,8 +179,8 @@ private extension PacketTunnelProvider {
             for: .tunnelProfile(originalProfile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: { [weak logFormatter] in
-                logFormatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+            mapper: {
+                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
             }
         )
         self.ctx = ctx
