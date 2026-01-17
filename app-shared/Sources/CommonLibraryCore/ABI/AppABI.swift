@@ -121,6 +121,7 @@ public final class AppABI: Sendable {
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
         let tunnelEvents = tunnelManager.didChange.subscribe()
+        let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverUploads = webReceiverManager.files
         subscriptions.append(Task {
             for await event in configEvents {
@@ -140,6 +141,11 @@ public final class AppABI: Sendable {
         subscriptions.append(Task {
             for await event in tunnelEvents {
                 callback(context, .tunnel(event))
+            }
+        })
+        subscriptions.append(Task {
+            for await event in versionEvents {
+                callback(context, .version(event))
             }
         })
         subscriptions.append(Task {
