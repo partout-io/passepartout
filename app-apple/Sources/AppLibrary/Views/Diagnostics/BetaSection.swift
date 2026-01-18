@@ -15,3 +15,9 @@ public struct BetaSection: View {
         .themeSection(header: "Beta")
     }
 }
+
+#Preview {
+    List {
+        BetaSection()
+    }
+}

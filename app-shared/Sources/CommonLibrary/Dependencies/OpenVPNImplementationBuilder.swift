@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if PSP_CROSS || canImport(PartoutOpenVPNConnection)
 import Partout
 
 struct OpenVPNImplementationBuilder: Sendable {
@@ -46,3 +47,4 @@ private extension OpenVPNImplementationBuilder {
         )
     }
 }
+#endif
