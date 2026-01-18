@@ -36,9 +36,9 @@ Tailored for Apple platforms:
 
 ### Requirements
 
-- iOS 16+ / macOS 13+ / tvOS 17+
-- Xcode 16+
-- SwiftPM 5.9
+- iOS 17+ / macOS 14+ / tvOS 17+
+- Xcode 26
+- Swift 6
 - Git (preinstalled with the Xcode Command Line Tools)
 
 It's highly recommended that you use the Git and Ruby packages provided by [Homebrew][dep-brew].
