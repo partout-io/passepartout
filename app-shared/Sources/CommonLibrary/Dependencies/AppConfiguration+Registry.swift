@@ -9,22 +9,6 @@ extension ABI.AppConfiguration {
         deviceId: String,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
     ) -> Registry {
-        let registry = Registry(
-            distributionTarget: distributionTarget,
-            deviceId: deviceId,
-            configBlock: configBlock
-        )
-        registry.assertMissingImplementations()
-        return registry
-    }
-}
-
-private extension Registry {
-    convenience init(
-        distributionTarget: ABI.DistributionTarget,
-        deviceId: String,
-        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
-    ) {
         let customHandlers: [ModuleHandler] = [
             ProviderModule.moduleHandler
         ]
@@ -56,19 +40,21 @@ private extension Registry {
                 $0[$1.moduleType] = $1
             }
 
-        self.init(
+        let registry = Registry(
             withKnown: true,
             customHandlers: customHandlers,
             allImplementations: allImplementations,
             resolvedModuleBlock: {
                 do {
-                    return try Self.resolvedModule($0, in: $1, with: mappedResolvers)
+                    return try Registry.resolvedModule($0, in: $1, with: mappedResolvers)
                 } catch {
                     pspLog($1?.id, .core, .error, "Unable to resolve module: \(error)")
                     throw error
                 }
             }
         )
+        registry.assertMissingImplementations()
+        return registry
     }
 }
 
