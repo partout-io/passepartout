@@ -106,10 +106,6 @@ public func pspLogRegister(
                 mapper: mapper
             )
             PartoutLogger.register(logger)
-            logger.logPreamble(
-                versionString: appConfiguration.versionString,
-                parameters: appConfiguration.constants.log
-            )
         }
         return PartoutLoggerContext(profileId)
     }
