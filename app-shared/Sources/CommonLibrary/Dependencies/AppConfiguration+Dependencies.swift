@@ -64,29 +64,6 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRegistry(
-        deviceId: String,
-        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
-    ) -> Registry {
-        let registry = Registry(
-            providerResolvers: [
-                OpenVPNProviderResolver(),
-                WireGuardProviderResolver(deviceId: deviceId)
-            ],
-            allImplementations: [
-                OpenVPNImplementationBuilder(
-                    distributionTarget: distributionTarget,
-                    configBlock: configBlock
-                ).build(),
-                WireGuardImplementationBuilder(
-                    configBlock: configBlock
-                ).build()
-            ]
-        )
-        registry.assertMissingImplementations()
-        return registry
-    }
-
     @MainActor
     public func newIAPManager(
         inAppHelper: InAppHelper,
@@ -466,35 +443,3 @@ extension ABI.AppConfiguration {
 }
 
 #endif
-
-private extension Registry {
-    func assertMissingImplementations() {
-        ModuleType.allCases.forEach { moduleType in
-            let builder = moduleType.newModule(with: self)
-            do {
-                // ModuleBuilder -> Module
-                let module = try builder.build()
-
-                // Module -> ModuleBuilder
-                guard let moduleBuilder = module.moduleBuilder() else {
-                    fatalError("\(moduleType): does not produce a ModuleBuilder")
-                }
-
-                // AppFeatureRequiring
-                guard builder is any AppFeatureRequiring else {
-                    fatalError("\(moduleType): #1 is not AppFeatureRequiring")
-                }
-                guard moduleBuilder is any AppFeatureRequiring else {
-                    fatalError("\(moduleType): #2 is not AppFeatureRequiring")
-                }
-            } catch {
-                switch (error as? PartoutError)?.code {
-                case .incompleteModule, .WireGuard.emptyPeers:
-                    return
-                default:
-                    fatalError("\(moduleType): empty module is not buildable: \(error)")
-                }
-            }
-        }
-    }
-}

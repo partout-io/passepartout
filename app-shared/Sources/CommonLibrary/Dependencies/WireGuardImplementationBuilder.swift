@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if PSP_CROSS || canImport(PartoutWireGuardConnection)
 import Partout
 
 struct WireGuardImplementationBuilder: Sendable {
@@ -32,3 +33,4 @@ struct WireGuardImplementationBuilder: Sendable {
         StandardWireGuardParser()
     }
 }
+#endif

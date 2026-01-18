@@ -27,6 +27,8 @@ extension IAPManager {
         suggestedProducts(for: features, on: .macOS, including: including)
 #elseif os(tvOS)
         suggestedProducts(for: features, on: .tvOS, including: including)
+#else
+        []
 #endif
     }
 }
