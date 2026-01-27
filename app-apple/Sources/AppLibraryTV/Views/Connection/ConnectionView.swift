@@ -156,7 +156,6 @@ private extension ConnectionView {
 
 // MARK: -
 
-// FIXME: #1594, Previews
 #Preview("List") {
     ConnectionView(
         profileObservable: .forPreviews,
