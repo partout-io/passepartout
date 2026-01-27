@@ -94,7 +94,6 @@ private extension ConnectionStatusDynamicText {
     }
 }
 
-// FIXME: #1594, Previews
 #Preview("Status (Static)") {
     ConnectionStatusStaticText(status: .disconnecting, color: .cyan)
         .frame(width: 400, height: 100)
