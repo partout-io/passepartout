@@ -5,8 +5,8 @@
 import CommonLibrary
 import SwiftUI
 
-extension IPModule.Builder: ModuleViewProviding {
-    public func moduleView(with editor: ProfileEditor) -> some View {
-        IPView(draft: editor[self])
+extension IPModule.Builder: LegacyModuleViewProviding {
+    public func moduleView(with parameters: LegacyModuleViewParameters) -> some View {
+        IPView(draft: parameters.editor[self])
     }
 }

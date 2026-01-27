@@ -5,8 +5,8 @@
 import CommonLibrary
 import SwiftUI
 
-extension HTTPProxyModule.Builder: ModuleViewProviding {
-    public func moduleView(with editor: ProfileEditor) -> some View {
-        HTTPProxyView(draft: editor[self])
+extension HTTPProxyModule.Builder: LegacyModuleViewProviding {
+    public func moduleView(with parameters: LegacyModuleViewParameters) -> some View {
+        HTTPProxyView(draft: parameters.editor[self])
     }
 }
