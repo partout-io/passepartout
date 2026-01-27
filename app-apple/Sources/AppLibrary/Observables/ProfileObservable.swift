@@ -22,13 +22,15 @@ public final class ProfileObservable {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init(abi: AppABIProfileProtocol) {
+    public init(abi: AppABIProfileProtocol, searchDebounce: Int = 200) {
         self.abi = abi
         allHeaders = [:]
         filteredHeaders = []
         isReady = false
         isRemoteImportingEnabled = abi.isRemoteImportingEnabled
         searchSubject = CurrentValueSubject("")
+
+        observeEvents(searchDebounce: searchDebounce)
     }
 }
 
@@ -140,10 +142,10 @@ extension ProfileObservable {
 }
 
 private extension ProfileObservable {
-    func observeEvents(debounce: Int = 200) {
+    func observeEvents(searchDebounce: Int) {
         // No need for observeLocal/observeRemote, done by AppContext/ABI
         searchSubscription = searchSubject
-            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
+            .debounce(for: .milliseconds(searchDebounce), scheduler: DispatchQueue.main)
             .sink { [weak self] in
                 self?.reloadHeaders(with: $0)
             }
