@@ -1,2 +1,3 @@
-* OpenVPN: Deindex Mullvad for discontinued support
-* Fix races on VPN connection/disconnection
+* Fix broken profile search bar (#1674)
+* Fix missing preferences (#1672)
+* Fix blank screen when editing modules (#1671)
