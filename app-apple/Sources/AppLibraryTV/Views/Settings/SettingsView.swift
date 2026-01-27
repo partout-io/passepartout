@@ -76,9 +76,7 @@ private extension SettingsView {
     }
 
     var preferencesSection: some View {
-        // FIXME: #1594, Preferences
-        EmptyView()
-//        PreferencesView(profileObservable: profileObservable)
+        PreferencesView(profileObservable: profileObservable)
     }
 
     var troubleshootingSection: some View {
