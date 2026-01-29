@@ -122,7 +122,7 @@ public final class AppABI: Sendable {
         let profileEvents = profileManager.didChange.subscribe()
         let tunnelEvents = tunnelManager.didChange.subscribe()
         let versionEvents = versionChecker.didChange.subscribe()
-        let webReceiverUploads = webReceiverManager.files
+        let webReceiverEvents = webReceiverManager.didChange.subscribe()
         subscriptions.append(Task {
             for await event in configEvents {
                 callback(context, .config(event))
@@ -149,8 +149,8 @@ public final class AppABI: Sendable {
             }
         })
         subscriptions.append(Task {
-            for await upload in webReceiverUploads {
-                callback(context, .webReceiver(.newUpload(upload)))
+            for await event in webReceiverEvents {
+                callback(context, .webReceiver(event))
             }
         })
     }
@@ -419,14 +419,6 @@ private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
 
     func refresh() {
         webReceiverManager.renewPasscode()
-    }
-
-    var isStarted: Bool {
-        webReceiverManager.isStarted
-    }
-
-    var website: ABI.WebsiteWithPasscode? {
-        webReceiverManager.website
     }
 }
 

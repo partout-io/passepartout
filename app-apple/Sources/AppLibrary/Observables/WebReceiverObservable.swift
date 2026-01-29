@@ -9,10 +9,16 @@ import Observation
 @MainActor @Observable
 public final class WebReceiverObservable {
     private let abi: AppABIWebReceiverProtocol
+    public private(set) var website: ABI.WebsiteWithPasscode?
     public let uploads: PassthroughStream<UniqueID, ABI.WebFileUpload>
+
+    public var isStarted: Bool {
+        website != nil
+    }
 
     public init(abi: AppABIWebReceiverProtocol) {
         self.abi = abi
+        website = nil
         uploads = PassthroughStream()
     }
 }
@@ -36,16 +42,12 @@ extension WebReceiverObservable {
 // MARK: - State
 
 extension WebReceiverObservable {
-    public var isStarted: Bool {
-        abi.isStarted
-    }
-
-    public var website: ABI.WebsiteWithPasscode? {
-        abi.website
-    }
-
     func onUpdate(_ event: ABI.WebReceiverEvent) {
         switch event {
+        case .start(let website):
+            self.website = website
+        case .stop:
+            website = nil
         case .newUpload(let upload):
             uploads.send(upload)
         }

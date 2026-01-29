@@ -60,10 +60,12 @@ private extension WebReceiverView {
 }
 
 private extension WebReceiverView {
-
     @Sendable
     func handleUploadedFile() async {
-        for await file in webReceiverManager.files {
+        for await event in webReceiverManager.didChange.subscribe() {
+            guard case .newUpload(let file) = event else {
+                continue
+            }
             pspLog(.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
             do {
                 try await profileManager.legacyImport(

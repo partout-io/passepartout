@@ -97,8 +97,6 @@ public protocol AppABIWebReceiverProtocol: Sendable {
     func start() throws
     func stop()
     func refresh()
-    var isStarted: Bool { get }
-    var website: ABI.WebsiteWithPasscode? { get }
 }
 
 // MARK: - Aggregate

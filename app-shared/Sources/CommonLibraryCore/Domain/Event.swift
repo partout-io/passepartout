@@ -54,6 +54,8 @@ extension ABI {
     }
 
     public enum WebReceiverEvent: Sendable {
+        case start(website: ABI.WebsiteWithPasscode)
+        case stop
         case newUpload(ABI.WebFileUpload)
     }
 }
