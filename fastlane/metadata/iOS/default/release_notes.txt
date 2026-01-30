@@ -1,3 +1,4 @@
+* Fix broken web upload server (#1677)
 * Fix broken profile search bar (#1674)
 * Fix missing preferences (#1672)
 * Fix blank screen when editing modules (#1671)
