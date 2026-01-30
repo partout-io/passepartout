@@ -122,7 +122,7 @@ public final class AppABI: Sendable {
         let profileEvents = profileManager.didChange.subscribe()
         let tunnelEvents = tunnelManager.didChange.subscribe()
         let versionEvents = versionChecker.didChange.subscribe()
-        let webReceiverUploads = webReceiverManager.files
+        let webReceiverEvents = webReceiverManager.didChange.subscribe()
         subscriptions.append(Task {
             for await event in configEvents {
                 callback(context, .config(event))
@@ -149,8 +149,17 @@ public final class AppABI: Sendable {
             }
         })
         subscriptions.append(Task {
-            for await upload in webReceiverUploads {
-                callback(context, .webReceiver(.newUpload(upload)))
+            for await event in webReceiverEvents {
+                switch event {
+                case .newUpload(let upload):
+                    do {
+                        try await onWebUpload(upload)
+                    } catch {
+                        callback(context, .webReceiver(.uploadFailure(error)))
+                    }
+                default:
+                    callback(context, .webReceiver(event))
+                }
             }
         })
     }
@@ -335,6 +344,10 @@ private struct AppABIProfile: AppABIProfileProtocol {
 private struct AppABIRegistry: AppABIRegistryProtocol {
     let registry: Registry
 
+    func importedProfile(from input: ABI.ProfileImporterInput) throws -> Profile {
+        try registry.importedProfile(from: input, passphrase: nil)
+    }
+
     func newModule(ofType type: ModuleType) -> any ModuleBuilder {
         type.newModule(with: registry)
     }
@@ -415,18 +428,6 @@ private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
 
     func stop() {
         webReceiverManager.stop()
-    }
-
-    func refresh() {
-        webReceiverManager.renewPasscode()
-    }
-
-    var isStarted: Bool {
-        webReceiverManager.isStarted
-    }
-
-    var website: ABI.WebsiteWithPasscode? {
-        webReceiverManager.website
     }
 }
 
@@ -598,6 +599,27 @@ private extension AppABI {
         }
         await pendingTask?.value
         pendingTask = nil
+    }
+
+    func onWebUpload(_ upload: ABI.WebFileUpload) async throws {
+        pspLog(.web, .info, "Uploaded: \(upload.name), \(upload.contents.count) bytes")
+        do {
+            // Import
+            var profile = try registry.importedProfile(
+                from: .contents(filename: upload.name, data: upload.contents),
+            )
+            // Add TV availability flag
+            var builder = profile.builder()
+            builder.attributes.isAvailableForTV = true
+            profile = try builder.build()
+            // Commit locally
+            try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
+            // Refresh web receiver
+            webReceiverManager.renewPasscode()
+        } catch {
+            pspLog(.web, .error, "Unable to import uploaded profile: \(error)")
+            throw error
+        }
     }
 
     @discardableResult

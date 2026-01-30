@@ -65,6 +65,7 @@ public protocol AppABIProfileProtocol: Sendable {
 
 @MainActor
 public protocol AppABIRegistryProtocol: Sendable {
+    func importedProfile(from input: ABI.ProfileImporterInput) throws -> Profile
     func newModule(ofType type: ModuleType) -> any ModuleBuilder
     func validate(_ builder: any ModuleBuilder) throws
     func implementation(for id: ModuleHandler.ID) -> ModuleImplementation?
@@ -96,9 +97,6 @@ public protocol AppABIVersionProtocol: Sendable {
 public protocol AppABIWebReceiverProtocol: Sendable {
     func start() throws
     func stop()
-    func refresh()
-    var isStarted: Bool { get }
-    var website: ABI.WebsiteWithPasscode? { get }
 }
 
 // MARK: - Aggregate

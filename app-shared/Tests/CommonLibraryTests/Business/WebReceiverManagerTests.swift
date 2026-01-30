@@ -15,11 +15,14 @@ extension WebReceiverManagerTests {
     func givenUploader_whenStart_thenReceivesFiles() async throws {
         let webReceiver = MockWebReceiver(file: ABI.WebFileUpload(name: "name", contents: "contents"))
         let sut = WebReceiverManager(webReceiver: webReceiver)
-        let stream = sut.files
+        let stream = sut.didChange.subscribe()
         let expReceive = Expectation()
         let expEnd = Expectation()
         Task {
-            for await file in stream {
+            for await event in stream {
+                guard case .newUpload(let file) = event else {
+                    continue
+                }
                 #expect(file.name == "name")
                 #expect(file.contents == "contents")
                 await expReceive.fulfill()

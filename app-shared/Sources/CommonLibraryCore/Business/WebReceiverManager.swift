@@ -16,8 +16,6 @@ public final class WebReceiverManager {
 
     private let passcodeGenerator: PasscodeGenerator?
 
-    private let filesStream: PassthroughStream<UniqueID, ABI.WebFileUpload>
-
     public var isStarted: Bool {
         website != nil
     }
@@ -28,11 +26,16 @@ public final class WebReceiverManager {
             objectWillChange.send()
 #endif
         }
+        didSet {
+            if let website {
+                didChange.send(.start(website: website))
+            } else {
+                didChange.send(.stop)
+            }
+        }
     }
 
-    public var files: AsyncStream<ABI.WebFileUpload> {
-        filesStream.subscribe()
-    }
+    public let didChange: PassthroughStream<UniqueID, ABI.WebReceiverEvent>
 
     public init(
         webReceiver: WebReceiver,
@@ -40,14 +43,14 @@ public final class WebReceiverManager {
     ) {
         self.webReceiver = webReceiver
         self.passcodeGenerator = passcodeGenerator
-        filesStream = PassthroughStream()
+        didChange = PassthroughStream()
     }
 
     public func start() throws {
         let passcode = passcodeGenerator?()
         do {
             let url = try webReceiver.start(passcode: passcode) { [weak self] in
-                self?.filesStream.send(ABI.WebFileUpload(name: $0, contents: $1))
+                self?.didChange.send(.newUpload(ABI.WebFileUpload(name: $0, contents: $1)))
             }
             website = ABI.WebsiteWithPasscode(url: url, passcode: passcode)
         } catch let error as WebReceiverError {
@@ -67,7 +70,7 @@ public final class WebReceiverManager {
 
     public func destroy() {
         stop()
-        filesStream.finish()
+        didChange.finish()
     }
 }
 
