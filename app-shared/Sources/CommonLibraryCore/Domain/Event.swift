@@ -57,6 +57,7 @@ extension ABI {
         case start(website: ABI.WebsiteWithPasscode)
         case stop
         case newUpload(ABI.WebFileUpload)
+        case uploadFailure(Error)
     }
 }
 

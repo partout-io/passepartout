@@ -20,7 +20,7 @@ struct WebReceiverView: View {
                 Text(Strings.Views.Tv.WebReceiver.toggle)
             }
         }
-        .task(handleUploadedFile)
+        .task(handleUploadFailure)
         .onDisappear {
             webReceiverObservable.stop()
         }
@@ -55,19 +55,10 @@ private extension WebReceiverView {
 }
 
 private extension WebReceiverView {
-
     @Sendable
-    func handleUploadedFile() async {
-        for await file in webReceiverObservable.uploads.subscribe() {
-            pspLog(.web, .info, "Uploaded: \(file.name), \(file.contents.count) bytes")
-            do {
-                // TODO: #1512, import encrypted OpenVPN profiles over the web
-                try await profileObservable.import(.contents(filename: file.name, data: file.contents))
-                webReceiverObservable.refresh()
-            } catch {
-                pspLog(.web, .error, "Unable to import uploaded profile: \(error)")
-                errorHandler.handle(error)
-            }
+    func handleUploadFailure() async {
+        for await error in webReceiverObservable.uploadFailure.subscribe() {
+            errorHandler.handle(error)
         }
     }
 }
