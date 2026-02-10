@@ -4,7 +4,6 @@
 
 import AppAccessibility
 import AppLibraryMain
-import AppLibraryMainLegacy
 import Combine
 import CommonLibrary
 import SwiftUI
@@ -59,36 +58,19 @@ extension PassepartoutApp {
 }
 
 private extension PassepartoutApp {
-    @ViewBuilder
     func menuBarView() -> some View {
-        if context.configObservable.isUsingObservables {
-            AppMenu(
-                profileObservable: context.profileObservable,
-                tunnel: context.tunnelObservable
-            )
-            .withEnvironment(from: context, theme: theme)
-            .environment(macSettings)
-            .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
-        } else {
-            LegacyAppMenu(
-                profileManager: context.profileManager,
-                tunnel: context.tunnel
-            )
-            .withEnvironment(from: context, theme: theme)
-            .environment(macSettings)
-            .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
-        }
+        AppMenu(
+            profileObservable: context.profileObservable,
+            tunnel: context.tunnelObservable
+        )
+        .withEnvironment(from: context, theme: theme)
+        .environment(macSettings)
+        .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
     }
 
-    @ViewBuilder
     func menuBarImage() -> some View {
-        if context.configObservable.isUsingObservables {
-            AppMenuImage(tunnel: context.tunnelObservable)
-                .environment(theme)
-        } else {
-            LegacyAppMenuImage(tunnel: context.tunnel)
-                .environment(theme)
-        }
+        AppMenuImage(tunnel: context.tunnelObservable)
+            .environment(theme)
     }
 }
 

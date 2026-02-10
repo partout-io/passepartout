@@ -24,9 +24,7 @@ private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
         .neSocketTCP,
-        .tunnelABI,
-        .observableMain,
-        .observableTV
+        .tunnelABI
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
@@ -38,10 +36,6 @@ private extension PreferencesAdvancedView {
             return V.neSocketTCP
         case .tunnelABI:
             return "Tunnel ABI"
-        case .observableMain:
-            return "Observable (Main)"
-        case .observableTV:
-            return "Observable (TV)"
         default:
             assertionFailure()
             return ""

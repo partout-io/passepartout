@@ -6,17 +6,10 @@ import CommonLibrary
 import SwiftUI
 
 public struct PurchasedView: View {
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
     public init() {}
 
     public var body: some View {
-        if configObservable.isUsingObservables {
-            NewPurchasedView()
-        } else {
-            LegacyPurchasedView()
-        }
+        NewPurchasedView()
     }
 }
 

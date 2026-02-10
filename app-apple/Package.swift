@@ -53,14 +53,9 @@ let package = Package(
             dependencies: ["AppLibrary"]
         ),
         .target(
-            name: "AppLibraryMainLegacy",
-            dependencies: ["AppLibrary"]
-        ),
-        .target(
             name: "AppLibraryMainWrapper",
             dependencies: [
-                .target(name: "AppLibraryMain", condition: .when(platforms: [.iOS, .macOS])),
-                .target(name: "AppLibraryMainLegacy", condition: .when(platforms: [.iOS, .macOS]))
+                .target(name: "AppLibraryMain", condition: .when(platforms: [.iOS, .macOS]))
             ],
             path: "Sources/Empty/AppLibraryMainWrapper"
         ),
@@ -69,14 +64,9 @@ let package = Package(
             dependencies: ["AppLibrary"]
         ),
         .target(
-            name: "AppLibraryTVLegacy",
-            dependencies: ["AppLibrary"]
-        ),
-        .target(
             name: "AppLibraryTVWrapper",
             dependencies: [
-                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS])),
-                .target(name: "AppLibraryTVLegacy", condition: .when(platforms: [.tvOS]))
+                .target(name: "AppLibraryTV", condition: .when(platforms: [.tvOS]))
             ],
             path: "Sources/Empty/AppLibraryTVWrapper"
         ),

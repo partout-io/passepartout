@@ -17,11 +17,7 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     let content: () -> Content
 
     public var body: some View {
-        if configObservable.isUsingObservables {
-            NewPurchaseRequiredView(features: features, force: force, content: content)
-        } else {
-            LegacyPurchaseRequiredView(features: features, force: force, content: content)
-        }
+        NewPurchaseRequiredView(features: features, force: force, content: content)
     }
 }
 
