@@ -229,29 +229,11 @@ private struct DynamicPaywallModifier: ViewModifier {
     var paywallReason: PaywallReason?
 
     func body(content: Content) -> some View {
-        if configObservable.isUsingObservables {
-            content.modifier(newModifier)
-        } else {
-            content.modifier(legacyModifier)
-        }
+        content.modifier(newModifier)
     }
 
     var newModifier: some ViewModifier {
         PaywallModifier(
-            reason: $paywallReason,
-            onAction: { action, _ in
-                switch action {
-                case .cancel:
-                    break
-                default:
-                    assertionFailure("Unhandled paywall action \(action)")
-                }
-            }
-        )
-    }
-
-    var legacyModifier: some ViewModifier {
-        LegacyPaywallModifier(
             reason: $paywallReason,
             onAction: { action, _ in
                 switch action {

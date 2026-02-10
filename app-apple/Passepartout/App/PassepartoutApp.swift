@@ -4,10 +4,8 @@
 
 #if os(iOS) || os(macOS)
 import AppLibraryMain
-import AppLibraryMainLegacy
 #elseif os(tvOS)
 import AppLibraryTV
-import AppLibraryTVLegacy
 #endif
 import CommonLibrary
 import SwiftUI
@@ -51,21 +49,11 @@ extension PassepartoutApp {
     }
 #endif
 
-    @ViewBuilder
     func contentView() -> some View {
-        if context.configObservable.isUsingObservables {
-            AppCoordinator(
-                profileObservable: context.profileObservable,
-                tunnel: context.tunnelObservable,
-                webReceiverObservable: context.webReceiverObservable
-            )
-        } else {
-            LegacyAppCoordinator(
-                profileManager: context.profileManager,
-                tunnel: context.tunnel,
-                registry: context.registry,
-                webReceiverManager: context.webReceiverManager
-            )
-        }
+        AppCoordinator(
+            profileObservable: context.profileObservable,
+            tunnel: context.tunnelObservable,
+            webReceiverObservable: context.webReceiverObservable
+        )
     }
 }

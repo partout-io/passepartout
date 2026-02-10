@@ -16,11 +16,7 @@ public struct DonateView<Modifier>: View where Modifier: ViewModifier {
     }
 
     public var body: some View {
-        if configObservable.isUsingObservables {
-            NewDonateView(modifier: modifier)
-        } else {
-            LegacyDonateView(modifier: modifier)
-        }
+        NewDonateView(modifier: modifier)
     }
 }
 
