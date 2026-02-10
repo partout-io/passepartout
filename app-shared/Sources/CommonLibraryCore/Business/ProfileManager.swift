@@ -412,9 +412,7 @@ extension ProfileManager {
         !allProfiles.isEmpty
     }
 
-    var previews: [ABI.ProfilePreview] {
-        allProfiles.map {
-            ABI.ProfilePreview($0.value)
-        }
+    var profiles: [Profile] {
+        Array(allProfiles.values)
     }
 }

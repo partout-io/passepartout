@@ -19,7 +19,7 @@ extension ProfileManagerTests {
         let sut = ProfileManager(profiles: [profile])
         #expect(!sut.isReady)
         #expect(!sut.hasProfiles)
-        #expect(sut.previews.isEmpty)
+        #expect(sut.profiles.isEmpty)
     }
 
     @Test
@@ -28,7 +28,7 @@ extension ProfileManagerTests {
         let sut = ProfileManager(repository: repository)
         #expect(!sut.isReady)
         #expect(!sut.hasProfiles)
-        #expect(sut.previews.isEmpty)
+        #expect(sut.profiles.isEmpty)
     }
 
     @Test
@@ -40,7 +40,7 @@ extension ProfileManagerTests {
         try await waitForReady(sut)
         #expect(sut.isReady)
         #expect(sut.hasProfiles)
-        #expect(sut.previews.count == 1)
+        #expect(sut.profiles.count == 1)
         #expect(sut.profile(withId: profile.id) == profile)
     }
 
@@ -78,8 +78,8 @@ extension ProfileManagerTests {
         try await waitForReady(sut)
         #expect(sut.isReady)
 
-        #expect(sut.previews.count == 1)
-        #expect(sut.previews.first?.name == "local2")
+        #expect(sut.profiles.count == 1)
+        #expect(sut.profiles.first?.name == "local2")
     }
 
     @Test
@@ -120,7 +120,7 @@ extension ProfileManagerTests {
         try await wait(sut, "Save", until: .localProfiles) {
             try await $0.save(profile)
         }
-        #expect(sut.previews.count == 1)
+        #expect(sut.profiles.count == 1)
         #expect(sut.profile(withId: profile.id) == profile)
     }
 
@@ -132,7 +132,7 @@ extension ProfileManagerTests {
 
         try await waitForReady(sut)
         #expect(sut.isReady)
-        #expect(sut.previews.first?.id == profile.id)
+        #expect(sut.profiles.first?.id == profile.id)
 
         var builder = profile.builder()
         builder.name = "newName"
@@ -141,7 +141,7 @@ extension ProfileManagerTests {
         try await wait(sut, "Save", until: .localProfiles) {
             try await $0.save(renamedProfile)
         }
-        #expect(sut.previews.first?.name == renamedProfile.name)
+        #expect(sut.profiles.first?.name == renamedProfile.name)
     }
 
     @Test
@@ -216,7 +216,7 @@ extension ProfileManagerTests {
         try await wait(sut, "Remove", until: .localProfiles) {
             await $0.remove(withId: profile.id)
         }
-        #expect(sut.previews.isEmpty)
+        #expect(sut.profiles.isEmpty)
     }
 }
 
@@ -287,7 +287,7 @@ extension ProfileManagerTests {
         let sut = ProfileManager(repository: repository)
 
         try await waitForReady(sut)
-        #expect(sut.previews.count == 1)
+        #expect(sut.profiles.count == 1)
 
         let newName = sut.firstUniqueName(from: profile.name)
         #expect(newName == "example.1")
@@ -304,19 +304,19 @@ extension ProfileManagerTests {
         try await wait(sut, "Duplicate 1", until: .localProfiles) {
             try await $0.duplicate(profileWithId: profile.id)
         }
-        #expect(sut.previews.count == 2)
+        #expect(sut.profiles.count == 2)
 
         try await wait(sut, "Duplicate 2", until: .localProfiles) {
             try await $0.duplicate(profileWithId: profile.id)
         }
-        #expect(sut.previews.count == 3)
+        #expect(sut.profiles.count == 3)
 
         try await wait(sut, "Duplicate 3", until: .localProfiles) {
             try await $0.duplicate(profileWithId: profile.id)
         }
-        #expect(sut.previews.count == 4)
+        #expect(sut.profiles.count == 4)
 
-        #expect(sut.previews.map(\.name).sorted() == [
+        #expect(sut.profiles.map(\.name).sorted() == [
             "example",
             "example.1",
             "example.2",
@@ -348,9 +348,9 @@ extension ProfileManagerTests {
             try await $0.observeLocal()
             try await $0.observeRemote(repository: remoteRepository)
         }
-        #expect(sut.previews.count == allProfiles.count)
+        #expect(sut.profiles.count == allProfiles.count)
 
-        #expect(Set(sut.previews) == Set(allProfiles.map { ABI.ProfilePreview($0) }))
+        #expect(Set(sut.profiles) == Set(allProfiles))
         localProfiles.forEach {
             #expect(!sut.isRemotelyShared(profileWithId: $0.id))
         }
@@ -383,9 +383,9 @@ extension ProfileManagerTests {
             try await $0.observeLocal()
             try await $0.observeRemote(repository: remoteRepository)
         }
-        #expect(sut.previews.count == 4) // unique IDs
+        #expect(sut.profiles.count == 4) // unique IDs
 
-        sut.previews.forEach {
+        sut.profiles.forEach {
             switch $0.id {
             case l1:
                 #expect($0.name == "remote1")
@@ -431,7 +431,7 @@ extension ProfileManagerTests {
         }
 
         #expect(processor.isIncludedCount == allProfiles.count)
-        #expect(Set(sut.previews) == Set(localProfiles.map { ABI.ProfilePreview($0) }))
+        #expect(Set(sut.profiles) == Set(localProfiles))
         localProfiles.forEach {
             #expect(!sut.isRemotelyShared(profileWithId: $0.id))
         }
@@ -464,7 +464,7 @@ extension ProfileManagerTests {
             try await $0.observeRemote(repository: remoteRepository)
         }
 
-        try sut.previews.forEach {
+        try sut.profiles.forEach {
             let profile = try #require(sut.profile(withId: $0.id))
             #expect(sut.isRemotelyShared(profileWithId: $0.id))
             switch $0.id {
@@ -494,7 +494,7 @@ extension ProfileManagerTests {
             try await $0.observeLocal()
             try await $0.observeRemote(repository: remoteRepository)
         }
-        #expect(sut.previews.count == localProfiles.count)
+        #expect(sut.profiles.count == localProfiles.count)
 
         let r1 = UniqueID()
         let r2 = UniqueID()
@@ -504,7 +504,7 @@ extension ProfileManagerTests {
         let fp3 = UniqueID()
 
         try await wait(sut, "Multiple imports", until: .stopRemoteImport) {
-            $0.previews.count == 5
+            $0.profiles.count == 5
         } after: { _ in
             remoteRepository.profiles = [
                 newProfile("remote1", id: r1)
@@ -551,13 +551,13 @@ extension ProfileManagerTests {
             try await $0.observeLocal()
             try await $0.observeRemote(repository: remoteRepository)
         }
-        #expect(sut.previews.count == 1)
+        #expect(sut.profiles.count == 1)
 
         try await wait(sut, "Remote reset", until: .stopRemoteImport) { _ in
             remoteRepository.profiles = []
         }
-        #expect(sut.previews.count == 1)
-        #expect(sut.previews.first == ABI.ProfilePreview(profile))
+        #expect(sut.profiles.count == 1)
+        #expect(sut.profiles.first == profile)
     }
 
     @Test
@@ -572,7 +572,7 @@ extension ProfileManagerTests {
             try await $0.observeLocal()
             try await $0.observeRemote(repository: remoteRepository)
         }
-        #expect(sut.previews.count == 1)
+        #expect(sut.profiles.count == 1)
 
         try await wait(sut, "Remote reset", until: .stopRemoteImport) { _ in
             remoteRepository.profiles = []
