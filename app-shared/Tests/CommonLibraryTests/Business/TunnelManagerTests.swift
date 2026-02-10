@@ -34,7 +34,7 @@ extension TunnelManagerTests {
         var didCall = false
         Task {
             for await _ in tunnelEvents {
-                if !didCall, sut.lastErrorCode(ofProfileId: profile.id) != nil {
+                if !didCall, sut.lastError(ofProfileId: profile.id) != nil {
                     didCall = true
                     await exp.fulfill()
                 }
@@ -43,7 +43,13 @@ extension TunnelManagerTests {
 
         try await tunnel.disconnect(from: profile.id)
         try await exp.fulfillment(timeout: 500)
-        #expect(sut.lastErrorCode(ofProfileId: profile.id) == .crypto)
+        let error = sut.lastError(ofProfileId: profile.id)
+        switch error {
+        case .partout(PartoutError(.crypto)):
+            break
+        default:
+            #expect(Bool(false), "Unexpected error: \(error)")
+        }
     }
 
     @Test
@@ -53,19 +59,21 @@ extension TunnelManagerTests {
             env
         }
         let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
-        let stream = sut.activeProfilesStream
+        let stream = sut.didChange.subscribe()
         let expectedDataCount = DataCount(500, 700)
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        #expect(await stream.nextElement() == [:])
-        let active = await stream.nextElement()
+        #expect(await stream.nextActiveProfiles() == [:])
+        let active = await stream.nextActiveProfiles()
 
-        #expect(active?.first?.key == profile.id)
+        #expect(active.first?.key == profile.id)
         env.setEnvironmentValue(expectedDataCount, forKey: TunnelEnvironmentKeys.dataCount)
-        #expect(sut.dataCount(ofProfileId: profile.id) == expectedDataCount)
+        let xfer = sut.transfer(ofProfileId: profile.id)
+        #expect(xfer?.sent == Int(expectedDataCount.sent))
+        #expect(xfer?.received == Int(expectedDataCount.received))
     }
 
     @Test
@@ -76,16 +84,16 @@ extension TunnelManagerTests {
         }
         let processor = MockTunnelProcessor()
         let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
-        let stream = sut.activeProfilesStream
+        let stream = sut.didChange.subscribe()
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        #expect(await stream.nextElement() == [:])
-        let active = await stream.nextElement()
+        #expect(await stream.nextActiveProfiles() == [:])
+        let active = await stream.nextActiveProfiles()
 
-        #expect(active?.first?.key == profile.id)
+        #expect(active.first?.key == profile.id)
 //        #expect(processor.titleCount == 1) // unused by FakeTunnelStrategy
         #expect(processor.willInstallCount == 1)
     }
@@ -98,16 +106,16 @@ extension TunnelManagerTests {
         }
         let processor = MockTunnelProcessor()
         let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
-        let stream = sut.activeProfilesStream
+        let stream = sut.didChange.subscribe()
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        #expect(await stream.nextElement() == [:])
-        let pulled = await stream.nextElement()
+        #expect(await stream.nextActiveProfiles() == [:])
+        let pulled = await stream.nextActiveProfiles()
 
-        #expect(pulled?.first?.key == profile.id)
+        #expect(pulled.first?.key == profile.id)
 //        #expect(processor.titleCount == 1) // unused by FakeTunnelStrategy
         #expect(processor.willInstallCount == 1)
     }
@@ -165,5 +173,16 @@ extension TunnelManagerTests {
             .forEach {
                 #expect($0.withEnvironment(env) == $0)
             }
+    }
+}
+
+private extension AsyncStream where Element == ABI.TunnelEvent {
+    func nextActiveProfiles() async -> [Profile.ID: ABI.AppProfileInfo] {
+        for await event in self {
+            if case .refresh(let active) = event {
+                return active
+            }
+        }
+        return [:]
     }
 }
