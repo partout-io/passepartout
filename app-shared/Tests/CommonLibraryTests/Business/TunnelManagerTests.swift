@@ -60,7 +60,7 @@ extension TunnelManagerTests {
         }
         let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
         let stream = sut.didChange.subscribe()
-        let expectedDataCount = DataCount(500, 700)
+        let expectedXfer = ABI.ProfileTransfer(received: 500, sent: 700)
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
@@ -70,10 +70,10 @@ extension TunnelManagerTests {
         let active = await stream.nextActiveProfiles()
 
         #expect(active.first?.key == profile.id)
-        env.setEnvironmentValue(expectedDataCount, forKey: TunnelEnvironmentKeys.dataCount)
+        let dataCount = DataCount(UInt(expectedXfer.received), UInt(expectedXfer.sent))
+        env.setEnvironmentValue(dataCount, forKey: TunnelEnvironmentKeys.dataCount)
         let xfer = sut.transfer(ofProfileId: profile.id)
-        #expect(xfer?.sent == Int(expectedDataCount.sent))
-        #expect(xfer?.received == Int(expectedDataCount.received))
+        #expect(xfer == expectedXfer)
     }
 
     @Test

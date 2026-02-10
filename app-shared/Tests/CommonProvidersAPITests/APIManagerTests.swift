@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !PSP_CROSS
+#if canImport(Combine)
 
 import Combine
 @testable import CommonProvidersAPI

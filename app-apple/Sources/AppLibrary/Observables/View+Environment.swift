@@ -28,6 +28,10 @@ extension View {
     }
 
     public func withMockEnvironment() -> some View {
+//        task {
+//            // FIXME: #1683, Previews
+//            try? await ProfileObservable.forPreviews.observeLocal()
+//        }
         withEnvironment(from: .forPreviews, theme: Theme())
     }
 }
