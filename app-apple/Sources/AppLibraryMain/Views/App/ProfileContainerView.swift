@@ -83,7 +83,7 @@ private struct ContainerModifier: ViewModifier {
             )
             .searchable(text: $search)
             .onChange(of: search) {
-                profileObservable.search(byName: $0)
+                profileObservable.search(byName: $1)
             }
     }
 

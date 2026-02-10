@@ -38,7 +38,7 @@ extension TunnelStatus {
 }
 
 extension TunnelObservable {
-    public func statusImageName(ofProfileId profileId: ABI.AppIdentifier) -> Theme.ImageName? {
+    public func statusImageName(ofProfileId profileId: Profile.ID) -> Theme.ImageName? {
         activeProfiles[profileId]?.status.imageName
     }
 
@@ -58,7 +58,7 @@ extension TunnelObservable {
     }
 }
 
-private extension ABI.AppProfile.Status {
+private extension ABI.AppProfileStatus {
     var imageName: Theme.ImageName? {
         switch self {
         case .connected:
@@ -66,46 +66,6 @@ private extension ABI.AppProfile.Status {
         case .connecting, .disconnecting:
             return .pending
         case .disconnected:
-            return nil
-        }
-    }
-}
-
-@available(*, deprecated, message: "#1594")
-extension TunnelManager {
-    public func statusImageName(ofProfileId profileId: Profile.ID) -> Theme.ImageName? {
-        connectionStatus(ofProfileId: profileId).imageName
-    }
-
-    public func statusColor(ofProfileId profileId: Profile.ID, _ theme: Theme) -> Color {
-        if lastErrorCode(ofProfileId: profileId) != nil {
-            switch status(ofProfileId: profileId) {
-            case .inactive:
-                return theme.inactiveColor
-            default:
-                return theme.errorColor
-            }
-        }
-        switch connectionStatus(ofProfileId: profileId) {
-        case .active:
-            return theme.activeColor
-        case .activating, .deactivating:
-            return theme.pendingColor
-        case .inactive:
-            return activeProfiles[profileId]?.onDemand == true ? theme.pendingColor : theme.inactiveColor
-        }
-    }
-}
-
-@available(*, deprecated, message: "#1594")
-private extension TunnelStatus {
-    var imageName: Theme.ImageName? {
-        switch self {
-        case .active:
-            return .marked
-        case .activating, .deactivating:
-            return .pending
-        case .inactive:
             return nil
         }
     }

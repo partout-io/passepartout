@@ -5,7 +5,6 @@
 import Combine
 import CommonLibrary
 
-// FIXME: #1594, Improve preferences design
 public final class ProviderPreferences: ObservableObject, ProviderPreferencesRepository {
     private var repository: ProviderPreferencesRepository?
 

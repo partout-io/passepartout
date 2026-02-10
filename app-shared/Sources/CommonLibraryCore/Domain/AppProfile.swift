@@ -4,29 +4,46 @@
 
 import Partout
 
-// FIXME: #1594, Dumb wrappings, should not be public
 extension ABI {
-    public struct AppProfile: Identifiable, Hashable, Sendable {
-        public let native: Profile
+    // FIXME: #1680, Rename to something else without "App" prefix
+    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
+        public private(set) var id: Profile.ID
+        public let name: String
+        public let moduleTypes: [String]
+        public let fingerprint: String
+        public let sharingFlags: [ProfileSharingFlag]
+        public let requiredFeatures: Set<AppFeature>
 
-        public var id: ABI.AppIdentifier {
-            native.id
+        public init(id: Profile.ID, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag], requiredFeatures: Set<AppFeature>) {
+            self.id = id
+            self.name = name
+            self.moduleTypes = moduleTypes
+            self.fingerprint = fingerprint
+            self.sharingFlags = sharingFlags
+            self.requiredFeatures = requiredFeatures
         }
 
-        public init(native: Profile) {
-            self.native = native
+        public static func < (lhs: Self, rhs: Self) -> Bool {
+            lhs.name.lowercased() < rhs.name.lowercased()
         }
     }
 
-    public struct AppModule: Identifiable, Sendable {
-        public let native: Module
+    public enum AppProfileStatus: Int, Codable, Sendable {
+        case disconnected
+        case connecting
+        case connected
+        case disconnecting
+    }
 
-        public var id: ABI.AppIdentifier {
-            native.id
-        }
+    public struct AppProfileInfo: Identifiable, Hashable, Codable, Sendable {
+        public let id: Profile.ID
+        public let status: AppProfileStatus
+        public let onDemand: Bool
 
-        public init(native: Module) {
-            self.native = native
+        public init(id: Profile.ID, status: AppProfileStatus, onDemand: Bool) {
+            self.id = id
+            self.status = status
+            self.onDemand = onDemand
         }
     }
 }

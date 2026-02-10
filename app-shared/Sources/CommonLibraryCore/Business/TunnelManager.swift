@@ -4,10 +4,6 @@
 
 @preconcurrency import Partout
 
-#if !PSP_CROSS
-extension TunnelManager: ObservableObject {}
-#endif
-
 @MainActor
 public final class TunnelManager {
     public static nonisolated let isManualKey = "isManual"
@@ -134,13 +130,27 @@ extension TunnelManager {
 // MARK: - State
 
 extension TunnelManager {
-    public func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
+    public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
+        tunnel.activeProfiles.keys.contains(profileId)
+    }
+
+    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+        activeProfiles[profileId]?.status ?? .inactive
+    }
+
+    public func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
         dataCount(ofProfileId: profileId)?.abiTransfer
     }
 
-    public func lastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
+    public func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError? {
         guard let code = lastErrorCode(ofProfileId: profileId) else { return nil }
         return ABI.AppError.partout(PartoutError(code))
+    }
+
+    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T? where T: Decodable {
+        tunnel
+            .environment(for: profileId)?
+            .environmentValue(forKey: key)
     }
 }
 
@@ -158,15 +168,10 @@ private extension TunnelManager {
                     pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break
                 }
-#if !PSP_CROSS
-                objectWillChange.send()
-#endif
-
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = newActiveProfiles.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
-
                 // Publish compound statuses
                 didChange.send(.refresh(computedProfileInfos(from: newActiveProfiles)))
             }
@@ -181,11 +186,7 @@ private extension TunnelManager {
                     pspLog(.core, .debug, "Cancelled TunnelManager.timerSubscription")
                     break
                 }
-#if !PSP_CROSS
-                objectWillChange.send()
-#endif
                 didChange.send(.dataCount)
-
                 try? await Task.sleep(interval: interval)
             }
         }
@@ -230,7 +231,7 @@ private extension TunnelManager {
         )
     }
 
-    func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppProfile.Status {
+    func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppProfileStatus {
         let status = status(ofProfileId: profileId)
         guard let environment = tunnel.environment(for: profileId) else {
             return status.abiStatus
@@ -238,10 +239,10 @@ private extension TunnelManager {
         return status.withEnvironment(environment).abiStatus
     }
 
-    func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [ABI.AppIdentifier: ABI.AppProfile.Info] {
+    func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [Profile.ID: ABI.AppProfileInfo] {
         var info = activeProfiles.mapValues {
             let profileStatus = profileStatus(ofProfileId: $0.id)
-            return ABI.AppProfile.Info(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
+            return ABI.AppProfileInfo(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
         }
         if info.isEmpty, let last = lastUsedProfile {
             info = [last.id: last.abiInfo]
@@ -269,21 +270,10 @@ extension TunnelStatus {
     }
 }
 
-// MARK: - Deprecated
+// MARK: - Internal state
 
-@available(*, deprecated, message: "#1594")
-extension TunnelManager {
-    public var activeProfilesStream: AsyncStream<[Profile.ID: TunnelActiveProfile]> {
-        tunnel.activeProfilesStream
-    }
-
-#if os(iOS) || os(tvOS)
-    public var activeProfile: TunnelActiveProfile? {
-        tunnel.activeProfile
-    }
-#endif
-
-    public var activeProfiles: [Profile.ID: TunnelActiveProfile] {
+private extension TunnelManager {
+    var activeProfiles: [Profile.ID: TunnelActiveProfile] {
         guard !tunnel.activeProfiles.isEmpty else {
             if let last = lastUsedProfile {
                 return [last.id: last]
@@ -293,15 +283,7 @@ extension TunnelManager {
         return tunnel.activeProfiles
     }
 
-    public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        tunnel.activeProfiles.keys.contains(profileId)
-    }
-
-    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        activeProfiles[profileId]?.status ?? .inactive
-    }
-
-    public func connectionStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+    func connectionStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
         let status = status(ofProfileId: profileId)
         guard let environment = tunnel.environment(for: profileId) else {
             return status
@@ -309,21 +291,15 @@ extension TunnelManager {
         return status.withEnvironment(environment)
     }
 
-    public func dataCount(ofProfileId profileId: Profile.ID) -> DataCount? {
+    func dataCount(ofProfileId profileId: Profile.ID) -> DataCount? {
         tunnel
             .environment(for: profileId)?
             .environmentValue(forKey: TunnelEnvironmentKeys.dataCount)
     }
 
-    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
+    func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
         tunnel
             .environment(for: profileId)?
             .environmentValue(forKey: TunnelEnvironmentKeys.lastErrorCode)
-    }
-
-    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T? where T: Decodable {
-        tunnel
-            .environment(for: profileId)?
-            .environmentValue(forKey: key)
     }
 }

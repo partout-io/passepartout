@@ -24,15 +24,6 @@ extension EnvironmentValues {
             self[AppConfigurationKey.self] = newValue
         }
     }
-
-    public var logFormatterBlock: LogFormatterBlock {
-        get {
-            self[LogFormatterBlockKey.self]
-        }
-        set {
-            self[LogFormatterBlockKey.self] = newValue
-        }
-    }
 }
 
 private struct IsUITestingKey: EnvironmentKey {

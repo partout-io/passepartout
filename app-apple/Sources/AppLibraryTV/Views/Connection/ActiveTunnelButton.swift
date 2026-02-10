@@ -12,7 +12,7 @@ struct ActiveTunnelButton: View {
 
     let tunnel: TunnelObservable
 
-    let profile: ABI.AppProfile?
+    let profile: Profile?
 
     @FocusState.Binding
     var focusedField: ConnectionView.Field?

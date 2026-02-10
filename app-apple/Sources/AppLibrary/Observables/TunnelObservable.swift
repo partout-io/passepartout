@@ -10,8 +10,8 @@ public final class TunnelObservable {
     private let abi: AppABITunnelProtocol
     private let formatter: LogFormatter?
 
-    public private(set) var activeProfiles: [ABI.AppIdentifier: ABI.AppProfile.Info]
-    public private(set) var transfers: [ABI.AppIdentifier: ABI.ProfileTransfer]
+    public private(set) var activeProfiles: [Profile.ID: ABI.AppProfileInfo]
+    public private(set) var transfers: [Profile.ID: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
     public init(abi: AppABITunnelProtocol, formatter: LogFormatter?) {
@@ -25,19 +25,19 @@ public final class TunnelObservable {
 // MARK: - Actions
 
 extension TunnelObservable {
-//    public func connect(to profileId: ABI.AppIdentifier, force: Bool = false) async throws {
+//    public func connect(to profileId: Profile.ID, force: Bool = false) async throws {
 //        try await abi.connect(to: profileId, force: force)
 //    }
 
-    public func connect(to profile: ABI.AppProfile, force: Bool = false) async throws {
+    public func connect(to profile: Profile, force: Bool = false) async throws {
         try await abi.connect(to: profile, force: force)
     }
 
-//    public func reconnect(to profileId: ABI.AppIdentifier) async throws {
+//    public func reconnect(to profileId: Profile.ID) async throws {
 //        try await abi.reconnect(to: profileId)
 //    }
 
-    public func disconnect(from profileId: ABI.AppIdentifier) async throws {
+    public func disconnect(from profileId: Profile.ID) async throws {
         try await abi.disconnect(from: profileId)
     }
 
@@ -51,23 +51,23 @@ extension TunnelObservable {
 // MARK: - State
 
 extension TunnelObservable {
-    public var activeProfile: ABI.AppProfile.Info? {
+    public var activeProfile: ABI.AppProfileInfo? {
         activeProfiles.first?.value
     }
 
-    public func isActiveProfile(withId profileId: ABI.AppIdentifier) -> Bool {
+    public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
         activeProfiles.keys.contains(profileId)
     }
 
-    public func status(for profileId: ABI.AppIdentifier) -> ABI.AppProfile.Status {
+    public func status(for profileId: Profile.ID) -> ABI.AppProfileStatus {
         activeProfiles[profileId]?.status ?? .disconnected
     }
 
-    public func lastError(for profileId: ABI.AppIdentifier) -> ABI.AppError? {
+    public func lastError(for profileId: Profile.ID) -> ABI.AppError? {
         abi.lastError(ofProfileId: profileId)
     }
 
-    public func openVPNServerConfiguration(for profileId: ABI.AppIdentifier) -> OpenVPN.Configuration? {
+    public func openVPNServerConfiguration(for profileId: Profile.ID) -> OpenVPN.Configuration? {
         abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
     }
 

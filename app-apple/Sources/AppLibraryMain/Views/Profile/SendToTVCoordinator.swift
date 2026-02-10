@@ -35,7 +35,7 @@ private extension SendToTVCoordinator {
             )
         )
         do {
-            let encodedProfile = try appEncoder.json(fromProfile: ABI.AppProfile(native: profile))
+            let encodedProfile = try appEncoder.json(fromProfile: profile)
             try await client.send(
                 encodedProfile,
                 filename: profile.name,

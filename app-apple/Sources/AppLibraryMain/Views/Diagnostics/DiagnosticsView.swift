@@ -136,13 +136,16 @@ private extension DiagnosticsView {
 }
 
 private extension DiagnosticsView {
+    // FIXME: #1680, Use AppProfileHeader here?
     var activeProfiles: [Profile] {
         tunnel.activeProfiles
             .values
             .compactMap {
-                profileObservable.profile(withId: $0.id)?.native
+                profileObservable.profile(withId: $0.id)
             }
-            .sorted(by: Profile.sorting)
+            .sorted {
+                $0.name.lowercased() < $1.name.lowercased()
+            }
     }
 
     var canReportIssue: Bool {

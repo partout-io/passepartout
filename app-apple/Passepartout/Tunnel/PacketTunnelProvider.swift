@@ -5,8 +5,6 @@
 import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
-// FIXME: #1594, Drop import
-import Partout
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var abi: TunnelABIProtocol?
@@ -53,14 +51,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }()
 
         // Update or fetch existing preferences
-        let (kvStore, preferences) = {
+        let preferences = {
             let kvStore = appConfiguration.newKeyValueStore()
             if let startPreferences {
                 kvStore.preferences = startPreferences
-                return (kvStore, startPreferences)
-            } else {
-                return (kvStore, kvStore.preferences)
             }
+            return kvStore.preferences
         }()
 
         // Defer to ABI

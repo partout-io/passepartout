@@ -5,7 +5,6 @@
 import Combine
 import CommonLibrary
 
-// FIXME: #1594, Improve preferences design
 public final class ModulePreferences: ObservableObject, ModulePreferencesRepository {
     private var repository: ModulePreferencesRepository?
 

@@ -111,32 +111,8 @@ extension WebReceiverObservable {
     }
 }
 
-// MARK: - Shortcuts (deprecated)
-
-extension IAPManager {
-    public static var forPreviews: IAPManager {
-        AppContext.forPreviews.iapManager
-    }
-}
-
-extension ProfileManager {
-    public static var forPreviews: ProfileManager {
-        AppContext.forPreviews.profileManager
-    }
-}
-
-extension TunnelManager {
-    public static var forPreviews: TunnelManager {
-        AppContext.forPreviews.tunnel
-    }
-}
-
 extension APIManager {
     public static var forPreviews: APIManager {
         AppContext.forPreviews.apiManager
     }
-}
-
-extension WebReceiverManager {
-    public static let forPreviews = WebReceiverManager()
 }

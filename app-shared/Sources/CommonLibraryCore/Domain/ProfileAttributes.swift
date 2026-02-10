@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Make internal
+// FIXME: #1680, Make internal
 import Partout
 
 extension ProfileType where UserInfoType == JSON {

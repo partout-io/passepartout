@@ -29,7 +29,7 @@ struct IPView: View, ModuleDraftEditing {
         .moduleView(draft: draft)
         .themeModal(item: $routePresentation, content: routeModal)
         .onLoad(perform: loadSubnets)
-        .onChange(of: subnets, perform: saveSubnets)
+        .onChange(of: subnets, saveSubnets)
     }
 }
 
@@ -202,7 +202,7 @@ private extension IPView {
         }
     }
 
-    func saveSubnets(_ newSubnets: [Address.Family: String]) {
+    func saveSubnets(_: [Address.Family: String], newSubnets: [Address.Family: String]) {
         newSubnets.forEach { pair in
             let subnet = Subnet(rawValue: pair.value)
             switch pair.key {

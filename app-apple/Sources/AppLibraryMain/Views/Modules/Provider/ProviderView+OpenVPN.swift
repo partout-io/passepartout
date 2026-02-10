@@ -39,9 +39,7 @@ extension ProviderView {
             .themeForm()
             .navigationTitle(Strings.Modules.Openvpn.credentials)
             .onLoad(perform: onLoad)
-            .onChange(of: builder) { _ in
-                saveCredentials()
-            }
+            .onChange(of: builder, saveCredentials)
         }
     }
 }

@@ -14,7 +14,7 @@ struct ActiveProfileView: View {
     @EnvironmentObject
     private var apiManager: APIManager
 
-    let profile: ABI.AppProfile?
+    let profile: Profile?
 
     let tunnel: TunnelObservable
 
@@ -57,7 +57,7 @@ struct ActiveProfileView: View {
 
 private extension ActiveProfileView {
     var activeProfileView: some View {
-        Text(profile?.native.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title)
             .fontWeight(theme.relevantWeight)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -71,14 +71,14 @@ private extension ActiveProfileView {
             .brightness(0.2)
     }
 
-    func detailView(for profile: ABI.AppProfile) -> some View {
+    func detailView(for profile: Profile) -> some View {
         VStack(spacing: 10) {
-            if let primaryType = profile.native.localizedDescription(optionalStyle: .primaryType) {
+            if let primaryType = profile.localizedDescription(optionalStyle: .primaryType) {
                 ListRowView(title: Strings.Global.Nouns.protocol) {
                     Text(primaryType)
                 }
             }
-            if let pair = profile.native.activeProviderModule {
+            if let pair = profile.activeProviderModule {
                 if let provider = apiManager.provider(withId: pair.providerId) {
                     ListRowView(title: Strings.Global.Nouns.provider) {
                         Text(provider.description)
@@ -90,7 +90,7 @@ private extension ActiveProfileView {
                     }
                 }
             }
-            if let secondaryTypes = profile.native.localizedDescription(optionalStyle: .secondaryTypes) {
+            if let secondaryTypes = profile.localizedDescription(optionalStyle: .secondaryTypes) {
                 ListRowView(title: secondaryTypes) {
                     EmptyView()
                 }
@@ -197,7 +197,7 @@ private struct ContentPreview: View {
 
     var body: some View {
         ActiveProfileView(
-            profile: ABI.AppProfile(native: profile),
+            profile: profile,
             tunnel: .forPreviews,
             isSwitching: $isSwitching,
             focusedField: $focusedField,

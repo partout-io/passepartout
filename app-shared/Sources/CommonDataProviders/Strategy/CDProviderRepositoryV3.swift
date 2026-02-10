@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CoreData
-// FIXME: #1594, Drop import (ModuleType)
 import Partout
 
 final class CDProviderRepositoryV3: ProviderRepository {

@@ -2,13 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Drop import (do not expose Partout to UI)
 import Partout
 
 @MainActor
 public final class AppABI: Sendable {
-    // MARK: Business
-
+    // Public ABI by domain
     public let config: AppABIConfigProtocol
     public let encoder: AppABIEncoderProtocol
     public let iap: AppABIIAPProtocol
@@ -17,37 +15,28 @@ public final class AppABI: Sendable {
     public let tunnel: AppABITunnelProtocol
     public let version: AppABIVersionProtocol
     public let webReceiver: AppABIWebReceiverProtocol
+    // Legacy managers not migrated to ABI, exposed as is
+    @available(*, deprecated, message: "#1679")
+    public let apiManager: APIManager
+    @available(*, deprecated, message: "#1679")
+    public let preferencesManager: PreferencesManager
+
+    // Constants and storage
+    private let appConfiguration: ABI.AppConfiguration
+    private let kvStore: KeyValueStore
+    // Managers wrapped in ABI
+    private let configManager: ConfigManager
+    private let extensionInstaller: ExtensionInstaller?
+    private let iapManager: IAPManager
+    private let logFormatter: LogFormatter
+    private let profileManager: ProfileManager
+    private let tunnelManager: TunnelManager
+    private let versionChecker: VersionChecker
+    private let webReceiverManager: WebReceiverManager
+    // Purchases handler
     private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
 
-    // FIXME: #1594, Drop these after observables
-    @available(*, deprecated, message: "#1594")
-    public let apiManager: APIManager
-    @available(*, deprecated, message: "#1594")
-    public let appEncoder: AppEncoder
-    @available(*, deprecated, message: "#1594")
-    public let configManager: ConfigManager
-    @available(*, deprecated, message: "#1594")
-    public let iapManager: IAPManager
-    @available(*, deprecated, message: "#1594")
-    public let preferencesManager: PreferencesManager
-    @available(*, deprecated, message: "#1594")
-    public let profileManager: ProfileManager
-    @available(*, deprecated, message: "#1594")
-    public let partoutRegistry: Registry
-    @available(*, deprecated, message: "#1594")
-    public let tunnelManager: TunnelManager
-    @available(*, deprecated, message: "#1594")
-    private let versionChecker: VersionChecker
-    @available(*, deprecated, message: "#1594")
-    public let webReceiverManager: WebReceiverManager
-
-    // MARK: Internal state
-
-    private let appConfiguration: ABI.AppConfiguration
-    private let extensionInstaller: ExtensionInstaller?
-    private let kvStore: KeyValueStore
-    private let logFormatter: LogFormatter
-
+    // Internal state
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?
@@ -70,21 +59,20 @@ public final class AppABI: Sendable {
         webReceiverManager: WebReceiverManager,
         onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
-        self.apiManager = apiManager
         self.appConfiguration = appConfiguration
-        self.appEncoder = appEncoder
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
         self.kvStore = kvStore
         self.logFormatter = logFormatter
-        self.preferencesManager = preferencesManager
         self.profileManager = profileManager
-        self.partoutRegistry = partoutRegistry
         self.tunnelManager = tunnelManager
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
+        self.apiManager = apiManager
+        self.preferencesManager = preferencesManager
+
         subscriptions = []
 
         iapManager.isEnabled = appConfiguration.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
@@ -196,20 +184,20 @@ private struct AppABIConfig: AppABIConfigProtocol {
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
 
-    func defaultFilename(for profile: ABI.AppProfile) -> String {
-        appEncoder.defaultFilename(for: profile.native)
+    func defaultFilename(for profile: Profile) -> String {
+        appEncoder.defaultFilename(for: profile)
     }
 
-    func profile(fromString string: String) throws -> ABI.AppProfile {
-        try ABI.AppProfile(native: appEncoder.profile(fromString: string))
+    func profile(fromString string: String) throws -> Profile {
+        try appEncoder.profile(fromString: string)
     }
 
-    func json(fromProfile profile: ABI.AppProfile) throws -> String {
-        try appEncoder.json(fromProfile: profile.native)
+    func json(fromProfile profile: Profile) throws -> String {
+        try appEncoder.json(fromProfile: profile)
     }
 
-    func writeToFile(_ profile: ABI.AppProfile) throws -> String {
-        try appEncoder.writeToFile(profile.native)
+    func writeToFile(_ profile: Profile) throws -> String {
+        try appEncoder.writeToFile(profile)
     }
 }
 
@@ -227,7 +215,7 @@ private struct AppABIIAP: AppABIIAPProtocol {
         kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
     }
 
-    func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
+    func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
         try iapManager.verify(profile, extra: extra)
     }
 
@@ -243,8 +231,8 @@ private struct AppABIIAP: AppABIIAPProtocol {
         try await iapManager.restorePurchases()
     }
 
-    func suggestedProducts(for features: Set<ABI.AppFeature>) -> Set<ABI.AppProduct> {
-        iapManager.suggestedProducts(for: features)
+    func suggestedProducts(for features: Set<ABI.AppFeature>, including inclusions: Set<IAPManager.SuggestionInclusion>) -> Set<ABI.AppProduct> {
+        iapManager.suggestedProducts(for: features, including: inclusions)
     }
 
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
@@ -288,12 +276,12 @@ private struct AppABIProfile: AppABIProfileProtocol {
     let profileManager: ProfileManager
     let registry: Registry
 
-    func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile? {
+    func profile(withId id: Profile.ID) -> Profile? {
         profileManager.profile(withId: id)
     }
 
-    func save(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws {
-        try await profileManager.save(profile.native, isLocal: true, remotelyShared: remotelyShared)
+    func save(_ profile: Profile, remotelyShared: Bool?) async throws {
+        try await profileManager.save(profile, isLocal: true, remotelyShared: remotelyShared)
     }
 
     func saveAll() async {
@@ -316,24 +304,20 @@ private struct AppABIProfile: AppABIProfileProtocol {
         try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
     }
 
-    func duplicate(_ id: ABI.AppIdentifier) async throws {
+    func duplicate(_ id: Profile.ID) async throws {
         try await profileManager.duplicate(profileWithId: id)
     }
 
-    func remove(_ id: ABI.AppIdentifier) async {
+    func remove(_ id: Profile.ID) async {
         await profileManager.remove(withId: id)
     }
 
-    func remove(_ ids: [ABI.AppIdentifier]) async {
+    func remove(_ ids: [Profile.ID]) async {
         await profileManager.remove(withIds: ids)
     }
 
     func removeAllRemote() async throws {
         try await profileManager.eraseRemotelySharedProfiles()
-    }
-
-    func isRemotelyShared(_ id: ABI.AppIdentifier) -> Bool {
-        profileManager.isRemotelyShared(profileWithId: id)
     }
 
     var isRemoteImportingEnabled: Bool {
@@ -348,8 +332,8 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
         try registry.importedProfile(from: input, passphrase: nil)
     }
 
-    func newModule(ofType type: ModuleType) -> any ModuleBuilder {
-        type.newModule(with: registry)
+    func newModule(ofType moduleType: ModuleType) -> any ModuleBuilder {
+        registry.newModule(ofType: moduleType)
     }
 
     func validate(_ builder: any ModuleBuilder) throws {
@@ -372,15 +356,15 @@ private struct AppABITunnel: AppABITunnelProtocol {
     let tunnelManager: TunnelManager
     let logParameters: ABI.Constants.Log
 
-    func connect(to profile: ABI.AppProfile, force: Bool) async throws {
-        try await tunnelManager.connect(with: profile.native, force: force)
+    func connect(to profile: Profile, force: Bool) async throws {
+        try await tunnelManager.connect(with: profile, force: force)
     }
 
 //    func reconnect(to profileId: ABI.Identifier) async throws {
 //        try await tunnel.
 //    }
 
-    func disconnect(from profileId: ABI.AppIdentifier) async throws {
+    func disconnect(from profileId: Profile.ID) async throws {
         try await tunnelManager.disconnect(from: profileId)
     }
 
@@ -388,15 +372,15 @@ private struct AppABITunnel: AppABITunnelProtocol {
         await tunnelManager.currentLog(parameters: logParameters)
     }
 
-    func lastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError? {
+    func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError? {
         tunnelManager.lastError(ofProfileId: profileId)
     }
 
-    func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer? {
+    func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
         tunnelManager.transfer(ofProfileId: profileId)
     }
 
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: ABI.AppIdentifier) -> Any? {
+    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any? {
         switch key {
         case .openVPNServerConfiguration:
             tunnelManager.value(
@@ -481,13 +465,13 @@ private extension AppABI {
             for await event in iapEvents {
                 switch event {
                 case .status(let isEnabled):
-                    // FIXME: #1594, .dropFirst() + .removeDuplicates()
+                    // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
                     kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let features):
-                    // FIXME: #1594, .dropFirst() + .removeDuplicates()
+                    // XXX: This was on .dropFirst() + .removeDuplicates()
                     do {
                         pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
                         try await onEligibleFeatures(features)

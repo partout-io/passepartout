@@ -78,7 +78,7 @@ private extension ProfileListView {
                     style: .installedProfile,
                     profileObservable: profileObservable,
                     tunnel: tunnel,
-                    preview: .init(profile.native),
+                    preview: .init(profile),
                     errorHandler: errorHandler,
                     flow: flow
                 )

@@ -6,9 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct ModuleDynamicPaywallModifier: ViewModifier {
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
     @Binding
     private var paywallReason: PaywallReason?
 

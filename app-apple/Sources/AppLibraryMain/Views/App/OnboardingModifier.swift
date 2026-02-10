@@ -38,12 +38,12 @@ struct OnboardingModifier: ViewModifier {
             )
             .onLoad(perform: deferCurrentStep)
             .onChange(of: modalRoute) {
-                if $0 == nil {
+                if $1 == nil {
                     advance()
                 }
             }
             .onChange(of: isAlertPresented) {
-                if !$0 {
+                if !$1 {
                     advance()
                 }
             }

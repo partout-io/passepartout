@@ -50,34 +50,6 @@ extension PaywallCoordinator.Model {
         }
     }
 
-    @available(*, deprecated, message: "#1594")
-    func fetchAvailableProducts(
-        for requiredFeatures: Set<ABI.AppFeature>,
-        with iapManager: IAPManager
-    ) async throws {
-        guard isFetchingProducts else {
-            return
-        }
-        isFetchingProducts = true
-        defer {
-            isFetchingProducts = false
-        }
-        do {
-            let rawProducts = iapManager.suggestedProducts(for: requiredFeatures)
-            guard !rawProducts.isEmpty else {
-                throw ABI.AppError.emptyProducts
-            }
-            let rawSortedProducts = rawProducts.sorted {
-                $0.productRank < $1.productRank
-            }
-            let purchasable = try await iapManager.fetchPurchasableProducts(for: rawSortedProducts)
-            try setSuggestedProducts(rawProducts, purchasable: purchasable)
-        } catch {
-            pspLog(.iap, .error, "Unable to load purchasable products: \(error)")
-            throw error
-        }
-    }
-
     func setSuggestedProducts(
         _ suggestedProducts: Set<ABI.AppProduct>,
         purchasable: [ABI.StoreProduct]
@@ -124,7 +96,6 @@ private extension ABI.AppProduct {
 }
 
 extension PaywallCoordinator.Model {
-
     @MainActor
     static func forPreviews(
         _ features: Set<ABI.AppFeature>,
@@ -132,7 +103,7 @@ extension PaywallCoordinator.Model {
     ) -> PaywallCoordinator.Model {
         let state = PaywallCoordinator.Model()
         state.isFetchingProducts = false
-        let suggested = IAPManager.forPreviews.suggestedProducts(
+        let suggested = IAPObservable.forPreviews.suggestedProducts(
             for: features,
             including: including
         )

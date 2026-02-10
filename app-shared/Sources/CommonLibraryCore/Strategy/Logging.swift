@@ -170,13 +170,6 @@ private extension PartoutLogger {
     }
 }
 
-@available(*, deprecated, message: "#1594")
-extension PartoutLogger {
-    public func currentLog(parameters: ABI.Constants.Log) -> [String] {
-        currentLog(sinceLast: parameters.sinceLast, maxLevel: parameters.options.maxLevel)
-    }
-}
-
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
         to url: URL,

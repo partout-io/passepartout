@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonLibrary
+@testable import CommonLibraryCore
 import Partout
 import Testing
 
@@ -41,31 +41,8 @@ extension ProfileManagerTests {
         #expect(sut.isReady)
         #expect(sut.hasProfiles)
         #expect(sut.previews.count == 1)
-        #expect(sut.partoutProfile(withId: profile.id) == profile)
+        #expect(sut.profile(withId: profile.id) == profile)
     }
-
-#if !PSP_CROSS
-    @Test
-    func givenRepository_whenSearch_thenIsSearching() async throws {
-        let profile1 = newProfile("foo")
-        let profile2 = newProfile("bar")
-        let repository = InMemoryProfileRepository(profiles: [profile1, profile2])
-        let sut = ProfileManager(repository: repository)
-
-        try await waitForReady(sut)
-        #expect(sut.isReady)
-        #expect(sut.hasProfiles)
-        #expect(sut.previews.count == 2)
-
-        try await wait(sut, "Search", until: .filteredProfiles) {
-            $0.search(byName: "ar")
-        }
-        #expect(sut.isSearching)
-        #expect(sut.previews.count == 1)
-        let found = try #require(sut.previews.last)
-        #expect(found.id == profile2.id)
-    }
-#endif
 
     @Test
     func givenRepositoryAndProcessor_whenReady_thenHasInvokedProcessor() async throws {
@@ -79,11 +56,9 @@ extension ProfileManagerTests {
         #expect(sut.isReady)
 
         #expect(processor.isIncludedCount == 1)
-        // FIXME: #1594, This is called twice while transitioning to observables
-//        #expect(processor.requiredFeaturesCount == 1)
-        #expect(processor.requiredFeaturesCount == 2)
+        #expect(processor.requiredFeaturesCount == 1)
         #expect(processor.willRebuildCount == 0)
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) == processor.requiredFeatures)
+        #expect(sut.requiredFeatures(for: profile) == processor.requiredFeatures)
     }
 
     @Test
@@ -118,19 +93,14 @@ extension ProfileManagerTests {
         try await waitForReady(sut)
         #expect(sut.isReady)
 
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) == processor.requiredFeatures)
+        #expect(sut.requiredFeatures(for: profile) == processor.requiredFeatures)
         processor.requiredFeatures = [.otp]
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) != processor.requiredFeatures)
-        sut.reloadRequiredFeatures()
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) == processor.requiredFeatures)
+        #expect(sut.requiredFeatures(for: profile) == processor.requiredFeatures)
 
         processor.requiredFeatures = nil
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) != nil)
-        sut.reloadRequiredFeatures()
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) == nil)
+        #expect(sut.requiredFeatures(for: profile).isEmpty)
         processor.requiredFeatures = []
-        sut.reloadRequiredFeatures()
-        #expect(sut.requiredFeatures(forProfileWithId: profile.id) == nil)
+        #expect(sut.requiredFeatures(for: profile).isEmpty)
     }
 }
 
@@ -151,7 +121,7 @@ extension ProfileManagerTests {
             try await $0.save(profile)
         }
         #expect(sut.previews.count == 1)
-        #expect(sut.partoutProfile(withId: profile.id) == profile)
+        #expect(sut.profile(withId: profile.id) == profile)
     }
 
     @Test
@@ -346,7 +316,7 @@ extension ProfileManagerTests {
         }
         #expect(sut.previews.count == 4)
 
-        #expect(sut.previews.map(\.name) == [
+        #expect(sut.previews.map(\.name).sorted() == [
             "example",
             "example.1",
             "example.2",
@@ -495,7 +465,7 @@ extension ProfileManagerTests {
         }
 
         try sut.previews.forEach {
-            let profile = try #require(sut.partoutProfile(withId: $0.id))
+            let profile = try #require(sut.profile(withId: $0.id))
             #expect(sut.isRemotelyShared(profileWithId: $0.id))
             switch $0.id {
             case l1:

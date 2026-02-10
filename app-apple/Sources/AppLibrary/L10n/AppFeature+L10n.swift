@@ -29,7 +29,7 @@ extension ABI.AppFeature: LocalizableEntity {
     }
 }
 
-extension ABI.AppFeature: Comparable {
+extension ABI.AppFeature: @retroactive Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.localizedDescription.lowercased() < rhs.localizedDescription.lowercased()
     }

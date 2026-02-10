@@ -5,10 +5,6 @@
 import Dispatch
 import Partout
 
-#if !PSP_CROSS
-extension ConfigManager: ObservableObject {}
-#endif
-
 @MainActor
 public final class ConfigManager {
     private let queue = DispatchQueue(label: "ConfigManager")
@@ -18,11 +14,6 @@ public final class ConfigManager {
     private let buildNumber: Int
 
     private var bundle: ABI.ConfigBundle? {
-        willSet {
-#if !PSP_CROSS
-            objectWillChange.send()
-#endif
-        }
         didSet {
             // Take a snapshot of the active flags
             queue.sync {

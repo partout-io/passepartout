@@ -8,7 +8,7 @@ import SwiftUI
 public struct TunnelToggle<Label>: View where Label: View {
     private let tunnel: TunnelObservable
 
-    private let profile: ABI.AppProfile?
+    private let profile: Profile?
 
     private let errorHandler: ErrorHandler
 
@@ -18,7 +18,7 @@ public struct TunnelToggle<Label>: View where Label: View {
 
     public init(
         tunnel: TunnelObservable,
-        profile: ABI.AppProfile?,
+        profile: Profile?,
         errorHandler: ErrorHandler,
         flow: ConnectionFlow?,
         label: @escaping (Binding<Bool>, Bool) -> Label
@@ -53,7 +53,7 @@ public struct TunnelTextToggle: View {
 }
 
 extension TunnelToggle where Label == TunnelTextToggle {
-    public init(_ title: String = "", tunnel: TunnelObservable, profile: ABI.AppProfile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
+    public init(_ title: String = "", tunnel: TunnelObservable, profile: Profile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
         self.init(tunnel: tunnel, profile: profile, errorHandler: errorHandler, flow: flow) { isOn, _ in
             TunnelTextToggle(title: title, isOn: isOn)
         }
@@ -73,7 +73,7 @@ private extension TunnelToggle {
 }
 
 private extension TunnelToggle {
-    var tunnelProfile: ABI.AppProfile.Info? {
+    var tunnelProfile: ABI.AppProfileInfo? {
         guard let profile else {
             return nil
         }
@@ -96,7 +96,7 @@ private extension TunnelToggle {
             return
         }
         Task {
-            await perform(isOn: isOn, with: profile.native)
+            await perform(isOn: isOn, with: profile)
         }
     }
 

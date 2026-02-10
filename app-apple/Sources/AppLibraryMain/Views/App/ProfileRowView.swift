@@ -71,7 +71,7 @@ private extension ProfileRowView {
 }
 
 private extension ProfileRowView {
-    var profile: ABI.AppProfile? {
+    var profile: Profile? {
         profileObservable.profile(withId: preview.id)
     }
 
@@ -83,7 +83,7 @@ private extension ProfileRowView {
 // MARK: - Previews
 
 #Preview {
-    let profile = ABI.AppProfile(native: .forPreviews)
+    let profile: Profile = .forPreviews
     let profileObservable: ProfileObservable = .forPreviews
 
     return Form {
@@ -91,7 +91,7 @@ private extension ProfileRowView {
             style: .full,
             profileObservable: profileObservable,
             tunnel: .forPreviews,
-            preview: ABI.ProfilePreview(profile.native),
+            preview: ABI.ProfilePreview(profile),
             errorHandler: .default()
         )
     }

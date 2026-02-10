@@ -8,7 +8,7 @@ import SwiftUI
 struct TunnelRestartButton<Label>: View where Label: View {
     let tunnel: TunnelObservable
 
-    let profile: ABI.AppProfile?
+    let profile: Profile?
 
     let errorHandler: ErrorHandler
 
@@ -25,7 +25,7 @@ struct TunnelRestartButton<Label>: View where Label: View {
                 return
             }
             Task {
-                await flow?.onConnect(profile.native)
+                await flow?.onConnect(profile)
             }
         } label: {
             label()

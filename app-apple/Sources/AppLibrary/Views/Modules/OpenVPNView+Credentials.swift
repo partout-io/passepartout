@@ -57,7 +57,7 @@ public struct OpenVPNCredentialsGroup: View {
         .themeAnimation(on: draft.module.isInteractive, category: .modules)
         .themeAnimation(on: builder, category: .modules)
         .onLoad(perform: onLoad)
-        .onChange(of: builder, perform: onChange)
+        .onChange(of: builder, onChange)
         .modifier(ModuleDynamicPaywallModifier(reason: $paywallReason))
     }
 }
@@ -165,7 +165,7 @@ private extension OpenVPNCredentialsGroup {
         }
     }
 
-    func onChange(_ builder: OpenVPN.Credentials.Builder) {
+    func onChange() {
         draft.module.credentials = builder.build()
     }
 }

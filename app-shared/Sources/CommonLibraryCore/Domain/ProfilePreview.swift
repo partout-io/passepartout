@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Drop import (after replacing Profile.ID)
 import Partout
 
 extension ABI {
-    @available(*, deprecated, message: "#1594, Use AppProfileHeader?")
+    @available(*, deprecated, message: "#1680, Use AppProfileHeader?")
     public struct ProfilePreview: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
 

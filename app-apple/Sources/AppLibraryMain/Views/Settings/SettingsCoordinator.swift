@@ -12,9 +12,6 @@ struct SettingsCoordinator: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.logFormatterBlock)
-    private var logFormatterBlock
-
     @Environment(\.dismiss)
     private var dismiss
 

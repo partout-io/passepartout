@@ -6,9 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct DonateView<Modifier>: View where Modifier: ViewModifier {
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
     private let modifier: Modifier
 
     public init(modifier: Modifier) {

@@ -50,7 +50,7 @@ private extension ProfileShareButton {
     func toURL() throws -> URL {
         do {
             pspLog(.profiles, .debug, "Writing profile \(profile.id) for sharing...")
-            let url = try appEncoder.writeToURL(ABI.AppProfile(native: profile))
+            let url = try appEncoder.writeToURL(profile)
             pspLog(.profiles, .debug, "Written profile to: \(url)")
             return url
         } catch {

@@ -46,7 +46,7 @@ struct ProfileExportButton: View {
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(JSONFile.init(string:)),
                 contentType: .json,
-                defaultFilename: appEncoder.defaultFilename(for: ABI.AppProfile(native: profile)),
+                defaultFilename: appEncoder.defaultFilename(for: profile),
                 onCompletion: { _ in }
             )
             .withErrorHandler(errorHandler)
@@ -64,7 +64,7 @@ private extension ProfileExportButton {
 
     func exportProfiles() {
         do {
-            viewModel.jsonString = try appEncoder.json(fromProfile: ABI.AppProfile(native: profile))
+            viewModel.jsonString = try appEncoder.json(fromProfile: profile)
             viewModel.isExporting = true
         } catch {
             errorHandler.handle(error)

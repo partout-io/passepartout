@@ -6,9 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct PurchaseRequiredView<Content>: View where Content: View {
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
     let features: Set<ABI.AppFeature>?
 
     var force: Bool = false

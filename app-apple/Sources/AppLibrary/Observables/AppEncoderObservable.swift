@@ -14,19 +14,19 @@ public final class AppEncoderObservable {
         self.abi = abi
     }
 
-    public func profile(fromString string: String) throws -> ABI.AppProfile {
+    public func profile(fromString string: String) throws -> Profile {
         try abi.profile(fromString: string)
     }
 
-    public func json(fromProfile profile: ABI.AppProfile) throws -> String {
+    public func json(fromProfile profile: Profile) throws -> String {
         try abi.json(fromProfile: profile)
     }
 
-    public func defaultFilename(for profile: ABI.AppProfile) -> String {
+    public func defaultFilename(for profile: Profile) -> String {
         abi.defaultFilename(for: profile)
     }
 
-    public func writeToURL(_ profile: ABI.AppProfile) throws -> URL {
+    public func writeToURL(_ profile: Profile) throws -> URL {
         let path = try abi.writeToFile(profile)
         // Make sure to convert to URL to share actual file content
         return URL(fileURLWithPath: path)

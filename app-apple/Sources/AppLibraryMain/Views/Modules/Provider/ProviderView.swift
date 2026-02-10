@@ -37,8 +37,8 @@ struct ProviderView: View, ModuleDraftEditing {
             .moduleView(draft: draft)
             .modifier(ModuleDynamicPaywallModifier(reason: $paywallReason))
             .onLoad(perform: loadCurrentProvider)
-            .onChange(of: providerId, perform: onChangeProvider)
-            .onChange(of: providerEntity, perform: onChangeEntity)
+            .onChange(of: providerId, onChangeProvider)
+            .onChange(of: providerEntity, onChangeEntity)
             .onDisappear(perform: savePreferences)
             .disabled(apiManager.isLoading)
     }
@@ -295,7 +295,7 @@ private extension ProviderView {
         }
     }
 
-    func onChangeProvider(_: ProviderID?) {
+    func onChangeProvider() {
        Task {
            if let module {
                await refreshInfrastructure(for: module)
@@ -306,10 +306,8 @@ private extension ProviderView {
        }
     }
 
-    func onChangeEntity(_ newEntity: ProviderEntity?) {
-        guard let newEntity else {
-            return
-        }
+    func onChangeEntity(_: ProviderEntity?, newEntity: ProviderEntity?) {
+        guard let newEntity else { return }
         Task {
             await loadSupportedPresets(for: newEntity.server)
         }

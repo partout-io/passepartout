@@ -14,7 +14,7 @@ struct InstalledProfileView: View, Routable {
 
     let profileObservable: ProfileObservable
 
-    let profile: ABI.AppProfile?
+    let profile: Profile?
 
     let tunnel: TunnelObservable
 
@@ -62,7 +62,7 @@ private extension InstalledProfileView {
     }
 
     func nameView() -> some View {
-        Text(profile?.native.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title2)
             .fontWeight(theme.relevantWeight)
             .themeMultiLine(true)
@@ -99,7 +99,7 @@ private extension InstalledProfileView {
             style: .installedProfile,
             profileObservable: profileObservable,
             tunnel: tunnel,
-            preview: .init(profile?.native ?? .forPreviews),
+            preview: .init(profile ?? .forPreviews),
             errorHandler: errorHandler,
             flow: flow
         )
@@ -183,7 +183,7 @@ private struct HeaderView: View {
         InstalledProfileView(
             layout: layout,
             profileObservable: .forPreviews,
-            profile: ABI.AppProfile(native: .forPreviews),
+            profile: .forPreviews,
             tunnel: .forPreviews,
             errorHandler: .default()
         )

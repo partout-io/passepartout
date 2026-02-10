@@ -22,12 +22,16 @@ public final class AppContext {
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
 
+    // ABI concerns (not migrated to observables, probably won't be)
+    @available(*, deprecated, message: "#1679")
+    public var apiManager: APIManager { abi.apiManager }
+    @available(*, deprecated, message: "#1679")
+    public var preferencesManager: PreferencesManager { abi.preferencesManager }
+
     // View concerns (app-specific)
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
-    @available(*, deprecated, message: "#1594")
-    private let logFormatter: LogFormatter
 
     public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
         self.abi = abi
@@ -45,7 +49,6 @@ public final class AppContext {
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
-        logFormatter = appConfiguration.newLogFormatter()
         userPreferences = UserPreferencesObservable(kvStore: kvStore)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
 
@@ -53,12 +56,6 @@ public final class AppContext {
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
         let ctx = ABI.EventContext(pointer: opaqueEnvironment)
         abi.registerEvents(context: ctx, callback: Self.abiCallback)
-    }
-}
-
-extension AppContext: LogFormatter {
-    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
-        logFormatter.formattedLog(timestamp: timestamp, message: message)
     }
 }
 
@@ -94,22 +91,4 @@ private extension AppContext {
             }
         }
     }
-}
-
-// FIXME: #1594, Drop these after using ABI actions in observables
-extension AppContext {
-    @available(*, deprecated, message: "#1594")
-    public var apiManager: APIManager { abi.apiManager }
-    @available(*, deprecated, message: "#1594")
-    public var iapManager: IAPManager { abi.iapManager }
-    @available(*, deprecated, message: "#1594")
-    public var preferencesManager: PreferencesManager { abi.preferencesManager }
-    @available(*, deprecated, message: "#1594")
-    public var profileManager: ProfileManager { abi.profileManager }
-    @available(*, deprecated, message: "#1594")
-    public var registry: Registry { abi.partoutRegistry }
-    @available(*, deprecated, message: "#1594")
-    public var tunnel: TunnelManager { abi.tunnelManager }
-    @available(*, deprecated, message: "#1594")
-    public var webReceiverManager: WebReceiverManager { abi.webReceiverManager }
 }

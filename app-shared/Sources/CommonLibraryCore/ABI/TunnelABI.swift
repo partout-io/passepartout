@@ -28,7 +28,7 @@ public final class TunnelABI: TunnelABIProtocol {
     private let environment: TunnelEnvironment
     private let iap: IAP?
     private let logFormatter: LogFormatter
-    private let originalProfile: ABI.AppProfile
+    private let originalProfile: Profile
 
     private var verifierSubscription: Task<Void, Error>?
 
@@ -37,7 +37,7 @@ public final class TunnelABI: TunnelABIProtocol {
         environment: TunnelEnvironment,
         iap: IAP?,
         logFormatter: LogFormatter,
-        originalProfile: ABI.AppProfile
+        originalProfile: Profile
     ) {
         self.daemon = daemon
         self.environment = environment
@@ -72,7 +72,7 @@ public final class TunnelABI: TunnelABIProtocol {
             // Do not run the verification loop if IAPs are not supported
             guard let iap else {
                 // Just ensure that the profile does not require any paid feature
-                guard originalProfile.native.features.isEmpty else {
+                guard originalProfile.features.isEmpty else {
                     throw PartoutError(.App.ineligibleProfile)
                 }
                 return
@@ -171,7 +171,7 @@ private extension TunnelABI {
 
 private extension TunnelABI {
     func verifyEligibility(
-        of profile: ABI.AppProfile,
+        of profile: Profile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
         params: ABI.Constants.Tunnel.Verification.Parameters,
@@ -183,7 +183,7 @@ private extension TunnelABI {
                 return
             }
             do {
-                pspLog(.iap, .info, "Verify profile, requires: \(profile.native.features)")
+                pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {

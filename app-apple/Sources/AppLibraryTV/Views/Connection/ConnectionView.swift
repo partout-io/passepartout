@@ -11,7 +11,7 @@ struct ConnectionView: View, Routable {
 
         case switchProfile
 
-        case profile(ABI.AppIdentifier)
+        case profile(Profile.ID)
     }
 
     let profileObservable: ProfileObservable
@@ -59,7 +59,7 @@ struct ConnectionView: View, Routable {
 }
 
 private extension ConnectionView {
-    var activeProfile: ABI.AppProfile? {
+    var activeProfile: Profile? {
         guard let id = tunnel.activeProfile?.id else {
             return nil
         }
@@ -120,8 +120,8 @@ private extension ConnectionView {
 
 private extension ConnectionView {
     func onTunnelActiveProfile(
-        old: ABI.AppProfile.Info?,
-        new: ABI.AppProfile.Info?
+        old: ABI.AppProfileInfo?,
+        new: ABI.AppProfileInfo?
     ) {
         // on profile connection, hide side panel and focus on connect button
         if new?.status == .connecting {
