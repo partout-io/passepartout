@@ -5,15 +5,6 @@
     "neSocketTCP": {
         "rate": 100
     },
-    "observableMain": {
-        "rate": 100
-    },
-    "observableTV": {
-        "rate": 100
-    },
-    "tunnelABI": {
-        "rate": 100
-    },
     "allowsRelaxedVerification": {
         "rate": 100
     },
