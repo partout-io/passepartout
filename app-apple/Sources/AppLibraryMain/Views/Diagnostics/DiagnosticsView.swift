@@ -53,7 +53,6 @@ struct DiagnosticsView: View {
             if canReportIssue {
                 reportIssueSection
             }
-            debugSection
         }
         .task {
             tunnelLogs = await computedTunnelLogs()
@@ -133,11 +132,6 @@ private extension DiagnosticsView {
 
     func navLink(_ title: String, to value: DiagnosticsRoute) -> some View {
         NavigationLink(title, value: value)
-    }
-
-    var debugSection: some View {
-        // FIXME: #1594, Drop after migration
-        Text("Using new Observables")
     }
 }
 

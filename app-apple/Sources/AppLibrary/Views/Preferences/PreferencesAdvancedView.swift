@@ -23,8 +23,7 @@ struct PreferencesAdvancedView: View {
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
-        .neSocketTCP,
-        .tunnelABI
+        .neSocketTCP
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
@@ -34,8 +33,6 @@ private extension PreferencesAdvancedView {
             return V.neSocketUDP
         case .neSocketTCP:
             return V.neSocketTCP
-        case .tunnelABI:
-            return "Tunnel ABI"
         default:
             assertionFailure()
             return ""
