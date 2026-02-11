@@ -1,22 +1,8 @@
-Schützen Sie Ihre Online-Privatsphäre mit Passepartout, einem intelligenten VPN-Client, der nahtlos in iOS, macOS, iPadOS und tvOS integriert ist. Egal, ob Sie bekannte VPN-Anbieter nutzen oder eigene Server hosten, Passepartout ist Ihre All-in-One-Lösung.
+Schützen Sie Ihre Online-Privatsphäre mit Passepartout, einem intelligenten VPN-Client, der nahtlos in iOS, macOS, iPadOS und tvOS integriert ist. Passepartout ist Ihre All-in-One-Lösung.
 
 WARUM PASSEPARTOUT WÄHLEN?
 
-VERBINDUNG MIT VERSCHIEDENEN ANBIETERN
-
-Passepartout unterstützt Voreinstellungen für beliebte VPN-Anbieter, sodass Sie sich einfach und sicher verbinden können:
-- Hide.me
-- IVPN
-- NordVPN
-- Oeck
-- PIA
-- Surfshark
-- TorGuard
-- TunnelBear
-- VyprVPN
-- Windscribe
-
-Bevorzugen Sie eine individuelle Einrichtung? Importieren Sie einfach .ovpn- oder .conf-Dateien, um Ihre persönlichen VPN-Server zu konfigurieren.
+Importieren Sie einfach .ovpn- oder .conf-Dateien, um Ihre persönlichen VPN-Server zu konfigurieren.
 
 KOSTENLOSE FUNKTIONEN:
 
@@ -34,7 +20,6 @@ BEZAHLTE FUNKTIONEN:
 - Benutzerdefiniertes Routing für erweiterte Konfigurationen.
 - Interaktives Login mit Unterstützung für Einmalpasswörter (OTP).
 - Nicht-VPN-Profile (z.B. nur DNS/Proxy-Setups).
-- Vollständige Voreinstellungen für große VPN-Anbieter.
 
 FAMILIENFREIGABE AKTIVIERT
 

@@ -32,13 +32,6 @@
             }
         },
         {
-            "id": "oeck",
-            "description": "Oeck",
-            "metadata": {
-                "OpenVPN": {}
-            }
-        },
-        {
             "id": "pia",
             "description": "PIA",
             "metadata": {
