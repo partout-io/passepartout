@@ -107,7 +107,7 @@ struct IAPManagerSuggestionsTests {
         let sut = await IAPManager(products: [])
         #expect(sut.essentialProducts(
             on: .iOS,
-            including: [.complete, .singlePlatformEssentials]
+            hints: [.complete, .singlePlatformEssentials]
         ) == [
             .Essentials.iOS_macOS,
             .Essentials.iOS,
@@ -117,7 +117,7 @@ struct IAPManagerSuggestionsTests {
         ])
         #expect(sut.essentialProducts(
             on: .macOS,
-            including: [.complete, .singlePlatformEssentials]
+            hints: [.complete, .singlePlatformEssentials]
         ) == [
             .Essentials.iOS_macOS,
             .Essentials.macOS,
@@ -132,7 +132,7 @@ struct IAPManagerSuggestionsTests {
         let sut = await IAPManager(products: [.Features.trustedNetworks])
         #expect(sut.essentialProducts(
             on: .iOS,
-            including: [.complete, .singlePlatformEssentials]
+            hints: [.complete, .singlePlatformEssentials]
         ) == [
             .Essentials.iOS_macOS,
             .Essentials.iOS,
@@ -142,7 +142,7 @@ struct IAPManagerSuggestionsTests {
         ])
         #expect(sut.essentialProducts(
             on: .macOS,
-            including: [.complete, .singlePlatformEssentials]
+            hints: [.complete, .singlePlatformEssentials]
         ) == [
             .Essentials.iOS_macOS,
             .Essentials.macOS,
@@ -157,14 +157,14 @@ struct IAPManagerSuggestionsTests {
         let sut = await IAPManager(products: [.Features.appleTV])
         #expect(sut.essentialProducts(
             on: .iOS,
-            including: [.complete, .singlePlatformEssentials]
+            hints: [.complete, .singlePlatformEssentials]
         ) == [
             .Essentials.iOS_macOS,
             .Essentials.iOS
         ])
         #expect(sut.essentialProducts(
             on: .macOS,
-            including: [.complete, .singlePlatformEssentials]
+            hints: [.complete, .singlePlatformEssentials]
         ) == [
             .Essentials.iOS_macOS,
             .Essentials.macOS
@@ -221,17 +221,17 @@ extension IAPManagerTests {
 private extension IAPManager {
     func essentialProducts(
         on platform: Platform,
-        including: Set<SuggestionInclusion> = [.singlePlatformEssentials]
+        hints: Set<ABI.StoreProductHint> = [.singlePlatformEssentials]
     ) -> Set<ABI.AppProduct> {
-        suggestedProducts(for: ABI.AppFeature.essentialFeatures, on: platform, including: including)
+        suggestedProducts(for: ABI.AppFeature.essentialFeatures, on: platform, hints: hints)
     }
 
     func mixedProducts(
         for features: Set<ABI.AppFeature>,
         on platform: Platform,
-        including: Set<SuggestionInclusion> = [.singlePlatformEssentials]
+        hints: Set<ABI.StoreProductHint> = [.singlePlatformEssentials]
     ) -> Set<ABI.AppProduct> {
-        suggestedProducts(for: features, on: platform, including: including)
+        suggestedProducts(for: features, on: platform, hints: hints)
     }
 }
 
