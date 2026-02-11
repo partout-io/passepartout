@@ -74,10 +74,7 @@ extension IAPObservable {
     }
 
     public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == ABI.AppFeature {
-        if features.isEmpty {
-            return true
-        }
-        return features.allSatisfy(eligibleFeatures.contains)
+        features.isEmpty || features.allSatisfy(eligibleFeatures.contains)
     }
 
     public var isEligibleForComplete: Bool {
