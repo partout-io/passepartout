@@ -72,7 +72,7 @@ extension TunnelObservable {
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
-//        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+//        pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let active):
             pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
