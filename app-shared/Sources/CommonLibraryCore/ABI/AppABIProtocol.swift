@@ -78,16 +78,14 @@ public protocol AppABITunnelProtocol: Sendable {
     func disconnect(from profileId: Profile.ID) async throws
     func currentLog() async -> [ABI.AppLogLine]
     // FIXME: #1685, Non-reactive
-//    func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
-//    func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?
-//    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?
+    func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
+    func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?
+    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?
 }
 
 @MainActor
 public protocol AppABIVersionProtocol: Sendable {
     func checkLatestRelease() async
-    // FIXME: #1685, Non-reactive
-//    var latestRelease: ABI.VersionRelease? { get }
 }
 
 @MainActor

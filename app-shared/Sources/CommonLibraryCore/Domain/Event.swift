@@ -40,7 +40,7 @@ extension ABI {
     }
 
     public enum VersionEvent: Sendable {
-        case new
+        case new(VersionRelease)
     }
 
     public enum WebReceiverEvent: Sendable {
