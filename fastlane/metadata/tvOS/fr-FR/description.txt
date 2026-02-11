@@ -1,6 +1,6 @@
 Protégez votre vie privée en ligne avec Passepartout, un client VPN intelligent parfaitement intégré à tvOS.
 
-Utilisez l'application iOS ou macOS comme télécommande pour configurer et gérer facilement vos profils VPN, offrant une expérience fluide et unifiée sur tous vos appareils Apple. Que vous comptiez sur les principaux fournisseurs de VPN ou que vous hébergiez vos propres serveurs, Passepartout est votre solution tout-en-un pour votre Apple TV.
+Utilisez l'application iOS ou macOS comme télécommande pour configurer et gérer facilement vos profils VPN, offrant une expérience fluide et unifiée sur tous vos appareils Apple. Passepartout est votre solution tout-en-un pour votre Apple TV.
 
 UNE CONFIDENTIALITÉ FIABLE
 

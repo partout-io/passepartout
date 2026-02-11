@@ -1,40 +1,25 @@
-Chroń swoją prywatność online z Passepartout, inteligentnym klientem VPN, który bezproblemowo integruje się z iOS, macOS, iPadOS i tvOS. Niezależnie od tego, czy korzystasz z popularnych dostawców VPN, czy hostujesz własne serwery, Passepartout to kompleksowe rozwiązanie dla Ciebie.
+Chroń swoją prywatność online z Passepartout, inteligentnym klientem VPN, który bezproblemowo integruje się z iOS, macOS, iPadOS i tvOS. Passepartout to kompleksowe rozwiązanie dla Ciebie.
 
 DLACZEGO WARTO WYBRAĆ PASSEPARTOUT?
 
-ŁĄCZ SIĘ Z WIELOMA DOSTAWCAMI
-
-Passepartout obsługuje konfiguracje dla popularnych dostawców VPN, co ułatwia bezpieczne połączenie:  
-- Hide.me  
-- IVPN  
-- NordVPN  
-- Oeck  
-- PIA  
-- Surfshark  
-- TorGuard  
-- TunnelBear  
-- VyprVPN  
-- Windscribe  
-
-Wolisz własną konfigurację? Wystarczy zaimportować pliki .ovpn lub .conf, aby skonfigurować swoje serwery VPN.
+Wystarczy zaimportować pliki .ovpn lub .conf, aby skonfigurować swoje serwery VPN.
 
 FUNKCJE DARMOWE:
 
-- Obsługa protokołów OpenVPN i WireGuard.  
-- Zaciemnianie OpenVPN (za pomocą --scramble).  
-- Automatyzacja za pomocą Skrótów dla uproszczonych operacji.  
+- Obsługa protokołów OpenVPN i WireGuard.
+- Zaciemnianie OpenVPN (za pomocą --scramble).
+- Automatyzacja za pomocą Skrótów dla uproszczonych operacji.
 - Wykluczanie punktów końcowych dla precyzyjnej kontroli.
 
 FUNKCJE PŁATNE:
 
-- Obsługa Apple TV.  
-- Reguły na żądanie dla inteligentnych, automatycznych połączeń.  
-- Udostępnianie w iCloud dla płynnego korzystania na wielu urządzeniach.  
-- DoH/DoT dla bezpiecznych zapytań DNS.  
-- Niestandardowe trasy dla zaawansowanych konfiguracji.  
-- Interaktywne logowanie z obsługą jednorazowych haseł (OTP).  
-- Profile inne niż VPN (np. ustawienia tylko DNS/Proxy).  
-- Pełne konfiguracje dla głównych dostawców VPN.
+- Obsługa Apple TV.
+- Reguły na żądanie dla inteligentnych, automatycznych połączeń.
+- Udostępnianie w iCloud dla płynnego korzystania na wielu urządzeniach.
+- DoH/DoT dla bezpiecznych zapytań DNS.
+- Niestandardowe trasy dla zaawansowanych konfiguracji.
+- Interaktywne logowanie z obsługą jednorazowych haseł (OTP).
+- Profile inne niż VPN (np. ustawienia tylko DNS/Proxy).
 
 UDOSTĘPNIANIE RODZINNE
 
@@ -42,8 +27,8 @@ Passepartout obsługuje Udostępnianie Rodzinne, dzięki czemu możesz dzielić 
 
 PRYWATNOŚĆ, KTÓREJ MOŻESZ UFAĆ
 
-Passepartout zostało zaprojektowane z myślą o przejrzystości i prywatności:  
-- Sprawdzaj dokładnie, z którymi serwerami się łączysz.  
+Passepartout zostało zaprojektowane z myślą o przejrzystości i prywatności:
+- Sprawdzaj dokładnie, z którymi serwerami się łączysz.
 - Bez reklam, trackerów czy niepotrzebnych procesów w tle – tylko połączenie VPN, którego potrzebujesz.
 
 OPEN SOURCE I WSPARCIE SPOŁECZNOŚCI
