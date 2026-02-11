@@ -192,10 +192,6 @@ private struct AppABIIAP: AppABIIAPProtocol {
     let kvStore: KeyValueStore
     let supportsIAP: Bool
 
-    var isEnabled: Bool {
-        iapManager.isEnabled
-    }
-
     func enable(_ isEnabled: Bool) {
         iapManager.isEnabled = supportsIAP && isEnabled
         kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
@@ -225,6 +221,14 @@ private struct AppABIIAP: AppABIIAPProtocol {
         try await iapManager.fetchPurchasableProducts(for: products)
     }
 
+    var verificationDelayMinutes: Int {
+        iapManager.verificationDelayMinutes
+    }
+
+    var isEnabled: Bool {
+        iapManager.isEnabled
+    }
+
     var originalPurchase: ABI.OriginalPurchase? {
         iapManager.originalPurchase
     }
@@ -251,10 +255,6 @@ private struct AppABIIAP: AppABIIAPProtocol {
 
     var isEligibleForComplete: Bool {
         iapManager.isEligibleForComplete
-    }
-
-    var verificationDelayMinutes: Int {
-        iapManager.verificationDelayMinutes
     }
 }
 

@@ -17,8 +17,6 @@ public protocol AppABIEncoderProtocol: Sendable {
 
 @MainActor
 public protocol AppABIIAPProtocol: Sendable {
-    // FIXME: #1685, Non-reactive
-//    var isEnabled: Bool { get }
     func enable(_ isEnabled: Bool)
     func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult
     func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws
@@ -26,14 +24,6 @@ public protocol AppABIIAPProtocol: Sendable {
     func restorePurchases() async throws
     func suggestedProducts(for features: Set<ABI.AppFeature>, hints: Set<ABI.StoreProductHint>?) -> Set<ABI.AppProduct>
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct]
-    // FIXME: #1685, Non-reactive
-//    var originalPurchase: ABI.OriginalPurchase? { get }
-//    var purchasedProducts: Set<ABI.AppProduct> { get }
-//    var isBeta: Bool { get }
-//    func isEligible(for feature: ABI.AppFeature) -> Bool
-//    func isEligible(for features: Set<ABI.AppFeature>) -> Bool
-//    var isEligibleForFeedback: Bool { get }
-//    var isEligibleForComplete: Bool { get }
     var verificationDelayMinutes: Int { get }
 }
 

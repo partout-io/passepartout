@@ -108,6 +108,10 @@ extension IAPManager {
         pendingReceiptTask != nil
     }
 
+    public var isBeta: Bool {
+        userLevel.isBeta
+    }
+
     public func enable() async {
         guard !isEnabled else {
             return
@@ -169,22 +173,13 @@ extension IAPManager {
     }
 }
 
-// MARK: - Eligibility
-
 extension IAPManager {
-    public var isBeta: Bool {
-        userLevel.isBeta
-    }
-
     public func isEligible(for feature: ABI.AppFeature) -> Bool {
         eligibleFeatures.contains(feature)
     }
 
     public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == ABI.AppFeature {
-        if features.isEmpty {
-            return true
-        }
-        return features.allSatisfy(eligibleFeatures.contains)
+        features.isEmpty || features.allSatisfy(eligibleFeatures.contains)
     }
 
     public var isEligibleForComplete: Bool {
@@ -214,18 +209,6 @@ extension IAPManager {
 
     public var isPayingUser: Bool {
         !purchasedProducts.isEmpty
-    }
-
-    public var didPurchaseComplete: Bool {
-        purchasedProducts.contains(where: \.isComplete)
-    }
-
-    public func didPurchase(_ product: ABI.AppProduct) -> Bool {
-        purchasedProducts.contains(product)
-    }
-
-    public func didPurchase(_ products: [ABI.AppProduct]) -> Bool {
-        products.allSatisfy(didPurchase)
     }
 }
 
@@ -310,7 +293,12 @@ private extension IAPManager {
 
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
-        self.eligibleFeatures = eligibleFeatures // Will call objectWillChange.send()
+        didChange.send(.newReceipt(
+            originalPurchase,
+            products: purchasedProducts,
+            isBeta: userLevel.isBeta
+        ))
+        self.eligibleFeatures = eligibleFeatures // Will post .eligibleFeatures
     }
 }
 

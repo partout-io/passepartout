@@ -20,8 +20,9 @@ extension ABI {
 
     public enum IAPEvent: Sendable {
         case status(isEnabled: Bool)
-        case eligibleFeatures(Set<AppFeature>)
         case loadReceipt(isLoading: Bool)
+        case newReceipt(OriginalPurchase?, products: Set<AppProduct>, isBeta: Bool)
+        case eligibleFeatures(Set<AppFeature>)
     }
 
     public enum ProfileEvent: Equatable, Sendable {
