@@ -13,12 +13,11 @@ struct APIMapperTests: APITestSuite {
     func whenFetchIndex_thenReturnsProviders() async throws {
         let sut = try newAPIMapper()
         let index = try await sut.index()
-        #expect(index.count == 10)
+        #expect(index.count == 9)
         #expect(index.map(\.description) == [
             "Hide.me",
             "IVPN",
             "NordVPN",
-            "Oeck",
             "PIA",
             "SurfShark",
             "TorGuard",
