@@ -7,7 +7,6 @@ import Partout
 @MainActor
 public final class AppABI: Sendable {
     // Public ABI by domain
-    public let config: AppABIConfigProtocol
     public let encoder: AppABIEncoderProtocol
     public let iap: AppABIIAPProtocol
     public let profile: AppABIProfileProtocol
@@ -77,7 +76,6 @@ public final class AppABI: Sendable {
 
         iapManager.isEnabled = appConfiguration.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
-        config = AppABIConfig(configManager: configManager)
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
@@ -168,18 +166,6 @@ extension AppABI: AppABILoggerProtocol, LogFormatter {
 }
 
 // MARK: - Actions
-
-private struct AppABIConfig: AppABIConfigProtocol {
-    let configManager: ConfigManager
-
-    var activeFlags: Set<ABI.ConfigFlag> {
-        configManager.activeFlags
-    }
-
-    func data(for flag: ABI.ConfigFlag) -> JSON? {
-        configManager.data(for: flag)
-    }
-}
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder

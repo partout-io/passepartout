@@ -8,13 +8,6 @@ import Partout
 // MARK: Domains
 
 @MainActor
-public protocol AppABIConfigProtocol: Sendable {
-    // FIXME: #1685, Non-reactive
-//    var activeFlags: Set<ABI.ConfigFlag> { get }
-//    func data(for flag: ABI.ConfigFlag) -> JSON?
-}
-
-@MainActor
 public protocol AppABIEncoderProtocol: Sendable {
     func defaultFilename(for profileName: String) -> String
     func profile(fromString string: String) throws -> Profile

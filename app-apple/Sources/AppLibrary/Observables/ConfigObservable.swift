@@ -8,13 +8,12 @@ import Observation
 
 @MainActor @Observable
 public final class ConfigObservable {
-    private let abi: AppABIConfigProtocol
-
     public private(set) var activeFlags: Set<ABI.ConfigFlag>
+    public private(set) var allData: [ABI.ConfigFlag: JSON]
 
-    public init(abi: AppABIConfigProtocol) {
-        self.abi = abi
+    public init() {
         activeFlags = []
+        allData = [:]
     }
 
     public func isActive(_ flag: ABI.ConfigFlag) -> Bool {
@@ -22,14 +21,15 @@ public final class ConfigObservable {
     }
 
     public func data(for flag: ABI.ConfigFlag) -> JSON? {
-        abi.data(for: flag)
+        allData[flag]
     }
 
     func onUpdate(_ event: ABI.ConfigEvent) {
         pspLog(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
         switch event {
-        case .refresh(let flags):
+        case .refresh(let flags, let data):
             activeFlags = flags
+            allData = data
         }
     }
 }

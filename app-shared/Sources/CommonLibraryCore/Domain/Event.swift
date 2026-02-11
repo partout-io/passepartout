@@ -15,7 +15,7 @@ extension ABI {
     }
 
     public enum ConfigEvent: Sendable {
-        case refresh(Set<ABI.ConfigFlag>)
+        case refresh(Set<ABI.ConfigFlag>, data: [ABI.ConfigFlag: JSON])
     }
 
     public enum IAPEvent: Sendable {
