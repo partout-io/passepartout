@@ -50,7 +50,13 @@ extension IAPObservable {
 // MARK: - State
 
 extension IAPObservable {
-    public func suggestedProducts(for features: Set<ABI.AppFeature>, including inclusions: Set<IAPManager.SuggestionInclusion> = []) -> Set<ABI.AppProduct> {
+    public func suggestedProducts(
+        for features: Set<ABI.AppFeature>,
+        including inclusions: Set<IAPManager.SuggestionInclusion> = [
+            .complete,
+            .singlePlatformEssentials
+        ]
+    ) -> Set<ABI.AppProduct> {
         abi.suggestedProducts(for: features, including: inclusions)
     }
 

@@ -19,7 +19,7 @@ extension IAPManager {
 
     public func suggestedProducts(
         for features: Set<ABI.AppFeature>,
-        including: Set<SuggestionInclusion> = [.complete, .singlePlatformEssentials]
+        including: Set<SuggestionInclusion>
     ) -> Set<ABI.AppProduct> {
 #if os(iOS)
         suggestedProducts(for: features, on: .iOS, including: including)
