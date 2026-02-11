@@ -224,38 +224,6 @@ private struct AppABIIAP: AppABIIAPProtocol {
     var verificationDelayMinutes: Int {
         iapManager.verificationDelayMinutes
     }
-
-    var isEnabled: Bool {
-        iapManager.isEnabled
-    }
-
-    var originalPurchase: ABI.OriginalPurchase? {
-        iapManager.originalPurchase
-    }
-
-    var purchasedProducts: Set<ABI.AppProduct> {
-        iapManager.purchasedProducts
-    }
-
-    var isBeta: Bool {
-        iapManager.isBeta
-    }
-
-    func isEligible(for feature: ABI.AppFeature) -> Bool {
-        iapManager.isEligible(for: feature)
-    }
-
-    func isEligible(for features: Set<ABI.AppFeature>) -> Bool {
-        iapManager.isEligible(for: features)
-    }
-
-    var isEligibleForFeedback: Bool {
-        iapManager.isEligibleForFeedback
-    }
-
-    var isEligibleForComplete: Bool {
-        iapManager.isEligibleForComplete
-    }
 }
 
 private struct AppABIProfile: AppABIProfileProtocol {
@@ -304,10 +272,6 @@ private struct AppABIProfile: AppABIProfileProtocol {
 
     func removeAllRemote() async throws {
         try await profileManager.eraseRemotelySharedProfiles()
-    }
-
-    var isRemoteImportingEnabled: Bool {
-        profileManager.isRemoteImportingEnabled
     }
 }
 
@@ -382,10 +346,6 @@ private struct AppABIVersion: AppABIVersionProtocol {
 
     func checkLatestRelease() async {
         await versionChecker.checkLatestRelease()
-    }
-
-    var latestRelease: ABI.VersionRelease? {
-        versionChecker.latestRelease
     }
 }
 
