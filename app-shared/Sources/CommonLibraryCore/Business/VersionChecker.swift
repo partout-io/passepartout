@@ -61,13 +61,12 @@ public final class VersionChecker {
             kvStore.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
             pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
-            didChange.send(.new)
-
-            if let latestRelease {
-                pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
-            } else {
+            guard let latestRelease else {
                 pspLog(.core, .debug, "Version: current is latest version")
+                return
             }
+            pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
+            didChange.send(.new(latestRelease))
         } catch ABI.AppError.rateLimit {
             pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {

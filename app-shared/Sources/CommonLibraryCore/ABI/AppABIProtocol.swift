@@ -8,12 +8,6 @@ import Partout
 // MARK: Domains
 
 @MainActor
-public protocol AppABIConfigProtocol: Sendable {
-    var activeFlags: Set<ABI.ConfigFlag> { get }
-    func data(for flag: ABI.ConfigFlag) -> JSON?
-}
-
-@MainActor
 public protocol AppABIEncoderProtocol: Sendable {
     func defaultFilename(for profileName: String) -> String
     func profile(fromString string: String) throws -> Profile
@@ -23,7 +17,6 @@ public protocol AppABIEncoderProtocol: Sendable {
 
 @MainActor
 public protocol AppABIIAPProtocol: Sendable {
-    var isEnabled: Bool { get }
     func enable(_ isEnabled: Bool)
     func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult
     func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws
@@ -31,13 +24,6 @@ public protocol AppABIIAPProtocol: Sendable {
     func restorePurchases() async throws
     func suggestedProducts(for features: Set<ABI.AppFeature>, hints: Set<ABI.StoreProductHint>?) -> Set<ABI.AppProduct>
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct]
-    var originalPurchase: ABI.OriginalPurchase? { get }
-    var purchasedProducts: Set<ABI.AppProduct> { get }
-    var isBeta: Bool { get }
-    func isEligible(for feature: ABI.AppFeature) -> Bool
-    func isEligible(for features: Set<ABI.AppFeature>) -> Bool
-    var isEligibleForFeedback: Bool { get }
-    var isEligibleForComplete: Bool { get }
     var verificationDelayMinutes: Int { get }
 }
 
@@ -58,7 +44,6 @@ public protocol AppABIProfileProtocol: Sendable {
     func remove(_ id: Profile.ID) async
     func remove(_ ids: [Profile.ID]) async
     func removeAllRemote() async throws
-    var isRemoteImportingEnabled: Bool { get }
 }
 
 @MainActor
@@ -80,6 +65,7 @@ public protocol AppABITunnelProtocol: Sendable {
 //    func reconnect(to profileId: Profile.ID) async throws
     func disconnect(from profileId: Profile.ID) async throws
     func currentLog() async -> [ABI.AppLogLine]
+    // These are non-observable (pull manually)
     func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
     func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?
     func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?
@@ -88,7 +74,6 @@ public protocol AppABITunnelProtocol: Sendable {
 @MainActor
 public protocol AppABIVersionProtocol: Sendable {
     func checkLatestRelease() async
-    var latestRelease: ABI.VersionRelease? { get }
 }
 
 @MainActor

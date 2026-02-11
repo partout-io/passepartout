@@ -7,7 +7,6 @@ import Partout
 @MainActor
 public final class AppABI: Sendable {
     // Public ABI by domain
-    public let config: AppABIConfigProtocol
     public let encoder: AppABIEncoderProtocol
     public let iap: AppABIIAPProtocol
     public let profile: AppABIProfileProtocol
@@ -77,7 +76,6 @@ public final class AppABI: Sendable {
 
         iapManager.isEnabled = appConfiguration.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
-        config = AppABIConfig(configManager: configManager)
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
@@ -169,18 +167,6 @@ extension AppABI: AppABILoggerProtocol, LogFormatter {
 
 // MARK: - Actions
 
-private struct AppABIConfig: AppABIConfigProtocol {
-    let configManager: ConfigManager
-
-    var activeFlags: Set<ABI.ConfigFlag> {
-        configManager.activeFlags
-    }
-
-    func data(for flag: ABI.ConfigFlag) -> JSON? {
-        configManager.data(for: flag)
-    }
-}
-
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
 
@@ -205,10 +191,6 @@ private struct AppABIIAP: AppABIIAPProtocol {
     let iapManager: IAPManager
     let kvStore: KeyValueStore
     let supportsIAP: Bool
-
-    var isEnabled: Bool {
-        iapManager.isEnabled
-    }
 
     func enable(_ isEnabled: Bool) {
         iapManager.isEnabled = supportsIAP && isEnabled
@@ -237,34 +219,6 @@ private struct AppABIIAP: AppABIIAPProtocol {
 
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
         try await iapManager.fetchPurchasableProducts(for: products)
-    }
-
-    var originalPurchase: ABI.OriginalPurchase? {
-        iapManager.originalPurchase
-    }
-
-    var purchasedProducts: Set<ABI.AppProduct> {
-        iapManager.purchasedProducts
-    }
-
-    var isBeta: Bool {
-        iapManager.isBeta
-    }
-
-    func isEligible(for feature: ABI.AppFeature) -> Bool {
-        iapManager.isEligible(for: feature)
-    }
-
-    func isEligible(for features: Set<ABI.AppFeature>) -> Bool {
-        iapManager.isEligible(for: features)
-    }
-
-    var isEligibleForFeedback: Bool {
-        iapManager.isEligibleForFeedback
-    }
-
-    var isEligibleForComplete: Bool {
-        iapManager.isEligibleForComplete
     }
 
     var verificationDelayMinutes: Int {
@@ -318,10 +272,6 @@ private struct AppABIProfile: AppABIProfileProtocol {
 
     func removeAllRemote() async throws {
         try await profileManager.eraseRemotelySharedProfiles()
-    }
-
-    var isRemoteImportingEnabled: Bool {
-        profileManager.isRemoteImportingEnabled
     }
 }
 
@@ -397,10 +347,6 @@ private struct AppABIVersion: AppABIVersionProtocol {
     func checkLatestRelease() async {
         await versionChecker.checkLatestRelease()
     }
-
-    var latestRelease: ABI.VersionRelease? {
-        versionChecker.latestRelease
-    }
 }
 
 private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
@@ -470,7 +416,7 @@ private extension AppABI {
                     kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
-                case .eligibleFeatures(let features):
+                case .eligibleFeatures(let features, _, _):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     do {
                         pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")

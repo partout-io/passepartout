@@ -39,7 +39,7 @@ public final class AppContext {
 
         // ABI
         appEncoderObservable = AppEncoderObservable(abi: abi.encoder)
-        configObservable = ConfigObservable(abi: abi.config)
+        configObservable = ConfigObservable()
         iapObservable = IAPObservable(abi: abi.iap)
         profileObservable = ProfileObservable(abi: abi.profile)
         registryObservable = RegistryObservable(abi: abi.registry)

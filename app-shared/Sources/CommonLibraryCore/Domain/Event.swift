@@ -15,19 +15,20 @@ extension ABI {
     }
 
     public enum ConfigEvent: Sendable {
-        case refresh(Set<ABI.ConfigFlag>)
+        case refresh(Set<ConfigFlag>, data: [ConfigFlag: JSON])
     }
 
     public enum IAPEvent: Sendable {
         case status(isEnabled: Bool)
-        case eligibleFeatures(Set<ABI.AppFeature>)
         case loadReceipt(isLoading: Bool)
+        case newReceipt(OriginalPurchase?, products: Set<AppProduct>, isBeta: Bool)
+        case eligibleFeatures(Set<AppFeature>, forComplete: Bool, forFeedback: Bool)
     }
 
     public enum ProfileEvent: Equatable, Sendable {
         case ready
         case localProfiles
-        case refresh([Profile.ID: ABI.AppProfileHeader])
+        case refresh([Profile.ID: AppProfileHeader])
         case save(Profile, previous: Profile?)
         case startRemoteImport
         case stopRemoteImport
@@ -35,18 +36,18 @@ extension ABI {
     }
 
     public enum TunnelEvent: Sendable {
-        case refresh([Profile.ID: ABI.AppProfileInfo])
+        case refresh([Profile.ID: AppProfileInfo])
         case dataCount
     }
 
     public enum VersionEvent: Sendable {
-        case new
+        case new(VersionRelease)
     }
 
     public enum WebReceiverEvent: Sendable {
-        case start(website: ABI.WebsiteWithPasscode)
+        case start(website: WebsiteWithPasscode)
         case stop
-        case newUpload(ABI.WebFileUpload)
+        case newUpload(WebFileUpload)
         case uploadFailure(Error)
     }
 }

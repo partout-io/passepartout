@@ -21,8 +21,8 @@ public final class VersionObservable {
 
     func onUpdate(_ event: ABI.VersionEvent) {
         switch event {
-        case .new:
-            latestRelease = abi.latestRelease
+        case .new(let release):
+            latestRelease = release
         }
     }
 }

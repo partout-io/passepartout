@@ -10,16 +10,24 @@ public final class IAPObservable {
     private let abi: AppABIIAPProtocol
 
     public private(set) var isEnabled: Bool
-    public private(set) var originalPurchase: ABI.OriginalPurchase?
-    public private(set) var eligibleFeatures: Set<ABI.AppFeature>
     public private(set) var isLoadingReceipt: Bool
+    public private(set) var isBeta: Bool
+    public private(set) var originalPurchase: ABI.OriginalPurchase?
+    public private(set) var purchasedProducts: Set<ABI.AppProduct>
+    public private(set) var eligibleFeatures: Set<ABI.AppFeature>
+    public private(set) var isEligibleForComplete: Bool
+    public private(set) var isEligibleForFeedback: Bool
     private var subscription: Task<Void, Never>?
 
     public init(abi: AppABIIAPProtocol) {
         self.abi = abi
-        isEnabled = abi.isEnabled
+        isEnabled = true
+        isLoadingReceipt = true
+        isBeta = false
+        purchasedProducts = []
         eligibleFeatures = []
-        isLoadingReceipt = false
+        isEligibleForComplete = false
+        isEligibleForFeedback = false
     }
 }
 
@@ -61,36 +69,16 @@ extension IAPObservable {
         try await abi.purchasableProducts(for: products)
     }
 
-    public var purchasedProducts: Set<ABI.AppProduct> {
-        abi.purchasedProducts
-    }
-
-    public var isBeta: Bool {
-        abi.isBeta
+    public var verificationDelayMinutes: Int {
+        abi.verificationDelayMinutes
     }
 
     public func isEligible(for feature: ABI.AppFeature) -> Bool {
-        abi.isEligible(for: feature)
+        eligibleFeatures.contains(feature)
     }
 
-    public func isEligible(for features: Set<ABI.AppFeature>) -> Bool {
-        abi.isEligible(for: features)
-    }
-
-    public var isEligibleForFeedback: Bool {
-        abi.isEligibleForFeedback
-    }
-
-    public var isEligibleForComplete: Bool {
-        abi.isEligibleForComplete
-    }
-
-    public var isPayingUser: Bool {
-        !purchasedProducts.isEmpty
-    }
-
-    public var verificationDelayMinutes: Int {
-        abi.verificationDelayMinutes
+    public func isEligible<C>(for features: C) -> Bool where C: Collection, C.Element == ABI.AppFeature {
+        features.isEmpty || features.allSatisfy(eligibleFeatures.contains)
     }
 
     public var didPurchaseComplete: Bool {
@@ -109,13 +97,16 @@ extension IAPObservable {
         switch event {
         case .status(let isEnabled):
             self.isEnabled = isEnabled
-        case .eligibleFeatures(let features):
-            eligibleFeatures = features
         case .loadReceipt(let isLoading):
             isLoadingReceipt = isLoading
-            if !isLoading {
-                originalPurchase = abi.originalPurchase
-            }
+        case .newReceipt(let purchase, let products, let isBeta):
+            originalPurchase = purchase
+            purchasedProducts = products
+            self.isBeta = isBeta
+        case .eligibleFeatures(let features, let forComplete, let forFeedback):
+            eligibleFeatures = features
+            isEligibleForComplete = forComplete
+            isEligibleForFeedback = forFeedback
         }
     }
 }
