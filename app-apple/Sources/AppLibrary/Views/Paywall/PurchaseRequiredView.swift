@@ -6,19 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct PurchaseRequiredView<Content>: View where Content: View {
-    let features: Set<ABI.AppFeature>?
-
-    var force: Bool = false
-
-    @ViewBuilder
-    let content: () -> Content
-
-    public var body: some View {
-        NewPurchaseRequiredView(features: features, force: force, content: content)
-    }
-}
-
-public struct NewPurchaseRequiredView<Content>: View where Content: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -36,7 +23,7 @@ public struct NewPurchaseRequiredView<Content>: View where Content: View {
     }
 }
 
-private extension NewPurchaseRequiredView {
+private extension PurchaseRequiredView {
     var isEligible: Bool {
         if let features {
             return iapObservable.isEligible(for: features)
@@ -47,7 +34,7 @@ private extension NewPurchaseRequiredView {
 
 // MARK: - Initializers
 
-// use for essential paywall, presents without confirmation
+// Use for essential paywall, presents without confirmation
 extension PurchaseRequiredView where Content == PurchaseRequiredButton {
     public init(
         for requiring: AppFeatureRequiring?,
@@ -73,7 +60,7 @@ extension PurchaseRequiredView where Content == PurchaseRequiredButton {
     }
 }
 
-// use for ad hoc feature paywalls, presents without confirmation
+// Use for ad hoc feature paywalls, presents without confirmation
 extension PurchaseRequiredView where Content == Button<Text> {
     public init(
         requiring features: Set<ABI.AppFeature>,
@@ -95,7 +82,7 @@ extension PurchaseRequiredView where Content == Button<Text> {
     }
 }
 
-// use for upgrade icon only
+// Use for upgrade icon only
 extension PurchaseRequiredView where Content == PurchaseRequiredImage {
     public init(for requiring: AppFeatureRequiring?) {
         self.init(requiring: requiring?.features)

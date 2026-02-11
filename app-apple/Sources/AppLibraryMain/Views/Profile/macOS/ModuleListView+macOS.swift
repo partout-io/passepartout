@@ -11,9 +11,6 @@ import SwiftUI
 struct ModuleListView: View, Routable {
     static let generalModuleId = UUID()
 
-    @Environment(IAPObservable.self)
-    private var iapObservable
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
