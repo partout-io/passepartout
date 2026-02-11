@@ -29,7 +29,7 @@ public protocol AppABIIAPProtocol: Sendable {
     func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws
     func reloadReceipt() async
     func restorePurchases() async throws
-    func suggestedProducts(for features: Set<ABI.AppFeature>, including inclusions: Set<IAPManager.SuggestionInclusion>) -> Set<ABI.AppProduct>
+    func suggestedProducts(for features: Set<ABI.AppFeature>, hints: Set<ABI.StoreProductHint>?) -> Set<ABI.AppProduct>
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct]
     var originalPurchase: ABI.OriginalPurchase? { get }
     var purchasedProducts: Set<ABI.AppProduct> { get }

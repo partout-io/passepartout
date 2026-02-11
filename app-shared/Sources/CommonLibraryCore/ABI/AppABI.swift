@@ -231,8 +231,8 @@ private struct AppABIIAP: AppABIIAPProtocol {
         try await iapManager.restorePurchases()
     }
 
-    func suggestedProducts(for features: Set<ABI.AppFeature>, including inclusions: Set<IAPManager.SuggestionInclusion>) -> Set<ABI.AppProduct> {
-        iapManager.suggestedProducts(for: features, including: inclusions)
+    func suggestedProducts(for features: Set<ABI.AppFeature>, hints: Set<ABI.StoreProductHint>?) -> Set<ABI.AppProduct> {
+        iapManager.suggestedProducts(for: features, hints: hints)
     }
 
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {

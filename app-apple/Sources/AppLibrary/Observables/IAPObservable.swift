@@ -52,12 +52,9 @@ extension IAPObservable {
 extension IAPObservable {
     public func suggestedProducts(
         for features: Set<ABI.AppFeature>,
-        including inclusions: Set<IAPManager.SuggestionInclusion> = [
-            .complete,
-            .singlePlatformEssentials
-        ]
+        hints: Set<ABI.StoreProductHint>? = nil
     ) -> Set<ABI.AppProduct> {
-        abi.suggestedProducts(for: features, including: inclusions)
+        abi.suggestedProducts(for: features, hints: hints)
     }
 
     public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {

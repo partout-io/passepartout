@@ -113,7 +113,7 @@ private extension PaywallScrollableView {
         isPresented: .constant(true),
         iapObservable: .forPreviews,
         requiredFeatures: features,
-        model: .forPreviews(features, including: [.complete]),
+        model: .forPreviews(features, hints: [.complete]),
         errorHandler: .default(),
         onComplete: { _, _ in },
         onError: { _ in }

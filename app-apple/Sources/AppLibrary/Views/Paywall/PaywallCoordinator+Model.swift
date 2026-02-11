@@ -99,13 +99,13 @@ extension PaywallCoordinator.Model {
     @MainActor
     static func forPreviews(
         _ features: Set<ABI.AppFeature>,
-        including: Set<IAPManager.SuggestionInclusion>
+        hints: Set<ABI.StoreProductHint>
     ) -> PaywallCoordinator.Model {
         let state = PaywallCoordinator.Model()
         state.isFetchingProducts = false
         let suggested = IAPObservable.forPreviews.suggestedProducts(
             for: features,
-            including: including
+            hints: hints
         )
         try? state.setSuggestedProducts(
             suggested,
