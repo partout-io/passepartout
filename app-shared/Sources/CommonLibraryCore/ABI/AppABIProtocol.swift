@@ -54,8 +54,6 @@ public protocol AppABIProfileProtocol: Sendable {
     func remove(_ id: Profile.ID) async
     func remove(_ ids: [Profile.ID]) async
     func removeAllRemote() async throws
-    // FIXME: #1685, Non-reactive
-//    var isRemoteImportingEnabled: Bool { get }
 }
 
 @MainActor
