@@ -8,7 +8,6 @@ import CommonDataPreferences
 import CommonDataProfiles
 import CommonDataProviders
 import CoreData
-// FIXME: #1594, Drop import (Profile, ModuleType, Registry, PartoutLogger)
 import Partout
 
 extension AppABI {
@@ -268,9 +267,6 @@ extension AppABI {
                     throw error
                 }
             }
-
-            pspLog(.profiles, .info, "\tReload profiles required features...")
-            profileManager.reloadRequiredFeatures()
         }
 
         return AppABI(

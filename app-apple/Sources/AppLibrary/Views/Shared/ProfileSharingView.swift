@@ -22,14 +22,6 @@ public struct ProfileSharingView: View {
         )
     }
 
-    @available(*, deprecated, message: "#1594")
-    public init(profileManager: ProfileManager, profileId: Profile.ID) {
-        self.init(
-            flags: profileManager.sharingFlags(for: profileId),
-            isRemoteImportingEnabled: profileManager.isRemoteImportingEnabled
-        )
-    }
-
     public var body: some View {
         if !flags.isEmpty {
             ZStack(alignment: .centerFirstTextBaseline) {

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Drop import (wrap ExtendedEndpoint)
 import Partout
 
 #if !PSP_CROSS

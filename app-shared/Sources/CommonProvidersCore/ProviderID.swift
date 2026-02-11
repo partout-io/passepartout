@@ -16,3 +16,9 @@ extension ProviderID: Identifiable {
         rawValue
     }
 }
+
+extension ProviderID: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        rawValue
+    }
+}

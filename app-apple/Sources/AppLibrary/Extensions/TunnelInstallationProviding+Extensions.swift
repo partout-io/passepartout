@@ -6,7 +6,7 @@ import CommonLibrary
 
 @MainActor
 extension TunnelInstallationProviding {
-    public var installedProfiles: [ABI.AppProfile] {
+    public var installedProfiles: [Profile] {
         tunnel
             .activeProfiles
             .compactMap {

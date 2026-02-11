@@ -212,41 +212,6 @@ extension ProfileEditor {
 
         return profile
     }
-
-    @available(*, deprecated, message: "#1594")
-    public func buildAndUpdate(with registry: Registry?) throws -> Profile {
-        try build(with: registry, updating: true)
-    }
-
-    @available(*, deprecated, message: "#1594")
-    public func build(with registry: Registry?, updating: Bool) throws -> Profile {
-        // Add this check in the app, the library does not enforce it
-        guard !editableProfile.activeModulesIds.isEmpty else {
-            throw PartoutError(.noActiveModules)
-        }
-
-        // Validate builders if implementation supports it
-        try editableProfile.modules.forEach {
-            guard let impl = registry?.implementation(for: $0) as? ModuleBuilderValidator else {
-                return
-            }
-            do {
-                try impl.validate($0)
-            } catch {
-                throw ABI.AppError.malformedModule($0, error: error)
-            }
-        }
-
-        let builder = try editableProfile.builder()
-        let profile = try builder.build()
-
-        // Update local view
-        if updating {
-            editableProfile.modules = profile.modulesBuilders()
-        }
-
-        return profile
-    }
 }
 
 // MARK: - Testing

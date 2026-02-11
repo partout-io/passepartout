@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
 extension ABI {
-    public typealias AppIdentifier = UniqueID
+    public enum StoreProductHint {
+        case complete
+        case singlePlatformEssentials
+    }
 }

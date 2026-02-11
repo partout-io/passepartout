@@ -4,12 +4,12 @@
 
 import Partout
 
-extension ModuleType {
-    public func newModule(with registry: Registry) -> any ModuleBuilder {
-        guard var newBuilder = registry.newModuleBuilder(withModuleType: self) else {
+extension Registry {
+    public func newModule(ofType moduleType: ModuleType) -> any ModuleBuilder {
+        guard var newBuilder = newModuleBuilder(withModuleType: moduleType) else {
             fatalError("Unknown module type: \(self)")
         }
-        switch self {
+        switch moduleType {
         case .openVPN:
             guard newBuilder is OpenVPNModule.Builder else {
                 fatalError("Unexpected module builder type: \(type(of: newBuilder)) != \(self)")
@@ -19,7 +19,7 @@ extension ModuleType {
             guard var builder = newBuilder as? WireGuardModule.Builder else {
                 fatalError("Unexpected module builder type: \(type(of: newBuilder)) != \(self)")
             }
-            guard let impl = registry.implementation(for: builder) as? WireGuardModule.Implementation else {
+            guard let impl = implementation(for: builder) as? WireGuardModule.Implementation else {
                 fatalError("Missing WireGuard implementation for module creation")
             }
             builder.configurationBuilder = WireGuard.Configuration.Builder(keyGenerator: impl.keyGenerator)

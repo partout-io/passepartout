@@ -25,9 +25,6 @@ struct ProfileCoordinator: View {
     @EnvironmentObject
     private var preferencesManager: PreferencesManager
 
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
     @Environment(RegistryObservable.self)
     private var registryObservable
 
@@ -53,9 +50,7 @@ struct ProfileCoordinator: View {
 
     var body: some View {
         contentView
-            .modifier(DynamicPaywallModifier(
-                configObservable: configObservable,
-                paywallReason: $paywallReason
+            .modifier(DynamicPaywallModifier(paywallReason: $paywallReason
             ))
             .themeModal(item: $modalRoute, content: modalDestination)
             .environment(\.dismissProfile, onDismiss)
@@ -158,7 +153,7 @@ private extension ProfileCoordinator {
             if dismissing {
                 onDismiss()
             }
-            return savedProfile.native
+            return savedProfile
         } catch ABI.AppError.verificationReceiptIsLoading {
             pspLog(.profiles, .error, "Unable to commit profile: loading receipt")
             let V = Strings.Views.Paywall.Alerts.self
@@ -212,7 +207,7 @@ private extension ProfileCoordinator {
                     verifyingWith: nil,
                     preferencesManager: preferencesManager
                 )
-                modalRoute = .sendToTV(profile.native)
+                modalRoute = .sendToTV(profile)
             } catch {
                 errorHandler.handle(error, title: Strings.Views.Profile.SendTv.title_compound)
             }
@@ -223,7 +218,8 @@ private extension ProfileCoordinator {
 // MARK: - Paywall
 
 private struct DynamicPaywallModifier: ViewModifier {
-    let configObservable: ConfigObservable
+    @Environment(ConfigObservable.self)
+    var configObservable: ConfigObservable
 
     @Binding
     var paywallReason: PaywallReason?

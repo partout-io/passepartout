@@ -5,7 +5,6 @@
 import Combine
 import CommonLibrary
 
-// FIXME: #1594, Bound to objectWillChange.send()
 @MainActor
 public final class ModuleDraft<T>: ObservableObject where T: ModuleBuilder {
     private weak var editor: ProfileEditor?

@@ -52,13 +52,6 @@ struct MockAPI: APIMapper {
     }
 }
 
-#if canImport(Combine)
-import Combine
-
-extension MockRepository: ObservableObject {
-}
-#endif
-
 final class MockRepository: APIRepository {
     private let providersSubject = CurrentValueStream<UniqueID, [Provider]>([])
 

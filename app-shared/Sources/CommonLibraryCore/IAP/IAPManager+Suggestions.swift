@@ -11,22 +11,16 @@ extension IAPManager {
         case tvOS
     }
 
-    public enum SuggestionInclusion {
-        case complete
-
-        case singlePlatformEssentials
-    }
-
     public func suggestedProducts(
         for features: Set<ABI.AppFeature>,
-        including: Set<SuggestionInclusion> = [.complete, .singlePlatformEssentials]
+        hints: Set<ABI.StoreProductHint>?
     ) -> Set<ABI.AppProduct> {
 #if os(iOS)
-        suggestedProducts(for: features, on: .iOS, including: including)
+        suggestedProducts(for: features, on: .iOS, hints: hints)
 #elseif os(macOS)
-        suggestedProducts(for: features, on: .macOS, including: including)
+        suggestedProducts(for: features, on: .macOS, hints: hints)
 #elseif os(tvOS)
-        suggestedProducts(for: features, on: .tvOS, including: including)
+        suggestedProducts(for: features, on: .tvOS, hints: hints)
 #else
         []
 #endif
@@ -35,14 +29,16 @@ extension IAPManager {
 
 // for testing
 extension IAPManager {
-
-    // suggest the minimum set of products for the given required features
+    // Suggest the minimum set of products for the given required features
     func suggestedProducts(
         for features: Set<ABI.AppFeature>,
         on platform: Platform,
-        including: Set<SuggestionInclusion>,
+        hints: Set<ABI.StoreProductHint>?,
         asserting: Bool = false
     ) -> Set<ABI.AppProduct> {
+        // Include all by default
+        let hints = hints ?? [.complete, .singlePlatformEssentials]
+
         guard !purchasedProducts.contains(where: \.isComplete) else {
             if asserting {
                 assertionFailure("Suggesting products to complete version purchaser?")
@@ -52,43 +48,43 @@ extension IAPManager {
 
         var suggested: Set<ABI.AppProduct> = []
 
-        // prioritize eligible features from non-essential products
+        // Prioritize eligible features from non-essential products
         let nonEssentialProducts = features.flatMap(\.nonEssentialProducts)
         suggested.formUnion(nonEssentialProducts)
         let nonEssentialEligibleFeatures = Set(nonEssentialProducts.flatMap(\.features))
 
         //
-        // suggest essential packages if:
+        // Suggest essential packages if:
         //
-        // - never purchased any
-        // - non-essential eligible features don't include required essential features
+        // - Never purchased any
+        // - Non-essential eligible features don't include required essential features
         //
         let essentialFeatures = features.filter(\.isEssential)
         if !didPurchaseEssentials(on: platform) &&
             !nonEssentialEligibleFeatures.isSuperset(of: essentialFeatures) {
             switch platform {
             case .iOS:
-                // suggest both platforms if never purchased
+                // Suggest both platforms if never purchased
                 if !purchasedProducts.contains(.Essentials.macOS) {
                     suggested.insert(.Essentials.iOS_macOS)
                 }
-                // suggest iOS to former macOS purchasers
-                let suggestsSinglePlatform = including.contains(.singlePlatformEssentials) || purchasedProducts.contains(.Essentials.macOS)
+                // Suggest iOS to former macOS purchasers
+                let suggestsSinglePlatform = hints.contains(.singlePlatformEssentials) || purchasedProducts.contains(.Essentials.macOS)
                 if suggestsSinglePlatform && !purchasedProducts.contains(.Essentials.iOS) {
                     suggested.insert(.Essentials.iOS)
                 }
             case .macOS:
-                // suggest both platforms if never purchased
+                // Suggest both platforms if never purchased
                 if !purchasedProducts.contains(.Essentials.iOS) {
                     suggested.insert(.Essentials.iOS_macOS)
                 }
-                // suggest macOS to former iOS purchasers
-                let suggestsSinglePlatform = including.contains(.singlePlatformEssentials) || purchasedProducts.contains(.Essentials.iOS)
+                // Suggest macOS to former iOS purchasers
+                let suggestsSinglePlatform = hints.contains(.singlePlatformEssentials) || purchasedProducts.contains(.Essentials.iOS)
                 if suggestsSinglePlatform && !purchasedProducts.contains(.Essentials.macOS) {
                     suggested.insert(.Essentials.macOS)
                 }
             case .tvOS:
-                // suggest both platforms if never purchased
+                // Suggest both platforms if never purchased
                 if !purchasedProducts.contains(where: \.isEssentials) {
                     suggested.insert(.Essentials.iOS_macOS)
                 }
@@ -99,9 +95,9 @@ extension IAPManager {
         switch platform {
         case .tvOS:
             //
-            // "essential" features are not accessible from the
-            // TV, therefore selling the "complete" packages is misleading
-            // for TV-only customers. only offer them if some "essential"
+            // "Essential" features are not accessible from the
+            // TV, therefore selling the "Complete" packages is misleading
+            // for TV-only customers. Only offer them if some "essential"
             // feature is required, because it means that the iOS/macOS app
             // is also installed
             //
@@ -111,14 +107,14 @@ extension IAPManager {
             suggestsComplete = true
         }
 
-        // suggest complete packages if eligible
-        if including.contains(.complete) && suggestsComplete && isEligibleForComplete {
+        // Suggest complete packages if eligible
+        if hints.contains(.complete) && suggestsComplete && isEligibleForComplete {
             suggested.insert(.Complete.Recurring.yearly)
             suggested.insert(.Complete.Recurring.monthly)
             suggested.insert(.Complete.OneTime.lifetime)
         }
 
-        // strip purchased (paranoid check)
+        // Strip purchased (paranoid check)
         suggested.subtract(purchasedProducts)
 
         return suggested

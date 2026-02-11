@@ -6,7 +6,7 @@ import CommonLibrary
 
 @MainActor @Observable
 public final class InteractiveObservable {
-    public typealias CompletionBlock = (ABI.AppProfile) throws -> Void
+    public typealias CompletionBlock = (Profile) throws -> Void
 
     public var isPresented = false
 
@@ -17,9 +17,9 @@ public final class InteractiveObservable {
     public init() {
     }
 
-    public func present(with profile: ABI.AppProfile, onComplete: CompletionBlock?) {
+    public func present(with profile: Profile, onComplete: CompletionBlock?) {
         editor = ProfileEditor()
-        editor.load(profile.native.editable(), isShared: false)
+        editor.load(profile.editable(), isShared: false)
         self.onComplete = onComplete
         isPresented = true
     }
@@ -27,6 +27,6 @@ public final class InteractiveObservable {
     public func complete() throws {
         isPresented = false
         let newProfile = try editor.buildAndUpdate()
-        try onComplete?(ABI.AppProfile(native: newProfile))
+        try onComplete?(newProfile)
     }
 }

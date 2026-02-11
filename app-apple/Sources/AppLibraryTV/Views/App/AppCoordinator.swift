@@ -77,10 +77,10 @@ private extension AppCoordinator {
             errorHandler: errorHandler,
             flow: .init(
                 onConnect: {
-                    await onConnect(ABI.AppProfile(native: $0), force: false)
+                    await onConnect($0, force: false)
                 },
                 onProviderEntityRequired: {
-                    onProviderEntityRequired(ABI.AppProfile(native: $0), force: false)
+                    onProviderEntityRequired($0, force: false)
                 }
             )
         )
@@ -129,7 +129,7 @@ private extension AppCoordinator {
 // MARK: - Handlers
 
 extension AppCoordinator {
-    public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         pspLog(.core, .info, "Present interactive login")
         interactiveObservable.present(
             with: profile,
@@ -137,15 +137,15 @@ extension AppCoordinator {
         )
     }
 
-    public func onProviderEntityRequired(_ profile: ABI.AppProfile, force: Bool) {
+    public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
         errorHandler.handle(
-            title: profile.native.name,
+            title: profile.name,
             message: Strings.Alerts.Providers.MissingServer.message
         )
     }
 
     public func onPurchaseRequired(
-        for profile: ABI.AppProfile,
+        for profile: Profile,
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
@@ -168,7 +168,7 @@ extension AppCoordinator {
         pspLog(.core, .info, "Present paywall")
         paywallContinuation = continuation
 
-        setLater(.init(profile.native, requiredFeatures: features, action: .connect)) {
+        setLater(.init(profile, requiredFeatures: features, action: .connect)) {
             paywallReason = $0
         }
     }

@@ -44,7 +44,7 @@ struct ProfileContextMenu: View, Routable {
 
 @MainActor
 private extension ProfileContextMenu {
-    var profile: ABI.AppProfile? {
+    var profile: Profile? {
         profileObservable.profile(withId: preview.id)
     }
 
@@ -53,10 +53,10 @@ private extension ProfileContextMenu {
             ProviderConnectToButton(
                 profile: profile,
                 onTap: {
-                    flow?.connectionFlow?.onProviderEntityRequired($0.native)
+                    flow?.connectionFlow?.onProviderEntityRequired($0)
                 },
                 label: {
-                    ThemeImageLabel(profile.native.providerServerSelectionTitle, .profileProvider)
+                    ThemeImageLabel(profile.providerServerSelectionTitle, .profileProvider)
                 }
             )
             .uiAccessibility(.App.ProfileMenu.connectTo)

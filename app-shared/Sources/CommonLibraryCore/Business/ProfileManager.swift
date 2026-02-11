@@ -2,13 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Subject for search through manager (debounce not trivial)
 import Partout
-
-#if !PSP_CROSS
-import Combine
-extension ProfileManager: ObservableObject {}
-#endif
 
 @MainActor
 public final class ProfileManager {
@@ -29,45 +23,18 @@ public final class ProfileManager {
 
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-#if !PSP_CROSS
             didChange.send(.localProfiles)
-            reloadFilteredProfiles(with: searchSubject.value)
-            reloadRequiredFeatures()
-#endif
             didChange.send(.refresh(computedProfileHeaders()))
         }
     }
 
     private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-#if !PSP_CROSS
-            didChange.send(.remoteProfiles)
-#endif
             didChange.send(.refresh(computedProfileHeaders()))
         }
     }
 
-    private var filteredProfiles: [Profile] {
-        didSet {
-            didChange.send(.filteredProfiles)
-        }
-    }
-
-    @available(*, deprecated, message: "#1594")
-    private var requiredFeatures: [Profile.ID: Set<ABI.AppFeature>] {
-        willSet {
-#if !PSP_CROSS
-            objectWillChange.send()
-#endif
-        }
-    }
-
     public var isRemoteImportingEnabled = false {
-        willSet {
-#if !PSP_CROSS
-            objectWillChange.send()
-#endif
-        }
         didSet {
             didChange.send(.changeRemoteImporting(isRemoteImportingEnabled))
         }
@@ -87,13 +54,6 @@ public final class ProfileManager {
     private var localSubscription: Task<Void, Never>?
     private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
-
-#if !PSP_CROSS
-    @available(*, deprecated, message: "#1594")
-    private let searchSubject: CurrentValueSubject<String, Never>
-    @available(*, deprecated, message: "#1594")
-    private var searchSubscription: AnyCancellable?
-#endif
 
     // For testing/previews
     public convenience init(profiles: [Profile]) {
@@ -116,26 +76,18 @@ public final class ProfileManager {
 
         allProfiles = [:]
         remoteProfilesIds = []
-        filteredProfiles = []
-        requiredFeatures = [:]
         if readyAfterRemote {
             waitingObservers = [.local, .remote]
         } else {
             waitingObservers = [.local]
         }
         didChange = PassthroughStream()
-
-#if !PSP_CROSS
-        searchSubject = CurrentValueSubject("")
-        observeSearch()
-#endif
     }
 }
 
 // MARK: - Actions
 
 extension ProfileManager {
-    // FIXME: #1594, Profile in public
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {
@@ -187,24 +139,6 @@ extension ProfileManager {
         pspLog(.profiles, .notice, "Finished saving profile \(profile.id)")
     }
 
-    @available(*, deprecated, message: "#1594")
-    public func legacyImport(
-        _ input: ABI.ProfileImporterInput,
-        registry: Registry,
-        passphrase: String? = nil,
-        sharingFlag: ABI.ProfileSharingFlag? = nil
-    ) async throws {
-        var profile = try registry.importedProfile(from: input, passphrase: passphrase)
-        pspLog(.profiles, .info, "Import decoded profile: \(profile)")
-        if sharingFlag == .tv {
-            var builder = profile.builder()
-            builder.attributes.isAvailableForTV = true
-            profile = try builder.build()
-        }
-        try await save(profile, isLocal: true, remotelyShared: sharingFlag != nil)
-    }
-
-    // FIXME: #1594, Profile.ID in public
     public func duplicate(profileWithId profileId: Profile.ID) async throws {
         guard let profile = allProfiles[profileId] else {
             return
@@ -231,18 +165,15 @@ extension ProfileManager {
         }
     }
 
-    // FIXME: #1594, Profile.ID in public
     public func remove(withId profileId: Profile.ID) async {
         await remove(withIds: [profileId])
     }
 
-    // FIXME: #1594, Profile.ID in public
     public func remove(withIds profileIds: [Profile.ID]) async {
         pspLog(.profiles, .notice, "Remove profiles \(profileIds)...")
         do {
             try await repository.removeProfiles(withIds: profileIds)
             try? await remoteRepository?.removeProfiles(withIds: profileIds)
-            didChange.send(.remove(profileIds))
         } catch {
             pspLog(.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }
@@ -267,10 +198,8 @@ extension ProfileManager {
 // MARK: - State
 
 extension ProfileManager {
-    // FIXME: #1594, Profile.ID in public
-    public func profile(withId profileId: Profile.ID) -> ABI.AppProfile? {
-        guard let profile = allProfiles[profileId] else { return nil }
-        return ABI.AppProfile(native: profile)
+    public func profile(withId profileId: Profile.ID) -> Profile? {
+        allProfiles[profileId]
     }
 }
 
@@ -309,9 +238,6 @@ extension ProfileManager {
 
 private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
-#if !PSP_CROSS
-        objectWillChange.send()
-#endif
         pspLog(.profiles, .info, "Reload local profiles: \(result.map(\.id))")
 
         let excludedIds = Set(result
@@ -344,9 +270,6 @@ private extension ProfileManager {
     }
 
     func reloadRemoteProfiles(_ result: [Profile]) {
-#if !PSP_CROSS
-        objectWillChange.send()
-#endif
         pspLog(.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
 
         remoteProfilesIds = Set(result.map(\.id))
@@ -439,7 +362,7 @@ private extension ProfileManager {
         remoteImportTask = nil
     }
 
-    func computedProfileHeaders() -> [ABI.AppIdentifier: ABI.AppProfileHeader] {
+    func computedProfileHeaders() -> [Profile.ID: ABI.AppProfileHeader] {
         let allHeaders = allProfiles.reduce(into: [:]) {
             $0[$1.key] = $1.value.abiHeader(
                 sharingFlags: sharingFlags(for: $1.key),
@@ -451,37 +374,18 @@ private extension ProfileManager {
     }
 }
 
-// MARK: - Deprecated
+// MARK: - Helpers
 
-@available(*, deprecated, message: "#1594")
 extension ProfileManager {
-    public var isReady: Bool {
-        waitingObservers.isEmpty
-    }
-
-    public var hasProfiles: Bool {
-        !filteredProfiles.isEmpty
-    }
-
-    public var previews: [ABI.ProfilePreview] {
-        filteredProfiles.map {
-            processor?.preview(from: $0) ?? ABI.ProfilePreview($0)
-        }
-    }
-
-    public func partoutProfile(withId profileId: Profile.ID) -> Profile? {
-        allProfiles[profileId]
-    }
-
-    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
+    func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
         remoteProfilesIds.contains(profileId)
     }
 
-    public func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
+    func isAvailableForTV(profileWithId profileId: Profile.ID) -> Bool {
         allProfiles[profileId]?.attributes.isAvailableForTV == true
     }
 
-    public func sharingFlags(for profileId: Profile.ID) -> [ABI.ProfileSharingFlag] {
+    func sharingFlags(for profileId: Profile.ID) -> [ABI.ProfileSharingFlag] {
         if isRemotelyShared(profileWithId: profileId) {
             if isAvailableForTV(profileWithId: profileId) {
                 return [.tv]
@@ -492,67 +396,23 @@ extension ProfileManager {
         return []
     }
 
-    public func requiredFeatures(for profile: Profile) -> Set<ABI.AppFeature> {
-        guard let ineligible = processor?.requiredFeatures(profile), !ineligible.isEmpty else {
-            return []
-        }
-        return ineligible
-    }
-
-#if !PSP_CROSS
-    public var isSearching: Bool {
-        !searchSubject.value.isEmpty
-    }
-
-    public func search(byName name: String) {
-        searchSubject.send(name)
-    }
-#endif
-
-    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<ABI.AppFeature>? {
-        requiredFeatures[profileId]
-    }
-
-    public func reloadRequiredFeatures() {
-        guard let processor else {
-            return
-        }
-        requiredFeatures = allProfiles.reduce(into: [:]) {
-            guard let ineligible = processor.requiredFeatures($1.value), !ineligible.isEmpty else {
-                return
-            }
-            $0[$1.key] = ineligible
-        }
-        pspLog(.profiles, .info, "Required features: \(requiredFeatures)")
+    func requiredFeatures(for profile: Profile) -> Set<ABI.AppFeature> {
+        processor?.requiredFeatures(profile) ?? []
     }
 }
 
-@available(*, deprecated, message: "#1594")
-private extension ProfileManager {
-#if !PSP_CROSS
-    func observeSearch(debounce: Int = 200) {
-        searchSubscription = searchSubject
-            .debounce(for: .milliseconds(debounce), scheduler: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.reloadFilteredProfiles(with: $0)
-            }
+// MARK: - Testing
+
+extension ProfileManager {
+    var isReady: Bool {
+        waitingObservers.isEmpty
     }
-#endif
 
-    func reloadFilteredProfiles(with search: String) {
-#if !PSP_CROSS
-        objectWillChange.send()
-#endif
-        filteredProfiles = allProfiles
-            .values
-            .filter {
-                if !search.isEmpty {
-                    return $0.name.lowercased().contains(search.lowercased())
-                }
-                return true
-            }
-            .sorted(by: Profile.sorting)
+    var hasProfiles: Bool {
+        !allProfiles.isEmpty
+    }
 
-        pspLog(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredProfiles.count)): \(filteredProfiles.map(\.name))")
+    var profiles: [Profile] {
+        Array(allProfiles.values)
     }
 }

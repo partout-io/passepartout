@@ -191,12 +191,12 @@ private extension AppMenu {
 
 private extension AppMenu {
     // TODO: #218, must be per-tunnel
-    var tunnelStatus: ABI.AppProfile.Status {
+    var tunnelStatus: ABI.AppProfileStatus {
         installedProfile?.status ?? .disconnected
     }
 
     // TODO: #218, must be per-tunnel
-    var installedProfile: ABI.AppProfile.Info? {
+    var installedProfile: ABI.AppProfileInfo? {
         tunnel.activeProfiles.first?.value
     }
 }

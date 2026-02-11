@@ -5,14 +5,13 @@
 import CommonLibrary
 import SwiftUI
 
-extension ABI.AppProfile {
+extension Profile {
     @MainActor
     func providerSelectorButton(onSelect: ((Profile) -> Void)?) -> some View {
-        native
-            .activeProviderModule
+        activeProviderModule
             .map { module in
                 Button {
-                    onSelect?(native)
+                    onSelect?(self)
                 } label: {
                     ProviderCountryFlag(entity: module.entity?.header)
                 }

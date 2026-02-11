@@ -17,27 +17,21 @@ extension View {
             .environment(context.iapObservable)
             .environment(context.profileObservable)
             .environment(context.registryObservable)
-//            .environment(context.tunnelObservable)
             .environment(context.versionObservable)
             // View concerns
             .environment(context.appFormatter)
             .environment(context.onboardingObservable)
             .environment(context.userPreferences)
             // Deprecated
-            .environment(\.logFormatterBlock) { [weak context] in
-                context?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
-            }
             .environmentObject(context.apiManager)
-            .environmentObject(context.iapManager)
             .environmentObject(context.preferencesManager)
-            .environmentObject(context.profileManager)
-//            .environmentObject(context.tunnel)
     }
 
     public func withMockEnvironment() -> some View {
-        task {
-            try? await AppContext.forPreviews.profileManager.observeLocal()
-        }
-        .withEnvironment(from: .forPreviews, theme: Theme())
+//        task {
+//            // FIXME: #1683, Previews
+//            try? await ProfileObservable.forPreviews.observeLocal()
+//        }
+        withEnvironment(from: .forPreviews, theme: Theme())
     }
 }

@@ -94,12 +94,10 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
         )
         .withErrorHandler(errorHandler)
         .onChange(of: interactiveObservable.isPresented) {
-            modalRoute = $0 ? .interactiveLogin : nil
+            modalRoute = $1 ? .interactiveLogin : nil
         }
         .onReceive(AppPipe.settings) {
-            guard modalRoute != .settings else {
-                return
-            }
+            guard modalRoute != .settings else { return }
             present(.settings)
         }
     }
@@ -120,10 +118,10 @@ extension AppCoordinator {
                 onDeleteProfile: onDeleteProfile,
                 connectionFlow: .init(
                     onConnect: {
-                        await onConnect(ABI.AppProfile(native: $0), force: false)
+                        await onConnect($0, force: false)
                     },
                     onProviderEntityRequired: {
-                        onProviderEntityRequired(ABI.AppProfile(native: $0), force: false)
+                        onProviderEntityRequired($0, force: false)
                     }
                 )
             )
@@ -310,22 +308,22 @@ private struct ProviderServerCoordinatorIfSupported: View {
 // MARK: - Handlers
 
 extension AppCoordinator {
-    public func onInteractiveLogin(_ profile: ABI.AppProfile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
+    public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         pspLog(.core, .info, "Present interactive login")
         interactiveObservable.present(with: profile, onComplete: onComplete)
     }
 
-    public func onProviderEntityRequired(_ profile: ABI.AppProfile, force: Bool) {
-        guard let module = profile.native.activeProviderModule else {
+    public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
+        guard let module = profile.activeProviderModule else {
             assertionFailure("Editing provider entity, but profile has no selected provider module")
             return
         }
         pspLog(.core, .info, "Present provider entity selector")
-        present(.editProviderEntity(profile.native, force, module))
+        present(.editProviderEntity(profile, force, module))
     }
 
     public func onPurchaseRequired(
-        for profile: ABI.AppProfile,
+        for profile: Profile,
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
@@ -348,7 +346,7 @@ extension AppCoordinator {
         pspLog(.core, .info, "Present paywall")
         paywallContinuation = continuation
 
-        setLater(.init(profile.native, requiredFeatures: features, action: .connect)) {
+        setLater(.init(profile, requiredFeatures: features, action: .connect)) {
             paywallReason = $0
         }
     }
@@ -380,7 +378,7 @@ private extension AppCoordinator {
             let newProfile = try builder.build()
 
             let wasConnected = tunnel.status(for: newProfile.id) == .connected
-            try await profileObservable.save(ABI.AppProfile(native: newProfile))
+            try await profileObservable.save(newProfile)
 
             guard profile.shouldConnectToProviderServer else {
                 return
@@ -388,7 +386,7 @@ private extension AppCoordinator {
 
             if !wasConnected {
                 pspLog(.core, .info, "Profile \(newProfile.id) was not connected, will connect to new provider entity")
-                await onConnect(ABI.AppProfile(native: newProfile), force: force)
+                await onConnect(newProfile, force: force)
             } else {
                 pspLog(.core, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
             }
@@ -406,7 +404,7 @@ private extension AppCoordinator {
         guard let profile = profileObservable.profile(withId: preview.id) else {
             return
         }
-        editProfile(profile.native.editable())
+        editProfile(profile.editable())
     }
 
     func onDeleteProfile(_ preview: ABI.ProfilePreview) {

@@ -34,7 +34,7 @@ extension IAPObservable {
         try await abi.purchase(storeProduct)
     }
 
-    public func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws {
+    public func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
         try abi.verify(profile, extra: extra)
     }
 
@@ -50,8 +50,11 @@ extension IAPObservable {
 // MARK: - State
 
 extension IAPObservable {
-    public func suggestedProducts(for features: Set<ABI.AppFeature>) -> Set<ABI.AppProduct> {
-        abi.suggestedProducts(for: features)
+    public func suggestedProducts(
+        for features: Set<ABI.AppFeature>,
+        hints: Set<ABI.StoreProductHint>? = nil
+    ) -> Set<ABI.AppProduct> {
+        abi.suggestedProducts(for: features, hints: hints)
     }
 
     public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {

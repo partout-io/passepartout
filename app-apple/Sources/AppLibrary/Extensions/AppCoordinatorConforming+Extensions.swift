@@ -6,7 +6,7 @@ import CommonLibrary
 import Foundation
 
 extension AppCoordinatorConforming {
-    public func onConnect(_ profile: ABI.AppProfile, force: Bool, verify: Bool = true) async {
+    public func onConnect(_ profile: Profile, force: Bool, verify: Bool = true) async {
         do {
             if verify {
                 try iapObservable.verify(profile, extra: nil)
@@ -25,7 +25,7 @@ extension AppCoordinatorConforming {
                 }
             }
         }
-        // FIXME: #1594, Map this inside TunnelManager
+        // FIXME: #1678, Map this inside TunnelManager
         catch let ppError as PartoutError {
             switch ppError.code {
             case .Providers.missingEntity:
@@ -38,7 +38,7 @@ extension AppCoordinatorConforming {
         }
     }
 
-    public func onError(_ error: Error, profile: ABI.AppProfile) {
-        onError(error, title: profile.native.name)
+    public func onError(_ error: Error, profile: Profile) {
+        onError(error, title: profile.name)
     }
 }

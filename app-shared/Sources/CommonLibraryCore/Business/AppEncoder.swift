@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Profile -> AppProfile
 import Partout
 
 public final class AppEncoder: Sendable {
@@ -12,8 +11,8 @@ public final class AppEncoder: Sendable {
         self.registry = registry
     }
 
-    public func defaultFilename(for profile: Profile) -> String {
-        "\(profile.name).json"
+    public func defaultFilename(for profileName: String) -> String {
+        "\(profileName).json"
     }
 
     public func profile(fromString string: String) throws -> Profile {

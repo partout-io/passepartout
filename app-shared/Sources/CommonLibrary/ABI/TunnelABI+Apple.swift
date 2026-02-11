@@ -122,7 +122,7 @@ extension TunnelABI {
             environment: environment,
             iap: iap,
             logFormatter: logFormatter,
-            originalProfile: ABI.AppProfile(native: originalProfile)
+            originalProfile: originalProfile
         )
     }
 }

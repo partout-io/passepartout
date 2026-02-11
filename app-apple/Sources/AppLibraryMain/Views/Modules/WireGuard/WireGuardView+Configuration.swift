@@ -46,7 +46,7 @@ extension WireGuardView {
                 }
             }
             .onChange(of: viewModel) {
-                $0.save(to: draft, fallback: newConfiguration)
+                $1.save(to: draft, fallback: newConfiguration)
             }
         }
     }

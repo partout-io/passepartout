@@ -4,10 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
-extension IAPManager: ObservableObject {}
-#endif
-
 @MainActor
 public final class IAPManager {
     private let customUserLevel: ABI.AppUserLevel?
@@ -26,10 +22,6 @@ public final class IAPManager {
 
     private let productsAtBuild: BuildProducts?
 
-#if !PSP_CROSS
-    // FIXME: #1594, AppContext requires Published
-    @Published
-#endif
     public var isEnabled = true {
         didSet {
             pendingReceiptTask?.cancel()
@@ -43,10 +35,6 @@ public final class IAPManager {
 
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
 
-#if !PSP_CROSS
-    // FIXME: #1594, AppContext requires Published
-    @Published
-#endif
     public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
         didSet {
             didChange.send(.eligibleFeatures(eligibleFeatures))
@@ -62,11 +50,6 @@ public final class IAPManager {
     private var isObserving: Bool
 
     private var pendingReceiptTask: Task<Void, Never>? {
-        willSet {
-#if !PSP_CROSS
-            objectWillChange.send()
-#endif
-        }
         didSet {
             didChange.send(.loadReceipt(isLoading: pendingReceiptTask != nil))
         }

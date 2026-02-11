@@ -53,18 +53,16 @@ public struct PaywallModifier: ViewModifier {
             )
 #endif
             .onChange(of: isPurchasing) {
-                if !$0 {
+                if !$1 {
                     reason = nil
                 }
             }
             .onChange(of: reason) {
-                guard let reason = $0 else {
-                    return
-                }
+                guard let reason = $1 else { return }
                 Task {
                     if !iapObservable.isEnabled {
                         pspLog(.iap, .info, "In-app purchases are disabled, enabling...")
-                        await iapObservable.enable(true)
+                        iapObservable.enable(true)
                         guard !iapObservable.isEligible(for: reason.requiredFeatures) else {
                             pspLog(.iap, .info, "Skipping paywall because eligible for features: \(reason.requiredFeatures)")
                             return

@@ -6,14 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct PurchasedView: View {
-    public init() {}
-
-    public var body: some View {
-        NewPurchasedView()
-    }
-}
-
-public struct NewPurchasedView: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -52,7 +44,7 @@ public struct NewPurchasedView: View {
     }
 }
 
-private extension NewPurchasedView {
+private extension PurchasedView {
     var isEmpty: Bool {
         iapObservable.originalPurchase == nil && iapObservable.purchasedProducts.isEmpty && iapObservable.eligibleFeatures.isEmpty
     }
@@ -69,7 +61,7 @@ private extension NewPurchasedView {
     }
 }
 
-private extension NewPurchasedView {
+private extension PurchasedView {
     var contentView: some View {
 #if os(macOS)
         Form(content: sectionsGroup)
@@ -161,6 +153,6 @@ private extension ABI.AppFeature {
 // MARK: - Previews
 
 #Preview {
-    NewPurchasedView()
+    PurchasedView()
         .withMockEnvironment()
 }

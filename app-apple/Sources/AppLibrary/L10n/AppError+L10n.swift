@@ -5,7 +5,7 @@
 import CommonLibrary
 import Foundation
 
-extension ABI.AppError: LocalizedError {
+extension ABI.AppError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
         switch self {

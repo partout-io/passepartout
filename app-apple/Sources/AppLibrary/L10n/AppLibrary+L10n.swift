@@ -15,7 +15,7 @@ extension SystemAppearance {
     }
 }
 
-extension ABI.AppProfile.Status: LocalizableEntity {
+extension ABI.AppProfileStatus: LocalizableEntity {
     public var localizedDescription: String {
         let V = Strings.Entities.TunnelStatus.self
         switch self {

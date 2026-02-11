@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1594, Drop import (after dropping deprecated events)
 import Partout
 
 extension ABI {
@@ -27,25 +26,16 @@ extension ABI {
 
     public enum ProfileEvent: Equatable, Sendable {
         case ready
-        case refresh([ABI.AppIdentifier: ABI.AppProfileHeader])
+        case localProfiles
+        case refresh([Profile.ID: ABI.AppProfileHeader])
+        case save(Profile, previous: Profile?)
         case startRemoteImport
         case stopRemoteImport
         case changeRemoteImporting(Bool)
-
-        @available(*, deprecated, message: "#1594")
-        case localProfiles
-        @available(*, deprecated, message: "#1594")
-        case remoteProfiles
-        @available(*, deprecated, message: "#1594")
-        case filteredProfiles
-        @available(*, deprecated, message: "#1594")
-        case save(Profile, previous: Profile?)
-        @available(*, deprecated, message: "#1594")
-        case remove([Profile.ID])
     }
 
     public enum TunnelEvent: Sendable {
-        case refresh([ABI.AppIdentifier: ABI.AppProfile.Info])
+        case refresh([Profile.ID: ABI.AppProfileInfo])
         case dataCount
     }
 

@@ -11,7 +11,7 @@ import Observation
 public final class ProfileObservable {
     private let abi: AppABIProfileProtocol
 
-    private var allHeaders: [ABI.AppIdentifier: ABI.AppProfileHeader] {
+    private var allHeaders: [Profile.ID: ABI.AppProfileHeader] {
         didSet {
             reloadHeaders(with: searchSubject.value)
         }
@@ -38,18 +38,18 @@ public final class ProfileObservable {
 
 extension ProfileObservable {
     // To avoid dup/expensive tracking of localProfiles
-    public func profile(withId profileId: ABI.AppIdentifier) -> ABI.AppProfile? {
+    public func profile(withId profileId: Profile.ID) -> Profile? {
         abi.profile(withId: profileId)
     }
 
-    public func save(_ profile: ABI.AppProfile, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
-        var partoutProfile = profile.native
+    public func save(_ profile: Profile, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
+        var copy = profile
         if sharingFlag == .tv {
-            var builder = partoutProfile.builder()
+            var builder = copy.builder()
             builder.attributes.isAvailableForTV = true
-            partoutProfile = try builder.build()
+            copy = try builder.build()
         }
-        try await abi.save(ABI.AppProfile(native: partoutProfile), remotelyShared: sharingFlag != nil)
+        try await abi.save(copy, remotelyShared: sharingFlag != nil)
     }
 
     public func saveAll() async {
@@ -65,7 +65,7 @@ extension ProfileObservable {
         }
     }
 
-    public func duplicate(profileWithId profileId: ABI.AppIdentifier) async throws {
+    public func duplicate(profileWithId profileId: Profile.ID) async throws {
         try await abi.duplicate(profileId)
     }
 
@@ -73,11 +73,11 @@ extension ProfileObservable {
         searchSubject.send(name)
     }
 
-    public func remove(withId profileId: ABI.AppIdentifier) async {
+    public func remove(withId profileId: Profile.ID) async {
         await abi.remove(profileId)
     }
 
-    public func remove(withIds profileIds: [ABI.AppIdentifier]) async {
+    public func remove(withIds profileIds: [Profile.ID]) async {
         await abi.remove(profileIds)
     }
 
@@ -85,8 +85,8 @@ extension ProfileObservable {
         try await abi.removeAllRemote()
     }
 
-    public func removeAll() async throws {
-        try await remove(withIds: filteredHeaders.map(\.id))
+    public func removeAll() async {
+        await remove(withIds: filteredHeaders.map(\.id))
     }
 }
 
@@ -110,15 +110,15 @@ extension ProfileObservable {
         }
     }
 
-    public func isRemotelyShared(profileWithId profileId: ABI.AppIdentifier) -> Bool {
-        abi.isRemotelyShared(profileId)
+    public func isRemotelyShared(profileWithId profileId: Profile.ID) -> Bool {
+        allHeaders[profileId]?.sharingFlags.isEmpty == false
     }
 
-    public func sharingFlags(for profileId: ABI.AppIdentifier) -> [ABI.ProfileSharingFlag] {
+    public func sharingFlags(for profileId: Profile.ID) -> [ABI.ProfileSharingFlag] {
         allHeaders[profileId]?.sharingFlags ?? []
     }
 
-    public func requiredFeatures(forProfileWithId profileId: ABI.AppIdentifier) -> Set<ABI.AppFeature>? {
+    public func requiredFeatures(forProfileWithId profileId: Profile.ID) -> Set<ABI.AppFeature>? {
         allHeaders[profileId]?.requiredFeatures
     }
 
@@ -161,8 +161,6 @@ private extension ProfileObservable {
                 return true
             }
             .sorted()
-            // FIXME: #1594, localized module types
-//            processor?.preview(from: $0) ?? ABI.ProfilePreview($0)
 
         pspLog(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
     }

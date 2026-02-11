@@ -33,7 +33,7 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         do {
-            try iapManager?.verify(ABI.AppProfile(native: profile))
+            try iapManager?.verify(profile)
             return nil
         } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
             return requiredFeatures

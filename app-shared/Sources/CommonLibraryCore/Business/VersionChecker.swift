@@ -4,10 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
-extension VersionChecker: ObservableObject {}
-#endif
-
 @MainActor
 public final class VersionChecker {
     private let kvStore: KeyValueStore
@@ -65,9 +61,6 @@ public final class VersionChecker {
             kvStore.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
             pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
-#if !PSP_CROSS
-            objectWillChange.send()
-#endif
             didChange.send(.new)
 
             if let latestRelease {

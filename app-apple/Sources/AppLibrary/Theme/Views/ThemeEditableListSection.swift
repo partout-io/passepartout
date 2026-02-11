@@ -21,7 +21,7 @@ public enum ThemeEditableListSection {
 
 // MARK: - Implementation
 
-public protocol EditableValue: Hashable, CustomStringConvertible {
+public protocol EditableValue: Hashable, CustomStringConvertible, Sendable {
     static var emptyValue: Self { get }
 
     var isEmptyValue: Bool { get }
@@ -116,7 +116,7 @@ public struct EditableListSection<ItemView: View, RemoveView: View, EditView: Vi
                 }
                 items.remove(atOffsets: $0)
             }
-            .onChange(of: items, perform: exportItems)
+            .onChange(of: items, exportItems)
 
             ThemeTrailingContent {
 #if os(iOS)
@@ -242,11 +242,9 @@ private extension EditableListSection {
         items = originalItems.map(Item.init)
     }
 
-    func exportItems(_ newItems: [Item]) {
-        let newOriginalItems = newItems.map(\.value)
-        guard newOriginalItems != originalItems else {
-            return
-        }
+    func exportItems() {
+        let newOriginalItems = items.map(\.value)
+        guard newOriginalItems != originalItems else { return }
         originalItems = newOriginalItems
     }
 }
@@ -255,7 +253,6 @@ private extension EditableListSection {
 
 #Preview {
     struct ContentView: View {
-
         @State
         private var originalItems = ["One", "Two", "Three"]
 

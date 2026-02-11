@@ -25,7 +25,7 @@ extension AppContext {
             kvStore: kvStore,
             assertModule: { moduleType, registry in
 #if !os(tvOS)
-                let builder = moduleType.newModule(with: registry)
+                let builder = registry.newModule(ofType: moduleType)
                 assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
 #endif
             },

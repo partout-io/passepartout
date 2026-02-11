@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibraryCore_C
-// FIXME: #1594, Drop import (Module*)
 import Partout
 
 // MARK: Domains
@@ -16,10 +15,10 @@ public protocol AppABIConfigProtocol: Sendable {
 
 @MainActor
 public protocol AppABIEncoderProtocol: Sendable {
-    func defaultFilename(for profile: ABI.AppProfile) -> String
-    func profile(fromString string: String) throws -> ABI.AppProfile
-    func json(fromProfile profile: ABI.AppProfile) throws -> String
-    func writeToFile(_ profile: ABI.AppProfile) throws -> String
+    func defaultFilename(for profileName: String) -> String
+    func profile(fromString string: String) throws -> Profile
+    func json(fromProfile profile: Profile) throws -> String
+    func writeToFile(_ profile: Profile) throws -> String
 }
 
 @MainActor
@@ -27,10 +26,10 @@ public protocol AppABIIAPProtocol: Sendable {
     var isEnabled: Bool { get }
     func enable(_ isEnabled: Bool)
     func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult
-    func verify(_ profile: ABI.AppProfile, extra: Set<ABI.AppFeature>?) throws
+    func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws
     func reloadReceipt() async
     func restorePurchases() async throws
-    func suggestedProducts(for features: Set<ABI.AppFeature>) -> Set<ABI.AppProduct>
+    func suggestedProducts(for features: Set<ABI.AppFeature>, hints: Set<ABI.StoreProductHint>?) -> Set<ABI.AppProduct>
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct]
     var originalPurchase: ABI.OriginalPurchase? { get }
     var purchasedProducts: Set<ABI.AppProduct> { get }
@@ -50,16 +49,15 @@ public protocol AppABILoggerProtocol: Sendable {
 
 @MainActor
 public protocol AppABIProfileProtocol: Sendable {
-    func profile(withId id: ABI.AppIdentifier) -> ABI.AppProfile?
-    func save(_ profile: ABI.AppProfile, remotelyShared: Bool?) async throws
+    func profile(withId id: Profile.ID) -> Profile?
+    func save(_ profile: Profile, remotelyShared: Bool?) async throws
     func saveAll() async
     func importText(_ text: String, filename: String, passphrase: String?) async throws
     func importFile(_ path: String, passphrase: String?) async throws
-    func duplicate(_ id: ABI.AppIdentifier) async throws
-    func remove(_ id: ABI.AppIdentifier) async
-    func remove(_ ids: [ABI.AppIdentifier]) async
+    func duplicate(_ id: Profile.ID) async throws
+    func remove(_ id: Profile.ID) async
+    func remove(_ ids: [Profile.ID]) async
     func removeAllRemote() async throws
-    func isRemotelyShared(_ id: ABI.AppIdentifier) -> Bool
     var isRemoteImportingEnabled: Bool { get }
 }
 
@@ -78,13 +76,13 @@ public enum AppABITunnelValueKey: Sendable {
 
 @MainActor
 public protocol AppABITunnelProtocol: Sendable {
-    func connect(to profile: ABI.AppProfile, force: Bool) async throws
-//    func reconnect(to profileId: ABI.AppIdentifier) async throws
-    func disconnect(from profileId: ABI.AppIdentifier) async throws
+    func connect(to profile: Profile, force: Bool) async throws
+//    func reconnect(to profileId: Profile.ID) async throws
+    func disconnect(from profileId: Profile.ID) async throws
     func currentLog() async -> [ABI.AppLogLine]
-    func lastError(ofProfileId profileId: ABI.AppIdentifier) -> ABI.AppError?
-    func transfer(ofProfileId profileId: ABI.AppIdentifier) -> ABI.ProfileTransfer?
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: ABI.AppIdentifier) -> Any?
+    func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
+    func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?
+    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?
 }
 
 @MainActor
@@ -102,7 +100,7 @@ public protocol AppABIWebReceiverProtocol: Sendable {
 // MARK: - Aggregate
 
 extension AppABITunnelProtocol where Self: AppABIProfileProtocol {
-    public func connect(to profileId: ABI.AppIdentifier, force: Bool) async throws {
+    public func connect(to profileId: Profile.ID, force: Bool) async throws {
         guard let profile = profile(withId: profileId) else {
             throw ABI.AppError.notFound
         }

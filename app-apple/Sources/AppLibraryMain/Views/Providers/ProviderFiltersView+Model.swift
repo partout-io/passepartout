@@ -8,8 +8,6 @@ import CommonLibrary
 import Foundation
 
 extension ProviderFiltersView {
-
-    // FIXME: #1594, Requires $onlyShowsFavorites publisher
     @MainActor
     final class Model: ObservableObject {
         typealias CodeWithDescription = (code: String, description: String)

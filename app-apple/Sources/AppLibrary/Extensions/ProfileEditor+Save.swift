@@ -17,9 +17,8 @@ extension ProfileEditor {
         buildingWith registryObservable: RegistryObservable,
         verifyingWith iapObservable: IAPObservable?,
         preferencesManager: PreferencesManager
-    ) async throws -> ABI.AppProfile {
-        let partoutProfile = try buildAndUpdate(with: registryObservable)
-        let profileToSave = ABI.AppProfile(native: partoutProfile)
+    ) async throws -> Profile {
+        let profileToSave = try buildAndUpdate(with: registryObservable)
 
         // Verify profile (optional)
         if let iapObservable, !iapObservable.isBeta {
@@ -43,52 +42,6 @@ extension ProfileEditor {
         try await profileObservable?.save(profileToSave, sharingFlag: isShared ? .shared : nil)
 
         // Clean up module preferences
-        removedModules.keys.forEach {
-            do {
-                pspLog(.profiles, .info, "Erase preferences for removed module \($0)")
-                let repository = try preferencesManager.preferencesRepository(forModuleWithId: $0)
-                repository.erase()
-                try repository.save()
-            } catch {
-                pspLog(.profiles, .error, "Unable to erase preferences for removed module \($0): \(error)")
-            }
-        }
-        removedModules.removeAll()
-
-        return profileToSave
-    }
-
-    @available(*, deprecated, message: "#1594")
-    public func legacySave(
-        to profileManager: ProfileManager?,
-        buildingWith registry: Registry,
-        verifyingWith iapManager: IAPManager?,
-        preferencesManager: PreferencesManager
-    ) async throws -> Profile {
-        let profileToSave = try buildAndUpdate(with: registry)
-
-        // verify profile (optional)
-        if let iapManager, !iapManager.isBeta {
-            do {
-                try iapManager.legacyVerify(profileToSave, extra: extraFeatures)
-            } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
-
-                // still loading receipt
-                guard !iapManager.isLoadingReceipt else {
-                    throw ABI.AppError.verificationReceiptIsLoading
-                }
-
-                // purchase required
-                guard requiredFeatures.isEmpty else {
-                    throw ABI.AppError.verificationRequiredFeatures(requiredFeatures)
-                }
-            }
-        }
-
-        // persist (optional)
-        try await profileManager?.save(profileToSave, isLocal: true, remotelyShared: isShared)
-
-        // clean up module preferences
         removedModules.keys.forEach {
             do {
                 pspLog(.profiles, .info, "Erase preferences for removed module \($0)")

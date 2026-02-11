@@ -44,7 +44,7 @@ private extension ModuleSendMenu {
                     guard let existingDestination = profileObservable.profile(withId: preview.id) else {
                         throw PartoutError(.notFound)
                     }
-                    destination = existingDestination.native.builder()
+                    destination = existingDestination.builder()
                 } else {
                     destination = Profile.Builder()
                     destination.name = profileObservable.firstUniqueName(from: newProfileName)
@@ -54,7 +54,7 @@ private extension ModuleSendMenu {
                 let builtModule = try moduleCopy.build()
 
                 destination.modules.append(builtModule)
-                try await profileObservable.save(ABI.AppProfile(native: destination.build()))
+                try await profileObservable.save(destination.build())
             } catch {
                 pspLog(.profiles, .error, "Unable to copy module: \(error)")
                 errorHandler.handle(error)

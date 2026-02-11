@@ -47,7 +47,7 @@ public struct LockableView<Content: View, LockedContent: View>: View {
                 )
             }
         }
-        .onChange(of: scenePhase, perform: onScenePhase)
+        .onChange(of: scenePhase, onScenePhase)
     }
 }
 
@@ -75,7 +75,7 @@ private final class Lock {
 
 @MainActor
 private extension LockableView {
-    func onScenePhase(_ scenePhase: ScenePhase) {
+    func onScenePhase() {
         switch scenePhase {
         case .active:
             unlockIfNeeded()

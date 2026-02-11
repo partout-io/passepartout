@@ -4,12 +4,6 @@
 
 import CommonLibrary
 
-extension ProviderID: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        rawValue
-    }
-}
-
 extension ProviderEntity: LocalizableEntity {
     public var localizedDescription: String {
         heuristic?.localizedDescription ?? server.localizedDescription

@@ -4,10 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
-extension WebReceiverManager: ObservableObject {}
-#endif
-
 @MainActor
 public final class WebReceiverManager {
     public typealias PasscodeGenerator = () -> String
@@ -21,11 +17,6 @@ public final class WebReceiverManager {
     }
 
     public private(set) var website: ABI.WebsiteWithPasscode? {
-        willSet {
-#if !PSP_CROSS
-            objectWillChange.send()
-#endif
-        }
         didSet {
             if let website {
                 didChange.send(.start(website: website))

@@ -8,11 +8,11 @@ import SwiftUI
 public struct ConnectionStatusText: View {
     let tunnel: TunnelObservable
 
-    let profileId: ABI.AppIdentifier?
+    let profileId: Profile.ID?
 
     let withColors: Bool
 
-    public init(tunnel: TunnelObservable, profileId: ABI.AppIdentifier?, withColors: Bool = true) {
+    public init(tunnel: TunnelObservable, profileId: Profile.ID?, withColors: Bool = true) {
         self.tunnel = tunnel
         self.profileId = profileId
         self.withColors = withColors
@@ -32,7 +32,7 @@ private struct ConnectionStatusStaticText: View {
 
     private let color: Color
 
-    init(status: ABI.AppProfile.Status, color: Color) {
+    init(status: ABI.AppProfileStatus, color: Color) {
         statusDescription = status.localizedDescription
         self.color = color
     }
@@ -55,7 +55,7 @@ private struct ConnectionStatusDynamicText: View {
 
     let tunnel: TunnelObservable
 
-    let profileId: ABI.AppIdentifier
+    let profileId: Profile.ID
 
     let withColors: Bool
 
@@ -103,7 +103,7 @@ private extension ConnectionStatusDynamicText {
 #Preview("Connected (Dynamic)") {
     ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: Profile.forPreviews.id, withColors: true)
         .task {
-            try? await TunnelManager.forPreviews.connect(with: .forPreviews)
+            try? await TunnelObservable.forPreviews.connect(to: .forPreviews)
         }
         .frame(width: 400, height: 100)
         .withMockEnvironment()
@@ -122,7 +122,7 @@ private extension ConnectionStatusDynamicText {
     }
     return ConnectionStatusDynamicText(tunnel: .forPreviews, profileId: profile.id, withColors: true)
         .task {
-            try? await TunnelManager.forPreviews.connect(with: profile)
+            try? await TunnelObservable.forPreviews.connect(to: profile)
         }
         .frame(width: 400, height: 100)
         .withMockEnvironment()

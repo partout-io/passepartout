@@ -23,7 +23,7 @@ extension ProfileManager {
                     var onDemandIdIfDisabled: UniqueID?
 
                     for moduleType in parameters.moduleTypes {
-                        var moduleBuilder = moduleType.newModule(with: registry)
+                        var moduleBuilder = registry.newModule(ofType: moduleType)
 
                         if parameters.name == "Hide.me" {
                             if var ovpnBuilder = moduleBuilder as? ProviderModule.Builder {

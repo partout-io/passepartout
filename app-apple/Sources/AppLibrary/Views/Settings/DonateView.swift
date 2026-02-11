@@ -6,21 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 public struct DonateView<Modifier>: View where Modifier: ViewModifier {
-    @Environment(ConfigObservable.self)
-    private var configObservable
-
-    private let modifier: Modifier
-
-    public init(modifier: Modifier) {
-        self.modifier = modifier
-    }
-
-    public var body: some View {
-        NewDonateView(modifier: modifier)
-    }
-}
-
-public struct NewDonateView<Modifier>: View where Modifier: ViewModifier {
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -66,7 +51,7 @@ public struct NewDonateView<Modifier>: View where Modifier: ViewModifier {
     }
 }
 
-private extension NewDonateView {
+private extension DonateView {
     var title: String {
         Strings.Views.Donate.title
     }
@@ -98,7 +83,7 @@ private extension NewDonateView {
 
 // MARK: -
 
-private extension NewDonateView {
+private extension DonateView {
     func fetchAvailableProducts() async {
         isFetchingProducts = true
         defer {
@@ -151,6 +136,6 @@ private extension NewDonateView {
         }
     }
 
-    return NewDonateView(modifier: PreviewModifier())
+    return DonateView(modifier: PreviewModifier())
         .withMockEnvironment()
 }
