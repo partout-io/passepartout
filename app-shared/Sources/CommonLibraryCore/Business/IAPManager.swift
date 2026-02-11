@@ -37,7 +37,11 @@ public final class IAPManager {
 
     public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
         didSet {
-            didChange.send(.eligibleFeatures(eligibleFeatures))
+            didChange.send(.eligibleFeatures(
+                eligibleFeatures,
+                forComplete: isEligibleForComplete,
+                forFeedback: isEligibleForFeedback
+            ))
         }
     }
 
@@ -104,14 +108,6 @@ public final class IAPManager {
 // MARK: - Actions
 
 extension IAPManager {
-    public var isLoadingReceipt: Bool {
-        pendingReceiptTask != nil
-    }
-
-    public var isBeta: Bool {
-        userLevel.isBeta
-    }
-
     public func enable() async {
         guard !isEnabled else {
             return
@@ -173,7 +169,17 @@ extension IAPManager {
     }
 }
 
+// MARK: - State
+
 extension IAPManager {
+    public var isLoadingReceipt: Bool {
+        pendingReceiptTask != nil
+    }
+
+    public var isBeta: Bool {
+        userLevel.isBeta
+    }
+
     public func isEligible(for feature: ABI.AppFeature) -> Bool {
         eligibleFeatures.contains(feature)
     }

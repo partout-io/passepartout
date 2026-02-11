@@ -15,6 +15,8 @@ public final class IAPObservable {
     public private(set) var originalPurchase: ABI.OriginalPurchase?
     public private(set) var purchasedProducts: Set<ABI.AppProduct>
     public private(set) var eligibleFeatures: Set<ABI.AppFeature>
+    public private(set) var isEligibleForComplete: Bool
+    public private(set) var isEligibleForFeedback: Bool
     private var subscription: Task<Void, Never>?
 
     public init(abi: AppABIIAPProtocol) {
@@ -24,6 +26,8 @@ public final class IAPObservable {
         isBeta = false
         purchasedProducts = []
         eligibleFeatures = []
+        isEligibleForComplete = false
+        isEligibleForFeedback = false
     }
 }
 
@@ -77,35 +81,6 @@ extension IAPObservable {
         features.isEmpty || features.allSatisfy(eligibleFeatures.contains)
     }
 
-    public var isEligibleForComplete: Bool {
-        let rawProducts = purchasedProducts.compactMap {
-            ABI.AppProduct(rawValue: $0.rawValue)
-        }
-
-        //
-        // Allow purchasing complete products only if:
-        //
-        // - never bought complete products ('Forever', subscriptions)
-        // - never bought 'Essentials' products (suggest individual features instead)
-        // - never bought 'Apple TV' product (suggest 'Essentials' instead)
-        //
-        return !rawProducts.contains {
-            $0.isComplete || $0.isEssentials || $0 == .Features.appleTV
-        }
-    }
-
-    public var isEligibleForFeedback: Bool {
-#if os(tvOS)
-        false
-#else
-        isBeta || isPayingUser
-#endif
-    }
-
-    public var isPayingUser: Bool {
-        !purchasedProducts.isEmpty
-    }
-
     public var didPurchaseComplete: Bool {
         purchasedProducts.contains(where: \.isComplete)
     }
@@ -128,8 +103,10 @@ extension IAPObservable {
             originalPurchase = purchase
             purchasedProducts = products
             self.isBeta = isBeta
-        case .eligibleFeatures(let features):
+        case .eligibleFeatures(let features, let forComplete, let forFeedback):
             eligibleFeatures = features
+            isEligibleForComplete = forComplete
+            isEligibleForFeedback = forFeedback
         }
     }
 }

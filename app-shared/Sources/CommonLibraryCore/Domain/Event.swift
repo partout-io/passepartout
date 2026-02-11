@@ -22,7 +22,7 @@ extension ABI {
         case status(isEnabled: Bool)
         case loadReceipt(isLoading: Bool)
         case newReceipt(OriginalPurchase?, products: Set<AppProduct>, isBeta: Bool)
-        case eligibleFeatures(Set<AppFeature>)
+        case eligibleFeatures(Set<AppFeature>, forComplete: Bool, forFeedback: Bool)
     }
 
     public enum ProfileEvent: Equatable, Sendable {

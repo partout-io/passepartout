@@ -416,7 +416,7 @@ private extension AppABI {
                     kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
-                case .eligibleFeatures(let features):
+                case .eligibleFeatures(let features, _, _):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     do {
                         pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
