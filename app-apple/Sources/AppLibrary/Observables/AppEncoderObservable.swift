@@ -23,7 +23,7 @@ public final class AppEncoderObservable {
     }
 
     public func defaultFilename(for profile: Profile) -> String {
-        abi.defaultFilename(for: profile)
+        abi.defaultFilename(for: profile.name)
     }
 
     public func writeToURL(_ profile: Profile) throws -> URL {

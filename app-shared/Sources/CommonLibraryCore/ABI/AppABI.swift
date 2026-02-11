@@ -184,8 +184,8 @@ private struct AppABIConfig: AppABIConfigProtocol {
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
 
-    func defaultFilename(for profile: Profile) -> String {
-        appEncoder.defaultFilename(for: profile)
+    func defaultFilename(for profileName: String) -> String {
+        appEncoder.defaultFilename(for: profileName)
     }
 
     func profile(fromString string: String) throws -> Profile {

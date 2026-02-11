@@ -15,7 +15,7 @@ public protocol AppABIConfigProtocol: Sendable {
 
 @MainActor
 public protocol AppABIEncoderProtocol: Sendable {
-    func defaultFilename(for profile: Profile) -> String
+    func defaultFilename(for profileName: String) -> String
     func profile(fromString string: String) throws -> Profile
     func json(fromProfile profile: Profile) throws -> String
     func writeToFile(_ profile: Profile) throws -> String

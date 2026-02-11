@@ -161,8 +161,6 @@ private extension ProfileObservable {
                 return true
             }
             .sorted()
-            // FIXME: #1680, localized module types
-//            processor?.preview(from: $0) ?? ABI.ProfilePreview($0)
 
         pspLog(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
     }
