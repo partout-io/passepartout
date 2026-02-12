@@ -37,7 +37,7 @@
 "errors.app.partout.incompatible_modules" = "某些激活的模块不兼容，请尝试仅激活一个模块。";
 "errors.app.partout.incomplete_module" = "请完成 %@ 模块的配置。";
 "errors.app.partout.invalid_fields" = "字段无效。";
-"errors.app.partout.missing_provider_entity" = "未在提供商中选择服务器。";
+"errors.app.missing_provider_entity" = "未在提供商中选择服务器。";
 "errors.app.partout.no_active_modules" = "配置文件没有激活模块。";
 "errors.app.partout.parsing" = "无法解析文件。";
 "errors.app.partout.timeout" = "操作超时。";

@@ -27,6 +27,9 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
 
+        case .missingProviderEntity:
+            return V.missingProviderEntity
+
         case .moduleRequiresConnection(let module):
             let connectionTypes = ModuleType.allCases.filter(\.isConnection)
             return V.moduleRequiresConnection(
@@ -113,9 +116,6 @@ extension PartoutError: @retroactive LocalizedError {
             return [V.invalidFields, fields]
                 .compactMap { $0 }
                 .joined(separator: " ")
-
-        case .Providers.missingEntity:
-            return V.missingProviderEntity
 
         case .noActiveModules:
             return V.noActiveModules

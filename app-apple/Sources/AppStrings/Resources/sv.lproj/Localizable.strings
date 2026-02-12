@@ -37,7 +37,7 @@
 "errors.app.partout.incompatible_modules" = "Vissa aktiva moduler är inkompatibla, försök att endast aktivera en.";
 "errors.app.partout.incomplete_module" = "Vänligen slutför konfigurationen av %@-modulen.";
 "errors.app.partout.invalid_fields" = "Ogiltiga fält.";
-"errors.app.partout.missing_provider_entity" = "Ingen server vald hos leverantören.";
+"errors.app.missing_provider_entity" = "Ingen server vald hos leverantören.";
 "errors.app.partout.no_active_modules" = "Profilen har inga aktiva moduler.";
 "errors.app.partout.parsing" = "Kan inte tolka filen.";
 "errors.app.partout.timeout" = "Åtgärden tog för lång tid.";

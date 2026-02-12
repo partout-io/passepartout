@@ -37,7 +37,7 @@
 "errors.app.partout.incompatible_modules" = "Einige aktive Module sind inkompatibel, versuche, nur eines von ihnen zu aktivieren.";
 "errors.app.partout.incomplete_module" = "Bitte schließen Sie die Konfiguration des %@-Moduls ab.";
 "errors.app.partout.invalid_fields" = "Ungültige Felder.";
-"errors.app.partout.missing_provider_entity" = "Kein Server beim Anbieter ausgewählt.";
+"errors.app.missing_provider_entity" = "Kein Server beim Anbieter ausgewählt.";
 "errors.app.partout.no_active_modules" = "Das Profil hat keine aktiven Module.";
 "errors.app.partout.parsing" = "Datei konnte nicht analysiert werden.";
 "errors.app.partout.timeout" = "Die Operation hat das Zeitlimit überschritten.";

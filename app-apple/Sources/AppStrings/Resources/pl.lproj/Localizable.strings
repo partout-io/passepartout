@@ -37,7 +37,7 @@
 "errors.app.partout.incompatible_modules" = "Niektóre aktywne moduły są niekompatybilne. Spróbuj aktywować tylko jeden.";
 "errors.app.partout.incomplete_module" = "Proszę dokończyć konfigurację modułu %@.";
 "errors.app.partout.invalid_fields" = "Nieprawidłowe pola.";
-"errors.app.partout.missing_provider_entity" = "Nie wybrano serwera w dostawcy.";
+"errors.app.missing_provider_entity" = "Nie wybrano serwera w dostawcy.";
 "errors.app.partout.no_active_modules" = "Profil nie ma aktywnych modułów.";
 "errors.app.partout.parsing" = "Nie można przeanalizować pliku.";
 "errors.app.partout.timeout" = "Operacja przekroczyła limit czasu.";

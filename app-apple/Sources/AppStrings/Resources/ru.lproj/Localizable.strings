@@ -37,7 +37,7 @@
 "errors.app.partout.incompatible_modules" = "Некоторые активные модули несовместимы, попробуйте активировать только один.";
 "errors.app.partout.incomplete_module" = "Пожалуйста, завершите настройку модуля %@.";
 "errors.app.partout.invalid_fields" = "Некорректные поля.";
-"errors.app.partout.missing_provider_entity" = "На провайдере не выбран сервер.";
+"errors.app.missing_provider_entity" = "На провайдере не выбран сервер.";
 "errors.app.partout.no_active_modules" = "В профиле нет активных модулей.";
 "errors.app.partout.parsing" = "Не удалось разобрать файл.";
 "errors.app.partout.timeout" = "Время операции истекло.";

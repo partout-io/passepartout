@@ -120,6 +120,8 @@ public enum Strings {
       public static func malformedModule(_ p1: Any, _ p2: Any) -> String {
         return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@")
       }
+      /// No server selected in provider.
+      public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.missing_provider_entity", fallback: "No server selected in provider.")
       /// The %@ module requires an active connection among the following types: %@
       public static func moduleRequiresConnection(_ p1: Any, _ p2: Any) -> String {
         return Strings.tr("Localizable", "errors.app.module_requires_connection", String(describing: p1), String(describing: p2), fallback: "The %@ module requires an active connection among the following types: %@")
@@ -147,8 +149,6 @@ public enum Strings {
         }
         /// Invalid fields.
         public static let invalidFields = Strings.tr("Localizable", "errors.app.partout.invalid_fields", fallback: "Invalid fields.")
-        /// No server selected in provider.
-        public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.partout.missing_provider_entity", fallback: "No server selected in provider.")
         /// The profile has no active modules.
         public static let noActiveModules = Strings.tr("Localizable", "errors.app.partout.no_active_modules", fallback: "The profile has no active modules.")
         /// Unable to parse file.

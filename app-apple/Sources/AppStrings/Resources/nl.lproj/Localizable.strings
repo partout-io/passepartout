@@ -37,7 +37,7 @@
 "errors.app.partout.incompatible_modules" = "Sommige actieve modules zijn incompatibel. Probeer er slechts één te activeren.";
 "errors.app.partout.incomplete_module" = "Voltooi de configuratie van de %@-module.";
 "errors.app.partout.invalid_fields" = "Ongeldige velden.";
-"errors.app.partout.missing_provider_entity" = "Geen server geselecteerd bij provider.";
+"errors.app.missing_provider_entity" = "Geen server geselecteerd bij provider.";
 "errors.app.partout.no_active_modules" = "Het profiel heeft geen actieve modules.";
 "errors.app.partout.parsing" = "Kan bestand niet parseren.";
 "errors.app.partout.timeout" = "De bewerking is verlopen.";
