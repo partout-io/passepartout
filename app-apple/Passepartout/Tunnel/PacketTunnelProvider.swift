@@ -55,6 +55,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             let kvStore = appConfiguration.newKeyValueStore()
             if let startPreferences {
                 kvStore.preferences = startPreferences
+                pspLog(.core, .debug, "PTP: kvStore.preferences: \(kvStore.preferences)")
+                pspLog(.core, .debug, "PTP: startPreferences: \(startPreferences)")
+                assert(kvStore.preferences == startPreferences)
+                return startPreferences
             }
             return kvStore.preferences
         }()
