@@ -5,7 +5,6 @@
 import Partout
 
 extension ABI {
-    // FIXME: #1680, Rename to something else without "App" prefix
     public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
         public private(set) var id: Profile.ID
         public let name: String
