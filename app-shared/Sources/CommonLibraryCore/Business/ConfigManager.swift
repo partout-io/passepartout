@@ -21,7 +21,7 @@ public final class ConfigManager {
                     isActive($0)
                 })
                 let data = bundle?.map
-                    .filter { activeFlags.contains($0.key) }
+                    .filter { synchronousActiveFlags.contains($0.key) }
                     .compactMapValues(\.data) ?? [:]
                 didChange.send(.refresh(synchronousActiveFlags, data: data))
             }
