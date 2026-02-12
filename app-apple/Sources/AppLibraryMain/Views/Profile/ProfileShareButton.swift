@@ -47,10 +47,12 @@ private extension ProfileShareButton {
 #endif
     }
 
-    func toURL() throws -> URL {
+    nonisolated func toURL() throws -> URL {
         do {
             pspLog(.profiles, .debug, "Writing profile \(profile.id) for sharing...")
-            let url = try appEncoder.writeToURL(profile)
+            let url = try MainActor.assumeIsolated {
+                try appEncoder.writeToURL(profile)
+            }
             pspLog(.profiles, .debug, "Written profile to: \(url)")
             return url
         } catch {
@@ -61,7 +63,7 @@ private extension ProfileShareButton {
 }
 
 private struct ProfileRepresentation: Transferable {
-    let encoder: () throws -> URL
+    let encoder: @Sendable () throws -> URL
 
     static var transferRepresentation: some TransferRepresentation {
         ProxyRepresentation { subject in
