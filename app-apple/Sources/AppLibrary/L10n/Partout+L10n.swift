@@ -7,29 +7,14 @@ import Foundation
 
 // MARK: Profile
 
-extension Profile {
-    // FIXME: #1680, UNUSED?!??!!?
-//    public var localizedHeader: ABI.AppProfileHeader {
-//        abiHeader(subtitle: localizedDescription(optionalStyle: .moduleTypes))
-//    }
-}
-
 extension Profile: StyledOptionalLocalizableEntity {
     public enum OptionalStyle {
-        case moduleTypes
         case primaryType
         case secondaryTypes
     }
 
     public func localizedDescription(optionalStyle: OptionalStyle) -> String? {
         switch optionalStyle {
-        case .moduleTypes:
-            return activeModules
-                .nilIfEmpty?
-                .map(\.moduleType.localizedDescription)
-                .sorted()
-                .joined(separator: ", ")
-
         case .primaryType:
             return activeModules
                 .first {
@@ -37,7 +22,6 @@ extension Profile: StyledOptionalLocalizableEntity {
                 }?
                 .primaryModuleType
                 .localizedDescription
-
         case .secondaryTypes:
             return activeModules
                 .filter {
