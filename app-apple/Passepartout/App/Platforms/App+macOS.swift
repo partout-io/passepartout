@@ -38,6 +38,7 @@ extension PassepartoutApp {
                 }
                 .withEnvironment(from: context, theme: theme)
                 .environment(macSettings)
+                .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
                 .frame(minWidth: 600, minHeight: 400)
         }
         .defaultSize(width: 600, height: 400)
@@ -64,6 +65,7 @@ private extension PassepartoutApp {
         )
         .withEnvironment(from: context, theme: theme)
         .environment(macSettings)
+        .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
     }
 
     func menuBarImage() -> some View {

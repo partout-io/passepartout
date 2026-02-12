@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import AppAccessibility
 import SwiftUI
 
 @MainActor
@@ -12,7 +11,6 @@ extension View {
             .environment(theme)
             // Constants
             .environment(\.appConfiguration, context.appConfiguration)
-            .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
             // ABI concerns
             .environment(context.appEncoderObservable)
             .environment(context.configObservable)

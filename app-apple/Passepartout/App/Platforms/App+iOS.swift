@@ -30,6 +30,7 @@ extension PassepartoutApp {
                 }
                 .themeLockScreen()
                 .withEnvironment(from: context, theme: theme)
+                .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
         }
     }
 }
