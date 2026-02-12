@@ -440,15 +440,15 @@
 
 // MARK: Global (Partout errors)
 
-"errors.app.passepartout.corrupt_provider_module" = "Unable to connect to provider server (reason=%@).";
-"errors.app.passepartout.default" = "Unable to complete operation (code=%@).";
-"errors.app.passepartout.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
-"errors.app.passepartout.incomplete_module" = "Please finish the configuration of the %@ module.";
-"errors.app.passepartout.invalid_fields" = "Invalid fields.";
-"errors.app.passepartout.missing_provider_entity" = "No server selected in provider.";
-"errors.app.passepartout.no_active_modules" = "The profile has no active modules.";
-"errors.app.passepartout.parsing" = "Unable to parse file.";
-"errors.app.passepartout.timeout" = "The operation timed out.";
+"errors.app.partout.corrupt_provider_module" = "Unable to connect to provider server (reason=%@).";
+"errors.app.partout.default" = "Unable to complete operation (code=%@).";
+"errors.app.partout.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
+"errors.app.partout.incomplete_module" = "Please finish the configuration of the %@ module.";
+"errors.app.partout.invalid_fields" = "Invalid fields.";
+"errors.app.partout.missing_provider_entity" = "No server selected in provider.";
+"errors.app.partout.no_active_modules" = "The profile has no active modules.";
+"errors.app.partout.parsing" = "Unable to parse file.";
+"errors.app.partout.timeout" = "The operation timed out.";
 
 "errors.tunnel.auth" = "Auth failed";
 "errors.tunnel.compression" = "Compression unsupported";

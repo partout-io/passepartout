@@ -54,7 +54,7 @@ extension ABI.AppError: @retroactive LocalizedError {
             return nil
 
         case .timeout:
-            return Strings.Errors.App.Passepartout.timeout
+            return Strings.Errors.App.Partout.timeout
 
         // handled manually
         case .unexpectedResponse:
@@ -87,7 +87,7 @@ extension ABI.AppError: @retroactive LocalizedError {
 
 extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
-        let V = Strings.Errors.App.Passepartout.self
+        let V = Strings.Errors.App.Partout.self
         switch code {
         case .Providers.corruptModule:
             return V.corruptProviderModule(reason?.localizedDescription ?? "")
