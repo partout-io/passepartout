@@ -77,7 +77,11 @@ private extension AppCoordinator {
             errorHandler: errorHandler,
             flow: .init(
                 onConnect: {
-                    await onConnect($0, force: false)
+                    guard let profile = profileObservable.profile(withId: $0.id) else {
+                        pspLog(.profiles, .error, "Unable to find profile from header: \($0.id)")
+                        return
+                    }
+                    await onConnect(profile, force: false)
                 },
                 onProviderEntityRequired: {
                     onProviderEntityRequired($0, force: false)
