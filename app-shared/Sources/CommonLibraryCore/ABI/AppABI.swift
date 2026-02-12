@@ -174,10 +174,6 @@ private struct AppABIEncoder: AppABIEncoderProtocol {
         appEncoder.defaultFilename(for: profileName)
     }
 
-    func profile(fromString string: String) throws -> Profile {
-        try appEncoder.profile(fromString: string)
-    }
-
     func json(fromProfile profile: Profile) throws -> String {
         try appEncoder.json(fromProfile: profile)
     }
