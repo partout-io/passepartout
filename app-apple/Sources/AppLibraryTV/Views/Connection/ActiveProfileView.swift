@@ -39,7 +39,7 @@ struct ActiveProfileView: View {
                 }
                 .padding(.bottom)
 
-                activeProfile.map {
+                header.map {
                     detailView(for: $0)
                 }
                 .padding(.bottom)
@@ -58,11 +58,6 @@ struct ActiveProfileView: View {
 }
 
 private extension ActiveProfileView {
-    var activeProfile: Profile? {
-        guard let header else { return nil }
-        return profileObservable.profile(withId: header.id)
-    }
-
     var activeProfileView: some View {
         Text(header?.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title)
@@ -78,26 +73,26 @@ private extension ActiveProfileView {
             .brightness(0.2)
     }
 
-    func detailView(for profile: Profile) -> some View {
+    func detailView(for header: ABI.AppProfileHeader) -> some View {
         VStack(spacing: 10) {
-            if let primaryType = profile.localizedDescription(optionalStyle: .primaryType) {
+            if let primaryType = header.localizedDescription(optionalStyle: .primaryType) {
                 ListRowView(title: Strings.Global.Nouns.protocol) {
                     Text(primaryType)
                 }
             }
-            if let pair = profile.activeProviderModule {
-                if let provider = apiManager.provider(withId: pair.providerId) {
+            if let providerInfo = header.providerInfo {
+                if let provider = apiManager.provider(withId: providerInfo.providerId) {
                     ListRowView(title: Strings.Global.Nouns.provider) {
                         Text(provider.description)
                     }
                 }
-                if let entityHeader = pair.entity?.header {
+                if let countryCode = providerInfo.countryCode {
                     ListRowView(title: Strings.Global.Nouns.country) {
-                        ThemeCountryText(entityHeader.countryCode)
+                        ThemeCountryText(countryCode)
                     }
                 }
             }
-            if let secondaryTypes = profile.localizedDescription(optionalStyle: .secondaryTypes) {
+            if let secondaryTypes = header.localizedDescription(optionalStyle: .secondaryTypes) {
                 ListRowView(title: secondaryTypes) {
                     EmptyView()
                 }
