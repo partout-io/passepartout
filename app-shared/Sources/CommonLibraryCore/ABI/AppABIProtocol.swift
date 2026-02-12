@@ -7,12 +7,10 @@ import Partout
 
 // MARK: Domains
 
-@MainActor
 public protocol AppABIEncoderProtocol: Sendable {
-    func defaultFilename(for profileName: String) -> String
-    func profile(fromString string: String) throws -> Profile
-    func json(fromProfile profile: Profile) throws -> String
-    func writeToFile(_ profile: Profile) throws -> String
+    nonisolated func defaultFilename(for profileName: String) -> String
+    nonisolated func json(fromProfile profile: Profile) throws -> String
+    nonisolated func writeToFile(_ profile: Profile) throws -> String
 }
 
 @MainActor
