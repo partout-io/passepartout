@@ -9,7 +9,6 @@ import Partout
 
 public protocol AppABIEncoderProtocol: Sendable {
     nonisolated func defaultFilename(for profileName: String) -> String
-    nonisolated func profile(fromString string: String) throws -> Profile
     nonisolated func json(fromProfile profile: Profile) throws -> String
     nonisolated func writeToFile(_ profile: Profile) throws -> String
 }

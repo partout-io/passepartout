@@ -15,10 +15,6 @@ public final class AppEncoderObservable {
         self.abi = abi
     }
 
-    public nonisolated func profile(fromString string: String) throws -> Profile {
-        try abi.profile(fromString: string)
-    }
-
     public nonisolated func json(fromProfile profile: Profile) throws -> String {
         try abi.json(fromProfile: profile)
     }
