@@ -20,7 +20,9 @@ public final class ConfigManager {
                 synchronousActiveFlags = Set(ABI.ConfigFlag.allCases.filter {
                     isActive($0)
                 })
-                let data = bundle?.map.compactMapValues(\.data) ?? [:]
+                let data = bundle?.map
+                    .filter { activeFlags.contains($0.key) }
+                    .compactMapValues(\.data) ?? [:]
                 didChange.send(.refresh(synchronousActiveFlags, data: data))
             }
         }
