@@ -8,12 +8,8 @@ import Foundation
 // MARK: Profile
 
 extension Profile {
-    public var localizedPreview: ABI.ProfilePreview {
-        ABI.ProfilePreview(
-            id: id,
-            name: name,
-            subtitle: localizedDescription(optionalStyle: .moduleTypes)
-        )
+    public var localizedHeader: ABI.AppProfileHeader {
+        abiHeader(subtitle: localizedDescription(optionalStyle: .moduleTypes))
     }
 }
 

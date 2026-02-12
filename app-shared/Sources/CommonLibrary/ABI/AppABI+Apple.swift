@@ -15,7 +15,6 @@ extension AppABI {
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore,
         assertModule: (ModuleType, Registry) -> Void,
-        profilePreview: @escaping @Sendable (Profile) -> ABI.ProfilePreview,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
         webStringsBundle: Bundle?,
@@ -146,8 +145,7 @@ extension AppABI {
         )
 #endif
         let profileProcessor = appConfiguration.newAppProfileProcessor(
-            iapManager: iapManager,
-            preview: profilePreview
+            iapManager: iapManager
         )
         let profileManager = ProfileManager(
             processor: profileProcessor,

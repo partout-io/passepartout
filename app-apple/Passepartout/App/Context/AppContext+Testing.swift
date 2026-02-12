@@ -45,8 +45,7 @@ extension AppContext {
             }
         )
         let profileProcessor = appConfiguration.newAppProfileProcessor(
-            iapManager: iapManager,
-            preview: \.localizedPreview
+            iapManager: iapManager
         )
         let profileManager: ProfileManager = .forUITesting(
             withRegistry: registry,

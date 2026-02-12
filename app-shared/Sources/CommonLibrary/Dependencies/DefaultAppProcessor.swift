@@ -9,14 +9,8 @@ import Partout
 final class DefaultProfileProcessor: ProfileProcessor, Sendable {
     private let iapManager: IAPManager?
 
-    private let preview: @Sendable (Profile) -> ABI.ProfilePreview
-
-    init(
-        iapManager: IAPManager?,
-        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview
-    ) {
+    init(iapManager: IAPManager?) {
         self.iapManager = iapManager
-        self.preview = preview
     }
 
     func isIncluded(_ profile: Profile) -> Bool {
@@ -25,10 +19,6 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 #else
         true
 #endif
-    }
-
-    func preview(from profile: Profile) -> ABI.ProfilePreview {
-        preview(profile)
     }
 
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {

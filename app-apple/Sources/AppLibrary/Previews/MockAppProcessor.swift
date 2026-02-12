@@ -18,10 +18,6 @@ extension MockAppProcessor: ProfileProcessor {
         true
     }
 
-    func preview(from profile: Profile) -> ABI.ProfilePreview {
-        profile.localizedPreview
-    }
-
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         nil
     }
