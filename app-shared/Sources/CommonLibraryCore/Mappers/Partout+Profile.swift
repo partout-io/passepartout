@@ -5,9 +5,13 @@
 import Partout
 
 extension Profile {
-    public func abiHeader(
-        sharingFlags: [ABI.ProfileSharingFlag] = [],
-        requiredFeatures: Set<ABI.AppFeature> = []
+    public func abiHeaderWithBogusFlagsAndRequirements() -> ABI.AppProfileHeader {
+        abiHeader(sharingFlags: [], requiredFeatures: [])
+    }
+
+    func abiHeader(
+        sharingFlags: [ABI.ProfileSharingFlag],
+        requiredFeatures: Set<ABI.AppFeature>
     ) -> ABI.AppProfileHeader {
         ABI.AppProfileHeader(
             id: id,

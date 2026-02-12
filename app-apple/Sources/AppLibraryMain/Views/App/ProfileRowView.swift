@@ -87,7 +87,7 @@ private extension ProfileRowView {
             style: .full,
             profileObservable: profileObservable,
             tunnel: .forPreviews,
-            header: profile.abiHeader(),
+            header: profile.abiHeaderWithBogusFlagsAndRequirements(),
             errorHandler: .default()
         )
     }

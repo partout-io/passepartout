@@ -157,7 +157,7 @@ private extension ActiveProfileView {
     }()
 
     HStack {
-        ContentPreview(header: profile.abiHeader())
+        ContentPreview(header: profile.abiHeaderWithBogusFlagsAndRequirements())
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
@@ -183,7 +183,7 @@ private extension ActiveProfileView {
     }()
 
     HStack {
-        ContentPreview(header: profile.abiHeader())
+        ContentPreview(header: profile.abiHeaderWithBogusFlagsAndRequirements())
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
