@@ -42,6 +42,10 @@ extension ProfileObservable {
         abi.profile(withId: profileId)
     }
 
+    public func header(withId profileId: Profile.ID) -> ABI.AppProfileHeader? {
+        allHeaders[profileId]
+    }
+
     public func save(_ profile: Profile, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
         var copy = profile
         if sharingFlag == .tv {

@@ -8,11 +8,11 @@ import SwiftUI
 public struct DiagnosticsProfileView: View {
     private let tunnel: TunnelObservable
 
-    private let profile: Profile
+    private let header: ABI.AppProfileHeader
 
-    public init(tunnel: TunnelObservable, profile: Profile) {
+    public init(tunnel: TunnelObservable, header: ABI.AppProfileHeader) {
         self.tunnel = tunnel
-        self.profile = profile
+        self.header = header
     }
 
     public var body: some View {
@@ -21,7 +21,7 @@ public struct DiagnosticsProfileView: View {
         }
         .themeForm()
         .themeEmpty(if: isEmpty, message: Strings.Global.Nouns.noContent)
-        .navigationTitle(profile.name)
+        .navigationTitle(header.name)
     }
 }
 
@@ -50,11 +50,11 @@ private extension DiagnosticsProfileView {
     }
 
     var openVPNServerConfiguration: OpenVPN.Configuration? {
-        tunnel.openVPNServerConfiguration(for: profile.id)
+        tunnel.openVPNServerConfiguration(for: header.id)
     }
 }
 
 #Preview {
-    DiagnosticsProfileView(tunnel: .forPreviews, profile: .forPreviews)
+    DiagnosticsProfileView(tunnel: .forPreviews, header: .forPreviews)
         .withMockEnvironment()
 }
