@@ -37,8 +37,8 @@ private extension InstalledProfileView {
     var cardView: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .center) {
-                if profile != nil {
-                    actionableNameView
+                if let profile {
+                    actionableNameView(header: profile.abiHeader())
                     Spacer(minLength: 10)
                 } else {
                     nameView()
@@ -57,8 +57,13 @@ private extension InstalledProfileView {
         .modifier(CardModifier(layout: layout))
     }
 
-    var actionableNameView: some View {
-        ThemeDisclosableMenu(content: menuContent, label: nameView)
+    func actionableNameView(header: ABI.AppProfileHeader) -> some View {
+        ThemeDisclosableMenu(
+            content: {
+                menuContent(header: header)
+            },
+            label: nameView
+        )
     }
 
     func nameView() -> some View {
@@ -94,12 +99,12 @@ private extension InstalledProfileView {
         .opaque(profile != nil)
     }
 
-    func menuContent() -> some View {
+    func menuContent(header: ABI.AppProfileHeader) -> some View {
         ProfileContextMenu(
             style: .installedProfile,
             profileObservable: profileObservable,
             tunnel: tunnel,
-            header: profile?.abiHeader() ?? .forPreviews,
+            header: header,
             errorHandler: errorHandler,
             flow: flow
         )
