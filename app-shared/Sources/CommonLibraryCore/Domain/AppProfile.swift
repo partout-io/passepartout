@@ -8,16 +8,14 @@ extension ABI {
     public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
         public private(set) var id: Profile.ID
         public let name: String
-        public let subtitle: String?
         public let moduleTypes: [String]
         public let fingerprint: String
         public let sharingFlags: [ProfileSharingFlag]
         public let requiredFeatures: Set<AppFeature>
 
-        public init(id: Profile.ID, name: String, subtitle: String?, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag], requiredFeatures: Set<AppFeature>) {
+        public init(id: Profile.ID, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag], requiredFeatures: Set<AppFeature>) {
             self.id = id
             self.name = name
-            self.subtitle = subtitle
             self.moduleTypes = moduleTypes
             self.fingerprint = fingerprint
             self.sharingFlags = sharingFlags

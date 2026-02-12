@@ -11,7 +11,6 @@ extension ABI.AppProfileHeader {
         return ABI.AppProfileHeader(
             id: profile.id,
             name: profile.name,
-            subtitle: nil,
             moduleTypes: profile.modules.map(\.moduleType.rawValue),
             fingerprint: "",
             sharingFlags: [],
