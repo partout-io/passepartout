@@ -5,6 +5,20 @@
 import CommonLibrary
 import Foundation
 
+extension ABI.AppProfileHeader {
+    public static let forPreviews: Self = {
+        let profile: Profile = .forPreviews
+        return ABI.AppProfileHeader(
+            id: profile.id,
+            name: profile.name,
+            moduleTypes: profile.modules.map(\.moduleType.rawValue),
+            fingerprint: "",
+            sharingFlags: [],
+            requiredFeatures: []
+        )
+    }()
+}
+
 extension Profile {
     public static let forPreviews: Profile = {
         var profile = Profile.Builder()

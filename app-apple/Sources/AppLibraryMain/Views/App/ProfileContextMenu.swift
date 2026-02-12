@@ -21,7 +21,7 @@ struct ProfileContextMenu: View, Routable {
 
     let tunnel: TunnelObservable
 
-    let preview: ABI.ProfilePreview
+    let header: ABI.AppProfileHeader
 
     let errorHandler: ErrorHandler
 
@@ -45,7 +45,7 @@ struct ProfileContextMenu: View, Routable {
 @MainActor
 private extension ProfileContextMenu {
     var profile: Profile? {
-        profileObservable.profile(withId: preview.id)
+        profileObservable.profile(withId: header.id)
     }
 
     var providerConnectToButton: some View {
@@ -77,7 +77,7 @@ private extension ProfileContextMenu {
 
     var profileEditButton: some View {
         Button {
-            flow?.onEditProfile(preview)
+            flow?.onEditProfile(header)
         } label: {
             ThemeImageLabel(Strings.Global.Actions.edit, .profileEdit)
         }
@@ -87,7 +87,7 @@ private extension ProfileContextMenu {
     var profileDuplicateButton: some View {
         ProfileDuplicateButton(
             profileObservable: profileObservable,
-            preview: preview,
+            header: header,
             errorHandler: errorHandler
         ) {
             ThemeImageLabel(Strings.Global.Actions.duplicate, .contextDuplicate)
@@ -96,7 +96,7 @@ private extension ProfileContextMenu {
 
     var profileRemoveButton: some View {
         Button(role: .destructive) {
-            flow?.onDeleteProfile(preview)
+            flow?.onDeleteProfile(header)
         } label: {
             ThemeImageLabel(Strings.Global.Actions.remove, .contextRemove)
         }
@@ -117,7 +117,7 @@ private extension Profile {
                 style: .installedProfile,
                 profileObservable: .forPreviews,
                 tunnel: .forPreviews,
-                preview: .init(.forPreviews),
+                header: .forPreviews,
                 errorHandler: .default()
             )
         }

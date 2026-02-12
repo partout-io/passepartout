@@ -39,7 +39,7 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
                     .unanimated()
             }
             Section {
-                ForEach(allPreviews, content: profileView)
+                ForEach(allHeaders, content: profileView)
                     .onDelete { offsets in
                         Task {
                             await profileObservable.removeProfiles(at: offsets)
@@ -56,10 +56,8 @@ struct ProfileListView: View, Routable, TunnelInstallationProviding {
 }
 
 private extension ProfileListView {
-    var allPreviews: [ABI.ProfilePreview] {
-        profileObservable.filteredHeaders.map {
-            ABI.ProfilePreview(id: $0.id, name: $0.name)
-        }
+    var allHeaders: [ABI.AppProfileHeader] {
+        profileObservable.filteredHeaders
     }
 
     // TODO: #218, move to InstalledProfileView when .multiple
@@ -78,7 +76,7 @@ private extension ProfileListView {
                     style: .installedProfile,
                     profileObservable: profileObservable,
                     tunnel: tunnel,
-                    preview: .init(profile),
+                    header: profile.abiHeader(),
                     errorHandler: errorHandler,
                     flow: flow
                 )
@@ -89,12 +87,12 @@ private extension ProfileListView {
         .modifier(HideActiveProfileModifier())
     }
 
-    func profileView(for preview: ABI.ProfilePreview) -> some View {
+    func profileView(for header: ABI.AppProfileHeader) -> some View {
         ProfileRowView(
             style: cardStyle,
             profileObservable: profileObservable,
             tunnel: tunnel,
-            preview: preview,
+            header: header,
             errorHandler: errorHandler,
             flow: flow
         )
@@ -103,12 +101,12 @@ private extension ProfileListView {
                 style: .containerContext,
                 profileObservable: profileObservable,
                 tunnel: tunnel,
-                preview: preview,
+                header: header,
                 errorHandler: errorHandler,
                 flow: flow
             )
         }
-        .id(preview.id)
+        .id(header.id)
     }
 }
 

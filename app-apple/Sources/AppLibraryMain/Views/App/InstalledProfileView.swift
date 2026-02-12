@@ -99,7 +99,7 @@ private extension InstalledProfileView {
             style: .installedProfile,
             profileObservable: profileObservable,
             tunnel: tunnel,
-            preview: .init(profile ?? .forPreviews),
+            header: profile?.abiHeader() ?? .forPreviews,
             errorHandler: errorHandler,
             flow: flow
         )
@@ -109,7 +109,6 @@ private extension InstalledProfileView {
 // MARK: - Subviews (observing)
 
 private struct HeaderModifier: ViewModifier {
-
     @Environment(Theme.self)
     private var theme
 
@@ -197,7 +196,7 @@ private struct ContentView: View {
                 style: .full,
                 profileObservable: .forPreviews,
                 tunnel: .forPreviews,
-                preview: .init(.forPreviews),
+                header: .forPreviews,
                 errorHandler: .default()
             )
         }

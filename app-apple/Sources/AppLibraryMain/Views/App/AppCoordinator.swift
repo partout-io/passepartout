@@ -400,15 +400,15 @@ private extension AppCoordinator {
         editProfile(profile)
     }
 
-    func onEditProfile(_ preview: ABI.ProfilePreview) {
-        guard let profile = profileObservable.profile(withId: preview.id) else {
+    func onEditProfile(_ header: ABI.AppProfileHeader) {
+        guard let profile = profileObservable.profile(withId: header.id) else {
             return
         }
         editProfile(profile.editable())
     }
 
-    func onDeleteProfile(_ preview: ABI.ProfilePreview) {
-        confirmationAction = .deleteProfile(preview)
+    func onDeleteProfile(_ header: ABI.AppProfileHeader) {
+        confirmationAction = .deleteProfile(header)
     }
 
     func confirmDeleteProfile() {
@@ -465,7 +465,7 @@ private struct DynamicPaywallModifier: ViewModifier {
     @Binding
     var paywallReason: PaywallReason?
 
-    let onEditProfile: (ABI.ProfilePreview) -> Void
+    let onEditProfile: (ABI.AppProfileHeader) -> Void
 
     let paywallContinuation: (() -> Void)?
 
