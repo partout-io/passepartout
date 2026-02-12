@@ -124,7 +124,7 @@ extension KeyValueStore {
             return values
         }
         set {
-            set(newValue.deviceId, forAppPreference: .dnsFallsBack)
+            set(newValue.deviceId, forAppPreference: .deviceId)
             set(newValue.dnsFallsBack, forAppPreference: .dnsFallsBack)
             set(newValue.lastCheckedVersionDate, forAppPreference: .lastCheckedVersionDate)
             set(newValue.lastCheckedVersion, forAppPreference: .lastCheckedVersion)
