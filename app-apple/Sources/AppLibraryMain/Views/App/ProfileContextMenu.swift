@@ -45,24 +45,26 @@ struct ProfileContextMenu: View, Routable {
 @MainActor
 private extension ProfileContextMenu {
     var providerConnectToButton: some View {
-        profile.map { profile in
-            ProviderConnectToButton(
-                header: profile,
-                onTap: {
-                    flow?.connectionFlow?.onProviderEntityRequired($0)
-                },
-                label: {
-                    ThemeImageLabel(profile.providerServerSelectionTitle, .profileProvider)
+        ProviderConnectToButton(
+            header: header,
+            onTap: {
+                guard let profile = profileObservable.profile(withId: $0.id) else {
+                    pspLog(.profiles, .error, "Unable to find profile from header: \($0.id)")
+                    return
                 }
-            )
-            .uiAccessibility(.App.ProfileMenu.connectTo)
-        }
+                flow?.connectionFlow?.onProviderEntityRequired(profile)
+            },
+            label: {
+                ThemeImageLabel(header.providerServerSelectionTitle, .profileProvider)
+            }
+        )
+        .uiAccessibility(.App.ProfileMenu.connectTo)
     }
 
     var tunnelRestartButton: some View {
         TunnelRestartButton(
             tunnel: tunnel,
-            header: profile,
+            header: header,
             errorHandler: errorHandler,
             flow: flow?.connectionFlow,
             label: {
@@ -99,9 +101,9 @@ private extension ProfileContextMenu {
     }
 }
 
-private extension Profile {
+private extension ABI.AppProfileHeader {
     var providerServerSelectionTitle: String {
-        (attributes.isAvailableForTV == true ?
+        (sharingFlags.contains(.tv) ?
          Strings.Views.Providers.selectEntity : Strings.Views.App.ProfileContext.connectTo).forMenu
     }
 }

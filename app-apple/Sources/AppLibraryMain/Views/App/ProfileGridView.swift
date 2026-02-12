@@ -69,18 +69,18 @@ private extension ProfileGridView {
         InstalledProfileView(
             layout: .grid,
             profileObservable: profileObservable,
-            profile: installedProfiles.first,
+            header: installedHeaders.first,
             tunnel: tunnel,
             errorHandler: errorHandler,
             flow: flow
         )
         .contextMenu {
-            if let profile = installedProfiles.first {
+            if let header = installedHeaders.first {
                 ProfileContextMenu(
                     style: .installedProfile,
                     profileObservable: profileObservable,
                     tunnel: tunnel,
-                    header: profile.abiHeader(),
+                    header: header,
                     errorHandler: errorHandler,
                     flow: flow
                 )

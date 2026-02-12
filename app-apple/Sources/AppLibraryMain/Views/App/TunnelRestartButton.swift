@@ -8,7 +8,7 @@ import SwiftUI
 struct TunnelRestartButton<Label>: View where Label: View {
     let tunnel: TunnelObservable
 
-    let profile: Profile?
+    let header: ABI.AppProfileHeader?
 
     let errorHandler: ErrorHandler
 
@@ -18,14 +18,10 @@ struct TunnelRestartButton<Label>: View where Label: View {
 
     var body: some View {
         Button {
-            guard let profile else {
-                return
-            }
-            guard tunnel.status(for: profile.id) == .connected else {
-                return
-            }
+            guard let header else { return }
+            guard tunnel.status(for: header.id) == .connected else { return }
             Task {
-                await flow?.onConnect(profile)
+                await flow?.onConnect(header)
             }
         } label: {
             label()
@@ -36,9 +32,7 @@ struct TunnelRestartButton<Label>: View where Label: View {
 
 private extension TunnelRestartButton {
     var isDisabled: Bool {
-        guard let profile else {
-            return true
-        }
-        return tunnel.status(for: profile.id) != .connected
+        guard let header else { return true }
+        return tunnel.status(for: header.id) != .connected
     }
 }

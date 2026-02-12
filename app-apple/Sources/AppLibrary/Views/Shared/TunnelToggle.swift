@@ -97,30 +97,29 @@ private extension TunnelToggle {
     }
 
     func tryPerform(isOn: Bool) {
-        guard let header,
-            let profile = profileObservable.profile(withId: header.id) else { return }
+        guard let header else { return }
         Task {
-            await perform(isOn: isOn, with: profile)
+            await perform(isOn: isOn, with: header)
         }
     }
 
-    func perform(isOn: Bool, with profile: Profile) async {
+    func perform(isOn: Bool, with header: ABI.AppProfileHeader) async {
         do {
             if tunnelProfile != nil {
                 if isOn {
-                    await flow?.onConnect(profile)
+                    await flow?.onConnect(header)
                 } else {
-                    try await tunnel.disconnect(from: profile.id)
+                    try await tunnel.disconnect(from: header.id)
                 }
             } else {
-                await flow?.onConnect(profile)
+                await flow?.onConnect(header)
             }
         } catch is CancellationError {
             //
         } catch {
             errorHandler.handle(
                 error,
-                title: profile.name,
+                title: header.name,
                 message: Strings.Errors.App.tunnel
             )
         }
