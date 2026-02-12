@@ -36,7 +36,3 @@ private struct AppConfigurationKey: EnvironmentKey {
         buildTarget: .app
     )
 }
-
-private struct LogFormatterBlockKey: EnvironmentKey {
-    static let defaultValue: @Sendable (ABI.AppLogLine) -> String = \.message
-}
