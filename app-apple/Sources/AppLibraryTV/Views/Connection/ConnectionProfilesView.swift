@@ -55,7 +55,7 @@ private extension ConnectionProfilesView {
     func toggleButton(for header: ABI.AppProfileHeader) -> some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profileObservable.profile(withId: header.id),
+            header: header,
             errorHandler: errorHandler,
             flow: flow,
             label: { isOn, _ in

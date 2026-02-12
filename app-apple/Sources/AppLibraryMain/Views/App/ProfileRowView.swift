@@ -61,7 +61,7 @@ private extension ProfileRowView {
     var tunnelToggle: some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             errorHandler: errorHandler,
             flow: flow?.connectionFlow
         )
@@ -71,10 +71,6 @@ private extension ProfileRowView {
 }
 
 private extension ProfileRowView {
-    var profile: Profile? {
-        profileObservable.profile(withId: header.id)
-    }
-
     var requiredFeatures: Set<ABI.AppFeature>? {
         profileObservable.requiredFeatures(forProfileWithId: header.id)
     }

@@ -44,14 +44,10 @@ struct ProfileContextMenu: View, Routable {
 
 @MainActor
 private extension ProfileContextMenu {
-    var profile: Profile? {
-        profileObservable.profile(withId: header.id)
-    }
-
     var providerConnectToButton: some View {
         profile.map { profile in
             ProviderConnectToButton(
-                profile: profile,
+                header: profile,
                 onTap: {
                     flow?.connectionFlow?.onProviderEntityRequired($0)
                 },
@@ -66,7 +62,7 @@ private extension ProfileContextMenu {
     var tunnelRestartButton: some View {
         TunnelRestartButton(
             tunnel: tunnel,
-            profile: profile,
+            header: profile,
             errorHandler: errorHandler,
             flow: flow?.connectionFlow,
             label: {

@@ -51,7 +51,7 @@ struct ProfileActionsSection: View {
 
 private extension ProfileActionsSection {
     var isExistingProfile: Bool {
-        profileObservable.profile(withId: profileId) != nil
+        profileObservable.header(withId: profileId) != nil
     }
 
     var uuidView: some View {
@@ -76,7 +76,7 @@ private extension ProfileActionsSection {
     }
 
     func removeContent() -> some View {
-        profileObservable.profile(withId: profileId)
+        profileObservable.header(withId: profileId)
             .map { _ in
                 removeButton
                     .themeConfirmation(

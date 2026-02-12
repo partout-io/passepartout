@@ -7,14 +7,16 @@ import CommonLibrary
 import SwiftUI
 
 struct ActiveProfileView: View {
-
     @Environment(Theme.self)
     private var theme
+
+    @Environment(ProfileObservable.self)
+    private var profileObservable
 
     @EnvironmentObject
     private var apiManager: APIManager
 
-    let profile: Profile?
+    let header: ABI.AppProfileHeader?
 
     let tunnel: TunnelObservable
 
@@ -37,7 +39,7 @@ struct ActiveProfileView: View {
                 }
                 .padding(.bottom)
 
-                profile.map {
+                activeProfile.map {
                     detailView(for: $0)
                 }
                 .padding(.bottom)
@@ -56,8 +58,13 @@ struct ActiveProfileView: View {
 }
 
 private extension ActiveProfileView {
+    var activeProfile: Profile? {
+        guard let header else { return nil }
+        return profileObservable.profile(withId: header.id)
+    }
+
     var activeProfileView: some View {
-        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(header?.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title)
             .fontWeight(theme.relevantWeight)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -65,7 +72,7 @@ private extension ActiveProfileView {
     }
 
     var statusView: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
+        ConnectionStatusText(tunnel: tunnel, profileId: header?.id)
             .font(.title2)
             .frame(maxWidth: .infinity, alignment: .leading)
             .brightness(0.2)
@@ -102,7 +109,7 @@ private extension ActiveProfileView {
     var toggleConnectionButton: some View {
         ActiveTunnelButton(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             focusedField: $focusedField,
             errorHandler: errorHandler,
             flow: flow
@@ -150,7 +157,7 @@ private extension ActiveProfileView {
     }()
 
     HStack {
-        ContentPreview(profile: profile)
+        ContentPreview(header: profile.abiHeader())
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
@@ -176,7 +183,7 @@ private extension ActiveProfileView {
     }()
 
     HStack {
-        ContentPreview(profile: profile)
+        ContentPreview(header: profile.abiHeader())
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
@@ -187,7 +194,7 @@ private extension ActiveProfileView {
 }
 
 private struct ContentPreview: View {
-    let profile: Profile
+    let header: ABI.AppProfileHeader
 
     @State
     private var isSwitching = false
@@ -197,7 +204,7 @@ private struct ContentPreview: View {
 
     var body: some View {
         ActiveProfileView(
-            profile: profile,
+            header: header,
             tunnel: .forPreviews,
             isSwitching: $isSwitching,
             focusedField: $focusedField,

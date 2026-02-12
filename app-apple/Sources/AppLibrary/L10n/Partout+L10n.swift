@@ -8,9 +8,10 @@ import Foundation
 // MARK: Profile
 
 extension Profile {
-    public var localizedHeader: ABI.AppProfileHeader {
-        abiHeader(subtitle: localizedDescription(optionalStyle: .moduleTypes))
-    }
+    // FIXME: #1680, UNUSED?!??!!?
+//    public var localizedHeader: ABI.AppProfileHeader {
+//        abiHeader(subtitle: localizedDescription(optionalStyle: .moduleTypes))
+//    }
 }
 
 extension Profile: StyledOptionalLocalizableEntity {

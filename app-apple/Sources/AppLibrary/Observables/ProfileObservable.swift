@@ -37,7 +37,7 @@ public final class ProfileObservable {
 // MARK: - Actions
 
 extension ProfileObservable {
-    // To avoid dup/expensive tracking of localProfiles
+    // DO USE headers for UI (observable), use full profiles for actions
     public func profile(withId profileId: Profile.ID) -> Profile? {
         abi.profile(withId: profileId)
     }
