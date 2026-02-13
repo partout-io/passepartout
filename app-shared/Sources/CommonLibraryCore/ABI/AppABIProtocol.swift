@@ -33,7 +33,6 @@ public protocol AppABILoggerProtocol: Sendable {
 
 @MainActor
 public protocol AppABIProfileProtocol: Sendable {
-    func profile(withId id: Profile.ID) -> Profile?
     func save(_ profile: Profile, remotelyShared: Bool?) async throws
     func saveAll() async
     func importText(_ text: String, filename: String, passphrase: String?) async throws
@@ -42,6 +41,8 @@ public protocol AppABIProfileProtocol: Sendable {
     func remove(_ id: Profile.ID) async
     func remove(_ ids: [Profile.ID]) async
     func removeAllRemote() async throws
+    // Non-observable
+    func profile(withId id: Profile.ID) -> Profile?
 }
 
 @MainActor
@@ -63,7 +64,7 @@ public protocol AppABITunnelProtocol: Sendable {
 //    func reconnect(to profileId: Profile.ID) async throws
     func disconnect(from profileId: Profile.ID) async throws
     func currentLog() async -> [ABI.AppLogLine]
-    // These are non-observable (pull manually)
+    // Non-observable
     func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
     func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?
     func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?

@@ -226,10 +226,6 @@ private struct AppABIProfile: AppABIProfileProtocol {
     let profileManager: ProfileManager
     let registry: Registry
 
-    func profile(withId id: Profile.ID) -> Profile? {
-        profileManager.profile(withId: id)
-    }
-
     func save(_ profile: Profile, remotelyShared: Bool?) async throws {
         try await profileManager.save(profile, isLocal: true, remotelyShared: remotelyShared)
     }
@@ -268,6 +264,10 @@ private struct AppABIProfile: AppABIProfileProtocol {
 
     func removeAllRemote() async throws {
         try await profileManager.eraseRemotelySharedProfiles()
+    }
+
+    func profile(withId id: Profile.ID) -> Profile? {
+        profileManager.profile(withId: id)
     }
 }
 

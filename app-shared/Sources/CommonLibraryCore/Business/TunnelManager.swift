@@ -173,7 +173,7 @@ private extension TunnelManager {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
                 // Publish compound statuses
-                didChange.send(.refresh(computedProfileInfos(from: newActiveProfiles)))
+                didChange.send(.refresh(computedTunnelInfos(from: newActiveProfiles)))
             }
         }
 
@@ -231,7 +231,7 @@ private extension TunnelManager {
         )
     }
 
-    func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppProfileStatus {
+    func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppTunnelStatus {
         let status = status(ofProfileId: profileId)
         guard let environment = tunnel.environment(for: profileId) else {
             return status.abiStatus
@@ -239,10 +239,10 @@ private extension TunnelManager {
         return status.withEnvironment(environment).abiStatus
     }
 
-    func computedProfileInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [Profile.ID: ABI.AppProfileInfo] {
+    func computedTunnelInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [Profile.ID: ABI.AppTunnelInfo] {
         var info = activeProfiles.mapValues {
             let profileStatus = profileStatus(ofProfileId: $0.id)
-            return ABI.AppProfileInfo(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
+            return ABI.AppTunnelInfo(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
         }
         if info.isEmpty, let last = lastUsedProfile {
             info = [last.id: last.abiInfo]

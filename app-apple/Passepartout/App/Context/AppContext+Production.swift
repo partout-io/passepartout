@@ -29,7 +29,6 @@ extension AppContext {
                 assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
 #endif
             },
-            profilePreview: \.localizedPreview,
             apiMappers: API.shared,
             webHTMLPath: Resources.webUploaderPath,
             webStringsBundle: AppStrings.bundle,

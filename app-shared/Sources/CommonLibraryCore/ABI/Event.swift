@@ -36,7 +36,7 @@ extension ABI {
     }
 
     public enum TunnelEvent: Sendable {
-        case refresh([Profile.ID: AppProfileInfo])
+        case refresh([Profile.ID: AppTunnelInfo])
         case dataCount
     }
 

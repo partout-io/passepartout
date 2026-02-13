@@ -7,14 +7,16 @@ import CommonLibrary
 import SwiftUI
 
 struct ActiveProfileView: View {
-
     @Environment(Theme.self)
     private var theme
+
+    @Environment(ProfileObservable.self)
+    private var profileObservable
 
     @EnvironmentObject
     private var apiManager: APIManager
 
-    let profile: Profile?
+    let header: ABI.AppProfileHeader?
 
     let tunnel: TunnelObservable
 
@@ -37,7 +39,7 @@ struct ActiveProfileView: View {
                 }
                 .padding(.bottom)
 
-                profile.map {
+                header.map {
                     detailView(for: $0)
                 }
                 .padding(.bottom)
@@ -57,7 +59,7 @@ struct ActiveProfileView: View {
 
 private extension ActiveProfileView {
     var activeProfileView: some View {
-        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(header?.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title)
             .fontWeight(theme.relevantWeight)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -65,32 +67,32 @@ private extension ActiveProfileView {
     }
 
     var statusView: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
+        ConnectionStatusText(tunnel: tunnel, profileId: header?.id)
             .font(.title2)
             .frame(maxWidth: .infinity, alignment: .leading)
             .brightness(0.2)
     }
 
-    func detailView(for profile: Profile) -> some View {
+    func detailView(for header: ABI.AppProfileHeader) -> some View {
         VStack(spacing: 10) {
-            if let primaryType = profile.localizedDescription(optionalStyle: .primaryType) {
+            if let primaryType = header.localizedDescription(optionalStyle: .primaryType) {
                 ListRowView(title: Strings.Global.Nouns.protocol) {
                     Text(primaryType)
                 }
             }
-            if let pair = profile.activeProviderModule {
-                if let provider = apiManager.provider(withId: pair.providerId) {
+            if let providerInfo = header.providerInfo {
+                if let provider = apiManager.provider(withId: providerInfo.providerId) {
                     ListRowView(title: Strings.Global.Nouns.provider) {
                         Text(provider.description)
                     }
                 }
-                if let entityHeader = pair.entity?.header {
+                if let countryCode = providerInfo.countryCode {
                     ListRowView(title: Strings.Global.Nouns.country) {
-                        ThemeCountryText(entityHeader.countryCode)
+                        ThemeCountryText(countryCode)
                     }
                 }
             }
-            if let secondaryTypes = profile.localizedDescription(optionalStyle: .secondaryTypes) {
+            if let secondaryTypes = header.localizedDescription(optionalStyle: .secondaryTypes) {
                 ListRowView(title: secondaryTypes) {
                     EmptyView()
                 }
@@ -102,7 +104,7 @@ private extension ActiveProfileView {
     var toggleConnectionButton: some View {
         ActiveTunnelButton(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             focusedField: $focusedField,
             errorHandler: errorHandler,
             flow: flow
@@ -150,7 +152,7 @@ private extension ActiveProfileView {
     }()
 
     HStack {
-        ContentPreview(profile: profile)
+        ContentPreview(header: profile.abiHeaderWithBogusFlagsAndRequirements())
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
@@ -176,7 +178,7 @@ private extension ActiveProfileView {
     }()
 
     HStack {
-        ContentPreview(profile: profile)
+        ContentPreview(header: profile.abiHeaderWithBogusFlagsAndRequirements())
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
@@ -187,7 +189,7 @@ private extension ActiveProfileView {
 }
 
 private struct ContentPreview: View {
-    let profile: Profile
+    let header: ABI.AppProfileHeader
 
     @State
     private var isSwitching = false
@@ -197,7 +199,7 @@ private struct ContentPreview: View {
 
     var body: some View {
         ActiveProfileView(
-            profile: profile,
+            header: header,
             tunnel: .forPreviews,
             isSwitching: $isSwitching,
             focusedField: $focusedField,

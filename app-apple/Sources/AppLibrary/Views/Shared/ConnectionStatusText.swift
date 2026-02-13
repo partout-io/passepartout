@@ -32,7 +32,7 @@ private struct ConnectionStatusStaticText: View {
 
     private let color: Color
 
-    init(status: ABI.AppProfileStatus, color: Color) {
+    init(status: ABI.AppTunnelStatus, color: Color) {
         statusDescription = status.localizedDescription
         self.color = color
     }

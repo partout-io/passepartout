@@ -14,20 +14,20 @@ struct ProfileCardView: View {
 
     let style: Style
 
-    let preview: ABI.ProfilePreview
+    let header: ABI.AppProfileHeader
 
     let tunnel: TunnelObservable
 
-    var onTap: ((ABI.ProfilePreview) -> Void)?
+    var onTap: ((ABI.AppProfileHeader) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading) {
             Spacer(minLength: .zero)
 
             ThemeNavigatingButton {
-                onTap?(preview)
+                onTap?(header)
             } label: {
-                Text(preview.name)
+                Text(header.name)
                     .font(.headline)
                     .themeMultiLine(true)
             }
@@ -47,7 +47,7 @@ struct ProfileCardView: View {
 
 private extension ProfileCardView {
     var statusView: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: preview.id)
+        ConnectionStatusText(tunnel: tunnel, profileId: header.id)
     }
 }
 
@@ -58,14 +58,14 @@ private extension ProfileCardView {
         Section {
             ProfileCardView(
                 style: .compact,
-                preview: .init(.forPreviews),
+                header: .forPreviews,
                 tunnel: .forPreviews
             )
         }
         Section {
             ProfileCardView(
                 style: .full,
-                preview: .init(.forPreviews),
+                header: .forPreviews,
                 tunnel: .forPreviews
             )
         }

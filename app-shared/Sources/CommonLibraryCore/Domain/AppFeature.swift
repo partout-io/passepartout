@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public enum AppFeature: String, CaseIterable, Sendable {
+    public enum AppFeature: String, CaseIterable, Codable, Sendable {
         case appleTV
         case dns
         case httpProxy

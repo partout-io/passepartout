@@ -36,7 +36,7 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
                         .unanimated()
                 }
                 LazyVGrid(columns: columns) {
-                    ForEach(allPreviews, content: profileView)
+                    ForEach(allHeaders, content: profileView)
                         .onDelete { offsets in
                             Task {
                                 await profileObservable.removeProfiles(at: offsets)
@@ -60,10 +60,8 @@ struct ProfileGridView: View, Routable, TunnelInstallationProviding {
 // MARK: - Subviews
 
 private extension ProfileGridView {
-    var allPreviews: [ABI.ProfilePreview] {
-        profileObservable.filteredHeaders.map {
-            ABI.ProfilePreview(id: $0.id, name: $0.name)
-        }
+    var allHeaders: [ABI.AppProfileHeader] {
+        profileObservable.filteredHeaders
     }
 
     // TODO: #218, move to InstalledProfileView when .multiple
@@ -71,18 +69,18 @@ private extension ProfileGridView {
         InstalledProfileView(
             layout: .grid,
             profileObservable: profileObservable,
-            profile: installedProfiles.first,
+            header: installedHeaders.first,
             tunnel: tunnel,
             errorHandler: errorHandler,
             flow: flow
         )
         .contextMenu {
-            if let profile = installedProfiles.first {
+            if let header = installedHeaders.first {
                 ProfileContextMenu(
                     style: .installedProfile,
                     profileObservable: profileObservable,
                     tunnel: tunnel,
-                    preview: .init(profile),
+                    header: header,
                     errorHandler: errorHandler,
                     flow: flow
                 )
@@ -92,12 +90,12 @@ private extension ProfileGridView {
         }
     }
 
-    func profileView(for preview: ABI.ProfilePreview) -> some View {
+    func profileView(for header: ABI.AppProfileHeader) -> some View {
         ProfileRowView(
             style: .compact,
             profileObservable: profileObservable,
             tunnel: tunnel,
-            preview: preview,
+            header: header,
             errorHandler: errorHandler,
             flow: flow
         )
@@ -107,12 +105,12 @@ private extension ProfileGridView {
                 style: .containerContext,
                 profileObservable: profileObservable,
                 tunnel: tunnel,
-                preview: preview,
+                header: header,
                 errorHandler: errorHandler,
                 flow: flow
             )
         }
-        .id(preview.id)
+        .id(header.id)
     }
 }
 

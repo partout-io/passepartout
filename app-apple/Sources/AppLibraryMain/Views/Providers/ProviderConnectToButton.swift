@@ -6,18 +6,22 @@ import CommonLibrary
 import SwiftUI
 
 struct ProviderConnectToButton<Label>: View where Label: View {
-    let profile: Profile
+    @Environment(ProfileObservable.self)
+    private var profileObservable
 
-    let onTap: (Profile) -> Void
+    let header: ABI.AppProfileHeader
+
+    let onTap: (ABI.AppProfileHeader) -> Void
 
     let label: () -> Label
 
     var body: some View {
-        profile
+        profileObservable
+            .profile(withId: header.id)?
             .activeProviderModule
             .map { _ in
                 Button {
-                    onTap(profile)
+                    onTap(header)
                 } label: {
                     label()
                 }

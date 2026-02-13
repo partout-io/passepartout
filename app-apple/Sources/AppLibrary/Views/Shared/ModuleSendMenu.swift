@@ -36,12 +36,12 @@ private extension ModuleSendMenu {
         Strings.Views.Ui.ModuleSend.newProfileName(module.moduleType)
     }
 
-    func sendModule(to preview: ABI.ProfilePreview?) {
+    func sendModule(to header: ABI.AppProfileHeader?) {
         Task {
             do {
                 var destination: Profile.Builder
-                if let preview {
-                    guard let existingDestination = profileObservable.profile(withId: preview.id) else {
+                if let header {
+                    guard let existingDestination = profileObservable.profile(withId: header.id) else {
                         throw PartoutError(.notFound)
                     }
                     destination = existingDestination.builder()

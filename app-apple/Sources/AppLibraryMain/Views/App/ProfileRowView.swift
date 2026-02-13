@@ -21,7 +21,7 @@ struct ProfileRowView: View, Routable, SizeClassProviding {
 
     let tunnel: TunnelObservable
 
-    let preview: ABI.ProfilePreview
+    let header: ABI.AppProfileHeader
 
     let errorHandler: ErrorHandler
 
@@ -42,7 +42,7 @@ private extension ProfileRowView {
     var cardView: some View {
         ProfileCardView(
             style: style,
-            preview: preview,
+            header: header,
             tunnel: tunnel,
             onTap: flow?.onEditProfile
         )
@@ -53,7 +53,7 @@ private extension ProfileRowView {
     var sharingView: some View {
         ProfileSharingView(
             profileObservable: profileObservable,
-            profileId: preview.id
+            profileId: header.id
         )
         .imageScale(isBigDevice ? .large : .medium)
     }
@@ -61,7 +61,7 @@ private extension ProfileRowView {
     var tunnelToggle: some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             errorHandler: errorHandler,
             flow: flow?.connectionFlow
         )
@@ -71,12 +71,8 @@ private extension ProfileRowView {
 }
 
 private extension ProfileRowView {
-    var profile: Profile? {
-        profileObservable.profile(withId: preview.id)
-    }
-
     var requiredFeatures: Set<ABI.AppFeature>? {
-        profileObservable.requiredFeatures(forProfileWithId: preview.id)
+        profileObservable.requiredFeatures(forProfileWithId: header.id)
     }
 }
 
@@ -91,7 +87,7 @@ private extension ProfileRowView {
             style: .full,
             profileObservable: profileObservable,
             tunnel: .forPreviews,
-            preview: ABI.ProfilePreview(profile),
+            header: profile.abiHeaderWithBogusFlagsAndRequirements(),
             errorHandler: .default()
         )
     }

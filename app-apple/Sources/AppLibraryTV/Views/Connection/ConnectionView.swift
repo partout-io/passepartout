@@ -59,16 +59,14 @@ struct ConnectionView: View, Routable {
 }
 
 private extension ConnectionView {
-    var activeProfile: Profile? {
-        guard let id = tunnel.activeProfile?.id else {
-            return nil
-        }
-        return profileObservable.profile(withId: id)
+    var activeHeader: ABI.AppProfileHeader? {
+        guard let id = tunnel.activeProfile?.id else { return nil }
+        return profileObservable.header(withId: id)
     }
 
     var activeView: some View {
         ActiveProfileView(
-            profile: activeProfile,
+            header: activeHeader,
             tunnel: tunnel,
             isSwitching: $showsSidePanel,
             focusedField: $focusedField,
@@ -120,8 +118,8 @@ private extension ConnectionView {
 
 private extension ConnectionView {
     func onTunnelActiveProfile(
-        old: ABI.AppProfileInfo?,
-        new: ABI.AppProfileInfo?
+        old: ABI.AppTunnelInfo?,
+        new: ABI.AppTunnelInfo?
     ) {
         // on profile connection, hide side panel and focus on connect button
         if new?.status == .connecting {

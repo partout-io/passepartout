@@ -7,61 +7,28 @@ import Foundation
 
 // MARK: Profile
 
-extension Profile {
-    public var localizedPreview: ABI.ProfilePreview {
-        ABI.ProfilePreview(
-            id: id,
-            name: name,
-            subtitle: localizedDescription(optionalStyle: .moduleTypes)
-        )
-    }
-}
-
-extension Profile: StyledOptionalLocalizableEntity {
+extension ABI.AppProfileHeader: StyledOptionalLocalizableEntity {
     public enum OptionalStyle {
-        case moduleTypes
         case primaryType
         case secondaryTypes
     }
 
     public func localizedDescription(optionalStyle: OptionalStyle) -> String? {
         switch optionalStyle {
-        case .moduleTypes:
-            return activeModules
-                .nilIfEmpty?
-                .map(\.moduleType.localizedDescription)
-                .sorted()
-                .joined(separator: ", ")
-
         case .primaryType:
-            return activeModules
-                .first {
-                    primaryCondition(for: $0)
-                }?
-                .primaryModuleType
-                .localizedDescription
-
+            return primaryModuleType?.localizedDescription
         case .secondaryTypes:
-            return activeModules
-                .filter {
-                    !primaryCondition(for: $0)
-                }
-                .nilIfEmpty?
-                .map(\.moduleType.localizedDescription)
+            return secondaryModuleTypes?
+                .map(\.localizedDescription)
                 .sorted()
                 .joined(separator: ", ")
         }
-    }
-
-    private func primaryCondition(for module: Module) -> Bool {
-        module is ProviderModule || module.buildsConnection
     }
 }
 
 // MARK: - Modules
 
 extension ModuleBuilder {
-
     @MainActor
     public func description(inEditor editor: ProfileEditor) -> String {
         moduleType.localizedDescription
@@ -95,15 +62,6 @@ extension ModuleType: LocalizableEntity {
 extension ModuleType: @retroactive Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.localizedDescription.lowercased() < rhs.localizedDescription.lowercased()
-    }
-}
-
-private extension Module {
-    var primaryModuleType: ModuleType {
-        if let providerModule = self as? ProviderModule {
-            return providerModule.providerModuleType
-        }
-        return moduleType
     }
 }
 

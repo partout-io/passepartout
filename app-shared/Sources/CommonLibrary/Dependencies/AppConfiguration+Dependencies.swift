@@ -101,14 +101,8 @@ extension ABI.AppConfiguration {
     }
 
     @MainActor
-    public func newAppProfileProcessor(
-        iapManager: IAPManager?,
-        preview: @escaping @Sendable (Profile) -> ABI.ProfilePreview
-    ) -> ProfileProcessor {
-        DefaultProfileProcessor(
-            iapManager: iapManager,
-            preview: preview
-        )
+    public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
+        DefaultProfileProcessor(iapManager: iapManager)
     }
 
     public func newAppTunnelProcessor(

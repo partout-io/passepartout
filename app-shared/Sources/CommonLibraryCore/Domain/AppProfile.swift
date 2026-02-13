@@ -5,19 +5,44 @@
 import Partout
 
 extension ABI {
-    // FIXME: #1680, Rename to something else without "App" prefix
-    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
+    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Codable, Sendable {
+        public struct ProviderInfo: Hashable, Codable, Sendable {
+            public let providerId: ProviderID
+            public let countryCode: String?
+
+            public init(providerId: ProviderID, countryCode: String?) {
+                self.providerId = providerId
+                self.countryCode = countryCode
+            }
+        }
+
         public private(set) var id: Profile.ID
         public let name: String
-        public let moduleTypes: [String]
+        public let moduleTypes: [ModuleType]
+        public let primaryModuleType: ModuleType?
+        public let secondaryModuleTypes: [ModuleType]?
+        public let providerInfo: ProviderInfo?
         public let fingerprint: String
         public let sharingFlags: [ProfileSharingFlag]
         public let requiredFeatures: Set<AppFeature>
 
-        public init(id: Profile.ID, name: String, moduleTypes: [String], fingerprint: String, sharingFlags: [ProfileSharingFlag], requiredFeatures: Set<AppFeature>) {
+        public init(
+            id: Profile.ID,
+            name: String,
+            moduleTypes: [ModuleType],
+            primaryModuleType: ModuleType?,
+            secondaryModuleTypes: [ModuleType]?,
+            providerInfo: ProviderInfo?,
+            fingerprint: String,
+            sharingFlags: [ProfileSharingFlag],
+            requiredFeatures: Set<AppFeature>
+        ) {
             self.id = id
             self.name = name
             self.moduleTypes = moduleTypes
+            self.primaryModuleType = primaryModuleType
+            self.secondaryModuleTypes = secondaryModuleTypes
+            self.providerInfo = providerInfo
             self.fingerprint = fingerprint
             self.sharingFlags = sharingFlags
             self.requiredFeatures = requiredFeatures
@@ -28,19 +53,19 @@ extension ABI {
         }
     }
 
-    public enum AppProfileStatus: Int, Codable, Sendable {
+    public enum AppTunnelStatus: Int, Codable, Sendable {
         case disconnected
         case connecting
         case connected
         case disconnecting
     }
 
-    public struct AppProfileInfo: Identifiable, Hashable, Codable, Sendable {
+    public struct AppTunnelInfo: Identifiable, Hashable, Codable, Sendable {
         public let id: Profile.ID
-        public let status: AppProfileStatus
+        public let status: AppTunnelStatus
         public let onDemand: Bool
 
-        public init(id: Profile.ID, status: AppProfileStatus, onDemand: Bool) {
+        public init(id: Profile.ID, status: AppTunnelStatus, onDemand: Bool) {
             self.id = id
             self.status = status
             self.onDemand = onDemand

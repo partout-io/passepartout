@@ -7,7 +7,7 @@ import CommonLibrary
 enum DiagnosticsRoute: Hashable {
     case appLog(title: String)
 
-    case profile(profile: Profile)
+    case profile(ABI.AppProfileHeader)
 
     case tunnelLog(title: String, url: URL?)
 }

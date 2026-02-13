@@ -85,11 +85,11 @@ private extension DiagnosticsView {
     }
 
     var profilesSection: some View {
-        activeProfiles
+        activeHeaders
             .nilIfEmpty
             .map {
-                ForEach($0) { profile in
-                    NavigationLink(profile.name, value: DiagnosticsRoute.profile(profile: profile))
+                ForEach($0) { header in
+                    NavigationLink(header.name, value: DiagnosticsRoute.profile(header))
                 }
                 .themeSection(header: Strings.Views.Diagnostics.Sections.activeProfiles)
             }
@@ -136,16 +136,13 @@ private extension DiagnosticsView {
 }
 
 private extension DiagnosticsView {
-    // FIXME: #1680, Use AppProfileHeader here?
-    var activeProfiles: [Profile] {
+    var activeHeaders: [ABI.AppProfileHeader] {
         tunnel.activeProfiles
             .values
             .compactMap {
-                profileObservable.profile(withId: $0.id)
+                profileObservable.header(withId: $0.id)
             }
-            .sorted {
-                $0.name.lowercased() < $1.name.lowercased()
-            }
+            .sorted()
     }
 
     var canReportIssue: Bool {

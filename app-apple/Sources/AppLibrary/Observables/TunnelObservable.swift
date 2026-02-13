@@ -10,7 +10,7 @@ public final class TunnelObservable {
     private let abi: AppABITunnelProtocol
     private let formatter: LogFormatter?
 
-    public private(set) var activeProfiles: [Profile.ID: ABI.AppProfileInfo]
+    public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
     public private(set) var transfers: [Profile.ID: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
@@ -51,7 +51,7 @@ extension TunnelObservable {
 // MARK: - State
 
 extension TunnelObservable {
-    public var activeProfile: ABI.AppProfileInfo? {
+    public var activeProfile: ABI.AppTunnelInfo? {
         activeProfiles.first?.value
     }
 
@@ -59,7 +59,7 @@ extension TunnelObservable {
         activeProfiles.keys.contains(profileId)
     }
 
-    public func status(for profileId: Profile.ID) -> ABI.AppProfileStatus {
+    public func status(for profileId: Profile.ID) -> ABI.AppTunnelStatus {
         activeProfiles[profileId]?.status ?? .disconnected
     }
 

@@ -6,11 +6,11 @@ import CommonLibrary
 
 @MainActor
 extension TunnelInstallationProviding {
-    public var installedProfiles: [Profile] {
+    public var installedHeaders: [ABI.AppProfileHeader] {
         tunnel
             .activeProfiles
             .compactMap {
-                profileObservable.profile(withId: $0.key)
+                profileObservable.header(withId: $0.key)
             }
     }
 }

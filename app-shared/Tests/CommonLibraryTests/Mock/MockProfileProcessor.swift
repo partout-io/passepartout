@@ -24,10 +24,6 @@ final class MockProfileProcessor: ProfileProcessor {
         return isIncludedBlock(profile)
     }
 
-    func preview(from profile: Profile) -> ABI.ProfilePreview {
-        ABI.ProfilePreview(profile)
-    }
-
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         requiredFeaturesCount += 1
         return requiredFeatures
