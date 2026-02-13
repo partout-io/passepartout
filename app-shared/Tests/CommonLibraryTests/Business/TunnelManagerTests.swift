@@ -177,7 +177,7 @@ extension TunnelManagerTests {
 }
 
 private extension AsyncStream where Element == ABI.TunnelEvent {
-    func nextActiveProfiles() async -> [Profile.ID: ABI.ProfileTunnelInfo] {
+    func nextActiveProfiles() async -> [Profile.ID: ABI.AppTunnelInfo] {
         for await event in self {
             if case .refresh(let active) = event {
                 return active
