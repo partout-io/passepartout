@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1678, Wrap PartoutError
+// FIXME: #1696, Wrap PartoutError
 import Partout
 
 extension ABI {

@@ -69,7 +69,7 @@ extension TunnelManager {
             options[Self.appPreferences] = encodedPreferences as NSData
         }
 #else
-        // FIXME: #228, Cross sends no .isManualKey to startTunnel()
+        // Cross sends no .isManualKey to startTunnel()
         var options: Sendable?
 #endif
 
