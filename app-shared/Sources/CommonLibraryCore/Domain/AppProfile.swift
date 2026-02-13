@@ -18,7 +18,7 @@ extension ABI {
 
         public private(set) var id: Profile.ID
         public let name: String
-        public let moduleTypes: [String]
+        public let moduleTypes: [ModuleType]
         public let primaryModuleType: ModuleType?
         public let secondaryModuleTypes: [ModuleType]?
         public let providerInfo: ProviderInfo?
@@ -29,7 +29,7 @@ extension ABI {
         public init(
             id: Profile.ID,
             name: String,
-            moduleTypes: [String],
+            moduleTypes: [ModuleType],
             primaryModuleType: ModuleType?,
             secondaryModuleTypes: [ModuleType]?,
             providerInfo: ProviderInfo?,

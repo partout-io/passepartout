@@ -34,7 +34,7 @@ extension Profile {
         return ABI.AppProfileHeader(
             id: id,
             name: name,
-            moduleTypes: modules.map(\.moduleType.rawValue),
+            moduleTypes: modules.map(\.moduleType),
             primaryModuleType: primaryModuleType,
             secondaryModuleTypes: secondaryModuleTypes,
             providerInfo: providerInfo,
