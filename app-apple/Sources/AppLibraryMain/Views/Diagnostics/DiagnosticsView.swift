@@ -142,9 +142,7 @@ private extension DiagnosticsView {
             .compactMap {
                 profileObservable.header(withId: $0.id)
             }
-            .sorted {
-                $0.name.lowercased() < $1.name.lowercased()
-            }
+            .sorted()
     }
 
     var canReportIssue: Bool {
