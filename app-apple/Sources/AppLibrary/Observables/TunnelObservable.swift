@@ -30,7 +30,16 @@ extension TunnelObservable {
 //    }
 
     public func connect(to profile: Profile, force: Bool = false) async throws {
-        try await abi.connect(to: profile, force: force)
+        do {
+            try await abi.connect(to: profile, force: force)
+        } catch let ppError as PartoutError {
+            switch ppError.code {
+            case .Providers.missingEntity:
+                throw ABI.AppError.missingProviderEntity
+            default:
+                throw ppError
+            }
+        }
     }
 
 //    public func reconnect(to profileId: Profile.ID) async throws {
