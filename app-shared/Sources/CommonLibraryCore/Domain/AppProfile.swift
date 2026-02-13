@@ -53,19 +53,19 @@ extension ABI {
         }
     }
 
-    public enum AppProfileStatus: Int, Codable, Sendable {
+    public enum AppTunnelStatus: Int, Codable, Sendable {
         case disconnected
         case connecting
         case connected
         case disconnecting
     }
 
-    public struct AppProfileInfo: Identifiable, Hashable, Codable, Sendable {
+    public struct AppTunnelInfo: Identifiable, Hashable, Codable, Sendable {
         public let id: Profile.ID
-        public let status: AppProfileStatus
+        public let status: AppTunnelStatus
         public let onDemand: Bool
 
-        public init(id: Profile.ID, status: AppProfileStatus, onDemand: Bool) {
+        public init(id: Profile.ID, status: AppTunnelStatus, onDemand: Bool) {
             self.id = id
             self.status = status
             self.onDemand = onDemand

@@ -82,7 +82,7 @@ private extension TunnelToggle {
 }
 
 private extension TunnelToggle {
-    var tunnelProfile: ABI.AppProfileInfo? {
+    var tunnelProfile: ABI.AppTunnelInfo? {
         guard let header else { return nil }
         return tunnel.activeProfiles[header.id]
     }

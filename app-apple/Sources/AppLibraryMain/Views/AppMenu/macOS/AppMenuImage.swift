@@ -20,7 +20,7 @@ public struct AppMenuImage: View {
 }
 
 private extension AppMenuImage {
-    var connectionStatus: ABI.AppProfileStatus {
+    var connectionStatus: ABI.AppTunnelStatus {
         // TODO: #218, must be per-tunnel
         guard let id = tunnel.activeProfiles.first?.value.id else {
             return .disconnected
@@ -29,7 +29,7 @@ private extension AppMenuImage {
     }
 }
 
-private extension ABI.AppProfileStatus {
+private extension ABI.AppTunnelStatus {
     var imageName: Theme.MenuImageName {
         switch self {
         case .connected:

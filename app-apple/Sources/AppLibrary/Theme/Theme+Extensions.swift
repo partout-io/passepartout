@@ -58,7 +58,7 @@ extension TunnelObservable {
     }
 }
 
-private extension ABI.AppProfileStatus {
+private extension ABI.AppTunnelStatus {
     var imageName: Theme.ImageName? {
         switch self {
         case .connected:

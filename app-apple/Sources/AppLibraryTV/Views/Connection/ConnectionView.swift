@@ -118,8 +118,8 @@ private extension ConnectionView {
 
 private extension ConnectionView {
     func onTunnelActiveProfile(
-        old: ABI.AppProfileInfo?,
-        new: ABI.AppProfileInfo?
+        old: ABI.AppTunnelInfo?,
+        new: ABI.AppTunnelInfo?
     ) {
         // on profile connection, hide side panel and focus on connect button
         if new?.status == .connecting {
