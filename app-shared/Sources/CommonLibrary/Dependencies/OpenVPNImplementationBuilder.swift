@@ -35,7 +35,7 @@ private extension OpenVPNImplementationBuilder {
             fatalError("Unexpected cachesURL type")
         }
         let ctx = PartoutLoggerContext(parameters.profile.id)
-        var options = OpenVPN.ConnectionOptions()
+        var options = OpenVPNConnection.Options()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
         return try OpenVPNConnection(
