@@ -42,10 +42,7 @@ target_include_directories(passepartout_shared PRIVATE ${ABI_INCLUDE})
 # Depend on Partout
 add_dependencies(passepartout_shared partout)
 target_include_directories(passepartout_shared PRIVATE ${OUTPUT_DIR}/partout)
-target_link_libraries(passepartout_shared PRIVATE
-    partout
-    SWONInterface
-)
+target_link_libraries(passepartout_shared PRIVATE partout)
 
 # Distribute with dependencies
 if(ANDROID)
