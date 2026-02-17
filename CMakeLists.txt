@@ -19,33 +19,12 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
     set(TOOLCHAIN_ARGS
         -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${CMAKE_TOOLCHAIN_FILE}
     )
-    set(SWIFTLY_ARGS
-        -DCMAKE_Swift_COMPILER=${CMAKE_CURRENT_SOURCE_DIR}/submodules/partout/toolchains/swiftc-wrapper.sh
-    )
 endif()
-
-# Build Partout dependency
-set(PARTOUT_ARGS
-    ${BUILD_ARGS}
-    ${TOOLCHAIN_ARGS}
-    -DPP_BUILD_OUTPUT=${OUTPUT_DIR}
-    -DPP_BUILD_LIBRARY=ON
-    -DPP_BUILD_USE_OPENSSL=ON
-    -DPP_BUILD_USE_WGGO=ON
-)
-ExternalProject_Add(
-    PartoutProject
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodules/partout
-    CMAKE_ARGS ${PARTOUT_ARGS}
-    INSTALL_COMMAND ""
-    BUILD_ALWAYS 0
-)
 
 # Build Passepartout shared library
 set(ABI_ARGS
     ${BUILD_ARGS}
     ${TOOLCHAIN_ARGS}
-    ${SWIFTLY_ARGS}
     -DOUTPUT_DIR=${OUTPUT_DIR}
     -DDIST_DIR=${DIST_DIR}
 )
@@ -54,7 +33,6 @@ ExternalProject_Add(PassepartoutShared
     CMAKE_ARGS ${ABI_ARGS}
     INSTALL_COMMAND ""
     BUILD_ALWAYS 1
-    DEPENDS PartoutProject
 )
 
 # wxWidgets only required to build executable

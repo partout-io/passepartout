@@ -16,6 +16,13 @@ set_target_properties(passepartout_shared PROPERTIES
     OUTPUT_NAME passepartout
 )
 
+# Build Partout dependency
+set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
+set(PP_BUILD_LIBRARY ON)
+set(PP_BUILD_USE_OPENSSL ON)
+set(PP_BUILD_USE_WGGO ON)
+add_subdirectory(partout)
+
 # Set exclusions and symbols for non-Apple builds
 if(NOT APPLE)
     target_compile_options(passepartout_shared PRIVATE
@@ -30,6 +37,7 @@ foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
 target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
+add_dependencies(passepartout_shared partout)
 
 # Import Partout as a Swift module plus the modulemap for the C ABI
 set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibraryCore_C/include)
