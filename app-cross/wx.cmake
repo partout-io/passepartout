@@ -1,9 +1,13 @@
-target_link_directories(passepartout PRIVATE
-    ${OUTPUT_DIR}/wx/lib
-)
 target_compile_options(passepartout PRIVATE
     -D_FILE_OFFSET_BITS=64
     -DwxDEBUG_LEVEL=0
+)
+target_link_directories(passepartout PRIVATE
+    ${OUTPUT_DIR}/wx/lib
+)
+target_link_libraries(passepartout PRIVATE
+    stdc++
+    m
 )
 
 # wx configuration is highly inconsistent across platforms
