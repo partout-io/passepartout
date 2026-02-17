@@ -1,29 +1,31 @@
 set(CMAKE_C_FLAGS "-Wall -W -pedantic")
 set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
-# Define target and output
+# Define app target
 add_executable(passepartout "")
-add_executable(passepartout-tunnel "")
+add_dependencies(passepartout wxWidgets passepartout_shared)
 set_target_properties(passepartout PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
+file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.cc)
+target_sources(passepartout PRIVATE ${APP_SOURCES})
+target_include_directories(passepartout PRIVATE ${OUTPUT_DIR})
+target_link_libraries(passepartout PRIVATE passepartout_shared)
+
+# Define tunnel target
+add_executable(passepartout-tunnel "")
+add_dependencies(passepartout-tunnel passepartout_shared)
 set_target_properties(passepartout-tunnel PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
-
-# Compile app files
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.cc)
 file(GLOB_RECURSE TUNNEL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/*.c)
-target_sources(passepartout PRIVATE ${APP_SOURCES})
 target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
-
-# Include app headers plus former ABI outputs
-target_include_directories(passepartout PRIVATE ${OUTPUT_DIR})
 target_include_directories(passepartout-tunnel PRIVATE ${OUTPUT_DIR})
+target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
 
 if(WIN32)
     # Build WinMain app
@@ -41,10 +43,6 @@ elseif(LINUX)
         SKIP_BUILD_RPATH OFF
     )
 endif()
-
-# Link to shared library
-target_link_libraries(passepartout PRIVATE passepartout_shared)
-target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
 
 # Link to wxWidgets
 include("wx.cmake")

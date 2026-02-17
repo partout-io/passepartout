@@ -55,6 +55,4 @@ if(BUILD_APP)
         INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
     )
     add_subdirectory(app-cross)
-    add_dependencies(passepartout wxWidgets passepartout_shared)
-    add_dependencies(passepartout-tunnel passepartout_shared)
 endif()
