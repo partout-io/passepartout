@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.27)
-project(PassepartoutCross LANGUAGES C CXX)
-
 set(CMAKE_C_FLAGS "-Wall -W -pedantic")
 set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
@@ -46,12 +43,8 @@ elseif(LINUX)
 endif()
 
 # Link to shared library
-find_library(LIBSHARED REQUIRED
-    NAMES passepartout libpassepartout
-    HINTS ${OUTPUT_DIR}
-)
-target_link_libraries(passepartout PRIVATE ${LIBSHARED})
-target_link_libraries(passepartout-tunnel PRIVATE ${LIBSHARED})
+target_link_libraries(passepartout PRIVATE passepartout_shared)
+target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
 
 # Link to wxWidgets
 include("wx.cmake")

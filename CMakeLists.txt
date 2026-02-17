@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(Passepartout)
+project(Passepartout LANGUAGES Swift C CXX)
 include(ExternalProject)
 
 option(BUILD_APP "Build app executable" 0)
@@ -28,12 +28,7 @@ set(ABI_ARGS
     -DOUTPUT_DIR=${OUTPUT_DIR}
     -DDIST_DIR=${DIST_DIR}
 )
-ExternalProject_Add(PassepartoutShared
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app-shared
-    CMAKE_ARGS ${ABI_ARGS}
-    INSTALL_COMMAND ""
-    BUILD_ALWAYS 1
-)
+add_subdirectory(app-shared)
 
 # wxWidgets only required to build executable
 if(BUILD_APP)
@@ -59,11 +54,7 @@ if(BUILD_APP)
         BUILD_COMMAND ""
         INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
     )
-    ExternalProject_Add(PassepartoutApp
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app-cross
-        CMAKE_ARGS ${BUILD_ARGS} -DOUTPUT_DIR=${OUTPUT_DIR} -DDIST_DIR=${DIST_DIR}
-        INSTALL_COMMAND ""
-        BUILD_ALWAYS 1
-        DEPENDS wxWidgets PassepartoutShared
-    )
+    add_subdirectory(app-cross)
+    add_dependencies(passepartout wxWidgets passepartout_shared)
+    add_dependencies(passepartout-tunnel passepartout_shared)
 endif()

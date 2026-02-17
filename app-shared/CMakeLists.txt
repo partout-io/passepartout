@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.27)
-project(PassepartoutShared LANGUAGES Swift)
-
 # Configure as shared library
 add_library(passepartout_shared SHARED "")
 file(GLOB_RECURSE PSP_SOURCES
