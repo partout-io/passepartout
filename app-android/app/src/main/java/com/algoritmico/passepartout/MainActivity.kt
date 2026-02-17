@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
 
         val wrapper = NativeLibraryWrapper()
         val version = wrapper.partoutVersion()
-        wrapper.initialize("")
         Log.e("Passepartout", ">>> $version")
 
         setContent {

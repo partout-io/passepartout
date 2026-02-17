@@ -16,9 +16,6 @@ class DummyVPNService: VpnService() {
 
     override fun onCreate() {
         super.onCreate()
-        val cachePath = cacheDir.absolutePath
-        Log.e("Passepartout", ">>> $cachePath")
-        library.initialize(cachePath)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -34,7 +31,6 @@ class DummyVPNService: VpnService() {
 
     override fun onDestroy() {
         stopVpn()
-        library.deinitialize()
         super.onDestroy()
     }
 
@@ -63,8 +59,9 @@ class DummyVPNService: VpnService() {
 //                val tun = builder.establish()
 //            tun?.fd
 
-        Log.e("Passepartout", ">>> Starting daemon")
-        library.daemonStart(testProfileString, vpnWrapper)
+        val cachePath = cacheDir.absolutePath
+        Log.e("Passepartout", ">>> Starting daemon (cache: $cachePath)")
+        library.daemonStart(cachePath, testProfileString, vpnWrapper)
         Log.e("Passepartout", ">>> Started daemon")
 
         isRunning = true
