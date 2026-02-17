@@ -49,8 +49,7 @@ set(ABI_ARGS
     -DOUTPUT_DIR=${OUTPUT_DIR}
     -DDIST_DIR=${DIST_DIR}
 )
-ExternalProject_Add(
-    PassepartoutShared
+ExternalProject_Add(PassepartoutShared
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app-shared
     CMAKE_ARGS ${ABI_ARGS}
     INSTALL_COMMAND ""
@@ -75,16 +74,14 @@ if(BUILD_APP)
         -DwxUSE_LIBWEBP=OFF
         -DwxUSE_WEBVIEW=OFF
     )
-    ExternalProject_Add(
-        wxWidgets
+    ExternalProject_Add(wxWidgets
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodules/wx
         CMAKE_GENERATOR ${WX_GENERATOR}
         CMAKE_ARGS ${WX_ARGS}
         BUILD_COMMAND ""
         INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
     )
-    ExternalProject_Add(
-        PassepartoutApp
+    ExternalProject_Add(PassepartoutApp
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app-cross
         CMAKE_ARGS ${BUILD_ARGS} -DOUTPUT_DIR=${OUTPUT_DIR} -DDIST_DIR=${DIST_DIR}
         INSTALL_COMMAND ""
