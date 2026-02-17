@@ -37,65 +37,17 @@ foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
 target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
-add_dependencies(passepartout_shared partout)
 
-# Import Partout as a Swift module plus the modulemap for the C ABI
+# Import the modulemap for the C ABI
 set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibraryCore_C/include)
-target_include_directories(passepartout_shared PRIVATE
-    ${ABI_INCLUDE}
-    ${OUTPUT_DIR}/partout
-    ${OUTPUT_DIR}/partout/modules
-)
-target_link_directories(passepartout_shared PRIVATE
-    ${OUTPUT_DIR}/partout
-)
+target_include_directories(passepartout_shared PRIVATE ${ABI_INCLUDE})
 
-# Link Partout static library
-message(STATUS "Searching for libraries in ${OUTPUT_DIR}")
-# Android CMake can't seem to find static libraries, smh
-if(ANDROID)
-    target_link_libraries(passepartout_shared PRIVATE
-        partout
-        partout_c
-    )
-else()
-    find_library(LIBPARTOUT REQUIRED
-        NAMES partout libpartout
-        HINTS ${OUTPUT_DIR}/partout
-    )
-    find_library(LIBPARTOUT_C REQUIRED
-        NAMES partout_c libpartout_c
-        HINTS ${OUTPUT_DIR}/partout
-    )
-    target_link_libraries(passepartout_shared PRIVATE
-        ${LIBPARTOUT}
-        ${LIBPARTOUT_C}
-    )
-endif()
-
-# Link dynamic vendors
-#
-# CAVEATS:
-# - libs order MATTERS!
-# - use explicit paths to avoid linking issues at runtime
-# - find_library() works around OS-specific extensions
-#
-# For example, passing "ssl" and "crypto" would likely link
-# to the system-wide OpenSSL and result in obscure crashes
-# at runtime due to binary mismatch
-#
-# Damn it, find_library() is unreliable
-if(WIN32)
-    set(LIBEXT lib)
-elseif(APPLE)
-    set(LIBEXT dylib)
-else()
-    set(LIBEXT so)
-endif()
+# Depend on Partout
+add_dependencies(passepartout_shared partout)
+target_include_directories(passepartout_shared PRIVATE ${OUTPUT_DIR}/partout)
 target_link_libraries(passepartout_shared PRIVATE
-    ${OUTPUT_DIR}/openssl/lib/libssl.${LIBEXT}
-    ${OUTPUT_DIR}/openssl/lib/libcrypto.${LIBEXT}
-    ${OUTPUT_DIR}/wg-go/lib/libwg-go.${LIBEXT}
+    partout
+    SWONInterface
 )
 
 # Distribute with dependencies
@@ -103,6 +55,11 @@ if(ANDROID)
     set(STRIP llvm-strip)
 else()
     set(STRIP ${CMAKE_STRIP})
+endif()
+if(APPLE)
+    set(LIBEXT dylib)
+else()
+    set(LIBEXT so)
 endif()
 add_custom_command(
     TARGET passepartout_shared
