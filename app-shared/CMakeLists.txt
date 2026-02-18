@@ -59,6 +59,7 @@ add_custom_command(
     TARGET passepartout_shared
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
+        -DABI_INCLUDE=${ABI_INCLUDE}
         -DOUTPUT_DIR=${OUTPUT_DIR}
         -DDIST_DIR=${DIST_DIR}
         -DSTRIP=${STRIP} -DLIBEXT=${LIBEXT}
