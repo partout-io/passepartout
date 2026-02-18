@@ -13,21 +13,7 @@ set(DIST_DIR "dist")
 message(STATUS "Option OUTPUT_DIR = ${OUTPUT_DIR}")
 message(STATUS "Option BUILD_APP = ${BUILD_APP}")
 
-# Propagate CMake args
-set(BUILD_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-if(DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(TOOLCHAIN_ARGS
-        -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${CMAKE_TOOLCHAIN_FILE}
-    )
-endif()
-
 # Build Passepartout shared library
-set(ABI_ARGS
-    ${BUILD_ARGS}
-    ${TOOLCHAIN_ARGS}
-    -DOUTPUT_DIR=${OUTPUT_DIR}
-    -DDIST_DIR=${DIST_DIR}
-)
 add_subdirectory(app-shared)
 
 # wxWidgets only required to build executable
