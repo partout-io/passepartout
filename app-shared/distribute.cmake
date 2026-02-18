@@ -11,7 +11,6 @@ file(GLOB LIBPASSEPARTOUT "${OUTPUT_DIR}/*passepartout*")
 file(GLOB LIBSSL "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libssl*")
 file(GLOB LIBCRYPTO "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libcrypto*")
 file(GLOB LIBWGGO "${OUTPUT_DIR}/wg-go/lib/*wg-go*")
-file(COPY ${ABI_INCLUDE}/passepartout.h DESTINATION ${OUTPUT_DIR})
 file(COPY ${LIBPASSEPARTOUT} DESTINATION ${APP_DIR})
 file(COPY ${LIBSSL} DESTINATION ${APP_DIR})
 file(COPY ${LIBCRYPTO} DESTINATION ${APP_DIR})
@@ -21,7 +20,6 @@ file(COPY ${LIBWGGO} DESTINATION ${APP_DIR})
 file(GLOB CLEANUP
     ${APP_DIR}/*.a
     ${APP_DIR}/*.d
-    ${APP_DIR}/*.h
     ${APP_DIR}/*.lib
     # Keep for debugging
     ${APP_DIR}/*.exp

@@ -3,7 +3,6 @@ set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
 # Define app target
 add_executable(passepartout "")
-add_dependencies(passepartout wxWidgets passepartout_shared)
 set_target_properties(passepartout PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
@@ -16,7 +15,6 @@ target_link_libraries(passepartout PRIVATE passepartout_shared)
 
 # Define tunnel target
 add_executable(passepartout-tunnel "")
-add_dependencies(passepartout-tunnel passepartout_shared)
 set_target_properties(passepartout-tunnel PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}

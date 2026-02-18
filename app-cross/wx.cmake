@@ -1,3 +1,4 @@
+add_dependencies(passepartout wxWidgets)
 target_compile_options(passepartout PRIVATE
     -D_FILE_OFFSET_BITS=64
     -DwxDEBUG_LEVEL=0
