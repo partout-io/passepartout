@@ -20,7 +20,7 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
         -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${CMAKE_TOOLCHAIN_FILE}
     )
     set(SWIFTLY_ARGS
-        -DCMAKE_Swift_COMPILER=${CMAKE_CURRENT_SOURCE_DIR}/submodules/partout/scripts/swiftc-wrapper.sh
+        -DCMAKE_Swift_COMPILER=${CMAKE_CURRENT_SOURCE_DIR}/submodules/partout/toolchains/swiftc-wrapper.sh
     )
 endif()
 
