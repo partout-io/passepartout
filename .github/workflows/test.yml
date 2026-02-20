@@ -28,6 +28,8 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
       - run: |
+          ci/fetch-swon.sh
+      - run: |
           ci/run-shared-tests.sh
       - run: |
           ci/run-apple-tests.sh
