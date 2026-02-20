@@ -1,1 +1,1 @@
-* Clean up deprecated code (#1682)
+* Update Partout with SWON and better CMake layout (#1698)
