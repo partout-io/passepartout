@@ -42,6 +42,8 @@ jobs:
       - name: Validate translations
         run: |
           scripts/clean-translations.sh
+      - run: |
+          ci/fetch-swon.sh
       - name: Run Apple tests
         run: |
           ci/run-apple-tests.sh
