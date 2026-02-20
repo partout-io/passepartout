@@ -157,14 +157,24 @@ private extension ProfileObservable {
     }
 
     func reloadHeaders(with search: String) {
-        filteredHeaders = allHeaders
+        let lowerSearch = search.lowercased()
+        let newFilteredHeaders = allHeaders
             .map(\.value)
             .filter {
                 if !search.isEmpty {
-                    return $0.name.lowercased().contains(search.lowercased())
+                    return $0.name.lowercased().contains(lowerSearch)
                 }
                 return true
             }
+
+        // Guard against duplicated updates
+        guard Set(newFilteredHeaders) != Set(filteredHeaders) else {
+            pspLog(.profiles, .info, "No change in profiles, skip update from ProfileManager")
+            return
+        }
+
+        // Only process/sort after confirming change
+        filteredHeaders = newFilteredHeaders
             .sorted()
 
         pspLog(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
