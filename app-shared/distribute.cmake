@@ -21,7 +21,6 @@ file(COPY ${LIBWGGO} DESTINATION ${APP_DIR})
 file(GLOB CLEANUP
     ${APP_DIR}/*.a
     ${APP_DIR}/*.d
-    ${APP_DIR}/*.h
     ${APP_DIR}/*.lib
     # Keep for debugging
     ${APP_DIR}/*.exp

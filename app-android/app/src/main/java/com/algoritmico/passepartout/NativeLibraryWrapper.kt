@@ -5,9 +5,7 @@ import io.partout.PartoutVpnWrapper
 
 class NativeLibraryWrapper {
     external fun partoutVersion(): String
-    external fun initialize(cacheDir: String)
-    external fun deinitialize()
-    external fun daemonStart(profile: String, vpn: PartoutVpnWrapper): Boolean
+    external fun daemonStart(cacheDir: String, profile: String, vpn: PartoutVpnWrapper): Boolean
     external fun daemonStop(): Unit
 
     companion object {
