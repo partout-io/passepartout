@@ -8,6 +8,9 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileSplitView: View, Routable {
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     let profileObservable: ProfileObservable
 
     let profileEditor: ProfileEditor
@@ -67,13 +70,15 @@ extension ProfileSplitView {
 
     @ToolbarContentBuilder
     func toolbarContent() -> some ToolbarContent {
-        ToolbarItemGroup {
-            ProfileExportButton(editor: profileEditor)
-            ProfileShareButton(editor: profileEditor)
-            PurchaseRequiredView(
-                requiring: [.sharing],
-                reason: $paywallReason
-            )
+        if appConfiguration.distributionTarget.supportsPaidFeatures {
+            ToolbarItemGroup {
+                ProfileExportButton(editor: profileEditor)
+                ProfileShareButton(editor: profileEditor)
+                PurchaseRequiredView(
+                    requiring: [.sharing],
+                    reason: $paywallReason
+                )
+            }
         }
         ToolbarItem(placement: .cancellationAction) {
             Button(Strings.Global.Actions.cancel, role: .cancel) {

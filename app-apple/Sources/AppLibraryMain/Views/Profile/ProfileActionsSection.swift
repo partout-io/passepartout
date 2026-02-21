@@ -9,6 +9,9 @@ struct ProfileActionsSection: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.dismissProfile)
     private var dismissProfile
 
@@ -24,10 +27,12 @@ struct ProfileActionsSection: View {
 
     var body: some View {
 #if os(iOS)
-        Section {
-            exportButton
-            shareButton
-            purchaseSharingButton
+        if appConfiguration.distributionTarget.supportsPaidFeatures {
+            Section {
+                exportButton
+                shareButton
+                purchaseSharingButton
+            }
         }
         Section {
             uuidView
