@@ -72,8 +72,7 @@ private extension DebugLogContentView {
     func entryView(for index: Int) -> some View {
         Text(lines[index])
             .themeMultiLine(true)
-            .scrollableOnTV()
-            .buttonStyle(.plain)
+            .scrollableOnTV(isText: true)
             .font(.caption)
             .frame(maxWidth: .infinity, alignment: .leading)
             .id(index)

@@ -67,8 +67,7 @@ private extension GenericCreditsView {
                                 Text(rows[index])
                                     .frame(maxWidth: .infinity, alignment: .topLeading)
                                     .monospaced()
-                                    .scrollableOnTV()
-                                    .buttonStyle(.plain)
+                                    .scrollableOnTV(isText: true)
                             }
                         }
                         .padding()
