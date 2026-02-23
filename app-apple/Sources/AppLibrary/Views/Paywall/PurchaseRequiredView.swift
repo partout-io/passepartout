@@ -9,6 +9,9 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     let features: Set<ABI.AppFeature>?
 
     var force: Bool = false
@@ -17,7 +20,7 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     let content: () -> Content
 
     public var body: some View {
-        if !iapObservable.isBeta && (force || !isEligible) {
+        if appConfiguration.distributionTarget.supportsIAP && !iapObservable.isBeta && (force || !isEligible) {
             content()
         }
     }

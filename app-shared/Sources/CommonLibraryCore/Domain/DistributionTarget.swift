@@ -38,8 +38,4 @@ extension ABI.DistributionTarget {
     public var supportsPaidFeatures: Bool {
         self != .developerID
     }
-
-    public var usesExperimentalPOSIXResolver: Bool {
-        self == .developerID
-    }
 }
