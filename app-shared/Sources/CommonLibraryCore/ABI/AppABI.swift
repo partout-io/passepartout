@@ -372,10 +372,8 @@ extension AppABI {
             // Propagate active config flags to tunnel via preferences
             kvStore.preferences.configFlags = configManager.activeFlags
 
-            // Disable .relaxedVerification if ABI.ConfigFlag disallows it
-            if !configManager.isActive(.allowsRelaxedVerification) {
-                kvStore.set(false, forAppPreference: .relaxedVerification)
-            }
+            // Disable .relaxedVerification if ConfigManager disallows it
+            kvStore.constrainRelaxedVerification(to: configManager)
         }
     }
 }
