@@ -19,7 +19,7 @@ rm -rf $cpp_path/libs/swift-*
 
 libs_path="$cpp_path/libs/passepartout-${passepartout_sha1}/arm64-v8a"
 mkdir -p $libs_path
-cp -f $cmake_bin_path/../passepartout.h $headers_path
+cp -f $cmake_bin_path/passepartout.h $headers_path
 cp -f $cmake_bin_path/libpassepartout.so $libs_path
 cp -f $cmake_bin_path/libssl.so $libs_path
 cp -f $cmake_bin_path/libcrypto.so $libs_path

@@ -25,11 +25,22 @@ target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
 target_include_directories(passepartout-tunnel PRIVATE ${OUTPUT_DIR})
 target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
 
-if(WIN32)
-    # Build WinMain app
-    set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
+if(APPLE)
+    # Mangle macOS @rpath
+    set_target_properties(passepartout PROPERTIES
+        MACOSX_RPATH ON
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@loader_path"
+        INSTALL_NAME_DIR "@rpath"
+    )
+    set_target_properties(passepartout-tunnel PROPERTIES
+        MACOSX_RPATH ON
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@loader_path"
+        INSTALL_NAME_DIR "@rpath"
+    )
 elseif(LINUX)
-    # Configure Linux RPATH stuff
+    # Mangle Linux RPATH
     set_target_properties(passepartout PROPERTIES
         BUILD_RPATH "\$ORIGIN"
         INSTALL_RPATH "\$ORIGIN"
@@ -40,6 +51,9 @@ elseif(LINUX)
         INSTALL_RPATH "\$ORIGIN"
         SKIP_BUILD_RPATH OFF
     )
+elseif(WIN32)
+    # Build WinMain app
+    set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
 # Link to wxWidgets

@@ -21,14 +21,12 @@ set(PP_BUILD_USE_WGGO ON)
 add_subdirectory(../submodules/partout partout)
 
 # Set exclusions and symbols for non-Apple builds
+set(PSP_EXCLUSIONS CommonData.*)
 if(NOT APPLE)
     target_compile_options(passepartout_shared PRIVATE
         -DPSP_CROSS
     )
-    set(PSP_EXCLUSIONS
-        CommonData.*
-        CommonLibraryApple.*
-    )
+    list(APPEND PSP_EXCLUSIONS CommonLibraryApple.*)
 endif()
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
@@ -43,6 +41,15 @@ target_include_directories(passepartout_shared PUBLIC ${ABI_INCLUDE})
 add_dependencies(passepartout_shared partout)
 target_include_directories(passepartout_shared PRIVATE ${OUTPUT_DIR}/partout)
 target_link_libraries(passepartout_shared PRIVATE partout)
+
+# Configure Linux RPATH stuff
+if(LINUX)
+    set_target_properties(passepartout_shared PROPERTIES
+        BUILD_RPATH "\$ORIGIN"
+        INSTALL_RPATH "\$ORIGIN"
+        SKIP_BUILD_RPATH OFF
+    )
+endif()
 
 # Distribute with dependencies
 if(ANDROID)

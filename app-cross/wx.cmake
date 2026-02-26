@@ -6,10 +6,10 @@ target_compile_options(passepartout PRIVATE
 target_link_directories(passepartout PRIVATE
     ${OUTPUT_DIR}/wx/lib
 )
-target_link_libraries(passepartout PRIVATE
-    stdc++
-    m
-)
+# Linux seems to complain about this
+if(LINUX)
+    target_link_libraries(passepartout PRIVATE stdc++ m)
+endif()
 
 # wx configuration is highly inconsistent across platforms
 if(APPLE)
