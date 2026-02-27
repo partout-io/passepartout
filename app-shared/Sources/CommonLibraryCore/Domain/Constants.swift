@@ -18,35 +18,35 @@ extension ABI {
             public let home: URL
 
             public var api: URL {
-                home.miniAppending(path: "api/")
+                home.appending(path: "api/")
             }
 
             public var faq: URL {
-                home.miniAppending(path: "faq/")
+                home.appending(path: "faq/")
             }
 
             public var blog: URL {
-                home.miniAppending(path: "blog/")
+                home.appending(path: "blog/")
             }
 
             public var disclaimer: URL {
-                home.miniAppending(path: "disclaimer/")
+                home.appending(path: "disclaimer/")
             }
 
             public var privacyPolicy: URL {
-                home.miniAppending(path: "privacy/")
+                home.appending(path: "privacy/")
             }
 
             public var donate: URL {
-                home.miniAppending(path: "donate/")
+                home.appending(path: "donate/")
             }
 
             public var config: URL {
-                home.miniAppending(path: "config/v1/bundle.json")
+                home.appending(path: "config/v1/bundle.json")
             }
 
             public var betaConfig: URL {
-                home.miniAppending(path: "config/v1/bundle-beta.json")
+                home.appending(path: "config/v1/bundle-beta.json")
             }
 
             public let subreddit: URL
@@ -62,11 +62,11 @@ extension ABI {
 
         public struct GitHub: Decodable, Sendable {
             public func urlForIssue(_ issue: Int) -> URL {
-                issues.miniAppending(path: issue.description)
+                issues.appending(path: issue.description)
             }
 
             public func urlForChangelog(ofVersion version: String) -> URL {
-                raw.miniAppending(path: "refs/tags/v\(version)/CHANGELOG.txt")
+                raw.appending(path: "refs/tags/v\(version)/CHANGELOG.txt")
             }
 
             public let discussions: URL

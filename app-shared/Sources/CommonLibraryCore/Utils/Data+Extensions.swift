@@ -9,7 +9,7 @@ extension Data {
         let url = FileManager.default.makeTemporaryURL(filename: filename)
         do {
             try write(toFile: url.filePath())
-            return url as? URL
+            return url
         } catch {
             return nil
         }

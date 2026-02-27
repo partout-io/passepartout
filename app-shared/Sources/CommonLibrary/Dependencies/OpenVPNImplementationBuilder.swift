@@ -31,9 +31,7 @@ private extension OpenVPNImplementationBuilder {
         module: OpenVPNModule
     ) throws -> Connection {
         // TODO: #218, this directory must be per-profile
-        guard let cachesURL = FileManager.default.miniTemporaryDirectory as? URL else {
-            fatalError("Unexpected cachesURL type")
-        }
+        let cachesURL = FileManager.default.temporaryDirectory
         let ctx = PartoutLoggerContext(parameters.profile.id)
         var options = OpenVPNConnection.Options()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0

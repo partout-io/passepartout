@@ -180,7 +180,7 @@ extension DefaultAPIMapper {
     }
 
     func data(for resource: API.REST.Resource) async throws -> Data {
-        let url = baseURL.miniAppending(path: resource.path)
+        let url = baseURL.appending(path: resource.path)
         pp_log_g(.providers, .info, "Fetch data for \(resource): \(url)")
         let cfg: URLSessionConfiguration = .default
         cfg.requestCachePolicy = .reloadRevalidatingCacheData
