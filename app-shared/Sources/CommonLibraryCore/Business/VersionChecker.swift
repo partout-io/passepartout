@@ -16,7 +16,7 @@ public final class VersionChecker {
 
     private var isPending = false
 
-    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.VersionEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.VersionEvent>
 
     public init(
         kvStore: KeyValueStore,

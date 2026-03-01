@@ -34,7 +34,7 @@ public actor CoreDataRepository<CD, T>: NSObject, Repository, NSFetchedResultsCo
 
     private nonisolated let onResultError: (@Sendable (Error) -> CoreDataResultAction)?
 
-    private nonisolated let entitiesSubject: CurrentValueStream<UniqueID, EntitiesResult<T>>
+    private nonisolated let entitiesSubject: CurrentValueStream<EntitiesResult<T>>
 
     private var resultsController: NSFetchedResultsController<CD>?
 

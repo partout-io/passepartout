@@ -10,7 +10,7 @@ import Observation
 public final class WebReceiverObservable {
     private let abi: AppABIWebReceiverProtocol
     public private(set) var website: ABI.WebsiteWithPasscode?
-    public let uploadFailure: PassthroughStream<UniqueID, Error>
+    public let uploadFailure: PassthroughStream<Error>
 
     public var isStarted: Bool {
         website != nil

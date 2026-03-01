@@ -5,9 +5,9 @@
 import Partout
 
 public final class InMemoryAPIRepository: APIRepositoryReader, APIRepositoryWriter {
-    private let providersSubject: CurrentValueStream<UniqueID, [Provider]>
+    private let providersSubject: CurrentValueStream<[Provider]>
 
-    private let infrastructuresSubject: CurrentValueStream<UniqueID, [ProviderID: ProviderInfrastructure]>
+    private let infrastructuresSubject: CurrentValueStream<[ProviderID: ProviderInfrastructure]>
 
     public init() {
         providersSubject = CurrentValueStream([])

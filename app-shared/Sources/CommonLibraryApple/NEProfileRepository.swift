@@ -11,7 +11,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
     private let title: @Sendable (Profile) -> String
 
-    private let profilesSubject: CurrentValueStream<UniqueID, [Profile]>
+    private let profilesSubject: CurrentValueStream<[Profile]>
 
     private var managersSubscription: Task<Void, Never>?
 

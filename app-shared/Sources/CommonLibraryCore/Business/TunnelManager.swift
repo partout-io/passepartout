@@ -20,7 +20,7 @@ public final class TunnelManager {
 
     private let interval: TimeInterval
 
-    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.TunnelEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
     private var subscriptions: [Task<Void, Never>]
 

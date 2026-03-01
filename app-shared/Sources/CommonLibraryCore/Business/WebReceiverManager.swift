@@ -26,7 +26,7 @@ public final class WebReceiverManager {
         }
     }
 
-    public let didChange: PassthroughStream<UniqueID, ABI.WebReceiverEvent>
+    public let didChange: PassthroughStream<ABI.WebReceiverEvent>
 
     public init(
         webReceiver: WebReceiver,

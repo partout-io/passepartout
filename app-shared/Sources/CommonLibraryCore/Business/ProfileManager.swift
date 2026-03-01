@@ -50,7 +50,7 @@ public final class ProfileManager {
 
     // MARK: Publishers
 
-    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.ProfileEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.ProfileEvent>
     private var localSubscription: Task<Void, Never>?
     private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?

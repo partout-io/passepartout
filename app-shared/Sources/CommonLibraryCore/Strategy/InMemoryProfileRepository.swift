@@ -5,7 +5,7 @@
 import Partout
 
 public final class InMemoryProfileRepository: ProfileRepository {
-    private let profilesSubject: CurrentValueStream<UniqueID, [Profile]>
+    private let profilesSubject: CurrentValueStream<[Profile]>
 
     public init(profiles: [Profile] = []) {
         profilesSubject = CurrentValueStream(profiles)

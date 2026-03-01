@@ -11,7 +11,7 @@ public actor FakeInAppHelper: InAppHelper {
 
     public nonisolated let receiptReader: FakeInAppReceiptReader
 
-    private nonisolated let didUpdateSubject: PassthroughStream<UniqueID, Void>
+    private nonisolated let didUpdateSubject: PassthroughStream<Void>
 
     // set .max to skip entitled products
     public init(build: Int = .max) {

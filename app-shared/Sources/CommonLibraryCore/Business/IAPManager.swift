@@ -49,7 +49,7 @@ public final class IAPManager {
         verificationDelayMinutesBlock(isBeta)
     }
 
-    public let didChange: PassthroughStream<UniqueID, ABI.IAPEvent>
+    public let didChange: PassthroughStream<ABI.IAPEvent>
 
     private var isObserving: Bool
 

@@ -33,7 +33,7 @@ public final class ConfigManager {
 
     private var isPending = false
 
-    public nonisolated let didChange: PassthroughStream<UniqueID, ABI.ConfigEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.ConfigEvent>
 
     public init() {
         strategy = nil
