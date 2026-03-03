@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/fastlane/fastlane.git
-  revision: ba79bd2c90b8d8b3692020548e21c0e84087e296
+  revision: e6edb7b9e0dc06821f439e0b9354c8dfabeb8b8a
   specs:
     fastlane (2.232.2)
       CFPropertyList (>= 2.3, < 4.0.0)
@@ -190,7 +190,7 @@ GEM
     os (1.1.4)
     ostruct (0.6.3)
     plist (3.7.2)
-    public_suffix (7.0.2)
+    public_suffix (7.0.5)
     rake (13.3.1)
     representable (3.2.0)
       declarative (< 0.1.0)
