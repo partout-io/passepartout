@@ -22,6 +22,7 @@ add_subdirectory(../submodules/partout partout)
 
 # Set exclusions and symbols for non-Apple builds
 set(PSP_EXCLUSIONS CommonData.*)
+target_compile_options(passepartout_shared PRIVATE -DPSP_ABI)
 if(NOT APPLE)
     target_compile_options(passepartout_shared PRIVATE -DPSP_CROSS)
     list(APPEND PSP_EXCLUSIONS CommonLibraryApple.*)
