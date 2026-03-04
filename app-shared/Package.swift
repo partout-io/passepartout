@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "app-cross",
+    name: "app-shared",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v17),
