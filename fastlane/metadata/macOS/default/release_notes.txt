@@ -1,2 +1,1 @@
-* Fix unscrollable license content (#1703)
-* Hide sharing buttons if no support for paid features
+* Implement tunnel C ABI (#1708)
