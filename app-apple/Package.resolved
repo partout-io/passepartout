@@ -1,13 +1,13 @@
 {
-  "originHash" : "6a275008bb14cd0342801d6bbf2e551c848c18c063549d085dbcbc78ce1ce63d",
+  "originHash" : "d59fb68a5b40b544a0c2a445739f1d97237aa4d13f2c0c92183d9ecab049d702",
   "pins" : [
     {
       "identity" : "openssl-apple",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/openssl-apple",
       "state" : {
-        "revision" : "5eaf588e6e46677779d23f184211ae7d406ec0e7",
-        "version" : "3.5.501"
+        "revision" : "3252c9386a195198ae49911a06ef595698f48c5a",
+        "version" : "3.6.200"
       }
     },
     {
