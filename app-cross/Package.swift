@@ -24,6 +24,7 @@ let package = Package(
 )
 
 let swiftSettings: [SwiftSetting] = [
+    .define("PSP_ABI", .when(platforms: [.android, .linux, .macOS, .windows])),
     .define("PSP_CROSS", .when(platforms: [.android, .linux, .windows]))
 ]
 

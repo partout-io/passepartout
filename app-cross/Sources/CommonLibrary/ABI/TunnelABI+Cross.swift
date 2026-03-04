@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !os(iOS) && !os(tvOS)
+#if PSP_ABI
 import Partout
 
 extension TunnelABI {
