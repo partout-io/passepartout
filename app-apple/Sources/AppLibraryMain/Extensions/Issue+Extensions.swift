@@ -50,7 +50,7 @@ extension ABI.Issue {
                 .data(using: .utf8)
         }
         // Latest persisted tunnel log
-        else if let latestTunnelEntry = pspLogEntriesAvailable(at: metadata.appConfiguration.urlForTunnelLog)
+        else if let latestTunnelEntry = pspLogEntriesAvailable(at: metadata.appConfiguration.bundle.urlForTunnelLog)
             .max(by: { $0.date < $1.date }) {
             tunnelLog = try? Data(contentsOf: latestTunnelEntry.url)
         }
@@ -61,7 +61,7 @@ extension ABI.Issue {
 
         return ABI.Issue(
             comment: metadata.comment,
-            appLine: "\(Strings.Unlocalized.appName) \(metadata.appConfiguration.versionString) [\(metadata.appConfiguration.distributionTarget.rawValue)]",
+            appLine: "\(Strings.Unlocalized.appName) \(metadata.appConfiguration.bundle.versionString) [\(metadata.appConfiguration.bundle.distributionTarget.rawValue)]",
             purchasedProducts: metadata.purchasedProducts,
             providerLastUpdates: metadata.providerLastUpdates,
             appLog: appLog,

@@ -54,11 +54,12 @@ extension ABI {
 
 // MARK: - Context and Callbacks
 
-#if !PSP_CROSS
+// FIXME: #1656, C ABI, map events
+//#if !PSP_CROSS
 public typealias ABICallbackEvent = ABI.Event
-#else
-public typealias ABICallbackEvent = UnsafePointer<psp_event>
-#endif
+//#else
+//public typealias ABICallbackEvent = UnsafePointer<psp_event>
+//#endif
 
 extension ABI {
     public struct EventContext: @unchecked Sendable {

@@ -88,10 +88,10 @@ private extension ABI.Issue {
         var list: [MailComposerView.Attachment] = []
         let mimeType = Strings.Unlocalized.Issues.attachmentMimeType
         if let appLog {
-            list.append(.init(data: appLog, mimeType: mimeType, fileName: cfg.constants.log.appPath))
+            list.append(.init(data: appLog, mimeType: mimeType, fileName: cfg.bundle.appLogPath))
         }
         if let tunnelLog {
-            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: cfg.constants.log.tunnelPath))
+            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: cfg.bundle.tunnelLogPath))
         }
         return list
     }

@@ -7,17 +7,21 @@ import NetworkExtension
 import Partout
 
 extension TunnelABI {
-    public static func forProduction(
+    @MainActor
+    public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         preferences: ABI.AppPreferenceValues,
         startPreferences: ABI.AppPreferenceValues?,
+        // TODO: #218, cachesURL must be per-profile
+        cachesURL: URL,
         neProvider: NEPacketTunnelProvider
     ) async throws -> TunnelABI {
         let logFormatter = appConfiguration.newLogFormatter()
 
         // Create global registry
         let registry = appConfiguration.newTunnelRegistry(
-            preferences: preferences
+            preferences: preferences,
+            cachesURL: cachesURL
         )
 
         // Decode profile from NE provider
@@ -91,7 +95,6 @@ extension TunnelABI {
         let params = SimpleConnectionDaemon.Parameters(
             registry: registry,
             connectionParameters: connectionParameters,
-            reachability: reachability,
             messageHandler: messageHandler
         )
         let daemon = try SimpleConnectionDaemon(params: params)
@@ -105,7 +108,7 @@ extension TunnelABI {
             betaChecker: appConfiguration.newBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
-        let skipsPurchases = !appConfiguration.distributionTarget.supportsIAP || preferences.skipsPurchases
+        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences.skipsPurchases
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
         let usesRelaxedVerification = preferences.relaxedVerification

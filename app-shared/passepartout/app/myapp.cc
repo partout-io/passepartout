@@ -16,6 +16,8 @@ bool MyApp::OnInit()
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
     psp_app_init_args args = { NULL, NULL, NULL, NULL };
+    args.event_ctx = NULL;
+    args.event_cb = NULL;
     psp_app_init(&args);
     MyFrame* frame = new MyFrame();
     frame->Show(true);

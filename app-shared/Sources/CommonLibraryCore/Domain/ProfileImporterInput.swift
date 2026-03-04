@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public enum ProfileImporterInput {
+    public enum ProfileImporterInput: Sendable {
         case contents(filename: String, data: String)
 
         case file(URL)

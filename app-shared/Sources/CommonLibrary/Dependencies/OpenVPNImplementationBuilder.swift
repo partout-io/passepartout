@@ -2,16 +2,23 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if PSP_CROSS || canImport(PartoutOpenVPNConnection)
+#if USE_CMAKE || canImport(PartoutOpenVPNConnection)
 import Partout
 
 struct OpenVPNImplementationBuilder: Sendable {
     private let distributionTarget: ABI.DistributionTarget
 
+    private let cachesURL: URL
+
     private let configBlock: @Sendable () -> Set<ABI.ConfigFlag>
 
-    init(distributionTarget: ABI.DistributionTarget, configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>) {
+    init(
+        distributionTarget: ABI.DistributionTarget,
+        cachesURL: URL,
+        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
+    ) {
         self.distributionTarget = distributionTarget
+        self.cachesURL = cachesURL
         self.configBlock = configBlock
     }
 
@@ -30,8 +37,6 @@ private extension OpenVPNImplementationBuilder {
         with parameters: ConnectionParameters,
         module: OpenVPNModule
     ) throws -> Connection {
-        // TODO: #218, this directory must be per-profile
-        let cachesURL = FileManager.default.temporaryDirectory
         let ctx = PartoutLoggerContext(parameters.profile.id)
         var options = OpenVPNConnection.Options()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0

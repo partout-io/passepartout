@@ -14,6 +14,7 @@ extension AppContext {
         )
         let registry = appConfiguration.newRegistry(
             deviceId: "TestDeviceID",
+            cachesURL: FileManager.default.temporaryDirectory,
             configBlock: { [] }
         )
         let appEncoder = AppEncoder(registry: registry)

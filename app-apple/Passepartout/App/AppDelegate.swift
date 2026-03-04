@@ -19,7 +19,7 @@ final class AppDelegate: NSObject {
 
 #if os(macOS)
     lazy var macSettings = MacSettings(
-        loginItemId: context.appConfiguration.bundleString(for: .loginItemId)
+        loginItemId: context.appConfiguration.bundle.bundleString(for: .loginItemId)
     )
 #endif
 

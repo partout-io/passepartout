@@ -38,10 +38,11 @@ class DummyVPNService: VpnService() {
         val notification = createNotification()
         startForeground(1, notification)
 
-        // FIXME: read from intent
-        val inputStream = assets.open("vps-tcp.ovpn")
-//        val inputStream = assets.open("vps.conf")
-        val testProfileString = inputStream.bufferedReader().use { it.readText() }
+        var bundle = String(assets.open("bundle.json").readBytes())
+        var constants = String(assets.open("constants.json").readBytes())
+        // FIXME: read profile from intent
+//        val testProfile = String(assets.open("vps.conf").readBytes())
+        val testProfile = String(assets.open("vps-tcp.ovpn").readBytes())
 
         // FIXME: protect main socket from VPN to avoid circular
         // register daemon callback to report any new
@@ -61,7 +62,13 @@ class DummyVPNService: VpnService() {
 
         val cachePath = cacheDir.absolutePath
         Log.e("Passepartout", ">>> Starting daemon (cache: $cachePath)")
-        library.daemonStart(cachePath, testProfileString, vpnWrapper)
+        library.daemonStart(
+            bundle,
+            constants,
+            testProfile,
+            cachePath,
+            vpnWrapper
+        )
         Log.e("Passepartout", ">>> Started daemon")
 
         isRunning = true

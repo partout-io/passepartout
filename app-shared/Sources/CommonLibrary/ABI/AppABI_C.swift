@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !os(iOS) && !os(tvOS)
-
-import CommonLibraryCore_C
-import PartoutABI_C
+#if PSP_ABI
+import CommonLibrary_C
 
 nonisolated(unsafe)
 private var abi: AppABI?
@@ -31,5 +29,4 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
 public func __psp_app_deinit() {
     abi = nil
 }
-
 #endif

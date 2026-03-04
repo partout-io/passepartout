@@ -20,7 +20,7 @@ extension AppContext {
             buildTarget: .app
         )
         let kvStore = appConfiguration.newKeyValueStore()
-        let abi = AppABI.forProduction(
+        let abi = AppABI.forNetworkExtension(
             appConfiguration: appConfiguration,
             kvStore: kvStore,
             assertModule: { moduleType, registry in

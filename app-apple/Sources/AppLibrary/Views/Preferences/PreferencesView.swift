@@ -48,14 +48,14 @@ public struct PreferencesView: View {
 #endif
             pinActiveProfileSection
             dnsFallsBackSection
-            if appConfiguration.distributionTarget.supportsIAP {
+            if appConfiguration.bundle.distributionTarget.supportsIAP {
                 enablesPurchasesSection
             }
-            if appConfiguration.distributionTarget.supportsIAP &&
+            if appConfiguration.bundle.distributionTarget.supportsIAP &&
                 configObservable.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationSection
             }
-            if appConfiguration.distributionTarget.supportsCloudKit {
+            if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
             NavigationLink(advancedTitle, destination: advancedView)
@@ -180,7 +180,7 @@ public struct PreferencesView: View {
 
     public var body: some View {
         Group {
-            if appConfiguration.distributionTarget.supportsIAP &&
+            if appConfiguration.bundle.distributionTarget.supportsIAP &&
                 configObservable.isActive(.allowsRelaxedVerification) {
                 relaxedVerificationToggle
             }

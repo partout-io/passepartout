@@ -1,2 +1,2 @@
 #!/bin/bash
-cd app-shared && swift test
+cd app-shared && FOR_TESTING=1 swift test

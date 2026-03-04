@@ -27,7 +27,7 @@ struct ProfileActionsSection: View {
 
     var body: some View {
 #if os(iOS)
-        if appConfiguration.distributionTarget.supportsPaidFeatures {
+        if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
             Section {
                 exportButton
                 shareButton

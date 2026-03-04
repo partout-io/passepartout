@@ -47,7 +47,7 @@ struct DiagnosticsView: View {
             }
             liveLogSection
             profilesSection
-            if appConfiguration.distributionTarget.supportsAppGroups {
+            if appConfiguration.bundle.distributionTarget.supportsAppGroups {
                 tunnelLogsSection
             }
             if canReportIssue {
@@ -148,7 +148,7 @@ private extension DiagnosticsView {
     var canReportIssue: Bool {
         AppCommandLine.contains(.withReportIssue) ||
             iapObservable.isEligibleForFeedback ||
-            appConfiguration.distributionTarget.canAlwaysReportIssue ||
+            appConfiguration.bundle.distributionTarget.canAlwaysReportIssue ||
             isUsingExperimentalFeatures
     }
 
@@ -164,7 +164,7 @@ private extension DiagnosticsView {
     }
 
     func defaultTunnelLogs() async -> [ABI.LogEntry] {
-        let url = appConfiguration.urlForTunnelLog
+        let url = appConfiguration.bundle.urlForTunnelLog
         return await Task.detached {
             pspLogEntriesAvailable(at: url)
         }.value
@@ -186,7 +186,7 @@ private extension DiagnosticsView {
     }
 
     func removeTunnelLogs() {
-        pspLogEntriesPurge(at: appConfiguration.urlForTunnelLog)
+        pspLogEntriesPurge(at: appConfiguration.bundle.urlForTunnelLog)
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

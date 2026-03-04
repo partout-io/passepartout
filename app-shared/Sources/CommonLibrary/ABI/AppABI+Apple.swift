@@ -11,7 +11,7 @@ import CoreData
 import Partout
 
 extension AppABI {
-    public static func forProduction(
+    public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore,
         assertModule: (ModuleType, Registry) -> Void,
@@ -47,9 +47,11 @@ extension AppABI {
 
         // MARK: Registry
 
+        let cachesURL = FileManager.default.temporaryDirectory
         let registry = appConfiguration.newAppRegistry(
             configManager: configManager,
-            kvStore: kvStore
+            kvStore: kvStore,
+            cachesURL: cachesURL
         )
 
         // Ensure that all module builders can be rendered in the profile editor
@@ -78,8 +80,8 @@ extension AppABI {
         )
         let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
             let cloudKitIdentifier: String?
-            if isEnabled && appConfiguration.distributionTarget.supportsCloudKit {
-                cloudKitIdentifier = appConfiguration.bundleString(for: .cloudKitId)
+            if isEnabled && appConfiguration.bundle.distributionTarget.supportsCloudKit {
+                cloudKitIdentifier = appConfiguration.bundle.bundleString(for: .cloudKitId)
             } else {
                 cloudKitIdentifier = nil
             }
@@ -111,7 +113,7 @@ extension AppABI {
         // MARK: Profiles and Tunnel (NE)
 
         let appEncoder = AppEncoder(registry: registry)
-        let tunnelIdentifier = appConfiguration.bundleString(for: .tunnelId)
+        let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             registry: registry,
@@ -175,7 +177,7 @@ extension AppABI {
         let versionChecker = appConfiguration.newVersionChecker(
             kvStore: kvStore,
             downloadURL: {
-                switch appConfiguration.distributionTarget {
+                switch appConfiguration.bundle.distributionTarget {
                 case .appStore:
                     return appConfiguration.constants.websites.appStoreDownload
                 case .developerID:
@@ -216,7 +218,7 @@ extension AppABI {
             // Toggle CloudKit sync based on .sharing eligibility
             let remoteStore = newRemoteStore(isRemoteImportingEnabled)
 
-            if appConfiguration.distributionTarget.supportsCloudKit {
+            if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 // @Published
                 profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
 

@@ -8,26 +8,29 @@ import Partout
 public enum Resources {
     public static func newAppConfiguration(
         distributionTarget: ABI.DistributionTarget,
-        buildTarget: ABI.BuildTarget
+        buildTarget: ABI.AppBundle.BuildTarget
     ) -> ABI.AppConfiguration {
         let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         if isPreview {
-            return ABI.AppConfiguration(constants: constants, distributionTarget: .appStore)
+            let bundle = ABI.AppBundle(distributionTarget: .appStore)
+            return ABI.AppConfiguration(bundle: bundle, constants: constants)
         }
         // WARNING: This fails from package itself, e.g. in previews
-        guard let bundle = BundleConfiguration(.main, key: "AppConfig") else {
+        guard let bundleConfiguration = BundleConfiguration(.main, key: "AppConfig") else {
             fatalError("Missing main bundle")
         }
-        return ABI.AppConfiguration(
-            constants: constants,
+        let bundle = ABI.AppBundle(
             distributionTarget: distributionTarget,
             buildTarget: buildTarget,
-            bundle: bundle
+            bundle: bundleConfiguration,
+            appLogPath: "app.log",
+            tunnelLogPath: "tunnel.log"
         )
+        return ABI.AppConfiguration(bundle: bundle, constants: constants)
     }
 
     // Do not expose this to views, use AppConfiguration.constants from environment
-    static let constants = Bundle.module.unsafeDecode(ABI.Constants.self, filename: "Constants")
+    static let constants = Bundle.module.unsafeDecode(ABI.AppConstants.self, filename: "Constants")
 
     nonisolated(unsafe)
     public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "Credits")

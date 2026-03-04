@@ -54,7 +54,7 @@ private extension DebugLogView {
 
 extension DebugLogView {
     public init(
-        withAppParameters parameters: ABI.Constants.Log,
+        withAppParameters parameters: ABI.AppConstants.Log,
         content: @escaping ([String]) -> Content
     ) {
         self.init {

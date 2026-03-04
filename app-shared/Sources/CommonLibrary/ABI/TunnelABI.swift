@@ -8,13 +8,13 @@ public final class TunnelABI: TunnelABIProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
         let skipsPurchases: Bool
-        let verificationParameters: ABI.Constants.Tunnel.Verification.Parameters
+        let verificationParameters: ABI.AppConstants.Tunnel.Verification.Parameters
         let usesRelaxedVerification: Bool
 
         public init(
             manager: IAPManager,
             skipsPurchases: Bool,
-            verificationParameters: ABI.Constants.Tunnel.Verification.Parameters,
+            verificationParameters: ABI.AppConstants.Tunnel.Verification.Parameters,
             usesRelaxedVerification: Bool
         ) {
             self.manager = manager
@@ -30,8 +30,10 @@ public final class TunnelABI: TunnelABIProtocol {
     private let logFormatter: LogFormatter
     private let originalProfile: Profile
 
+    nonisolated(unsafe)
     private var verifierSubscription: Task<Void, Error>?
 
+    @MainActor
     public init(
         daemon: ConnectionDaemon,
         environment: TunnelEnvironment,
@@ -52,7 +54,7 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public func start(isInteractive: Bool) async throws {
-        try trackContext()
+        try await trackContext()
 
         do {
             // Check hold flag and hang the tunnel if set
@@ -108,11 +110,11 @@ public final class TunnelABI: TunnelABIProtocol {
         verifierSubscription?.cancel()
         await daemon.stop()
         flushLogs()
-        untrackContext()
+        await untrackContext()
     }
 
     public func sendMessage(_ messageData: Data) async -> Data? {
-        pspLog(.core, .debug, "Handle PTP message")
+        pspLog(.core, .debug, "Handle tunnel message")
         do {
             let input = try JSONDecoder().decode(Message.Input.self, from: messageData)
             let output = try await daemon.sendMessage(input)
@@ -130,7 +132,7 @@ public final class TunnelABI: TunnelABIProtocol {
         }
     }
 
-    public func cancel(_ error: Error?) {
+    public nonisolated func cancel(_ error: Error?) {
         flushLogs()
     }
 
@@ -146,12 +148,19 @@ public final class TunnelABI: TunnelABIProtocol {
 // MARK: - Tracking and Logging
 
 private extension TunnelABI {
+    @globalActor
+    actor ContextActor {
+        static let shared = ContextActor()
+    }
+
+    @ContextActor
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
             pspLog(.core, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
+    @ContextActor
     func trackContext() throws {
         // TODO: #218, keep this until supported
         guard Self.activeTunnels.isEmpty else {
@@ -161,6 +170,7 @@ private extension TunnelABI {
         Self.activeTunnels.insert(daemon.profile.id)
     }
 
+    @ContextActor
     func untrackContext() {
         pspLog(.core, .info, "Untrack context: \(daemon.profile.id)")
         Self.activeTunnels.remove(daemon.profile.id)
@@ -174,7 +184,7 @@ private extension TunnelABI {
         of profile: Profile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
-        params: ABI.Constants.Tunnel.Verification.Parameters,
+        params: ABI.AppConstants.Tunnel.Verification.Parameters,
         isRelaxed: Bool
     ) async {
         var attempts = params.attempts
@@ -185,7 +195,7 @@ private extension TunnelABI {
             do {
                 pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
-                try iapManager.verify(profile)
+                try await iapManager.verify(profile)
             } catch {
                 if isRelaxed {
                     // Mitigate the StoreKit inability to report errors, sometimes it
@@ -193,7 +203,8 @@ private extension TunnelABI {
                     // cases, retry a few times before failing
                     if attempts > 0 {
                         attempts -= 1
-                        pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(iapManager.purchasedProducts))")
+                        let products = await iapManager.purchasedProducts
+                        pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
                         try? await Task.sleep(interval: params.retryInterval)
                         continue
                     }

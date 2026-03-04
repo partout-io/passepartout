@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public enum AppUserLevel: Int, Sendable {
+    public enum AppUserLevel: Int, Decodable, Sendable {
         case undefined = -1
         case freemium = 0
         case beta = 1

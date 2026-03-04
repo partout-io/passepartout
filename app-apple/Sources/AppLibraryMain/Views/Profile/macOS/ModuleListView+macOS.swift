@@ -108,7 +108,7 @@ private extension ModuleListView {
     var addModuleMenu: some View {
         AddModuleMenu(
             moduleTypes: availableTypes,
-            withProviderType: appConfiguration.distributionTarget.supportsPaidFeatures
+            withProviderType: appConfiguration.bundle.distributionTarget.supportsPaidFeatures
         ) {
             flow?.onNewModule($0)
         } label: {
@@ -119,7 +119,7 @@ private extension ModuleListView {
 
 private extension ModuleListView {
     var availableTypes: [ModuleType] {
-        profileEditor.availableModuleTypes(forTarget: appConfiguration.distributionTarget)
+        profileEditor.availableModuleTypes(forTarget: appConfiguration.bundle.distributionTarget)
     }
 
     var requiredGeneralFeatures: Set<ABI.AppFeature> {
