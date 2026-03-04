@@ -145,43 +145,47 @@ package.targets.append(contentsOf: [
 
 // MARK: Cross-platform app (development)
 
-package.targets.append(contentsOf: [
-    .executableTarget(
-        name: "passepartout",
-        dependencies: ["CommonLibrary"],
-        path: "passepartout/app",
-        cxxSettings: [
-            .unsafeFlags([
-                "-D__WXOSX_COCOA__",
-                "-D_FILE_OFFSET_BITS=64",
-                "-DwxDEBUG_LEVEL=0",
-                "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/include/wx-3.3",
-                "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/lib/wx/include/osx_cocoa-unicode-3.3"
-            ])
-        ],
-        linkerSettings: [
-            .unsafeFlags(["-L/opt/homebrew/lib"]),
-            .linkedFramework("IOKit"),
-            .linkedFramework("Carbon"),
-            .linkedFramework("Cocoa"),
-            .linkedFramework("QuartzCore"),
-            .linkedFramework("AudioToolbox"),
-            .linkedFramework("System"),
-            .linkedFramework("OpenGL"),
-            .linkedLibrary("wx_osx_cocoau_xrc-3.3"),
-            .linkedLibrary("wx_osx_cocoau_html-3.3"),
-            .linkedLibrary("wx_osx_cocoau_qa-3.3"),
-            .linkedLibrary("wx_osx_cocoau_core-3.3"),
-            .linkedLibrary("wx_baseu_xml-3.3"),
-            .linkedLibrary("wx_baseu_net-3.3"),
-            .linkedLibrary("wx_baseu-3.3")
-        ]
-    ),
-    .executableTarget(
-        name: "passepartout-tunnel",
-        dependencies: ["CommonLibrary"],
-        path: "passepartout/tunnel",
-        resources: [.copy("args")],
-        cSettings: [.define("USE_SWIFTPM")]
-    )
-])
+import Foundation
+
+if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
+    package.targets.append(contentsOf: [
+        .executableTarget(
+            name: "passepartout",
+            dependencies: ["CommonLibrary"],
+            path: "passepartout/app",
+            cxxSettings: [
+                .unsafeFlags([
+                    "-D__WXOSX_COCOA__",
+                    "-D_FILE_OFFSET_BITS=64",
+                    "-DwxDEBUG_LEVEL=0",
+                    "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/include/wx-3.3",
+                    "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/lib/wx/include/osx_cocoa-unicode-3.3"
+                ])
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-L/opt/homebrew/lib"]),
+                .linkedFramework("IOKit"),
+                .linkedFramework("Carbon"),
+                .linkedFramework("Cocoa"),
+                .linkedFramework("QuartzCore"),
+                .linkedFramework("AudioToolbox"),
+                .linkedFramework("System"),
+                .linkedFramework("OpenGL"),
+                .linkedLibrary("wx_osx_cocoau_xrc-3.3"),
+                .linkedLibrary("wx_osx_cocoau_html-3.3"),
+                .linkedLibrary("wx_osx_cocoau_qa-3.3"),
+                .linkedLibrary("wx_osx_cocoau_core-3.3"),
+                .linkedLibrary("wx_baseu_xml-3.3"),
+                .linkedLibrary("wx_baseu_net-3.3"),
+                .linkedLibrary("wx_baseu-3.3")
+            ]
+        ),
+        .executableTarget(
+            name: "passepartout-tunnel",
+            dependencies: ["CommonLibrary"],
+            path: "passepartout/tunnel",
+            resources: [.copy("args")],
+            cSettings: [.define("USE_SWIFTPM")]
+        )
+    ])
+}
