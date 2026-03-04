@@ -20,7 +20,7 @@ public struct PurchaseRequiredView<Content>: View where Content: View {
     let content: () -> Content
 
     public var body: some View {
-        if appConfiguration.distributionTarget.supportsIAP && !iapObservable.isBeta && (force || !isEligible) {
+        if appConfiguration.bundle.distributionTarget.supportsIAP && !iapObservable.isBeta && (force || !isEligible) {
             content()
         }
     }

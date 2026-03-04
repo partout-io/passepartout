@@ -29,11 +29,7 @@ public final class AppEncoder: Sendable {
 
     public func writeToFile(_ profile: Profile) throws -> String {
         let json = try json(fromProfile: profile)
-#if !PSP_CROSS
         let data = Data(json.utf8)
-#else
-        let data = Data([UInt8](json.utf8))
-#endif
         let filename = "\(profile.id.uuidString).json"
         let path = FileManager.default.makeTemporaryURL(filename: filename).filePath()
         try data.write(toFile: path)

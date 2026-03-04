@@ -24,13 +24,14 @@ extension ABI.AppConfiguration {
                 isBeta: isBeta,
                 fetcher: fetcher
             ),
-            buildNumber: buildNumber
+            buildNumber: bundle.buildNumber
         )
     }
 
     public func newAppRegistry(
         configManager: ConfigManager,
-        kvStore: KeyValueStore
+        kvStore: KeyValueStore,
+        cachesURL: URL
     ) -> Registry {
         newRegistry(
             deviceId: {
@@ -43,6 +44,7 @@ extension ABI.AppConfiguration {
                 pspLog(.core, .info, "Device ID (new): \(newId)")
                 return newId
             }(),
+            cachesURL: cachesURL,
             configBlock: { [weak configManager, weak kvStore] in
                 guard let configManager, let kvStore else { return [] }
                 return kvStore.preferences.enabledFlags(of: configManager.activeFlags)
@@ -51,12 +53,14 @@ extension ABI.AppConfiguration {
     }
 
     public func newTunnelRegistry(
-        preferences: ABI.AppPreferenceValues
+        preferences: ABI.AppPreferenceValues,
+        cachesURL: URL
     ) -> Registry {
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
         pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         return newRegistry(
             deviceId: preferences.deviceId ?? "MissingDeviceID",
+            cachesURL: cachesURL,
             configBlock: {
                 preferences.enabledFlags()
             }
@@ -70,7 +74,7 @@ extension ABI.AppConfiguration {
         betaChecker: BetaChecker
     ) -> IAPManager {
         IAPManager(
-            customUserLevel: customUserLevel,
+            customUserLevel: bundle.customUserLevel,
             inAppHelper: inAppHelper,
             receiptReader: receiptReader,
             betaChecker: betaChecker,
@@ -82,6 +86,7 @@ extension ABI.AppConfiguration {
         )
     }
 
+    @Sendable
     public func newProductsAtBuild(purchase: ABI.OriginalPurchase) -> Set<ABI.AppProduct> {
 #if os(iOS)
         if purchase.isUntil(.freemium) {
@@ -154,7 +159,7 @@ extension ABI.AppConfiguration {
         return VersionChecker(
             kvStore: kvStore,
             strategy: versionStrategy,
-            currentVersion: versionNumber,
+            currentVersion: bundle.versionNumber,
             downloadURL: downloadURL
         )
     }
@@ -170,7 +175,12 @@ extension ABI.AppConfiguration {
 
 #if canImport(CommonLibraryApple)
 
-extension ABI.AppConfiguration {
+extension ABI.AppBundle {
+    public enum BuildTarget: Sendable {
+        case app
+        case tunnel
+    }
+
     public enum BundleKey: String, CaseIterable, Decodable, Sendable {
         // These cases are all strings
         case appStoreId
@@ -184,7 +194,7 @@ extension ABI.AppConfiguration {
         // This is an integer number
         case userLevel
 
-        static func requiredKeys(for target: ABI.BuildTarget) -> Set<Self> {
+        static func requiredKeys(for target: BuildTarget) -> Set<Self> {
             switch target {
             case .app: Set(allCases).subtracting([.userLevel])
             case .tunnel: [.groupId, .keychainGroupId, .tunnelId]
@@ -193,15 +203,15 @@ extension ABI.AppConfiguration {
     }
 
     public init(
-        constants: ABI.Constants,
         distributionTarget: ABI.DistributionTarget,
-        buildTarget: ABI.BuildTarget,
-        bundle: BundleConfiguration
+        buildTarget: BuildTarget,
+        bundle: BundleConfiguration,
+        appLogPath: String,
+        tunnelLogPath: String
     ) {
         let displayName = bundle.displayName
         let versionNumber = bundle.versionNumber
         let buildNumber = bundle.buildNumber
-        let versionString = bundle.versionString
 
         // Ensure that all required keys are present (will crash on first missing)
         let requiredBundleKeys = BundleKey.requiredKeys(for: buildTarget)
@@ -225,8 +235,8 @@ extension ABI.AppConfiguration {
             return url
         }()
 
-        let urlForAppLog = appGroupURL.forCaches.appending(path: constants.log.appPath)
-        let urlForTunnelLog = {
+        let urlToAppLogs = appGroupURL.forCaches
+        let urlToTunnelLogs = {
             let baseURL: URL
             if distributionTarget.supportsAppGroups {
                 baseURL = appGroupURL.forCaches
@@ -239,7 +249,7 @@ extension ABI.AppConfiguration {
                     log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
                 }
             }
-            return baseURL.appending(path: constants.log.tunnelPath)
+            return baseURL
         }()
 
         let urlForReview: URL?
@@ -256,21 +266,21 @@ extension ABI.AppConfiguration {
         }
 
         self.init(
-            constants: constants,
             distributionTarget: distributionTarget,
             displayName: displayName,
             versionNumber: versionNumber,
             buildNumber: buildNumber,
-            versionString: versionString,
             customUserLevel: customUserLevel,
             bundleStrings: bundleStrings,
-            urlForAppLog: urlForAppLog,
-            urlForTunnelLog: urlForTunnelLog,
+            appLogPath: appLogPath,
+            tunnelLogPath: tunnelLogPath,
+            urlToAppLogs: urlToAppLogs,
+            urlToTunnelLogs: urlToTunnelLogs,
             urlForReview: urlForReview
         )
     }
 
-    public func bundleString(for key: ABI.AppConfiguration.BundleKey) -> String {
+    public func bundleString(for key: ABI.AppBundle.BundleKey) -> String {
         guard let value = bundleStrings[key.rawValue] else {
             fatalError("Missing bundle value in JSON for: \(key.rawValue)")
         }
@@ -279,14 +289,14 @@ extension ABI.AppConfiguration {
 }
 
 private extension BundleConfiguration {
-    func string(for key: ABI.AppConfiguration.BundleKey) -> String {
+    func string(for key: ABI.AppBundle.BundleKey) -> String {
         guard let value: String = value(forKey: key.rawValue) else {
             fatalError("Missing main bundle key: \(key.rawValue)")
         }
         return value
     }
 
-    func integerIfPresent(for key: ABI.AppConfiguration.BundleKey) -> Int? {
+    func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {
         value(forKey: key.rawValue)
     }
 }
@@ -356,7 +366,7 @@ extension ABI.AppConfiguration {
     }
 
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        if distributionTarget.supportsAppGroups {
+        if bundle.distributionTarget.supportsAppGroups {
             return newTunnelEnvironment(profileId: profileId)
         } else {
             guard let neStrategy = strategy as? NETunnelStrategy else {
@@ -367,7 +377,7 @@ extension ABI.AppConfiguration {
     }
 
     public func newTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        let appGroup = bundleString(for: .groupId)
+        let appGroup = bundle.bundleString(for: .groupId)
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
         }
@@ -375,17 +385,17 @@ extension ABI.AppConfiguration {
     }
 
     public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, registry: Registry) -> NEProtocolCoder {
-        if distributionTarget.supportsAppGroups {
+        if bundle.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
                 registry: registry,
-                keychain: AppleKeychain(ctx, group: bundleString(for: .keychainGroupId))
+                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
                 registry: registry
             )
         }
@@ -400,20 +410,20 @@ extension ABI.AppConfiguration {
         StoreKitHelper(
             products: ABI.AppProduct.all,
             inAppIdentifier: {
-                let iapBundlePrefix = bundleString(for: .iapBundlePrefix)
+                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
                 return "\(iapBundlePrefix).\($0.rawValue)"
             }
         )
     }
 
     public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
-        guard distributionTarget == .developerID else {
+        guard bundle.distributionTarget == .developerID else {
             return nil
         }
         return SystemExtensionManager(
             identifier: tunnelIdentifier,
-            version: versionNumber,
-            build: buildNumber
+            version: bundle.versionNumber,
+            build: bundle.buildNumber
         )
     }
 

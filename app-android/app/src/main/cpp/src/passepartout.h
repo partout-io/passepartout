@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-const char *psp_partout_version();
+const char *psp_partout_version(void);
 int psp_example_sum(int a, int b);
 
 /* Common structures. */
@@ -17,6 +17,7 @@ int psp_example_sum(int a, int b);
 typedef const char *psp_json;
 //psp_json psp_json_new(const char *);
 //void psp_json_free(psp_json);
+char *psp_readfile(const char *rel_path, const char *parent);
 
 /* Errors. */
 //typedef enum {
@@ -79,13 +80,16 @@ void psp_app_init(const psp_app_init_args *args);
 
 /* Daemon initialization. */
 typedef struct {
-    const char *app_configuration;
+    const char *bundle;
+    const char *constants;
+    const char *preferences;
     const char *cache_dir;
     const char *profile;
     bool is_interactive;
+    bool is_daemon;
     void *jni_wrapper;
 } psp_tunnel_start_args;
-bool psp_tunnel_start(const psp_tunnel_start_args *args, void (*callback)(int));
-void psp_tunnel_stop(void (*callback)());
+bool psp_tunnel_start(const psp_tunnel_start_args *args, void (*callback)(int, const char *));
+void psp_tunnel_stop(void (*callback)(void));
 
 #endif

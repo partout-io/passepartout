@@ -4,8 +4,7 @@
 
 #if !os(iOS) && !os(tvOS)
 
-import CommonLibraryCore_C
-import PartoutABI_C
+import CommonLibrary_C
 
 nonisolated(unsafe)
 private var abi: AppABI?

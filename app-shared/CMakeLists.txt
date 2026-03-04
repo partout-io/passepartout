@@ -23,9 +23,7 @@ add_subdirectory(../submodules/partout partout)
 # Set exclusions and symbols for non-Apple builds
 set(PSP_EXCLUSIONS CommonData.*)
 if(NOT APPLE)
-    target_compile_options(passepartout_shared PRIVATE
-        -DPSP_CROSS
-    )
+    target_compile_options(passepartout_shared PRIVATE -DPSP_CROSS)
     list(APPEND PSP_EXCLUSIONS CommonLibraryApple.*)
 endif()
 foreach(pattern ${PSP_EXCLUSIONS})
@@ -33,8 +31,13 @@ foreach(pattern ${PSP_EXCLUSIONS})
 endforeach()
 target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
 
+# Link the C ABI code
+file(GLOB_RECURSE PSP_C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/*.c)
+add_library(passepartout_shared_c STATIC ${PSP_C_SOURCES})
+target_link_libraries(passepartout_shared PUBLIC passepartout_shared_c)
+
 # Import the modulemap for the C ABI
-set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibraryCore_C/include)
+set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include)
 target_include_directories(passepartout_shared PUBLIC ${ABI_INCLUDE})
 
 # Depend on Partout
@@ -74,3 +77,30 @@ add_custom_command(
         -DSTRIP=${STRIP} -DLIBEXT=${LIBEXT}
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )
+
+# wxWidgets only required to build executable
+if(BUILD_APP)
+    if(WIN32)
+        set(WX_GENERATOR "Visual Studio 17 2022")
+    else()
+        set(WX_GENERATOR ${CMAKE_GENERATOR})
+    endif()
+    set(WX_ARGS
+        -DCMAKE_INSTALL_PREFIX=${OUTPUT_DIR}/wx
+        -DwxBUILD_SHARED=OFF
+        -DwxBUILD_TESTS=OFF
+        -DwxBUILD_SAMPLES=OFF
+        -DwxBUILD_DEMOS=OFF
+        -DwxBUILD_PRECOMP=OFF
+        -DwxUSE_LIBWEBP=OFF
+        -DwxUSE_WEBVIEW=OFF
+    )
+    ExternalProject_Add(wxWidgets
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/wx
+        CMAKE_GENERATOR ${WX_GENERATOR}
+        CMAKE_ARGS ${WX_ARGS}
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
+    )
+    add_subdirectory(passepartout)
+endif()

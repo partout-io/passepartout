@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if PSP_CROSS || canImport(PartoutWireGuardConnection)
+#if USE_CMAKE || canImport(PartoutWireGuardConnection)
 import Partout
 
 struct WireGuardImplementationBuilder: Sendable {

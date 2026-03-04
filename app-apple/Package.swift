@@ -73,7 +73,7 @@ let package = Package(
         .target(
             name: "AppResources",
             dependencies: [
-                .product(name: "CommonLibrary", package: "app-shared")
+                .product(name: "CommonLibrary", package: "app-cross")
             ],
             resources: [
                 .process("Resources")

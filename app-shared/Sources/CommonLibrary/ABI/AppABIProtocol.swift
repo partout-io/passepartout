@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore_C
+import CommonLibrary_C
 import Partout
 
 // MARK: Domains
@@ -25,7 +25,6 @@ public protocol AppABIIAPProtocol: Sendable {
     var verificationDelayMinutes: Int { get }
 }
 
-@MainActor
 public protocol AppABILoggerProtocol: Sendable {
     func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
     func flushLogs()

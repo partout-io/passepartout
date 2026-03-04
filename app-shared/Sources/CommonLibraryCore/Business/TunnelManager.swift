@@ -108,7 +108,7 @@ extension TunnelManager {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func currentLog(parameters: ABI.Constants.Log) async -> [ABI.AppLogLine] {
+    public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.AppLogLine] {
         guard let anyProfile = tunnel.activeProfiles.first?.value else {
             return []
         }

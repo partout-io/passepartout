@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public enum DistributionTarget: String, Sendable {
+    public enum DistributionTarget: String, Decodable, Sendable {
         case appStore
 
         case developerID

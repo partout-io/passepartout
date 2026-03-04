@@ -92,7 +92,7 @@ private extension ProfileStorageSection {
 
 private extension ProfileStorageSection {
     var showsSharing: Bool {
-        appConfiguration.distributionTarget.supportsCloudKit
+        appConfiguration.bundle.distributionTarget.supportsCloudKit
     }
 
     var sharingRequirements: Set<ABI.AppFeature> {

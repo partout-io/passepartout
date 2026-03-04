@@ -52,7 +52,7 @@ public struct AppMenu: View {
 
 private extension AppMenu {
     var versionItem: some View {
-        Text(appConfiguration.versionString)
+        Text(appConfiguration.bundle.versionString)
     }
 
     var updateButton: some View {
@@ -103,7 +103,7 @@ private extension AppMenu {
     }
 
     var quitButton: some View {
-        Button(Strings.Views.AppMenu.Items.quit(appConfiguration.displayName), action: quit)
+        Button(Strings.Views.AppMenu.Items.quit(appConfiguration.bundle.displayName), action: quit)
     }
 }
 

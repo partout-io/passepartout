@@ -21,7 +21,7 @@ public func pspLog(
     pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
 }
 
-public func pspLogCurrent(_ parameters: ABI.Constants.Log) -> [String] {
+public func pspLogCurrent(_ parameters: ABI.AppConstants.Log) -> [String] {
     PartoutLogger.default.currentLog(
         sinceLast: parameters.sinceLast,
         maxLevel: parameters.options.maxLevel
@@ -71,28 +71,28 @@ public func pspLogRegister(
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
             let logger = PartoutLogger.logger(
-                to: appConfiguration.urlForAppLog,
+                to: appConfiguration.bundle.urlForAppLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
                 mapper: mapper
             )
             PartoutLogger.register(logger)
             logger.logPreamble(
-                versionString: appConfiguration.versionString,
+                versionString: appConfiguration.bundle.versionString,
                 parameters: appConfiguration.constants.log
             )
         }
         return .global
     case .tunnelGlobal:
         let logger = PartoutLogger.tunnelLogger(
-            to: appConfiguration.urlForTunnelLog,
+            to: appConfiguration.bundle.urlForTunnelLog,
             preferences: preferences,
             parameters: appConfiguration.constants.log,
             mapper: mapper
         )
         PartoutLogger.register(logger)
         logger.logPreamble(
-            versionString: appConfiguration.versionString,
+            versionString: appConfiguration.bundle.versionString,
             parameters: appConfiguration.constants.log
         )
         return .global
@@ -100,7 +100,7 @@ public func pspLogRegister(
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
             let logger = PartoutLogger.tunnelLogger(
-                to: appConfiguration.urlForTunnelLog,
+                to: appConfiguration.bundle.urlForTunnelLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
                 mapper: mapper
@@ -117,7 +117,7 @@ private extension PartoutLogger {
     static func logger(
         to url: URL,
         preferences: ABI.AppPreferenceValues,
-        parameters: ABI.Constants.Log,
+        parameters: ABI.AppConstants.Log,
         mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
@@ -133,7 +133,7 @@ private extension PartoutLogger {
     static func tunnelLogger(
         to url: URL,
         preferences: ABI.AppPreferenceValues,
-        parameters: ABI.Constants.Log,
+        parameters: ABI.AppConstants.Log,
         mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
@@ -150,7 +150,7 @@ private extension PartoutLogger {
         return builder.build()
     }
 
-    func logPreamble(versionString: String, parameters: ABI.Constants.Log) {
+    func logPreamble(versionString: String, parameters: ABI.AppConstants.Log) {
         let level = parameters.options.maxLevel
         appendLog(level, message: "")
         appendLog(level, message: "--- BEGIN ---")
@@ -173,7 +173,7 @@ private extension PartoutLogger {
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
         to url: URL,
-        parameters: ABI.Constants.Log,
+        parameters: ABI.AppConstants.Log,
         logsPrivateData: Bool,
         mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) {

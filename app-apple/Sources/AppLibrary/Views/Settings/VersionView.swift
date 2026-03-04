@@ -75,7 +75,7 @@ private extension VersionView {
     }
 
     var subtitle: String {
-        appConfiguration.versionString
+        appConfiguration.bundle.versionString
     }
 
     var message: String {

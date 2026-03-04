@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibraryCore_C
+import CommonLibrary_C
 import Partout
 
-@MainActor
 public protocol TunnelABIProtocol: AppABILoggerProtocol, Sendable {
     func start(isInteractive: Bool) async throws
     func stop() async

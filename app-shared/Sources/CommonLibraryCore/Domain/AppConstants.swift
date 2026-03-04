@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public struct Constants: Decodable, Sendable {
+    public struct AppConstants: Decodable, Sendable {
         public struct Containers: Decodable, Sendable {
             public let local: String
 
@@ -169,10 +169,6 @@ extension ABI {
             }
 
             public let formatter: Formatter
-
-            public let appPath: String
-
-            public let tunnelPath: String
 
             public let sinceLast: TimeInterval
 

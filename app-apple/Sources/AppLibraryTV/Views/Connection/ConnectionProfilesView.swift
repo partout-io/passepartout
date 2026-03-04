@@ -93,7 +93,7 @@ private extension ConnectionProfilesView {
 #Preview("Empty") {
     ContentPreview(profileObservable: .forPreviews)
         .task {
-            try? await ProfileObservable.forPreviews.removeAll()
+            await ProfileObservable.forPreviews.removeAll()
         }
 }
 

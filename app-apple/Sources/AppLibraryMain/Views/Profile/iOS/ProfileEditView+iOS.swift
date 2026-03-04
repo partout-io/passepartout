@@ -125,7 +125,7 @@ private extension ProfileEditView {
     var addModuleMenu: some View {
         AddModuleMenu(
             moduleTypes: availableTypes,
-            withProviderType: appConfiguration.distributionTarget.supportsPaidFeatures
+            withProviderType: appConfiguration.bundle.distributionTarget.supportsPaidFeatures
         ) {
             flow?.onNewModule($0)
         } label: {
@@ -136,7 +136,7 @@ private extension ProfileEditView {
 
 private extension ProfileEditView {
     var availableTypes: [ModuleType] {
-        profileEditor.availableModuleTypes(forTarget: appConfiguration.distributionTarget)
+        profileEditor.availableModuleTypes(forTarget: appConfiguration.bundle.distributionTarget)
     }
 
     func moveModules(from offsets: IndexSet, to newOffset: Int) {

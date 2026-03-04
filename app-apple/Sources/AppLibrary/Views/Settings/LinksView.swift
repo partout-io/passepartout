@@ -26,7 +26,7 @@ public struct LinksView: View {
 }
 
 private extension LinksView {
-    var constants: ABI.Constants {
+    var constants: ABI.AppConstants {
         appConfiguration.constants
     }
 
@@ -37,7 +37,7 @@ private extension LinksView {
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !appConfiguration.distributionTarget.supportsIAP && !isBeta {
+            if !appConfiguration.bundle.distributionTarget.supportsIAP && !isBeta {
                 WebDonationLink()
             }
         }

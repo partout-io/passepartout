@@ -74,13 +74,13 @@ public final class AppABI: Sendable {
 
         subscriptions = []
 
-        iapManager.isEnabled = appConfiguration.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
+        iapManager.isEnabled = appConfiguration.bundle.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
             kvStore: kvStore,
-            supportsIAP: appConfiguration.distributionTarget.supportsIAP
+            supportsIAP: appConfiguration.bundle.distributionTarget.supportsIAP
         )
         profile = AppABIProfile(
             profileManager: profileManager,
@@ -300,7 +300,7 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
 
 private struct AppABITunnel: AppABITunnelProtocol {
     let tunnelManager: TunnelManager
-    let logParameters: ABI.Constants.Log
+    let logParameters: ABI.AppConstants.Log
 
     func connect(to profile: Profile, force: Bool) async throws {
         try await tunnelManager.connect(with: profile, force: force)

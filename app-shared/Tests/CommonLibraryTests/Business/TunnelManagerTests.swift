@@ -147,7 +147,7 @@ extension TunnelManagerTests {
 
         // affected if .active
         let tunnelActive: TunnelStatus = .active
-        env.setEnvironmentValue(ConnectionStatus.connected, forKey: key)
+        env.setEnvironmentValue(.connected, forKey: key)
         #expect(tunnelActive.withEnvironment(env) == .active)
         allConnectionStatuses
             .forEach {

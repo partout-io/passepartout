@@ -175,6 +175,6 @@ private extension ConnectionView {
     )
     .withMockEnvironment()
     .task {
-        try? await ProfileObservable.forPreviews.removeAll()
+        await ProfileObservable.forPreviews.removeAll()
     }
 }

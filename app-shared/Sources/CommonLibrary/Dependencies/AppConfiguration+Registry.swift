@@ -7,6 +7,7 @@ import Partout
 extension ABI.AppConfiguration {
     public func newRegistry(
         deviceId: String,
+        cachesURL: URL,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
     ) -> Registry {
         let customHandlers: [ModuleHandler] = [
@@ -14,24 +15,25 @@ extension ABI.AppConfiguration {
         ]
         var allImplementations: [ModuleImplementation] = []
         var providerResolvers: [ProviderModuleResolver] = []
-#if PSP_CROSS || canImport(PartoutOpenVPNConnection)
+#if USE_CMAKE || canImport(PartoutOpenVPNConnection)
         allImplementations.append(
             OpenVPNImplementationBuilder(
-                distributionTarget: distributionTarget,
+                distributionTarget: bundle.distributionTarget,
+                cachesURL: cachesURL,
                 configBlock: configBlock
             ).build()
         )
-#if !PSP_CROSS
+#if !USE_CMAKE
         providerResolvers.append(OpenVPNProviderResolver())
 #endif
 #endif
-#if PSP_CROSS || canImport(PartoutWireGuardConnection)
+#if USE_CMAKE || canImport(PartoutWireGuardConnection)
         allImplementations.append(
             WireGuardImplementationBuilder(
                 configBlock: configBlock
             ).build()
         )
-#if !PSP_CROSS
+#if !USE_CMAKE
         providerResolvers.append(WireGuardProviderResolver(deviceId: deviceId))
 #endif
 #endif
