@@ -133,7 +133,7 @@ n+p25b79tbI2iIoa4VqhkFAXpCdujNc/j7f+5wT+PsandEi3vckAvvZjhmTdreev
 +nB/J2uzyFLr+6MUrYkPlOEUOnNImqDeXE/ocPFsTHiigV1I+1CUUgLr2MGuFTFm
 ZpQyQ6V9oqNU6av+hsD11GYpV8wi4QqWjeBOQayXJ7vcwqE3igyoBI2vMrpwfLlJ
 K127pRfgZn0=
------END CERTIFICATE----
+-----END CERTIFICATE-----
 `;
 
     const tlsAuthKey = `
