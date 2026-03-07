@@ -33,13 +33,8 @@ public func __psp_tunnel_start(
     let isDaemon = args.pointee.is_daemon
     nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
     // Start tunnel ABI (synchronously)
-#if !canImport(Darwin)
-    let semaphore = DispatchSemaphore(value: 0)
-#endif
     Task { @Sendable @BusinessActor in
-#if !canImport(Darwin)
-        defer { semaphore.signal() }
-#endif
+        defer { pspUnlock() }
         do {
             let abi = try TunnelABI.forCrossPlatform(
                 appBundleData: appBundleData,
@@ -57,14 +52,7 @@ public func __psp_tunnel_start(
             fatalError("Unable to start tunnel: \(error)")
         }
     }
-#if canImport(Darwin)
-    if isDaemon { CFRunLoopRun() }
-#else
-    // Wait for ABI to start
-    semaphore.wait()
-    // Block main thread indefinitely if daemon
-    if isDaemon { semaphore.wait() }
-#endif
+    pspLock(isDaemon: isDaemon)
 }
 
 @_cdecl("psp_tunnel_stop")
@@ -75,4 +63,24 @@ public func __psp_tunnel_stop(callback: (@convention(c) () -> Void)?) {
         callback?()
     }
 }
+
+private let semaphore = DispatchSemaphore(value: 0)
+
+private func pspLock(isDaemon: Bool) {
+#if canImport(Darwin)
+    if isDaemon { CFRunLoopRun() }
+#else
+    // Wait for ABI to start
+    semaphore.wait()
+    // Block main thread indefinitely if daemon
+    if isDaemon { semaphore.wait() }
+#endif
+}
+
+private func pspUnlock() {
+#if !canImport(Darwin)
+    semaphore.signal()
+#endif
+}
+
 #endif
