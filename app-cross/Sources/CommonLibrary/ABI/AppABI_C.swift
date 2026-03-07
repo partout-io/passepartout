@@ -9,7 +9,6 @@ nonisolated(unsafe)
 private var abi: AppABI?
 
 @_cdecl("psp_app_init")
-@BusinessActor
 public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
 //    guard let args else { fatalError() }
 //    args.pointee.event_cb
@@ -25,7 +24,6 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
 }
 
 @_cdecl("psp_app_deinit")
-@BusinessActor
 public func __psp_app_deinit() {
     abi = nil
 }
