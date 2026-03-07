@@ -8,7 +8,6 @@ public protocol ProfileProcessor: AnyObject, Sendable {
     func isIncluded(_ profile: Profile) -> Bool
     @BusinessActor
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>?
-    func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder
 }
 
 public protocol AppTunnelProcessor: AnyObject, Sendable {

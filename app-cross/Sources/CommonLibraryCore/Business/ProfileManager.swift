@@ -96,9 +96,6 @@ extension ProfileManager {
         let profile: Profile
         if isLocal {
             var builder = originalProfile.builder()
-            if let processor {
-                builder = try processor.willRebuild(builder)
-            }
             builder.attributes.lastUpdate = Date()
             builder.attributes.fingerprint = UniqueID()
             profile = try builder.build()

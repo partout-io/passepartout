@@ -13,8 +13,6 @@ final class MockProfileProcessor: ProfileProcessor, @unchecked Sendable {
 
     var requiredFeatures: Set<ABI.AppFeature>?
 
-    var willRebuildCount = 0
-
     func title(for profile: Profile) -> String {
         profile.name
     }
@@ -27,10 +25,5 @@ final class MockProfileProcessor: ProfileProcessor, @unchecked Sendable {
     func requiredFeatures(_ profile: Profile) -> Set<ABI.AppFeature>? {
         requiredFeaturesCount += 1
         return requiredFeatures
-    }
-
-    func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder {
-        willRebuildCount += 1
-        return builder
     }
 }

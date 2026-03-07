@@ -31,10 +31,6 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
             return nil
         }
     }
-
-    func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder {
-        builder
-    }
 }
 
 // MARK: - AppTunnelProcessor
