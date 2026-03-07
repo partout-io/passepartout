@@ -72,6 +72,7 @@ extension TunnelManagerTests {
         #expect(active.first?.key == profile.id)
         let dataCount = DataCount(UInt(expectedXfer.received), UInt(expectedXfer.sent))
         env.setEnvironmentValue(dataCount, forKey: TunnelEnvironmentKeys.dataCount)
+        try await Task.sleep(for: .milliseconds(200)) // > 0.1s to fetch environments
         let xfer = sut.transfer(ofProfileId: profile.id)
         #expect(xfer == expectedXfer)
     }
