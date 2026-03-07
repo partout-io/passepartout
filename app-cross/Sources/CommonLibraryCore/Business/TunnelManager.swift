@@ -136,7 +136,7 @@ extension TunnelManager {
 
 extension TunnelManager {
     public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        latestActiveProfiles.keys.contains(profileId)
+        activeProfiles.keys.contains(profileId)
     }
 
     public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
