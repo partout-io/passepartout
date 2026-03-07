@@ -29,7 +29,7 @@ public final class TunnelManager {
     private var subscriptions: [Task<Void, Never>]
 
     // TODO: #218, keep "last used profile" until .multiple
-    public nonisolated init(
+    public init(
         tunnel: Tunnel,
         extensionInstaller: ExtensionInstaller? = nil,
         kvStore: KeyValueStore? = nil,
@@ -46,9 +46,7 @@ public final class TunnelManager {
         latestEnvironments = [:]
         subscriptions = []
 
-        Task {
-            await observeObjects()
-        }
+        observeObjects()
     }
 }
 

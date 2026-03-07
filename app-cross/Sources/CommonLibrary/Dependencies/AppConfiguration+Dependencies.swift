@@ -126,6 +126,7 @@ extension ABI.AppConfiguration {
         DefaultTunnelProcessor()
     }
 
+    @BusinessActor
     public func newTunnelManager(
         tunnel: Tunnel,
         extensionInstaller: ExtensionInstaller?,
