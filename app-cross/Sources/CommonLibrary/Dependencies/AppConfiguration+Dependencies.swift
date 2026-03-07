@@ -5,7 +5,6 @@
 import Partout
 
 extension ABI.AppConfiguration {
-    @MainActor
     public func newConfigManager(
         isBeta: @escaping @Sendable () async -> Bool,
         fetcher: @escaping @Sendable (URL) async throws -> Data
@@ -67,7 +66,6 @@ extension ABI.AppConfiguration {
         )
     }
 
-    @MainActor
     public func newIAPManager(
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
@@ -105,7 +103,6 @@ extension ABI.AppConfiguration {
 #endif
     }
 
-    @MainActor
     public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
         DefaultProfileProcessor(iapManager: iapManager)
     }
@@ -129,7 +126,6 @@ extension ABI.AppConfiguration {
         DefaultTunnelProcessor()
     }
 
-    @MainActor
     public func newTunnelManager(
         tunnel: Tunnel,
         extensionInstaller: ExtensionInstaller?,
@@ -145,7 +141,6 @@ extension ABI.AppConfiguration {
         )
     }
 
-    @MainActor
     public func newVersionChecker(
         kvStore: KeyValueStore,
         downloadURL: URL,
@@ -405,7 +400,6 @@ extension ABI.AppConfiguration {
         TestFlightChecker()
     }
 
-    @MainActor
     public func newAppProductHelper() -> InAppHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,
@@ -428,7 +422,6 @@ extension ABI.AppConfiguration {
     }
 
 #if os(tvOS)
-    @MainActor
     public func newWebReceiverManager(
         htmlPath: String,
         stringsBundle: Bundle

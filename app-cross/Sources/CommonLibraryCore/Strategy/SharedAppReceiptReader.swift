@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-public actor SharedReceiptReader: UserInAppReceiptReader {
+@BusinessActor
+public final class SharedReceiptReader: UserInAppReceiptReader {
     private let reader: InAppReceiptReader
 
     private var pendingTask: Task<ABI.StoreReceipt?, Never>?
 
-    public init(reader: InAppReceiptReader) {
+    public nonisolated init(reader: InAppReceiptReader) {
         self.reader = reader
     }
 

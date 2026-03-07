@@ -4,7 +4,8 @@
 
 import Partout
 
-public actor FakeInAppHelper: InAppHelper {
+@BusinessActor
+public final class FakeInAppHelper: InAppHelper {
     private let purchase: ABI.OriginalPurchase
 
     private var products: [ABI.AppProduct: ABI.StoreProduct]
@@ -14,7 +15,7 @@ public actor FakeInAppHelper: InAppHelper {
     private nonisolated let didUpdateSubject: PassthroughStream<Void>
 
     // set .max to skip entitled products
-    public init(build: Int = .max) {
+    public nonisolated init(build: Int = .max) {
         purchase = ABI.OriginalPurchase(buildNumber: build)
         products = [:]
         receiptReader = FakeInAppReceiptReader()
@@ -29,17 +30,20 @@ public actor FakeInAppHelper: InAppHelper {
         didUpdateSubject.subscribe()
     }
 
+    public func startObserving() {
+    }
+
     public func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: ABI.StoreProduct] {
         products = ABI.AppProduct.all.reduce(into: [:]) {
             $0[$1] = $1.asFakeStoreProduct
         }
-        await receiptReader.setReceipt(withPurchase: purchase, identifiers: [])
+        receiptReader.setReceipt(withPurchase: purchase, identifiers: [])
         didUpdateSubject.send()
         return products
     }
 
     public func purchase(_ inAppProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
-        await receiptReader.addPurchase(with: inAppProduct.nativeIdentifier)
+        receiptReader.addPurchase(with: inAppProduct.nativeIdentifier)
         didUpdateSubject.send()
         return .done
     }

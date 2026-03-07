@@ -6,7 +6,6 @@
 import Partout
 import Testing
 
-@MainActor
 struct KeyValueStoreTests {
     @Test
     func givenKeyValue_whenSet_thenGets() {

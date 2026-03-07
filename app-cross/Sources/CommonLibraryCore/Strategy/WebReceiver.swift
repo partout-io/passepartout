@@ -4,7 +4,7 @@
 
 import Partout
 
-public protocol WebReceiver {
+public protocol WebReceiver: Sendable {
     func start(passcode: String?, onReceive: @escaping @Sendable (String, String) -> Void) throws -> URL
     func stop()
 }

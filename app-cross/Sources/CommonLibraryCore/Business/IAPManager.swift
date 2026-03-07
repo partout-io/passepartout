@@ -4,7 +4,7 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class IAPManager {
     private let customUserLevel: ABI.AppUserLevel?
 
@@ -22,7 +22,7 @@ public final class IAPManager {
 
     private let productsAtBuild: BuildProducts?
 
-    public var isEnabled = true {
+    public private(set) var isEnabled = true {
         didSet {
             pendingReceiptTask?.cancel()
             didChange.send(.status(isEnabled: isEnabled))
@@ -49,7 +49,7 @@ public final class IAPManager {
         verificationDelayMinutesBlock(isBeta)
     }
 
-    public let didChange: PassthroughStream<ABI.IAPEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.IAPEvent>
 
     private var isObserving: Bool
 
@@ -62,7 +62,7 @@ public final class IAPManager {
     private var receiptSubscription: Task<Void, Never>?
 
     // Dummy
-    public init() {
+    public nonisolated init() {
         customUserLevel = nil
         inAppHelper = FakeInAppHelper()
         receiptReader = FakeInAppReceiptReader()
@@ -79,7 +79,7 @@ public final class IAPManager {
         isEnabled = false
     }
 
-    public init(
+    public nonisolated init(
         customUserLevel: ABI.AppUserLevel? = nil,
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
@@ -108,12 +108,14 @@ public final class IAPManager {
 // MARK: - Actions
 
 extension IAPManager {
-    public func enable() async {
-        guard !isEnabled else {
-            return
+    public func enable(_ isEnabled: Bool) {
+        guard isEnabled != self.isEnabled else { return }
+        self.isEnabled = isEnabled
+        if isEnabled {
+            Task {
+                await reloadReceipt()
+            }
         }
-        isEnabled = true
-        await reloadReceipt()
     }
 
     public func fetchPurchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
@@ -317,6 +319,7 @@ extension IAPManager {
         isObserving = true
         let inAppEvents = inAppHelper.didUpdate
         Task {
+            await inAppHelper.startObserving()
             await fetchLevelIfNeeded()
             do {
                 // Reload the receipt on in-app updates

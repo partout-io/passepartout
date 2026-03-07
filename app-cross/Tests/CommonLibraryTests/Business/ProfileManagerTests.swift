@@ -6,7 +6,7 @@
 import Partout
 import Testing
 
-@MainActor
+@BusinessActor
 struct ProfileManagerTests {
 }
 

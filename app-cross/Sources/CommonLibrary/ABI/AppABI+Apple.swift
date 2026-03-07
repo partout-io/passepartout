@@ -155,7 +155,7 @@ extension AppABI {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) {
+        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) { @Sendable in
             appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
         }
         let sysexManager = appConfiguration.newSystemExtensionManager(
@@ -212,7 +212,7 @@ extension AppABI {
         // MARK: Sync (CloudKit)
 
         // Remote profiles and preferences are (re)created on updates to synchronization
-        let onEligibleFeaturesBlock: (Set<ABI.AppFeature>) async -> Void = { @MainActor features in
+        let onEligibleFeaturesBlock: @Sendable @BusinessActor (Set<ABI.AppFeature>) async -> Void = { features in
             let isRemoteImportingEnabled = features.contains(.sharing)
 
             // Toggle CloudKit sync based on .sharing eligibility
@@ -220,7 +220,7 @@ extension AppABI {
 
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 // @Published
-                profileManager.isRemoteImportingEnabled = isRemoteImportingEnabled
+                profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
                 let isCloudKitEnabled = withUITesting || appConfiguration.isCloudKitEnabled
                 pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
@@ -321,15 +321,11 @@ private extension ABI.AppConfiguration {
         )
     }
 
-    @MainActor
     func simulatedAppProductHelper(isFake: Bool) -> InAppHelper {
-        guard !isFake else {
-            return FakeInAppHelper()
-        }
+        guard !isFake else { return FakeInAppHelper() }
         return newAppProductHelper()
     }
 
-    @MainActor
     func simulatedAppReceiptReader(isFake: Bool) -> UserInAppReceiptReader {
         guard !isFake else {
             guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeInAppHelper else {

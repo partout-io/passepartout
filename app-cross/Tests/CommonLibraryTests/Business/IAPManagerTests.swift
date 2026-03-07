@@ -7,7 +7,7 @@
 import Partout
 import Testing
 
-@MainActor
+@BusinessActor
 struct IAPManagerTests {
     private let olderBuildNumber = 500
 

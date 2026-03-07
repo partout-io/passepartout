@@ -4,7 +4,7 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class ProfileManager {
     private enum Observer: CaseIterable {
         case local
@@ -34,7 +34,7 @@ public final class ProfileManager {
         }
     }
 
-    public var isRemoteImportingEnabled = false {
+    public private(set) var isRemoteImportingEnabled = false {
         didSet {
             didChange.send(.changeRemoteImporting(isRemoteImportingEnabled))
         }
@@ -56,13 +56,13 @@ public final class ProfileManager {
     private var remoteImportTask: Task<Void, Never>?
 
     // For testing/previews
-    public convenience init(profiles: [Profile]) {
+    public convenience nonisolated init(profiles: [Profile]) {
         self.init(
             repository: InMemoryProfileRepository(profiles: profiles)
         )
     }
 
-    public init(
+    public nonisolated init(
         processor: ProfileProcessor? = nil,
         repository: ProfileRepository,
         backupRepository: ProfileRepository? = nil,
@@ -88,6 +88,10 @@ public final class ProfileManager {
 // MARK: - Actions
 
 extension ProfileManager {
+    public func enableRemoteImporting(_ isRemoteImportingEnabled: Bool) {
+        self.isRemoteImportingEnabled = isRemoteImportingEnabled
+    }
+
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {
@@ -323,7 +327,7 @@ private extension ProfileManager {
             }
             for remoteProfile in profiles {
                 do {
-                    guard await processor?.isIncluded(remoteProfile) ?? true else {
+                    guard processor?.isIncluded(remoteProfile) ?? true else {
                         pspLog(.profiles, .info, "Will delete non-included remote profile \(remoteProfile.id)")
                         idsToRemove.append(remoteProfile.id)
                         continue

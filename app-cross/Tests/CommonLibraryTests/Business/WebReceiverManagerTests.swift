@@ -9,7 +9,7 @@ import Testing
 struct WebReceiverManagerTests {
 }
 
-@MainActor
+@BusinessActor
 extension WebReceiverManagerTests {
     @Test
     func givenUploader_whenStart_thenReceivesFiles() async throws {
