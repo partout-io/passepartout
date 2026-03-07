@@ -4,7 +4,7 @@
 
 import Partout
 
-final class MockProfileProcessor: ProfileProcessor {
+final class MockProfileProcessor: ProfileProcessor, @unchecked Sendable {
     var isIncludedCount = 0
 
     var isIncludedBlock: (Profile) -> Bool = { _ in true }
