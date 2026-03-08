@@ -33,7 +33,7 @@ public func __psp_tunnel_start(
     let isDaemon = args.pointee.is_daemon
     nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
     // Start tunnel ABI (synchronously)
-    Task { @Sendable @BusinessActor in
+    abiDispatch {
         defer { pspUnlock() }
         do {
             let abi = try TunnelABI.forCrossPlatform(
@@ -57,7 +57,7 @@ public func __psp_tunnel_start(
 
 @_cdecl("psp_tunnel_stop")
 public func __psp_tunnel_stop(callback: (@convention(c) () -> Void)?) {
-    Task { @Sendable @BusinessActor in
+    abiDispatch {
         await globalABI?.stop()
         globalABI = nil
         callback?()
