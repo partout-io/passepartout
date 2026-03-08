@@ -7,7 +7,6 @@ import Partout
 
 extension TunnelABI {
     // TODO: #218, cachesURL must be per-profile
-    @MainActor
     public static func forCrossPlatform(
         appBundleData: Data,
         appConstantsData: Data,

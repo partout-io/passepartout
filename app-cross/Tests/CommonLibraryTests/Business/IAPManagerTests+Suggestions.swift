@@ -8,7 +8,7 @@
 @testable import CommonLibraryCore
 import Testing
 
-@MainActor
+@BusinessActor
 struct IAPManagerSuggestionsTests {
     @Test
     func givenFree_thenSuggestsEssentialsAllAndPlatform() async {

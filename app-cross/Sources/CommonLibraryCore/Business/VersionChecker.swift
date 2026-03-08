@@ -4,7 +4,7 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class VersionChecker {
     private let kvStore: KeyValueStore
 
@@ -18,7 +18,7 @@ public final class VersionChecker {
 
     public nonisolated let didChange: PassthroughStream<ABI.VersionEvent>
 
-    public init(
+    public nonisolated init(
         kvStore: KeyValueStore,
         strategy: VersionCheckerStrategy,
         currentVersion: String,
@@ -87,7 +87,7 @@ extension VersionChecker {
         }
     }
 
-    public convenience init(
+    public convenience nonisolated init(
         downloadURL: URL = URL(string: "http://")!,
         currentVersion: String = "255.255.255" // An update is never available
     ) {

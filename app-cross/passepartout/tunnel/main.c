@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     }
 
 #ifdef USE_SWIFTPM
-    const char *parent = "app-shared_passepartout-tunnel.bundle/Contents/Resources/args";
+    const char *parent = "app-cross_passepartout-tunnel.bundle/Contents/Resources/args";
 #else
     const char *parent = NULL;
 #endif

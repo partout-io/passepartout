@@ -4,10 +4,11 @@
 
 import Partout
 
-public actor FakeInAppReceiptReader: UserInAppReceiptReader {
+@BusinessActor
+public final class FakeInAppReceiptReader: UserInAppReceiptReader {
     private var localReceipt: ABI.StoreReceipt?
 
-    public init(receipt localReceipt: ABI.StoreReceipt? = nil) {
+    public nonisolated init(receipt localReceipt: ABI.StoreReceipt? = nil) {
         self.localReceipt = localReceipt
     }
 
@@ -42,8 +43,8 @@ public actor FakeInAppReceiptReader: UserInAppReceiptReader {
         localReceipt
     }
 
-    public func addPurchase(with identifier: String) async {
-        await addPurchase(with: identifier, expirationDate: nil, cancellationDate: nil)
+    public func addPurchase(with identifier: String) {
+        addPurchase(with: identifier, expirationDate: nil, cancellationDate: nil)
     }
 }
 
@@ -52,8 +53,8 @@ extension FakeInAppReceiptReader {
         with product: ABI.AppProduct,
         expirationDate: Date? = nil,
         cancellationDate: Date? = nil
-    ) async {
-        await addPurchase(
+    ) {
+        addPurchase(
             with: product.rawValue,
             expirationDate: expirationDate,
             cancellationDate: cancellationDate
@@ -64,7 +65,7 @@ extension FakeInAppReceiptReader {
         with identifier: String,
         expirationDate: Date? = nil,
         cancellationDate: Date? = nil
-    ) async {
+    ) {
         var purchaseReceipts = localReceipt?.purchaseReceipts ?? []
         purchaseReceipts.append(.init(
             productIdentifier: identifier,

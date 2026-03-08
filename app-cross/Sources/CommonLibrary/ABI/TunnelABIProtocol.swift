@@ -5,6 +5,7 @@
 import CommonLibrary_C
 import Partout
 
+@BusinessActor
 public protocol TunnelABIProtocol: AppABILoggerProtocol, Sendable {
     func start(isInteractive: Bool) async throws
     func stop() async

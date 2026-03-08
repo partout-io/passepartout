@@ -31,10 +31,6 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
             return nil
         }
     }
-
-    func willRebuild(_ builder: Profile.Builder) throws -> Profile.Builder {
-        builder
-    }
 }
 
 // MARK: - AppTunnelProcessor
@@ -101,7 +97,6 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
 // MARK: Heuristics
 
 private extension Profile {
-    @MainActor
     func withNewServer(using heuristic: ProviderHeuristic, apiManager: APIManager, sort: @escaping ProviderServerParameters.Sorter) async throws -> Profile {
         guard var providerModule = activeProviderModule?.moduleBuilder() as? ProviderModule.Builder else {
             return self

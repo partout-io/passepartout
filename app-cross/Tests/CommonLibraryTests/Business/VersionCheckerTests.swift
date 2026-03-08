@@ -5,7 +5,7 @@
 import Partout
 import Testing
 
-@MainActor
+@BusinessActor
 struct VersionCheckerTests {
     let downloadURL = URL(string: "http://")!
 

@@ -14,12 +14,12 @@ struct TunnelManagerTests {
     }
 }
 
-@MainActor
+@BusinessActor
 extension TunnelManagerTests {
     @Test
     func givenTunnel_whenDisconnectWithError_thenPublishesLastErrorCode() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
             env
         }
         let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
@@ -55,7 +55,7 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenPublishesDataCount_thenIsAvailable() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
             env
         }
         let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
@@ -72,6 +72,7 @@ extension TunnelManagerTests {
         #expect(active.first?.key == profile.id)
         let dataCount = DataCount(UInt(expectedXfer.received), UInt(expectedXfer.sent))
         env.setEnvironmentValue(dataCount, forKey: TunnelEnvironmentKeys.dataCount)
+        try await Task.sleep(for: .milliseconds(200)) // > 0.1s to fetch environments
         let xfer = sut.transfer(ofProfileId: profile.id)
         #expect(xfer == expectedXfer)
     }
@@ -79,7 +80,7 @@ extension TunnelManagerTests {
     @Test
     func givenTunnelAndProcessor_whenInstall_thenProcessesProfile() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
             env
         }
         let processor = MockTunnelProcessor()
@@ -101,7 +102,7 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenStatusChanges_thenConnectionStatusIsExpected() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
             env
         }
         let processor = MockTunnelProcessor()

@@ -4,9 +4,9 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class WebReceiverManager {
-    public typealias PasscodeGenerator = () -> String
+    public typealias PasscodeGenerator = @Sendable () -> String
 
     private let webReceiver: WebReceiver
 
@@ -26,9 +26,9 @@ public final class WebReceiverManager {
         }
     }
 
-    public let didChange: PassthroughStream<ABI.WebReceiverEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.WebReceiverEvent>
 
-    public init(
+    public nonisolated init(
         webReceiver: WebReceiver,
         passcodeGenerator: PasscodeGenerator? = nil
     ) {
@@ -66,7 +66,7 @@ public final class WebReceiverManager {
 }
 
 extension WebReceiverManager {
-    public convenience init() {
+    public convenience nonisolated init() {
         self.init(webReceiver: DummyWebReceiver(url: URL(fileURLWithPath: "")))
     }
 }

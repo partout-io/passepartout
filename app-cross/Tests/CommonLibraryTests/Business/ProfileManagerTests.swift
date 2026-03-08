@@ -6,7 +6,7 @@
 import Partout
 import Testing
 
-@MainActor
+@BusinessActor
 struct ProfileManagerTests {
 }
 
@@ -57,7 +57,6 @@ extension ProfileManagerTests {
 
         #expect(processor.isIncludedCount == 1)
         #expect(processor.requiredFeaturesCount == 1)
-        #expect(processor.willRebuildCount == 0)
         #expect(sut.requiredFeatures(for: profile) == processor.requiredFeatures)
     }
 
@@ -142,38 +141,6 @@ extension ProfileManagerTests {
             try await $0.save(renamedProfile)
         }
         #expect(sut.profiles.first?.name == renamedProfile.name)
-    }
-
-    @Test
-    func givenRepositoryAndProcessor_whenSave_thenProcessorIsNotInvoked() async throws {
-        let repository = InMemoryProfileRepository(profiles: [])
-        let processor = MockProfileProcessor()
-        let sut = ProfileManager(processor: processor, repository: repository)
-
-        try await waitForReady(sut)
-        #expect(sut.isReady)
-        #expect(!sut.hasProfiles)
-
-        let profile = newProfile()
-        try await sut.save(profile)
-        #expect(processor.willRebuildCount == 0)
-        try await sut.save(profile, isLocal: false)
-        #expect(processor.willRebuildCount == 0)
-    }
-
-    @Test
-    func givenRepositoryAndProcessor_whenSaveLocal_thenProcessorIsInvoked() async throws {
-        let repository = InMemoryProfileRepository(profiles: [])
-        let processor = MockProfileProcessor()
-        let sut = ProfileManager(processor: processor, repository: repository)
-
-        try await waitForReady(sut)
-        #expect(sut.isReady)
-        #expect(!sut.hasProfiles)
-
-        let profile = newProfile()
-        try await sut.save(profile, isLocal: true)
-        #expect(processor.willRebuildCount == 1)
     }
 
     @Test
