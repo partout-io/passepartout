@@ -22,7 +22,7 @@ public final class IAPManager {
 
     private let productsAtBuild: BuildProducts?
 
-    public private(set) var isEnabled = true {
+    public var isEnabled = true {
         didSet {
             pendingReceiptTask?.cancel()
             didChange.send(.status(isEnabled: isEnabled))
@@ -108,16 +108,6 @@ public final class IAPManager {
 // MARK: - Actions
 
 extension IAPManager {
-    public func enable(_ isEnabled: Bool) {
-        guard isEnabled != self.isEnabled else { return }
-        self.isEnabled = isEnabled
-        if isEnabled {
-            Task {
-                await reloadReceipt()
-            }
-        }
-    }
-
     public func fetchPurchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
         guard isEnabled else { return [] }
         do {

@@ -74,7 +74,7 @@ public final class AppABI: Sendable {
 
         subscriptions = []
 
-        iapManager.enable(appConfiguration.bundle.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases))
+        iapManager.isEnabled = appConfiguration.bundle.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
@@ -189,7 +189,7 @@ private struct AppABIIAP: AppABIIAPProtocol {
     let supportsIAP: Bool
 
     func enable(_ isEnabled: Bool) {
-        iapManager.enable(supportsIAP && isEnabled)
+        iapManager.isEnabled = supportsIAP && isEnabled
         kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
     }
 

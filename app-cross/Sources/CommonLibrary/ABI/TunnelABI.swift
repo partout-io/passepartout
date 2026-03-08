@@ -48,7 +48,7 @@ public final class TunnelABI: TunnelABIProtocol {
 
         // Disable if skips purchases
         if let iap {
-            iap.manager.enable(!iap.skipsPurchases)
+            iap.manager.isEnabled = !iap.skipsPurchases
         }
     }
 
