@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     }
 
 #ifdef USE_SWIFTPM
-    const char *parent = "app-cross_passepartout-tunnel.bundle/Contents/Resources/args";
+    const char *parent = "app-cross_passepartout-shared.bundle/Contents/Resources/assets";
 #else
     const char *parent = NULL;
 #endif
@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Current directory. */
+    // FIXME: #1656, C ABI, hardcoded cache dir
     const char *cache_dir = ".";
 //    const char *cache_dir = mkdtemp("psp");
 

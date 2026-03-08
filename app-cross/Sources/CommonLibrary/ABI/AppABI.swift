@@ -14,11 +14,13 @@ public final class AppABI: Sendable {
     public nonisolated let tunnel: AppABITunnelProtocol
     public nonisolated let version: AppABIVersionProtocol
     public nonisolated let webReceiver: AppABIWebReceiverProtocol
+#if !PSP_CROSS
     // Legacy managers not migrated to ABI, exposed as is
     @available(*, deprecated, message: "#1679")
     public nonisolated let apiManager: APIManager
     @available(*, deprecated, message: "#1679")
     public nonisolated let preferencesManager: PreferencesManager
+#endif
 
     // Constants and storage
     private let appConfiguration: ABI.AppConfiguration
@@ -42,7 +44,7 @@ public final class AppABI: Sendable {
     private var subscriptions: [Task<Void, Never>]
 
     public init(
-        apiManager: APIManager,
+        apiManager: APIManager?,
         appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
         configManager: ConfigManager,
@@ -50,7 +52,7 @@ public final class AppABI: Sendable {
         iapManager: IAPManager,
         kvStore: KeyValueStore,
         logFormatter: LogFormatter,
-        preferencesManager: PreferencesManager,
+        preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: Registry,
         tunnelManager: TunnelManager,
@@ -69,9 +71,10 @@ public final class AppABI: Sendable {
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
-        self.apiManager = apiManager
-        self.preferencesManager = preferencesManager
-
+#if !PSP_CROSS
+        self.apiManager = apiManager ?? APIManager()
+        self.preferencesManager = preferencesManager ?? PreferencesManager()
+#endif
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
@@ -444,13 +447,14 @@ private extension AppABI {
                 }
             }
         })
-
+#if !PSP_CROSS
         do {
             pspLog(.core, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
             pspLog(.core, .error, "\tUnable to fetch providers index: \(error)")
         }
+#endif
     }
 
     func onForeground() async throws {

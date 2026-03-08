@@ -6,13 +6,19 @@ import Partout
 
 extension ABI.AppConfiguration {
     public func newConfigManager(
+        withTestBundle: Bool,
         isBeta: @escaping @Sendable () async -> Bool,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> ConfigManager {
-#if DEBUG
-        let configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
+        let configURL: URL
+#if !PSP_CROSS
+        if withTestBundle {
+            configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
+        } else {
+            configURL = constants.websites.config
+        }
 #else
-        let configURL = constants.websites.config
+        configURL = constants.websites.config
 #endif
         let betaConfigURL = constants.websites.betaConfig
         return ConfigManager(

@@ -10,7 +10,6 @@
 #include <stdbool.h>
 
 const char *psp_partout_version(void);
-int psp_example_sum(int a, int b);
 
 /* Common structures. */
 //typedef const char *psp_id;
@@ -48,12 +47,18 @@ typedef void (*psp_event_callback)(void *event_ctx, const psp_event *event);
 
 /* App initialization. */
 typedef struct {
-    const char *app_configuration;
+    const char *bundle;
+    const char *constants;
+    const char *preferences;
     const char *profiles_dir;
+    const char *cache_dir;
     void *event_ctx;
     psp_event_callback event_cb;
 } psp_app_init_args;
 void psp_app_init(const psp_app_init_args *args);
+void psp_app_on_foreground();
+void psp_app_import_profile(const char *path);
+void psp_app_flush_log();
 
 /* Options. */
 //typedef enum {

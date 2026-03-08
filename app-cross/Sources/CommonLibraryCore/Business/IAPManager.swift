@@ -274,7 +274,7 @@ private extension IAPManager {
                 }
             }
         } else {
-            pspLog(.iap, .error, "Could not parse App Store receipt!")
+            pspLog(.iap, .error, "Could not parse in-app receipt!")
         }
 
         userLevel.features.forEach {

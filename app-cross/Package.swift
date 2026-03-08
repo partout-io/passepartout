@@ -150,9 +150,17 @@ import Foundation
 
 if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
     package.targets.append(contentsOf: [
+        .target(
+            name: "passepartout-shared",
+            path: "passepartout/shared",
+            resources: [.copy("assets")]
+        ),
         .executableTarget(
             name: "passepartout",
-            dependencies: ["CommonLibrary"],
+            dependencies: [
+                "CommonLibrary",
+                "passepartout-shared"
+            ],
             path: "passepartout/app",
             cxxSettings: [
                 .unsafeFlags([
@@ -161,7 +169,8 @@ if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
                     "-DwxDEBUG_LEVEL=0",
                     "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/include/wx-3.3",
                     "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/lib/wx/include/osx_cocoa-unicode-3.3"
-                ])
+                ]),
+                .define("USE_SWIFTPM")
             ],
             linkerSettings: [
                 .unsafeFlags(["-L/opt/homebrew/lib"]),
@@ -183,9 +192,11 @@ if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
         ),
         .executableTarget(
             name: "passepartout-tunnel",
-            dependencies: ["CommonLibrary"],
+            dependencies: [
+                "CommonLibrary",
+                "passepartout-shared"
+            ],
             path: "passepartout/tunnel",
-            resources: [.copy("args")],
             cSettings: [.define("USE_SWIFTPM")]
         )
     ])

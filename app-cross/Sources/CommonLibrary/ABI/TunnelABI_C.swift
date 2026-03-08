@@ -32,7 +32,7 @@ public func __psp_tunnel_start(
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
     nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
-    // Start tunnel ABI (synchronously)
+    // Start tunnel ABI
     abiDispatch {
         defer { pspUnlock() }
         do {

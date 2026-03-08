@@ -34,7 +34,13 @@ extension AppABI {
         // MARK: Config (GitHub)
 
         let betaChecker = appConfiguration.newBetaChecker()
+#if DEBUG
+        let withTestBundle = true
+#else
+        let withTestBundle = false
+#endif
         let configManager = appConfiguration.newConfigManager(
+            withTestBundle: withTestBundle,
             isBeta: {
                 await betaChecker.isBeta()
             },
