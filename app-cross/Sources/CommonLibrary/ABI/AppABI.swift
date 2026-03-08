@@ -74,13 +74,14 @@ public final class AppABI: Sendable {
 
         subscriptions = []
 
-        iapManager.isEnabled = appConfiguration.bundle.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
+        let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
+        iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
             kvStore: kvStore,
-            supportsIAP: appConfiguration.bundle.distributionTarget.supportsIAP
+            supportsIAP: supportsIAP
         )
         profile = AppABIProfile(
             profileManager: profileManager,
