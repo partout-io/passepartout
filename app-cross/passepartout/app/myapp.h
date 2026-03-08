@@ -9,7 +9,8 @@
 class MyApp : public wxApp
 {
 public:
-    virtual bool OnInit() override;
+    bool OnInit() override;
+    void OnActivate(wxActivateEvent &event);
 };
 
 class MyFrame : public wxFrame
@@ -18,14 +19,13 @@ public:
     MyFrame();
 
 private:
-    void OnDummy1(wxCommandEvent& event);
-    void OnDummy2(wxCommandEvent& event);
-    void OnAbout(wxCommandEvent& event);
-    void OnQuit(wxCommandEvent& event);
+    void OnImportProfile(wxCommandEvent &event);
+    void OnFlushLog(wxCommandEvent &event);
+    void OnAbout(wxCommandEvent &event);
+    void OnQuit(wxCommandEvent &event);
 };
 
-enum
-{
-    ID_Dummy1 = 1,
-    ID_Dummy2
+enum {
+    ID_ImportProfile = 100,
+    ID_FlushLog
 };
