@@ -13,7 +13,7 @@ public protocol AppABIEncoderProtocol: Sendable {
     nonisolated func writeToFile(_ profile: Profile) throws -> String
 }
 
-@MainActor
+@BusinessActor
 public protocol AppABIIAPProtocol: Sendable {
     func enable(_ isEnabled: Bool)
     func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult
@@ -30,7 +30,7 @@ public protocol AppABILoggerProtocol: Sendable {
     func flushLogs()
 }
 
-@MainActor
+@BusinessActor
 public protocol AppABIProfileProtocol: Sendable {
     func save(_ profile: Profile, remotelyShared: Bool?) async throws
     func saveAll() async
@@ -44,7 +44,6 @@ public protocol AppABIProfileProtocol: Sendable {
     func profile(withId id: Profile.ID) -> Profile?
 }
 
-@MainActor
 public protocol AppABIRegistryProtocol: Sendable {
     func importedProfile(from input: ABI.ProfileImporterInput) throws -> Profile
     func newModule(ofType type: ModuleType) -> any ModuleBuilder
@@ -57,7 +56,7 @@ public enum AppABITunnelValueKey: Sendable {
     case openVPNServerConfiguration
 }
 
-@MainActor
+@BusinessActor
 public protocol AppABITunnelProtocol: Sendable {
     func connect(to profile: Profile, force: Bool) async throws
 //    func reconnect(to profileId: Profile.ID) async throws
@@ -69,12 +68,12 @@ public protocol AppABITunnelProtocol: Sendable {
     func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?
 }
 
-@MainActor
+@BusinessActor
 public protocol AppABIVersionProtocol: Sendable {
     func checkLatestRelease() async
 }
 
-@MainActor
+@BusinessActor
 public protocol AppABIWebReceiverProtocol: Sendable {
     func start() throws
     func stop()

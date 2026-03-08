@@ -4,7 +4,7 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     private let releaseURL: URL
 
@@ -12,7 +12,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
 
     private let fetcher: @Sendable (URL) async throws -> Data
 
-    public init(
+    public nonisolated init(
         releaseURL: URL,
         rateLimit: TimeInterval,
         fetcher: @escaping @Sendable (URL) async throws -> Data

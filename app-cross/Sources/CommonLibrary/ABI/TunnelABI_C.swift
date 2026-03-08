@@ -9,10 +9,7 @@ import Partout
 nonisolated(unsafe)
 private var globalABI: TunnelABIProtocol?
 
-// WARNING: Tasks must be .detached because MainActor is blocked
-
 @_cdecl("psp_tunnel_start")
-@MainActor
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
     callback: (@convention(c) (Int, UnsafePointer<CChar>?) -> Void)?
@@ -34,46 +31,56 @@ public func __psp_tunnel_start(
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
-    let jniWrapper = args.pointee.jni_wrapper
+    nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
     // Start tunnel ABI (synchronously)
-    let semaphore = DispatchSemaphore(value: 0)
-    nonisolated(unsafe) var startError: Error?
-    do {
-        let abi = try TunnelABI.forCrossPlatform(
-            appBundleData: appBundleData,
-            appConstantsData: appConstantsData,
-            preferencesData: preferencesData,
-            profileInput: profileInput,
-            cachesURL: cachesURL,
-            jniWrapper: jniWrapper
-        )
-        Task.detached { @Sendable in
-            defer { semaphore.signal() }
-            do {
-                try await abi.start(isInteractive: isInteractive)
-            } catch {
-                startError = error
-            }
+    abiDispatch {
+        defer { pspUnlock() }
+        do {
+            let abi = try TunnelABI.forCrossPlatform(
+                appBundleData: appBundleData,
+                appConstantsData: appConstantsData,
+                preferencesData: preferencesData,
+                profileInput: profileInput,
+                cachesURL: cachesURL,
+                jniWrapper: jniWrapper
+            )
+            try await abi.start(isInteractive: isInteractive)
+            globalABI = abi
+            callback?(0, nil)
+        } catch {
+            callback?(-1, error.localizedDescription)
+            fatalError("Unable to start tunnel: \(error)")
         }
-        semaphore.wait()
-        if let startError { throw startError }
-        globalABI = abi
-        callback?(0, nil)
-    } catch {
-        callback?(-1, error.localizedDescription)
-        fatalError("Unable to start tunnel: \(error)")
     }
-    // Block main thread indefinitely if daemon
-    if isDaemon { semaphore.wait() }
+    pspLock(isDaemon: isDaemon)
 }
 
 @_cdecl("psp_tunnel_stop")
-@MainActor
 public func __psp_tunnel_stop(callback: (@convention(c) () -> Void)?) {
-    Task.detached {
+    abiDispatch {
         await globalABI?.stop()
         globalABI = nil
         callback?()
     }
 }
+
+private let semaphore = DispatchSemaphore(value: 0)
+
+private func pspLock(isDaemon: Bool) {
+#if canImport(Darwin)
+    if isDaemon { CFRunLoopRun() }
+#else
+    // Wait for ABI to start
+    semaphore.wait()
+    // Block main thread indefinitely if daemon
+    if isDaemon { semaphore.wait() }
+#endif
+}
+
+private func pspUnlock() {
+#if !canImport(Darwin)
+    semaphore.signal()
+#endif
+}
+
 #endif

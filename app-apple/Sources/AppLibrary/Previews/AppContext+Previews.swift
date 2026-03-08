@@ -41,7 +41,7 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelManager = TunnelManager(

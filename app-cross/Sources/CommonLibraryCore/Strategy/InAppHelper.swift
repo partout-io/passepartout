@@ -9,6 +9,8 @@ public protocol InAppHelper: Sendable {
 
     var didUpdate: AsyncStream<Void> { get }
 
+    func startObserving() async
+
     func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: ABI.StoreProduct]
 
     func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult

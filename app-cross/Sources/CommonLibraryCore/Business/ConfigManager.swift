@@ -5,7 +5,7 @@
 import Dispatch
 import Partout
 
-@MainActor
+@BusinessActor
 public final class ConfigManager {
     private let queue = DispatchQueue(label: "ConfigManager")
 
@@ -35,13 +35,13 @@ public final class ConfigManager {
 
     public nonisolated let didChange: PassthroughStream<ABI.ConfigEvent>
 
-    public init() {
+    public nonisolated init() {
         strategy = nil
         buildNumber = .max // Activate flags regardless of .minBuild
         didChange = PassthroughStream()
     }
 
-    public init(strategy: ConfigManagerStrategy, buildNumber: Int) {
+    public nonisolated init(strategy: ConfigManagerStrategy, buildNumber: Int) {
         self.strategy = strategy
         self.buildNumber = buildNumber
         didChange = PassthroughStream()

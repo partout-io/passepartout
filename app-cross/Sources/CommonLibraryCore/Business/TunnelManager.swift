@@ -4,7 +4,7 @@
 
 @preconcurrency import Partout
 
-@MainActor
+@BusinessActor
 public final class TunnelManager {
     public static nonisolated let isManualKey = "isManual"
 
@@ -22,6 +22,10 @@ public final class TunnelManager {
 
     public nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
+    private var latestActiveProfiles: [Profile.ID: TunnelActiveProfile]
+
+    private var latestEnvironments: [Profile.ID: TunnelEnvironmentReader]
+
     private var subscriptions: [Task<Void, Never>]
 
     // TODO: #218, keep "last used profile" until .multiple
@@ -38,6 +42,8 @@ public final class TunnelManager {
         self.processor = processor
         self.interval = interval
         didChange = PassthroughStream()
+        latestActiveProfiles = [:]
+        latestEnvironments = [:]
         subscriptions = []
 
         observeObjects()
@@ -109,13 +115,10 @@ extension TunnelManager {
     }
 
     public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.AppLogLine] {
-        guard let anyProfile = tunnel.activeProfiles.first?.value else {
-            return []
-        }
         let output = try? await tunnel.sendMessage(.debugLog(
             sinceLast: parameters.sinceLast,
             maxLevel: parameters.options.maxLevel
-        ), to: anyProfile.id)
+        ))
         switch output {
         case .debugLog(let log):
             return log.lines.map {
@@ -131,7 +134,7 @@ extension TunnelManager {
 
 extension TunnelManager {
     public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        tunnel.activeProfiles.keys.contains(profileId)
+        activeProfiles.keys.contains(profileId)
     }
 
     public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
@@ -148,9 +151,7 @@ extension TunnelManager {
     }
 
     public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T? where T: Decodable {
-        tunnel
-            .environment(for: profileId)?
-            .environmentValue(forKey: key)
+        latestEnvironments[profileId]?.environmentValue(forKey: key)
     }
 }
 
@@ -160,14 +161,14 @@ private extension TunnelManager {
     func observeObjects() {
         let tunnelEvents = tunnel.activeProfilesStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
-            guard let self else {
-                return
-            }
+            guard let self else { return }
             for await newActiveProfiles in tunnelEvents {
                 guard !Task.isCancelled else {
                     pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break
                 }
+                // Copy locally for sync access
+                latestActiveProfiles = newActiveProfiles
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = newActiveProfiles.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
@@ -179,13 +180,12 @@ private extension TunnelManager {
 
         let timerSubscription = Task { [weak self] in
             while true {
-                guard let self else {
-                    return
-                }
+                guard let self else { return }
                 guard !Task.isCancelled else {
                     pspLog(.core, .debug, "Cancelled TunnelManager.timerSubscription")
                     break
                 }
+                latestEnvironments = await tunnel.allEnvironments()
                 didChange.send(.dataCount)
                 try? await Task.sleep(interval: interval)
             }
@@ -233,7 +233,7 @@ private extension TunnelManager {
 
     func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppTunnelStatus {
         let status = status(ofProfileId: profileId)
-        guard let environment = tunnel.environment(for: profileId) else {
+        guard let environment = latestEnvironments[profileId] else {
             return status.abiStatus
         }
         return status.withEnvironment(environment).abiStatus
@@ -274,32 +274,30 @@ extension TunnelStatus {
 
 private extension TunnelManager {
     var activeProfiles: [Profile.ID: TunnelActiveProfile] {
-        guard !tunnel.activeProfiles.isEmpty else {
+        guard !latestActiveProfiles.isEmpty else {
             if let last = lastUsedProfile {
                 return [last.id: last]
             }
             return [:]
         }
-        return tunnel.activeProfiles
+        return latestActiveProfiles
     }
 
     func connectionStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
         let status = status(ofProfileId: profileId)
-        guard let environment = tunnel.environment(for: profileId) else {
+        guard let environment = latestEnvironments[profileId] else {
             return status
         }
         return status.withEnvironment(environment)
     }
 
     func dataCount(ofProfileId profileId: Profile.ID) -> DataCount? {
-        tunnel
-            .environment(for: profileId)?
+        latestEnvironments[profileId]?
             .environmentValue(forKey: TunnelEnvironmentKeys.dataCount)
     }
 
     func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
-        tunnel
-            .environment(for: profileId)?
+        latestEnvironments[profileId]?
             .environmentValue(forKey: TunnelEnvironmentKeys.lastErrorCode)
     }
 }

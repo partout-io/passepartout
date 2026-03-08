@@ -4,7 +4,7 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class GitHubConfigStrategy: ConfigManagerStrategy {
     private let url: URL
 
@@ -18,7 +18,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
 
     private var lastUpdated: Date
 
-    public init(
+    public nonisolated init(
         url: URL,
         betaURL: URL,
         ttl: TimeInterval,

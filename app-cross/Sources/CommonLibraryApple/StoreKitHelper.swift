@@ -5,7 +5,7 @@
 import Partout
 import StoreKit
 
-@MainActor
+@BusinessActor
 public final class StoreKitHelper: InAppHelper {
     private let products: [ABI.AppProduct]
 
@@ -17,13 +17,14 @@ public final class StoreKitHelper: InAppHelper {
 
     private var observer: Task<Void, Never>?
 
-    public init(products: [ABI.AppProduct], inAppIdentifier: @escaping @Sendable (ABI.AppProduct) -> String) {
+    public nonisolated init(
+        products: [ABI.AppProduct],
+        inAppIdentifier: @escaping @Sendable (ABI.AppProduct) -> String
+    ) {
         self.products = products
         self.inAppIdentifier = inAppIdentifier
         activeTransactions = []
         didUpdateSubject = PassthroughStream()
-
-        observer = transactionsObserverTask()
     }
 
     deinit {
@@ -38,6 +39,21 @@ extension StoreKitHelper {
 
     public nonisolated var didUpdate: AsyncStream<Void> {
         didUpdateSubject.subscribe()
+    }
+
+    public func startObserving() {
+        observer?.cancel()
+        observer = Task { [weak self] in
+            guard let self else { return }
+            for await update in Transaction.updates {
+                guard let transaction = try? update.payloadValue else {
+                    continue
+                }
+                await fetchActiveTransactions()
+                await transaction.finish()
+                guard !Task.isCancelled else { break }
+            }
+        }
     }
 
     public func fetchProducts(timeout: TimeInterval) async throws -> [ABI.AppProduct: ABI.StoreProduct] {
@@ -95,21 +111,6 @@ extension StoreKitHelper {
 }
 
 private extension StoreKitHelper {
-    nonisolated func transactionsObserverTask() -> Task<Void, Never> {
-        Task {
-            for await update in Transaction.updates {
-                guard let transaction = try? update.payloadValue else {
-                    continue
-                }
-                await fetchActiveTransactions()
-                await transaction.finish()
-                guard !Task.isCancelled else {
-                    break
-                }
-            }
-        }
-    }
-
     func fetchActiveTransactions() async {
         var activeTransactions: Set<Transaction> = []
         for await entitlement in Transaction.currentEntitlements {

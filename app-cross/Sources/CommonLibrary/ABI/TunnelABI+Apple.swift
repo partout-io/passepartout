@@ -7,7 +7,6 @@ import NetworkExtension
 import Partout
 
 extension TunnelABI {
-    @MainActor
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         preferences: ABI.AppPreferenceValues,

@@ -7,7 +7,7 @@
 import Partout
 import Testing
 
-@MainActor
+@BusinessActor
 struct IAPManagerTests {
     private let olderBuildNumber = 500
 
@@ -44,7 +44,7 @@ extension IAPManagerTests {
     @Test
     func givenProducts_whenPurchase_thenIsAddedToPurchasedProducts() async throws {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, products: [])
+        reader.setReceipt(withBuild: .max, products: [])
         let sut = IAPManager(receiptReader: reader)
 
         let appleTV: ABI.AppProduct = .Features.appleTV
@@ -70,7 +70,7 @@ extension IAPManagerTests {
     @Test
     func givenBuildProducts_whenOlder_thenEssentialsVersion() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: olderBuildNumber, identifiers: [])
+        reader.setReceipt(withBuild: olderBuildNumber, identifiers: [])
         let sut = IAPManager(receiptReader: reader) { [defaultBuildNumber] purchase in
             if purchase.buildNumber <= defaultBuildNumber {
                 return [.Essentials.iOS_macOS]
@@ -84,7 +84,7 @@ extension IAPManagerTests {
     @Test
     func givenBuildProducts_whenNewer_thenFreeVersion() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: newerBuildNumber, products: [])
+        reader.setReceipt(withBuild: newerBuildNumber, products: [])
         let sut = IAPManager(receiptReader: reader) { [defaultBuildNumber] purchase in
             if purchase.buildNumber <= defaultBuildNumber {
                 return [.Essentials.iOS_macOS]
@@ -99,7 +99,7 @@ extension IAPManagerTests {
     func givenBuildProducts_whenFutureRelease_thenFreeVersion() async {
         let reader = FakeInAppReceiptReader()
         let purchase = ABI.OriginalPurchase(buildNumber: .max, purchaseDate: .distantFuture)
-        await reader.setReceipt(withPurchase: purchase, products: [])
+        reader.setReceipt(withPurchase: purchase, products: [])
         let sut = IAPManager(receiptReader: reader) { purchase in
             if purchase.isUntil(.target) {
                 return [.Features.appleTV]
@@ -114,7 +114,7 @@ extension IAPManagerTests {
     func givenBuildProducts_whenPastRelease_thenFreeVersion() async {
         let reader = FakeInAppReceiptReader()
         let purchase = ABI.OriginalPurchase(buildNumber: 0, purchaseDate: .distantPast)
-        await reader.setReceipt(withPurchase: purchase, products: [])
+        reader.setReceipt(withPurchase: purchase, products: [])
         let sut = IAPManager(receiptReader: reader) { purchase in
             if purchase.isUntil(.target) {
                 return [.Features.appleTV]
@@ -136,7 +136,7 @@ extension IAPManagerTests {
 
         #expect(!sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS_macOS])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS_macOS])
         #expect(!sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 
         await sut.reloadReceipt()
@@ -146,7 +146,7 @@ extension IAPManagerTests {
     @Test
     func givenPurchasedFeatures_thenIsOnlyEligibleForFeatures() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [
             .Features.networkSettings
         ])
         let sut = IAPManager(receiptReader: reader)
@@ -163,7 +163,7 @@ extension IAPManagerTests {
     @Test
     func givenPurchasedAndCancelledFeature_thenIsNotEligible() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(
+        reader.setReceipt(
             withBuild: defaultBuildNumber,
             products: [.Essentials.iOS_macOS],
             cancelledProducts: [.Essentials.iOS_macOS]
@@ -177,7 +177,7 @@ extension IAPManagerTests {
     @Test
     func givenFreeVersion_thenIsNotEligibleForAnyFeature() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [])
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
@@ -189,7 +189,7 @@ extension IAPManagerTests {
     @Test
     func givenFreeVersion_thenIsNotEligibleForAppleTV() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [])
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
@@ -199,7 +199,7 @@ extension IAPManagerTests {
     @Test
     func givenEssentialsVersion_thenIsEligibleForEssentialFeatures() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS_macOS])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS_macOS])
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
@@ -220,7 +220,7 @@ extension IAPManagerTests {
     @Test
     func givenAppleTV_thenIsEligibleForAppleTVAndSharing() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Features.appleTV])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Features.appleTV])
         let sut = IAPManager(receiptReader: reader)
 
         await sut.reloadReceipt()
@@ -234,11 +234,11 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
 #if os(macOS)
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.macOS, .Features.networkSettings])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.macOS, .Features.networkSettings])
         await sut.reloadReceipt()
         #expect(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #else
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS, .Features.networkSettings])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS, .Features.networkSettings])
         await sut.reloadReceipt()
         #expect(sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #endif
@@ -250,11 +250,11 @@ extension IAPManagerTests {
         let sut = IAPManager(receiptReader: reader)
 
 #if os(macOS)
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS, .Features.networkSettings])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.iOS, .Features.networkSettings])
         await sut.reloadReceipt()
         #expect(!sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #else
-        await reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.macOS, .Features.networkSettings])
+        reader.setReceipt(withBuild: defaultBuildNumber, products: [.Essentials.macOS, .Features.networkSettings])
         await sut.reloadReceipt()
         #expect(!sut.isEligible(for: ABI.AppFeature.essentialFeatures))
 #endif
@@ -270,7 +270,7 @@ extension IAPManagerTests {
     @Test
     func givenBeta_thenIsEligibleForFeedback() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, identifiers: [])
+        reader.setReceipt(withBuild: .max, identifiers: [])
         let sut = IAPManager(customUserLevel: .beta, receiptReader: reader)
         await sut.reloadReceipt()
         #expect(sut.isEligibleForFeedback)
@@ -279,7 +279,7 @@ extension IAPManagerTests {
     @Test
     func givenPayingUser_thenIsEligibleForFeedback() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, products: [.Essentials.iOS])
+        reader.setReceipt(withBuild: .max, products: [.Essentials.iOS])
         let sut = IAPManager(receiptReader: reader)
         await sut.reloadReceipt()
         #expect(sut.isEligibleForFeedback)
@@ -383,7 +383,7 @@ extension IAPManagerTests {
     @Test
     func givenReceipts_whenReloadReceipt_thenPublishesEligibleFeatures() async throws {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, products: [
+        reader.setReceipt(withBuild: .max, products: [
             .Features.appleTV,
             .Features.trustedNetworks
         ])
@@ -415,12 +415,12 @@ extension IAPManagerTests {
     @Test
     func givenInvalidReceipts_whenReloadReceipt_thenSkipsInvalid() async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, products: [])
-        await reader.addPurchase(with: "foobar")
-        await reader.addPurchase(with: .Features.allProviders, expirationDate: Date().addingTimeInterval(-10))
-        await reader.addPurchase(with: .Features.appleTV)
-        await reader.addPurchase(with: .Features.networkSettings, expirationDate: Date().addingTimeInterval(10))
-        await reader.addPurchase(with: .Essentials.iOS, cancellationDate: Date().addingTimeInterval(-60))
+        reader.setReceipt(withBuild: .max, products: [])
+        reader.addPurchase(with: "foobar")
+        reader.addPurchase(with: .Features.allProviders, expirationDate: Date().addingTimeInterval(-10))
+        reader.addPurchase(with: .Features.appleTV)
+        reader.addPurchase(with: .Features.networkSettings, expirationDate: Date().addingTimeInterval(10))
+        reader.addPurchase(with: .Essentials.iOS, cancellationDate: Date().addingTimeInterval(-60))
 
         let sut = IAPManager(receiptReader: reader)
         await sut.reloadReceipt()
@@ -441,7 +441,7 @@ extension IAPManagerTests {
     @Test
     func givenManager_whenObserveObjects_thenReloadsReceipt() async throws {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, products: [.Essentials.iOS_macOS])
+        reader.setReceipt(withBuild: .max, products: [.Essentials.iOS_macOS])
         let sut = IAPManager(receiptReader: reader)
 
         #expect(sut.userLevel == .undefined)
@@ -493,7 +493,7 @@ extension IAPManager {
 
     convenience init(products: Set<ABI.AppProduct>) async {
         let reader = FakeInAppReceiptReader()
-        await reader.setReceipt(withBuild: .max, products: products)
+        reader.setReceipt(withBuild: .max, products: products)
         self.init(receiptReader: reader)
         await reloadReceipt()
     }

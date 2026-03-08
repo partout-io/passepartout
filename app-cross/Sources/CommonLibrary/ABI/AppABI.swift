@@ -4,21 +4,21 @@
 
 import Partout
 
-@MainActor
+@BusinessActor
 public final class AppABI: Sendable {
     // Public ABI by domain
-    public let encoder: AppABIEncoderProtocol
-    public let iap: AppABIIAPProtocol
-    public let profile: AppABIProfileProtocol
-    public let registry: AppABIRegistryProtocol
-    public let tunnel: AppABITunnelProtocol
-    public let version: AppABIVersionProtocol
-    public let webReceiver: AppABIWebReceiverProtocol
+    public nonisolated let encoder: AppABIEncoderProtocol
+    public nonisolated let iap: AppABIIAPProtocol
+    public nonisolated let profile: AppABIProfileProtocol
+    public nonisolated let registry: AppABIRegistryProtocol
+    public nonisolated let tunnel: AppABITunnelProtocol
+    public nonisolated let version: AppABIVersionProtocol
+    public nonisolated let webReceiver: AppABIWebReceiverProtocol
     // Legacy managers not migrated to ABI, exposed as is
     @available(*, deprecated, message: "#1679")
-    public let apiManager: APIManager
+    public nonisolated let apiManager: APIManager
     @available(*, deprecated, message: "#1679")
-    public let preferencesManager: PreferencesManager
+    public nonisolated let preferencesManager: PreferencesManager
 
     // Constants and storage
     private let appConfiguration: ABI.AppConfiguration
@@ -33,7 +33,7 @@ public final class AppABI: Sendable {
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
-    private let onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)?
+    private let onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)?
 
     // Internal state
     private var launchTask: Task<Void, Error>?
@@ -56,7 +56,7 @@ public final class AppABI: Sendable {
         tunnelManager: TunnelManager,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        onEligibleFeaturesBlock: ((Set<ABI.AppFeature>) async -> Void)? = nil
+        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         self.appConfiguration = appConfiguration
         self.configManager = configManager
@@ -74,13 +74,14 @@ public final class AppABI: Sendable {
 
         subscriptions = []
 
-        iapManager.isEnabled = appConfiguration.bundle.distributionTarget.supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
+        let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
+        iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
             kvStore: kvStore,
-            supportsIAP: appConfiguration.bundle.distributionTarget.supportsIAP
+            supportsIAP: supportsIAP
         )
         profile = AppABIProfile(
             profileManager: profileManager,

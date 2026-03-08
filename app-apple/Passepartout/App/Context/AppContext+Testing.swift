@@ -52,8 +52,8 @@ extension AppContext {
             withRegistry: registry,
             processor: profileProcessor
         )
-        profileManager.isRemoteImportingEnabled = true
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
+        profileManager.enableRemoteImporting(true)
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
