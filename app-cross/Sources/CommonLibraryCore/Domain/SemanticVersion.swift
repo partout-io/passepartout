@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public struct SemanticVersion: Hashable, Sendable {
+    public struct SemanticVersion: Hashable, Codable, Sendable {
         public let major: Int
 
         public let minor: Int
