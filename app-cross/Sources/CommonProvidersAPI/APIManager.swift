@@ -4,9 +4,9 @@
 
 #if canImport(Combine)
 import Combine
-extension APIManager: ObservableObject {
-}
+extension APIManager: ObservableObject {}
 #endif
+
 import Partout
 
 @MainActor

@@ -4,8 +4,7 @@
 
 #if canImport(Combine)
 import Combine
-extension ProviderManager: ObservableObject {
-}
+extension ProviderManager: ObservableObject {}
 #endif
 
 import Partout
