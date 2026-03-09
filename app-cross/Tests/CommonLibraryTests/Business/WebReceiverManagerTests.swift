@@ -20,11 +20,11 @@ extension WebReceiverManagerTests {
         let expEnd = Expectation()
         Task {
             for await event in stream {
-                guard case .newUpload(let file) = event else {
+                guard case .newUpload(let payload) = event else {
                     continue
                 }
-                #expect(file.name == "name")
-                #expect(file.contents == "contents")
+                #expect(payload.upload.name == "name")
+                #expect(payload.upload.contents == "contents")
                 await expReceive.fulfill()
             }
             await expEnd.fulfill()

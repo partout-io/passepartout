@@ -16,7 +16,7 @@ public final class VersionChecker {
 
     private var isPending = false
 
-    public nonisolated let didChange: PassthroughStream<ABI.VersionEventProtocol>
+    public nonisolated let didChange: PassthroughStream<ABI.VersionEvent>
 
     public nonisolated init(
         kvStore: KeyValueStore,
@@ -66,7 +66,7 @@ public final class VersionChecker {
                 return
             }
             pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
-            didChange.send(ABI.VersionEvent.New(release: latestRelease))
+            didChange.send(.new(.init(release: latestRelease)))
         } catch ABI.AppError.rateLimit {
             pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {

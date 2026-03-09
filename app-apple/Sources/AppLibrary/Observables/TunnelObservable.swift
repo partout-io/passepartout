@@ -71,18 +71,16 @@ extension TunnelObservable {
         abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
     }
 
-    func onUpdate(_ event: ABI.TunnelEventProtocol) {
+    func onUpdate(_ event: ABI.TunnelEvent) {
 //        pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
-        case let payload as ABI.TunnelEvent.Refresh:
+        case .refresh(let payload):
             pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
             activeProfiles = payload.info
-        case is ABI.TunnelEvent.DataCount:
+        case .dataCount:
             transfers = activeProfiles.compactMapValues {
                 abi.transfer(ofProfileId: $0.id)
             }
-        default:
-            assertionFailure()
         }
     }
 }

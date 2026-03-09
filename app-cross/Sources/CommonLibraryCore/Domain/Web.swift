@@ -5,13 +5,13 @@
 import Partout
 
 extension ABI {
-    public struct WebsiteWithPasscode: Codable, Sendable {
+    public struct WebsiteWithPasscode: Equatable, Codable, Sendable {
         public let url: URL
 
         public let passcode: String?
     }
 
-    public struct WebFileUpload: Codable, Sendable {
+    public struct WebFileUpload: Equatable, Codable, Sendable {
         public let name: String
 
         public let contents: String

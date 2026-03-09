@@ -114,48 +114,48 @@ extension AppABI {
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
         subscriptions.append(Task {
             for await event in configEvents {
-                dispatch(event, handler)
+                dispatch(.config(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in iapEvents {
-                dispatch(event, handler)
+                dispatch(.iap(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in profileEvents {
-                dispatch(event, handler)
+                dispatch(.profile(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in tunnelEvents {
-                dispatch(event, handler)
+                dispatch(.tunnel(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in versionEvents {
-                dispatch(event, handler)
+                dispatch(.version(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in webReceiverEvents {
                 switch event {
-                case let payload as ABI.WebReceiverEvent.NewUpload:
+                case .newUpload(let payload):
                     do {
                         try await onWebUpload(payload.upload)
-                        dispatch(event, handler)
+                        dispatch(.webReceiver(event), handler)
                     } catch {
-                        let failureEvent = ABI.WebReceiverEvent.UploadFailure(error)
-                        dispatch(failureEvent, handler)
+                        let failureEvent: ABI.WebReceiverEvent = .uploadFailure(.init(error))
+                        dispatch(.webReceiver(failureEvent), handler)
                     }
                 default:
-                    dispatch(event, handler)
+                    dispatch(.webReceiver(event), handler)
                 }
             }
         })
     }
 
-    func dispatch(_ event: ABI.EventProtocol, _ handler: ABI.EventHandler?) {
+    func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
         guard let handler else { return }
         handler.callback(handler.context, event)
     }
@@ -418,13 +418,13 @@ private extension AppABI {
             guard let self else { return }
             for await event in iapEvents {
                 switch event {
-                case let payload as ABI.IAPEvent.Status:
+                case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
                     kvStore.set(!payload.isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
-                case let payload as ABI.IAPEvent.EligibleFeatures:
+                case .eligibleFeatures(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     do {
                         pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
@@ -444,7 +444,7 @@ private extension AppABI {
             guard let self else { return }
             for await event in profileEvents {
                 switch event {
-                case let payload as ABI.ProfileEvent.Save:
+                case .save(let payload):
                     do {
                         try await onSaveProfile(
                             payload.profile,

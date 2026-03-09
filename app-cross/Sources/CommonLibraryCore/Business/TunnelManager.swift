@@ -20,7 +20,7 @@ public final class TunnelManager {
 
     private let interval: TimeInterval
 
-    public nonisolated let didChange: PassthroughStream<ABI.TunnelEventProtocol>
+    public nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
     private var latestActiveProfiles: [Profile.ID: TunnelActiveProfile]
 
@@ -174,9 +174,9 @@ private extension TunnelManager {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
                 // Publish compound statuses
-                didChange.send(ABI.TunnelEvent.Refresh(
+                didChange.send(.refresh(.init(
                     info: computedTunnelInfos(from: newActiveProfiles)
-                ))
+                )))
             }
         }
 
@@ -188,7 +188,7 @@ private extension TunnelManager {
                     break
                 }
                 latestEnvironments = await tunnel.allEnvironments()
-                didChange.send(ABI.TunnelEvent.DataCount())
+                didChange.send(.dataCount(.init()))
                 try? await Task.sleep(interval: interval)
             }
         }

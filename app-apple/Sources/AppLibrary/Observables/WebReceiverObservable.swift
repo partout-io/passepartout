@@ -38,18 +38,16 @@ extension WebReceiverObservable {
 // MARK: - State
 
 extension WebReceiverObservable {
-    func onUpdate(_ event: ABI.WebReceiverEventProtocol) {
+    func onUpdate(_ event: ABI.WebReceiverEvent) {
         switch event {
-        case let payload as ABI.WebReceiverEvent.Start:
+        case .start(let payload):
             self.website = payload.website
-        case is ABI.WebReceiverEvent.Stop:
+        case .stop:
             website = nil
-        case is ABI.WebReceiverEvent.NewUpload:
+        case .newUpload:
             break
-        case let payload as ABI.WebReceiverEvent.UploadFailure:
+        case .uploadFailure(let payload):
             uploadFailure.send(payload.error)
-        default:
-            assertionFailure()
         }
     }
 }

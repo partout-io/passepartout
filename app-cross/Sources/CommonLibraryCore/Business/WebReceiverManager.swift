@@ -19,16 +19,16 @@ public final class WebReceiverManager {
     public private(set) var website: ABI.WebsiteWithPasscode? {
         didSet {
             if let website {
-                didChange.send(ABI.WebReceiverEvent.Start(
+                didChange.send(.start(.init(
                     website: website
-                ))
+                )))
             } else {
-                didChange.send(ABI.WebReceiverEvent.Stop())
+                didChange.send(.stop(.init()))
             }
         }
     }
 
-    public nonisolated let didChange: PassthroughStream<ABI.WebReceiverEventProtocol>
+    public nonisolated let didChange: PassthroughStream<ABI.WebReceiverEvent>
 
     public nonisolated init(
         webReceiver: WebReceiver,
@@ -43,9 +43,9 @@ public final class WebReceiverManager {
         let passcode = passcodeGenerator?()
         do {
             let url = try webReceiver.start(passcode: passcode) { [weak self] in
-                self?.didChange.send(ABI.WebReceiverEvent.NewUpload(
+                self?.didChange.send(.newUpload(.init(
                     upload: ABI.WebFileUpload(name: $0, contents: $1)
-                ))
+                )))
             }
             website = ABI.WebsiteWithPasscode(url: url, passcode: passcode)
         } catch let error as WebReceiverError {

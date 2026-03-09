@@ -25,7 +25,7 @@ public final class IAPManager {
     public var isEnabled = true {
         didSet {
             pendingReceiptTask?.cancel()
-            didChange.send(ABI.IAPEvent.Status(isEnabled: isEnabled))
+            didChange.send(.status(.init(isEnabled: isEnabled)))
         }
     }
 
@@ -37,11 +37,11 @@ public final class IAPManager {
 
     public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
         didSet {
-            didChange.send(ABI.IAPEvent.EligibleFeatures(
+            didChange.send(.eligibleFeatures(.init(
                 features: eligibleFeatures,
                 forComplete: isEligibleForComplete,
                 forFeedback: isEligibleForFeedback
-            ))
+            )))
         }
     }
 
@@ -49,15 +49,15 @@ public final class IAPManager {
         verificationDelayMinutesBlock(isBeta)
     }
 
-    public nonisolated let didChange: PassthroughStream<ABI.IAPEventProtocol>
+    public nonisolated let didChange: PassthroughStream<ABI.IAPEvent>
 
     private var isObserving: Bool
 
     private var pendingReceiptTask: Task<Void, Never>? {
         didSet {
-            didChange.send(ABI.IAPEvent.LoadReceipt(
+            didChange.send(.loadReceipt(.init(
                 isLoading: pendingReceiptTask != nil
-            ))
+            )))
         }
     }
 
@@ -293,11 +293,11 @@ private extension IAPManager {
 
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
-        didChange.send(ABI.IAPEvent.NewReceipt(
+        didChange.send(.newReceipt(.init(
             originalPurchase: originalPurchase,
             products: purchasedProducts,
             isBeta: userLevel.isBeta
-        ))
+        )))
         self.eligibleFeatures = eligibleFeatures // Will post .eligibleFeatures
     }
 }

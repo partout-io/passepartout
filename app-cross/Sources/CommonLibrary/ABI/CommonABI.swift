@@ -39,3 +39,62 @@ extension UnsafePointer where Pointee == CChar {
         String(cString: self).data(using: .utf8)
     }
 }
+
+// MARK: - Event wrapping
+
+extension ABI {
+    struct EventWrapper: Encodable {
+        enum CodingKeys: CodingKey {
+            case type
+            case subtype
+            case payload
+        }
+        private let type: String
+        private let subEvent: SubEvent?
+        init(_ event: Event) {
+            self.type = event.type
+            self.subEvent = event.subEvent
+        }
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(type, forKey: .type)
+            guard let subEvent else { return }
+            let subtype = subEvent.name
+            try container.encode(subtype, forKey: .subtype)
+            if let payload = subEvent.payload {
+                try container.encode(payload, forKey: .payload)
+            }
+        }
+    }
+}
+
+private extension ABI.Event {
+    var type: String {
+        switch self {
+        case .config: "config"
+        case .iap: "iap"
+        case .profile: "profile"
+        case .tunnel: "tunnel"
+        case .version: "version"
+        case .webReceiver: "webReceiver"
+        }
+    }
+}
+
+private struct SubEvent {
+    let name: String
+    let payload: Encodable?
+}
+
+private extension ABI.EventProtocol {
+    var subEvent: SubEvent? {
+//        print(">>> event: \(self)")
+        let mirror = Mirror(reflecting: self)
+        guard let arg = mirror.children.first else { return nil }
+//        print(">>> subevent: \(arg.label), \(arg.value)")
+        guard let payload = Mirror(reflecting: arg.value).children.first,
+              let name = payload.label else { return nil }
+//        print(">>> payload: \(payload)")
+        return SubEvent(name: name, payload: payload.value as? Encodable)
+    }
+}

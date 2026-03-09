@@ -68,7 +68,7 @@ extension AppContext {
 private extension AppContext {
     static nonisolated func abiCallback(
         ctx: UnsafeRawPointer?,
-        event mainEvent: ABI.EventProtocol
+        event mainEvent: ABI.Event
     ) {
         guard let opaqueContext = ctx else {
             fatalError("Missing AppContext from ctx. Bad arguments to abi.registerEvents?")
@@ -76,20 +76,18 @@ private extension AppContext {
         let appContext = Unmanaged<AppContext>.fromOpaque(opaqueContext).takeUnretainedValue()
         Task { @MainActor in
             switch mainEvent {
-            case let event as ABI.ConfigEventProtocol:
+            case .config(let event):
                 appContext.configObservable.onUpdate(event)
-            case let event as ABI.IAPEventProtocol:
+            case .iap(let event):
                 appContext.iapObservable.onUpdate(event)
-            case let event as ABI.ProfileEventProtocol:
+            case .profile(let event):
                 appContext.profileObservable.onUpdate(event)
-            case let event as ABI.TunnelEventProtocol:
+            case .tunnel(let event):
                 appContext.tunnelObservable.onUpdate(event)
-            case let event as ABI.VersionEventProtocol:
+            case .version(let event):
                 appContext.versionObservable.onUpdate(event)
-            case let event as ABI.WebReceiverEventProtocol:
+            case .webReceiver(let event):
                 appContext.webReceiverObservable.onUpdate(event)
-            default:
-                assertionFailure()
             }
         }
     }
