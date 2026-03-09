@@ -25,11 +25,6 @@ public protocol AppABIIAPProtocol: Sendable {
     var verificationDelayMinutes: Int { get }
 }
 
-public protocol AppABILoggerProtocol: Sendable {
-    func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
-    func flushLogs()
-}
-
 @BusinessActor
 public protocol AppABIProfileProtocol: Sendable {
     func save(_ profile: Profile, remotelyShared: Bool?) async throws
@@ -77,6 +72,13 @@ public protocol AppABIVersionProtocol: Sendable {
 public protocol AppABIWebReceiverProtocol: Sendable {
     func start() throws
     func stop()
+}
+
+// MARK: - Logging
+
+public protocol AppABILoggerProtocol: Sendable {
+    func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
+    func flushLogs()
 }
 
 // MARK: - Aggregate

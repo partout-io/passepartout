@@ -12,7 +12,8 @@ private var globalABI: TunnelABIProtocol?
 @_cdecl("psp_tunnel_start")
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
-    callback: (@convention(c) (Int, UnsafePointer<CChar>?) -> Void)?
+    context: UnsafeMutableRawPointer?,
+    callback: psp_abi_cb_error?
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -23,17 +24,20 @@ public func __psp_tunnel_start(
     }
     // Process input
     let preferencesData = args.pointee.preferences?.asJSONData
+    if args.pointee.preferences != nil {
+        assert(preferencesData != nil, "Unable to decode preferences")
+    }
     let profileInput: ABI.ProfileImporterInput = {
         let json = String(cString: cProfileJSON)
+        // FIXME: #1656, C ABI, filename is used if module, discarded if JSON profile
         return .contents(filename: "FIXME", data: json)
     }()
-    // FIXME: #1656, C ABI, filename is used if module, discarded if JSON profile
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
     nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
     // Start tunnel ABI
-    abiDispatch {
+    ABI.run(context) { ctx in
         defer { pspUnlock() }
         do {
             let abi = try TunnelABI.forCrossPlatform(
@@ -46,9 +50,9 @@ public func __psp_tunnel_start(
             )
             try await abi.start(isInteractive: isInteractive)
             globalABI = abi
-            callback?(0, nil)
+            callback?(ctx, 0, nil)
         } catch {
-            callback?(-1, error.localizedDescription)
+            callback?(ctx, -1, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }
     }
@@ -56,11 +60,14 @@ public func __psp_tunnel_start(
 }
 
 @_cdecl("psp_tunnel_stop")
-public func __psp_tunnel_stop(callback: (@convention(c) () -> Void)?) {
-    abiDispatch {
+public func __psp_tunnel_stop(
+    context: UnsafeMutableRawPointer?,
+    callback: psp_abi_cb_void?
+) {
+    ABI.run(context) { ctx in
         await globalABI?.stop()
         globalABI = nil
-        callback?()
+        callback?(ctx)
     }
 }
 
