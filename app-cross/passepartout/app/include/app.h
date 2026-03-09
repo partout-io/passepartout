@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
+#pragma once
 #include <wx/wx.h>
 
 class MyApp : public wxApp
 {
 public:
     bool OnInit() override;
-    void OnActivate(wxActivateEvent &event);
+    void OnActivateApp(wxActivateEvent &event);
 };
 
 class MyFrame : public wxFrame
@@ -23,6 +24,7 @@ private:
     void OnFlushLog(wxCommandEvent &event);
     void OnAbout(wxCommandEvent &event);
     void OnQuit(wxCommandEvent &event);
+    void OnABIEvent(wxCommandEvent &event);
 };
 
 enum {
