@@ -23,7 +23,10 @@ public final class ConfigManager {
                 let data = bundle?.map
                     .filter { synchronousActiveFlags.contains($0.key) }
                     .compactMapValues(\.data) ?? [:]
-                didChange.send(.refresh(synchronousActiveFlags, data: data))
+                didChange.send(ABI.ConfigEvent.Refresh(
+                    flags: synchronousActiveFlags,
+                    data: data
+                ))
             }
         }
     }
@@ -33,7 +36,7 @@ public final class ConfigManager {
 
     private var isPending = false
 
-    public nonisolated let didChange: PassthroughStream<ABI.ConfigEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.ConfigEventProtocol>
 
     public nonisolated init() {
         strategy = nil

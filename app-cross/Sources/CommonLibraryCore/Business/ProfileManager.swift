@@ -23,34 +23,40 @@ public final class ProfileManager {
 
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.localProfiles)
-            didChange.send(.refresh(computedProfileHeaders()))
+            didChange.send(ABI.ProfileEvent.LocalProfiles())
+            didChange.send(ABI.ProfileEvent.Refresh(
+                headers: computedProfileHeaders()
+            ))
         }
     }
 
     private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-            didChange.send(.refresh(computedProfileHeaders()))
+            didChange.send(ABI.ProfileEvent.Refresh(
+                headers: computedProfileHeaders()
+            ))
         }
     }
 
     public private(set) var isRemoteImportingEnabled = false {
         didSet {
-            didChange.send(.changeRemoteImporting(isRemoteImportingEnabled))
+            didChange.send(ABI.ProfileEvent.ChangeRemoteImporting(
+                isImporting: isRemoteImportingEnabled
+            ))
         }
     }
 
     private var waitingObservers: Set<Observer> {
         didSet {
             if waitingObservers.isEmpty {
-                didChange.send(.ready)
+                didChange.send(ABI.ProfileEvent.Ready())
             }
         }
     }
 
     // MARK: Publishers
 
-    public nonisolated let didChange: PassthroughStream<ABI.ProfileEvent>
+    public nonisolated let didChange: PassthroughStream<ABI.ProfileEventProtocol>
     private var localSubscription: Task<Void, Never>?
     private var remoteSubscription: Task<Void, Never>?
     private var remoteImportTask: Task<Void, Never>?
@@ -113,7 +119,10 @@ extension ProfileManager {
                         try await backupRepository.saveProfile(profile)
                     }
                 }
-                didChange.send(.save(profile, previous: existingProfile))
+                didChange.send(ABI.ProfileEvent.Save(
+                    profile: profile,
+                    previous: existingProfile
+                ))
             } else {
                 pspLog(.profiles, .notice, "\tProfile \(profile.id) not modified, not saving")
             }
@@ -279,9 +288,9 @@ private extension ProfileManager {
         }
 
         Task { [weak self] in
-            self?.didChange.send(.startRemoteImport)
+            self?.didChange.send(ABI.ProfileEvent.StartRemoteImport())
             await self?.importRemoteProfiles(result)
-            self?.didChange.send(.stopRemoteImport)
+            self?.didChange.send(ABI.ProfileEvent.StopRemoteImport())
         }
     }
 
