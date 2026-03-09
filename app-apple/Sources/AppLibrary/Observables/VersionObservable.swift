@@ -19,10 +19,12 @@ public final class VersionObservable {
         await abi.checkLatestRelease()
     }
 
-    func onUpdate(_ event: ABI.VersionEvent) {
+    func onUpdate(_ event: ABI.VersionEventProtocol) {
         switch event {
-        case .new(let release):
-            latestRelease = release
+        case let payload as ABI.VersionEvent.New:
+            latestRelease = payload.release
+        default:
+            assertionFailure()
         }
     }
 }

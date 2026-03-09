@@ -131,17 +131,17 @@ extension ProfileObservable {
         !searchSubject.value.isEmpty
     }
 
-    func onUpdate(_ event: ABI.ProfileEvent) {
+    func onUpdate(_ event: ABI.ProfileEventProtocol) {
         pspLog(.core, .debug, "ProfileObservable.onUpdate(): \(event)")
         switch event {
-        case .ready:
+        case is ABI.ProfileEvent.Ready:
             isReady = true
-        case .refresh(let headers):
-            allHeaders = headers
-        case .changeRemoteImporting(let isEnabled):
-            isRemoteImportingEnabled = isEnabled
+        case let payload as ABI.ProfileEvent.Refresh:
+            allHeaders = payload.headers
+        case let payload as ABI.ProfileEvent.ChangeRemoteImporting:
+            isRemoteImportingEnabled = payload.isImporting
         default:
-            break
+            break // assertionFailure()
         }
     }
 }

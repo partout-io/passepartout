@@ -10,7 +10,7 @@ import Observation
 public final class WebReceiverObservable {
     private let abi: AppABIWebReceiverProtocol
     public private(set) var website: ABI.WebsiteWithPasscode?
-    public let uploadFailure: PassthroughStream<Error>
+    public let uploadFailure: PassthroughStream<String>
 
     public var isStarted: Bool {
         website != nil
@@ -38,16 +38,18 @@ extension WebReceiverObservable {
 // MARK: - State
 
 extension WebReceiverObservable {
-    func onUpdate(_ event: ABI.WebReceiverEvent) {
+    func onUpdate(_ event: ABI.WebReceiverEventProtocol) {
         switch event {
-        case .start(let website):
-            self.website = website
-        case .stop:
+        case let payload as ABI.WebReceiverEvent.Start:
+            self.website = payload.website
+        case is ABI.WebReceiverEvent.Stop:
             website = nil
-        case .uploadFailure(let error):
-            uploadFailure.send(error)
-        default:
+        case is ABI.WebReceiverEvent.NewUpload:
             break
+        case let payload as ABI.WebReceiverEvent.UploadFailure:
+            uploadFailure.send(payload.error)
+        default:
+            assertionFailure()
         }
     }
 }

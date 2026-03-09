@@ -57,8 +57,8 @@ private extension WebReceiverView {
 private extension WebReceiverView {
     @Sendable
     func handleUploadFailure() async {
-        for await error in webReceiverObservable.uploadFailure.subscribe() {
-            errorHandler.handle(error)
+        for await errorDescription in webReceiverObservable.uploadFailure.subscribe() {
+            errorHandler.handle(errorDescription)
         }
     }
 }

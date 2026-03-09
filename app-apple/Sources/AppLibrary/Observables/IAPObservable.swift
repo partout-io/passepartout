@@ -93,20 +93,22 @@ extension IAPObservable {
         products.allSatisfy(didPurchase)
     }
 
-    func onUpdate(_ event: ABI.IAPEvent) {
+    func onUpdate(_ event: ABI.IAPEventProtocol) {
         switch event {
-        case .status(let isEnabled):
-            self.isEnabled = isEnabled
-        case .loadReceipt(let isLoading):
-            isLoadingReceipt = isLoading
-        case .newReceipt(let purchase, let products, let isBeta):
-            originalPurchase = purchase
-            purchasedProducts = products
+        case let payload as ABI.IAPEvent.Status:
+            self.isEnabled = payload.isEnabled
+        case let payload as ABI.IAPEvent.LoadReceipt:
+            isLoadingReceipt = payload.isLoading
+        case let payload as ABI.IAPEvent.NewReceipt:
+            originalPurchase = payload.originalPurchase
+            purchasedProducts = payload.products
             self.isBeta = isBeta
-        case .eligibleFeatures(let features, let forComplete, let forFeedback):
-            eligibleFeatures = features
-            isEligibleForComplete = forComplete
-            isEligibleForFeedback = forFeedback
+        case let payload as ABI.IAPEvent.EligibleFeatures:
+            eligibleFeatures = payload.features
+            isEligibleForComplete = payload.forComplete
+            isEligibleForFeedback = payload.forFeedback
+        default:
+            assertionFailure()
         }
     }
 }

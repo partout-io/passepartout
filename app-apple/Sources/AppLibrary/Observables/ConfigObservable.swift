@@ -24,12 +24,14 @@ public final class ConfigObservable {
         allData[flag]
     }
 
-    func onUpdate(_ event: ABI.ConfigEvent) {
+    func onUpdate(_ event: ABI.ConfigEventProtocol) {
         pspLog(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
         switch event {
-        case .refresh(let flags, let data):
-            activeFlags = flags
-            allData = data
+        case let payload as ABI.ConfigEvent.Refresh:
+            activeFlags = payload.flags
+            allData = payload.data
+        default:
+            assertionFailure()
         }
     }
 }

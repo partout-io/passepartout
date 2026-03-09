@@ -43,7 +43,23 @@ public final class ErrorHandler {
         messageSeparator: String = " ",
         onDismiss: (() -> Void)? = nil
     ) {
-        let composedMessage = [message, errorDescription(error)]
+        handle(
+            errorDescription(error),
+            title: title,
+            message: message,
+            messageSeparator: messageSeparator,
+            onDismiss: onDismiss
+        )
+    }
+
+    public func handle(
+        _ errorDescription: String,
+        title: String? = nil,
+        message: String? = nil,
+        messageSeparator: String = " ",
+        onDismiss: (() -> Void)? = nil
+    ) {
+        let composedMessage = [message, errorDescription]
             .compactMap { $0 }
             .joined(separator: messageSeparator)
         beforeAlert(composedMessage)
