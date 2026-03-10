@@ -17,7 +17,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 void abi_event_callback_proxy(const void *ctx, const char *event_json) {
     JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
 
     abi_event_handler *handler = (abi_event_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->event_cb);
