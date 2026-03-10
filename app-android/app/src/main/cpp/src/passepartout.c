@@ -7,7 +7,7 @@
 #include <jni.h>
 #include <stdlib.h>
 #include "passepartout.h"
-#include "abi.h"
+#include "helpers.h"
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {

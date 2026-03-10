@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
-#ifndef __PASSEPARTOUT_ABI_H
-#define __PASSEPARTOUT_ABI_H
-
+#pragma once
 #include <jni.h>
 
 typedef struct {
@@ -14,5 +12,3 @@ typedef struct {
     jobject event_cb; // Global ref to Kotlin callback
 } abi_event_handler;
 void abi_event_callback_proxy(const void *ctx, const char *event_json);
-
-#endif

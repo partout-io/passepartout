@@ -6,7 +6,7 @@
 
 #include <jni.h>
 #include <stdlib.h>
-#include "abi.h"
+#include "helpers.h"
 
 // WARNING: Defining jvm is a requirement for Partout!
 JavaVM *jvm = NULL;

@@ -29,7 +29,7 @@ endforeach()
 
 # Native wrappings for JNI
 add_library(passepartout_wrapper SHARED
-    src/wrapper.c
-    src/abi.c
+        src/passepartout.c
+        src/helpers.c
 )
 target_link_libraries(passepartout_wrapper PRIVATE ${AUTO_LIBS})
