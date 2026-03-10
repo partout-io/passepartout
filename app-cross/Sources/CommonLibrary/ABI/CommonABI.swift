@@ -46,22 +46,23 @@ extension ABI {
     struct EventWrapper: Encodable {
         enum CodingKeys: CodingKey {
             case type
-            case subtype
             case payload
         }
+
         private let type: String
-        private let subEvent: SubEvent?
+        private let payload: Encodable?
+
         init(_ event: Event) {
-            self.type = event.type
-            self.subEvent = event.subEvent
+            let subEvent = event.subEvent
+            let subtype = subEvent?.name ?? ""
+            type = "\(event.type).\(subtype)"
+            payload = subEvent?.payload
         }
+
         func encode(to encoder: any Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(type, forKey: .type)
-            guard let subEvent else { return }
-            let subtype = subEvent.name
-            try container.encode(subtype, forKey: .subtype)
-            if let payload = subEvent.payload {
+            if let payload {
                 try container.encode(payload, forKey: .payload)
             }
         }
@@ -86,15 +87,17 @@ private struct SubEvent {
     let payload: Encodable?
 }
 
-private extension ABI.EventProtocol {
+private extension ABI.Event {
     var subEvent: SubEvent? {
 //        print(">>> event: \(self)")
         let mirror = Mirror(reflecting: self)
         guard let arg = mirror.children.first else { return nil }
 //        print(">>> subevent: \(arg.label), \(arg.value)")
-        guard let payload = Mirror(reflecting: arg.value).children.first,
-              let name = payload.label else { return nil }
+        guard let payload = Mirror(reflecting: arg.value).children.first?.value else {
+            return nil
+        }
+        let name = "\(Swift.type(of: payload))"
 //        print(">>> payload: \(payload)")
-        return SubEvent(name: name, payload: payload.value as? Encodable)
+        return SubEvent(name: name, payload: payload as? Encodable)
     }
 }
