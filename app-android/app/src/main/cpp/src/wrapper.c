@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stdlib.h>
 #include "passepartout.h"
+#include "abi.h"
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
@@ -21,11 +22,18 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_appInit(
         jstring bundle,
         jstring constants,
         jstring profilesDir,
-        jstring cacheDir) {
+        jstring cacheDir,
+        jobject eventContext,
+        jobject eventCallback) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
     const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
+
+    // JNI handler is the context of the event callback
+    abi_event_handler *handler = malloc(sizeof(abi_event_handler));
+    handler->event_ctx = (*env)->NewGlobalRef(env, eventContext);
+    handler->event_cb = (*env)->NewGlobalRef(env, eventCallback);
 
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
@@ -33,8 +41,8 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_appInit(
     args.preferences = NULL;
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
-    args.event_ctx = NULL;
-    args.event_cb = NULL;
+    args.event_ctx = handler;
+    args.event_cb = abi_event_callback_proxy;
     // FIXME: #1656, C ABI, completion can inform about start errors
     psp_app_init(&args);
 

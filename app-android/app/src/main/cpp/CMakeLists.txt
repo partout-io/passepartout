@@ -28,5 +28,8 @@ foreach(SO_FILE ${ALL_SOS})
 endforeach()
 
 # Native wrappings for JNI
-add_library(passepartout_wrapper SHARED src/wrapper.c)
+add_library(passepartout_wrapper SHARED
+    src/wrapper.c
+    src/abi.c
+)
 target_link_libraries(passepartout_wrapper PRIVATE ${AUTO_LIBS})

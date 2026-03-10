@@ -9,7 +9,9 @@ class NativeLibraryWrapper {
         bundle: String,
         constants: String,
         profilesDir: String,
-        cacheDir: String
+        cacheDir: String,
+        eventContext: Any,
+        eventCallback: ABIEventCallback
     )
     external fun tunnelStart(
         bundle: String,

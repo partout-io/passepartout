@@ -35,7 +35,14 @@ class MainActivity : ComponentActivity() {
         val cachePath = cacheDir.absolutePath
 
         val wrapper = NativeLibraryWrapper()
-        wrapper.appInit(bundle, constants, profilesDir, cachePath)
+        wrapper.appInit(
+            bundle,
+            constants,
+            profilesDir,
+            cachePath,
+            this,
+            MyCallback(this)
+        )
         val version = wrapper.partoutVersion()
         Log.e("Passepartout", ">>> $version")
 
