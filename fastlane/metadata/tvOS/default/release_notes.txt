@@ -1,1 +1,1 @@
-* Implement tunnel C ABI (#1708)
+* Update OpenSSL to 3.6.1
