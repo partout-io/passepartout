@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HelloWorld(version: String, startDaemon: () -> Unit, stopDaemon: () -> Unit) {
+fun HelloWorldView(version: String, startDaemon: () -> Unit, stopDaemon: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -45,5 +45,5 @@ fun HelloWorld(version: String, startDaemon: () -> Unit, stopDaemon: () -> Unit)
 @Preview
 @Composable
 fun PreviewHelloWorld() {
-    HelloWorld("World", {}, {})
+    HelloWorldView("World", {}, {})
 }

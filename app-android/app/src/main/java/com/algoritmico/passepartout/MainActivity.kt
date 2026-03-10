@@ -29,25 +29,28 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val wrapper = NativeLibraryWrapper()
+        // Start easy, test Partout version
+        val version = wrapper.partoutVersion()
+        Log.e("Passepartout", ">>> $version")
+
+        // Initialize app and event callback
         var bundle = String(assets.open("bundle.json").readBytes())
         var constants = String(assets.open("constants.json").readBytes())
         var profilesDir = "." // FIXME: #1656, C ABI, profiles dir
         val cachePath = cacheDir.absolutePath
-
-        val wrapper = NativeLibraryWrapper()
+        var eventHandler = MyEventHandler()
         wrapper.appInit(
             bundle,
             constants,
             profilesDir,
             cachePath,
             this,
-            MyCallback(this)
+            eventHandler
         )
-        val version = wrapper.partoutVersion()
-        Log.e("Passepartout", ">>> $version")
 
         setContent {
-            HelloWorld(
+            HelloWorldView(
                 version,
                 { startVpnService() },
                 { stopVpnService() }
