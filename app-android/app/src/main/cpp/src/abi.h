@@ -9,8 +9,6 @@
 
 #include <jni.h>
 
-extern JavaVM *jvm;
-
 typedef struct {
     void *event_ctx;
     jobject event_cb; // Global ref to Kotlin callback

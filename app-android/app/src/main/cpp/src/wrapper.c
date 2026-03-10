@@ -43,7 +43,6 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_appInit(
     args.cache_dir = cCacheDir;
     args.event_ctx = handler;
     args.event_cb = abi_event_callback_proxy;
-    // FIXME: #1656, C ABI, completion can inform about start errors
     psp_app_init(&args);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
