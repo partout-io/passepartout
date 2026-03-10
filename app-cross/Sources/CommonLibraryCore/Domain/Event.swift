@@ -27,6 +27,10 @@ extension ABI {
 }
 
 extension ABI {
+    public struct EmptyPayload: Equatable, Sendable {
+        public init() {}
+    }
+
     public enum ConfigEvent: Sendable {
         case refresh(Refresh)
     }
@@ -38,19 +42,19 @@ extension ABI {
         case eligibleFeatures(EligibleFeatures)
     }
 
-    public enum ProfileEvent: Sendable {
-        case ready(Ready)
-        case localProfiles(LocalProfiles)
+    public enum ProfileEvent: Equatable, Sendable {
+        case ready(EmptyPayload = .init())
+        case localProfiles(EmptyPayload = .init())
         case refresh(Refresh)
         case save(Save)
-        case startRemoteImport(StartRemoteImport)
-        case stopRemoteImport(StopRemoteImport)
+        case startRemoteImport(EmptyPayload = .init())
+        case stopRemoteImport(EmptyPayload = .init())
         case changeRemoteImporting(ChangeRemoteImporting)
     }
 
     public enum TunnelEvent: Sendable {
         case refresh(Refresh)
-        case dataCount(DataCount)
+        case dataCount(EmptyPayload = .init())
     }
 
     public enum VersionEvent: Sendable {
@@ -59,7 +63,7 @@ extension ABI {
 
     public enum WebReceiverEvent: Sendable {
         case start(Start)
-        case stop(Stop)
+        case stop(EmptyPayload = .init())
         case newUpload(NewUpload)
         case uploadFailure(UploadFailure)
     }

@@ -23,7 +23,7 @@ public final class ProfileManager {
 
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.localProfiles(.init()))
+            didChange.send(.localProfiles())
             didChange.send(.refresh(.init(
                 headers: computedProfileHeaders()
             )))
@@ -49,7 +49,7 @@ public final class ProfileManager {
     private var waitingObservers: Set<Observer> {
         didSet {
             if waitingObservers.isEmpty {
-                didChange.send(.ready(.init()))
+                didChange.send(.ready())
             }
         }
     }
@@ -288,9 +288,9 @@ private extension ProfileManager {
         }
 
         Task { [weak self] in
-            self?.didChange.send(.startRemoteImport(.init()))
+            self?.didChange.send(.startRemoteImport())
             await self?.importRemoteProfiles(result)
-            self?.didChange.send(.stopRemoteImport(.init()))
+            self?.didChange.send(.stopRemoteImport())
         }
     }
 

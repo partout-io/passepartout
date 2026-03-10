@@ -93,11 +93,11 @@ private extension ABI.Event {
         let mirror = Mirror(reflecting: self)
         guard let arg = mirror.children.first else { return nil }
 //        print(">>> subevent: \(arg.label), \(arg.value)")
-        guard let payload = Mirror(reflecting: arg.value).children.first?.value else {
+        guard let payload = Mirror(reflecting: arg.value).children.first,
+              let name = payload.label else {
             return nil
         }
-        let name = "\(Swift.type(of: payload))"
 //        print(">>> payload: \(payload)")
-        return SubEvent(name: name, payload: payload as? Encodable)
+        return SubEvent(name: name, payload: payload.value as? Encodable)
     }
 }

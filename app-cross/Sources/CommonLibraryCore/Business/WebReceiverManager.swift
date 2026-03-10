@@ -23,7 +23,7 @@ public final class WebReceiverManager {
                     website: website
                 )))
             } else {
-                didChange.send(.stop(.init()))
+                didChange.send(.stop())
             }
         }
     }

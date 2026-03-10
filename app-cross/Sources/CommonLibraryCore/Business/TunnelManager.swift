@@ -188,7 +188,7 @@ private extension TunnelManager {
                     break
                 }
                 latestEnvironments = await tunnel.allEnvironments()
-                didChange.send(.dataCount(.init()))
+                didChange.send(.dataCount())
                 try? await Task.sleep(interval: interval)
             }
         }

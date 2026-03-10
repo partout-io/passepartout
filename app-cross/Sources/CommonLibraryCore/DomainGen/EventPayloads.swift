@@ -35,11 +35,9 @@ extension ABI.IAPEvent {
 }
 
 extension ABI.ProfileEvent {
-    public struct Ready: ABI.EventProtocol {}
     public struct Refresh: ABI.EventProtocol {
         public let headers: [Profile.ID: ABI.AppProfileHeader]
     }
-    public struct LocalProfiles: ABI.EventProtocol {}
     public struct Save: ABI.EventProtocol {
         private struct EncodableSave: Encodable {
             let profile: CodableProfile
@@ -56,8 +54,6 @@ extension ABI.ProfileEvent {
             try container.encode(cd)
         }
     }
-    public struct StartRemoteImport: ABI.EventProtocol {}
-    public struct StopRemoteImport: ABI.EventProtocol {}
     public struct ChangeRemoteImporting: ABI.EventProtocol {
         public let isImporting: Bool
     }
@@ -79,7 +75,6 @@ extension ABI.WebReceiverEvent {
     public struct Start: ABI.EventProtocol {
         public let website: ABI.WebsiteWithPasscode
     }
-    public struct Stop: ABI.EventProtocol {}
     public struct NewUpload: ABI.EventProtocol {
         public let upload: ABI.WebFileUpload
     }
