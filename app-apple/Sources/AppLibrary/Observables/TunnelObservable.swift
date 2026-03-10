@@ -76,7 +76,7 @@ extension TunnelObservable {
         switch event {
         case .refresh(let payload):
             pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
-            activeProfiles = payload.info
+            activeProfiles = payload.active
         case .dataCount:
             transfers = activeProfiles.compactMapValues {
                 abi.transfer(ofProfileId: $0.id)
