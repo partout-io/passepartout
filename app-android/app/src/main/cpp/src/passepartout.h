@@ -34,9 +34,9 @@ typedef struct {
 
 /* App functions. */
 void psp_app_init(const psp_app_init_args *args);
-void psp_app_on_foreground();
+void psp_app_on_foreground(void);
 void psp_app_import_profile(const char *path, void *ctx, psp_abi_cb_error completion);
-void psp_app_flush_log();
+void psp_app_flush_log(void);
 
 /* Options. */
 //typedef enum {

@@ -10,7 +10,10 @@ set_target_properties(passepartout PROPERTIES
 )
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.cc)
 target_sources(passepartout PRIVATE ${APP_SOURCES})
-target_include_directories(passepartout PRIVATE ${OUTPUT_DIR})
+target_include_directories(passepartout PRIVATE
+    ${OUTPUT_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/include
+)
 target_link_libraries(passepartout PRIVATE passepartout_shared)
 
 # Define tunnel target
@@ -22,7 +25,10 @@ set_target_properties(passepartout-tunnel PROPERTIES
 )
 file(GLOB_RECURSE TUNNEL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/*.c)
 target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
-target_include_directories(passepartout-tunnel PRIVATE ${OUTPUT_DIR})
+target_include_directories(passepartout-tunnel PRIVATE
+    ${OUTPUT_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
+)
 target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
 
 if(APPLE)

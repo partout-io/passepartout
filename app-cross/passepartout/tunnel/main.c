@@ -10,6 +10,7 @@
 
 static
 void start_callback(void *ctx, int result, const char *error) {
+    (void)ctx;
     if (error) {
         printf("Result: %d, %s\n", result, error);
     } else {
