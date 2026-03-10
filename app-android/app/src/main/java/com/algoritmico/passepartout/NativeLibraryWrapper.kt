@@ -5,14 +5,20 @@ import io.partout.PartoutVpnWrapper
 
 class NativeLibraryWrapper {
     external fun partoutVersion(): String
-    external fun daemonStart(
+    external fun appInit(
+        bundle: String,
+        constants: String,
+        profilesDir: String,
+        cacheDir: String
+    )
+    external fun tunnelStart(
         bundle: String,
         constants: String,
         profile: String,
         cacheDir: String,
         vpn: PartoutVpnWrapper
-    ): Boolean
-    external fun daemonStop(): Unit
+    )
+    external fun tunnelStop(): Unit
 
     companion object {
         init {

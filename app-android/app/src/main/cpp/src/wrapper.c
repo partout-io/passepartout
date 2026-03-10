@@ -14,8 +14,38 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_partoutVersion(JNIEnv *en
     return jmsg;
 }
 
-JNIEXPORT jboolean JNICALL
-Java_com_algoritmico_passepartout_NativeLibraryWrapper_daemonStart(
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_NativeLibraryWrapper_appInit(
+        JNIEnv *env,
+        jobject thiz,
+        jstring bundle,
+        jstring constants,
+        jstring profilesDir,
+        jstring cacheDir) {
+    const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
+    const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
+    const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
+    const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
+
+    psp_app_init_args args = { 0 };
+    args.bundle = cBundle;
+    args.constants = cConstants;
+    args.preferences = NULL;
+    args.profiles_dir = cProfilesDir;
+    args.cache_dir = cCacheDir;
+    args.event_ctx = NULL;
+    args.event_cb = NULL;
+    // FIXME: #1656, C ABI, completion can inform about start errors
+    psp_app_init(&args);
+
+    (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
+    (*env)->ReleaseStringUTFChars(env, constants, cConstants);
+    (*env)->ReleaseStringUTFChars(env, profilesDir, cProfilesDir);
+    (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_NativeLibraryWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -40,16 +70,16 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_daemonStart(
     args.is_interactive = true;
     args.is_daemon = false;
     args.jni_wrapper = jniVPNWrapper;
-    // FIXME: #1700, C ABI, completion can inform about start errors
-    const bool ret = psp_tunnel_start(&args, NULL, NULL);
+    // FIXME: #1656, C ABI, completion can inform about start errors
+    psp_tunnel_start(&args, NULL, NULL);
+
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
     (*env)->ReleaseStringUTFChars(env, profile, cProfile);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
-    return ret;
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_NativeLibraryWrapper_daemonStop(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_NativeLibraryWrapper_tunnelStop(JNIEnv *env, jobject thiz) {
     psp_tunnel_stop(NULL, NULL);
 }

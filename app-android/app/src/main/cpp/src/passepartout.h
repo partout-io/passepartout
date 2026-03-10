@@ -62,7 +62,7 @@ typedef struct {
 } psp_tunnel_start_args;
 
 /* Daemon functions. */
-bool psp_tunnel_start(const psp_tunnel_start_args *args, void *ctx, psp_abi_cb_error callback);
+void psp_tunnel_start(const psp_tunnel_start_args *args, void *ctx, psp_abi_cb_error callback);
 void psp_tunnel_stop(void *ctx, psp_abi_cb_void callback);
 
 #endif

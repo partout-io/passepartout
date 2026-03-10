@@ -29,7 +29,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        var bundle = String(assets.open("bundle.json").readBytes())
+        var constants = String(assets.open("constants.json").readBytes())
+        var profilesDir = "." // FIXME: #1656, C ABI, profiles dir
+        val cachePath = cacheDir.absolutePath
+
         val wrapper = NativeLibraryWrapper()
+        wrapper.appInit(bundle, constants, profilesDir, cachePath)
         val version = wrapper.partoutVersion()
         Log.e("Passepartout", ">>> $version")
 

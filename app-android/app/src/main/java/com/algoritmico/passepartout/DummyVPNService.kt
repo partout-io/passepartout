@@ -62,7 +62,7 @@ class DummyVPNService: VpnService() {
 
         val cachePath = cacheDir.absolutePath
         Log.e("Passepartout", ">>> Starting daemon (cache: $cachePath)")
-        library.daemonStart(
+        library.tunnelStart(
             bundle,
             constants,
             testProfile,
@@ -78,7 +78,7 @@ class DummyVPNService: VpnService() {
         if (!isRunning) { return }
         isRunning = false
         Log.e("Passepartout", ">>> Stopping daemon")
-        library.daemonStop()
+        library.tunnelStop()
         Log.e("Passepartout", ">>> Stopped daemon")
 
         // FIXME: add callback to partout_daemon_start and partout_daemon_stop
