@@ -61,7 +61,7 @@ extension ABI.ProfileEvent {
 
 extension ABI.TunnelEvent {
     public struct Refresh: ABI.EventProtocol {
-        public let info: [Profile.ID: ABI.AppTunnelInfo]
+        public let active: [Profile.ID: ABI.AppTunnelInfo]
     }
 }
 
@@ -76,7 +76,7 @@ extension ABI.WebReceiverEvent {
         public let website: ABI.WebsiteWithPasscode
     }
     public struct NewUpload: ABI.EventProtocol {
-        public let upload: ABI.WebFileUpload
+        public let file: ABI.WebFileUpload
     }
     public struct UploadFailure: ABI.EventProtocol {
         public let error: String

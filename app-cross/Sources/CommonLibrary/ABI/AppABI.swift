@@ -142,7 +142,7 @@ extension AppABI {
                 switch event {
                 case .newUpload(let payload):
                     do {
-                        try await onWebUpload(payload.upload)
+                        try await onWebUpload(payload.file)
                         dispatch(.webReceiver(event), handler)
                     } catch {
                         let failureEvent: ABI.WebReceiverEvent = .uploadFailure(.init(error))

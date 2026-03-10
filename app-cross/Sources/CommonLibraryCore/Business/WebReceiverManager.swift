@@ -44,7 +44,7 @@ public final class WebReceiverManager {
         do {
             let url = try webReceiver.start(passcode: passcode) { [weak self] in
                 self?.didChange.send(.newUpload(.init(
-                    upload: ABI.WebFileUpload(name: $0, contents: $1)
+                    file: ABI.WebFileUpload(name: $0, contents: $1)
                 )))
             }
             website = ABI.WebsiteWithPasscode(url: url, passcode: passcode)

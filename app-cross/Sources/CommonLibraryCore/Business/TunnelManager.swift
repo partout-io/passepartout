@@ -175,7 +175,7 @@ private extension TunnelManager {
                 }
                 // Publish compound statuses
                 didChange.send(.refresh(.init(
-                    info: computedTunnelInfos(from: newActiveProfiles)
+                    active: computedTunnelInfos(from: newActiveProfiles)
                 )))
             }
         }
