@@ -4,6 +4,6 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
-#include "myapp.h"
+#include "app.h"
 
 wxIMPLEMENT_APP(MyApp);

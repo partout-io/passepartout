@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
-    public struct AppProduct: RawRepresentable, Hashable, Sendable {
+    public struct AppProduct: RawRepresentable, Hashable, Codable, Sendable {
         public let rawValue: String
 
         public init?(rawValue: String) {

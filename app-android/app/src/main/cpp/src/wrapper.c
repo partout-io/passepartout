@@ -41,7 +41,7 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_daemonStart(
     args.is_daemon = false;
     args.jni_wrapper = jniVPNWrapper;
     // FIXME: #1700, C ABI, completion can inform about start errors
-    const bool ret = psp_tunnel_start(&args, NULL);
+    const bool ret = psp_tunnel_start(&args, NULL, NULL);
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
     (*env)->ReleaseStringUTFChars(env, profile, cProfile);
@@ -51,5 +51,5 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_daemonStart(
 
 JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_NativeLibraryWrapper_daemonStop(JNIEnv *env, jobject thiz) {
-    psp_tunnel_stop(NULL);
+    psp_tunnel_stop(NULL, NULL);
 }

@@ -23,27 +23,33 @@ public final class ProfileManager {
 
     private var allProfiles: [Profile.ID: Profile] {
         didSet {
-            didChange.send(.localProfiles)
-            didChange.send(.refresh(computedProfileHeaders()))
+            didChange.send(.localProfiles())
+            didChange.send(.refresh(.init(
+                headers: computedProfileHeaders()
+            )))
         }
     }
 
     private var remoteProfilesIds: Set<Profile.ID> {
         didSet {
-            didChange.send(.refresh(computedProfileHeaders()))
+            didChange.send(.refresh(.init(
+                headers: computedProfileHeaders()
+            )))
         }
     }
 
     public private(set) var isRemoteImportingEnabled = false {
         didSet {
-            didChange.send(.changeRemoteImporting(isRemoteImportingEnabled))
+            didChange.send(.changeRemoteImporting(.init(
+                isImporting: isRemoteImportingEnabled
+            )))
         }
     }
 
     private var waitingObservers: Set<Observer> {
         didSet {
             if waitingObservers.isEmpty {
-                didChange.send(.ready)
+                didChange.send(.ready())
             }
         }
     }
@@ -113,7 +119,10 @@ extension ProfileManager {
                         try await backupRepository.saveProfile(profile)
                     }
                 }
-                didChange.send(.save(profile, previous: existingProfile))
+                didChange.send(.save(.init(
+                    profile: profile,
+                    previous: existingProfile
+                )))
             } else {
                 pspLog(.profiles, .notice, "\tProfile \(profile.id) not modified, not saving")
             }
@@ -279,9 +288,9 @@ private extension ProfileManager {
         }
 
         Task { [weak self] in
-            self?.didChange.send(.startRemoteImport)
+            self?.didChange.send(.startRemoteImport())
             await self?.importRemoteProfiles(result)
-            self?.didChange.send(.stopRemoteImport)
+            self?.didChange.send(.stopRemoteImport())
         }
     }
 

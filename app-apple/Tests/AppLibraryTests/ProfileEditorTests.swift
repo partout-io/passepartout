@@ -237,7 +237,8 @@ extension ProfileEditorTests {
         Task {
             for await event in profileEvents {
                 switch event {
-                case .save(let savedProfile, _):
+                case .save(let payload):
+                    let savedProfile = payload.profile
                     do {
                         let lhs = try savedProfile.withoutUserInfo()
                         let rhs = try profile.withoutUserInfo()

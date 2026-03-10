@@ -11,22 +11,16 @@ extension ABI.AppError: @retroactive LocalizedError {
         switch self {
         case .couldNotLaunch(let reason):
             return reason.localizedDescription
-
         case .emptyProducts:
             return V.emptyProducts
-
         case .emptyProfileName:
             return V.emptyProfileName
-
         case .ineligibleProfile:
             return nil
-
         case .interactiveLogin:
             return nil
-
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
-
         case .moduleRequiresConnection(let module):
             let connectionTypes = ModuleType.allCases.filter(\.isConnection)
             return V.moduleRequiresConnection(
@@ -35,41 +29,30 @@ extension ABI.AppError: @retroactive LocalizedError {
                     .map(\.localizedDescription)
                     .joined(separator: ", ")
             )
-
         case .notFound:
             return nil
-
         case .partout(let error):
             return error.localizedDescription
-
         case .permissionDenied:
             return V.permissionDenied
-
-        // handled manually
         case .rateLimit:
+            // Handled manually
             return nil
-
         case .systemExtension:
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
-
         case .timeout:
             return Strings.Errors.App.Passepartout.timeout
-
-        // handled manually
         case .unexpectedResponse:
+            // Handled manually
             return nil
-
         case .unknown:
             return nil
-
-        // handled manually
         case .verificationReceiptIsLoading, .verificationRequiredFeatures:
+            // Handled manually
             return nil
-
         case .webReceiver:
             return Strings.Errors.App.webReceiver
-
         case .webUploader(let status, let error):
             switch status {
             case 403:

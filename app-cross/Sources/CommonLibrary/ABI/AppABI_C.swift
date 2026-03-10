@@ -9,6 +9,10 @@ import Partout
 nonisolated(unsafe)
 private var abi: AppABI?
 
+private enum AppABIError: Error {
+    case eventEncoding(reason: Error? = nil)
+}
+
 @_cdecl("psp_app_init")
 public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     guard let args,
@@ -19,25 +23,48 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
         fatalError("NULL args or required fields")
     }
     let preferencesData = args.pointee.preferences?.asJSONData
-//    var kvStore: KeyValueStore!
-    nonisolated(unsafe) let eventContext = args.pointee.event_ctx
+    if args.pointee.preferences != nil {
+        assert(preferencesData != nil, "Unable to decode preferences")
+    }
+    let eventContext = args.pointee.event_ctx
     let eventCallback = args.pointee.event_cb
+    let eventHandler = ABI.EventHandler(
+        context: eventContext,
+        callback: { ctx, event in
+            guard let eventCallback else { return }
+            do {
+                // Enrich event JSON with metadata for decoding
+                let wrapper = ABI.EventWrapper(event)
+                let data: Data
+                do {
+                    data = try JSONEncoder().encode(wrapper)
+                } catch {
+                    throw AppABIError.eventEncoding(reason: error)
+                }
+                guard let json = String(data: data, encoding: .utf8) else {
+                    throw AppABIError.eventEncoding()
+                }
+                // Dispatch JSON event to cross-platform apps
+                json.withCString {
+                    eventCallback(ctx, $0)
+                }
+            } catch {
+                assertionFailure("Unable to encode event: \(event), \(error)")
+            }
+        }
+    )
     let profilesDir = String(cString: cProfilesDir)
     let cachesURL = URL(filePath: String(cString: cCacheDir))
-    abiDispatch {
+    ABI.run {
         do {
             abi = try AppABI.forCrossPlatform(
                 appBundleData: appBundleData,
                 appConstantsData: appConstantsData,
                 preferencesData: preferencesData,
                 profilesDir: profilesDir,
-                cachesURL: cachesURL,
-                eventContext: eventContext,
-                eventCallback: eventCallback
+                cachesURL: cachesURL
             )
-            abi?.registerEvents(context: nil) { ctx, event in
-                // FIXME: #1656, C ABI, dispatch events to UI
-            }
+            abi?.registerEvents(eventHandler)
         } catch {
             fatalError("Unable to start app: \(error)")
         }
@@ -51,20 +78,25 @@ public func __psp_app_deinit() {
 
 @_cdecl("psp_app_on_foreground")
 public func __psp_app_on_foreground() {
-    abiDispatch {
+    ABI.run {
         abi?.onApplicationActive()
     }
 }
 
 @_cdecl("psp_app_import_profile")
-public func __psp_app_import_profile(cPath: UnsafePointer<CChar>?) {
-    guard let abi, let cPath else { return }
-    let path = String(cString: cPath)
-    abiDispatch {
+public func __psp_app_import_profile(
+    path: UnsafePointer<CChar>?,
+    context: UnsafeMutableRawPointer?,
+    completion: psp_abi_cb_error?
+) {
+    guard let abi, let path else { return }
+    let swiftPath = String(cString: path)
+    ABI.run(context) { ctx in
         do {
-            try await abi.profile.importFile(path, passphrase: nil)
+            try await abi.profile.importFile(swiftPath, passphrase: nil)
+            completion?(ctx, 0, nil)
         } catch {
-            // FIXME: #1656, C ABI, return error via completion callback
+            completion?(ctx, -1, error.localizedDescription)
         }
     }
 }

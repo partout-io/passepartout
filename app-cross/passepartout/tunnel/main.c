@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include "passepartout.h"
 
-void start_callback(int result, const char *error) {
+static
+void start_callback(void *ctx, int result, const char *error) {
     if (error) {
         printf("Result: %d, %s\n", result, error);
     } else {
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
     args.jni_wrapper = NULL;
 
     /* Will block indefinitely. */
-    psp_tunnel_start(&args, start_callback);
+    psp_tunnel_start(&args, NULL, start_callback);
 
     free(bundle);
     free(constants);

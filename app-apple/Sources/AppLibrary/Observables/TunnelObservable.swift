@@ -74,9 +74,9 @@ extension TunnelObservable {
     func onUpdate(_ event: ABI.TunnelEvent) {
 //        pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
-        case .refresh(let active):
+        case .refresh(let payload):
             pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
-            activeProfiles = active
+            activeProfiles = payload.active
         case .dataCount:
             transfers = activeProfiles.compactMapValues {
                 abi.transfer(ofProfileId: $0.id)

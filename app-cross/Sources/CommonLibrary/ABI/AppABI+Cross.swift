@@ -12,9 +12,7 @@ extension AppABI {
         appConstantsData: Data,
         preferencesData: Data?,
         profilesDir: String,
-        cachesURL: URL,
-        eventContext: UnsafeMutableRawPointer?,
-        eventCallback: psp_event_callback?
+        cachesURL: URL
     ) throws -> AppABI {
         let decoder = JSONDecoder()
 

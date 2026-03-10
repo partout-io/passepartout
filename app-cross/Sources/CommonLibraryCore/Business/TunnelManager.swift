@@ -174,7 +174,9 @@ private extension TunnelManager {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
                 // Publish compound statuses
-                didChange.send(.refresh(computedTunnelInfos(from: newActiveProfiles)))
+                didChange.send(.refresh(.init(
+                    active: computedTunnelInfos(from: newActiveProfiles)
+                )))
             }
         }
 
@@ -186,7 +188,7 @@ private extension TunnelManager {
                     break
                 }
                 latestEnvironments = await tunnel.allEnvironments()
-                didChange.send(.dataCount)
+                didChange.send(.dataCount())
                 try? await Task.sleep(interval: interval)
             }
         }

@@ -14,60 +14,57 @@ extension ABI {
         case webReceiver(WebReceiverEvent)
     }
 
-    public enum ConfigEvent: Sendable {
-        case refresh(Set<ConfigFlag>, data: [ConfigFlag: JSON])
-    }
-
-    public enum IAPEvent: Sendable {
-        case status(isEnabled: Bool)
-        case loadReceipt(isLoading: Bool)
-        case newReceipt(OriginalPurchase?, products: Set<AppProduct>, isBeta: Bool)
-        case eligibleFeatures(Set<AppFeature>, forComplete: Bool, forFeedback: Bool)
-    }
-
-    public enum ProfileEvent: Equatable, Sendable {
-        case ready
-        case localProfiles
-        case refresh([Profile.ID: AppProfileHeader])
-        case save(Profile, previous: Profile?)
-        case startRemoteImport
-        case stopRemoteImport
-        case changeRemoteImporting(Bool)
-    }
-
-    public enum TunnelEvent: Sendable {
-        case refresh([Profile.ID: AppTunnelInfo])
-        case dataCount
-    }
-
-    public enum VersionEvent: Sendable {
-        case new(VersionRelease)
-    }
-
-    public enum WebReceiverEvent: Sendable {
-        case start(website: WebsiteWithPasscode)
-        case stop
-        case newUpload(WebFileUpload)
-        case uploadFailure(Error)
-    }
-}
-
-// MARK: - Context and Callbacks
-
-// FIXME: #1656, C ABI, map events
-//#if !PSP_CROSS
-public typealias ABICallbackEvent = ABI.Event
-//#else
-//public typealias ABICallbackEvent = UnsafePointer<psp_event>
-//#endif
-
-extension ABI {
-    public struct EventContext: @unchecked Sendable {
-        public let pointer: UnsafeRawPointer
-        public init(pointer: UnsafeRawPointer) {
-            self.pointer = pointer
+    public struct EventHandler: @unchecked Sendable {
+        public let context: UnsafeRawPointer?
+        public let callback: EventCallback
+        public init(context: UnsafeRawPointer?, callback: @escaping EventCallback) {
+            self.context = context
+            self.callback = callback
         }
     }
 
-    public typealias EventCallback = @Sendable (EventContext?, ABICallbackEvent) -> Void
+    public typealias EventCallback = @Sendable (UnsafeRawPointer?, ABI.Event) -> Void
+}
+
+extension ABI {
+    public struct EmptyPayload: Equatable, Sendable {
+        public init() {}
+    }
+
+    public enum ConfigEvent: Sendable {
+        case refresh(Refresh)
+    }
+
+    public enum IAPEvent: Sendable {
+        case status(Status)
+        case loadReceipt(LoadReceipt)
+        case newReceipt(NewReceipt)
+        case eligibleFeatures(EligibleFeatures)
+    }
+
+    public enum ProfileEvent: Equatable, Sendable {
+        case ready(EmptyPayload = .init())
+        case localProfiles(EmptyPayload = .init())
+        case refresh(Refresh)
+        case save(Save)
+        case startRemoteImport(EmptyPayload = .init())
+        case stopRemoteImport(EmptyPayload = .init())
+        case changeRemoteImporting(ChangeRemoteImporting)
+    }
+
+    public enum TunnelEvent: Sendable {
+        case refresh(Refresh)
+        case dataCount(EmptyPayload = .init())
+    }
+
+    public enum VersionEvent: Sendable {
+        case new(New)
+    }
+
+    public enum WebReceiverEvent: Sendable {
+        case start(Start)
+        case stop(EmptyPayload = .init())
+        case newUpload(NewUpload)
+        case uploadFailure(UploadFailure)
+    }
 }

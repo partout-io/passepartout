@@ -136,10 +136,10 @@ extension ProfileObservable {
         switch event {
         case .ready:
             isReady = true
-        case .refresh(let headers):
-            allHeaders = headers
-        case .changeRemoteImporting(let isEnabled):
-            isRemoteImportingEnabled = isEnabled
+        case .refresh(let payload):
+            allHeaders = payload.headers
+        case .changeRemoteImporting(let payload):
+            isRemoteImportingEnabled = payload.isImporting
         default:
             break
         }

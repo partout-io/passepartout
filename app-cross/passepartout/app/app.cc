@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0
  */
 
-#include "myapp.h"
+#include "app.h"
+#include "abi.h"
+
 extern "C" {
 #include <stdlib.h>
 #include "passepartout.h"
@@ -46,13 +48,13 @@ bool MyApp::OnInit()
     args.preferences = NULL;
     args.profiles_dir = profiles_dir;
     args.cache_dir = cache_dir;
-    args.event_ctx = NULL;
-    args.event_cb = NULL;
+    args.event_ctx = this;
+    args.event_cb = onABIEvent;
     psp_app_init(&args);
     free(bundle);
     free(constants);
 
-    Bind(wxEVT_ACTIVATE_APP, &MyApp::OnActivate, this);
+    Bind(wxEVT_ACTIVATE_APP, &MyApp::OnActivateApp, this);
 
     frame = new MyFrame();
     frame->Show(true);
@@ -63,7 +65,7 @@ failure:
     return false;
 }
 
-void MyApp::OnActivate(wxActivateEvent &event) {
+void MyApp::OnActivateApp(wxActivateEvent &event) {
     psp_app_on_foreground();
 }
 
@@ -93,6 +95,7 @@ MyFrame::MyFrame()
     Bind(wxEVT_MENU, &MyFrame::OnFlushLog, this, ID_FlushLog);
     Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MyFrame::OnQuit, this, wxID_EXIT);
+    Bind(wxEVT_ABI_EVENT, &MyFrame::OnABIEvent, this);
 
     SetSize(400, 300);
     Centre();
@@ -101,7 +104,7 @@ MyFrame::MyFrame()
 void MyFrame::OnImportProfile(wxCommandEvent&)
 {
     wxFileDialog openFileDialog(this, _("Import profile"), "", "",
-                                "Configuration files *.ovpn|*.conf",
+                                "*.ovpn;*.conf;*.json",
                                 wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
     if (openFileDialog.ShowModal() == wxID_CANCEL) return;
@@ -109,7 +112,10 @@ void MyFrame::OnImportProfile(wxCommandEvent&)
     const wxString path = openFileDialog.GetPath();
     const char *cPath = path.utf8_str().data();
     printf("Path: %s\n", cPath);
-    psp_app_import_profile(cPath);
+    psp_app_import_profile(cPath, this, [](void *ctx, int code, const char *error) {
+        printf(">>> ABI Result: (ctx=%p), %d, %s\n", ctx, code, error);
+        wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
+    });
 }
 
 void MyFrame::OnFlushLog(wxCommandEvent&)
@@ -125,4 +131,11 @@ void MyFrame::OnAbout(wxCommandEvent&)
 void MyFrame::OnQuit(wxCommandEvent&)
 {
     Close(true);
+}
+
+void MyFrame::OnABIEvent(wxCommandEvent &event)
+{
+    const wxString json = event.GetString();
+    const char *cJSON = json.utf8_str().data();
+    printf(">>> ABI Event (MyFrame): %s\n", cJSON);
 }

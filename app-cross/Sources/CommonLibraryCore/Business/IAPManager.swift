@@ -25,7 +25,7 @@ public final class IAPManager {
     public var isEnabled = true {
         didSet {
             pendingReceiptTask?.cancel()
-            didChange.send(.status(isEnabled: isEnabled))
+            didChange.send(.status(.init(isEnabled: isEnabled)))
         }
     }
 
@@ -37,11 +37,11 @@ public final class IAPManager {
 
     public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
         didSet {
-            didChange.send(.eligibleFeatures(
-                eligibleFeatures,
+            didChange.send(.eligibleFeatures(.init(
+                features: eligibleFeatures,
                 forComplete: isEligibleForComplete,
                 forFeedback: isEligibleForFeedback
-            ))
+            )))
         }
     }
 
@@ -55,7 +55,9 @@ public final class IAPManager {
 
     private var pendingReceiptTask: Task<Void, Never>? {
         didSet {
-            didChange.send(.loadReceipt(isLoading: pendingReceiptTask != nil))
+            didChange.send(.loadReceipt(.init(
+                isLoading: pendingReceiptTask != nil
+            )))
         }
     }
 
@@ -291,11 +293,11 @@ private extension IAPManager {
 
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
-        didChange.send(.newReceipt(
-            originalPurchase,
+        didChange.send(.newReceipt(.init(
+            originalPurchase: originalPurchase,
             products: purchasedProducts,
             isBeta: userLevel.isBeta
-        ))
+        )))
         self.eligibleFeatures = eligibleFeatures // Will post .eligibleFeatures
     }
 }

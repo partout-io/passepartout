@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
-
-#if !PSP_CROSS
+#if canImport(Combine)
 import Combine
 extension PreferencesManager: ObservableObject {}
 #endif
+
+import Partout
 
 @MainActor
 public final class PreferencesManager {

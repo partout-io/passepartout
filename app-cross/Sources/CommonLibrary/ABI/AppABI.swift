@@ -102,11 +102,10 @@ public final class AppABI: Sendable {
     deinit {
         subscriptions.forEach { $0.cancel() }
     }
+}
 
-    public func registerEvents(
-        context: ABI.EventContext?,
-        callback: @escaping ABI.EventCallback
-    ) {
+extension AppABI {
+    public func registerEvents(_ handler: ABI.EventHandler?) {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
@@ -115,57 +114,50 @@ public final class AppABI: Sendable {
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
         subscriptions.append(Task {
             for await event in configEvents {
-                callback(context, .config(event))
+                dispatch(.config(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in iapEvents {
-                callback(context, .iap(event))
+                dispatch(.iap(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in profileEvents {
-                callback(context, .profile(event))
+                dispatch(.profile(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in tunnelEvents {
-                callback(context, .tunnel(event))
+                dispatch(.tunnel(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in versionEvents {
-                callback(context, .version(event))
+                dispatch(.version(event), handler)
             }
         })
         subscriptions.append(Task {
             for await event in webReceiverEvents {
                 switch event {
-                case .newUpload(let upload):
+                case .newUpload(let payload):
                     do {
-                        try await onWebUpload(upload)
+                        try await onWebUpload(payload.file)
+                        dispatch(.webReceiver(event), handler)
                     } catch {
-                        callback(context, .webReceiver(.uploadFailure(error)))
+                        let failureEvent: ABI.WebReceiverEvent = .uploadFailure(.init(error))
+                        dispatch(.webReceiver(failureEvent), handler)
                     }
                 default:
-                    callback(context, .webReceiver(event))
+                    dispatch(.webReceiver(event), handler)
                 }
             }
         })
     }
-}
 
-extension AppABI: AppABILoggerProtocol, LogFormatter {
-    public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
-        pspLog(category, level, message)
-    }
-
-    public nonisolated func flushLogs() {
-        pspLogFlush()
-    }
-
-    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
-        logFormatter.formattedLog(timestamp: timestamp, message: message)
+    func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
+        guard let handler else { return }
+        handler.callback(handler.context, event)
     }
 }
 
@@ -361,6 +353,22 @@ private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
     }
 }
 
+// MARK: - Logging
+
+extension AppABI: AppABILoggerProtocol, LogFormatter {
+    public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
+        pspLog(category, level, message)
+    }
+
+    public nonisolated func flushLogs() {
+        pspLogFlush()
+    }
+
+    public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
+        logFormatter.formattedLog(timestamp: timestamp, message: message)
+    }
+}
+
 // MARK: - Observation
 
 // Invoked by AppDelegate
@@ -410,17 +418,17 @@ private extension AppABI {
             guard let self else { return }
             for await event in iapEvents {
                 switch event {
-                case .status(let isEnabled):
+                case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
-                    pspLog(.iap, .info, "IAPManager.isEnabled -> \(isEnabled)")
-                    kvStore.set(!isEnabled, forAppPreference: .skipsPurchases)
+                    pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
+                    kvStore.set(!payload.isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
-                case .eligibleFeatures(let features, _, _):
+                case .eligibleFeatures(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     do {
-                        pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(features)")
-                        try await onEligibleFeatures(features)
+                        pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
+                        try await onEligibleFeatures(payload.features)
                     } catch {
                         pspLog(.iap, .error, "Unable to react to eligible features: \(error)")
                     }
@@ -436,9 +444,12 @@ private extension AppABI {
             guard let self else { return }
             for await event in profileEvents {
                 switch event {
-                case .save(let profile, let previousProfile):
+                case .save(let payload):
                     do {
-                        try await onSaveProfile(profile, previous: previousProfile)
+                        try await onSaveProfile(
+                            payload.profile,
+                            previous: payload.previous
+                        )
                     } catch {
                         pspLog(.profiles, .error, "Unable to react to saved profile: \(error)")
                     }
