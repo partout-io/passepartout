@@ -23,8 +23,9 @@ extension WebReceiverManagerTests {
                 guard case .newUpload(let payload) = event else {
                     continue
                 }
-                #expect(payload.upload.name == "name")
-                #expect(payload.upload.contents == "contents")
+                let file = payload.upload
+                #expect(file.name == "name")
+                #expect(file.contents == "contents")
                 await expReceive.fulfill()
             }
             await expEnd.fulfill()
