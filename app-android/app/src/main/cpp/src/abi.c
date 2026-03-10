@@ -8,16 +8,16 @@
 #include <stdlib.h>
 #include "abi.h"
 
-JavaVM *g_vm = NULL;
-
+// WARNING: Defining jvm is a requirement for Partout!
+JavaVM *jvm = NULL;
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
-    g_vm = vm;
+    jvm = vm;
     return JNI_VERSION_1_6;
 }
 
 void abi_event_callback_proxy(const void *ctx, const char *event_json) {
     JNIEnv *env;
-    (*g_vm)->AttachCurrentThread(g_vm, (void **)&env, NULL);
+    (*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
 
     abi_event_handler *handler = (abi_event_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->event_cb);

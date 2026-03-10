@@ -9,7 +9,7 @@
 
 #include <jni.h>
 
-extern JavaVM *g_vm;
+extern JavaVM *jvm;
 
 typedef struct {
     void *event_ctx;
