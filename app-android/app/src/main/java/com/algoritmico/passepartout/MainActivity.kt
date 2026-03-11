@@ -30,11 +30,27 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val wrapper = NativeLibraryWrapper()
+        // Start easy, test Partout version
         val version = wrapper.partoutVersion()
         Log.e("Passepartout", ">>> $version")
 
+        // Initialize app and event callback
+        var bundle = String(assets.open("bundle.json").readBytes())
+        var constants = String(assets.open("constants.json").readBytes())
+        var profilesDir = "." // FIXME: #1656, C ABI, profiles dir
+        val cachePath = cacheDir.absolutePath
+        var eventHandler = MyEventHandler()
+        wrapper.appInit(
+            bundle,
+            constants,
+            profilesDir,
+            cachePath,
+            this,
+            eventHandler
+        )
+
         setContent {
-            HelloWorld(
+            HelloWorldView(
                 version,
                 { startVpnService() },
                 { stopVpnService() }
@@ -72,41 +88,4 @@ class MainActivity : ComponentActivity() {
             // User denied VPN permission
         }
     }
-}
-
-@Composable
-fun HelloWorld(version: String, startDaemon: () -> Unit, stopDaemon: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Hello, ${version}",
-                style = MaterialTheme.typography.headlineLarge
-            )
-            Button(
-                onClick = {
-                    startDaemon()
-                }
-            ) {
-                Text("Start")
-            }
-            Button(
-                onClick = {
-                    stopDaemon()
-                }
-            ) {
-                Text("Stop")
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun PreviewHelloWorld() {
-    HelloWorld("World", {}, {})
 }
