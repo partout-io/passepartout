@@ -17,23 +17,11 @@ extension AppABI {
         let decoder = JSONDecoder()
 
         // Parse preferences
-        let preferences: ABI.AppPreferenceValues = {
-            var values = ABI.AppPreferenceValues()
-            if let preferencesData {
-                do {
-                    values = try decoder.decode(ABI.AppPreferenceValues.self, from: preferencesData)
-                } catch {
-                    pspLog(.core, .error, "Unable to decode preferences: \(error)")
-                }
-            } else {
-                pspLog(.core, .info, "No preferences provided")
-            }
-            // FIXME: #1656, C ABI, app device ID
-            if values.deviceId == nil {
-                values.deviceId = ""
-            }
-            return values
-        }()
+        let preferences = ABI.AppPreferenceValues(
+            with: decoder,
+            data: preferencesData,
+            newDeviceId: true
+        )
 
         // Decode app configuration
         let bundle = try decoder.decode(ABI.AppBundle.self, from: appBundleData)

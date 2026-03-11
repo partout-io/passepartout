@@ -101,3 +101,23 @@ private extension ABI.Event {
         return SubEvent(name: name, payload: payload.value as? Encodable)
     }
 }
+
+extension ABI.AppPreferenceValues {
+    init(with decoder: JSONDecoder, data: Data?, newDeviceId: Bool) {
+        var values = ABI.AppPreferenceValues()
+        if let data {
+            do {
+                values = try decoder.decode(Self.self, from: data)
+            } catch {
+                pspLog(.core, .error, "Unable to decode preferences: \(error)")
+            }
+        } else {
+            pspLog(.core, .info, "No preferences provided")
+        }
+        if newDeviceId && values.deviceId == nil {
+            // FIXME: #1656, C ABI, app device ID
+            values.deviceId = ""
+        }
+        self = values
+    }
+}
