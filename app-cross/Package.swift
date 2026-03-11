@@ -149,6 +149,7 @@ package.targets.append(contentsOf: [
 import Foundation
 
 if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
+    let wxWidgetsVersion = "3.3"
     package.targets.append(contentsOf: [
         .target(
             name: "passepartout-shared",
@@ -167,8 +168,8 @@ if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
                     "-D__WXOSX_COCOA__",
                     "-D_FILE_OFFSET_BITS=64",
                     "-DwxDEBUG_LEVEL=0",
-                    "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/include/wx-3.3",
-                    "-I/opt/homebrew/Cellar/wxwidgets/3.3.1/lib/wx/include/osx_cocoa-unicode-3.3"
+                    "-I/opt/homebrew/opt/wxwidgets/include/wx-\(wxWidgetsVersion)",
+                    "-I/opt/homebrew/opt/wxwidgets/lib/wx/include/osx_cocoa-unicode-\(wxWidgetsVersion)"
                 ]),
                 .define("USE_SWIFTPM")
             ],
@@ -181,13 +182,13 @@ if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
                 .linkedFramework("AudioToolbox"),
                 .linkedFramework("System"),
                 .linkedFramework("OpenGL"),
-                .linkedLibrary("wx_osx_cocoau_xrc-3.3"),
-                .linkedLibrary("wx_osx_cocoau_html-3.3"),
-                .linkedLibrary("wx_osx_cocoau_qa-3.3"),
-                .linkedLibrary("wx_osx_cocoau_core-3.3"),
-                .linkedLibrary("wx_baseu_xml-3.3"),
-                .linkedLibrary("wx_baseu_net-3.3"),
-                .linkedLibrary("wx_baseu-3.3")
+                .linkedLibrary("wx_osx_cocoau_xrc-\(wxWidgetsVersion)"),
+                .linkedLibrary("wx_osx_cocoau_html-\(wxWidgetsVersion)"),
+                .linkedLibrary("wx_osx_cocoau_qa-\(wxWidgetsVersion)"),
+                .linkedLibrary("wx_osx_cocoau_core-\(wxWidgetsVersion)"),
+                .linkedLibrary("wx_baseu_xml-\(wxWidgetsVersion)"),
+                .linkedLibrary("wx_baseu_net-\(wxWidgetsVersion)"),
+                .linkedLibrary("wx_baseu-\(wxWidgetsVersion)")
             ]
         ),
         .executableTarget(
