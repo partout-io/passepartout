@@ -30,7 +30,6 @@ if [[ $1 != "gen" ]]; then
     cp -f $cmake_bin_path/libwg-go.so $libs_path
     # Pull C++ runtime (Swift runtime linked statically)
     cp -f $ANDROID_NDK_SYSROOT/usr/lib/aarch64-linux-android/libc++_shared.so $libs_path
-    sed -E -i '' "s/set\(PASSEPARTOUT_SHA1 ([0-9a-f]+)\)/set(PASSEPARTOUT_SHA1 ${passepartout_sha1})/" $cpp_path/CMakeLists.txt
 fi
 
 # Codegen ABI entities
