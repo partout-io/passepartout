@@ -18,7 +18,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(path: "../submodules/partout"),
+        .package(path: "partout"),
         .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
     ]
 )

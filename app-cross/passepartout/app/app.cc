@@ -19,7 +19,7 @@ bool MyApp::OnInit()
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
 
-    psp_app_init_args args = { 0 };
+    psp_app_init_args args;
     char *bundle = NULL;
     char *constants = NULL;
     MyFrame* frame = 0;
@@ -65,7 +65,7 @@ failure:
     return false;
 }
 
-void MyApp::OnActivateApp(wxActivateEvent &event) {
+void MyApp::OnActivateApp(wxActivateEvent &) {
     psp_app_on_foreground();
 }
 
@@ -101,7 +101,7 @@ MyFrame::MyFrame()
     Centre();
 }
 
-void MyFrame::OnImportProfile(wxCommandEvent&)
+void MyFrame::OnImportProfile(wxCommandEvent &)
 {
     wxFileDialog openFileDialog(this, _("Import profile"), "", "",
                                 "*.ovpn;*.conf;*.json",
@@ -118,17 +118,17 @@ void MyFrame::OnImportProfile(wxCommandEvent&)
     });
 }
 
-void MyFrame::OnFlushLog(wxCommandEvent&)
+void MyFrame::OnFlushLog(wxCommandEvent &)
 {
     psp_app_flush_log();
 }
 
-void MyFrame::OnAbout(wxCommandEvent&)
+void MyFrame::OnAbout(wxCommandEvent &)
 {
     wxMessageBox("This is a simple wxWidgets macOS menu bar app.", "About", wxOK | wxICON_INFORMATION);
 }
 
-void MyFrame::OnQuit(wxCommandEvent&)
+void MyFrame::OnQuit(wxCommandEvent &)
 {
     Close(true);
 }

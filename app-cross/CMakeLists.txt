@@ -18,7 +18,7 @@ set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_WGGO ON)
-add_subdirectory(../submodules/partout partout)
+add_subdirectory(partout)
 
 # Set exclusions and symbols for non-Apple builds
 set(PSP_EXCLUSIONS CommonData.*)
@@ -79,29 +79,7 @@ add_custom_command(
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )
 
-# wxWidgets only required to build executable
+# Optionally build end-user applications
 if(BUILD_APP)
-    if(WIN32)
-        set(WX_GENERATOR "Visual Studio 17 2022")
-    else()
-        set(WX_GENERATOR ${CMAKE_GENERATOR})
-    endif()
-    set(WX_ARGS
-        -DCMAKE_INSTALL_PREFIX=${OUTPUT_DIR}/wx
-        -DwxBUILD_SHARED=OFF
-        -DwxBUILD_TESTS=OFF
-        -DwxBUILD_SAMPLES=OFF
-        -DwxBUILD_DEMOS=OFF
-        -DwxBUILD_PRECOMP=OFF
-        -DwxUSE_LIBWEBP=OFF
-        -DwxUSE_WEBVIEW=OFF
-    )
-    ExternalProject_Add(wxWidgets
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/wx
-        CMAKE_GENERATOR ${WX_GENERATOR}
-        CMAKE_ARGS ${WX_ARGS}
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
-    )
     add_subdirectory(passepartout)
 endif()
