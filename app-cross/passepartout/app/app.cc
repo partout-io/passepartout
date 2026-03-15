@@ -133,7 +133,7 @@ void MyFrame::OnQuit(wxCommandEvent &)
     Close(true);
 }
 
-void MyFrame::OnABIEvent(wxCommandEvent &)
+void MyFrame::OnABIEvent(wxCommandEvent &event)
 {
     const wxString json = event.GetString();
     const char *cJSON = json.utf8_str().data();
