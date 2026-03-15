@@ -49,7 +49,7 @@ Download the app codebase locally:
 
 ```
 $ git clone https://github.com/partout-io/passepartout
-$ git submodule update --init submodules/partout
+$ git submodule update --init app-cross/partout
 ```
 
 then find the Xcode project in `app-apple`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
