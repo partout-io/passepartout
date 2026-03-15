@@ -21,9 +21,9 @@ extension Profile {
             .map(\.moduleType)
             .nilIfEmpty
 
-        let providerInfo: ABI.AppProfileHeader.ProviderInfo?
+        let providerInfo: ABI.ProviderInfo?
         if let activeProviderModule {
-            providerInfo = ABI.AppProfileHeader.ProviderInfo(
+            providerInfo = ABI.ProviderInfo(
                 providerId: activeProviderModule.providerId,
                 countryCode: activeProviderModule.entity?.header.countryCode
             )

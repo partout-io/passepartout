@@ -37,7 +37,9 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
                 let wrapper = ABI.EventWrapper(event)
                 let data: Data
                 do {
-                    data = try JSONEncoder().encode(wrapper)
+                    let encoder = JSONEncoder()
+                    encoder.dateEncodingStrategy = .iso8601
+                    data = try encoder.encode(wrapper)
                 } catch {
                     throw AppABIError.eventEncoding(reason: error)
                 }

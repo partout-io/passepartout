@@ -44,26 +44,42 @@ extension UnsafePointer where Pointee == CChar {
 
 extension ABI {
     struct EventWrapper: Encodable {
-        enum CodingKeys: CodingKey {
-            case type
-            case payload
+        struct DynamicCodingKeys: CodingKey {
+            var stringValue: String
+            init?(stringValue: String) { self.stringValue = stringValue }
+            var intValue: Int? { nil }
+            init?(intValue: Int) { nil }
         }
 
-        private let type: String
+        private let fullType: String
         private let payload: Encodable?
 
         init(_ event: Event) {
             let subEvent = event.subEvent
             let subtype = subEvent?.name ?? ""
-            type = "\(event.type).\(subtype)"
+            fullType = "\(event.type)_\(subtype)"
             payload = subEvent?.payload
         }
 
         func encode(to encoder: any Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(type, forKey: .type)
+            //
+            // WARNING: "eventType" MUST match 100% the codegen output
+            // type (which is also the @SerialName) for the corresponding
+            // sealed class in Kotlin
+            //
+            // E.g.: ConfigEvent.Refresh
+            //
+            // Event.type = "ConfigEvent"
+            // Event.subtype = "Refresh"
+            // fullType = "ConfigEvent_Refresh" (see init)
+            // fqEventType = "ABI_\(fullType)" = "ABI_ConfigEvent_Refresh"
+            //
+            let fqEventType = "ABI_\(fullType)"
+            var container = encoder.container(keyedBy: DynamicCodingKeys.self)
+            let eventTypeKey = DynamicCodingKeys(stringValue: "eventType")!
+            try container.encode(fqEventType, forKey: eventTypeKey)
             if let payload {
-                try container.encode(payload, forKey: .payload)
+                try payload.encode(to: encoder)
             }
         }
     }
@@ -72,12 +88,12 @@ extension ABI {
 private extension ABI.Event {
     var type: String {
         switch self {
-        case .config: "config"
-        case .iap: "iap"
-        case .profile: "profile"
-        case .tunnel: "tunnel"
-        case .version: "version"
-        case .webReceiver: "webReceiver"
+        case .config: "ConfigEvent"
+        case .iap: "IAPEvent"
+        case .profile: "ProfileEvent"
+        case .tunnel: "TunnelEvent"
+        case .version: "VersionEvent"
+        case .webReceiver: "WebReceiverEvent"
         }
     }
 }
@@ -93,12 +109,12 @@ private extension ABI.Event {
         let mirror = Mirror(reflecting: self)
         guard let arg = mirror.children.first else { return nil }
 //        print(">>> subevent: \(arg.label), \(arg.value)")
-        guard let payload = Mirror(reflecting: arg.value).children.first,
-              let name = payload.label else {
+        guard let payload = Mirror(reflecting: arg.value).children.first?.value else {
             return nil
         }
 //        print(">>> payload: \(payload)")
-        return SubEvent(name: name, payload: payload.value as? Encodable)
+        let name = "\(Swift.type(of: payload))"
+        return SubEvent(name: name, payload: payload as? Encodable)
     }
 }
 
