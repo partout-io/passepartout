@@ -67,7 +67,7 @@ extension AppContext {
 
 private extension AppContext {
     static nonisolated func abiCallback(
-        ctx: UnsafeRawPointer?,
+        ctx: UnsafeMutableRawPointer?,
         event mainEvent: ABI.Event
     ) {
         guard let opaqueContext = ctx else {

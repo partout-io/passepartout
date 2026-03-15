@@ -208,6 +208,7 @@ extension ABI.AppBundle {
         distributionTarget: ABI.DistributionTarget,
         buildTarget: BuildTarget,
         bundle: BundleConfiguration,
+        logTag: String,
         appLogPath: String,
         tunnelLogPath: String
     ) {
@@ -226,7 +227,7 @@ extension ABI.AppBundle {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
-        let log = SimpleLogDestination()
+        let log = SimpleLogDestination(tag: logTag)
 
         let appGroupURL = {
             let groupId = bundle.string(for: .groupId)
@@ -313,7 +314,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create group caches directory: \(error)")
+            SimpleLogDestination(tag: nil).append(.fault, "Unable to create group caches directory: \(error)")
         }
         return url
     }
@@ -323,7 +324,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create group documents directory: \(error)")
+            SimpleLogDestination(tag: nil).append(.fault, "Unable to create group documents directory: \(error)")
         }
         return url
     }
@@ -336,7 +337,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination(tag: nil).append(.fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -345,7 +346,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination(tag: nil).append(.fault, "Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }

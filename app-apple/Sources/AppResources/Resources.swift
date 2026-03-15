@@ -23,6 +23,7 @@ public enum Resources {
             distributionTarget: distributionTarget,
             buildTarget: buildTarget,
             bundle: bundleConfiguration,
+            logTag: "Passepartout",
             appLogPath: "app.log",
             tunnelLogPath: "tunnel.log"
         )

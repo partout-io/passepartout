@@ -5,17 +5,17 @@
 import Partout
 
 extension ABI {
-    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Codable, Sendable {
-        public struct ProviderInfo: Hashable, Codable, Sendable {
-            public let providerId: ProviderID
-            public let countryCode: String?
+    public struct ProviderInfo: Hashable, Codable, Sendable {
+        public let providerId: ProviderID
+        public let countryCode: String?
 
-            public init(providerId: ProviderID, countryCode: String?) {
-                self.providerId = providerId
-                self.countryCode = countryCode
-            }
+        public init(providerId: ProviderID, countryCode: String?) {
+            self.providerId = providerId
+            self.countryCode = countryCode
         }
+    }
 
+    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Codable, Sendable {
         public private(set) var id: Profile.ID
         public let name: String
         public let moduleTypes: [ModuleType]

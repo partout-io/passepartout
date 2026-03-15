@@ -208,7 +208,7 @@ private extension PartoutLogger.Builder {
 #if canImport(Darwin)
             setDestination(OSLogDestination($0), for: [$0])
 #else
-            setDestination(SimpleLogDestination(), for: [$0])
+            setDestination(SimpleLogDestination(tag: "Passepartout"), for: [$0])
 #endif
         }
     }

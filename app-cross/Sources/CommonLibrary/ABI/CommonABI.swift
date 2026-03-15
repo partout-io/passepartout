@@ -44,46 +44,59 @@ extension UnsafePointer where Pointee == CChar {
 
 extension ABI {
     struct EventWrapper: Encodable {
-        enum CodingKeys: CodingKey {
-            case type
-            case payload
+        struct DynamicCodingKeys: CodingKey {
+            var stringValue: String
+            init?(stringValue: String) { self.stringValue = stringValue }
+            var intValue: Int? { nil }
+            init?(intValue: Int) { nil }
         }
 
-        private let type: String
+        private let payloadType: String?
         private let payload: Encodable?
 
         init(_ event: Event) {
             let subEvent = event.subEvent
-            let subtype = subEvent?.name ?? ""
-            type = "\(event.type).\(subtype)"
-            payload = subEvent?.payload
+            guard let subEvent else {
+                payloadType = nil
+                payload = nil
+                return
+            }
+            payloadType = subEvent.type
+            payload = subEvent.payload
         }
 
         func encode(to encoder: any Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(type, forKey: .type)
-            if let payload {
-                try container.encode(payload, forKey: .payload)
+            guard let payloadType, let payload else {
+                assertionFailure("Unable to encode event (missing payload)")
+                return
             }
-        }
-    }
-}
 
-private extension ABI.Event {
-    var type: String {
-        switch self {
-        case .config: "config"
-        case .iap: "iap"
-        case .profile: "profile"
-        case .tunnel: "tunnel"
-        case .version: "version"
-        case .webReceiver: "webReceiver"
+            //
+            // WARNING: "eventType" MUST match 100% the codegen output
+            // type (which is also the @SerialName) for the corresponding
+            // sealed class in Kotlin
+            //
+            // E.g.: ConfigEvent.Refresh
+            // payloadType = "CommonLibraryCore.ABI.ConfigEvent.Refresh"
+            // eventType = "ABI_ConfigEvent_Refresh"
+            //
+            let eventType: String = {
+                var comps = payloadType.split(separator: ".")
+                let moduleName = comps.removeFirst()
+                assert(moduleName == "CommonLibraryCore")
+                return comps.joined(separator: "_")
+            }()
+
+            var container = encoder.container(keyedBy: DynamicCodingKeys.self)
+            let eventTypeKey = DynamicCodingKeys(stringValue: "eventType")!
+            try container.encode(eventType, forKey: eventTypeKey)
+            try payload.encode(to: encoder)
         }
     }
 }
 
 private struct SubEvent {
-    let name: String
+    let type: String
     let payload: Encodable?
 }
 
@@ -93,12 +106,12 @@ private extension ABI.Event {
         let mirror = Mirror(reflecting: self)
         guard let arg = mirror.children.first else { return nil }
 //        print(">>> subevent: \(arg.label), \(arg.value)")
-        guard let payload = Mirror(reflecting: arg.value).children.first,
-              let name = payload.label else {
+        guard let payload = Mirror(reflecting: arg.value).children.first?.value else {
             return nil
         }
 //        print(">>> payload: \(payload)")
-        return SubEvent(name: name, payload: payload.value as? Encodable)
+        let type = "\(String(reflecting: Swift.type(of: payload)))"
+        return SubEvent(type: type, payload: payload as? Encodable)
     }
 }
 

@@ -1,7 +1,7 @@
-package com.algoritmico.passepartout
+package com.algoritmico.passepartout.abi
 
 import android.util.Log
-import io.partout.PartoutVpnWrapper
+import io.partout.jni.PartoutVpnWrapper
 
 class NativeLibraryWrapper {
     external fun partoutVersion(): String
@@ -12,6 +12,12 @@ class NativeLibraryWrapper {
         cacheDir: String,
         eventContext: Any,
         eventCallback: ABIEventCallback
+    )
+    external fun appOnForeground()
+    external fun appImportProfileText(
+        text: String,
+        name: String,
+        completion: ABICompletionCallback
     )
     external fun tunnelStart(
         bundle: String,
