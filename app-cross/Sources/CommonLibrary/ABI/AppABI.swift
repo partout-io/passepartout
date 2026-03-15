@@ -109,7 +109,7 @@ extension AppABI {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
-        let tunnelEvents = tunnelManager.didChange.subscribe()
+        let tunnelEvents = tunnelManager.observeObjects()
         let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
         subscriptions.append(Task {

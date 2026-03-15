@@ -20,7 +20,7 @@ public final class TunnelManager {
 
     private let interval: TimeInterval
 
-    public nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
+    private nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
     private var latestActiveProfiles: [Profile.ID: TunnelActiveProfile]
 
@@ -29,7 +29,7 @@ public final class TunnelManager {
     private var subscriptions: [Task<Void, Never>]
 
     // TODO: #218, keep "last used profile" until .multiple
-    public init(
+    public nonisolated init(
         tunnel: Tunnel,
         extensionInstaller: ExtensionInstaller? = nil,
         kvStore: KeyValueStore? = nil,
@@ -45,8 +45,6 @@ public final class TunnelManager {
         latestActiveProfiles = [:]
         latestEnvironments = [:]
         subscriptions = []
-
-        observeObjects()
     }
 }
 
@@ -157,8 +155,8 @@ extension TunnelManager {
 
 // MARK: - Observation
 
-private extension TunnelManager {
-    func observeObjects() {
+extension TunnelManager {
+    public func observeObjects() -> AsyncStream<ABI.TunnelEvent> {
         let tunnelEvents = tunnel.activeProfilesStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
             guard let self else { return }
@@ -169,6 +167,7 @@ private extension TunnelManager {
                 }
                 // Copy locally for sync access
                 latestActiveProfiles = newActiveProfiles
+                latestEnvironments = await tunnel.allEnvironments()
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = newActiveProfiles.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
@@ -195,6 +194,7 @@ private extension TunnelManager {
         }
 
         subscriptions = [tunnelSubscription, timerSubscription]
+        return didChange.subscribe()
     }
 }
 
