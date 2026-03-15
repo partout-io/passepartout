@@ -29,8 +29,7 @@ jobs:
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
       - name: Ensure Partout previews are off
         run: |
-          expected="let forPreviews = false"
-          grep "^$expected" app-cross/partout/Package.swift
+          ci/check-partout-previews.sh
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}
