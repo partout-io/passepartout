@@ -52,14 +52,14 @@ do {
     }
 
     // Configure encoder with output type
-    let codegen: Codegen
+    let encoder: CodegenEncoder
     switch output {
     case .swift:
-        codegen = .forSwift()
+        encoder = SwiftEncoder()
     case .kotlin:
         switch target {
         case .abi:
-            codegen = .forKotlin(
+            encoder = KotlinEncoder(
                 packageName: "com.algoritmico.passepartout.abi",
                 preamble: "import io.partout.abi.*\n",
                 sealed: .init(
@@ -78,7 +78,7 @@ do {
                 }
             )
         case .partout:
-            codegen = .forKotlin(
+            encoder = KotlinEncoder(
                 packageName: "io.partout.abi"
             )
         }
@@ -87,6 +87,7 @@ do {
     }
 
     // Write output to stdout
+    let codegen = Codegen(encoder: encoder)
     let code = try codegen.generate(from: paths, entities: entities)
     print(code)
 } catch {
