@@ -51,55 +51,52 @@ extension ABI {
             init?(intValue: Int) { nil }
         }
 
-        private let fullType: String
+        private let payloadType: String?
         private let payload: Encodable?
 
         init(_ event: Event) {
             let subEvent = event.subEvent
-            let subtype = subEvent?.name ?? ""
-            fullType = "\(event.type)_\(subtype)"
-            payload = subEvent?.payload
+            guard let subEvent else {
+                payloadType = nil
+                payload = nil
+                return
+            }
+            payloadType = subEvent.type
+            payload = subEvent.payload
         }
 
         func encode(to encoder: any Encoder) throws {
+            guard let payloadType, let payload else {
+                assertionFailure("Unable to encode event (missing payload)")
+                return
+            }
+
             //
             // WARNING: "eventType" MUST match 100% the codegen output
             // type (which is also the @SerialName) for the corresponding
             // sealed class in Kotlin
             //
             // E.g.: ConfigEvent.Refresh
+            // payloadType = "CommonLibraryCore.ABI.ConfigEvent.Refresh"
+            // eventType = "ABI_ConfigEvent_Refresh"
             //
-            // Event.type = "ConfigEvent"
-            // Event.subtype = "Refresh"
-            // fullType = "ConfigEvent_Refresh" (see init)
-            // fqEventType = "ABI_\(fullType)" = "ABI_ConfigEvent_Refresh"
-            //
-            let fqEventType = "ABI_\(fullType)"
+            let eventType: String = {
+                var comps = payloadType.split(separator: ".")
+                let moduleName = comps.removeFirst()
+                assert(moduleName == "CommonLibraryCore")
+                return comps.joined(separator: "_")
+            }()
+
             var container = encoder.container(keyedBy: DynamicCodingKeys.self)
             let eventTypeKey = DynamicCodingKeys(stringValue: "eventType")!
-            try container.encode(fqEventType, forKey: eventTypeKey)
-            if let payload {
-                try payload.encode(to: encoder)
-            }
-        }
-    }
-}
-
-private extension ABI.Event {
-    var type: String {
-        switch self {
-        case .config: "ConfigEvent"
-        case .iap: "IAPEvent"
-        case .profile: "ProfileEvent"
-        case .tunnel: "TunnelEvent"
-        case .version: "VersionEvent"
-        case .webReceiver: "WebReceiverEvent"
+            try container.encode(eventType, forKey: eventTypeKey)
+            try payload.encode(to: encoder)
         }
     }
 }
 
 private struct SubEvent {
-    let name: String
+    let type: String
     let payload: Encodable?
 }
 
@@ -113,8 +110,8 @@ private extension ABI.Event {
             return nil
         }
 //        print(">>> payload: \(payload)")
-        let name = "\(Swift.type(of: payload))"
-        return SubEvent(name: name, payload: payload as? Encodable)
+        let type = "\(String(reflecting: Swift.type(of: payload)))"
+        return SubEvent(type: type, payload: payload as? Encodable)
     }
 }
 
