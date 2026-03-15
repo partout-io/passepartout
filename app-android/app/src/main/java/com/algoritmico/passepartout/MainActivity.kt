@@ -11,25 +11,39 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
-import com.algoritmico.passepartout.DummyVPNService
-import com.algoritmico.passepartout.NativeLibraryWrapper
+import com.algoritmico.passepartout.abi.ABIEventCallback
+import com.algoritmico.passepartout.abi.ABI_AppProfileHeader
+import com.algoritmico.passepartout.abi.ABI_Event
+import com.algoritmico.passepartout.abi.NativeLibraryWrapper
+import com.algoritmico.passepartout.abi.ABI_ProfileEvent_Refresh
+import kotlinx.serialization.json.Json
 
-class MainActivity : ComponentActivity() {
+val json = Json {
+    ignoreUnknownKeys = true
+}
+
+class MainActivity : ComponentActivity(), ABIEventCallback {
+    val wrapper = NativeLibraryWrapper()
+    var headers = mutableStateOf<Map<String, ABI_AppProfileHeader>>(emptyMap())
+
+    override fun onEvent(eventCtx: Any?, eventJSON: String) {
+        val event: ABI_Event = json.decodeFromString(eventJSON)
+        Log.i("Passepartout", ">>> MainActivity: $event")
+        when (event) {
+            is ABI_ProfileEvent_Refresh -> {
+                headers.value = event.headers
+            }
+            else -> {
+                // Other events
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val wrapper = NativeLibraryWrapper()
         // Start easy, test Partout version
         val version = wrapper.partoutVersion()
         Log.e("Passepartout", ">>> $version")
@@ -39,7 +53,7 @@ class MainActivity : ComponentActivity() {
         var constants = String(assets.open("constants.json").readBytes())
         var profilesDir = "." // FIXME: #1656, C ABI, profiles dir
         val cachePath = cacheDir.absolutePath
-        var eventHandler = MyEventHandler()
+        var eventHandler = this
         wrapper.appInit(
             bundle,
             constants,
@@ -52,10 +66,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             HelloWorldView(
                 version,
+                headers,
                 { startVpnService() },
-                { stopVpnService() }
+                { stopVpnService() },
+                { importProfile() }
             )
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        wrapper.appOnForeground()
     }
 
     fun startVpnService() {
@@ -76,6 +97,17 @@ class MainActivity : ComponentActivity() {
         ContextCompat.startForegroundService(this, stopIntent)
         // This calls onDestroy abruptly and may prevent proper VPN cleanup
 //        stopService(stopIntent)
+    }
+
+    fun importProfile() {
+        val file = String(assets.open("vps.conf").readBytes())
+        wrapper.appImportProfileText(file, "SomeName") { ctx, code, errorMessage ->
+            if (code == 0) {
+                Log.i("Passepartout", "Import success!")
+            } else {
+                Log.e("Passepartout", "Import failure (code=$code): $errorMessage")
+            }
+        }
     }
 
     private val vpnPermissionLauncher = registerForActivityResult(

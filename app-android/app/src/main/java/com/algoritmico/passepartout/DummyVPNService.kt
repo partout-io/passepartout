@@ -7,7 +7,8 @@ import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import io.partout.PartoutVpnWrapper
+import com.algoritmico.passepartout.abi.NativeLibraryWrapper
+import io.partout.jni.PartoutVpnWrapper
 
 class DummyVPNService: VpnService() {
     private val library = NativeLibraryWrapper()

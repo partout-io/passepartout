@@ -10,13 +10,18 @@
 #include "helpers.h"
 
 JNIEXPORT jstring JNICALL
-Java_com_algoritmico_passepartout_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
     jstring jmsg = (*env)->NewStringUTF(env, psp_partout_version());
     return jmsg;
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_NativeLibraryWrapper_appInit(
+Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appOnForeground(JNIEnv *env, jobject thiz) {
+    psp_app_on_foreground();
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appInit(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -52,7 +57,26 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_appInit(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_NativeLibraryWrapper_tunnelStart(
+Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appImportProfileText(
+        JNIEnv *env,
+        jobject thiz,
+        jstring text,
+        jstring name,
+        jobject completion
+) {
+    abi_completion_handler *handler = malloc(sizeof(abi_completion_handler));
+    handler->completion_ctx = NULL;
+    handler->completion_cb = (*env)->NewGlobalRef(env, completion);
+
+    const char *cText = (*env)->GetStringUTFChars(env, text, NULL);
+    const char *cName = (*env)->GetStringUTFChars(env, name, NULL);
+    psp_app_import_profile_text(cText, cName, handler, abi_completion_callback_proxy);
+    (*env)->ReleaseStringUTFChars(env, text, cText);
+    (*env)->ReleaseStringUTFChars(env, name, cName);
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -87,6 +111,6 @@ Java_com_algoritmico_passepartout_NativeLibraryWrapper_tunnelStart(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_NativeLibraryWrapper_tunnelStop(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStop(JNIEnv *env, jobject thiz) {
     psp_tunnel_stop(NULL, NULL);
 }

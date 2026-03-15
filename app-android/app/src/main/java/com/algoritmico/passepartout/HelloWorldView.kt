@@ -3,16 +3,28 @@ package com.algoritmico.passepartout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.algoritmico.passepartout.abi.ABI_AppProfileHeader
 
 @Composable
-fun HelloWorldView(version: String, startDaemon: () -> Unit, stopDaemon: () -> Unit) {
+fun HelloWorldView(
+    version: String,
+    headers: State<Map<String, ABI_AppProfileHeader>>,
+    startDaemon: () -> Unit,
+    stopDaemon: () -> Unit,
+    importProfile: () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -25,18 +37,30 @@ fun HelloWorldView(version: String, startDaemon: () -> Unit, stopDaemon: () -> U
                 style = MaterialTheme.typography.headlineLarge
             )
             Button(
-                onClick = {
-                    startDaemon()
-                }
+                onClick = { startDaemon() }
             ) {
                 Text("Start")
             }
             Button(
-                onClick = {
-                    stopDaemon()
-                }
+                onClick = {  stopDaemon() }
             ) {
                 Text("Stop")
+            }
+            Button(
+                onClick = {  importProfile() }
+            ) {
+                Text("Import")
+            }
+            LazyColumn {
+                items(
+//                    items = arrayOf("One", "Two")
+                    headers.value.values.toList().sortedBy { it.name },
+                    key = { it.id }
+                ) { header ->
+//                    Text(header)
+//                    Text(header.name)
+                    Text(header.id)
+                }
             }
         }
     }
@@ -45,5 +69,9 @@ fun HelloWorldView(version: String, startDaemon: () -> Unit, stopDaemon: () -> U
 @Preview
 @Composable
 fun PreviewHelloWorld() {
-    HelloWorldView("World", {}, {})
+    HelloWorldView(
+        "World",
+        remember { mutableStateOf<Map<String, ABI_AppProfileHeader>>(emptyMap()) },
+        {}, {}, {}
+    )
 }
