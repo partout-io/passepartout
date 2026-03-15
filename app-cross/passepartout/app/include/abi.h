@@ -8,4 +8,4 @@
 #include <wx/wx.h>
 
 wxDECLARE_EVENT(wxEVT_ABI_EVENT, wxCommandEvent);
-void onABIEvent(const void *ctx, const char *event_json);
+void onABIEvent(void *ctx, const char *event_json);
