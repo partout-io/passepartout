@@ -6,7 +6,6 @@ if [ -z $ANDROID_NDK_ROOT ]; then
     echo "Android NDK not found (missing \$ANDROID_NDK_ROOT)"
     exit 1
 fi
-passepartout_sha1=`git rev-parse --short HEAD`
 cmake_bin_path="bin/android-aarch64/dist"
 cpp_path=`realpath app-android/app/src/main/cpp`
 java_path=`realpath app-android/app/src/main/java`
@@ -21,7 +20,7 @@ if [[ $1 != "gen" ]]; then
     rm -rf $cpp_path/libs/passepartout-*
     rm -rf $cpp_path/libs/swift-*
 
-    libs_path="$cpp_path/libs/passepartout-${passepartout_sha1}/arm64-v8a"
+    libs_path="$cpp_path/libs/passepartout/arm64-v8a"
     mkdir -p $libs_path
     cp -f $cmake_bin_path/passepartout.h $headers_path
     cp -f $cmake_bin_path/libpassepartout.so $libs_path
