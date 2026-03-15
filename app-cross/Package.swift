@@ -199,6 +199,13 @@ if !ProcessInfo.processInfo.environment.keys.contains("FOR_TESTING") {
             ],
             path: "passepartout/tunnel",
             cSettings: [.define("USE_SWIFTPM")]
+        ),
+        .executableTarget(
+            name: "passepartout-codegen",
+            dependencies: [
+                .product(name: "PartoutCodegen", package: "partout")
+            ],
+            path: "passepartout/codegen"
         )
     ])
 }
