@@ -31,6 +31,9 @@ target_include_directories(passepartout-tunnel PRIVATE
 )
 target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
 
+# wxWidgets only required to build executable
+include("wx.cmake")
+
 if(APPLE)
     # Mangle macOS @rpath
     set_target_properties(passepartout PROPERTIES
@@ -61,9 +64,6 @@ elseif(WIN32)
     # Build WinMain app
     set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
 endif()
-
-# Link to wxWidgets
-include("wx.cmake")
 
 # Strip executables except on Windows
 set(APP_DIR ${OUTPUT_DIR}/${DIST_DIR})
