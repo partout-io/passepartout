@@ -30,10 +30,10 @@ extension TunnelManagerTests {
         env.setEnvironmentValue(.crypto, forKey: TunnelEnvironmentKeys.lastErrorCode)
 
         let exp = Expectation()
-        let tunnelEvents = sut.didChange.subscribe()
+        let stream = sut.observeObjects()
         var didCall = false
         Task {
-            for await _ in tunnelEvents {
+            for await _ in stream {
                 if !didCall, sut.lastError(ofProfileId: profile.id) != nil {
                     didCall = true
                     await exp.fulfill()
@@ -59,16 +59,16 @@ extension TunnelManagerTests {
             env
         }
         let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
-        let stream = sut.didChange.subscribe()
-        let expectedXfer = ABI.ProfileTransfer(received: 500, sent: 700)
+        let stream = sut.observeObjects()
+        #expect(await stream.nextActiveProfiles() == [:])
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
-        try await sut.install(profile)
-        #expect(await stream.nextActiveProfiles() == [:])
+        try await sut.connect(with: profile)
         let active = await stream.nextActiveProfiles()
 
+        let expectedXfer = ABI.ProfileTransfer(received: 500, sent: 700)
         #expect(active.first?.key == profile.id)
         let dataCount = DataCount(UInt(expectedXfer.received), UInt(expectedXfer.sent))
         env.setEnvironmentValue(dataCount, forKey: TunnelEnvironmentKeys.dataCount)
@@ -85,13 +85,13 @@ extension TunnelManagerTests {
         }
         let processor = MockTunnelProcessor()
         let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
-        let stream = sut.didChange.subscribe()
+        let stream = sut.observeObjects()
+        #expect(await stream.nextActiveProfiles() == [:])
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        #expect(await stream.nextActiveProfiles() == [:])
         let active = await stream.nextActiveProfiles()
 
         #expect(active.first?.key == profile.id)
@@ -107,13 +107,13 @@ extension TunnelManagerTests {
         }
         let processor = MockTunnelProcessor()
         let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
-        let stream = sut.didChange.subscribe()
+        let stream = sut.observeObjects()
+        #expect(await stream.nextActiveProfiles() == [:])
 
         let module = try DNSModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        #expect(await stream.nextActiveProfiles() == [:])
         let pulled = await stream.nextActiveProfiles()
 
         #expect(pulled.first?.key == profile.id)
