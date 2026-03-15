@@ -30,7 +30,7 @@ jobs:
       - name: Ensure Partout previews are off
         run: |
           expected="let forPreviews = false"
-          grep "^$expected" submodules/partout/Package.swift
+          grep "^$expected" app-cross/partout/Package.swift
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}
