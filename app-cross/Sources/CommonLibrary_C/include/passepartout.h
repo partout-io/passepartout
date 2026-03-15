@@ -14,7 +14,7 @@ const char *psp_partout_version(void);
 char *psp_readfile(const char *rel_path, const char *parent);
 
 /* Events callback. */
-typedef void (*psp_event_callback)(const void *event_ctx, const char *event);
+typedef void (*psp_event_callback)(void *event_ctx, const char *event);
 
 /* Completion callbacks. */
 /* Success: code == 0. */
@@ -35,7 +35,8 @@ typedef struct {
 /* App functions. */
 void psp_app_init(const psp_app_init_args *args);
 void psp_app_on_foreground(void);
-void psp_app_import_profile(const char *path, void *ctx, psp_abi_cb_error completion);
+void psp_app_import_profile_path(const char *path, void *ctx, psp_abi_cb_error completion);
+void psp_app_import_profile_text(const char *text, const char *filename, void *ctx, psp_abi_cb_error completion);
 void psp_app_flush_log(void);
 
 /* Options. */

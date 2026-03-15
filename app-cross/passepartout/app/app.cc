@@ -112,7 +112,7 @@ void MyFrame::OnImportProfile(wxCommandEvent &)
     const wxString path = openFileDialog.GetPath();
     const char *cPath = path.utf8_str().data();
     printf("Path: %s\n", cPath);
-    psp_app_import_profile(cPath, this, [](void *ctx, int code, const char *error) {
+    psp_app_import_profile_path(cPath, this, [](void *ctx, int code, const char *error) {
         printf(">>> ABI Result: (ctx=%p), %d, %s\n", ctx, code, error);
         wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
     });

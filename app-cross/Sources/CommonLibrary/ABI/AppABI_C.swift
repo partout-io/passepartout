@@ -85,8 +85,8 @@ public func __psp_app_on_foreground() {
     }
 }
 
-@_cdecl("psp_app_import_profile")
-public func __psp_app_import_profile(
+@_cdecl("psp_app_import_profile_path")
+public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
     context: UnsafeMutableRawPointer?,
     completion: psp_abi_cb_error?
@@ -96,6 +96,26 @@ public func __psp_app_import_profile(
     ABI.run(context) { ctx in
         do {
             try await abi.profile.importFile(swiftPath, passphrase: nil)
+            completion?(ctx, 0, nil)
+        } catch {
+            completion?(ctx, -1, error.localizedDescription)
+        }
+    }
+}
+
+@_cdecl("psp_app_import_profile_text")
+public func __psp_app_import_profile_text(
+    text: UnsafePointer<CChar>?,
+    filename: UnsafePointer<CChar>?,
+    context: UnsafeMutableRawPointer?,
+    completion: psp_abi_cb_error?
+) {
+    guard let abi, let text, let filename else { return }
+    let swiftText = String(cString: text)
+    let swiftFilename = String(cString: filename)
+    ABI.run(context) { ctx in
+        do {
+            try await abi.profile.importText(swiftText, filename: swiftFilename, passphrase: nil)
             completion?(ctx, 0, nil)
         } catch {
             completion?(ctx, -1, error.localizedDescription)
