@@ -23,7 +23,7 @@ public enum Resources {
             distributionTarget: distributionTarget,
             buildTarget: buildTarget,
             bundle: bundleConfiguration,
-            logTag: "Passepartout",
+            logTag: "BlockbitVPN",
             appLogPath: "app.log",
             tunnelLogPath: "tunnel.log"
         )

@@ -56,11 +56,11 @@ extension Strings {
             public static let attachmentMimeType = "text/plain"
         }
 
-        public static let appName = "Passepartout"
+        public static let appName = "Blockbit VPN"
 
         public static let appleTV = "Apple TV"
 
-        public static let authorName = "Davide De Rosa (keeshux)"
+        public static let authorName = "Blockbit Tecnologia"
 
         public static let ca = "CA"
 
