@@ -32,12 +32,6 @@
 name: Build iOS (Ad-hoc)
 
 on:
-  push:
-    paths-ignore:
-      - "**.md"
-      - "LICENSE"
-      - ".gitignore"
-  pull_request:
   workflow_dispatch:
     inputs:
       configuration:

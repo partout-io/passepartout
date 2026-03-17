@@ -1,9 +1,6 @@
 name: Release iOS (TestFlight)
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
   workflow_dispatch:
     inputs:
       upload_testflight:
