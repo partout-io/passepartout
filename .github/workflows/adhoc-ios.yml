@@ -1,0 +1,280 @@
+# =============================================================================
+# Ad-hoc: Build iOS assinado para distribuição direta
+# =============================================================================
+# Gera um .ipa assinado com provisioning Ad-hoc, instalável em devices
+# cujos UDIDs estejam registrados no Apple Developer Portal.
+#
+# O .ipa fica disponível como artifact no GitHub Actions para download.
+# Depois de baixar, pode distribuir via:
+#   - Diawi (https://www.diawi.com) — upload do .ipa, gera link/QR
+#   - AppCenter (https://appcenter.ms) — Microsoft, gratuito
+#   - Firebase App Distribution
+#   - Instalação direta via Apple Configurator / Finder
+#
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ SECRETS NECESSÁRIOS:                                                │
+# │                                                                     │
+# │  CERTIFICATE_P12_BASE64              — cert .p12 base64            │
+# │  CERTIFICATE_P12_PASSWORD            — senha do .p12               │
+# │  ADHOC_APP_PROVISION_PROFILE_BASE64  — profile Ad-hoc do app      │
+# │  ADHOC_EXT_PROVISION_PROFILE_BASE64  — profile Ad-hoc da extension│
+# │  KEYCHAIN_PASSWORD                   — senha keychain temporário   │
+# │  XCCONFIG_CONTENT                    — Config.xcconfig completo    │
+# └─────────────────────────────────────────────────────────────────────┘
+#
+# IMPORTANTE: os provisioning profiles Ad-hoc são DIFERENTES dos de
+# App Store. Você precisa criar profiles com tipo "Ad Hoc" no Apple
+# Developer Portal, selecionando os devices autorizados.
+#
+# Limite Apple: 100 devices por tipo (iPhone, iPad) por ano.
+# =============================================================================
+
+name: Build iOS (Ad-hoc)
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+      - ".gitignore"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: "Build configuration"
+        required: true
+        default: "Release"
+        type: choice
+        options:
+          - Release
+          - Debug
+
+concurrency:
+  group: adhoc-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODE_PROJECT: app-apple/Passepartout.xcodeproj
+  SCHEME: Passepartout
+  ARCHIVE_PATH: build/Passepartout-adhoc.xcarchive
+  IPA_PATH: build/adhoc-ipa
+  EXPORT_OPTIONS: build/ExportOptions-adhoc.plist
+  CONFIGURATION: ${{ github.event.inputs.configuration || 'Release' }}
+
+jobs:
+  build-adhoc:
+    name: Archive Ad-hoc iOS
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Select Xcode version
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Usando: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            ~/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Setup Config.xcconfig
+        env:
+          XCCONFIG_CONTENT: ${{ secrets.XCCONFIG_CONTENT }}
+        run: |
+          CONFIG_FILE="app-apple/Passepartout/Config.xcconfig"
+          mkdir -p "$(dirname "$CONFIG_FILE")"
+          echo "$XCCONFIG_CONTENT" > "$CONFIG_FILE"
+          echo "Config.xcconfig escrito."
+
+      - name: Install Apple certificate and Ad-hoc profiles
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_P12_PASSWORD: ${{ secrets.CERTIFICATE_P12_PASSWORD }}
+          ADHOC_APP_PROVISION_PROFILE_BASE64: ${{ secrets.ADHOC_APP_PROVISION_PROFILE_BASE64 }}
+          ADHOC_EXT_PROVISION_PROFILE_BASE64: ${{ secrets.ADHOC_EXT_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Criar keychain temporário
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          # Importar certificado .p12
+          CERT_PATH="$RUNNER_TEMP/certificate.p12"
+          echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode -o "$CERT_PATH"
+          security import "$CERT_PATH" \
+            -P "$CERTIFICATE_P12_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain
+
+          # Instalar provisioning profiles Ad-hoc
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+
+          echo -n "$ADHOC_APP_PROVISION_PROFILE_BASE64" | base64 --decode \
+            -o "$PROFILES_DIR/adhoc_app.mobileprovision"
+
+          echo -n "$ADHOC_EXT_PROVISION_PROFILE_BASE64" | base64 --decode \
+            -o "$PROFILES_DIR/adhoc_tunnel.mobileprovision"
+
+          echo "Certificado e profiles Ad-hoc instalados."
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -clonedSourcePackagesDirPath "$HOME/spm-cache"
+
+      - name: Build archive
+        run: |
+          set -o pipefail
+          mkdir -p build
+          xcodebuild archive \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -destination "generic/platform=iOS" \
+            -configuration "$CONFIGURATION" \
+            -archivePath "$ARCHIVE_PATH" \
+            -clonedSourcePackagesDirPath "$HOME/spm-cache" \
+            -allowProvisioningUpdates \
+            | tee build/archive.log | tail -80
+
+          echo "Archive criado: $ARCHIVE_PATH"
+
+      - name: Generate ExportOptions.plist (Ad-hoc)
+        env:
+          XCCONFIG_CONTENT: ${{ secrets.XCCONFIG_CONTENT }}
+        run: |
+          TEAM_ID=$(echo "$XCCONFIG_CONTENT" | grep CFG_TEAM_ID | cut -d= -f2 | tr -d ' ')
+
+          cat > "$EXPORT_OPTIONS" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>teamID</key>
+            <string>${TEAM_ID}</string>
+            <key>compileBitcode</key>
+            <false/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>thinning</key>
+            <string>&lt;none&gt;</string>
+          </dict>
+          </plist>
+          EOF
+
+          echo "ExportOptions Ad-hoc gerado:"
+          cat "$EXPORT_OPTIONS"
+
+      - name: Export IPA (Ad-hoc)
+        run: |
+          set -o pipefail
+          mkdir -p "$IPA_PATH"
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$IPA_PATH" \
+            -exportOptionsPlist "$EXPORT_OPTIONS" \
+            -allowProvisioningUpdates \
+            | tee build/export.log | tail -40
+
+          echo ""
+          echo "========================================="
+          echo " IPA Ad-hoc gerado com sucesso!"
+          echo "========================================="
+          ls -lh "$IPA_PATH"/*.ipa
+
+      - name: Extract version info
+        id: version
+        env:
+          XCCONFIG_CONTENT: ${{ secrets.XCCONFIG_CONTENT }}
+        run: |
+          VERSION=$(echo "$XCCONFIG_CONTENT" \
+            | grep MARKETING_VERSION | cut -d= -f2 | tr -d ' ')
+          BUILD=$(echo "$XCCONFIG_CONTENT" \
+            | grep CURRENT_PROJECT_VERSION | cut -d= -f2 | tr -d ' ')
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build=${BUILD}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "Versão: $VERSION ($BUILD) @ $SHORT_SHA"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            Passepartout-iOS-adhoc-${{ steps.version.outputs.version }}-${{ steps.version.outputs.build }}-${{ steps.version.outputs.short_sha }}
+          path: |
+            build/adhoc-ipa/*.ipa
+          retention-days: 90
+          compression-level: 0
+
+      - name: Write job summary
+        if: success()
+        run: |
+          IPA_FILE=$(ls "$IPA_PATH"/*.ipa | head -1)
+          IPA_SIZE=$(du -h "$IPA_FILE" | cut -f1)
+          cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          ## Build iOS Ad-hoc
+
+          | Campo | Valor |
+          |-------|-------|
+          | **Versão** | ${{ steps.version.outputs.version }} (${{ steps.version.outputs.build }}) |
+          | **Commit** | \`${{ steps.version.outputs.short_sha }}\` |
+          | **Config** | ${{ env.CONFIGURATION }} |
+          | **Tamanho** | ${IPA_SIZE} |
+
+          ### Como instalar
+
+          1. Baixe o artifact **\`.ipa\`** acima
+          2. Distribua via:
+             - [Diawi](https://www.diawi.com) — upload do .ipa → link/QR code
+             - [Firebase App Distribution](https://firebase.google.com/docs/app-distribution)
+             - Apple Configurator (USB)
+             - \`ios-deploy --bundle Passepartout.ipa\`
+          3. O device destino **precisa ter o UDID registrado** no provisioning profile
+
+          > **Limite Apple:** 100 devices por tipo por ano de membership.
+          EOF
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adhoc-build-logs
+          path: build/*.log
+          retention-days: 7
+
+      - name: Cleanup keychain and profiles
+        if: always()
+        run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          [ -f "$KEYCHAIN_PATH" ] && security delete-keychain "$KEYCHAIN_PATH"
+          rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/adhoc_app.mobileprovision"
+          rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/adhoc_tunnel.mobileprovision"
