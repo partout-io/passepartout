@@ -1,0 +1,228 @@
+name: Release iOS (TestFlight)
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      upload_testflight:
+        description: "Upload para TestFlight?"
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: release-ios
+  cancel-in-progress: false
+
+env:
+  XCODE_PROJECT: app-apple/Passepartout.xcodeproj
+  SCHEME: Passepartout
+  ARCHIVE_PATH: build/Passepartout.xcarchive
+  IPA_PATH: build/ipa
+  EXPORT_OPTIONS: build/ExportOptions.plist
+
+jobs:
+  release-ios:
+    name: Archive + Upload iOS
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Select Xcode version
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Usando: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            ~/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Setup Config.xcconfig
+        env:
+          XCCONFIG_CONTENT: ${{ secrets.XCCONFIG_CONTENT }}
+        run: |
+          CONFIG_FILE="app-apple/Passepartout/Config.xcconfig"
+          mkdir -p "$(dirname "$CONFIG_FILE")"
+          echo "$XCCONFIG_CONTENT" > "$CONFIG_FILE"
+          echo "Config.xcconfig escrito com sucesso."
+
+      - name: Install Apple certificate and provisioning profiles
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_P12_PASSWORD: ${{ secrets.CERTIFICATE_P12_PASSWORD }}
+          APP_PROVISION_PROFILE_BASE64: ${{ secrets.APP_PROVISION_PROFILE_BASE64 }}
+          EXT_PROVISION_PROFILE_BASE64: ${{ secrets.EXT_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Criar keychain temporário
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          # Importar certificado .p12
+          CERT_PATH="$RUNNER_TEMP/certificate.p12"
+          echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode -o "$CERT_PATH"
+          security import "$CERT_PATH" \
+            -P "$CERTIFICATE_P12_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain
+
+          # Instalar provisioning profiles
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+
+          echo -n "$APP_PROVISION_PROFILE_BASE64" | base64 --decode \
+            -o "$PROFILES_DIR/app.mobileprovision"
+
+          echo -n "$EXT_PROVISION_PROFILE_BASE64" | base64 --decode \
+            -o "$PROFILES_DIR/tunnel.mobileprovision"
+
+          echo "Certificado e profiles instalados."
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -clonedSourcePackagesDirPath "$HOME/spm-cache"
+
+      - name: Build archive
+        run: |
+          set -o pipefail
+          mkdir -p build
+          xcodebuild archive \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -destination "generic/platform=iOS" \
+            -configuration Release \
+            -archivePath "$ARCHIVE_PATH" \
+            -clonedSourcePackagesDirPath "$HOME/spm-cache" \
+            -allowProvisioningUpdates \
+            | tee build/archive.log | tail -80
+
+          echo "Archive criado em: $ARCHIVE_PATH"
+
+      - name: Generate ExportOptions.plist
+        env:
+          XCCONFIG_CONTENT: ${{ secrets.XCCONFIG_CONTENT }}
+        run: |
+          # Extrair valores do xcconfig
+          TEAM_ID=$(echo "$XCCONFIG_CONTENT" | grep CFG_TEAM_ID | cut -d= -f2 | tr -d ' ')
+          APP_ID=$(echo "$XCCONFIG_CONTENT" | grep CFG_APP_ID | cut -d= -f2 | tr -d ' ')
+
+          cat > "$EXPORT_OPTIONS" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>${TEAM_ID}</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>destination</key>
+            <string>upload</string>
+          </dict>
+          </plist>
+          EOF
+
+          echo "ExportOptions.plist gerado."
+          cat "$EXPORT_OPTIONS"
+
+      - name: Export IPA
+        run: |
+          set -o pipefail
+          mkdir -p "$IPA_PATH"
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$IPA_PATH" \
+            -exportOptionsPlist "$EXPORT_OPTIONS" \
+            -allowProvisioningUpdates \
+            | tee build/export.log | tail -40
+
+          echo "IPA exportado:"
+          ls -lh "$IPA_PATH"/*.ipa
+
+      - name: Upload to TestFlight
+        if: >-
+          (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
+          || (github.event_name == 'workflow_dispatch'
+              && github.event.inputs.upload_testflight == 'true')
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_API_KEY_BASE64: ${{ secrets.ASC_API_KEY_BASE64 }}
+        run: |
+          # Instalar API key para altool/xcrun
+          API_KEY_DIR="$HOME/.appstoreconnect/private_keys"
+          mkdir -p "$API_KEY_DIR"
+          echo -n "$ASC_API_KEY_BASE64" | base64 --decode \
+            -o "$API_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
+
+          IPA_FILE=$(ls "$IPA_PATH"/*.ipa | head -1)
+          echo "Uploading: $IPA_FILE"
+
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_FILE" \
+            --apiKey "$ASC_KEY_ID" \
+            --apiIssuer "$ASC_ISSUER_ID"
+
+          echo "Upload para TestFlight concluído!"
+
+      - name: Upload IPA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: passepartout-ios-${{ github.sha }}
+          path: |
+            build/ipa/*.ipa
+            build/ipa/*.plist
+          retention-days: 30
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build-logs
+          path: build/*.log
+          retention-days: 7
+
+      - name: Cleanup keychain
+        if: always()
+        run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          if [ -f "$KEYCHAIN_PATH" ]; then
+            security delete-keychain "$KEYCHAIN_PATH"
+          fi
+          rm -rf "$HOME/Library/MobileDevice/Provisioning Profiles/app.mobileprovision"
+          rm -rf "$HOME/Library/MobileDevice/Provisioning Profiles/tunnel.mobileprovision"
+          rm -rf "$HOME/.appstoreconnect"

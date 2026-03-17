@@ -1,0 +1,102 @@
+name: Build iOS (Simulator)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODE_PROJECT: app-apple/Passepartout.xcodeproj
+  SCHEME: Passepartout
+  DESTINATION: "platform=iOS Simulator,name=iPhone 16,OS=latest"
+  SWIFT_VERSION: "6.0"
+
+jobs:
+  build-simulator:
+    name: Build iOS Simulator
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Select Xcode version
+        run: |
+          # Lista versões disponíveis para debug
+          ls /Applications/ | grep Xcode
+          # Seleciona o Xcode mais recente disponível (Xcode 26+)
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Usando: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+          swift --version
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            ~/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Setup Config.xcconfig (dummy values for CI)
+        run: |
+          CONFIG_FILE="app-apple/Passepartout/Config.xcconfig"
+          if [ -f "$CONFIG_FILE" ]; then
+            echo "Config.xcconfig já existe, verificando se precisa ajuste..."
+            cat "$CONFIG_FILE"
+          else
+            echo "Criando Config.xcconfig com valores CI..."
+            mkdir -p "$(dirname "$CONFIG_FILE")"
+            cat > "$CONFIG_FILE" << 'EOF'
+          // CI-generated Config.xcconfig
+          CFG_TEAM_ID = XXXXXXXXXX
+          CFG_APP_ID = com.ci.passepartout
+          CFG_GROUP_ID = com.ci.passepartout.group
+          CFG_APPSTORE_ID = 0000000000
+          CFG_CLOUDKIT_ROOT = iCloud.com.ci.passepartout
+          CFG_IAP_BUNDLE_PREFIX = com.ci.passepartout
+          MARKETING_VERSION = 0.0.1
+          CURRENT_PROJECT_VERSION = 1
+          EOF
+          fi
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -clonedSourcePackagesDirPath "$HOME/spm-cache"
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -configuration Debug \
+            -clonedSourcePackagesDirPath "$HOME/spm-cache" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            | tee build.log | tail -50
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-simulator
+          path: build.log
+          retention-days: 7
