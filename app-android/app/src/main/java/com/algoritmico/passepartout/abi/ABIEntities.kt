@@ -58,15 +58,15 @@ data class AppConfiguration (
 @Serializable
 data class AppBundle (
     val appLogPath: String,
+    val appLogsURL: String,
     val buildNumber: Long,
     val bundleStrings: Map<String, String>,
     val customUserLevel: AppUserLevel? = null,
     val displayName: String,
     val distributionTarget: DistributionTarget,
+    val reviewURL: String? = null,
     val tunnelLogPath: String,
-    val urlForReview: String? = null,
-    val urlToAppLogs: String,
-    val urlToTunnelLogs: String,
+    val tunnelLogsURL: String,
     val versionNumber: String
 )
 
@@ -137,10 +137,10 @@ data class AppConstantsFormats (
 
 @Serializable
 data class AppConstantsGitHub (
-    val discussions: String,
-    val issues: String,
-    val latestRelease: String,
-    val raw: String
+    val discussionsURL: String,
+    val issuesURL: String,
+    val latestReleaseURL: String,
+    val rawURL: String
 )
 
 @Serializable
@@ -212,12 +212,12 @@ data class AppConstantsWebReceiver (
 
 @Serializable
 data class AppConstantsWebsites (
-    val appStoreDownload: String,
+    val appStoreDownloadURL: String,
     val configTTL: Double,
-    val eula: String,
-    val home: String,
-    val macDownload: String,
-    val subreddit: String
+    val eulaURL: String,
+    val homeURL: String,
+    val macDownloadURL: String,
+    val subredditURL: String
 )
 
 @Serializable

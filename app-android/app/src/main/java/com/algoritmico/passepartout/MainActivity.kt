@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
         )
 
         val constantsJSON: AppConstants = json.decodeFromString(constants)
-        Log.e("Passepartout", ">>> Test GitHub constants: ${constantsJSON.github.discussions}")
+        Log.e("Passepartout", ">>> Test GitHub constants: ${constantsJSON.github.discussionsURL}")
 
         setContent {
             HelloWorldView(
