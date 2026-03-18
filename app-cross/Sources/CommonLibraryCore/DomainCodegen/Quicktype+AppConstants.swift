@@ -26,27 +26,27 @@ extension QuicktypeAppConstantsWebsites {
     }
 
     public var apiURL: URL {
-        homeURL.appending(path: "api/")
+        homeURL.appending(path: "api")
     }
 
     public var faqURL: URL {
-        homeURL.appending(path: "faq/")
+        homeURL.appending(path: "faq")
     }
 
     public var blogURL: URL {
-        homeURL.appending(path: "blog/")
+        homeURL.appending(path: "blog")
     }
 
     public var disclaimerURL: URL {
-        homeURL.appending(path: "disclaimer/")
+        homeURL.appending(path: "disclaimer")
     }
 
     public var privacyPolicyURL: URL {
-        homeURL.appending(path: "privacy/")
+        homeURL.appending(path: "privacy")
     }
 
     public var donateURL: URL {
-        homeURL.appending(path: "donate/")
+        homeURL.appending(path: "donate")
     }
 
     public var configURL: URL {
