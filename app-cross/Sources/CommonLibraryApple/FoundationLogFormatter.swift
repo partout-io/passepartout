@@ -16,6 +16,7 @@ public final class FoundationLogFormatter: LogFormatter {
 
     public func formattedLog(timestamp: Date, message: String) -> String {
         let formattedTimestamp = formatter.string(from: timestamp)
+        return timestamp.formatted(<#T##format: FormatStyle##FormatStyle#>)
         return String(format: messageFormat, formattedTimestamp, message)
     }
 }
