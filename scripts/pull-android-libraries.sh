@@ -15,26 +15,19 @@ swift_version="6_2"
 set -e
 
 # Rebuild library (unless "gen" argument)
-if [[ $1 != "gen" ]]; then
-    rm -f $headers_path/passepartout.h
-    rm -rf $cpp_path/libs/passepartout-*
-    rm -rf $cpp_path/libs/swift-*
+rm -f $headers_path/passepartout.h
+rm -rf $cpp_path/libs/passepartout-*
+rm -rf $cpp_path/libs/swift-*
 
-    libs_path="$cpp_path/libs/passepartout/arm64-v8a"
-    mkdir -p $libs_path
-    cp -f $cmake_bin_path/passepartout.h $headers_path
-    cp -f $cmake_bin_path/libpassepartout.so $libs_path
-    cp -f $cmake_bin_path/libssl.so $libs_path
-    cp -f $cmake_bin_path/libcrypto.so $libs_path
-    cp -f $cmake_bin_path/libwg-go.so $libs_path
-    # Pull C++ runtime (Swift runtime linked statically)
-    cp -f $ANDROID_NDK_SYSROOT/usr/lib/aarch64-linux-android/libc++_shared.so $libs_path
-fi
+libs_path="$cpp_path/libs/passepartout/arm64-v8a"
+mkdir -p $libs_path
+cp -f $cmake_bin_path/passepartout.h $headers_path
+cp -f $cmake_bin_path/libpassepartout.so $libs_path
+cp -f $cmake_bin_path/libssl.so $libs_path
+cp -f $cmake_bin_path/libcrypto.so $libs_path
+cp -f $cmake_bin_path/libwg-go.so $libs_path
+# Pull C++ runtime (Swift runtime linked statically)
+cp -f $ANDROID_NDK_SYSROOT/usr/lib/aarch64-linux-android/libc++_shared.so $libs_path
 
-# Codegen ABI entities
-codegen_lang="kotlin"
-codegen_abi_path="$java_path/com/algoritmico/passepartout/abi/ABIEntities.kt"
-codegen_partout_path="$java_path/io/partout/abi/PartoutEntities.kt"
-cd app-cross
-swift run passepartout-codegen partout $codegen_lang >$codegen_partout_path
-swift run passepartout-codegen abi $codegen_lang >$codegen_abi_path
+# Generate ABI entities
+scripts/gen-abi-kotlin.sh

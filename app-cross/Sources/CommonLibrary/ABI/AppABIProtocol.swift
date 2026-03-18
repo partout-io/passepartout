@@ -56,7 +56,7 @@ public protocol AppABITunnelProtocol: Sendable {
     func connect(to profile: Profile, force: Bool) async throws
 //    func reconnect(to profileId: Profile.ID) async throws
     func disconnect(from profileId: Profile.ID) async throws
-    func currentLog() async -> [ABI.AppLogLine]
+    func currentLog() async -> [ABI.LogLine]
     // Non-observable
     func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
     func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?

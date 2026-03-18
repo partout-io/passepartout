@@ -104,7 +104,7 @@ extension IAPObservable {
             purchasedProducts = payload.products
             self.isBeta = isBeta
         case .eligibleFeatures(let payload):
-            eligibleFeatures = payload.features
+            eligibleFeatures = Set(payload.features)
             isEligibleForComplete = payload.forComplete
             isEligibleForFeedback = payload.forFeedback
         }

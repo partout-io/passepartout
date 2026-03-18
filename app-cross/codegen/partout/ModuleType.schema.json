@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ModuleType",
+  "type": "string",
+  "enum": [
+    "DNS",
+    "HTTPProxy",
+    "IP",
+    "OnDemand",
+    "OpenVPN",
+    "WireGuard"
+  ]
+}

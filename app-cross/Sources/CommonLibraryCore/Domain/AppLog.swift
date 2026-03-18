@@ -24,13 +24,26 @@ extension ABI {
         case fault
     }
 
-    public struct AppLogLine: Sendable {
+    public struct LogLine: Sendable {
         public let timestamp: Date
         public let message: String
 
         public init(timestamp: Date, message: String) {
             self.timestamp = timestamp
             self.message = message
+        }
+    }
+
+    public struct LogEntry: Identifiable, Equatable, Sendable {
+        public let date: Date
+        public let url: URL
+        public var id: Date {
+            date
+        }
+
+        public init(date: Date, url: URL) {
+            self.date = date
+            self.url = url
         }
     }
 }

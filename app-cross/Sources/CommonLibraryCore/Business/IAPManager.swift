@@ -38,7 +38,7 @@ public final class IAPManager {
     public private(set) var eligibleFeatures: Set<ABI.AppFeature> {
         didSet {
             didChange.send(.eligibleFeatures(.init(
-                features: eligibleFeatures,
+                features: Array(eligibleFeatures),
                 forComplete: isEligibleForComplete,
                 forFeedback: isEligibleForFeedback
             )))

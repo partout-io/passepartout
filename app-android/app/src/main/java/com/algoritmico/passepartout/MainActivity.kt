@@ -14,10 +14,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.abi.ABIEventCallback
-import com.algoritmico.passepartout.abi.ABI_AppProfileHeader
-import com.algoritmico.passepartout.abi.ABI_Event
+import com.algoritmico.passepartout.abi.ABIEvent
+import com.algoritmico.passepartout.abi.AppConstants
+import com.algoritmico.passepartout.abi.AppProfileHeader
 import com.algoritmico.passepartout.abi.NativeLibraryWrapper
-import com.algoritmico.passepartout.abi.ABI_ProfileEvent_Refresh
+import com.algoritmico.passepartout.abi.ProfileEventRefresh
 import kotlinx.serialization.json.Json
 
 val json = Json {
@@ -26,13 +27,13 @@ val json = Json {
 
 class MainActivity : ComponentActivity(), ABIEventCallback {
     val wrapper = NativeLibraryWrapper()
-    var headers = mutableStateOf<Map<String, ABI_AppProfileHeader>>(emptyMap())
+    var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
 
     override fun onEvent(eventCtx: Any?, eventJSON: String) {
-        val event: ABI_Event = json.decodeFromString(eventJSON)
+        val event: ABIEvent = json.decodeFromString(eventJSON)
         Log.i("Passepartout", ">>> MainActivity: $event")
         when (event) {
-            is ABI_ProfileEvent_Refresh -> {
+            is ProfileEventRefresh -> {
                 headers.value = event.headers
             }
             else -> {
@@ -62,6 +63,9 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
             this,
             eventHandler
         )
+
+        val constantsJSON: AppConstants = json.decodeFromString(constants)
+        Log.e("Passepartout", ">>> Test GitHub constants: ${constantsJSON.github.discussionsURL}")
 
         setContent {
             HelloWorldView(

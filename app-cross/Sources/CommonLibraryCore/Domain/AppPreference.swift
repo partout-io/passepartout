@@ -5,6 +5,10 @@
 import Partout
 
 extension ABI {
+    public protocol PreferenceProtocol {
+        var key: String { get }
+    }
+
     public enum AppPreference: String, PreferenceProtocol {
         // Not directly accessible
         case deviceId

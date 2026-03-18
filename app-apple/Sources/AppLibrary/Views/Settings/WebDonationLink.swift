@@ -11,6 +11,6 @@ struct WebDonationLink: View {
     private var appConfiguration
 
     var body: some View {
-        Link(Strings.Views.Donate.title, destination: appConfiguration.constants.websites.donate)
+        Link(Strings.Views.Donate.title, destination: appConfiguration.constants.websites.donateURL)
     }
 }

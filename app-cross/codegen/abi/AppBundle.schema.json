@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AppBundle",
+  "type": "object",
+  "properties": {
+    "distributionTarget": {
+      "$ref": "DistributionTarget.schema.json"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "versionNumber": {
+      "type": "string"
+    },
+    "buildNumber": {
+      "type": "integer"
+    },
+    "customUserLevel": {
+      "$ref": "AppUserLevel.schema.json"
+    },
+    "bundleStrings": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "appLogPath": {
+      "type": "string"
+    },
+    "tunnelLogPath": {
+      "type": "string"
+    },
+    "appLogsURL": {
+      "type": "string",
+      "format": "uri"
+    },
+    "tunnelLogsURL": {
+      "type": "string",
+      "format": "uri"
+    },
+    "reviewURL": {
+      "type": ["string", "null"],
+      "format": "uri"
+    }
+  },
+  "required": [
+    "distributionTarget",
+    "displayName",
+    "versionNumber",
+    "buildNumber",
+    "bundleStrings",
+    "appLogPath",
+    "tunnelLogPath",
+    "appLogsURL",
+    "tunnelLogsURL"
+  ]
+}

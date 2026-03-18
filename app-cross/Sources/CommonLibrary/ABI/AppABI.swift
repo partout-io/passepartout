@@ -145,7 +145,9 @@ extension AppABI {
                         try await onWebUpload(payload.file)
                         dispatch(.webReceiver(event), handler)
                     } catch {
-                        let failureEvent: ABI.WebReceiverEvent = .uploadFailure(.init(error))
+                        let failureEvent: ABI.WebReceiverEvent = .uploadFailure(.init(
+                            error: error.localizedDescription
+                        ))
                         dispatch(.webReceiver(failureEvent), handler)
                     }
                 default:
@@ -310,7 +312,7 @@ private struct AppABITunnel: AppABITunnelProtocol {
         try await tunnelManager.disconnect(from: profileId)
     }
 
-    func currentLog() async -> [ABI.AppLogLine] {
+    func currentLog() async -> [ABI.LogLine] {
         await tunnelManager.currentLog(parameters: logParameters)
     }
 
@@ -428,7 +430,7 @@ private extension AppABI {
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     do {
                         pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
-                        try await onEligibleFeatures(payload.features)
+                        try await onEligibleFeatures(Set(payload.features))
                     } catch {
                         pspLog(.iap, .error, "Unable to react to eligible features: \(error)")
                     }

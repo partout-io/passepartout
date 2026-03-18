@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IAPEventStatus",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "isEnabled": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "isEnabled"
+  ]
+}

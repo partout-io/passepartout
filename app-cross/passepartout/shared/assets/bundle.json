@@ -6,6 +6,6 @@
     "bundleStrings": {},
     "appLogPath": "app.log",
     "tunnelLogPath": "tunnel.log",
-    "urlToAppLogs": ".",
-    "urlToTunnelLogs": "."
+    "appLogsURL": ".",
+    "tunnelLogsURL": "."
 }

@@ -51,6 +51,7 @@ extension ABI {
             init?(intValue: Int) { nil }
         }
 
+        private static let packageName = "com.algoritmico.passepartout.abi"
         private let payloadType: String?
         private let payload: Encodable?
 
@@ -73,22 +74,36 @@ extension ABI {
 
             //
             // WARNING: "eventType" MUST match 100% the codegen output
-            // type (which is also the @SerialName) for the corresponding
-            // sealed class in Kotlin
+            // type (and package for Kotlin)
             //
-            // E.g.: ConfigEvent.Refresh
+            // E.g.:
+            //
+            // ProfileEvent.Ready
+            // payloadType = "CommonLibraryCore.QuicktypeProfileEventReady"
+            // type = "<packageName>.ProfileEventReady"
+            //
+            // ConfigEvent.Refresh
             // payloadType = "CommonLibraryCore.ABI.ConfigEvent.Refresh"
-            // eventType = "ABI_ConfigEvent_Refresh"
+            // type = "<packageName>.ConfigEventRefresh"
             //
             let eventType: String = {
                 var comps = payloadType.split(separator: ".")
                 let moduleName = comps.removeFirst()
                 assert(moduleName == "CommonLibraryCore")
-                return comps.joined(separator: "_")
+                // Quicktype*Event* or ABI.*Event*
+                var name = comps.joined(separator: ".")
+                for prefix in ["ABI.", "Quicktype"] {
+                    if name.hasPrefix(prefix) {
+                        name.replace(prefix, with: "")
+                        break
+                    }
+                }
+                name.replace(".", with: "")
+                return "\(Self.packageName).\(name)"
             }()
 
             var container = encoder.container(keyedBy: DynamicCodingKeys.self)
-            let eventTypeKey = DynamicCodingKeys(stringValue: "eventType")!
+            let eventTypeKey = DynamicCodingKeys(stringValue: "type")!
             try container.encode(eventType, forKey: eventTypeKey)
             try payload.encode(to: encoder)
         }

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CodableProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "$ref": "CodableModule.schema.json"
+      }
+    },
+    "activeModulesIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "behavior": {
+      "$ref": "ProfileBehavior.schema.json"
+    },
+    "userInfo": {
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "modules",
+    "activeModulesIds",
+    "behavior",
+    "userInfo"
+  ]
+}

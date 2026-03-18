@@ -15,12 +15,12 @@ extension ABI.AppConfiguration {
         if withTestBundle {
             configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
         } else {
-            configURL = constants.websites.config
+            configURL = constants.websites.configURL
         }
 #else
-        configURL = constants.websites.config
+        configURL = constants.websites.configURL
 #endif
-        let betaConfigURL = constants.websites.betaConfig
+        let betaConfigURL = constants.websites.betaConfigURL
         return ConfigManager(
             strategy: GitHubConfigStrategy(
                 url: configURL,
@@ -44,7 +44,7 @@ extension ABI.AppConfiguration {
                     pspLog(.core, .info, "Device ID: \(existingId)")
                     return existingId
                 }
-                let newId = String.random(count: constants.deviceIdLength)
+                let newId = String.random(count: constants.deviceIDLength)
                 kvStore.set(newId, forAppPreference: .deviceId)
                 pspLog(.core, .info, "Device ID (new): \(newId)")
                 return newId
@@ -154,7 +154,7 @@ extension ABI.AppConfiguration {
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
-            releaseURL: constants.github.latestRelease,
+            releaseURL: constants.github.latestReleaseURL,
             rateLimit: constants.api.versionRateLimit,
             fetcher: fetcher
         )
@@ -192,8 +192,6 @@ extension ABI.AppBundle {
         case keychainGroupId
         case loginItemId
         case tunnelId
-
-        // This is an integer number
         case userLevel
 
         static func requiredKeys(for target: BuildTarget) -> Set<Self> {
@@ -223,7 +221,7 @@ extension ABI.AppBundle {
         }
 
         // Fetch user level manually
-        let customUserLevel = bundle.integerIfPresent(for: .userLevel).map {
+        let customUserLevel = bundle.stringIfPresent(for: .userLevel).map {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
@@ -238,8 +236,8 @@ extension ABI.AppBundle {
             return url
         }()
 
-        let urlToAppLogs = appGroupURL.forCaches
-        let urlToTunnelLogs = {
+        let appLogsURL = appGroupURL.forCaches
+        let tunnelLogsURL = {
             let baseURL: URL
             if distributionTarget.supportsAppGroups {
                 baseURL = appGroupURL.forCaches
@@ -255,9 +253,9 @@ extension ABI.AppBundle {
             return baseURL
         }()
 
-        let urlForReview: URL?
+        let reviewURL: URL?
         if requiredBundleKeys.contains(.appStoreId) {
-            urlForReview = {
+            reviewURL = {
                 let appStoreId = bundle.string(for: .appStoreId)
                 guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
                     fatalError("Unable to build urlForReview")
@@ -265,21 +263,21 @@ extension ABI.AppBundle {
                 return url
             }()
         } else {
-            urlForReview = nil
+            reviewURL = nil
         }
 
         self.init(
-            distributionTarget: distributionTarget,
-            displayName: displayName,
-            versionNumber: versionNumber,
-            buildNumber: buildNumber,
-            customUserLevel: customUserLevel,
-            bundleStrings: bundleStrings,
             appLogPath: appLogPath,
+            appLogsURL: appLogsURL,
+            buildNumber: buildNumber,
+            bundleStrings: bundleStrings,
+            customUserLevel: customUserLevel,
+            displayName: displayName,
+            distributionTarget: distributionTarget,
+            reviewURL: reviewURL,
             tunnelLogPath: tunnelLogPath,
-            urlToAppLogs: urlToAppLogs,
-            urlToTunnelLogs: urlToTunnelLogs,
-            urlForReview: urlForReview
+            tunnelLogsURL: tunnelLogsURL,
+            versionNumber: versionNumber
         )
     }
 
@@ -297,6 +295,10 @@ private extension BundleConfiguration {
             fatalError("Missing main bundle key: \(key.rawValue)")
         }
         return value
+    }
+
+    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
+        value(forKey: key.rawValue)
     }
 
     func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {

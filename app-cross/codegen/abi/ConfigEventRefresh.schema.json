@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConfigEventRefresh",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "flags": {
+      "type": "array",
+      "items": {
+        "$ref": "ConfigFlag.schema.json"
+      }
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "flags",
+    "data"
+  ]
+}

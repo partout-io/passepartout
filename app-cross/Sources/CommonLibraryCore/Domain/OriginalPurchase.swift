@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public struct OriginalPurchase: Equatable, Codable, Sendable {
+    public struct OriginalPurchase: Equatable, Sendable {
         public let buildNumber: Int
 
         public let purchaseDate: Date

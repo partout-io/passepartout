@@ -13,7 +13,10 @@ struct WebReceiverManagerTests {
 extension WebReceiverManagerTests {
     @Test
     func givenUploader_whenStart_thenReceivesFiles() async throws {
-        let webReceiver = MockWebReceiver(file: ABI.WebFileUpload(name: "name", contents: "contents"))
+        let webReceiver = MockWebReceiver(file: ABI.WebFileUpload(
+            contents: "contents",
+            name: "name"
+        ))
         let sut = WebReceiverManager(webReceiver: webReceiver)
         let stream = sut.didChange.subscribe()
         let expReceive = Expectation()

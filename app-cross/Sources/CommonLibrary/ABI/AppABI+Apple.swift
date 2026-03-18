@@ -185,9 +185,9 @@ extension AppABI {
             downloadURL: {
                 switch appConfiguration.bundle.distributionTarget {
                 case .appStore:
-                    return appConfiguration.constants.websites.appStoreDownload
+                    return appConfiguration.constants.websites.appStoreDownloadURL
                 case .developerID:
-                    return appConfiguration.constants.websites.macDownload
+                    return appConfiguration.constants.websites.macDownloadURL
                 case .enterprise:
                     fatalError("No URL for enterprise distribution")
                 }

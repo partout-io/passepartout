@@ -13,7 +13,7 @@ public final class ConfigManager {
 
     private let buildNumber: Int
 
-    private var bundle: ABI.ConfigBundle? {
+    private var bundle: ConfigBundle? {
         didSet {
             // Take a snapshot of the active flags
             queue.sync {
@@ -92,7 +92,7 @@ public final class ConfigManager {
 }
 
 private extension ConfigManager {
-    func activeMap(for flag: ABI.ConfigFlag) -> ABI.ConfigBundle.Config? {
+    func activeMap(for flag: ABI.ConfigFlag) -> ConfigBundle.Config? {
         guard let map = bundle?.map[flag] else {
             return nil
         }

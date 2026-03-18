@@ -8,13 +8,13 @@ public final class TunnelABI: TunnelABIProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
         let skipsPurchases: Bool
-        let verificationParameters: ABI.AppConstants.Tunnel.Verification.Parameters
+        let verificationParameters: ABI.AppConstants.TunnelVerificationParameters
         let usesRelaxedVerification: Bool
 
         public init(
             manager: IAPManager,
             skipsPurchases: Bool,
-            verificationParameters: ABI.AppConstants.Tunnel.Verification.Parameters,
+            verificationParameters: ABI.AppConstants.TunnelVerificationParameters,
             usesRelaxedVerification: Bool
         ) {
             self.manager = manager
@@ -175,7 +175,7 @@ private extension TunnelABI {
         of profile: Profile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
-        params: ABI.AppConstants.Tunnel.Verification.Parameters,
+        params: ABI.AppConstants.TunnelVerificationParameters,
         isRelaxed: Bool
     ) async {
         var attempts = params.attempts

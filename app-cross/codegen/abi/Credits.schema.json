@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Credits",
+  "type": "object",
+  "properties": {
+    "licenses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "licenseName": { "type": "string" },
+          "licenseURL": { "type": "string", "format": "uri" }
+        },
+        "required": ["name", "licenseName", "licenseURL"]
+      }
+    },
+    "notices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "required": ["name", "message"]
+      }
+    },
+    "translations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "required": ["licenses", "notices", "translations"]
+}
