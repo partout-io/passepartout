@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.abi.ABIEventCallback
 import com.algoritmico.passepartout.abi.ABIEvent
+import com.algoritmico.passepartout.abi.AppConstants
 import com.algoritmico.passepartout.abi.AppProfileHeader
 import com.algoritmico.passepartout.abi.NativeLibraryWrapper
 import com.algoritmico.passepartout.abi.ProfileEventRefresh
@@ -62,6 +63,9 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
             this,
             eventHandler
         )
+
+        val constantsJSON: AppConstants = json.decodeFromString(constants)
+        Log.e("Passepartout", "${constantsJSON.github.discussions}")
 
         setContent {
             HelloWorldView(

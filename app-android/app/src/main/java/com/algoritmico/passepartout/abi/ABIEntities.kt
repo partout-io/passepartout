@@ -1,17 +1,22 @@
 // To parse the JSON, install kotlin's serialization plugin and do:
 //
 // val json                              = Json { allowStructuredMapKeys = true }
+// val appBundle                         = json.parse(AppBundle.serializer(), jsonString)
+// val appConfiguration                  = json.parse(AppConfiguration.serializer(), jsonString)
+// val appConstants                      = json.parse(AppConstants.serializer(), jsonString)
 // val appFeature                        = json.parse(AppFeature.serializer(), jsonString)
 // val appProfileHeader                  = json.parse(AppProfileHeader.serializer(), jsonString)
 // val appTunnelInfo                     = json.parse(AppTunnelInfo.serializer(), jsonString)
 // val appTunnelStatus                   = json.parse(AppTunnelStatus.serializer(), jsonString)
+// val appUserLevel                      = json.parse(AppUserLevel.serializer(), jsonString)
 // val configEventRefresh                = json.parse(ConfigEventRefresh.serializer(), jsonString)
 // val configFlag                        = json.parse(ConfigFlag.serializer(), jsonString)
+// val credits                           = json.parse(Credits.serializer(), jsonString)
+// val distributionTarget                = json.parse(DistributionTarget.serializer(), jsonString)
 // val iAPEventEligibleFeatures          = json.parse(IAPEventEligibleFeatures.serializer(), jsonString)
 // val iAPEventLoadReceipt               = json.parse(IAPEventLoadReceipt.serializer(), jsonString)
 // val iAPEventNewReceipt                = json.parse(IAPEventNewReceipt.serializer(), jsonString)
 // val iAPEventStatus                    = json.parse(IAPEventStatus.serializer(), jsonString)
-// val moduleType                        = json.parse(ModuleType.serializer(), jsonString)
 // val originalPurchase                  = json.parse(OriginalPurchase.serializer(), jsonString)
 // val profileEventChangeRemoteImporting = json.parse(ProfileEventChangeRemoteImporting.serializer(), jsonString)
 // val profileEventLocalProfiles         = json.parse(ProfileEventLocalProfiles.serializer(), jsonString)
@@ -45,32 +50,181 @@ import kotlinx.serialization.encoding.*
 typealias Timestamp = String
 
 @Serializable
+data class AppConfiguration (
+    val bundle: AppBundle,
+    val constants: AppConstants
+)
+
+@Serializable
+data class AppBundle (
+    val appLogPath: String,
+    val buildNumber: Long,
+    val bundleStrings: Map<String, String>,
+    val customUserLevel: AppUserLevel? = null,
+    val displayName: String,
+    val distributionTarget: DistributionTarget,
+    val tunnelLogPath: String,
+    val urlForReview: String? = null,
+    val urlToAppLogs: String,
+    val urlToTunnelLogs: String,
+    val versionNumber: String
+)
+
+@Serializable
+enum class AppUserLevel(val value: String) {
+    @SerialName("beta") Beta("beta"),
+    @SerialName("complete") Complete("complete"),
+    @SerialName("essentials") Essentials("essentials"),
+    @SerialName("freemium") Freemium("freemium"),
+    @SerialName("undefined") Undefined("undefined");
+}
+
+@Serializable
+enum class DistributionTarget(val value: String) {
+    @SerialName("appStore") AppStore("appStore"),
+    @SerialName("developerID") DeveloperID("developerID"),
+    @SerialName("enterprise") Enterprise("enterprise");
+}
+
+@Serializable
+data class AppConstants (
+    val api: AppConstantsAPI,
+    val containers: AppConstantsContainers,
+
+    @SerialName("deviceIdLength")
+    val deviceIDLength: Long,
+
+    val emails: AppConstantsEmails,
+    val formats: AppConstantsFormats,
+    val github: AppConstantsGitHub,
+    val iap: AppConstantsIAP,
+    val log: AppConstantsLog,
+    val tunnel: AppConstantsTunnel,
+    val webReceiver: AppConstantsWebReceiver,
+    val websites: AppConstantsWebsites
+)
+
+@Serializable
+data class AppConstantsAPI (
+    val refreshInfrastructureRateLimit: Double,
+    val timeoutInterval: Double,
+    val versionRateLimit: Double
+)
+
+@Serializable
+data class AppConstantsContainers (
+    val backup: String,
+    val local: String,
+    val remote: String
+)
+
+@Serializable
+data class AppConstantsEmails (
+    val domain: String,
+    val recipients: AppConstantsEmailsRecipients
+)
+
+@Serializable
+data class AppConstantsEmailsRecipients (
+    val beta: String,
+    val issues: String
+)
+
+@Serializable
+data class AppConstantsFormats (
+    val timestamp: String
+)
+
+@Serializable
+data class AppConstantsGitHub (
+    val discussions: String,
+    val issues: String,
+    val latestRelease: String,
+    val raw: String
+)
+
+@Serializable
+data class AppConstantsIAP (
+    val productsTimeoutInterval: Double,
+    val receiptInvalidationInterval: Double
+)
+
+@Serializable
+data class AppConstantsLog (
+    val formatter: AppConstantsLogFormatter,
+    val options: AppConstantsLogOptions,
+    val sinceLast: Double
+)
+
+@Serializable
+data class AppConstantsLogFormatter (
+    val message: String,
+    val timestamp: String
+)
+
+@Serializable
+data class AppConstantsLogOptions (
+    /**
+     * Optional maximum age in seconds
+     */
+    val maxAge: Double? = null,
+
+    val maxBufferedLines: Long,
+
+    /**
+     * DebugLog.Level (0=debug, 1=info, 2=warning, 3=error)
+     */
+    val maxLevel: Long,
+
+    /**
+     * Maximum size in bytes
+     */
+    val maxSize: Long
+)
+
+@Serializable
+data class AppConstantsTunnel (
+    val dnsFallbackServers: List<String>,
+    val profileTitleFormat: String,
+    val refreshInterval: Double,
+    val verification: AppConstantsTunnelVerification
+)
+
+@Serializable
+data class AppConstantsTunnelVerification (
+    val beta: AppConstantsTunnelVerificationParameters,
+    val production: AppConstantsTunnelVerificationParameters
+)
+
+@Serializable
+data class AppConstantsTunnelVerificationParameters (
+    val attempts: Long,
+    val delay: Double,
+    val interval: Double,
+    val retryInterval: Double
+)
+
+@Serializable
+data class AppConstantsWebReceiver (
+    val passcodeLength: Long,
+    val port: Long
+)
+
+@Serializable
+data class AppConstantsWebsites (
+    val appStoreDownload: String,
+    val configTTL: Double,
+    val eula: String,
+    val home: String,
+    val macDownload: String,
+    val subreddit: String
+)
+
+@Serializable
 data class ConfigEventRefresh (
-    val data: Data,
+    val data: JsonObject,
     val flags: List<ConfigFlag>
 ) : ABIEvent()
-
-@Serializable
-sealed class Data {
-    class AnythingArrayValue(val value: JsonArray)     : Data()
-    class BoolValue(val value: Boolean)                : Data()
-    class DoubleValue(val value: Double)               : Data()
-    class IntegerValue(val value: Long)                : Data()
-    class StringValue(val value: String)               : Data()
-    class UnionMapValue(val value: Map<String, Datum>) : Data()
-    class NullValue()                                  : Data()
-}
-
-@Serializable
-sealed class Datum {
-    class AnythingArrayValue(val value: JsonArray) : Datum()
-    class AnythingMapValue(val value: JsonObject)  : Datum()
-    class BoolValue(val value: Boolean)            : Datum()
-    class DoubleValue(val value: Double)           : Datum()
-    class IntegerValue(val value: Long)            : Datum()
-    class StringValue(val value: String)           : Datum()
-    class NullValue()                              : Datum()
-}
 
 @Serializable
 enum class ConfigFlag(val value: String) {
@@ -80,6 +234,26 @@ enum class ConfigFlag(val value: String) {
     @SerialName("neSocketUDP") NeSocketUDP("neSocketUDP"),
     @SerialName("unknown") Unknown("unknown");
 }
+
+@Serializable
+data class Credits (
+    val licenses: List<License>,
+    val notices: List<Notice>,
+    val translations: Map<String, List<String>>
+)
+
+@Serializable
+data class License (
+    val licenseName: String,
+    val licenseURL: String,
+    val name: String
+)
+
+@Serializable
+data class Notice (
+    val message: String,
+    val name: String
+)
 
 @Serializable
 data class IAPEventEligibleFeatures (

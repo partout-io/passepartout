@@ -5,7 +5,7 @@ cd $cwd/..
 
 set -e
 abi_schemas=$schemas_path/abi/*.json
-abi_output="app-cross/Sources/CommonLibraryCore/DomainCodegen/Quicktype.swift"
+abi_output="app-cross/Sources/CommonLibraryCore/Domain/Codegen/Quicktype.swift"
 abi_prefix="Quicktype"
 
 quicktype \
