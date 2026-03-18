@@ -21,12 +21,8 @@ quicktype \
 # Replace import
 sed -i '' "s/import Foundation/import Partout/" $abi_output
 
-# Replace Data with JSON in fields
-sed -i '' "s/data: ${abi_prefix}Data/data: [String: JSON]/g" $abi_output
-
-# Drop "Equatable" from Data/Datum
-sed -i '' "s/${abi_prefix}Data: Codable, Equatable, Sendable/${abi_prefix}Data: Codable, Sendable/" $abi_output
-sed -i '' "s/${abi_prefix}Datum: Codable, Equatable, Sendable/${abi_prefix}Datum: Codable, Sendable/" $abi_output
+# Replace JSONAny with JSON in fields
+sed -i '' "s/: JSONAny/: JSON/g" $abi_output
 
 # Add "@unchecked Sendable" to JSONAny
 sed -i '' "s/JSONAny: Codable/JSONAny: Codable, @unchecked Sendable/" $abi_output

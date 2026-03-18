@@ -11,9 +11,7 @@
       }
     },
     "data": {
-      "additionalProperties": {
-        "additionalProperties": true
-      }
+      "type": "object"
     }
   },
   "required": [
