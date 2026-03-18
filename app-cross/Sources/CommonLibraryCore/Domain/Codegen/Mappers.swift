@@ -92,6 +92,8 @@ extension QuicktypeAppConstantsLogOptions: QuicktypeDecodable {
 // MARK: - Helpers
 
 extension URL {
+    // XXX: Quicktype is unable to leverage the "uri" format
+    // to parse URL directly from JSON.
     init(forceString string: String, description: String) {
         guard let url = URL(string: string) else {
             fatalError("Malformed '\(description)' URL")
