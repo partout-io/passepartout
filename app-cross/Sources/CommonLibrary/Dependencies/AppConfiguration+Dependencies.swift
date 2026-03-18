@@ -18,7 +18,7 @@ extension ABI.AppConfiguration {
             configURL = constants.websites.configURL
         }
 #else
-        configURL = constants.websites.config
+        configURL = constants.websites.configURL
 #endif
         let betaConfigURL = constants.websites.betaConfigURL
         return ConfigManager(
