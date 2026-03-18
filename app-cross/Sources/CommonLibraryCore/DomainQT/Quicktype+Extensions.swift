@@ -2,10 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 protocol QuicktypeEncodable {
     associatedtype QuicktypeType
     var toProto: QuicktypeType { get }
 }
+
+// MARK: - ABI
 
 extension ABI.AppFeature {
     public static let essentialFeatures: Set<Self> = [
@@ -35,6 +39,32 @@ extension ABI.AppFeature: CustomDebugStringConvertible {
     }
 }
 
+extension ABI.AppProfileHeader: QuicktypeEncodable {
+    var toProto: QuicktypeAppProfileHeader {
+        QuicktypeAppProfileHeader(
+            fingerprint: fingerprint,
+            id: id.uuidString,
+            moduleTypes: moduleTypes.compactMap(\.toProto),
+            name: name,
+            primaryModuleType: primaryModuleType?.toProto,
+            providerInfo: providerInfo?.toProto,
+            requiredFeatures: Array(requiredFeatures),
+            secondaryModuleTypes: secondaryModuleTypes?.compactMap(\.toProto) ?? [],
+            sharingFlags: sharingFlags
+        )
+    }
+}
+
+extension ABI.AppTunnelInfo: QuicktypeEncodable {
+    var toProto: QuicktypeAppTunnelInfo {
+        QuicktypeAppTunnelInfo(
+            id: id.uuidString,
+            onDemand: onDemand,
+            status: status
+        )
+    }
+}
+
 extension ABI.ConfigFlag: CustomStringConvertible {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -48,6 +78,15 @@ extension ABI.ConfigFlag: CustomStringConvertible {
 
     public var description: String {
         rawValue
+    }
+}
+
+extension ABI.ProviderInfo: QuicktypeEncodable {
+    var toProto: QuicktypeProviderInfo {
+        QuicktypeProviderInfo(
+            countryCode: countryCode,
+            providerID: providerId.rawValue
+        )
     }
 }
 
@@ -87,5 +126,13 @@ extension ABI.SemanticVersion: CustomStringConvertible {
 extension ABI.VersionRelease: QuicktypeEncodable {
     var toProto: QuicktypeVersionRelease {
         QuicktypeVersionRelease(url: url.absoluteString, version: version)
+    }
+}
+
+// MARK: - Partout
+
+extension ModuleType: QuicktypeEncodable {
+    var toProto: QuicktypeModuleType? {
+        QuicktypeModuleType(rawValue: rawValue)
     }
 }

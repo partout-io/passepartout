@@ -13,18 +13,13 @@ extension ABI.ConfigEvent {
         public let flags: Set<ABI.ConfigFlag>
         public let data: [ABI.ConfigFlag: JSON]
         public func encode(to encoder: Encoder) throws {
-            struct EncodableRefresh: Encodable {
-                let flags: Set<ABI.ConfigFlag>
-                let data: [String: JSON]
-            }
-            let cd = EncodableRefresh(
-                flags: flags,
+            var container = encoder.singleValueContainer()
+            try container.encode(QuicktypeConfigEventRefresh(
                 data: data.reduce(into: [:]) {
                     $0[$1.key.rawValue] = $1.value
-                }
-            )
-            var container = encoder.singleValueContainer()
-            try container.encode(cd)
+                },
+                flags: Array(flags)
+            ))
         }
     }
 }
@@ -54,32 +49,20 @@ extension ABI.ProfileEvent {
     public struct Refresh: ABI.EventProtocol {
         public let headers: [Profile.ID: ABI.AppProfileHeader]
         public func encode(to encoder: Encoder) throws {
-            struct EncodableRefresh: Encodable {
-                let headers: [String: ABI.AppProfileHeader]
-            }
-            let cd = EncodableRefresh(
-                headers: headers.reduce(into: [:]) {
-                    $0[$1.key.uuidString] = $1.value
-                }
-            )
             var container = encoder.singleValueContainer()
-            try container.encode(cd)
+            try container.encode(QuicktypeProfileEventRefresh(
+                headers: headers.reduce(into: [:]) {
+                    $0[$1.key.uuidString] = $1.value.toProto
+                }
+            ))
         }
     }
     public struct Save: ABI.EventProtocol {
         public let profile: Profile
         public let previous: Profile?
         public func encode(to encoder: any Encoder) throws {
-            struct EncodableSave: Encodable {
-                let profile: CodableProfile
-                let previous: CodableProfile?
-            }
-            let cd = EncodableSave(
-                profile: profile.asCodableProfile,
-                previous: previous?.asCodableProfile
-            )
             var container = encoder.singleValueContainer()
-            try container.encode(cd)
+            try container.encode(QuicktypeProfileEventSave())
         }
     }
     public struct StartRemoteImport: ABI.EventProtocol { public init() {} }
@@ -93,16 +76,12 @@ extension ABI.TunnelEvent {
     public struct Refresh: ABI.EventProtocol {
         public let active: [Profile.ID: ABI.AppTunnelInfo]
         public func encode(to encoder: Encoder) throws {
-            struct EncodableRefresh: Encodable {
-                let active: [String: ABI.AppTunnelInfo]
-            }
-            let cd = EncodableRefresh(
-                active: active.reduce(into: [:]) {
-                    $0[$1.key.uuidString] = $1.value
-                }
-            )
             var container = encoder.singleValueContainer()
-            try container.encode(cd)
+            try container.encode(QuicktypeTunnelEventRefresh(
+                active: active.reduce(into: [:]) {
+                    $0[$1.key.uuidString] = $1.value.toProto
+                }
+            ))
         }
     }
 }
@@ -110,6 +89,12 @@ extension ABI.TunnelEvent {
 extension ABI.VersionEvent {
     public struct New: ABI.EventProtocol {
         public let release: ABI.VersionRelease
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(QuicktypeVersionEventNew(
+                release: release.toProto
+            ))
+        }
     }
 }
 
