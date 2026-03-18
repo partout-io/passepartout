@@ -112,7 +112,7 @@ extension TunnelManager {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.AppLogLine] {
+    public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.LogLine] {
         let output = try? await tunnel.sendMessage(.debugLog(
             sinceLast: parameters.sinceLast,
             maxLevel: parameters.options.maxLevel
@@ -120,7 +120,7 @@ extension TunnelManager {
         switch output {
         case .debugLog(let log):
             return log.lines.map {
-                ABI.AppLogLine(timestamp: $0.timestamp, message: $0.message)
+                ABI.LogLine(timestamp: $0.timestamp, message: $0.message)
             }
         default:
             return []

@@ -312,7 +312,7 @@ private struct AppABITunnel: AppABITunnelProtocol {
         try await tunnelManager.disconnect(from: profileId)
     }
 
-    func currentLog() async -> [ABI.AppLogLine] {
+    func currentLog() async -> [ABI.LogLine] {
         await tunnelManager.currentLog(parameters: logParameters)
     }
 
