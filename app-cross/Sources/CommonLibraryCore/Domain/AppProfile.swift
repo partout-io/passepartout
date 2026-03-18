@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public struct ProviderInfo: Hashable, Codable, Sendable {
+    public struct ProviderInfo: Hashable, Sendable {
         public let providerId: ProviderID
         public let countryCode: String?
 
@@ -15,7 +15,7 @@ extension ABI {
         }
     }
 
-    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Codable, Sendable {
+    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
         public private(set) var id: Profile.ID
         public let name: String
         public let moduleTypes: [ModuleType]
@@ -53,7 +53,7 @@ extension ABI {
         }
     }
 
-    public struct AppTunnelInfo: Identifiable, Hashable, Codable, Sendable {
+    public struct AppTunnelInfo: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
         public let status: AppTunnelStatus
         public let onDemand: Bool

@@ -6,7 +6,7 @@ import Partout
 
 extension ABI {
     public struct ConfigBundle: Decodable, Sendable {
-        public struct Config: Codable, Sendable {
+        public struct Config: Decodable, Sendable {
             public let rate: Int
 
             public let minBuild: Int?
