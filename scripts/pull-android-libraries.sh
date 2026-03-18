@@ -29,13 +29,5 @@ cp -f $cmake_bin_path/libwg-go.so $libs_path
 # Pull C++ runtime (Swift runtime linked statically)
 cp -f $ANDROID_NDK_SYSROOT/usr/lib/aarch64-linux-android/libc++_shared.so $libs_path
 
-# FIXME
-exit
-
-# Codegen ABI entities
-codegen_lang="kotlin"
-codegen_abi_path="$java_path/com/algoritmico/passepartout/abi/ABIEntities.kt"
-codegen_partout_path="$java_path/io/partout/abi/PartoutEntities.kt"
-cd app-cross
-swift run passepartout-codegen partout $codegen_lang >$codegen_partout_path
-swift run passepartout-codegen abi $codegen_lang >$codegen_abi_path
+# Generate ABI entities
+scripts/gen-abi-kotlin.sh
