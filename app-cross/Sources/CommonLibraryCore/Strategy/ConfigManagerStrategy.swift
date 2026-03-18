@@ -3,5 +3,5 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public protocol ConfigManagerStrategy: Sendable {
-    func bundle() async throws -> ABI.ConfigBundle
+    func bundle() async throws -> ConfigBundle
 }

@@ -156,7 +156,7 @@ private extension PartoutLogger {
         appendLog(level, message: "--- BEGIN ---")
         appendLog(level, message: "")
 
-        let systemInfo = ABI.SystemInformation()
+        let systemInfo = SystemInformation()
         appendLog(level, message: "App: \(versionString)")
         appendLog(level, message: "OS: \(systemInfo.osString)")
         if let deviceString = systemInfo.deviceString {

@@ -33,7 +33,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         lastUpdated = .distantPast
     }
 
-    public func bundle() async throws -> ABI.ConfigBundle {
+    public func bundle() async throws -> ConfigBundle {
         let isBeta = await isBeta()
         pspLog(.core, .debug, "Config (GitHub): beta = \(isBeta)")
         if lastUpdated > .distantPast {
@@ -47,7 +47,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         let targetURL = isBeta ? betaURL : url
         pspLog(.core, .info, "Config (GitHub): fetching bundle from \(targetURL)")
         let data = try await fetcher(targetURL)
-        let json = try JSONDecoder().decode(ABI.ConfigBundle.self, from: data)
+        let json = try JSONDecoder().decode(ConfigBundle.self, from: data)
         lastUpdated = Date()
         return json
     }
