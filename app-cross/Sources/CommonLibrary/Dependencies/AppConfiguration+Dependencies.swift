@@ -15,12 +15,12 @@ extension ABI.AppConfiguration {
         if withTestBundle {
             configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
         } else {
-            configURL = constants.websites.config
+            configURL = constants.websites.configURL
         }
 #else
         configURL = constants.websites.config
 #endif
-        let betaConfigURL = constants.websites.betaConfig
+        let betaConfigURL = constants.websites.betaConfigURL
         return ConfigManager(
             strategy: GitHubConfigStrategy(
                 url: configURL,
@@ -44,7 +44,7 @@ extension ABI.AppConfiguration {
                     pspLog(.core, .info, "Device ID: \(existingId)")
                     return existingId
                 }
-                let newId = String.random(count: constants.deviceIdLength)
+                let newId = String.random(count: constants.deviceIDLength)
                 kvStore.set(newId, forAppPreference: .deviceId)
                 pspLog(.core, .info, "Device ID (new): \(newId)")
                 return newId
@@ -154,7 +154,7 @@ extension ABI.AppConfiguration {
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
-            releaseURL: constants.github.latestRelease,
+            releaseURL: constants.github.latestReleaseURL,
             rateLimit: constants.api.versionRateLimit,
             fetcher: fetcher
         )

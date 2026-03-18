@@ -115,7 +115,7 @@ extension TunnelManager {
     public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.LogLine] {
         let output = try? await tunnel.sendMessage(.debugLog(
             sinceLast: parameters.sinceLast,
-            maxLevel: parameters.options.maxLevel
+            maxLevel: parameters.options.maxDebugLogLevel
         ))
         switch output {
         case .debugLog(let log):

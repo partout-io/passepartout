@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LocalLoggerOptions",
+  "type": "object",
+  "properties": {
+    "maxLevel": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "description": "DebugLog.Level (0=debug, 1=info, 2=warning, 3=error)"
+    },
+    "maxSize": {
+      "type": "integer",
+      "description": "Maximum size in bytes"
+    },
+    "maxBufferedLines": {
+      "type": "integer"
+    },
+    "maxAge": {
+      "type": ["number", "null"],
+      "description": "Optional maximum age in seconds"
+    }
+  },
+  "required": ["maxLevel", "maxSize", "maxBufferedLines"]
+}

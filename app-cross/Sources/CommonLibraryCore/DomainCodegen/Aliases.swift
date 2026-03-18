@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
+    public typealias AppConstants = QuicktypeAppConstants
     public typealias AppFeature = QuicktypeAppFeature
     public typealias AppTunnelStatus = QuicktypeAppTunnelStatus
     public typealias ConfigFlag = QuicktypeConfigFlag
@@ -10,6 +11,11 @@ extension ABI {
     public typealias SemanticVersion = QuicktypeSemanticVersion
     public typealias WebsiteWithPasscode = QuicktypeWebsiteWithPasscode
     public typealias WebFileUpload = QuicktypeWebFileUpload
+}
+
+extension ABI.AppConstants {
+    public typealias Log = QuicktypeAppConstantsLog
+    public typealias TunnelVerificationParameters = QuicktypeAppConstantsTunnelVerificationParameters
 }
 
 extension ABI.IAPEvent {

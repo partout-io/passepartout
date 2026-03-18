@@ -24,7 +24,7 @@ public func pspLog(
 public func pspLogCurrent(_ parameters: ABI.AppConstants.Log) -> [String] {
     PartoutLogger.default.currentLog(
         sinceLast: parameters.sinceLast,
-        maxLevel: parameters.options.maxLevel
+        maxLevel: parameters.options.maxDebugLogLevel
     )
 }
 
@@ -151,7 +151,7 @@ private extension PartoutLogger {
     }
 
     func logPreamble(versionString: String, parameters: ABI.AppConstants.Log) {
-        let level = parameters.options.maxLevel
+        let level = parameters.options.maxDebugLogLevel
         appendLog(level, message: "")
         appendLog(level, message: "--- BEGIN ---")
         appendLog(level, message: "")
@@ -193,7 +193,7 @@ private extension PartoutLogger.Builder {
 
         setLocalLogger(
             url: url,
-            options: parameters.options,
+            options: parameters.options.fromProto,
             mapper: mapper
         )
 

@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AppConstants",
+  "type": "object",
+  "properties": {
+    "deviceIdLength": { "type": "integer", "title": "AppConstants.deviceIdLength" },
+    "containers": {
+      "type": "object",
+      "title": "AppConstants.Containers",
+      "properties": {
+        "local": { "type": "string", "title": "AppConstants.Containers.local" },
+        "remote": { "type": "string", "title": "AppConstants.Containers.remote" },
+        "backup": { "type": "string", "title": "AppConstants.Containers.backup" }
+      },
+      "required": ["local", "remote", "backup"]
+    },
+    "websites": {
+      "type": "object",
+      "title": "AppConstants.Websites",
+      "properties": {
+        "home": { "type": "string", "format": "uri", "title": "AppConstants.Websites.home" },
+        "subreddit": { "type": "string", "format": "uri", "title": "AppConstants.Websites.subreddit" },
+        "eula": { "type": "string", "format": "uri", "title": "AppConstants.Websites.eula" },
+        "appStoreDownload": { "type": "string", "format": "uri", "title": "AppConstants.Websites.appStoreDownload" },
+        "macDownload": { "type": "string", "format": "uri", "title": "AppConstants.Websites.macDownload" },
+        "configTTL": { "type": "number", "title": "AppConstants.Websites.configTTL" }
+      },
+      "required": ["home", "subreddit", "eula", "appStoreDownload", "macDownload", "configTTL"]
+    },
+    "github": {
+      "type": "object",
+      "title": "AppConstants.GitHub",
+      "properties": {
+        "discussions": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.discussions" },
+        "issues": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.issues" },
+        "raw": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.raw" },
+        "latestRelease": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.latestRelease" }
+      },
+      "required": ["discussions", "issues", "raw", "latestRelease"]
+    },
+    "emails": {
+      "type": "object",
+      "title": "AppConstants.Emails",
+      "properties": {
+        "domain": { "type": "string", "title": "AppConstants.Emails.domain" },
+        "recipients": {
+          "type": "object",
+          "title": "AppConstants.Emails.Recipients",
+          "properties": {
+            "issues": { "type": "string", "title": "AppConstants.Emails.Recipients.issues" },
+            "beta": { "type": "string", "title": "AppConstants.Emails.Recipients.beta" }
+          },
+          "required": ["issues", "beta"]
+        }
+      },
+      "required": ["domain", "recipients"]
+    },
+    "formats": {
+      "type": "object",
+      "title": "AppConstants.Formats",
+      "properties": {
+        "timestamp": { "type": "string", "title": "AppConstants.Formats.timestamp" }
+      },
+      "required": ["timestamp"]
+    },
+    "tunnel": {
+      "type": "object",
+      "title": "AppConstants.Tunnel",
+      "properties": {
+        "profileTitleFormat": { "type": "string", "title": "AppConstants.Tunnel.profileTitleFormat" },
+        "refreshInterval": { "type": "number", "title": "AppConstants.Tunnel.refreshInterval" },
+        "dnsFallbackServers": {
+          "type": "array",
+          "items": { "type": "string", "title": "AppConstants.Tunnel.dnsFallbackServers.item" },
+          "title": "AppConstants.Tunnel.dnsFallbackServers"
+        },
+        "verification": {
+          "type": "object",
+          "title": "AppConstants.Tunnel.Verification",
+          "properties": {
+            "production": { "$ref": "#/$defs/AppConstants.Tunnel.Verification.Parameters" },
+            "beta": { "$ref": "#/$defs/AppConstants.Tunnel.Verification.Parameters" }
+          },
+          "required": ["production", "beta"]
+        }
+      },
+      "required": ["profileTitleFormat", "refreshInterval", "dnsFallbackServers", "verification"]
+    },
+    "api": {
+      "type": "object",
+      "title": "AppConstants.API",
+      "properties": {
+        "timeoutInterval": { "type": "number", "title": "AppConstants.API.timeoutInterval" },
+        "versionRateLimit": { "type": "number", "title": "AppConstants.API.versionRateLimit" },
+        "refreshInfrastructureRateLimit": { "type": "number", "title": "AppConstants.API.refreshInfrastructureRateLimit" }
+      },
+      "required": ["timeoutInterval", "versionRateLimit", "refreshInfrastructureRateLimit"]
+    },
+    "iap": {
+      "type": "object",
+      "title": "AppConstants.IAP",
+      "properties": {
+        "productsTimeoutInterval": { "type": "number", "title": "AppConstants.IAP.productsTimeoutInterval" },
+        "receiptInvalidationInterval": { "type": "number", "title": "AppConstants.IAP.receiptInvalidationInterval" }
+      },
+      "required": ["productsTimeoutInterval", "receiptInvalidationInterval"]
+    },
+    "webReceiver": {
+      "type": "object",
+      "title": "AppConstants.WebReceiver",
+      "properties": {
+        "port": { "type": "integer", "title": "AppConstants.WebReceiver.port" },
+        "passcodeLength": { "type": "integer", "title": "AppConstants.WebReceiver.passcodeLength" }
+      },
+      "required": ["port", "passcodeLength"]
+    },
+    "log": {
+      "type": "object",
+      "title": "AppConstants.Log",
+      "properties": {
+        "formatter": {
+          "type": "object",
+          "title": "AppConstants.Log.Formatter",
+          "properties": {
+            "timestamp": { "type": "string", "title": "AppConstants.Log.Formatter.timestamp" },
+            "message": { "type": "string", "title": "AppConstants.Log.Formatter.message" }
+          },
+          "required": ["timestamp", "message"]
+        },
+        "sinceLast": { "type": "number", "title": "AppConstants.Log.sinceLast" },
+        "options": {
+          "type": "object",
+          "title": "AppConstants.Log.options",
+          "$ref": "../partout/LocalLoggerOptions.schema.json"
+        }
+      },
+      "required": ["formatter", "sinceLast", "options"]
+    }
+  },
+  "required": [
+    "deviceIdLength",
+    "containers",
+    "websites",
+    "github",
+    "emails",
+    "formats",
+    "tunnel",
+    "api",
+    "iap",
+    "webReceiver",
+    "log"
+  ],
+  "$defs": {
+      "AppConstants.Tunnel.Verification.Parameters": {
+        "type": "object",
+        "title": "AppConstants.Tunnel.Verification.Parameters",
+        "properties": {
+          "delay": { "type": "number", "title": "AppConstants.Tunnel.Verification.Parameters.delay" },
+          "interval": { "type": "number", "title": "AppConstants.Tunnel.Verification.Parameters.interval" },
+          "attempts": { "type": "integer", "title": "AppConstants.Tunnel.Verification.Parameters.attempts" },
+          "retryInterval": { "type": "number", "title": "AppConstants.Tunnel.Verification.Parameters.retryInterval" }
+        },
+        "required": ["delay", "interval", "attempts", "retryInterval"]
+      }
+  }
+}

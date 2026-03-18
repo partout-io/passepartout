@@ -9,7 +9,12 @@ protocol QuicktypeEncodable {
     var toProto: QuicktypeType { get }
 }
 
-// MARK: - ABI
+protocol QuicktypeDecodable {
+    associatedtype NativeType
+    var fromProto: NativeType { get }
+}
+
+// MARK: - Encodable
 
 extension ABI.AppFeature {
     public static let essentialFeatures: Set<Self> = [
@@ -138,10 +143,25 @@ extension ABI.VersionRelease: QuicktypeEncodable {
     }
 }
 
-// MARK: - Partout
-
 extension ModuleType: QuicktypeEncodable {
     var toProto: QuicktypeModuleType? {
         QuicktypeModuleType(rawValue: rawValue)
+    }
+}
+
+// MARK: - Decodable
+
+extension QuicktypeAppConstantsLogOptions: QuicktypeDecodable {
+    public var maxDebugLogLevel: DebugLog.Level {
+        DebugLog.Level(rawValue: maxLevel) ?? .info
+    }
+
+    public var fromProto: LocalLogger.Options {
+        LocalLogger.Options(
+            maxLevel: maxDebugLogLevel,
+            maxSize: UInt64(maxSize),
+            maxBufferedLines: maxBufferedLines,
+            maxAge: maxAge
+        )
     }
 }

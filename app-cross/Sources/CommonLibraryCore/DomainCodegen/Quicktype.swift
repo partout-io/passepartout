@@ -1,6 +1,7 @@
 // This file was generated from JSON Schema using quicktype, do not modify it directly.
 // To parse the JSON, add this file to your project and do:
 //
+//   let quicktypeAppConstants = try? JSONDecoder().decode(QuicktypeAppConstants.self, from: jsonData)
 //   let quicktypeAppFeature = try? JSONDecoder().decode(QuicktypeAppFeature.self, from: jsonData)
 //   let quicktypeAppProfileHeader = try? JSONDecoder().decode(QuicktypeAppProfileHeader.self, from: jsonData)
 //   let quicktypeAppTunnelInfo = try? JSONDecoder().decode(QuicktypeAppTunnelInfo.self, from: jsonData)
@@ -11,7 +12,6 @@
 //   let quicktypeIAPEventLoadReceipt = try? JSONDecoder().decode(QuicktypeIAPEventLoadReceipt.self, from: jsonData)
 //   let quicktypeIAPEventNewReceipt = try? JSONDecoder().decode(QuicktypeIAPEventNewReceipt.self, from: jsonData)
 //   let quicktypeIAPEventStatus = try? JSONDecoder().decode(QuicktypeIAPEventStatus.self, from: jsonData)
-//   let quicktypeModuleType = try? JSONDecoder().decode(QuicktypeModuleType.self, from: jsonData)
 //   let quicktypeOriginalPurchase = try? JSONDecoder().decode(QuicktypeOriginalPurchase.self, from: jsonData)
 //   let quicktypeProfileEventChangeRemoteImporting = try? JSONDecoder().decode(QuicktypeProfileEventChangeRemoteImporting.self, from: jsonData)
 //   let quicktypeProfileEventLocalProfiles = try? JSONDecoder().decode(QuicktypeProfileEventLocalProfiles.self, from: jsonData)
@@ -43,6 +43,316 @@
 
 import Partout
 
+// MARK: - QuicktypeAppConstants
+public struct QuicktypeAppConstants: Codable, Equatable, Sendable {
+    public let api: QuicktypeAppConstantsAPI
+    public let containers: QuicktypeAppConstantsContainers
+    public let deviceIDLength: Int
+    public let emails: QuicktypeAppConstantsEmails
+    public let formats: QuicktypeAppConstantsFormats
+    public let github: QuicktypeAppConstantsGitHub
+    public let iap: QuicktypeAppConstantsIAP
+    public let log: QuicktypeAppConstantsLog
+    public let tunnel: QuicktypeAppConstantsTunnel
+    public let webReceiver: QuicktypeAppConstantsWebReceiver
+    public let websites: QuicktypeAppConstantsWebsites
+
+    public enum CodingKeys: String, CodingKey {
+        case api, containers
+        case deviceIDLength = "deviceIdLength"
+        case emails, formats, github, iap, log, tunnel, webReceiver, websites
+    }
+
+    public init(api: QuicktypeAppConstantsAPI, containers: QuicktypeAppConstantsContainers, deviceIDLength: Int, emails: QuicktypeAppConstantsEmails, formats: QuicktypeAppConstantsFormats, github: QuicktypeAppConstantsGitHub, iap: QuicktypeAppConstantsIAP, log: QuicktypeAppConstantsLog, tunnel: QuicktypeAppConstantsTunnel, webReceiver: QuicktypeAppConstantsWebReceiver, websites: QuicktypeAppConstantsWebsites) {
+        self.api = api
+        self.containers = containers
+        self.deviceIDLength = deviceIDLength
+        self.emails = emails
+        self.formats = formats
+        self.github = github
+        self.iap = iap
+        self.log = log
+        self.tunnel = tunnel
+        self.webReceiver = webReceiver
+        self.websites = websites
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsAPI
+public struct QuicktypeAppConstantsAPI: Codable, Equatable, Sendable {
+    public let refreshInfrastructureRateLimit, timeoutInterval, versionRateLimit: Double
+
+    public init(refreshInfrastructureRateLimit: Double, timeoutInterval: Double, versionRateLimit: Double) {
+        self.refreshInfrastructureRateLimit = refreshInfrastructureRateLimit
+        self.timeoutInterval = timeoutInterval
+        self.versionRateLimit = versionRateLimit
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsContainers
+public struct QuicktypeAppConstantsContainers: Codable, Equatable, Sendable {
+    public let backup, local, remote: String
+
+    public init(backup: String, local: String, remote: String) {
+        self.backup = backup
+        self.local = local
+        self.remote = remote
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsEmails
+public struct QuicktypeAppConstantsEmails: Codable, Equatable, Sendable {
+    public let domain: String
+    public let recipients: QuicktypeAppConstantsEmailsRecipients
+
+    public init(domain: String, recipients: QuicktypeAppConstantsEmailsRecipients) {
+        self.domain = domain
+        self.recipients = recipients
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsEmailsRecipients
+public struct QuicktypeAppConstantsEmailsRecipients: Codable, Equatable, Sendable {
+    public let beta, issues: String
+
+    public init(beta: String, issues: String) {
+        self.beta = beta
+        self.issues = issues
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsFormats
+public struct QuicktypeAppConstantsFormats: Codable, Equatable, Sendable {
+    public let timestamp: String
+
+    public init(timestamp: String) {
+        self.timestamp = timestamp
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsGitHub
+public struct QuicktypeAppConstantsGitHub: Codable, Equatable, Sendable {
+    public let discussions, issues, latestRelease, raw: String
+
+    public init(discussions: String, issues: String, latestRelease: String, raw: String) {
+        self.discussions = discussions
+        self.issues = issues
+        self.latestRelease = latestRelease
+        self.raw = raw
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsIAP
+public struct QuicktypeAppConstantsIAP: Codable, Equatable, Sendable {
+    public let productsTimeoutInterval, receiptInvalidationInterval: Double
+
+    public init(productsTimeoutInterval: Double, receiptInvalidationInterval: Double) {
+        self.productsTimeoutInterval = productsTimeoutInterval
+        self.receiptInvalidationInterval = receiptInvalidationInterval
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsLog
+public struct QuicktypeAppConstantsLog: Codable, Equatable, Sendable {
+    public let formatter: QuicktypeAppConstantsLogFormatter
+    public let options: QuicktypeAppConstantsLogOptions
+    public let sinceLast: Double
+
+    public init(formatter: QuicktypeAppConstantsLogFormatter, options: QuicktypeAppConstantsLogOptions, sinceLast: Double) {
+        self.formatter = formatter
+        self.options = options
+        self.sinceLast = sinceLast
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsLogFormatter
+public struct QuicktypeAppConstantsLogFormatter: Codable, Equatable, Sendable {
+    public let message, timestamp: String
+
+    public init(message: String, timestamp: String) {
+        self.message = message
+        self.timestamp = timestamp
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsLogOptions
+public struct QuicktypeAppConstantsLogOptions: Codable, Equatable, Sendable {
+    /// Optional maximum age in seconds
+    public let maxAge: Double?
+    public let maxBufferedLines: Int
+    /// DebugLog.Level (0=debug, 1=info, 2=warning, 3=error)
+    public let maxLevel: Int
+    /// Maximum size in bytes
+    public let maxSize: Int
+
+    public init(maxAge: Double?, maxBufferedLines: Int, maxLevel: Int, maxSize: Int) {
+        self.maxAge = maxAge
+        self.maxBufferedLines = maxBufferedLines
+        self.maxLevel = maxLevel
+        self.maxSize = maxSize
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsTunnel
+public struct QuicktypeAppConstantsTunnel: Codable, Equatable, Sendable {
+    public let dnsFallbackServers: [String]
+    public let profileTitleFormat: String
+    public let refreshInterval: Double
+    public let verification: QuicktypeAppConstantsTunnelVerification
+
+    public init(dnsFallbackServers: [String], profileTitleFormat: String, refreshInterval: Double, verification: QuicktypeAppConstantsTunnelVerification) {
+        self.dnsFallbackServers = dnsFallbackServers
+        self.profileTitleFormat = profileTitleFormat
+        self.refreshInterval = refreshInterval
+        self.verification = verification
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsTunnelVerification
+public struct QuicktypeAppConstantsTunnelVerification: Codable, Equatable, Sendable {
+    public let beta, production: QuicktypeAppConstantsTunnelVerificationParameters
+
+    public init(beta: QuicktypeAppConstantsTunnelVerificationParameters, production: QuicktypeAppConstantsTunnelVerificationParameters) {
+        self.beta = beta
+        self.production = production
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsTunnelVerificationParameters
+public struct QuicktypeAppConstantsTunnelVerificationParameters: Codable, Equatable, Sendable {
+    public let attempts: Int
+    public let delay, interval, retryInterval: Double
+
+    public init(attempts: Int, delay: Double, interval: Double, retryInterval: Double) {
+        self.attempts = attempts
+        self.delay = delay
+        self.interval = interval
+        self.retryInterval = retryInterval
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsWebReceiver
+public struct QuicktypeAppConstantsWebReceiver: Codable, Equatable, Sendable {
+    public let passcodeLength, port: Int
+
+    public init(passcodeLength: Int, port: Int) {
+        self.passcodeLength = passcodeLength
+        self.port = port
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeAppConstantsWebsites
+public struct QuicktypeAppConstantsWebsites: Codable, Equatable, Sendable {
+    public let appStoreDownload: String
+    public let configTTL: Double
+    public let eula, home, macDownload, subreddit: String
+
+    public init(appStoreDownload: String, configTTL: Double, eula: String, home: String, macDownload: String, subreddit: String) {
+        self.appStoreDownload = appStoreDownload
+        self.configTTL = configTTL
+        self.eula = eula
+        self.home = home
+        self.macDownload = macDownload
+        self.subreddit = subreddit
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
 // MARK: - QuicktypeConfigEventRefresh
 public struct QuicktypeConfigEventRefresh: Codable, Equatable, Sendable {
     public let data: [String: JSON]
@@ -51,132 +361,6 @@ public struct QuicktypeConfigEventRefresh: Codable, Equatable, Sendable {
     public init(data: [String: JSON], flags: [QuicktypeConfigFlag]) {
         self.data = data
         self.flags = flags
-    }
-}
-
-public enum QuicktypeData: Codable, Sendable {
-    case anythingArray([JSONAny])
-    case bool(Bool)
-    case double(Double)
-    case integer(Int)
-    case string(String)
-    case unionMap([String: QuicktypeDatum])
-    case null
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let x = try? container.decode(Bool.self) {
-            self = .bool(x)
-            return
-        }
-        if let x = try? container.decode(Int.self) {
-            self = .integer(x)
-            return
-        }
-        if let x = try? container.decode([JSONAny].self) {
-            self = .anythingArray(x)
-            return
-        }
-        if let x = try? container.decode(Double.self) {
-            self = .double(x)
-            return
-        }
-        if let x = try? container.decode([String: QuicktypeDatum].self) {
-            self = .unionMap(x)
-            return
-        }
-        if let x = try? container.decode(String.self) {
-            self = .string(x)
-            return
-        }
-        if container.decodeNil() {
-            self = .null
-            return
-        }
-        throw DecodingError.typeMismatch(QuicktypeData.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for QuicktypeData"))
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .anythingArray(let x):
-            try container.encode(x)
-        case .bool(let x):
-            try container.encode(x)
-        case .double(let x):
-            try container.encode(x)
-        case .integer(let x):
-            try container.encode(x)
-        case .string(let x):
-            try container.encode(x)
-        case .unionMap(let x):
-            try container.encode(x)
-        case .null:
-            try container.encodeNil()
-        }
-    }
-}
-
-public enum QuicktypeDatum: Codable, Sendable {
-    case anythingArray([JSONAny])
-    case anythingMap([String: JSONAny])
-    case bool(Bool)
-    case double(Double)
-    case integer(Int)
-    case string(String)
-    case null
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let x = try? container.decode(Bool.self) {
-            self = .bool(x)
-            return
-        }
-        if let x = try? container.decode(Int.self) {
-            self = .integer(x)
-            return
-        }
-        if let x = try? container.decode([JSONAny].self) {
-            self = .anythingArray(x)
-            return
-        }
-        if let x = try? container.decode(Double.self) {
-            self = .double(x)
-            return
-        }
-        if let x = try? container.decode([String: JSONAny].self) {
-            self = .anythingMap(x)
-            return
-        }
-        if let x = try? container.decode(String.self) {
-            self = .string(x)
-            return
-        }
-        if container.decodeNil() {
-            self = .null
-            return
-        }
-        throw DecodingError.typeMismatch(QuicktypeDatum.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for QuicktypeDatum"))
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .anythingArray(let x):
-            try container.encode(x)
-        case .anythingMap(let x):
-            try container.encode(x)
-        case .bool(let x):
-            try container.encode(x)
-        case .double(let x):
-            try container.encode(x)
-        case .integer(let x):
-            try container.encode(x)
-        case .string(let x):
-            try container.encode(x)
-        case .null:
-            try container.encodeNil()
-        }
     }
 }
 
