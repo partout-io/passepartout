@@ -88,3 +88,14 @@ extension QuicktypeAppConstantsLogOptions: QuicktypeDecodable {
         )
     }
 }
+
+// MARK: - Helpers
+
+extension URL {
+    init(forceString string: String, description: String) {
+        guard let url = URL(string: string) else {
+            fatalError("Malformed '\(description)' URL")
+        }
+        self = url
+    }
+}

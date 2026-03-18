@@ -223,7 +223,7 @@ extension ABI.AppBundle {
         }
 
         // Fetch user level manually
-        let customUserLevel = bundle.integerIfPresent(for: .userLevel).map {
+        let customUserLevel = bundle.stringIfPresent(for: .userLevel).map {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
@@ -297,6 +297,10 @@ private extension BundleConfiguration {
             fatalError("Missing main bundle key: \(key.rawValue)")
         }
         return value
+    }
+
+    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
+        value(forKey: key.rawValue)
     }
 
     func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {

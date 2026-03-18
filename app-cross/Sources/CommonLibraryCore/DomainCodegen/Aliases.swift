@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 extension ABI {
+    public typealias AppBundle = QuicktypeAppBundle
     public typealias AppConstants = QuicktypeAppConstants
     public typealias AppFeature = QuicktypeAppFeature
     public typealias AppTunnelStatus = QuicktypeAppTunnelStatus
+    public typealias AppUserLevel = QuicktypeAppUserLevel
     public typealias ConfigFlag = QuicktypeConfigFlag
     public typealias DistributionTarget = QuicktypeDistributionTarget
     public typealias ProfileSharingFlag = QuicktypeProfileSharingFlag

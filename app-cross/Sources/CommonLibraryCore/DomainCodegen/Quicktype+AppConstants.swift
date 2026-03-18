@@ -108,12 +108,3 @@ extension QuicktypeAppConstantsTunnel {
         isBeta ? verification.beta : verification.production
     }
 }
-
-private extension URL {
-    init(forceString string: String, description: String) {
-        guard let url = URL(string: string) else {
-            fatalError("Malformed '\(description)' URL")
-        }
-        self = url
-    }
-}

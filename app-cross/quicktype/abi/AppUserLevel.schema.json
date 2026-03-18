@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AppUserLevel",
+  "type": "string",
+  "enum": [
+    "undefined",
+    "freemium",
+    "beta",
+    "essentials",
+    "complete"
+  ]
+}

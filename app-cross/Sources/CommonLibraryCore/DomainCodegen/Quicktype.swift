@@ -1,11 +1,13 @@
 // This file was generated from JSON Schema using quicktype, do not modify it directly.
 // To parse the JSON, add this file to your project and do:
 //
+//   let quicktypeAppBundle = try? JSONDecoder().decode(QuicktypeAppBundle.self, from: jsonData)
 //   let quicktypeAppConstants = try? JSONDecoder().decode(QuicktypeAppConstants.self, from: jsonData)
 //   let quicktypeAppFeature = try? JSONDecoder().decode(QuicktypeAppFeature.self, from: jsonData)
 //   let quicktypeAppProfileHeader = try? JSONDecoder().decode(QuicktypeAppProfileHeader.self, from: jsonData)
 //   let quicktypeAppTunnelInfo = try? JSONDecoder().decode(QuicktypeAppTunnelInfo.self, from: jsonData)
 //   let quicktypeAppTunnelStatus = try? JSONDecoder().decode(QuicktypeAppTunnelStatus.self, from: jsonData)
+//   let quicktypeAppUserLevel = try? JSONDecoder().decode(QuicktypeAppUserLevel.self, from: jsonData)
 //   let quicktypeConfigEventRefresh = try? JSONDecoder().decode(QuicktypeConfigEventRefresh.self, from: jsonData)
 //   let quicktypeConfigFlag = try? JSONDecoder().decode(QuicktypeConfigFlag.self, from: jsonData)
 //   let quicktypeDistributionTarget = try? JSONDecoder().decode(QuicktypeDistributionTarget.self, from: jsonData)
@@ -43,6 +45,53 @@
 // synthesized for types that have collections (such as arrays or dictionaries).
 
 import Partout
+
+// MARK: - QuicktypeAppBundle
+public struct QuicktypeAppBundle: Codable, Equatable, Sendable {
+    public let appLogPath: String
+    public let buildNumber: Int
+    public let bundleStrings: [String: String]
+    public let customUserLevel: QuicktypeAppUserLevel?
+    public let displayName: String
+    public let distributionTarget: QuicktypeDistributionTarget
+    public let tunnelLogPath: String
+    public let urlForReview: String?
+    public let urlToAppLogs, urlToTunnelLogs, versionNumber: String
+
+    public init(appLogPath: String, buildNumber: Int, bundleStrings: [String: String], customUserLevel: QuicktypeAppUserLevel?, displayName: String, distributionTarget: QuicktypeDistributionTarget, tunnelLogPath: String, urlForReview: String?, urlToAppLogs: String, urlToTunnelLogs: String, versionNumber: String) {
+        self.appLogPath = appLogPath
+        self.buildNumber = buildNumber
+        self.bundleStrings = bundleStrings
+        self.customUserLevel = customUserLevel
+        self.displayName = displayName
+        self.distributionTarget = distributionTarget
+        self.tunnelLogPath = tunnelLogPath
+        self.urlForReview = urlForReview
+        self.urlToAppLogs = urlToAppLogs
+        self.urlToTunnelLogs = urlToTunnelLogs
+        self.versionNumber = versionNumber
+    }
+}
+
+public enum QuicktypeAppUserLevel: String, Codable, Equatable, Sendable {
+    case beta = "beta"
+    case complete = "complete"
+    case essentials = "essentials"
+    case freemium = "freemium"
+    case undefined = "undefined"
+}
+
+public enum QuicktypeDistributionTarget: String, Codable, Equatable, Sendable {
+    case appStore = "appStore"
+    case developerID = "developerID"
+    case enterprise = "enterprise"
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
 
 // MARK: - QuicktypeAppConstants
 public struct QuicktypeAppConstants: Codable, Equatable, Sendable {
@@ -371,12 +420,6 @@ public enum QuicktypeConfigFlag: String, Codable, Equatable, Sendable {
     case neSocketTCP = "neSocketTCP"
     case neSocketUDP = "neSocketUDP"
     case unknown = "unknown"
-}
-
-public enum QuicktypeDistributionTarget: String, Codable, Equatable, Sendable {
-    case appStore = "appStore"
-    case developerID = "developerID"
-    case enterprise = "enterprise"
 }
 
 //
