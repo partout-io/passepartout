@@ -102,7 +102,7 @@ extension ABI {
             }()
 
             var container = encoder.container(keyedBy: DynamicCodingKeys.self)
-            let eventTypeKey = DynamicCodingKeys(stringValue: "eventType")!
+            let eventTypeKey = DynamicCodingKeys(stringValue: "type")!
             try container.encode(eventType, forKey: eventTypeKey)
             try payload.encode(to: encoder)
         }
