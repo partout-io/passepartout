@@ -13,16 +13,16 @@
     "moduleTypes": {
       "type": "array",
       "items": {
-        "$ref": "ModuleType.schema.json"
+        "$ref": "../partout/ModuleType.schema.json"
       }
     },
     "primaryModuleType": {
-      "$ref": "ModuleType.schema.json"
+      "$ref": "../partout/ModuleType.schema.json"
     },
     "secondaryModuleTypes": {
       "type": "array",
       "items": {
-        "$ref": "ModuleType.schema.json"
+        "$ref": "../partout/ModuleType.schema.json"
       }
     },
     "providerInfo": {
