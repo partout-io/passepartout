@@ -4,6 +4,7 @@
 
 import Partout
 
+// FIXME: #1723, Precompute in Quicktype decoding
 extension ABI.Credits.License {
     public var licenseFoundationURL: URL {
         URL(forceString: licenseURL, description: "licenseURL")

@@ -41,19 +41,22 @@ extension ABI.AppBundle {
         "\(versionNumber) (\(buildNumber))"
     }
 
-    private var urlToAppLogsURL: URL {
-        URL(forceString: urlToAppLogs, description: "bundle.urlToAppLogs")
-    }
-
-    private var urlToTunnelLogsURL: URL {
-        URL(forceString: urlToTunnelLogs, description: "bundle.urlToTunnelLogs")
-    }
-
     public var urlForAppLog: URL {
         urlToAppLogsURL.appending(path: appLogPath)
     }
 
     public var urlForTunnelLog: URL {
         urlToTunnelLogsURL.appending(path: tunnelLogPath)
+    }
+}
+
+// FIXME: #1723, Precompute in Quicktype decoding
+private extension ABI.AppBundle {
+    var urlToAppLogsURL: URL {
+        URL(forceString: urlToAppLogs, description: "bundle.urlToAppLogs")
+    }
+
+    var urlToTunnelLogsURL: URL {
+        URL(forceString: urlToTunnelLogs, description: "bundle.urlToTunnelLogs")
     }
 }

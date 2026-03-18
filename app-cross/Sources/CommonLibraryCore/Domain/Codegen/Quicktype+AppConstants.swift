@@ -5,26 +5,6 @@
 import Partout
 
 extension QuicktypeAppConstantsWebsites {
-    public var homeURL: URL {
-        URL(forceString: home, description: "websites.home")
-    }
-
-    public var appStoreDownloadURL: URL {
-        URL(forceString: appStoreDownload, description: "websites.appStoreDownload")
-    }
-
-    public var eulaURL: URL {
-        URL(forceString: eula, description: "websites.eula")
-    }
-
-    public var macDownloadURL: URL {
-        URL(forceString: macDownload, description: "websites.macDownload")
-    }
-
-    public var subredditURL: URL {
-        URL(forceString: subreddit, description: "websites.subreddit")
-    }
-
     public var apiURL: URL {
         homeURL.appending(path: "api")
     }
@@ -59,22 +39,6 @@ extension QuicktypeAppConstantsWebsites {
 }
 
 extension QuicktypeAppConstantsGitHub {
-    public var issuesURL: URL {
-        URL(forceString: issues, description: "github.issues")
-    }
-
-    public var rawURL: URL {
-        URL(forceString: raw, description: "github.raw")
-    }
-
-    public var latestReleaseURL: URL {
-        URL(forceString: latestRelease, description: "github.latestRelease")
-    }
-
-    public var discussionsURL: URL {
-        URL(forceString: discussions, description: "github.discussions")
-    }
-
     public func urlForIssue(_ issue: Int) -> URL {
         issuesURL.appending(path: issue.description)
     }
@@ -106,5 +70,47 @@ extension QuicktypeAppConstantsTunnel {
 
     public func verificationParameters(isBeta: Bool) -> QuicktypeAppConstantsTunnelVerificationParameters {
         isBeta ? verification.beta : verification.production
+    }
+}
+
+// FIXME: #1723, Precompute in Quicktype decoding
+extension QuicktypeAppConstantsWebsites {
+    public var homeURL: URL {
+        URL(forceString: home, description: "websites.home")
+    }
+
+    public var appStoreDownloadURL: URL {
+        URL(forceString: appStoreDownload, description: "websites.appStoreDownload")
+    }
+
+    public var eulaURL: URL {
+        URL(forceString: eula, description: "websites.eula")
+    }
+
+    public var macDownloadURL: URL {
+        URL(forceString: macDownload, description: "websites.macDownload")
+    }
+
+    public var subredditURL: URL {
+        URL(forceString: subreddit, description: "websites.subreddit")
+    }
+}
+
+// FIXME: #1723, Precompute in Quicktype decoding
+extension QuicktypeAppConstantsGitHub {
+    public var issuesURL: URL {
+        URL(forceString: issues, description: "github.issues")
+    }
+
+    public var rawURL: URL {
+        URL(forceString: raw, description: "github.raw")
+    }
+
+    public var latestReleaseURL: URL {
+        URL(forceString: latestRelease, description: "github.latestRelease")
+    }
+
+    public var discussionsURL: URL {
+        URL(forceString: discussions, description: "github.discussions")
     }
 }
