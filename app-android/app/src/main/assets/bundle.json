@@ -1,11 +1,1 @@
-{
-    "distributionTarget": "appStore",
-    "displayName": "Passepartout",
-    "versionNumber": "3.7.0",
-    "buildNumber": 3993,
-    "bundleStrings": {},
-    "appLogPath": "app.log",
-    "tunnelLogPath": "tunnel.log",
-    "urlToAppLogs": ".",
-    "urlToTunnelLogs": "."
-}
+../../../../../app-cross/passepartout/shared/assets/bundle.json
