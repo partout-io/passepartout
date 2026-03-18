@@ -8,6 +8,14 @@ extension ABI {
     public protocol EventProtocol: Equatable, Encodable, Sendable {}
 }
 
+// Events are typically codegenerated from Quicktype. Here we keep
+// the events where we want to:
+//
+// - Retain the Swift strong typing (for app-apple)
+// - Manually encode to Quicktype formats (for app-cross)
+//
+// Any other event that maps 1:1 to JSON is a typealias to Quicktype.
+
 extension ABI.ConfigEvent {
     public struct Refresh: ABI.EventProtocol {
         public let flags: Set<ABI.ConfigFlag>
