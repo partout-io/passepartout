@@ -7,18 +7,18 @@
         "preferences": "Preferences-v3"
     },
     "websites": {
-        "home": "https://passepartoutvpn.app",
-        "subreddit": "https://www.reddit.com/r/passepartout/",
-        "eula": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
-        "appStoreDownload": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
-        "macDownload": "https://passepartoutvpn.app/#app-mac",
+        "homeURL": "https://passepartoutvpn.app",
+        "subredditURL": "https://www.reddit.com/r/passepartout/",
+        "eulaURL": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
+        "appStoreDownloadURL": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
+        "macDownloadURL": "https://passepartoutvpn.app/#app-mac",
         "configTTL": 3600.0
     },
     "github": {
-        "discussions": "http://github.com/orgs/partout-io/discussions",
-        "issues": "https://github.com/partout-io/passepartout/issues",
-        "raw": "https://raw.githubusercontent.com/partout-io/passepartout",
-        "latestRelease": "https://api.github.com/repos/partout-io/passepartout/releases/latest"
+        "discussionsURL": "http://github.com/orgs/partout-io/discussions",
+        "issuesURL": "https://github.com/partout-io/passepartout/issues",
+        "rawURL": "https://raw.githubusercontent.com/partout-io/passepartout",
+        "latestReleaseURL": "https://api.github.com/repos/partout-io/passepartout/releases/latest"
     },
     "emails": {
         "domain": "passepartoutvpn.app",

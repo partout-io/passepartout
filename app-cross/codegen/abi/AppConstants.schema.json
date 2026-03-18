@@ -18,25 +18,25 @@
       "type": "object",
       "title": "AppConstants.Websites",
       "properties": {
-        "home": { "type": "string", "format": "uri", "title": "AppConstants.Websites.home" },
-        "subreddit": { "type": "string", "format": "uri", "title": "AppConstants.Websites.subreddit" },
-        "eula": { "type": "string", "format": "uri", "title": "AppConstants.Websites.eula" },
-        "appStoreDownload": { "type": "string", "format": "uri", "title": "AppConstants.Websites.appStoreDownload" },
-        "macDownload": { "type": "string", "format": "uri", "title": "AppConstants.Websites.macDownload" },
+        "homeURL": { "type": "string", "format": "uri", "title": "AppConstants.Websites.home" },
+        "subredditURL": { "type": "string", "format": "uri", "title": "AppConstants.Websites.subreddit" },
+        "eulaURL": { "type": "string", "format": "uri", "title": "AppConstants.Websites.eula" },
+        "appStoreDownloadURL": { "type": "string", "format": "uri", "title": "AppConstants.Websites.appStoreDownload" },
+        "macDownloadURL": { "type": "string", "format": "uri", "title": "AppConstants.Websites.macDownload" },
         "configTTL": { "type": "number", "title": "AppConstants.Websites.configTTL" }
       },
-      "required": ["home", "subreddit", "eula", "appStoreDownload", "macDownload", "configTTL"]
+      "required": ["homeURL", "subredditURL", "eulaURL", "appStoreDownloadURL", "macDownloadURL", "configTTL"]
     },
     "github": {
       "type": "object",
       "title": "AppConstants.GitHub",
       "properties": {
-        "discussions": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.discussions" },
-        "issues": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.issues" },
-        "raw": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.raw" },
-        "latestRelease": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.latestRelease" }
+        "discussionsURL": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.discussions" },
+        "issuesURL": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.issues" },
+        "rawURL": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.raw" },
+        "latestReleaseURL": { "type": "string", "format": "uri", "title": "AppConstants.GitHub.latestRelease" }
       },
-      "required": ["discussions", "issues", "raw", "latestRelease"]
+      "required": ["discussionsURL", "issuesURL", "rawURL", "latestReleaseURL"]
     },
     "emails": {
       "type": "object",

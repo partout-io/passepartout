@@ -15,11 +15,16 @@ quicktype \
     --type-prefix $abi_prefix \
     --protocol equatable \
     --sendable \
+    --density normal \
     -s schema $abi_schemas \
     -o $abi_output
 
 # Replace import
 sed -i '' "s/import Foundation/import Partout/" $abi_output
+
+# Replace String with URL in fields ending in "URL"
+sed -i '' 's/let \([A-Za-z0-9_ ,]*\)URL: String/let \1URL: URL/g' $abi_output
+sed -i '' 's/\([A-Za-z0-9_]*\)URL: String/\1URL: URL/g' $abi_output
 
 # Replace JSONAny with JSON in fields
 sed -i '' "s/: JSONAny/: JSON/g" $abi_output

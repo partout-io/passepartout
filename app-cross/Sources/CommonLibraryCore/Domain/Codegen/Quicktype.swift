@@ -53,6 +53,11 @@ public struct QuicktypeAppConfiguration: Codable, Equatable, Sendable {
     public let bundle: QuicktypeAppBundle
     public let constants: QuicktypeAppConstants
 
+    public enum CodingKeys: String, CodingKey {
+        case bundle = "bundle"
+        case constants = "constants"
+    }
+
     public init(bundle: QuicktypeAppBundle, constants: QuicktypeAppConstants) {
         self.bundle = bundle
         self.constants = constants
@@ -68,26 +73,42 @@ public struct QuicktypeAppConfiguration: Codable, Equatable, Sendable {
 // MARK: - QuicktypeAppBundle
 public struct QuicktypeAppBundle: Codable, Equatable, Sendable {
     public let appLogPath: String
+    public let appLogsURL: URL
     public let buildNumber: Int
     public let bundleStrings: [String: String]
     public let customUserLevel: QuicktypeAppUserLevel?
     public let displayName: String
     public let distributionTarget: QuicktypeDistributionTarget
+    public let reviewURL: URL?
     public let tunnelLogPath: String
-    public let urlForReview: String?
-    public let urlToAppLogs, urlToTunnelLogs, versionNumber: String
+    public let tunnelLogsURL: URL
+    public let versionNumber: String
 
-    public init(appLogPath: String, buildNumber: Int, bundleStrings: [String: String], customUserLevel: QuicktypeAppUserLevel?, displayName: String, distributionTarget: QuicktypeDistributionTarget, tunnelLogPath: String, urlForReview: String?, urlToAppLogs: String, urlToTunnelLogs: String, versionNumber: String) {
+    public enum CodingKeys: String, CodingKey {
+        case appLogPath = "appLogPath"
+        case appLogsURL = "appLogsURL"
+        case buildNumber = "buildNumber"
+        case bundleStrings = "bundleStrings"
+        case customUserLevel = "customUserLevel"
+        case displayName = "displayName"
+        case distributionTarget = "distributionTarget"
+        case reviewURL = "reviewURL"
+        case tunnelLogPath = "tunnelLogPath"
+        case tunnelLogsURL = "tunnelLogsURL"
+        case versionNumber = "versionNumber"
+    }
+
+    public init(appLogPath: String, appLogsURL: URL, buildNumber: Int, bundleStrings: [String: String], customUserLevel: QuicktypeAppUserLevel?, displayName: String, distributionTarget: QuicktypeDistributionTarget, reviewURL: URL?, tunnelLogPath: String, tunnelLogsURL: URL, versionNumber: String) {
         self.appLogPath = appLogPath
+        self.appLogsURL = appLogsURL
         self.buildNumber = buildNumber
         self.bundleStrings = bundleStrings
         self.customUserLevel = customUserLevel
         self.displayName = displayName
         self.distributionTarget = distributionTarget
+        self.reviewURL = reviewURL
         self.tunnelLogPath = tunnelLogPath
-        self.urlForReview = urlForReview
-        self.urlToAppLogs = urlToAppLogs
-        self.urlToTunnelLogs = urlToTunnelLogs
+        self.tunnelLogsURL = tunnelLogsURL
         self.versionNumber = versionNumber
     }
 }
@@ -127,9 +148,17 @@ public struct QuicktypeAppConstants: Codable, Equatable, Sendable {
     public let websites: QuicktypeAppConstantsWebsites
 
     public enum CodingKeys: String, CodingKey {
-        case api, containers
+        case api = "api"
+        case containers = "containers"
         case deviceIDLength = "deviceIdLength"
-        case emails, formats, github, iap, log, tunnel, webReceiver, websites
+        case emails = "emails"
+        case formats = "formats"
+        case github = "github"
+        case iap = "iap"
+        case log = "log"
+        case tunnel = "tunnel"
+        case webReceiver = "webReceiver"
+        case websites = "websites"
     }
 
     public init(api: QuicktypeAppConstantsAPI, containers: QuicktypeAppConstantsContainers, deviceIDLength: Int, emails: QuicktypeAppConstantsEmails, formats: QuicktypeAppConstantsFormats, github: QuicktypeAppConstantsGitHub, iap: QuicktypeAppConstantsIAP, log: QuicktypeAppConstantsLog, tunnel: QuicktypeAppConstantsTunnel, webReceiver: QuicktypeAppConstantsWebReceiver, websites: QuicktypeAppConstantsWebsites) {
@@ -155,7 +184,15 @@ public struct QuicktypeAppConstants: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsAPI
 public struct QuicktypeAppConstantsAPI: Codable, Equatable, Sendable {
-    public let refreshInfrastructureRateLimit, timeoutInterval, versionRateLimit: Double
+    public let refreshInfrastructureRateLimit: Double
+    public let timeoutInterval: Double
+    public let versionRateLimit: Double
+
+    public enum CodingKeys: String, CodingKey {
+        case refreshInfrastructureRateLimit = "refreshInfrastructureRateLimit"
+        case timeoutInterval = "timeoutInterval"
+        case versionRateLimit = "versionRateLimit"
+    }
 
     public init(refreshInfrastructureRateLimit: Double, timeoutInterval: Double, versionRateLimit: Double) {
         self.refreshInfrastructureRateLimit = refreshInfrastructureRateLimit
@@ -172,7 +209,15 @@ public struct QuicktypeAppConstantsAPI: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsContainers
 public struct QuicktypeAppConstantsContainers: Codable, Equatable, Sendable {
-    public let backup, local, remote: String
+    public let backup: String
+    public let local: String
+    public let remote: String
+
+    public enum CodingKeys: String, CodingKey {
+        case backup = "backup"
+        case local = "local"
+        case remote = "remote"
+    }
 
     public init(backup: String, local: String, remote: String) {
         self.backup = backup
@@ -192,6 +237,11 @@ public struct QuicktypeAppConstantsEmails: Codable, Equatable, Sendable {
     public let domain: String
     public let recipients: QuicktypeAppConstantsEmailsRecipients
 
+    public enum CodingKeys: String, CodingKey {
+        case domain = "domain"
+        case recipients = "recipients"
+    }
+
     public init(domain: String, recipients: QuicktypeAppConstantsEmailsRecipients) {
         self.domain = domain
         self.recipients = recipients
@@ -206,7 +256,13 @@ public struct QuicktypeAppConstantsEmails: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsEmailsRecipients
 public struct QuicktypeAppConstantsEmailsRecipients: Codable, Equatable, Sendable {
-    public let beta, issues: String
+    public let beta: String
+    public let issues: String
+
+    public enum CodingKeys: String, CodingKey {
+        case beta = "beta"
+        case issues = "issues"
+    }
 
     public init(beta: String, issues: String) {
         self.beta = beta
@@ -224,6 +280,10 @@ public struct QuicktypeAppConstantsEmailsRecipients: Codable, Equatable, Sendabl
 public struct QuicktypeAppConstantsFormats: Codable, Equatable, Sendable {
     public let timestamp: String
 
+    public enum CodingKeys: String, CodingKey {
+        case timestamp = "timestamp"
+    }
+
     public init(timestamp: String) {
         self.timestamp = timestamp
     }
@@ -237,13 +297,23 @@ public struct QuicktypeAppConstantsFormats: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsGitHub
 public struct QuicktypeAppConstantsGitHub: Codable, Equatable, Sendable {
-    public let discussions, issues, latestRelease, raw: String
+    public let discussionsURL: URL
+    public let issuesURL: URL
+    public let latestReleaseURL: URL
+    public let rawURL: URL
 
-    public init(discussions: String, issues: String, latestRelease: String, raw: String) {
-        self.discussions = discussions
-        self.issues = issues
-        self.latestRelease = latestRelease
-        self.raw = raw
+    public enum CodingKeys: String, CodingKey {
+        case discussionsURL = "discussionsURL"
+        case issuesURL = "issuesURL"
+        case latestReleaseURL = "latestReleaseURL"
+        case rawURL = "rawURL"
+    }
+
+    public init(discussionsURL: URL, issuesURL: URL, latestReleaseURL: URL, rawURL: URL) {
+        self.discussionsURL = discussionsURL
+        self.issuesURL = issuesURL
+        self.latestReleaseURL = latestReleaseURL
+        self.rawURL = rawURL
     }
 }
 
@@ -255,7 +325,13 @@ public struct QuicktypeAppConstantsGitHub: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsIAP
 public struct QuicktypeAppConstantsIAP: Codable, Equatable, Sendable {
-    public let productsTimeoutInterval, receiptInvalidationInterval: Double
+    public let productsTimeoutInterval: Double
+    public let receiptInvalidationInterval: Double
+
+    public enum CodingKeys: String, CodingKey {
+        case productsTimeoutInterval = "productsTimeoutInterval"
+        case receiptInvalidationInterval = "receiptInvalidationInterval"
+    }
 
     public init(productsTimeoutInterval: Double, receiptInvalidationInterval: Double) {
         self.productsTimeoutInterval = productsTimeoutInterval
@@ -275,6 +351,12 @@ public struct QuicktypeAppConstantsLog: Codable, Equatable, Sendable {
     public let options: QuicktypeAppConstantsLogOptions
     public let sinceLast: Double
 
+    public enum CodingKeys: String, CodingKey {
+        case formatter = "formatter"
+        case options = "options"
+        case sinceLast = "sinceLast"
+    }
+
     public init(formatter: QuicktypeAppConstantsLogFormatter, options: QuicktypeAppConstantsLogOptions, sinceLast: Double) {
         self.formatter = formatter
         self.options = options
@@ -290,7 +372,13 @@ public struct QuicktypeAppConstantsLog: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsLogFormatter
 public struct QuicktypeAppConstantsLogFormatter: Codable, Equatable, Sendable {
-    public let message, timestamp: String
+    public let message: String
+    public let timestamp: String
+
+    public enum CodingKeys: String, CodingKey {
+        case message = "message"
+        case timestamp = "timestamp"
+    }
 
     public init(message: String, timestamp: String) {
         self.message = message
@@ -314,6 +402,13 @@ public struct QuicktypeAppConstantsLogOptions: Codable, Equatable, Sendable {
     /// Maximum size in bytes
     public let maxSize: Int
 
+    public enum CodingKeys: String, CodingKey {
+        case maxAge = "maxAge"
+        case maxBufferedLines = "maxBufferedLines"
+        case maxLevel = "maxLevel"
+        case maxSize = "maxSize"
+    }
+
     public init(maxAge: Double?, maxBufferedLines: Int, maxLevel: Int, maxSize: Int) {
         self.maxAge = maxAge
         self.maxBufferedLines = maxBufferedLines
@@ -335,6 +430,13 @@ public struct QuicktypeAppConstantsTunnel: Codable, Equatable, Sendable {
     public let refreshInterval: Double
     public let verification: QuicktypeAppConstantsTunnelVerification
 
+    public enum CodingKeys: String, CodingKey {
+        case dnsFallbackServers = "dnsFallbackServers"
+        case profileTitleFormat = "profileTitleFormat"
+        case refreshInterval = "refreshInterval"
+        case verification = "verification"
+    }
+
     public init(dnsFallbackServers: [String], profileTitleFormat: String, refreshInterval: Double, verification: QuicktypeAppConstantsTunnelVerification) {
         self.dnsFallbackServers = dnsFallbackServers
         self.profileTitleFormat = profileTitleFormat
@@ -351,7 +453,13 @@ public struct QuicktypeAppConstantsTunnel: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsTunnelVerification
 public struct QuicktypeAppConstantsTunnelVerification: Codable, Equatable, Sendable {
-    public let beta, production: QuicktypeAppConstantsTunnelVerificationParameters
+    public let beta: QuicktypeAppConstantsTunnelVerificationParameters
+    public let production: QuicktypeAppConstantsTunnelVerificationParameters
+
+    public enum CodingKeys: String, CodingKey {
+        case beta = "beta"
+        case production = "production"
+    }
 
     public init(beta: QuicktypeAppConstantsTunnelVerificationParameters, production: QuicktypeAppConstantsTunnelVerificationParameters) {
         self.beta = beta
@@ -368,7 +476,16 @@ public struct QuicktypeAppConstantsTunnelVerification: Codable, Equatable, Senda
 // MARK: - QuicktypeAppConstantsTunnelVerificationParameters
 public struct QuicktypeAppConstantsTunnelVerificationParameters: Codable, Equatable, Sendable {
     public let attempts: Int
-    public let delay, interval, retryInterval: Double
+    public let delay: Double
+    public let interval: Double
+    public let retryInterval: Double
+
+    public enum CodingKeys: String, CodingKey {
+        case attempts = "attempts"
+        case delay = "delay"
+        case interval = "interval"
+        case retryInterval = "retryInterval"
+    }
 
     public init(attempts: Int, delay: Double, interval: Double, retryInterval: Double) {
         self.attempts = attempts
@@ -386,7 +503,13 @@ public struct QuicktypeAppConstantsTunnelVerificationParameters: Codable, Equata
 
 // MARK: - QuicktypeAppConstantsWebReceiver
 public struct QuicktypeAppConstantsWebReceiver: Codable, Equatable, Sendable {
-    public let passcodeLength, port: Int
+    public let passcodeLength: Int
+    public let port: Int
+
+    public enum CodingKeys: String, CodingKey {
+        case passcodeLength = "passcodeLength"
+        case port = "port"
+    }
 
     public init(passcodeLength: Int, port: Int) {
         self.passcodeLength = passcodeLength
@@ -402,17 +525,29 @@ public struct QuicktypeAppConstantsWebReceiver: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppConstantsWebsites
 public struct QuicktypeAppConstantsWebsites: Codable, Equatable, Sendable {
-    public let appStoreDownload: String
+    public let appStoreDownloadURL: URL
     public let configTTL: Double
-    public let eula, home, macDownload, subreddit: String
+    public let eulaURL: URL
+    public let homeURL: URL
+    public let macDownloadURL: URL
+    public let subredditURL: URL
 
-    public init(appStoreDownload: String, configTTL: Double, eula: String, home: String, macDownload: String, subreddit: String) {
-        self.appStoreDownload = appStoreDownload
+    public enum CodingKeys: String, CodingKey {
+        case appStoreDownloadURL = "appStoreDownloadURL"
+        case configTTL = "configTTL"
+        case eulaURL = "eulaURL"
+        case homeURL = "homeURL"
+        case macDownloadURL = "macDownloadURL"
+        case subredditURL = "subredditURL"
+    }
+
+    public init(appStoreDownloadURL: URL, configTTL: Double, eulaURL: URL, homeURL: URL, macDownloadURL: URL, subredditURL: URL) {
+        self.appStoreDownloadURL = appStoreDownloadURL
         self.configTTL = configTTL
-        self.eula = eula
-        self.home = home
-        self.macDownload = macDownload
-        self.subreddit = subreddit
+        self.eulaURL = eulaURL
+        self.homeURL = homeURL
+        self.macDownloadURL = macDownloadURL
+        self.subredditURL = subredditURL
     }
 }
 
@@ -426,6 +561,11 @@ public struct QuicktypeAppConstantsWebsites: Codable, Equatable, Sendable {
 public struct QuicktypeConfigEventRefresh: Codable, Equatable, Sendable {
     public let data: [String: JSON]
     public let flags: [QuicktypeConfigFlag]
+
+    public enum CodingKeys: String, CodingKey {
+        case data = "data"
+        case flags = "flags"
+    }
 
     public init(data: [String: JSON], flags: [QuicktypeConfigFlag]) {
         self.data = data
@@ -453,6 +593,12 @@ public struct QuicktypeCredits: Codable, Equatable, Sendable {
     public let notices: [QuicktypeNotice]
     public let translations: [String: [String]]
 
+    public enum CodingKeys: String, CodingKey {
+        case licenses = "licenses"
+        case notices = "notices"
+        case translations = "translations"
+    }
+
     public init(licenses: [QuicktypeLicense], notices: [QuicktypeNotice], translations: [String: [String]]) {
         self.licenses = licenses
         self.notices = notices
@@ -468,9 +614,17 @@ public struct QuicktypeCredits: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeLicense
 public struct QuicktypeLicense: Codable, Equatable, Sendable {
-    public let licenseName, licenseURL, name: String
+    public let licenseName: String
+    public let licenseURL: URL
+    public let name: String
 
-    public init(licenseName: String, licenseURL: String, name: String) {
+    public enum CodingKeys: String, CodingKey {
+        case licenseName = "licenseName"
+        case licenseURL = "licenseURL"
+        case name = "name"
+    }
+
+    public init(licenseName: String, licenseURL: URL, name: String) {
         self.licenseName = licenseName
         self.licenseURL = licenseURL
         self.name = name
@@ -485,7 +639,13 @@ public struct QuicktypeLicense: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeNotice
 public struct QuicktypeNotice: Codable, Equatable, Sendable {
-    public let message, name: String
+    public let message: String
+    public let name: String
+
+    public enum CodingKeys: String, CodingKey {
+        case message = "message"
+        case name = "name"
+    }
 
     public init(message: String, name: String) {
         self.message = message
@@ -502,7 +662,14 @@ public struct QuicktypeNotice: Codable, Equatable, Sendable {
 // MARK: - QuicktypeIAPEventEligibleFeatures
 public struct QuicktypeIAPEventEligibleFeatures: Codable, Equatable, Sendable {
     public let features: [QuicktypeAppFeature]
-    public let forComplete, forFeedback: Bool
+    public let forComplete: Bool
+    public let forFeedback: Bool
+
+    public enum CodingKeys: String, CodingKey {
+        case features = "features"
+        case forComplete = "forComplete"
+        case forFeedback = "forFeedback"
+    }
 
     public init(features: [QuicktypeAppFeature], forComplete: Bool, forFeedback: Bool) {
         self.features = features
@@ -532,6 +699,10 @@ public enum QuicktypeAppFeature: String, Codable, Equatable, Sendable {
 public struct QuicktypeIAPEventLoadReceipt: Codable, Equatable, Sendable {
     public let isLoading: Bool
 
+    public enum CodingKeys: String, CodingKey {
+        case isLoading = "isLoading"
+    }
+
     public init(isLoading: Bool) {
         self.isLoading = isLoading
     }
@@ -548,6 +719,12 @@ public struct QuicktypeIAPEventNewReceipt: Codable, Equatable, Sendable {
     public let isBeta: Bool
     public let originalPurchase: QuicktypeOriginalPurchase?
     public let products: [String]
+
+    public enum CodingKeys: String, CodingKey {
+        case isBeta = "isBeta"
+        case originalPurchase = "originalPurchase"
+        case products = "products"
+    }
 
     public init(isBeta: Bool, originalPurchase: QuicktypeOriginalPurchase?, products: [String]) {
         self.isBeta = isBeta
@@ -567,6 +744,11 @@ public struct QuicktypeOriginalPurchase: Codable, Equatable, Sendable {
     public let buildNumber: Int
     public let purchaseDate: String
 
+    public enum CodingKeys: String, CodingKey {
+        case buildNumber = "buildNumber"
+        case purchaseDate = "purchaseDate"
+    }
+
     public init(buildNumber: Int, purchaseDate: String) {
         self.buildNumber = buildNumber
         self.purchaseDate = purchaseDate
@@ -583,6 +765,10 @@ public struct QuicktypeOriginalPurchase: Codable, Equatable, Sendable {
 public struct QuicktypeIAPEventStatus: Codable, Equatable, Sendable {
     public let isEnabled: Bool
 
+    public enum CodingKeys: String, CodingKey {
+        case isEnabled = "isEnabled"
+    }
+
     public init(isEnabled: Bool) {
         self.isEnabled = isEnabled
     }
@@ -597,6 +783,10 @@ public struct QuicktypeIAPEventStatus: Codable, Equatable, Sendable {
 // MARK: - QuicktypeProfileEventChangeRemoteImporting
 public struct QuicktypeProfileEventChangeRemoteImporting: Codable, Equatable, Sendable {
     public let isImporting: Bool
+
+    public enum CodingKeys: String, CodingKey {
+        case isImporting = "isImporting"
+    }
 
     public init(isImporting: Bool) {
         self.isImporting = isImporting
@@ -639,6 +829,10 @@ public struct QuicktypeProfileEventReady: Codable, Equatable, Sendable {
 public struct QuicktypeProfileEventRefresh: Codable, Equatable, Sendable {
     public let headers: [String: QuicktypeAppProfileHeader]
 
+    public enum CodingKeys: String, CodingKey {
+        case headers = "headers"
+    }
+
     public init(headers: [String: QuicktypeAppProfileHeader]) {
         self.headers = headers
     }
@@ -652,7 +846,8 @@ public struct QuicktypeProfileEventRefresh: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeAppProfileHeader
 public struct QuicktypeAppProfileHeader: Codable, Equatable, Sendable {
-    public let fingerprint, id: String
+    public let fingerprint: String
+    public let id: String
     public let moduleTypes: [QuicktypeModuleType]
     public let name: String
     public let primaryModuleType: QuicktypeModuleType?
@@ -660,6 +855,18 @@ public struct QuicktypeAppProfileHeader: Codable, Equatable, Sendable {
     public let requiredFeatures: [QuicktypeAppFeature]
     public let secondaryModuleTypes: [QuicktypeModuleType]
     public let sharingFlags: [QuicktypeProfileSharingFlag]
+
+    public enum CodingKeys: String, CodingKey {
+        case fingerprint = "fingerprint"
+        case id = "id"
+        case moduleTypes = "moduleTypes"
+        case name = "name"
+        case primaryModuleType = "primaryModuleType"
+        case providerInfo = "providerInfo"
+        case requiredFeatures = "requiredFeatures"
+        case secondaryModuleTypes = "secondaryModuleTypes"
+        case sharingFlags = "sharingFlags"
+    }
 
     public init(fingerprint: String, id: String, moduleTypes: [QuicktypeModuleType], name: String, primaryModuleType: QuicktypeModuleType?, providerInfo: QuicktypeProviderInfo?, requiredFeatures: [QuicktypeAppFeature], secondaryModuleTypes: [QuicktypeModuleType], sharingFlags: [QuicktypeProfileSharingFlag]) {
         self.fingerprint = fingerprint
@@ -695,7 +902,7 @@ public struct QuicktypeProviderInfo: Codable, Equatable, Sendable {
     public let providerID: String
 
     public enum CodingKeys: String, CodingKey {
-        case countryCode
+        case countryCode = "countryCode"
         case providerID = "providerId"
     }
 
@@ -772,6 +979,10 @@ public struct QuicktypeTunnelEventDataCount: Codable, Equatable, Sendable {
 public struct QuicktypeTunnelEventRefresh: Codable, Equatable, Sendable {
     public let active: [String: QuicktypeAppTunnelInfo]
 
+    public enum CodingKeys: String, CodingKey {
+        case active = "active"
+    }
+
     public init(active: [String: QuicktypeAppTunnelInfo]) {
         self.active = active
     }
@@ -788,6 +999,12 @@ public struct QuicktypeAppTunnelInfo: Codable, Equatable, Sendable {
     public let id: String
     public let onDemand: Bool
     public let status: QuicktypeAppTunnelStatus
+
+    public enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case onDemand = "onDemand"
+        case status = "status"
+    }
 
     public init(id: String, onDemand: Bool, status: QuicktypeAppTunnelStatus) {
         self.id = id
@@ -813,6 +1030,10 @@ public enum QuicktypeAppTunnelStatus: String, Codable, Equatable, Sendable {
 public struct QuicktypeVersionEventNew: Codable, Equatable, Sendable {
     public let release: QuicktypeVersionRelease
 
+    public enum CodingKeys: String, CodingKey {
+        case release = "release"
+    }
+
     public init(release: QuicktypeVersionRelease) {
         self.release = release
     }
@@ -829,6 +1050,11 @@ public struct QuicktypeVersionRelease: Codable, Equatable, Sendable {
     public let url: String
     public let version: QuicktypeSemanticVersion
 
+    public enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case version = "version"
+    }
+
     public init(url: String, version: QuicktypeSemanticVersion) {
         self.url = url
         self.version = version
@@ -843,7 +1069,15 @@ public struct QuicktypeVersionRelease: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeSemanticVersion
 public struct QuicktypeSemanticVersion: Codable, Equatable, Sendable {
-    public let major, minor, patch: Int
+    public let major: Int
+    public let minor: Int
+    public let patch: Int
+
+    public enum CodingKeys: String, CodingKey {
+        case major = "major"
+        case minor = "minor"
+        case patch = "patch"
+    }
 
     public init(major: Int, minor: Int, patch: Int) {
         self.major = major
@@ -862,6 +1096,10 @@ public struct QuicktypeSemanticVersion: Codable, Equatable, Sendable {
 public struct QuicktypeWebReceiverEventNewUpload: Codable, Equatable, Sendable {
     public let file: QuicktypeWebFileUpload
 
+    public enum CodingKeys: String, CodingKey {
+        case file = "file"
+    }
+
     public init(file: QuicktypeWebFileUpload) {
         self.file = file
     }
@@ -875,7 +1113,13 @@ public struct QuicktypeWebReceiverEventNewUpload: Codable, Equatable, Sendable {
 
 // MARK: - QuicktypeWebFileUpload
 public struct QuicktypeWebFileUpload: Codable, Equatable, Sendable {
-    public let contents, name: String
+    public let contents: String
+    public let name: String
+
+    public enum CodingKeys: String, CodingKey {
+        case contents = "contents"
+        case name = "name"
+    }
 
     public init(contents: String, name: String) {
         self.contents = contents
@@ -893,6 +1137,10 @@ public struct QuicktypeWebFileUpload: Codable, Equatable, Sendable {
 public struct QuicktypeWebReceiverEventStart: Codable, Equatable, Sendable {
     public let website: QuicktypeWebsiteWithPasscode
 
+    public enum CodingKeys: String, CodingKey {
+        case website = "website"
+    }
+
     public init(website: QuicktypeWebsiteWithPasscode) {
         self.website = website
     }
@@ -908,6 +1156,11 @@ public struct QuicktypeWebReceiverEventStart: Codable, Equatable, Sendable {
 public struct QuicktypeWebsiteWithPasscode: Codable, Equatable, Sendable {
     public let passcode: String?
     public let url: String
+
+    public enum CodingKeys: String, CodingKey {
+        case passcode = "passcode"
+        case url = "url"
+    }
 
     public init(passcode: String?, url: String) {
         self.passcode = passcode
@@ -937,6 +1190,10 @@ public struct QuicktypeWebReceiverEventStop: Codable, Equatable, Sendable {
 // MARK: - QuicktypeWebReceiverEventUploadFailure
 public struct QuicktypeWebReceiverEventUploadFailure: Codable, Equatable, Sendable {
     public let error: String
+
+    public enum CodingKeys: String, CodingKey {
+        case error = "error"
+    }
 
     public init(error: String) {
         self.error = error

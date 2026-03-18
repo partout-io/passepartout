@@ -236,8 +236,8 @@ extension ABI.AppBundle {
             return url
         }()
 
-        let urlToAppLogs = appGroupURL.forCaches
-        let urlToTunnelLogs = {
+        let appLogsURL = appGroupURL.forCaches
+        let tunnelLogsURL = {
             let baseURL: URL
             if distributionTarget.supportsAppGroups {
                 baseURL = appGroupURL.forCaches
@@ -253,9 +253,9 @@ extension ABI.AppBundle {
             return baseURL
         }()
 
-        let urlForReview: URL?
+        let reviewURL: URL?
         if requiredBundleKeys.contains(.appStoreId) {
-            urlForReview = {
+            reviewURL = {
                 let appStoreId = bundle.string(for: .appStoreId)
                 guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
                     fatalError("Unable to build urlForReview")
@@ -263,21 +263,21 @@ extension ABI.AppBundle {
                 return url
             }()
         } else {
-            urlForReview = nil
+            reviewURL = nil
         }
 
         self.init(
-            distributionTarget: distributionTarget,
-            displayName: displayName,
-            versionNumber: versionNumber,
-            buildNumber: buildNumber,
-            customUserLevel: customUserLevel,
-            bundleStrings: bundleStrings,
             appLogPath: appLogPath,
+            appLogsURL: appLogsURL,
+            buildNumber: buildNumber,
+            bundleStrings: bundleStrings,
+            customUserLevel: customUserLevel,
+            displayName: displayName,
+            distributionTarget: distributionTarget,
+            reviewURL: reviewURL,
             tunnelLogPath: tunnelLogPath,
-            urlToAppLogs: urlToAppLogs,
-            urlToTunnelLogs: urlToTunnelLogs,
-            urlForReview: urlForReview
+            tunnelLogsURL: tunnelLogsURL,
+            versionNumber: versionNumber
         )
     }
 

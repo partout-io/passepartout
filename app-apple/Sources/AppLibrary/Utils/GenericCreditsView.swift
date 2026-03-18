@@ -109,7 +109,7 @@ private extension GenericCreditsView {
             ForEach(sortedLicenses, id: \.name) { license in
                 NavigationLink {
                     LicenseView(
-                        url: license.licenseFoundationURL,
+                        url: license.licenseURL,
                         errorDescription: errorDescription,
                         content: $contentForLicense[license.name]
                     )
