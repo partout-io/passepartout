@@ -51,6 +51,7 @@ extension ABI {
             init?(intValue: Int) { nil }
         }
 
+        private static let packageName = "com.algoritmico.passepartout.abi"
         private let payloadType: String?
         private let payload: Encodable?
 
@@ -79,11 +80,11 @@ extension ABI {
             //
             // ProfileEvent.Ready
             // payloadType = "CommonLibraryCore.QuicktypeProfileEventReady"
-            // eventType = "ProfileEventReady"
+            // type = "<packageName>.ProfileEventReady"
             //
             // ConfigEvent.Refresh
             // payloadType = "CommonLibraryCore.ABI.ConfigEvent.Refresh"
-            // eventType = "ConfigEventRefresh"
+            // type = "<packageName>.ConfigEventRefresh"
             //
             let eventType: String = {
                 var comps = payloadType.split(separator: ".")
@@ -98,7 +99,7 @@ extension ABI {
                     }
                 }
                 name.replace(".", with: "")
-                return "com.algoritmico.passepartout.abi.\(name)"
+                return "\(Self.packageName).\(name)"
             }()
 
             var container = encoder.container(keyedBy: DynamicCodingKeys.self)
