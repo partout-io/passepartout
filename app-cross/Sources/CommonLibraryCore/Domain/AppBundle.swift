@@ -6,7 +6,7 @@ import Partout
 
 extension ABI {
     public struct AppBundle: Decodable, Sendable {
-        public let distributionTarget: ABI.DistributionTarget
+        public let distributionTarget: DistributionTarget
 
         public let displayName: String
         public let versionNumber: String
@@ -29,7 +29,7 @@ extension ABI {
             urlToTunnelLogs.appending(path: tunnelLogPath)
         }
 
-        public init(distributionTarget: ABI.DistributionTarget, displayName: String, versionNumber: String, buildNumber: Int, customUserLevel: AppUserLevel?, bundleStrings: [String: String], appLogPath: String, tunnelLogPath: String, urlToAppLogs: URL, urlToTunnelLogs: URL, urlForReview: URL?) {
+        public init(distributionTarget: DistributionTarget, displayName: String, versionNumber: String, buildNumber: Int, customUserLevel: AppUserLevel?, bundleStrings: [String: String], appLogPath: String, tunnelLogPath: String, urlToAppLogs: URL, urlToTunnelLogs: URL, urlForReview: URL?) {
             self.distributionTarget = distributionTarget
             self.displayName = displayName
             self.versionNumber = versionNumber
@@ -44,7 +44,7 @@ extension ABI {
         }
 
         // For previews
-        public init(distributionTarget: ABI.DistributionTarget) {
+        public init(distributionTarget: DistributionTarget) {
             self.distributionTarget = distributionTarget
 
             displayName = "preview-display-name"
