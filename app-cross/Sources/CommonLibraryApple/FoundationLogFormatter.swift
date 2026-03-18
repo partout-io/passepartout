@@ -4,6 +4,7 @@
 
 import Partout
 
+// FIXME: #1656, C ABI, use FoundationEssentials variant with .formatted()
 public final class FoundationLogFormatter: LogFormatter {
     private let formatter: DateFormatter
     private let messageFormat: String
