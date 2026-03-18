@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WebReceiverEventNewUpload",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "file": {
+      "$ref": "WebFileUpload.schema.json"
+    }
+  },
+  "required": [
+    "file"
+  ]
+}

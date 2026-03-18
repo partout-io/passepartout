@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AppProfileHeader",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "moduleTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "ModuleType.schema.json"
+      }
+    },
+    "primaryModuleType": {
+      "$ref": "ModuleType.schema.json"
+    },
+    "secondaryModuleTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "ModuleType.schema.json"
+      }
+    },
+    "providerInfo": {
+      "$ref": "ProviderInfo.schema.json"
+    },
+    "fingerprint": {
+      "type": "string"
+    },
+    "sharingFlags": {
+      "type": "array",
+      "items": {
+        "$ref": "ProfileSharingFlag.schema.json"
+      }
+    },
+    "requiredFeatures": {
+      "type": "array",
+      "items": {
+        "$ref": "AppFeature.schema.json"
+      }
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "moduleTypes",
+    "secondaryModuleTypes",
+    "fingerprint",
+    "sharingFlags",
+    "requiredFeatures"
+  ]
+}

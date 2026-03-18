@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public struct VersionRelease: Hashable, Codable, Sendable {
+    public struct VersionRelease: Equatable, Sendable {
         public let version: ABI.SemanticVersion
 
         public let url: URL

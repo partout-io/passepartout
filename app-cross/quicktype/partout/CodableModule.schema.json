@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CodableModule",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "moduleType": {
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "moduleType",
+    "payload"
+  ]
+}

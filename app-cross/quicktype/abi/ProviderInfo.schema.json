@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderInfo",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "providerId": {
+      "type": "string"
+    },
+    "countryCode": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "providerId"
+  ]
+}

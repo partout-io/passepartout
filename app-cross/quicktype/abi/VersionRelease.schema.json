@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VersionRelease",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "$ref": "SemanticVersion.schema.json"
+    },
+    "url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "url"
+  ]
+}

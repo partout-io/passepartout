@@ -53,13 +53,6 @@ extension ABI {
         }
     }
 
-    public enum AppTunnelStatus: Int, Codable, Sendable {
-        case disconnected
-        case connecting
-        case connected
-        case disconnecting
-    }
-
     public struct AppTunnelInfo: Identifiable, Hashable, Codable, Sendable {
         public let id: Profile.ID
         public let status: AppTunnelStatus

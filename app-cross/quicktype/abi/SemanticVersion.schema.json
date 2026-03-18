@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SemanticVersion",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "major": {
+      "type": "integer"
+    },
+    "minor": {
+      "type": "integer"
+    },
+    "patch": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "major",
+    "minor",
+    "patch"
+  ]
+}

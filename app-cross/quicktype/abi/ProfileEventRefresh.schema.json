@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProfileEventRefresh",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "AppProfileHeader.schema.json"
+      }
+    }
+  },
+  "required": [
+    "headers"
+  ]
+}
