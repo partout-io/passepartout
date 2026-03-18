@@ -7,6 +7,7 @@ extension ABI {
     public typealias AppFeature = QuicktypeAppFeature
     public typealias AppTunnelStatus = QuicktypeAppTunnelStatus
     public typealias ConfigFlag = QuicktypeConfigFlag
+    public typealias DistributionTarget = QuicktypeDistributionTarget
     public typealias ProfileSharingFlag = QuicktypeProfileSharingFlag
     public typealias SemanticVersion = QuicktypeSemanticVersion
     public typealias WebsiteWithPasscode = QuicktypeWebsiteWithPasscode

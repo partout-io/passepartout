@@ -8,6 +8,7 @@
 //   let quicktypeAppTunnelStatus = try? JSONDecoder().decode(QuicktypeAppTunnelStatus.self, from: jsonData)
 //   let quicktypeConfigEventRefresh = try? JSONDecoder().decode(QuicktypeConfigEventRefresh.self, from: jsonData)
 //   let quicktypeConfigFlag = try? JSONDecoder().decode(QuicktypeConfigFlag.self, from: jsonData)
+//   let quicktypeDistributionTarget = try? JSONDecoder().decode(QuicktypeDistributionTarget.self, from: jsonData)
 //   let quicktypeIAPEventEligibleFeatures = try? JSONDecoder().decode(QuicktypeIAPEventEligibleFeatures.self, from: jsonData)
 //   let quicktypeIAPEventLoadReceipt = try? JSONDecoder().decode(QuicktypeIAPEventLoadReceipt.self, from: jsonData)
 //   let quicktypeIAPEventNewReceipt = try? JSONDecoder().decode(QuicktypeIAPEventNewReceipt.self, from: jsonData)
@@ -370,6 +371,12 @@ public enum QuicktypeConfigFlag: String, Codable, Equatable, Sendable {
     case neSocketTCP = "neSocketTCP"
     case neSocketUDP = "neSocketUDP"
     case unknown = "unknown"
+}
+
+public enum QuicktypeDistributionTarget: String, Codable, Equatable, Sendable {
+    case appStore = "appStore"
+    case developerID = "developerID"
+    case enterprise = "enterprise"
 }
 
 //
