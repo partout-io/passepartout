@@ -73,18 +73,32 @@ extension ABI {
 
             //
             // WARNING: "eventType" MUST match 100% the codegen output
-            // type (which is also the @SerialName) for the corresponding
-            // sealed class in Kotlin
+            // type (and package for Kotlin)
             //
-            // E.g.: ConfigEvent.Refresh
+            // E.g.:
+            //
+            // ProfileEvent.Ready
+            // payloadType = "CommonLibraryCore.QuicktypeProfileEventReady"
+            // eventType = "ProfileEventReady"
+            //
+            // ConfigEvent.Refresh
             // payloadType = "CommonLibraryCore.ABI.ConfigEvent.Refresh"
-            // eventType = "ABI_ConfigEvent_Refresh"
+            // eventType = "ConfigEventRefresh"
             //
             let eventType: String = {
                 var comps = payloadType.split(separator: ".")
                 let moduleName = comps.removeFirst()
                 assert(moduleName == "CommonLibraryCore")
-                return comps.joined(separator: "_")
+                // Quicktype*Event* or ABI.*Event*
+                var name = comps.joined(separator: ".")
+                for prefix in ["ABI.", "Quicktype"] {
+                    if name.hasPrefix(prefix) {
+                        name.replace(prefix, with: "")
+                        break
+                    }
+                }
+                name.replace(".", with: "")
+                return "com.algoritmico.passepartout.abi.\(name)"
             }()
 
             var container = encoder.container(keyedBy: DynamicCodingKeys.self)
