@@ -11,3 +11,24 @@ extension ABI {
     public typealias WebsiteWithPasscode = QuicktypeWebsiteWithPasscode
     public typealias WebFileUpload = QuicktypeWebFileUpload
 }
+
+extension ABI.IAPEvent {
+    public typealias Status = QuicktypeIAPEventStatus
+    public typealias LoadReceipt = QuicktypeIAPEventLoadReceipt
+    public typealias EligibleFeatures = QuicktypeIAPEventEligibleFeatures
+}
+
+extension ABI.ProfileEvent {
+    public typealias Ready = QuicktypeProfileEventReady
+    public typealias LocalProfiles = QuicktypeProfileEventLocalProfiles
+    public typealias StartRemoteImport = QuicktypeProfileEventStartRemoteImport
+    public typealias StopRemoteImport = QuicktypeProfileEventStopRemoteImport
+    public typealias ChangeRemoteImporting = QuicktypeProfileEventChangeRemoteImporting
+}
+
+extension ABI.WebReceiverEvent {
+    public typealias Start = QuicktypeWebReceiverEventStart
+    public typealias Stop = QuicktypeWebReceiverEventStop
+    public typealias NewUpload = QuicktypeWebReceiverEventNewUpload
+    public typealias UploadFailure = QuicktypeWebReceiverEventUploadFailure
+}

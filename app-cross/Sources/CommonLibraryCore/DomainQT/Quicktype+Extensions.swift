@@ -81,6 +81,15 @@ extension ABI.ConfigFlag: CustomStringConvertible {
     }
 }
 
+extension ABI.OriginalPurchase: QuicktypeEncodable {
+    var toProto: QuicktypeOriginalPurchase {
+        QuicktypeOriginalPurchase(
+            buildNumber: buildNumber,
+            purchaseDate: purchaseDate.formatted(.iso8601)
+        )
+    }
+}
+
 extension ABI.ProviderInfo: QuicktypeEncodable {
     var toProto: QuicktypeProviderInfo {
         QuicktypeProviderInfo(

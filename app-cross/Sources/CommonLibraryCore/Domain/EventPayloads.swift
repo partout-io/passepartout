@@ -25,27 +25,22 @@ extension ABI.ConfigEvent {
 }
 
 extension ABI.IAPEvent {
-    public struct Status: ABI.EventProtocol {
-        public let isEnabled: Bool
-    }
-    public struct LoadReceipt: ABI.EventProtocol {
-        public let isLoading: Bool
-    }
     public struct NewReceipt: ABI.EventProtocol {
         public let originalPurchase: ABI.OriginalPurchase?
         public let products: Set<ABI.AppProduct>
         public let isBeta: Bool
-    }
-    public struct EligibleFeatures: ABI.EventProtocol {
-        public let features: Set<ABI.AppFeature>
-        public let forComplete: Bool
-        public let forFeedback: Bool
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(QuicktypeIAPEventNewReceipt(
+                isBeta: isBeta,
+                originalPurchase: originalPurchase?.toProto,
+                products: products.map(\.rawValue)
+            ))
+        }
     }
 }
 
 extension ABI.ProfileEvent {
-    public struct Ready: ABI.EventProtocol { public init() {} }
-    public struct LocalProfiles: ABI.EventProtocol { public init() {} }
     public struct Refresh: ABI.EventProtocol {
         public let headers: [Profile.ID: ABI.AppProfileHeader]
         public func encode(to encoder: Encoder) throws {
@@ -64,11 +59,6 @@ extension ABI.ProfileEvent {
             var container = encoder.singleValueContainer()
             try container.encode(QuicktypeProfileEventSave())
         }
-    }
-    public struct StartRemoteImport: ABI.EventProtocol { public init() {} }
-    public struct StopRemoteImport: ABI.EventProtocol { public init() {} }
-    public struct ChangeRemoteImporting: ABI.EventProtocol {
-        public let isImporting: Bool
     }
 }
 
@@ -94,22 +84,6 @@ extension ABI.VersionEvent {
             try container.encode(QuicktypeVersionEventNew(
                 release: release.toProto
             ))
-        }
-    }
-}
-
-extension ABI.WebReceiverEvent {
-    public struct Start: ABI.EventProtocol {
-        public let website: ABI.WebsiteWithPasscode
-    }
-    public struct Stop: ABI.EventProtocol { public init() {} }
-    public struct NewUpload: ABI.EventProtocol {
-        public let file: ABI.WebFileUpload
-    }
-    public struct UploadFailure: ABI.EventProtocol {
-        public let error: String
-        public init(_ error: Error) {
-            self.error = error.localizedDescription
         }
     }
 }
