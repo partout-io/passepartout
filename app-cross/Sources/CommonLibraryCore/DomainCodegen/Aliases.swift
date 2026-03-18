@@ -4,6 +4,7 @@
 
 extension ABI {
     public typealias AppBundle = QuicktypeAppBundle
+    public typealias AppConfiguration = QuicktypeAppConfiguration
     public typealias AppConstants = QuicktypeAppConstants
     public typealias AppFeature = QuicktypeAppFeature
     public typealias AppTunnelStatus = QuicktypeAppTunnelStatus

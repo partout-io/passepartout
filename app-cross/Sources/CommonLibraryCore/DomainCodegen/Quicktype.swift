@@ -2,6 +2,7 @@
 // To parse the JSON, add this file to your project and do:
 //
 //   let quicktypeAppBundle = try? JSONDecoder().decode(QuicktypeAppBundle.self, from: jsonData)
+//   let quicktypeAppConfiguration = try? JSONDecoder().decode(QuicktypeAppConfiguration.self, from: jsonData)
 //   let quicktypeAppConstants = try? JSONDecoder().decode(QuicktypeAppConstants.self, from: jsonData)
 //   let quicktypeAppFeature = try? JSONDecoder().decode(QuicktypeAppFeature.self, from: jsonData)
 //   let quicktypeAppProfileHeader = try? JSONDecoder().decode(QuicktypeAppProfileHeader.self, from: jsonData)
@@ -45,6 +46,23 @@
 // synthesized for types that have collections (such as arrays or dictionaries).
 
 import Partout
+
+// MARK: - QuicktypeAppConfiguration
+public struct QuicktypeAppConfiguration: Codable, Equatable, Sendable {
+    public let bundle: QuicktypeAppBundle
+    public let constants: QuicktypeAppConstants
+
+    public init(bundle: QuicktypeAppBundle, constants: QuicktypeAppConstants) {
+        self.bundle = bundle
+        self.constants = constants
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
 
 // MARK: - QuicktypeAppBundle
 public struct QuicktypeAppBundle: Codable, Equatable, Sendable {
