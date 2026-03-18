@@ -15,12 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.algoritmico.passepartout.abi.ABI_AppProfileHeader
+import com.algoritmico.passepartout.abi.AppProfileHeader
 
 @Composable
 fun HelloWorldView(
     version: String,
-    headers: State<Map<String, ABI_AppProfileHeader>>,
+    headers: State<Map<String, AppProfileHeader>>,
     startDaemon: () -> Unit,
     stopDaemon: () -> Unit,
     importProfile: () -> Unit
@@ -71,7 +71,7 @@ fun HelloWorldView(
 fun PreviewHelloWorld() {
     HelloWorldView(
         "World",
-        remember { mutableStateOf<Map<String, ABI_AppProfileHeader>>(emptyMap()) },
+        remember { mutableStateOf<Map<String, AppProfileHeader>>(emptyMap()) },
         {}, {}, {}
     )
 }
