@@ -192,8 +192,6 @@ extension ABI.AppBundle {
         case keychainGroupId
         case loginItemId
         case tunnelId
-
-        // This is an integer number
         case userLevel
 
         static func requiredKeys(for target: BuildTarget) -> Set<Self> {
