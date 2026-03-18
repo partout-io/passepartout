@@ -11,6 +11,7 @@
 //   let quicktypeAppUserLevel = try? JSONDecoder().decode(QuicktypeAppUserLevel.self, from: jsonData)
 //   let quicktypeConfigEventRefresh = try? JSONDecoder().decode(QuicktypeConfigEventRefresh.self, from: jsonData)
 //   let quicktypeConfigFlag = try? JSONDecoder().decode(QuicktypeConfigFlag.self, from: jsonData)
+//   let quicktypeCredits = try? JSONDecoder().decode(QuicktypeCredits.self, from: jsonData)
 //   let quicktypeDistributionTarget = try? JSONDecoder().decode(QuicktypeDistributionTarget.self, from: jsonData)
 //   let quicktypeIAPEventEligibleFeatures = try? JSONDecoder().decode(QuicktypeIAPEventEligibleFeatures.self, from: jsonData)
 //   let quicktypeIAPEventLoadReceipt = try? JSONDecoder().decode(QuicktypeIAPEventLoadReceipt.self, from: jsonData)
@@ -438,6 +439,58 @@ public enum QuicktypeConfigFlag: String, Codable, Equatable, Sendable {
     case neSocketTCP = "neSocketTCP"
     case neSocketUDP = "neSocketUDP"
     case unknown = "unknown"
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeCredits
+public struct QuicktypeCredits: Codable, Equatable, Sendable {
+    public let licenses: [QuicktypeLicense]
+    public let notices: [QuicktypeNotice]
+    public let translations: [String: [String]]
+
+    public init(licenses: [QuicktypeLicense], notices: [QuicktypeNotice], translations: [String: [String]]) {
+        self.licenses = licenses
+        self.notices = notices
+        self.translations = translations
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeLicense
+public struct QuicktypeLicense: Codable, Equatable, Sendable {
+    public let licenseName, licenseURL, name: String
+
+    public init(licenseName: String, licenseURL: String, name: String) {
+        self.licenseName = licenseName
+        self.licenseURL = licenseURL
+        self.name = name
+    }
+}
+
+//
+// Hashable or Equatable:
+// The compiler will not be able to synthesize the implementation of Hashable or Equatable
+// for types that require the use of JSONAny, nor will the implementation of Hashable be
+// synthesized for types that have collections (such as arrays or dictionaries).
+
+// MARK: - QuicktypeNotice
+public struct QuicktypeNotice: Codable, Equatable, Sendable {
+    public let message, name: String
+
+    public init(message: String, name: String) {
+        self.message = message
+        self.name = name
+    }
 }
 
 //

@@ -10,6 +10,7 @@ extension ABI {
     public typealias AppTunnelStatus = QuicktypeAppTunnelStatus
     public typealias AppUserLevel = QuicktypeAppUserLevel
     public typealias ConfigFlag = QuicktypeConfigFlag
+    public typealias Credits = QuicktypeCredits
     public typealias DistributionTarget = QuicktypeDistributionTarget
     public typealias ProfileSharingFlag = QuicktypeProfileSharingFlag
     public typealias SemanticVersion = QuicktypeSemanticVersion
@@ -20,6 +21,11 @@ extension ABI {
 extension ABI.AppConstants {
     public typealias Log = QuicktypeAppConstantsLog
     public typealias TunnelVerificationParameters = QuicktypeAppConstantsTunnelVerificationParameters
+}
+
+extension ABI.Credits {
+    public typealias License = QuicktypeLicense
+    public typealias Notice = QuicktypeNotice
 }
 
 extension ABI.IAPEvent {
