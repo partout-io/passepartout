@@ -57,7 +57,7 @@ private extension SettingsContentView {
             }
             .themeSection(header: Strings.Global.Nouns.about)
 
-            ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
+            ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faqURL)
                 .themeSection(header: Strings.Global.Nouns.troubleshooting)
 
             Group {

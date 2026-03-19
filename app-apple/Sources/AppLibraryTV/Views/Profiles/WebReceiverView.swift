@@ -31,12 +31,12 @@ private extension WebReceiverView {
     func view(forWebsite website: ABI.WebsiteWithPasscode) -> some View {
         VStack {
             Text(Strings.Views.Tv.WebReceiver.qr)
-            QRCodeView(text: website.url.absoluteString)
+            QRCodeView(text: website.url)
                 .frame(width: 400)
                 .padding(.vertical)
 
             VStack {
-                Text(website.url.absoluteString)
+                Text(website.url)
                     .fontWeight(.bold)
 
                 if let passcode = website.passcode {
