@@ -1,3 +1,5 @@
+* Partially migrate ABI to Quicktype with JSON Schemas (#1723)
+* Fix unintended exit in .dataCount observer
 * Android: Integrate with ABI via Partout codegen (#1720)
 * Move submodules to their proper context (#1718)
 * Subscribe to tunnel events atomically on observation (#1719)
