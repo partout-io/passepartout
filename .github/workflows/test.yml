@@ -24,6 +24,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -38,10 +42,6 @@ jobs:
           key: ${{ runner.os }}-openapi-generator-${{ hashFiles('package-lock.json', 'openapitools.json') }}
           restore-keys: |
             ${{ runner.os }}-openapi-generator-
-      - uses: partout-io/action-prepare-xcode-build@master
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
       - name: Verify generated Swift ABI is up to date
         run: |
           scripts/gen-abi-swift.sh
