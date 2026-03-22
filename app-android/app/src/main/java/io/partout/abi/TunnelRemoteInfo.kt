@@ -15,7 +15,6 @@
 
 package io.partout.abi
 
-import io.partout.abi.TaggedModule
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -32,7 +31,7 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-data class CodableTunnelRemoteInfo (
+data class TunnelRemoteInfo (
 
     @SerialName(value = "fileDescriptors")
     val fileDescriptors: kotlin.collections.List<kotlin.Int>,
@@ -47,7 +46,7 @@ data class CodableTunnelRemoteInfo (
     val address: kotlin.String? = null,
 
     @SerialName(value = "modules")
-    val modules: kotlin.collections.List<TaggedModule>? = null
+    val modules: kotlin.collections.List<@Contextual kotlin.Any>? = null
 
 ) {
 
