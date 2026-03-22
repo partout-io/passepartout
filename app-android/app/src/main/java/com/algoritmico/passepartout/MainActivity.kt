@@ -21,7 +21,7 @@ import com.algoritmico.passepartout.abi.NativeLibraryWrapper
 import com.algoritmico.passepartout.abi.ProfileEventRefresh
 import kotlinx.serialization.json.Json
 
-val json = Json {
+val globalJsonCoder = Json {
     ignoreUnknownKeys = true
 }
 
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
     var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
 
     override fun onEvent(eventCtx: Any?, eventJSON: String) {
-        val event: ABIEvent = json.decodeFromString(eventJSON)
+        val event: ABIEvent = globalJsonCoder.decodeFromString(eventJSON)
         Log.i("Passepartout", ">>> MainActivity: $event")
         when (event) {
             is ProfileEventRefresh -> {
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
             eventHandler
         )
 
-        val constantsJSON: AppConstants = json.decodeFromString(constants)
+        val constantsJSON: AppConstants = globalJsonCoder.decodeFromString(constants)
         Log.e("Passepartout", ">>> Test GitHub constants: ${constantsJSON.github.discussionsURL}")
 
         setContent {
