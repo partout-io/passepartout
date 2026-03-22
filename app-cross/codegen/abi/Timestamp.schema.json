@@ -1,6 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Timestamp",
-  "description": "ISO8601 timestamp string.",
-  "type": "string"
-}
