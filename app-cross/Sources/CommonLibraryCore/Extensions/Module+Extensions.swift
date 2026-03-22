@@ -5,18 +5,6 @@
 import Partout
 
 extension Module {
-    public var moduleType: ModuleType {
-        moduleHandler.id
-    }
-}
-
-extension ModuleBuilder {
-    public var moduleType: ModuleType {
-        moduleHandler.id
-    }
-}
-
-extension Module {
     public func moduleBuilder() -> (any ModuleBuilder)? {
         guard let buildableModule = self as? any BuildableType else {
             return nil
