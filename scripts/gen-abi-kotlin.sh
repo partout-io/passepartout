@@ -8,6 +8,9 @@ abi_schemas=$schemas_path/abi/*.json
 abi_output="app-android/app/src/main/java/com/algoritmico/passepartout/abi/ABIEntities.kt"
 abi_package="com.algoritmico.passepartout.abi"
 
+# Generate Partout entities
+app-cross/partout/scripts/gen-models.sh kotlin tmp app-android/app
+
 quicktype \
     -l kotlin \
     --framework kotlinx \

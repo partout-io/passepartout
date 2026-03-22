@@ -12,7 +12,7 @@ class MyEventHandler() : ABIEventCallback {
     override fun onEvent(eventCtx: Any?, eventJSON: String) {
         mainHandler.post {
 //            Log.i("Passepartout", ">>> Event from $eventCtx : $eventJSON")
-            val event: ABIEvent = json.decodeFromString(eventJSON)
+            val event: ABIEvent = globalJsonCoder.decodeFromString(eventJSON)
             Log.i("Passepartout", ">>> MyEventHandler: $event")
 //            val event2: EventPayload = json.decodeFromString("""
 //{
