@@ -43,7 +43,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appInit(
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
-    args.preferences = NULL;
+    args.preferences = "{\"logsPrivateData\": true}";
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
     args.event_ctx = handler;
@@ -95,7 +95,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStart(
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
-    args.preferences = NULL;
+    args.preferences = "{\"logsPrivateData\": true}";
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_interactive = true;
