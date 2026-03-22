@@ -44,6 +44,7 @@ jobs:
             ${{ runner.os }}-openapi-generator-
       - name: Verify generated Swift ABI is up to date
         run: |
+          alias openapi-generator=$(pwd)/node_modules/.bin/openapi-generator-cli
           scripts/gen-abi-swift.sh
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
