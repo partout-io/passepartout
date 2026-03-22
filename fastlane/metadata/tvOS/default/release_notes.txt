@@ -1,9 +1,1 @@
-* Partially migrate ABI to Quicktype with JSON Schemas (#1723)
-* Fix unintended exit in .dataCount observer
-* Android: Integrate with ABI via Partout codegen (#1720)
-* Move submodules to their proper context (#1718)
-* Subscribe to tunnel events atomically on observation (#1719)
-* Reuse ABI preferences initialization
-* Clean up wxWidgets configuration in SwiftPM
-* Do not report .dataCount if no active tunnels (#1716)
-* Android: Register for ABI events (#1717)
+* Android: Codegen Partout modules via OpenAPI (#1726)
