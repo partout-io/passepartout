@@ -2,7 +2,6 @@
 cwd=`dirname $0`
 source $cwd/env.sh
 cd $cwd/..
-repo_root="$(pwd)"
 
 set -e
 infile=app-cross/abi.yaml
@@ -17,7 +16,7 @@ rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/abi
 ( cd app-cross/partout && scripts/gen-models.sh kotlin $models_dir )
 
 # Generate Passepartout ABI entities
-"$repo_root/node_modules/.bin/openapi-generator-cli" generate \
+openapi-generator generate \
     -i $infile \
     -o $models_dir \
     -g kotlin \

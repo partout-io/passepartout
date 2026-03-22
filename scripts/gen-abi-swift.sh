@@ -2,7 +2,6 @@
 cwd=`dirname $0`
 source $cwd/env.sh
 cd $cwd/..
-repo_root="$(pwd)"
 
 set -e
 infile=app-cross/abi.yaml
@@ -12,7 +11,7 @@ models_out=$models_tmp/Sources/OpenAPIClient/Models
 models_gen=$models_dir/Codegen
 abi_prefix=OpenAPI
 
-"$repo_root/node_modules/.bin/openapi-generator-cli" generate \
+openapi-generator generate \
     -i $infile \
     -o $models_tmp \
     -g swift6 \
