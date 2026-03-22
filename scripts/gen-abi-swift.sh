@@ -11,7 +11,7 @@ models_out=$models_tmp/Sources/OpenAPIClient/Models
 models_gen=$models_dir/Codegen
 abi_prefix=OpenAPI
 
-openapi-generator generate \
+npx --no-install openapi-generator-cli generate \
     -i $infile \
     -o $models_tmp \
     -g swift6 \

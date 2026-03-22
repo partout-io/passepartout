@@ -16,7 +16,7 @@ rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/abi
 ( cd app-cross/partout && scripts/gen-models.sh kotlin $models_dir )
 
 # Generate Passepartout ABI entities
-openapi-generator generate \
+npx --no-install openapi-generator-cli generate \
     -i $infile \
     -o $models_dir \
     -g kotlin \
