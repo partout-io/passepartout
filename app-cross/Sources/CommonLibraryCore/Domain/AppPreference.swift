@@ -52,6 +52,20 @@ extension ABI {
         public var experimentalData: Data?
 
         public init() {}
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            deviceId = try container.decodeIfPresent(String.self, forKey: CodingKeys.deviceId)
+            dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.dnsFallsBack) ?? true
+            lastCheckedVersionDate = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.lastCheckedVersionDate)
+            lastCheckedVersion = try container.decodeIfPresent(String.self, forKey: CodingKeys.lastCheckedVersion)
+            lastUsedProfileId = try container.decodeIfPresent(Profile.ID.self, forKey: CodingKeys.lastUsedProfileId)
+            logsPrivateData = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.logsPrivateData) ?? false
+            relaxedVerification = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.relaxedVerification) ?? false
+            skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.skipsPurchases) ?? false
+            configFlagsData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.configFlagsData)
+            experimentalData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.experimentalData)
+        }
     }
 }
 
