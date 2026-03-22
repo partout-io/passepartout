@@ -41,7 +41,7 @@ extension WebReceiverObservable {
     func onUpdate(_ event: ABI.WebReceiverEvent) {
         switch event {
         case .start(let payload):
-            self.website = payload.website
+            website = payload.website
         case .stop:
             website = nil
         case .newUpload:
