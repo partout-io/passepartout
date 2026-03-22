@@ -2,8 +2,6 @@
 cwd=`dirname $0`
 source $cwd/env.sh
 cd $cwd/..
-repo_root="$(pwd)"
-codegen="$repo_root/node_modules/.bin/openapi-generator-cli"
 
 set -e
 partout_infile=app-cross/partout/scripts/openapi.yaml
