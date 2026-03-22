@@ -27,6 +27,13 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
+      - name: Verify generated Swift ABI is up to date
+        run: |
+          scripts/gen-abi-swift.sh
+          if [[ -n "$(git status --porcelain --untracked-files=all -- app-cross/Sources/CommonLibraryCore/Domain/Codegen)" ]]; then
+            git status --short -- app-cross/Sources/CommonLibraryCore/Domain/Codegen
+            exit 1
+          fi
       - run: |
           ci/run-cross-tests.sh
       - run: |
