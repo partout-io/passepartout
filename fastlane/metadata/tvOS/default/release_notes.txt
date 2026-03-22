@@ -1,1 +1,1 @@
-* Android: Codegen Partout modules via OpenAPI (#1726)
+* Update encoding of Partout profiles and modules (#1728)
