@@ -15,7 +15,7 @@
 
 package io.partout.abi
 
-import io.partout.abi.DNSModule
+import io.partout.abi.OnDemandModule
 import io.partout.abi.TaggedModule
 
 import kotlinx.serialization.Serializable
@@ -29,11 +29,11 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-@SerialName(value = "dns")
-data class TaggedModuledns (
+@SerialName(value = "OnDemand")
+data class TaggedModuleOnDemand (
 
     @SerialName(value = "value")
-    val `value`: DNSModule
+    val `value`: OnDemandModule
 
 ) : TaggedModule() {
 

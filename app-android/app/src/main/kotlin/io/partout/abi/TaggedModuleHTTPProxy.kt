@@ -15,7 +15,7 @@
 
 package io.partout.abi
 
-import io.partout.abi.IPModule
+import io.partout.abi.HTTPProxyModule
 import io.partout.abi.TaggedModule
 
 import kotlinx.serialization.Serializable
@@ -29,11 +29,11 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-@SerialName(value = "ip")
-data class TaggedModuleip (
+@SerialName(value = "HTTPProxy")
+data class TaggedModuleHTTPProxy (
 
     @SerialName(value = "value")
-    val `value`: IPModule
+    val `value`: HTTPProxyModule
 
 ) : TaggedModule() {
 
