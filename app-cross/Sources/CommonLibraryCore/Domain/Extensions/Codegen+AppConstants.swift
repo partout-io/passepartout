@@ -4,7 +4,7 @@
 
 import Partout
 
-extension QuicktypeAppConstantsWebsites {
+extension OpenAPIAppConstantsWebsites {
     public var apiURL: URL {
         homeURL.appending(path: "api")
     }
@@ -38,7 +38,7 @@ extension QuicktypeAppConstantsWebsites {
     }
 }
 
-extension QuicktypeAppConstantsGitHub {
+extension OpenAPIAppConstantsGithub {
     public func urlForIssue(_ issue: Int) -> URL {
         issuesURL.appending(path: issue.description)
     }
@@ -48,7 +48,7 @@ extension QuicktypeAppConstantsGitHub {
     }
 }
 
-extension QuicktypeAppConstantsEmails {
+extension OpenAPIAppConstantsEmails {
     public var issues: String {
         email(to: recipients.issues)
     }
@@ -62,13 +62,13 @@ extension QuicktypeAppConstantsEmails {
     }
 }
 
-extension QuicktypeAppConstantsTunnel {
+extension OpenAPIAppConstantsTunnel {
     public func verificationDelayMinutes(isBeta: Bool) -> Int {
         let params = verificationParameters(isBeta: isBeta)
         return Int(params.delay / 60.0)
     }
 
-    public func verificationParameters(isBeta: Bool) -> QuicktypeAppConstantsTunnelVerificationParameters {
+    public func verificationParameters(isBeta: Bool) -> OpenAPIAppConstantsTunnelVerificationParameters {
         isBeta ? verification.beta : verification.production
     }
 }

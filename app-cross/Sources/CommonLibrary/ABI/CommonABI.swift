@@ -44,89 +44,28 @@ extension UnsafePointer where Pointee == CChar {
 
 extension ABI {
     struct EventWrapper: Encodable {
-        struct DynamicCodingKeys: CodingKey {
-            var stringValue: String
-            init?(stringValue: String) { self.stringValue = stringValue }
-            var intValue: Int? { nil }
-            init?(intValue: Int) { nil }
-        }
+        private let payload: Encodable
 
-        private static let packageName = "com.algoritmico.passepartout.abi"
-        private let payloadType: String?
-        private let payload: Encodable?
-
-        init(_ event: Event) {
-            let subEvent = event.subEvent
-            guard let subEvent else {
-                payloadType = nil
-                payload = nil
-                return
-            }
-            payloadType = subEvent.type
-            payload = subEvent.payload
+        init?(_ event: Event) {
+            guard let payload = event.payload else { return nil }
+            self.payload = payload
         }
 
         func encode(to encoder: any Encoder) throws {
-            guard let payloadType, let payload else {
-                assertionFailure("Unable to encode event (missing payload)")
-                return
-            }
-
-            //
-            // WARNING: "eventType" MUST match 100% the codegen output
-            // type (and package for Kotlin)
-            //
-            // E.g.:
-            //
-            // ProfileEvent.Ready
-            // payloadType = "CommonLibraryCore.QuicktypeProfileEventReady"
-            // type = "<packageName>.ProfileEventReady"
-            //
-            // ConfigEvent.Refresh
-            // payloadType = "CommonLibraryCore.ABI.ConfigEvent.Refresh"
-            // type = "<packageName>.ConfigEventRefresh"
-            //
-            let eventType: String = {
-                var comps = payloadType.split(separator: ".")
-                let moduleName = comps.removeFirst()
-                assert(moduleName == "CommonLibraryCore")
-                // Quicktype*Event* or ABI.*Event*
-                var name = comps.joined(separator: ".")
-                for prefix in ["ABI.", "Quicktype"] {
-                    if name.hasPrefix(prefix) {
-                        name.replace(prefix, with: "")
-                        break
-                    }
-                }
-                name.replace(".", with: "")
-                return "\(Self.packageName).\(name)"
-            }()
-
-            var container = encoder.container(keyedBy: DynamicCodingKeys.self)
-            let eventTypeKey = DynamicCodingKeys(stringValue: "type")!
-            try container.encode(eventType, forKey: eventTypeKey)
             try payload.encode(to: encoder)
         }
     }
 }
 
-private struct SubEvent {
-    let type: String
-    let payload: Encodable?
-}
-
 private extension ABI.Event {
-    var subEvent: SubEvent? {
-//        print(">>> event: \(self)")
+    // Return the first (and only) associated value of the enum
+    var payload: Encodable? {
         let mirror = Mirror(reflecting: self)
         guard let arg = mirror.children.first else { return nil }
-//        print(">>> subevent: \(arg.label), \(arg.value)")
-        guard let payload = Mirror(reflecting: arg.value).children.first?.value else {
-            return nil
-        }
-//        print(">>> payload: \(payload)")
-        let type = "\(String(reflecting: Swift.type(of: payload)))"
-        return SubEvent(type: type, payload: payload as? Encodable)
+        let children = Mirror(reflecting: arg.value).children
+        assert(children.count == 1)
+        guard let payload = children.first?.value else { return nil }
+        return payload as? Encodable
     }
 }
 

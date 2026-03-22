@@ -8,13 +8,13 @@ extension ABI {
     public protocol EventProtocol: Equatable, Encodable, Sendable {}
 }
 
-// Events are typically codegenerated from Quicktype. Here we keep
+// Events are typically codegenerated from OpenAPI. Here we keep
 // the events where we want to:
 //
 // - Retain the Swift strong typing (for app-apple)
-// - Manually encode to Quicktype formats (for app-cross)
+// - Manually encode to OpenAPI formats (for app-cross)
 //
-// Any other event that maps 1:1 to JSON is a typealias to Quicktype.
+// Any other event that maps 1:1 to JSON is a typealias to OpenAPI.
 
 extension ABI.ConfigEvent {
     public struct Refresh: ABI.EventProtocol {
@@ -22,11 +22,11 @@ extension ABI.ConfigEvent {
         public let data: [ABI.ConfigFlag: JSON]
         public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(QuicktypeConfigEventRefresh(
+            try container.encode(OpenAPIConfigEventRefresh(
+                flags: Array(flags),
                 data: data.reduce(into: [:]) {
                     $0[$1.key.rawValue] = $1.value
-                },
-                flags: Array(flags)
+                }
             ))
         }
     }
@@ -39,10 +39,10 @@ extension ABI.IAPEvent {
         public let isBeta: Bool
         public func encode(to encoder: any Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(QuicktypeIAPEventNewReceipt(
-                isBeta: isBeta,
+            try container.encode(OpenAPIIAPEventNewReceipt(
                 originalPurchase: originalPurchase?.toProto,
-                products: products.map(\.rawValue)
+                products: products.map(\.rawValue),
+                isBeta: isBeta
             ))
         }
     }
@@ -53,7 +53,7 @@ extension ABI.ProfileEvent {
         public let headers: [Profile.ID: ABI.AppProfileHeader]
         public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(QuicktypeProfileEventRefresh(
+            try container.encode(OpenAPIProfileEventRefresh(
                 headers: headers.reduce(into: [:]) {
                     $0[$1.key.uuidString] = $1.value.toProto
                 }
@@ -65,7 +65,7 @@ extension ABI.ProfileEvent {
         public let previous: Profile?
         public func encode(to encoder: any Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(QuicktypeProfileEventSave())
+            try container.encode(OpenAPIProfileEventSave())
         }
     }
 }
@@ -75,7 +75,7 @@ extension ABI.TunnelEvent {
         public let active: [Profile.ID: ABI.AppTunnelInfo]
         public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(QuicktypeTunnelEventRefresh(
+            try container.encode(OpenAPITunnelEventRefresh(
                 active: active.reduce(into: [:]) {
                     $0[$1.key.uuidString] = $1.value.toProto
                 }
@@ -89,7 +89,7 @@ extension ABI.VersionEvent {
         public let release: ABI.VersionRelease
         public func encode(to encoder: any Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(QuicktypeVersionEventNew(
+            try container.encode(OpenAPIVersionEventNew(
                 release: release.toProto
             ))
         }

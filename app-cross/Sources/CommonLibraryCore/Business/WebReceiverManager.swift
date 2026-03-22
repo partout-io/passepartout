@@ -44,10 +44,13 @@ public final class WebReceiverManager {
         do {
             let url = try webReceiver.start(passcode: passcode) { [weak self] in
                 self?.didChange.send(.newUpload(.init(
-                    file: ABI.WebFileUpload(contents: $1, name: $0)
+                    file: ABI.WebFileUpload(name: $0, contents: $1)
                 )))
             }
-            website = ABI.WebsiteWithPasscode(passcode: passcode, url: url.absoluteString)
+            website = ABI.WebsiteWithPasscode(
+                url: url.absoluteString,
+                passcode: passcode
+            )
         } catch let error as WebReceiverError {
             throw ABI.AppError.webReceiver(error)
         }
