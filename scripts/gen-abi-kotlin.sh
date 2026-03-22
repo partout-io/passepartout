@@ -4,39 +4,35 @@ source $cwd/env.sh
 cd $cwd/..
 
 set -e
-abi_schemas=$schemas_path/abi/*.json
-abi_output="app-android/app/src/main/java/com/algoritmico/passepartout/abi/ABIEntities.kt"
-abi_package="com.algoritmico.passepartout.abi"
+partout_infile=app-cross/partout/scripts/openapi.yaml
+partout_package=io.partout.abi
+abi_infile=app-cross/abi.yaml
+abi_package=com.algoritmico.passepartout.abi
+models_dir=`realpath app-android/app`
+
+# Clean up
+rm -rf $models_dir/src/main/kotlin/io/partout/abi
+rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/abi
+
+shared_flags=(
+    -o "$models_dir"
+    -g kotlin
+    --global-property=models,modelDocs=false,modelTests=false
+    --type-mappings number=Double,URI=String
+    --import-mappings Double=kotlin.Double,String=kotlin.String
+    --additional-properties=serializationLibrary=kotlinx_serialization
+)
 
 # Generate Partout entities
-app-cross/partout/scripts/gen-models.sh kotlin tmp app-android/app
+"$codegen" generate \
+    -i "$partout_infile" \
+    --additional-properties=packageName=$partout_package \
+    --additional-properties=modelPackage=$partout_package \
+    "${shared_flags[@]}"
 
-quicktype \
-    -l kotlin \
-    --framework kotlinx \
-    --package $abi_package \
-    -s schema $abi_schemas \
-    -o $abi_output
-
-# Inject sealed ABIEvent
-awk '
-/^data class .*Event/ {           # match lines with "data class" AND "Event"
-    inEventClass = 1              # flag to indicate we are inside target class
-}
-inEventClass && /^[[:space:]]*\)[[:space:]]*$/ {  # line with only ")"
-    sub(/\)[[:space:]]*$/, ") : ABIEvent()")
-    inEventClass = 0             # reset flag after modification
-}
-{ print }
-' $abi_output >$abi_output.tmp
-mv $abi_output.tmp $abi_output
-
-sed -E '/^class .*Event.*\(\)/ s/\(\)$/(): ABIEvent()/' $abi_output >$abi_output.tmp
-
-event=$(cat <<EVENT
-@Serializable
-sealed class ABIEvent
-EVENT
-)
-echo $event >>$abi_output.tmp
-mv $abi_output.tmp $abi_output
+# Generate Passepartout ABI entities
+"$codegen" generate \
+    -i "$abi_infile" \
+    --additional-properties=packageName=$abi_package \
+    --additional-properties=modelPackage=$abi_package \
+    "${shared_flags[@]}"

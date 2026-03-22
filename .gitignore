@@ -9,6 +9,7 @@ fastlane/**/trade_representative_contact_information
 build/
 dist/
 tmp/
+/node_modules/
 /l10n/
 **/*secret*
 *.a

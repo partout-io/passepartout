@@ -1,0 +1,846 @@
+components:
+  schemas:
+    AppBundle:
+      type: object
+      properties:
+        distributionTarget:
+          "$ref": "#/components/schemas/DistributionTarget"
+        displayName:
+          type: string
+        versionNumber:
+          type: string
+        buildNumber:
+          type: integer
+        customUserLevel:
+          "$ref": "#/components/schemas/AppUserLevel"
+        bundleStrings:
+          type: object
+          additionalProperties:
+            type: string
+        appLogPath:
+          type: string
+        tunnelLogPath:
+          type: string
+        appLogsURL:
+          type: string
+          format: uri
+        tunnelLogsURL:
+          type: string
+          format: uri
+        reviewURL:
+          type:
+          - string
+          - 'null'
+          format: uri
+      required:
+      - distributionTarget
+      - displayName
+      - versionNumber
+      - buildNumber
+      - bundleStrings
+      - appLogPath
+      - tunnelLogPath
+      - appLogsURL
+      - tunnelLogsURL
+    AppConfiguration:
+      type: object
+      properties:
+        bundle:
+          "$ref": "#/components/schemas/AppBundle"
+        constants:
+          "$ref": "#/components/schemas/AppConstants"
+      required:
+      - bundle
+      - constants
+    AppConstants:
+      type: object
+      properties:
+        deviceIdLength:
+          type: integer
+        containers:
+          type: object
+          properties:
+            local:
+              type: string
+            remote:
+              type: string
+            backup:
+              type: string
+          required:
+          - local
+          - remote
+          - backup
+        websites:
+          type: object
+          properties:
+            homeURL:
+              type: string
+              format: uri
+            subredditURL:
+              type: string
+              format: uri
+            eulaURL:
+              type: string
+              format: uri
+            appStoreDownloadURL:
+              type: string
+              format: uri
+            macDownloadURL:
+              type: string
+              format: uri
+            configTTL:
+              type: number
+          required:
+          - homeURL
+          - subredditURL
+          - eulaURL
+          - appStoreDownloadURL
+          - macDownloadURL
+          - configTTL
+        github:
+          type: object
+          properties:
+            discussionsURL:
+              type: string
+              format: uri
+            issuesURL:
+              type: string
+              format: uri
+            rawURL:
+              type: string
+              format: uri
+            latestReleaseURL:
+              type: string
+              format: uri
+          required:
+          - discussionsURL
+          - issuesURL
+          - rawURL
+          - latestReleaseURL
+        emails:
+          type: object
+          properties:
+            domain:
+              type: string
+            recipients:
+              type: object
+              properties:
+                issues:
+                  type: string
+                beta:
+                  type: string
+              required:
+              - issues
+              - beta
+          required:
+          - domain
+          - recipients
+        formats:
+          type: object
+          properties:
+            timestamp:
+              type: string
+          required:
+          - timestamp
+        tunnel:
+          type: object
+          properties:
+            profileTitleFormat:
+              type: string
+            refreshInterval:
+              type: number
+            dnsFallbackServers:
+              type: array
+              items:
+                type: string
+            verification:
+              type: object
+              properties:
+                production:
+                  "$ref": "#/components/schemas/AppConstants.Tunnel.Verification.Parameters"
+                beta:
+                  "$ref": "#/components/schemas/AppConstants.Tunnel.Verification.Parameters"
+              required:
+              - production
+              - beta
+          required:
+          - profileTitleFormat
+          - refreshInterval
+          - dnsFallbackServers
+          - verification
+        api:
+          type: object
+          properties:
+            timeoutInterval:
+              type: number
+            versionRateLimit:
+              type: number
+            refreshInfrastructureRateLimit:
+              type: number
+          required:
+          - timeoutInterval
+          - versionRateLimit
+          - refreshInfrastructureRateLimit
+        iap:
+          type: object
+          properties:
+            productsTimeoutInterval:
+              type: number
+            receiptInvalidationInterval:
+              type: number
+          required:
+          - productsTimeoutInterval
+          - receiptInvalidationInterval
+        webReceiver:
+          type: object
+          properties:
+            port:
+              type: integer
+            passcodeLength:
+              type: integer
+          required:
+          - port
+          - passcodeLength
+        log:
+          type: object
+          properties:
+            formatter:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                message:
+                  type: string
+              required:
+              - timestamp
+              - message
+            sinceLast:
+              type: number
+            options:
+              "$ref": "#/components/schemas/LocalLoggerOptions"
+          required:
+          - formatter
+          - sinceLast
+          - options
+      required:
+      - deviceIdLength
+      - containers
+      - websites
+      - github
+      - emails
+      - formats
+      - tunnel
+      - api
+      - iap
+      - webReceiver
+      - log
+    AppConstants.Tunnel.Verification.Parameters:
+      type: object
+      properties:
+        delay:
+          type: number
+        interval:
+          type: number
+        attempts:
+          type: integer
+        retryInterval:
+          type: number
+      required:
+      - delay
+      - interval
+      - attempts
+      - retryInterval
+    AppFeature:
+      type: string
+      x-enum-varnames:
+      - appleTV
+      - dns
+      - httpProxy
+      - onDemand
+      - otp
+      - providers
+      - routing
+      - sharing
+      enum:
+      - appleTV
+      - dns
+      - httpProxy
+      - onDemand
+      - otp
+      - providers
+      - routing
+      - sharing
+    AppProfileHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        moduleTypes:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ModuleType"
+        primaryModuleType:
+          "$ref": "#/components/schemas/ModuleType"
+        secondaryModuleTypes:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ModuleType"
+        providerInfo:
+          "$ref": "#/components/schemas/ProviderInfo"
+        fingerprint:
+          type: string
+        sharingFlags:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ProfileSharingFlag"
+        requiredFeatures:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AppFeature"
+      required:
+      - id
+      - name
+      - moduleTypes
+      - secondaryModuleTypes
+      - fingerprint
+      - sharingFlags
+      - requiredFeatures
+    AppTunnelInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        status:
+          "$ref": "#/components/schemas/AppTunnelStatus"
+        onDemand:
+          type: boolean
+      required:
+      - id
+      - status
+      - onDemand
+    AppTunnelStatus:
+      type: string
+      x-enum-varnames:
+      - disconnected
+      - connecting
+      - connected
+      - disconnecting
+      enum:
+      - disconnected
+      - connecting
+      - connected
+      - disconnecting
+    AppUserLevel:
+      type: string
+      x-enum-varnames:
+      - undefined
+      - freemium
+      - beta
+      - essentials
+      - complete
+      enum:
+      - undefined
+      - freemium
+      - beta
+      - essentials
+      - complete
+    Event:
+      discriminator:
+        mapping:
+          ConfigEventRefresh: "#/components/schemas/ConfigEventRefresh"
+          IAPEventEligibleFeatures: "#/components/schemas/IAPEventEligibleFeatures"
+          IAPEventLoadReceipt: "#/components/schemas/IAPEventLoadReceipt"
+          IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
+          IAPEventStatus: "#/components/schemas/IAPEventStatus"
+          ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
+          ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
+          ProfileEventReady: "#/components/schemas/ProfileEventReady"
+          ProfileEventRefresh: "#/components/schemas/ProfileEventRefresh"
+          ProfileEventSave: "#/components/schemas/ProfileEventSave"
+          ProfileEventStartRemoteImport: "#/components/schemas/ProfileEventStartRemoteImport"
+          ProfileEventStopRemoteImport: "#/components/schemas/ProfileEventStopRemoteImport"
+          TunnelEventDataCount: "#/components/schemas/TunnelEventDataCount"
+          TunnelEventRefresh: "#/components/schemas/TunnelEventRefresh"
+          VersionEventNew: "#/components/schemas/VersionEventNew"
+          WebReceiverEventNewUpload: "#/components/schemas/WebReceiverEventNewUpload"
+          WebReceiverEventStart: "#/components/schemas/WebReceiverEventStart"
+          WebReceiverEventStop: "#/components/schemas/WebReceiverEventStop"
+          WebReceiverEventUploadFailure: "#/components/schemas/WebReceiverEventUploadFailure"
+        propertyName: type
+      properties:
+        type:
+          type: string
+      required:
+      - type
+      type: object
+    ConfigEventRefresh:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        flags:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ConfigFlag"
+        data:
+          type: object
+        type:
+          const: ConfigEventRefresh
+          type: string
+      required:
+      - type
+      - flags
+      - data
+    ConfigFlag:
+      type: string
+      x-enum-varnames:
+      - allowsRelaxedVerification
+      - appNotWorking
+      - neSocketUDP
+      - neSocketTCP
+      - unknown
+      enum:
+      - allowsRelaxedVerification
+      - appNotWorking
+      - neSocketUDP
+      - neSocketTCP
+      - unknown
+    Credits:
+      type: object
+      properties:
+        licenses:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              licenseName:
+                type: string
+              licenseURL:
+                type: string
+                format: uri
+            required:
+            - name
+            - licenseName
+            - licenseURL
+        notices:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              message:
+                type: string
+            required:
+            - name
+            - message
+        translations:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+      - licenses
+      - notices
+      - translations
+    DistributionTarget:
+      type: string
+      x-enum-varnames:
+      - appStore
+      - developerID
+      - enterprise
+      enum:
+      - appStore
+      - developerID
+      - enterprise
+    IAPEventEligibleFeatures:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        features:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AppFeature"
+        forComplete:
+          type: boolean
+        forFeedback:
+          type: boolean
+        type:
+          const: IAPEventEligibleFeatures
+          type: string
+      required:
+      - type
+      - features
+      - forComplete
+      - forFeedback
+    IAPEventLoadReceipt:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        isLoading:
+          type: boolean
+        type:
+          const: IAPEventLoadReceipt
+          type: string
+      required:
+      - type
+      - isLoading
+    IAPEventNewReceipt:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        originalPurchase:
+          "$ref": "#/components/schemas/OriginalPurchase"
+        products:
+          type: array
+          items:
+            type: string
+        isBeta:
+          type: boolean
+        type:
+          const: IAPEventNewReceipt
+          type: string
+      required:
+      - type
+      - products
+      - isBeta
+    IAPEventStatus:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        isEnabled:
+          type: boolean
+        type:
+          const: IAPEventStatus
+          type: string
+      required:
+      - type
+      - isEnabled
+    LocalLoggerOptions:
+      type: object
+      properties:
+        maxLevel:
+          "$ref": "#/components/schemas/LocalLoggerOptions.MaxLevel"
+        maxSize:
+          type: integer
+          description: Maximum size in bytes
+        maxBufferedLines:
+          type: integer
+        maxAge:
+          type:
+          - number
+          - 'null'
+          description: Optional maximum age in seconds
+      required:
+      - maxLevel
+      - maxSize
+      - maxBufferedLines
+    LocalLoggerOptions.MaxLevel:
+      type: integer
+      x-enum-varnames:
+      - fault
+      - error
+      - notice
+      - info
+      - debug
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      description: DebugLog.Level (0=fault, 1=error, 2=notice, 3=info, 4=debug)
+    ModuleType:
+      type: string
+      x-enum-varnames:
+      - DNS
+      - HTTPProxy
+      - IP
+      - OnDemand
+      - OpenVPN
+      - WireGuard
+      enum:
+      - DNS
+      - HTTPProxy
+      - IP
+      - OnDemand
+      - OpenVPN
+      - WireGuard
+    OriginalPurchase:
+      type: object
+      additionalProperties: false
+      properties:
+        buildNumber:
+          type: integer
+        purchaseDate:
+          "$ref": "#/components/schemas/Timestamp"
+      required:
+      - buildNumber
+      - purchaseDate
+    ProfileEventChangeRemoteImporting:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        isImporting:
+          type: boolean
+        type:
+          const: ProfileEventChangeRemoteImporting
+          type: string
+      required:
+      - type
+      - isImporting
+    ProfileEventLocalProfiles:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventLocalProfiles
+          type: string
+      required:
+      - type
+    ProfileEventReady:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventReady
+          type: string
+      required:
+      - type
+    ProfileEventRefresh:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        headers:
+          type: object
+          additionalProperties:
+            "$ref": "#/components/schemas/AppProfileHeader"
+        type:
+          const: ProfileEventRefresh
+          type: string
+      required:
+      - type
+      - headers
+    ProfileEventSave:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventSave
+          type: string
+      required:
+      - type
+    ProfileEventStartRemoteImport:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventStartRemoteImport
+          type: string
+      required:
+      - type
+    ProfileEventStopRemoteImport:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventStopRemoteImport
+          type: string
+      required:
+      - type
+    ProfileSharingFlag:
+      type: string
+      x-enum-varnames:
+      - shared
+      - tv
+      enum:
+      - shared
+      - tv
+    ProviderInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        providerId:
+          type: string
+        countryCode:
+          type: string
+      required:
+      - providerId
+    SemanticVersion:
+      type: object
+      additionalProperties: false
+      properties:
+        major:
+          type: integer
+        minor:
+          type: integer
+        patch:
+          type: integer
+      required:
+      - major
+      - minor
+      - patch
+    Timestamp:
+      description: ISO8601 timestamp string.
+      type: string
+    TunnelEventDataCount:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: TunnelEventDataCount
+          type: string
+      required:
+      - type
+    TunnelEventRefresh:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        active:
+          type: object
+          additionalProperties:
+            "$ref": "#/components/schemas/AppTunnelInfo"
+        type:
+          const: TunnelEventRefresh
+          type: string
+      required:
+      - type
+      - active
+    VersionEventNew:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        release:
+          "$ref": "#/components/schemas/VersionRelease"
+        type:
+          const: VersionEventNew
+          type: string
+      required:
+      - type
+      - release
+    VersionRelease:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          "$ref": "#/components/schemas/SemanticVersion"
+        url:
+          type: string
+      required:
+      - version
+      - url
+    WebFileUpload:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        contents:
+          type: string
+      required:
+      - name
+      - contents
+    WebReceiverEventNewUpload:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        file:
+          "$ref": "#/components/schemas/WebFileUpload"
+        type:
+          const: WebReceiverEventNewUpload
+          type: string
+      required:
+      - type
+      - file
+    WebReceiverEventStart:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        website:
+          "$ref": "#/components/schemas/WebsiteWithPasscode"
+        type:
+          const: WebReceiverEventStart
+          type: string
+      required:
+      - type
+      - website
+    WebReceiverEventStop:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: WebReceiverEventStop
+          type: string
+      required:
+      - type
+    WebReceiverEventUploadFailure:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        error:
+          type: string
+        type:
+          const: WebReceiverEventUploadFailure
+          type: string
+      required:
+      - type
+      - error
+    WebsiteWithPasscode:
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          type: string
+        passcode:
+          type: string
+      required:
+      - url
+info:
+  title: codegen
+  version: 1.0.0
+openapi: 3.1.0
+paths: {}

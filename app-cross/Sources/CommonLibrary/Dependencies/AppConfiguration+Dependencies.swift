@@ -44,7 +44,7 @@ extension ABI.AppConfiguration {
                     pspLog(.core, .info, "Device ID: \(existingId)")
                     return existingId
                 }
-                let newId = String.random(count: constants.deviceIDLength)
+                let newId = String.random(count: constants.deviceIdLength)
                 kvStore.set(newId, forAppPreference: .deviceId)
                 pspLog(.core, .info, "Device ID (new): \(newId)")
                 return newId
@@ -267,17 +267,17 @@ extension ABI.AppBundle {
         }
 
         self.init(
-            appLogPath: appLogPath,
-            appLogsURL: appLogsURL,
-            buildNumber: buildNumber,
-            bundleStrings: bundleStrings,
-            customUserLevel: customUserLevel,
-            displayName: displayName,
             distributionTarget: distributionTarget,
-            reviewURL: reviewURL,
+            displayName: displayName,
+            versionNumber: versionNumber,
+            buildNumber: buildNumber,
+            customUserLevel: customUserLevel,
+            bundleStrings: bundleStrings,
+            appLogPath: appLogPath,
             tunnelLogPath: tunnelLogPath,
+            appLogsURL: appLogsURL,
             tunnelLogsURL: tunnelLogsURL,
-            versionNumber: versionNumber
+            reviewURL: reviewURL
         )
     }
 

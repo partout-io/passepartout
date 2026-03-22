@@ -10,18 +10,18 @@
 #include "helpers.h"
 
 JNIEXPORT jstring JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
     jstring jmsg = (*env)->NewStringUTF(env, psp_partout_version());
     return jmsg;
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appOnForeground(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appOnForeground(JNIEnv *env, jobject thiz) {
     psp_app_on_foreground();
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appInit(
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -57,7 +57,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appInit(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appImportProfileText(
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appImportProfileText(
         JNIEnv *env,
         jobject thiz,
         jstring text,
@@ -76,7 +76,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appImportProfileText(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStart(
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -111,6 +111,6 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStart(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStop(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStop(JNIEnv *env, jobject thiz) {
     psp_tunnel_stop(NULL, NULL);
 }
