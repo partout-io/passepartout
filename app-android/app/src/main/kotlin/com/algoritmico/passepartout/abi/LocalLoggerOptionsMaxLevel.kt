@@ -29,20 +29,22 @@ import kotlinx.serialization.encoding.Encoder
 
 
 /**
- * DebugLog.Level (0=debug, 1=info, 2=warning, 3=error)
+ * DebugLog.Level (0=fault, 1=error, 2=notice, 3=info, 4=debug)
  *
- * Values: debug,info,warning,error
+ * Values: fault,error,notice,info,debug
  */
 @Serializable(with = LocalLoggerOptionsMaxLevelSerializer::class)
 enum class LocalLoggerOptionsMaxLevel(val value: kotlin.Int) {
 
-    debug(0),
+    fault(0),
 
-    info(1),
+    error(1),
 
-    warning(2),
+    notice(2),
 
-    error(3);
+    info(3),
+
+    debug(4);
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

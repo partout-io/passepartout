@@ -554,16 +554,18 @@ components:
     LocalLoggerOptions.MaxLevel:
       type: integer
       x-enum-varnames:
-      - debug
-      - info
-      - warning
+      - fault
       - error
+      - notice
+      - info
+      - debug
       enum:
       - 0
       - 1
       - 2
       - 3
-      description: DebugLog.Level (0=debug, 1=info, 2=warning, 3=error)
+      - 4
+      description: DebugLog.Level (0=fault, 1=error, 2=notice, 3=info, 4=debug)
     ModuleType:
       type: string
       x-enum-varnames:

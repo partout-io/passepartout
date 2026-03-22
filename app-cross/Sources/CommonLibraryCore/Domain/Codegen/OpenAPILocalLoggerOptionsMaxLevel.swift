@@ -7,10 +7,11 @@
 
 import Partout
 
-/** DebugLog.Level (0&#x3D;debug, 1&#x3D;info, 2&#x3D;warning, 3&#x3D;error) */
+/** DebugLog.Level (0&#x3D;fault, 1&#x3D;error, 2&#x3D;notice, 3&#x3D;info, 4&#x3D;debug) */
 public enum OpenAPILocalLoggerOptionsMaxLevel: Int, Sendable, Codable, CaseIterable {
-    case debug = 0
-    case info = 1
-    case warning = 2
-    case error = 3
+    case fault = 0
+    case error = 1
+    case notice = 2
+    case info = 3
+    case debug = 4
 }
