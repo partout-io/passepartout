@@ -591,16 +591,6 @@ components:
       required:
       - buildNumber
       - purchaseDate
-    ProfileBehavior:
-      type: object
-      additionalProperties: false
-      properties:
-        disconnectsOnSleep:
-          type: boolean
-        includesAllNetworks:
-          type: boolean
-      required:
-      - disconnectsOnSleep
     ProfileEventChangeRemoteImporting:
       type: object
       additionalProperties: false
