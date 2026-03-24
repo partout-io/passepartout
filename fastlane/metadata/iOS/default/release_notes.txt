@@ -1,1 +1,2 @@
+* Add "Extensive logging" preference in Diagnostics (#1729)
 * Update encoding of Partout profiles and modules (#1728)
