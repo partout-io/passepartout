@@ -136,6 +136,10 @@ extension TunnelManager {
         latestInfo.keys.contains(profileId)
     }
 
+    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+        latestInfo[profileId]?.rawStatus ?? .inactive
+    }
+
     public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
         await tunnel.environment(for: profileId)?.environmentValue(forKey: key)
     }

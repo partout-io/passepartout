@@ -56,8 +56,9 @@ extension ABI {
     public struct AppTunnelInfo: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
         public let status: AppTunnelStatus
+        public let rawStatus: TunnelStatus
         public let onDemand: Bool
-        public private(set) var transfer: ABI.ProfileTransfer
+        public private(set) var transfer: ABI.ProfileTransfer?
         public private(set) var lastErrorCode: PartoutError.Code?
 
         public init(
@@ -68,13 +69,14 @@ extension ABI {
         ) {
             self.id = id
             status = .init(status: rawStatus, environment: environment)
+            self.rawStatus = rawStatus
             self.onDemand = onDemand
-            transfer = ABI.ProfileTransfer()
+            transfer = nil
             lastErrorCode = nil
 
             transfer = environment?.environmentValue(
                 forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer ?? ABI.ProfileTransfer()
+            )?.abiTransfer
             lastErrorCode = environment?.environmentValue(
                 forKey: TunnelEnvironmentKeys.lastErrorCode
             )
@@ -84,7 +86,7 @@ extension ABI {
             var copy = self
             copy.transfer = environment.environmentValue(
                 forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer ?? ABI.ProfileTransfer()
+            )?.abiTransfer
             copy.lastErrorCode = environment.environmentValue(
                 forKey: TunnelEnvironmentKeys.lastErrorCode
             )

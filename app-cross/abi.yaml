@@ -363,7 +363,6 @@ components:
           ProfileEventSave: "#/components/schemas/ProfileEventSave"
           ProfileEventStartRemoteImport: "#/components/schemas/ProfileEventStartRemoteImport"
           ProfileEventStopRemoteImport: "#/components/schemas/ProfileEventStopRemoteImport"
-          TunnelEventDataCount: "#/components/schemas/TunnelEventDataCount"
           TunnelEventRefresh: "#/components/schemas/TunnelEventRefresh"
           VersionEventNew: "#/components/schemas/VersionEventNew"
           WebReceiverEventNewUpload: "#/components/schemas/WebReceiverEventNewUpload"
@@ -713,17 +712,6 @@ components:
     Timestamp:
       description: ISO8601 timestamp string.
       type: string
-    TunnelEventDataCount:
-      type: object
-      additionalProperties: false
-      allOf:
-      - "$ref": "#/components/schemas/Event"
-      properties:
-        type:
-          const: TunnelEventDataCount
-          type: string
-      required:
-      - type
     TunnelEventRefresh:
       type: object
       additionalProperties: false
