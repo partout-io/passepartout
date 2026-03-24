@@ -7,8 +7,8 @@ import Partout
 import Testing
 
 struct RegistryTests {
-    @Test
-    func givenKnownHandlers_whenSerializeProfile_thenIsDeserialized() throws {
+    @Test(arguments: [false, true])
+    func givenKnownHandlers_whenSerializeProfile_thenIsDeserialized(withLegacyEncoding: Bool) throws {
         let sut = Registry()
 
         var ovpnBuilder = OpenVPN.Configuration.Builder()
@@ -30,7 +30,7 @@ struct RegistryTests {
         profileBuilder.modules.append(try WireGuardModule.Builder(configurationBuilder: wgBuilder).build())
         let profile = try profileBuilder.build()
 
-        let encoded = try sut.json(fromProfile: profile)
+        let encoded = try sut.json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
         print(encoded)
 
         let decoded = try sut.profile(fromJSON: encoded)

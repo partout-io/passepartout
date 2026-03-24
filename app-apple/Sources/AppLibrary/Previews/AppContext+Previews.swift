@@ -13,8 +13,8 @@ extension AppContext {
         )
         let logFormatter = DummyLogFormatter()
         let registry = Registry()
-        let appEncoder = AppEncoder(registry: registry)
         let kvStore = InMemoryStore()
+        let appEncoder = AppEncoder(registry: registry, kvStore: kvStore)
         let configManager = ConfigManager()
         let apiManager = APIManager(
             from: API.bundled,

@@ -12,5 +12,6 @@ public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case appNotWorking = "appNotWorking"
     case neSocketUDP = "neSocketUDP"
     case neSocketTCP = "neSocketTCP"
+    case newProfileEncoding = "newProfileEncoding"
     case unknown = "unknown"
 }

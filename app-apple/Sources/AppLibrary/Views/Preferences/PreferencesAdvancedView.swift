@@ -23,7 +23,8 @@ struct PreferencesAdvancedView: View {
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
-        .neSocketTCP
+        .neSocketTCP,
+        .newProfileEncoding
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
@@ -33,6 +34,8 @@ private extension PreferencesAdvancedView {
             return V.neSocketUDP
         case .neSocketTCP:
             return V.neSocketTCP
+        case .newProfileEncoding:
+            return "New profile encoding"
         default:
             assertionFailure()
             return ""

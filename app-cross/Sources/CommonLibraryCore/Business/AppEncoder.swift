@@ -6,9 +6,16 @@ import Partout
 
 public final class AppEncoder: Sendable {
     private let registry: Registry
+    private let kvStore: KeyValueStore
 
-    public init(registry: Registry) {
+    private var withLegacyEncoding: Bool {
+        !kvStore.bool(forAppPreference: .newProfileEncoding) ||
+        kvStore.preferences.experimental.ignoredConfigFlags.contains(.newProfileEncoding)
+    }
+
+    public init(registry: Registry, kvStore: KeyValueStore) {
         self.registry = registry
+        self.kvStore = kvStore
     }
 
     public func defaultFilename(for profileName: String) -> String {
@@ -24,7 +31,7 @@ public final class AppEncoder: Sendable {
     }
 
     public func json(fromProfile profile: Profile) throws -> String {
-        try registry.json(fromProfile: profile)
+        try registry.json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
     }
 
     public func writeToFile(_ profile: Profile) throws -> String {

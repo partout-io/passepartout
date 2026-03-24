@@ -22,6 +22,7 @@ extension ABI {
         case lastCheckedVersion
         case lastUsedProfileId
         case logsPrivateData
+        case newProfileEncoding
         case relaxedVerification // Though appears in "Experimental"
         case skipsPurchases
 
@@ -42,6 +43,7 @@ extension ABI {
         public var lastCheckedVersion: String?
         public var lastUsedProfileId: Profile.ID?
         public var logsPrivateData = false
+        public var newProfileEncoding = false
         public var relaxedVerification = false
         public var skipsPurchases = false
 
@@ -58,17 +60,18 @@ extension ABI {
         // TODO: #1513, Error-prone, refactor to keep automatically in sync with AppPreference
         public init(from decoder: any Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
+            configFlagsData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.configFlagsData)
             deviceId = try container.decodeIfPresent(String.self, forKey: CodingKeys.deviceId)
             dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.dnsFallsBack) ?? true
+            experimentalData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.experimentalData)
             extensiveLogging = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.extensiveLogging) ?? false
             lastCheckedVersionDate = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.lastCheckedVersionDate)
             lastCheckedVersion = try container.decodeIfPresent(String.self, forKey: CodingKeys.lastCheckedVersion)
             lastUsedProfileId = try container.decodeIfPresent(Profile.ID.self, forKey: CodingKeys.lastUsedProfileId)
             logsPrivateData = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.logsPrivateData) ?? false
+            newProfileEncoding = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newProfileEncoding) ?? false
             relaxedVerification = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.relaxedVerification) ?? false
             skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.skipsPurchases) ?? false
-            configFlagsData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.configFlagsData)
-            experimentalData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.experimentalData)
         }
     }
 }
@@ -131,8 +134,10 @@ extension KeyValueStore {
     public var preferences: ABI.AppPreferenceValues {
         get {
             var values = ABI.AppPreferenceValues()
+            values.configFlagsData = object(forAppPreference: .configFlags)
             values.deviceId = string(forAppPreference: .deviceId)
             values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack, fallback: true)
+            values.experimentalData = object(forAppPreference: .experimental)
             values.extensiveLogging = bool(forAppPreference: .extensiveLogging, fallback: false)
             values.lastCheckedVersionDate = double(forAppPreference: .lastCheckedVersionDate)
             values.lastCheckedVersion = object(forAppPreference: .lastCheckedVersion)
@@ -140,24 +145,24 @@ extension KeyValueStore {
                 Profile.ID(uuidString: $0)
             }
             values.logsPrivateData = bool(forAppPreference: .logsPrivateData)
+            values.newProfileEncoding = bool(forAppPreference: .newProfileEncoding)
             values.relaxedVerification = bool(forAppPreference: .relaxedVerification)
             values.skipsPurchases = bool(forAppPreference: .skipsPurchases)
-            values.configFlagsData = object(forAppPreference: .configFlags)
-            values.experimentalData = object(forAppPreference: .experimental)
             return values
         }
         set {
+            set(newValue.configFlagsData, forAppPreference: .configFlags)
             set(newValue.deviceId, forAppPreference: .deviceId)
             set(newValue.dnsFallsBack, forAppPreference: .dnsFallsBack)
+            set(newValue.experimentalData, forAppPreference: .experimental)
             set(newValue.extensiveLogging, forAppPreference: .extensiveLogging)
             set(newValue.lastCheckedVersionDate, forAppPreference: .lastCheckedVersionDate)
             set(newValue.lastCheckedVersion, forAppPreference: .lastCheckedVersion)
             set(newValue.lastUsedProfileId?.uuidString, forAppPreference: .lastUsedProfileId)
             set(newValue.logsPrivateData, forAppPreference: .logsPrivateData)
+            set(newValue.newProfileEncoding, forAppPreference: .newProfileEncoding)
             set(newValue.relaxedVerification, forAppPreference: .relaxedVerification)
             set(newValue.skipsPurchases, forAppPreference: .skipsPurchases)
-            set(newValue.configFlagsData, forAppPreference: .configFlags)
-            set(newValue.experimentalData, forAppPreference: .experimental)
         }
     }
 }
