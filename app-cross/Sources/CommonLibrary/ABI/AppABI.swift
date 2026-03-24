@@ -80,7 +80,10 @@ public final class AppABI: Sendable {
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
         iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
-        encoder = AppABIEncoder(appEncoder: appEncoder)
+        encoder = AppABIEncoder(
+            appEncoder: appEncoder,
+            kvStore: kvStore
+        )
         iap = AppABIIAP(
             iapManager: iapManager,
             kvStore: kvStore,
@@ -167,17 +170,23 @@ extension AppABI {
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
+    let kvStore: KeyValueStore
+
+    var withLegacyEncoding: Bool {
+        kvStore.bool(forAppPreference: .withLegacyEncoding) ||
+        kvStore.preferences.experimental.ignoredConfigFlags.contains(.newProfileEncoding)
+    }
 
     func defaultFilename(for profileName: String) -> String {
         appEncoder.defaultFilename(for: profileName)
     }
 
     func json(fromProfile profile: Profile) throws -> String {
-        try appEncoder.json(fromProfile: profile)
+        try appEncoder.json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
     }
 
     func writeToFile(_ profile: Profile) throws -> String {
-        try appEncoder.writeToFile(profile)
+        try appEncoder.writeToFile(profile, withLegacyEncoding: withLegacyEncoding)
     }
 }
 
@@ -377,6 +386,9 @@ extension AppABI {
 
             // Propagate active config flags to tunnel via preferences
             kvStore.preferences.configFlags = configManager.activeFlags
+
+            // Imply some hidden preferences from config flags
+            kvStore.preferences.withLegacyEncoding = !configManager.isActive(.newProfileEncoding)
 
             // Disable .relaxedVerification if ABI.ConfigFlag disallows it
             if !configManager.isActive(.allowsRelaxedVerification) {

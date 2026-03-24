@@ -406,12 +406,14 @@ components:
       - appNotWorking
       - neSocketUDP
       - neSocketTCP
+      - newProfileEncoding
       - unknown
       enum:
       - allowsRelaxedVerification
       - appNotWorking
       - neSocketUDP
       - neSocketTCP
+      - newProfileEncoding
       - unknown
     Credits:
       type: object

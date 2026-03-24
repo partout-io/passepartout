@@ -1,4 +1,7 @@
 {
+    "newProfileEncoding": {
+        "rate": 100
+    },
     "neSocketUDP": {
         "rate": 100
     },

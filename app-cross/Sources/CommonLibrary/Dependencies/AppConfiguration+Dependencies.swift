@@ -395,13 +395,15 @@ extension ABI.AppConfiguration {
                 ctx,
                 tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
                 registry: registry,
-                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId))
+                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId)),
+                withLegacyEncoding: false
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
-                registry: registry
+                registry: registry,
+                withLegacyEncoding: false
             )
         }
     }

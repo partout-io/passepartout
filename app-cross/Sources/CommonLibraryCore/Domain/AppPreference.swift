@@ -24,6 +24,7 @@ extension ABI {
         case logsPrivateData
         case relaxedVerification // Though appears in "Experimental"
         case skipsPurchases
+        case withLegacyEncoding
 
         // Experimental
         case experimental
@@ -44,6 +45,7 @@ extension ABI {
         public var logsPrivateData = false
         public var relaxedVerification = false
         public var skipsPurchases = false
+        public var withLegacyEncoding = false
 
         // XXX: These are copied from ConfigManager.activeFlags for use
         // in the PacketTunnelProvider (see AppABI.onApplicationActive).
@@ -69,6 +71,7 @@ extension ABI {
             skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.skipsPurchases) ?? false
             configFlagsData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.configFlagsData)
             experimentalData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.experimentalData)
+            withLegacyEncoding = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.withLegacyEncoding) ?? false
         }
     }
 }
@@ -131,8 +134,10 @@ extension KeyValueStore {
     public var preferences: ABI.AppPreferenceValues {
         get {
             var values = ABI.AppPreferenceValues()
+            values.configFlagsData = object(forAppPreference: .configFlags)
             values.deviceId = string(forAppPreference: .deviceId)
             values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack, fallback: true)
+            values.experimentalData = object(forAppPreference: .experimental)
             values.extensiveLogging = bool(forAppPreference: .extensiveLogging, fallback: false)
             values.lastCheckedVersionDate = double(forAppPreference: .lastCheckedVersionDate)
             values.lastCheckedVersion = object(forAppPreference: .lastCheckedVersion)
@@ -142,13 +147,14 @@ extension KeyValueStore {
             values.logsPrivateData = bool(forAppPreference: .logsPrivateData)
             values.relaxedVerification = bool(forAppPreference: .relaxedVerification)
             values.skipsPurchases = bool(forAppPreference: .skipsPurchases)
-            values.configFlagsData = object(forAppPreference: .configFlags)
-            values.experimentalData = object(forAppPreference: .experimental)
+            values.withLegacyEncoding = bool(forAppPreference: .withLegacyEncoding)
             return values
         }
         set {
+            set(newValue.configFlagsData, forAppPreference: .configFlags)
             set(newValue.deviceId, forAppPreference: .deviceId)
             set(newValue.dnsFallsBack, forAppPreference: .dnsFallsBack)
+            set(newValue.experimentalData, forAppPreference: .experimental)
             set(newValue.extensiveLogging, forAppPreference: .extensiveLogging)
             set(newValue.lastCheckedVersionDate, forAppPreference: .lastCheckedVersionDate)
             set(newValue.lastCheckedVersion, forAppPreference: .lastCheckedVersion)
@@ -156,8 +162,7 @@ extension KeyValueStore {
             set(newValue.logsPrivateData, forAppPreference: .logsPrivateData)
             set(newValue.relaxedVerification, forAppPreference: .relaxedVerification)
             set(newValue.skipsPurchases, forAppPreference: .skipsPurchases)
-            set(newValue.configFlagsData, forAppPreference: .configFlags)
-            set(newValue.experimentalData, forAppPreference: .experimental)
+            set(newValue.withLegacyEncoding, forAppPreference: .withLegacyEncoding)
         }
     }
 }
