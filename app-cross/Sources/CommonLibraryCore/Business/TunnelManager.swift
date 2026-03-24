@@ -22,7 +22,11 @@ public final class TunnelManager {
 
     private nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
-    private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]?
+    private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]? {
+        didSet {
+            didChange.send(.refresh(.init(active: latestInfo ?? [:])))
+        }
+    }
 
     private var subscriptions: [Task<Void, Never>]
 
@@ -183,9 +187,6 @@ extension TunnelManager {
                 // Publish compound info
                 if newInfo != latestInfo {
                     latestInfo = newInfo
-                    didChange.send(.refresh(.init(
-                        active: newInfo
-                    )))
                 }
             }
         }
@@ -201,9 +202,6 @@ extension TunnelManager {
                 let newInfo = latestInfo?.updated(with: latestEnvironments) ?? [:]
                 if newInfo != latestInfo {
                     latestInfo = newInfo
-                    didChange.send(.refresh(.init(
-                        active: newInfo
-                    )))
                 }
                 try? await Task.sleep(interval: interval)
             }
