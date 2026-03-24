@@ -140,6 +140,14 @@ extension TunnelManager {
         latestInfo[profileId]?.rawStatus ?? .inactive
     }
 
+    public func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
+        latestInfo[profileId]?.transfer
+    }
+
+    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
+        latestInfo[profileId]?.lastErrorCode
+    }
+
     public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
         await tunnel.environment(for: profileId)?.environmentValue(forKey: key)
     }

@@ -34,7 +34,7 @@ extension TunnelManagerTests {
         var didCall = false
         Task {
             for await _ in stream {
-                if !didCall, sut.lastError(ofProfileId: profile.id) != nil {
+                if !didCall, sut.lastErrorCode(ofProfileId: profile.id) != nil {
                     didCall = true
                     await exp.fulfill()
                 }
@@ -43,9 +43,9 @@ extension TunnelManagerTests {
 
         try await tunnel.disconnect(from: profile.id)
         try await exp.fulfillment(timeout: 500)
-        let error = sut.lastError(ofProfileId: profile.id)
+        let error = sut.lastErrorCode(ofProfileId: profile.id)
         switch error {
-        case .partout(PartoutError(.crypto)):
+        case .crypto:
             break
         default:
             #expect(Bool(false), "Unexpected error: \(error)")

@@ -4,30 +4,27 @@
 
 import Partout
 
-extension ABI.AppTunnelStatus {
-    init(status: TunnelStatus, environment: TunnelEnvironmentReader?) {
-        // If the tunnel is active and it relies on a connection, map
-        // app status from the connection status
-        if status == .active,
+extension TunnelStatus {
+    func withEnvironment(_ environment: TunnelEnvironmentReader?) -> TunnelStatus {
+        // If the tunnel is active and it relies on a
+        // connection, map to the connection status
+        if self == .active,
            let connectionStatus = environment?.environmentValue(forKey: TunnelEnvironmentKeys.connectionStatus) {
             switch connectionStatus {
             case .connecting:
-                self = .connecting
+                return .activating
             case .connected:
-                self = .connected
+                return .active
             case .disconnecting:
-                self = .disconnecting
+                return .deactivating
             case .disconnected:
-                self = .disconnected
+                return .inactive
             }
-            return
         }
         // Otherwise, map directly to the tunnel status
-        self = status.abiStatus
+        return self
     }
-}
 
-extension TunnelStatus {
     var abiStatus: ABI.AppTunnelStatus {
         switch self {
         case .inactive: .disconnected
