@@ -80,10 +80,7 @@ public final class AppABI: Sendable {
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
         iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
 
-        encoder = AppABIEncoder(
-            appEncoder: appEncoder,
-            kvStore: kvStore
-        )
+        encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
             kvStore: kvStore,
@@ -170,23 +167,17 @@ extension AppABI {
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
-    let kvStore: KeyValueStore
-
-    var withLegacyEncoding: Bool {
-        kvStore.bool(forAppPreference: .withLegacyEncoding) ||
-        kvStore.preferences.experimental.ignoredConfigFlags.contains(.newProfileEncoding)
-    }
 
     func defaultFilename(for profileName: String) -> String {
         appEncoder.defaultFilename(for: profileName)
     }
 
     func json(fromProfile profile: Profile) throws -> String {
-        try appEncoder.json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
+        try appEncoder.json(fromProfile: profile)
     }
 
     func writeToFile(_ profile: Profile) throws -> String {
-        try appEncoder.writeToFile(profile, withLegacyEncoding: withLegacyEncoding)
+        try appEncoder.writeToFile(profile)
     }
 }
 

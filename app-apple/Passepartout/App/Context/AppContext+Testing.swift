@@ -17,7 +17,8 @@ extension AppContext {
             cachesURL: FileManager.default.temporaryDirectory,
             configBlock: { [] }
         )
-        let appEncoder = AppEncoder(registry: registry)
+        let kvStore = InMemoryStore()
+        let appEncoder = AppEncoder(registry: registry, kvStore: kvStore)
 
         let logFormatter = DummyLogFormatter()
         pspLogRegister(
@@ -27,7 +28,6 @@ extension AppContext {
             mapper: \.message
         )
 
-        let kvStore = InMemoryStore()
         let apiManager = APIManager(
             from: API.bundled,
             repository: InMemoryAPIRepository()

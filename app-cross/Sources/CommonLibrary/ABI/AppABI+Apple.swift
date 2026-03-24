@@ -118,7 +118,7 @@ extension AppABI {
 
         // MARK: Profiles and Tunnel (NE)
 
-        let appEncoder = AppEncoder(registry: registry)
+        let appEncoder = AppEncoder(registry: registry, kvStore: kvStore)
         let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,

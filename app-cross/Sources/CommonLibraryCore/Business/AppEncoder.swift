@@ -6,9 +6,16 @@ import Partout
 
 public final class AppEncoder: Sendable {
     private let registry: Registry
+    private let kvStore: KeyValueStore
 
-    public init(registry: Registry) {
+    private var withLegacyEncoding: Bool {
+        kvStore.bool(forAppPreference: .withLegacyEncoding) ||
+        kvStore.preferences.experimental.ignoredConfigFlags.contains(.newProfileEncoding)
+    }
+
+    public init(registry: Registry, kvStore: KeyValueStore) {
         self.registry = registry
+        self.kvStore = kvStore
     }
 
     public func defaultFilename(for profileName: String) -> String {
@@ -23,12 +30,12 @@ public final class AppEncoder: Sendable {
 #endif
     }
 
-    public func json(fromProfile profile: Profile, withLegacyEncoding: Bool) throws -> String {
+    public func json(fromProfile profile: Profile) throws -> String {
         try registry.json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
     }
 
-    public func writeToFile(_ profile: Profile, withLegacyEncoding: Bool) throws -> String {
-        let json = try json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
+    public func writeToFile(_ profile: Profile) throws -> String {
+        let json = try json(fromProfile: profile)
         let data = Data(json.utf8)
         let filename = "\(profile.id.uuidString).json"
         let path = FileManager.default.makeTemporaryURL(filename: filename).filePath()
