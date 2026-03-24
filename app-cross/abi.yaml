@@ -330,6 +330,10 @@ components:
           "$ref": "#/components/schemas/AppProfileStatus"
         onDemand:
           type: boolean
+        transfer:
+          "$ref": "#/components/schemas/ProfileTransfer"
+        lastErrorCode:
+          type: string
       required:
       - id
       - status
@@ -685,6 +689,19 @@ components:
       enum:
       - shared
       - tv
+    ProfileTransfer:
+      type: object
+      additionalProperties: false
+      properties:
+        received:
+          type: integer
+          default: 0
+        sent:
+          type: integer
+          default: 0
+      required:
+      - received
+      - sent
     ProviderInfo:
       type: object
       additionalProperties: false

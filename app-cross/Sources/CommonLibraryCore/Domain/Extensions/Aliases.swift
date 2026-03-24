@@ -13,6 +13,7 @@ extension ABI {
     public typealias Credits = OpenAPICredits
     public typealias DistributionTarget = OpenAPIDistributionTarget
     public typealias ProfileSharingFlag = OpenAPIProfileSharingFlag
+    public typealias ProfileTransfer = OpenAPIProfileTransfer
     public typealias SemanticVersion = OpenAPISemanticVersion
     public typealias WebsiteWithPasscode = OpenAPIWebsiteWithPasscode
     public typealias WebFileUpload = OpenAPIWebFileUpload
