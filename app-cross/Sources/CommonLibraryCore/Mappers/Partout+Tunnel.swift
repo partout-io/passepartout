@@ -4,6 +4,29 @@
 
 import Partout
 
+extension ABI.AppTunnelStatus {
+    init(status: TunnelStatus, environment: TunnelEnvironmentReader?) {
+        // If the tunnel is active and it relies on a connection, map
+        // app status from the connection status
+        if status == .active,
+           let connectionStatus = environment?.environmentValue(forKey: TunnelEnvironmentKeys.connectionStatus) {
+            switch connectionStatus {
+            case .connecting:
+                self = .connecting
+            case .connected:
+                self = .connected
+            case .disconnecting:
+                self = .disconnecting
+            case .disconnected:
+                self = .disconnected
+            }
+            return
+        }
+        // Otherwise, map directly to the tunnel status
+        self = status.abiStatus
+    }
+}
+
 extension TunnelStatus {
     var abiStatus: ABI.AppTunnelStatus {
         switch self {
@@ -16,8 +39,13 @@ extension TunnelStatus {
 }
 
 extension TunnelActiveProfile {
-    var abiInfo: ABI.AppTunnelInfo {
-        ABI.AppTunnelInfo(id: id, status: status.abiStatus, onDemand: onDemand)
+    func abiInfo(withEnvironment environment: TunnelEnvironmentReader?) -> ABI.AppTunnelInfo {
+        ABI.AppTunnelInfo(
+            id: id,
+            rawStatus: status,
+            onDemand: onDemand,
+            environment: environment
+        )
     }
 }
 

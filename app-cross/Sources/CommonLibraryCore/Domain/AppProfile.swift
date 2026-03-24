@@ -57,11 +57,38 @@ extension ABI {
         public let id: Profile.ID
         public let status: AppTunnelStatus
         public let onDemand: Bool
+        public private(set) var transfer: ABI.ProfileTransfer
+        public private(set) var lastErrorCode: PartoutError.Code?
 
-        public init(id: Profile.ID, status: AppTunnelStatus, onDemand: Bool) {
+        public init(
+            id: Profile.ID,
+            rawStatus: TunnelStatus,
+            onDemand: Bool,
+            environment: TunnelEnvironmentReader?
+        ) {
             self.id = id
-            self.status = status
+            status = .init(status: rawStatus, environment: environment)
             self.onDemand = onDemand
+            transfer = ABI.ProfileTransfer()
+            lastErrorCode = nil
+
+            transfer = environment?.environmentValue(
+                forKey: TunnelEnvironmentKeys.dataCount
+            )?.abiTransfer ?? ABI.ProfileTransfer()
+            lastErrorCode = environment?.environmentValue(
+                forKey: TunnelEnvironmentKeys.lastErrorCode
+            )
+        }
+
+        public func with(environment: TunnelEnvironmentReader) -> Self {
+            var copy = self
+            copy.transfer = environment.environmentValue(
+                forKey: TunnelEnvironmentKeys.dataCount
+            )?.abiTransfer ?? ABI.ProfileTransfer()
+            copy.lastErrorCode = environment.environmentValue(
+                forKey: TunnelEnvironmentKeys.lastErrorCode
+            )
+            return copy
         }
     }
 }

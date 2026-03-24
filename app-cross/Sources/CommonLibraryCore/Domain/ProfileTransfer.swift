@@ -7,7 +7,7 @@ extension ABI {
         public let received: Int
         public let sent: Int
 
-        public init(received: Int, sent: Int) {
+        public init(received: Int = 0, sent: Int = 0) {
             self.received = received
             self.sent = sent
         }
