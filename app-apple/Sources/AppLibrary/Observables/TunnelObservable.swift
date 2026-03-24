@@ -66,8 +66,9 @@ extension TunnelObservable {
     }
 
     public func lastError(for profileId: Profile.ID) -> ABI.AppError? {
-        guard let code = activeProfiles[profileId]?.lastErrorCode else { return nil }
-        return ABI.AppError.partout(PartoutError(code))
+        activeProfiles[profileId]?.lastErrorCode.map {
+            ABI.AppError.partout(PartoutError($0))
+        }
     }
 
     public func openVPNServerConfiguration(for profileId: Profile.ID) async -> OpenVPN.Configuration? {
