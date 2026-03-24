@@ -123,8 +123,8 @@ private extension PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: url,
+            preferences: preferences,
             parameters: parameters,
-            logsPrivateData: preferences.logsPrivateData,
             mapper: mapper
         )
         return builder.build()
@@ -139,8 +139,8 @@ private extension PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: url,
+            preferences: preferences,
             parameters: parameters,
-            logsPrivateData: preferences.logsPrivateData,
             mapper: mapper
         )
         builder.willPrint = {
@@ -173,8 +173,8 @@ private extension PartoutLogger {
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
         to url: URL,
+        preferences: ABI.AppPreferenceValues,
         parameters: ABI.AppConstants.Log,
-        logsPrivateData: Bool,
         mapper: @escaping @Sendable (DebugLog.Line) -> String
     ) {
         assertsMissingLoggingCategory = true
@@ -191,13 +191,16 @@ private extension PartoutLogger.Builder {
         list.append(.providers)
         setDefaultDestination(for: list)
 
+        var newOptions = parameters.options
+        if preferences.extensiveLogging {
+            newOptions.maxLevel = .debug
+        }
         setLocalLogger(
             url: url,
-            options: parameters.options.fromProto,
+            options: newOptions.fromProto,
             mapper: mapper
         )
-
-        if logsPrivateData {
+        if preferences.logsPrivateData {
             logsAddresses = true
             logsModules = true
         }

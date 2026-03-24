@@ -877,6 +877,8 @@ public enum Strings {
       public enum Rows {
         /// App
         public static let app = Strings.tr("Localizable", "views.diagnostics.rows.app", fallback: "App")
+        /// Extensive logging
+        public static let extensiveLogging = Strings.tr("Localizable", "views.diagnostics.rows.extensive_logging", fallback: "Extensive logging")
         /// Include private data
         public static let includePrivateData = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data", fallback: "Include private data")
         /// Delete all logs

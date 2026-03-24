@@ -17,6 +17,7 @@ extension ABI {
         // Manual
         case dnsFallsBack
 //        case dnsFallbackServers
+        case extensiveLogging
         case lastCheckedVersionDate
         case lastCheckedVersion
         case lastUsedProfileId
@@ -36,6 +37,7 @@ extension ABI {
     public struct AppPreferenceValues: Hashable, Codable, Sendable {
         public var deviceId: String?
         public var dnsFallsBack = true
+        public var extensiveLogging = false
         public var lastCheckedVersionDate: TimeInterval?
         public var lastCheckedVersion: String?
         public var lastUsedProfileId: Profile.ID?
@@ -53,10 +55,12 @@ extension ABI {
 
         public init() {}
 
+        // TODO: #1513, Error-prone, refactor to keep automatically in sync with AppPreference
         public init(from decoder: any Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             deviceId = try container.decodeIfPresent(String.self, forKey: CodingKeys.deviceId)
             dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.dnsFallsBack) ?? true
+            extensiveLogging = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.extensiveLogging) ?? false
             lastCheckedVersionDate = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.lastCheckedVersionDate)
             lastCheckedVersion = try container.decodeIfPresent(String.self, forKey: CodingKeys.lastCheckedVersion)
             lastUsedProfileId = try container.decodeIfPresent(Profile.ID.self, forKey: CodingKeys.lastUsedProfileId)
@@ -123,12 +127,13 @@ extension ABI.AppPreferenceValues {
 }
 
 extension KeyValueStore {
-    // TODO: #1513, refactor to keep automatically in sync with AppPreference
+    // TODO: #1513, Error-prone, refactor to keep automatically in sync with AppPreference
     public var preferences: ABI.AppPreferenceValues {
         get {
             var values = ABI.AppPreferenceValues()
             values.deviceId = string(forAppPreference: .deviceId)
             values.dnsFallsBack = bool(forAppPreference: .dnsFallsBack, fallback: true)
+            values.extensiveLogging = bool(forAppPreference: .extensiveLogging, fallback: false)
             values.lastCheckedVersionDate = double(forAppPreference: .lastCheckedVersionDate)
             values.lastCheckedVersion = object(forAppPreference: .lastCheckedVersion)
             values.lastUsedProfileId = string(forAppPreference: .lastUsedProfileId).flatMap {
@@ -144,6 +149,7 @@ extension KeyValueStore {
         set {
             set(newValue.deviceId, forAppPreference: .deviceId)
             set(newValue.dnsFallsBack, forAppPreference: .dnsFallsBack)
+            set(newValue.extensiveLogging, forAppPreference: .extensiveLogging)
             set(newValue.lastCheckedVersionDate, forAppPreference: .lastCheckedVersionDate)
             set(newValue.lastCheckedVersion, forAppPreference: .lastCheckedVersion)
             set(newValue.lastUsedProfileId?.uuidString, forAppPreference: .lastUsedProfileId)

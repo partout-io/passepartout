@@ -24,6 +24,7 @@ public final class UserPreferencesObservable {
         } else {
             experimental = ABI.AppPreferenceValues.Experimental()
         }
+        extensiveLogging = kvStore.bool(forAppPreference: .extensiveLogging)
         keepsInMenu = kvStore.bool(forUIPreference: .keepsInMenu)
         lastInfrastructureRefresh = kvStore.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]?
         locksInBackground = kvStore.bool(forUIPreference: .locksInBackground)
@@ -58,6 +59,12 @@ public final class UserPreferencesObservable {
             } catch {
                 pspLog(.core, .error, "Unable to encode experimental: \(error)")
             }
+        }
+    }
+
+    public var extensiveLogging: Bool {
+        didSet {
+            kvStore.set(extensiveLogging, forAppPreference: .extensiveLogging)
         }
     }
 

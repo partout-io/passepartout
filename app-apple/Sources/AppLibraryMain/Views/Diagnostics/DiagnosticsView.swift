@@ -79,6 +79,7 @@ private extension DiagnosticsView {
                 Strings.Views.Diagnostics.Rows.tunnel,
                 to: .tunnelLog(title: Strings.Views.Diagnostics.Rows.tunnel, url: nil)
             )
+            ExtensiveLoggingToggle()
             LogsPrivateDataToggle()
         }
         .themeSection(header: Strings.Views.Diagnostics.Sections.live)
