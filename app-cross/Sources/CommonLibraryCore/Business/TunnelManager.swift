@@ -136,7 +136,11 @@ extension TunnelManager {
         latestInfo?.keys.contains(profileId) ?? false
     }
 
-    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+    public func status(ofProfileId profileId: Profile.ID) -> ABI.AppTunnelStatus {
+        latestInfo?[profileId]?.status ?? .disconnected
+    }
+
+    public func rawStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
         latestInfo?[profileId]?.rawStatus ?? .inactive
     }
 
