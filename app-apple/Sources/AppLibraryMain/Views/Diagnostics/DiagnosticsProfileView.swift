@@ -10,6 +10,9 @@ public struct DiagnosticsProfileView: View {
 
     private let header: ABI.AppProfileHeader
 
+    @State
+    private var openVPNServerConfiguration: OpenVPN.Configuration?
+
     public init(tunnel: TunnelObservable, header: ABI.AppProfileHeader) {
         self.tunnel = tunnel
         self.header = header
@@ -22,6 +25,9 @@ public struct DiagnosticsProfileView: View {
         .themeForm()
         .themeEmpty(if: isEmpty, message: Strings.Global.Nouns.noContent)
         .navigationTitle(header.name)
+        .task {
+            openVPNServerConfiguration = await tunnel.openVPNServerConfiguration(for: header.id)
+        }
     }
 }
 
@@ -43,14 +49,8 @@ private extension DiagnosticsProfileView {
 private extension DiagnosticsProfileView {
     var isEmpty: Bool {
         [openVPNServerConfiguration]
-            .filter {
-                $0 != nil
-            }
+            .filter { $0 != nil }
             .isEmpty
-    }
-
-    var openVPNServerConfiguration: OpenVPN.Configuration? {
-        tunnel.openVPNServerConfiguration(for: header.id)
     }
 }
 
