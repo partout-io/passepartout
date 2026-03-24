@@ -9,7 +9,7 @@ public final class AppEncoder: Sendable {
     private let kvStore: KeyValueStore
 
     private var withLegacyEncoding: Bool {
-        kvStore.bool(forAppPreference: .withLegacyEncoding) ||
+        !kvStore.bool(forAppPreference: .newProfileEncoding) ||
         kvStore.preferences.experimental.ignoredConfigFlags.contains(.newProfileEncoding)
     }
 
