@@ -42,6 +42,10 @@ extension ABI.ProfileEvent {
     public typealias ChangeRemoteImporting = OpenAPIProfileEventChangeRemoteImporting
 }
 
+extension ABI.TunnelEvent {
+    public typealias DataCount = OpenAPITunnelEventDataCount
+}
+
 extension ABI.WebReceiverEvent {
     public typealias Start = OpenAPIWebReceiverEventStart
     public typealias Stop = OpenAPIWebReceiverEventStop

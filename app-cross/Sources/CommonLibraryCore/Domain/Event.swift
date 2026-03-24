@@ -49,6 +49,7 @@ extension ABI {
     }
 
     public enum TunnelEvent: Sendable {
+        case dataCount(DataCount = .init())
         case refresh(Refresh)
     }
 
