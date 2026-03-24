@@ -141,7 +141,7 @@ extension TunnelManager {
     }
 
     public func status(ofProfileId profileId: Profile.ID) -> ABI.AppProfileStatus {
-        latestInfo?[profileId]?.profileStatus ?? .disconnected
+        latestInfo?[profileId]?.status ?? .disconnected
     }
 
     public func tunnelStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {

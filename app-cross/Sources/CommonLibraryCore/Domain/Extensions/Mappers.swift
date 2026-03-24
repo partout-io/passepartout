@@ -36,7 +36,7 @@ extension ABI.AppTunnelInfo: OpenAPIEncodable {
     var toProto: OpenAPIAppTunnelInfo {
         OpenAPIAppTunnelInfo(
             id: id.uuidString,
-            status: profileStatus,
+            status: status,
             onDemand: onDemand,
             transfer: transfer,
             lastErrorCode: lastErrorCode?.rawValue

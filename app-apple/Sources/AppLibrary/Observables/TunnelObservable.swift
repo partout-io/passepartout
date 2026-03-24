@@ -57,7 +57,7 @@ extension TunnelObservable {
         activeProfiles.keys.contains(profileId)
     }
 
-    public func status(for profileId: Profile.ID) -> ABI.AppTunnelStatus {
+    public func status(for profileId: Profile.ID) -> ABI.AppProfileStatus {
         activeProfiles[profileId]?.status ?? .disconnected
     }
 

@@ -15,12 +15,12 @@ public struct AppMenuImage: View {
     }
 
     public var body: some View {
-        ThemeMenuImage(connectionStatus.imageName)
+        ThemeMenuImage(status.imageName)
     }
 }
 
 private extension AppMenuImage {
-    var connectionStatus: ABI.AppTunnelStatus {
+    var status: ABI.AppProfileStatus {
         // TODO: #218, must be per-tunnel
         guard let id = tunnel.activeProfiles.first?.value.id else {
             return .disconnected
@@ -29,7 +29,7 @@ private extension AppMenuImage {
     }
 }
 
-private extension ABI.AppTunnelStatus {
+private extension ABI.AppProfileStatus {
     var imageName: Theme.MenuImageName {
         switch self {
         case .connected:
