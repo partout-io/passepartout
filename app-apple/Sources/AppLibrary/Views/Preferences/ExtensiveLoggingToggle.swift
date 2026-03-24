@@ -14,5 +14,6 @@ public struct ExtensiveLoggingToggle: View {
 
     public var body: some View {
         Toggle(Strings.Views.Diagnostics.Rows.extensiveLogging, isOn: userPreferences.binding(\.extensiveLogging))
+            .themeContainerEntry(subtitle: Strings.Views.Diagnostics.Rows.ExtensiveLogging.subtitle)
     }
 }

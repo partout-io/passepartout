@@ -885,6 +885,14 @@ public enum Strings {
         public static let removeTunnelLogs = Strings.tr("Localizable", "views.diagnostics.rows.remove_tunnel_logs", fallback: "Delete all logs")
         /// Tunnel
         public static let tunnel = Strings.tr("Localizable", "views.diagnostics.rows.tunnel", fallback: "Tunnel")
+        public enum ExtensiveLogging {
+          /// Very, very verbose. Keep this off except for troubleshooting.
+          public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.extensive_logging.subtitle", fallback: "Very, very verbose. Keep this off except for troubleshooting.")
+        }
+        public enum IncludePrivateData {
+          /// Only use for local inspection.
+          public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data.subtitle", fallback: "Only use for local inspection.")
+        }
       }
       public enum Sections {
         /// Active profiles
