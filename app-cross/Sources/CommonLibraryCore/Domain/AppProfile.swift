@@ -68,7 +68,7 @@ extension ABI {
             environment: TunnelEnvironmentReader?
         ) {
             self.id = id
-            status = rawStatus.withEnvironment(environment).abiStatus
+            status = rawStatus.considering(environment).abiStatus
             self.rawStatus = rawStatus
             self.onDemand = onDemand
             transfer = nil

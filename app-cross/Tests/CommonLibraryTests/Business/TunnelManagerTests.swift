@@ -141,7 +141,7 @@ extension TunnelManagerTests {
 
         // no connection status, tunnel status unaffected
         allTunnelStatuses.forEach {
-            #expect($0.withEnvironment(env) == $0)
+            #expect($0.considering(env) == $0)
         }
 
         // has connection status
@@ -149,11 +149,11 @@ extension TunnelManagerTests {
         // affected if .active
         let tunnelActive: TunnelStatus = .active
         env.setEnvironmentValue(.connected, forKey: key)
-        #expect(tunnelActive.withEnvironment(env) == .active)
+        #expect(tunnelActive.considering(env) == .active)
         allConnectionStatuses
             .forEach {
                 env.setEnvironmentValue($0, forKey: key)
-                let statusWithEnv = tunnelActive.withEnvironment(env)
+                let statusWithEnv = tunnelActive.considering(env)
                 switch $0 {
                 case .connecting:
                     #expect(statusWithEnv == .activating)
@@ -172,7 +172,7 @@ extension TunnelManagerTests {
                 $0 != .active
             }
             .forEach {
-                #expect($0.withEnvironment(env) == $0)
+                #expect($0.considering(env) == $0)
             }
     }
 }

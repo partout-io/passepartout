@@ -5,7 +5,7 @@
 import Partout
 
 extension TunnelStatus {
-    func withEnvironment(_ environment: TunnelEnvironmentReader?) -> TunnelStatus {
+    func considering(_ environment: TunnelEnvironmentReader?) -> TunnelStatus {
         // If the tunnel is active and it relies on a
         // connection, map to the connection status
         if self == .active,
