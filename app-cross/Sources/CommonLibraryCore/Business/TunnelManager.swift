@@ -200,8 +200,6 @@ extension TunnelManager {
                     didChange.send(.refresh(.init(
                         active: newInfo
                     )))
-                } else {
-                    didChange.send(.dataCount())
                 }
                 try? await Task.sleep(interval: interval)
             }
