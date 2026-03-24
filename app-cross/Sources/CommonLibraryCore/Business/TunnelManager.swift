@@ -113,9 +113,13 @@ extension TunnelManager {
     }
 
     public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.LogLine] {
+        var maxLevel = parameters.options.maxDebugLogLevel
+        if kvStore?.preferences.extensiveLogging == true {
+            maxLevel = .debug
+        }
         let output = try? await tunnel.sendMessage(.debugLog(
             sinceLast: parameters.sinceLast,
-            maxLevel: parameters.options.maxDebugLogLevel
+            maxLevel: maxLevel
         ))
         switch output {
         case .debugLog(let log):
