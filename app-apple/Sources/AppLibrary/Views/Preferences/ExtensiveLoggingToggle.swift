@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-public struct LogsPrivateDataToggle: View {
+public struct ExtensiveLoggingToggle: View {
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
@@ -13,7 +13,7 @@ public struct LogsPrivateDataToggle: View {
     }
 
     public var body: some View {
-        Toggle(Strings.Views.Diagnostics.Rows.includePrivateData, isOn: userPreferences.binding(\.logsPrivateData))
-            .themeContainerEntry(subtitle: Strings.Views.Diagnostics.Rows.IncludePrivateData.subtitle)
+        Toggle(Strings.Views.Diagnostics.Rows.extensiveLogging, isOn: userPreferences.binding(\.extensiveLogging))
+            .themeContainerEntry(subtitle: Strings.Views.Diagnostics.Rows.ExtensiveLogging.subtitle)
     }
 }

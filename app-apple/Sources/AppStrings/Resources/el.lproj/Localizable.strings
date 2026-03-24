@@ -296,6 +296,9 @@
 "views.diagnostics.openvpn.rows.server_configuration" = "Διαμόρφωση διακομιστή";
 "views.diagnostics.report_issue.title" = "Αναφορά προβλήματος";
 "views.diagnostics.rows.app" = "Εφαρμογή";
+"views.diagnostics.rows.extensive_logging.subtitle" = "Πολύ, πολύ αναλυτικό. Διατηρήστε το απενεργοποιημένο εκτός για αντιμετώπιση προβλημάτων.";
+"views.diagnostics.rows.extensive_logging" = "Εκτενής καταγραφή";
+"views.diagnostics.rows.include_private_data.subtitle" = "Χρησιμοποιήστε το μόνο για τοπικό έλεγχο.";
 "views.diagnostics.rows.include_private_data" = "Συμπερίληψη ιδιωτικών δεδομένων";
 "views.diagnostics.rows.remove_tunnel_logs" = "Διαγραφή όλων των ημερολογίων";
 "views.diagnostics.rows.tunnel" = "Τούνελ";

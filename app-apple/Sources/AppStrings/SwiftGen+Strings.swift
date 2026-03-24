@@ -877,12 +877,22 @@ public enum Strings {
       public enum Rows {
         /// App
         public static let app = Strings.tr("Localizable", "views.diagnostics.rows.app", fallback: "App")
+        /// Extensive logging
+        public static let extensiveLogging = Strings.tr("Localizable", "views.diagnostics.rows.extensive_logging", fallback: "Extensive logging")
         /// Include private data
         public static let includePrivateData = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data", fallback: "Include private data")
         /// Delete all logs
         public static let removeTunnelLogs = Strings.tr("Localizable", "views.diagnostics.rows.remove_tunnel_logs", fallback: "Delete all logs")
         /// Tunnel
         public static let tunnel = Strings.tr("Localizable", "views.diagnostics.rows.tunnel", fallback: "Tunnel")
+        public enum ExtensiveLogging {
+          /// Very, very verbose. Keep this off except for troubleshooting.
+          public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.extensive_logging.subtitle", fallback: "Very, very verbose. Keep this off except for troubleshooting.")
+        }
+        public enum IncludePrivateData {
+          /// Only use for local inspection.
+          public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data.subtitle", fallback: "Only use for local inspection.")
+        }
       }
       public enum Sections {
         /// Active profiles

@@ -46,6 +46,7 @@ struct DiagnosticsView: View {
                 BetaSection()
             }
             liveLogSection
+            togglesSection
             profilesSection
             if appConfiguration.bundle.distributionTarget.supportsAppGroups {
                 tunnelLogsSection
@@ -79,9 +80,16 @@ private extension DiagnosticsView {
                 Strings.Views.Diagnostics.Rows.tunnel,
                 to: .tunnelLog(title: Strings.Views.Diagnostics.Rows.tunnel, url: nil)
             )
-            LogsPrivateDataToggle()
         }
         .themeSection(header: Strings.Views.Diagnostics.Sections.live)
+    }
+
+    var togglesSection: some View {
+        Group {
+            ExtensiveLoggingToggle()
+            LogsPrivateDataToggle()
+        }
+        .themeContainer()
     }
 
     var profilesSection: some View {

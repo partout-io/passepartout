@@ -296,6 +296,9 @@
 "views.diagnostics.openvpn.rows.server_configuration" = "Конфігурація сервера";
 "views.diagnostics.report_issue.title" = "Повідомити про проблему";
 "views.diagnostics.rows.app" = "Додаток";
+"views.diagnostics.rows.extensive_logging.subtitle" = "Дуже, дуже докладно. Увімкніть лише для усунення несправностей.";
+"views.diagnostics.rows.extensive_logging" = "Розширене журналювання";
+"views.diagnostics.rows.include_private_data.subtitle" = "Використовуйте лише для локальної перевірки.";
 "views.diagnostics.rows.include_private_data" = "Включити приватні дані";
 "views.diagnostics.rows.remove_tunnel_logs" = "Видалити всі журнали";
 "views.diagnostics.rows.tunnel" = "Тунель";
