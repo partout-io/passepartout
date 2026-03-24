@@ -55,21 +55,21 @@ extension ABI {
 
     public struct AppTunnelInfo: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
-        public let status: AppTunnelStatus
-        public let rawStatus: TunnelStatus
+        public let tunnelStatus: TunnelStatus
+        public let profileStatus: AppProfileStatus
         public let onDemand: Bool
         public private(set) var transfer: ABI.ProfileTransfer?
         public private(set) var lastErrorCode: PartoutError.Code?
 
         public init(
             id: Profile.ID,
-            rawStatus: TunnelStatus,
+            tunnelStatus: TunnelStatus,
             onDemand: Bool,
             environment: TunnelEnvironmentReader?
         ) {
             self.id = id
-            status = rawStatus.considering(environment).abiStatus
-            self.rawStatus = rawStatus
+            self.tunnelStatus = tunnelStatus
+            profileStatus = tunnelStatus.considering(environment).abiStatus
             self.onDemand = onDemand
             transfer = nil
             lastErrorCode = nil

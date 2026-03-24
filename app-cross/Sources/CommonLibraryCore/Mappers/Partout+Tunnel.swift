@@ -25,7 +25,7 @@ extension TunnelStatus {
         return self
     }
 
-    var abiStatus: ABI.AppTunnelStatus {
+    var abiStatus: ABI.AppProfileStatus {
         switch self {
         case .inactive: .disconnected
         case .activating: .connecting
@@ -39,7 +39,7 @@ extension TunnelActiveProfile {
     func abiInfo(withEnvironment environment: TunnelEnvironmentReader?) -> ABI.AppTunnelInfo {
         ABI.AppTunnelInfo(
             id: id,
-            rawStatus: status,
+            tunnelStatus: status,
             onDemand: onDemand,
             environment: environment
         )

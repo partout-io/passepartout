@@ -10,10 +10,10 @@ import Partout
 public struct OpenAPIAppTunnelInfo: Sendable, Codable, Hashable {
 
     public var id: String
-    public var status: OpenAPIAppTunnelStatus
+    public var status: OpenAPIAppProfileStatus
     public var onDemand: Bool
 
-    public init(id: String, status: OpenAPIAppTunnelStatus, onDemand: Bool) {
+    public init(id: String, status: OpenAPIAppProfileStatus, onDemand: Bool) {
         self.id = id
         self.status = status
         self.onDemand = onDemand

@@ -308,21 +308,7 @@ components:
       - fingerprint
       - sharingFlags
       - requiredFeatures
-    AppTunnelInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        status:
-          "$ref": "#/components/schemas/AppTunnelStatus"
-        onDemand:
-          type: boolean
-      required:
-      - id
-      - status
-      - onDemand
-    AppTunnelStatus:
+    AppProfileStatus:
       type: string
       x-enum-varnames:
       - disconnected
@@ -334,6 +320,20 @@ components:
       - connecting
       - connected
       - disconnecting
+    AppTunnelInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        status:
+          "$ref": "#/components/schemas/AppProfileStatus"
+        onDemand:
+          type: boolean
+      required:
+      - id
+      - status
+      - onDemand
     AppUserLevel:
       type: string
       x-enum-varnames:

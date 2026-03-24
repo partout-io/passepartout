@@ -512,7 +512,7 @@ private extension AppABI {
             pspLog(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
             return
         }
-        let status = tunnelManager.rawStatus(ofProfileId: profile.id)
+        let status = tunnelManager.tunnelStatus(ofProfileId: profile.id)
         guard [.active, .activating].contains(status) else {
             pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return
