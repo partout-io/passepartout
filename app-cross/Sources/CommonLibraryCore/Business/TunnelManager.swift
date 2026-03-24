@@ -22,7 +22,7 @@ public final class TunnelManager {
 
     private nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
-    private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]
+    private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]?
 
     private var subscriptions: [Task<Void, Never>]
 
@@ -40,7 +40,7 @@ public final class TunnelManager {
         self.processor = processor
         self.interval = interval
         didChange = PassthroughStream()
-        latestInfo = [:]
+        latestInfo = nil
         subscriptions = []
     }
 }
@@ -133,19 +133,19 @@ extension TunnelManager {
 
 extension TunnelManager {
     public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        latestInfo.keys.contains(profileId)
+        latestInfo?.keys.contains(profileId) ?? false
     }
 
     public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        latestInfo[profileId]?.rawStatus ?? .inactive
+        latestInfo?[profileId]?.rawStatus ?? .inactive
     }
 
     public func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
-        latestInfo[profileId]?.transfer
+        latestInfo?[profileId]?.transfer
     }
 
     public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
-        latestInfo[profileId]?.lastErrorCode
+        latestInfo?[profileId]?.lastErrorCode
     }
 
     public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
@@ -167,11 +167,11 @@ extension TunnelManager {
                 }
                 // Copy locally for sync access
                 let latestEnvironments = await tunnel.allEnvironments()
-                let newInfo = latestInfo.with(
+                let newInfo = latestInfo?.with(
                     activeProfiles: activeProfiles,
                     lastUsedProfile: lastUsedProfile,
                     environments: latestEnvironments
-                )
+                ) ?? [:]
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = activeProfiles.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
@@ -194,7 +194,7 @@ extension TunnelManager {
                     break
                 }
                 let latestEnvironments = await tunnel.allEnvironments()
-                let newInfo = latestInfo.updated(with: latestEnvironments)
+                let newInfo = latestInfo?.updated(with: latestEnvironments) ?? [:]
                 if newInfo != latestInfo {
                     latestInfo = newInfo
                     didChange.send(.refresh(.init(
