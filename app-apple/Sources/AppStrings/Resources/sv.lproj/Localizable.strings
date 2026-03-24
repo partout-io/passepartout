@@ -296,6 +296,9 @@
 "views.diagnostics.openvpn.rows.server_configuration" = "Serverkonfiguration";
 "views.diagnostics.report_issue.title" = "Rapportera problem";
 "views.diagnostics.rows.app" = "App";
+"views.diagnostics.rows.extensive_logging.subtitle" = "Mycket, mycket utförligt. Håll detta avstängt utom vid felsökning.";
+"views.diagnostics.rows.extensive_logging" = "Utförlig loggning";
+"views.diagnostics.rows.include_private_data.subtitle" = "Använd endast för lokal inspektion.";
 "views.diagnostics.rows.include_private_data" = "Inkludera privata data";
 "views.diagnostics.rows.remove_tunnel_logs" = "Ta bort alla loggar";
 "views.diagnostics.rows.tunnel" = "Tunnel";

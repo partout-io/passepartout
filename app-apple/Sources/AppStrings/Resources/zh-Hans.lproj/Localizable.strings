@@ -296,6 +296,9 @@
 "views.diagnostics.openvpn.rows.server_configuration" = "服务器配置";
 "views.diagnostics.report_issue.title" = "报告问题";
 "views.diagnostics.rows.app" = "应用";
+"views.diagnostics.rows.extensive_logging.subtitle" = "非常非常详细。仅在故障排查时开启。";
+"views.diagnostics.rows.extensive_logging" = "详细日志";
+"views.diagnostics.rows.include_private_data.subtitle" = "仅用于本地检查。";
 "views.diagnostics.rows.include_private_data" = "包含私人数据";
 "views.diagnostics.rows.remove_tunnel_logs" = "删除所有日志";
 "views.diagnostics.rows.tunnel" = "隧道";

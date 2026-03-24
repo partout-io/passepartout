@@ -296,6 +296,9 @@
 "views.diagnostics.openvpn.rows.server_configuration" = "Serverconfiguratie";
 "views.diagnostics.report_issue.title" = "Probleem melden";
 "views.diagnostics.rows.app" = "App";
+"views.diagnostics.rows.extensive_logging.subtitle" = "Zeer, zeer uitvoerig. Alleen inschakelen voor probleemoplossing.";
+"views.diagnostics.rows.extensive_logging" = "Uitgebreide logging";
+"views.diagnostics.rows.include_private_data.subtitle" = "Alleen gebruiken voor lokale inspectie.";
 "views.diagnostics.rows.include_private_data" = "Privégegevens opnemen";
 "views.diagnostics.rows.remove_tunnel_logs" = "Alle logboeken verwijderen";
 "views.diagnostics.rows.tunnel" = "Tunnel";
