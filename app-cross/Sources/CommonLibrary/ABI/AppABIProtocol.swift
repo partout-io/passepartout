@@ -58,9 +58,7 @@ public protocol AppABITunnelProtocol: Sendable {
     func disconnect(from profileId: Profile.ID) async throws
     func currentLog() async -> [ABI.LogLine]
     // Non-observable
-    func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError?
-    func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer?
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any?
+    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) async -> Any?
 }
 
 @BusinessActor

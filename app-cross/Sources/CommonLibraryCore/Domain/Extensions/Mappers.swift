@@ -37,7 +37,9 @@ extension ABI.AppTunnelInfo: OpenAPIEncodable {
         OpenAPIAppTunnelInfo(
             id: id.uuidString,
             status: status,
-            onDemand: onDemand
+            onDemand: onDemand,
+            transfer: transfer,
+            lastErrorCode: lastErrorCode?.rawValue
         )
     }
 }

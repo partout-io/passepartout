@@ -110,7 +110,7 @@ private extension AppMenu {
 private extension AppMenu {
     var isTunnelActionable: Bool {
         // TODO: #218, must be per-tunnel
-        [.connecting, .connected].contains(tunnelStatus)
+        [.connecting, .connected].contains(status)
     }
 
     func showApp(completion: (() -> Void)? = nil) {
@@ -191,7 +191,7 @@ private extension AppMenu {
 
 private extension AppMenu {
     // TODO: #218, must be per-tunnel
-    var tunnelStatus: ABI.AppTunnelStatus {
+    var status: ABI.AppProfileStatus {
         installedProfile?.status ?? .disconnected
     }
 

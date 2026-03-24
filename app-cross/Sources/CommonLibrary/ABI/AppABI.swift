@@ -316,18 +316,10 @@ private struct AppABITunnel: AppABITunnelProtocol {
         await tunnelManager.currentLog(parameters: logParameters)
     }
 
-    func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError? {
-        tunnelManager.lastError(ofProfileId: profileId)
-    }
-
-    func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
-        tunnelManager.transfer(ofProfileId: profileId)
-    }
-
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) -> Any? {
+    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) async -> Any? {
         switch key {
         case .openVPNServerConfiguration:
-            tunnelManager.value(
+            await tunnelManager.value(
                 forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
                 ofProfileId: profileId
             )
@@ -520,7 +512,7 @@ private extension AppABI {
             pspLog(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
             return
         }
-        let status = tunnelManager.status(ofProfileId: profile.id)
+        let status = tunnelManager.tunnelStatus(ofProfileId: profile.id)
         guard [.active, .activating].contains(status) else {
             pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return

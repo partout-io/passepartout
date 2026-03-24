@@ -11,14 +11,12 @@ public final class TunnelObservable {
     private let formatter: LogFormatter?
 
     public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
-    public private(set) var transfers: [Profile.ID: ABI.ProfileTransfer]
     private var subscription: Task<Void, Never>?
 
     public init(abi: AppABITunnelProtocol, formatter: LogFormatter?) {
         self.abi = abi
         self.formatter = formatter
         activeProfiles = [:]
-        transfers = [:]
     }
 }
 
@@ -59,16 +57,22 @@ extension TunnelObservable {
         activeProfiles.keys.contains(profileId)
     }
 
-    public func status(for profileId: Profile.ID) -> ABI.AppTunnelStatus {
+    public func status(for profileId: Profile.ID) -> ABI.AppProfileStatus {
         activeProfiles[profileId]?.status ?? .disconnected
     }
 
-    public func lastError(for profileId: Profile.ID) -> ABI.AppError? {
-        abi.lastError(ofProfileId: profileId)
+    public func transfer(for profileId: Profile.ID) -> ABI.ProfileTransfer? {
+        activeProfiles[profileId]?.transfer
     }
 
-    public func openVPNServerConfiguration(for profileId: Profile.ID) -> OpenVPN.Configuration? {
-        abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
+    public func lastError(for profileId: Profile.ID) -> ABI.AppError? {
+        activeProfiles[profileId]?.lastErrorCode.map {
+            ABI.AppError.partout(PartoutError($0))
+        }
+    }
+
+    public func openVPNServerConfiguration(for profileId: Profile.ID) async -> OpenVPN.Configuration? {
+        await abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
@@ -77,10 +81,6 @@ extension TunnelObservable {
         case .refresh(let payload):
             pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
             activeProfiles = payload.active
-        case .dataCount:
-            transfers = activeProfiles.compactMapValues {
-                abi.transfer(ofProfileId: $0.id)
-            }
         }
     }
 }

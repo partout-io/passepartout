@@ -22,9 +22,11 @@ public final class TunnelManager {
 
     private nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
-    private var latestActiveProfiles: [Profile.ID: TunnelActiveProfile]
-
-    private var latestEnvironments: [Profile.ID: TunnelEnvironmentReader]
+    private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]? {
+        didSet {
+            didChange.send(.refresh(.init(active: latestInfo ?? [:])))
+        }
+    }
 
     private var subscriptions: [Task<Void, Never>]
 
@@ -42,8 +44,7 @@ public final class TunnelManager {
         self.processor = processor
         self.interval = interval
         didChange = PassthroughStream()
-        latestActiveProfiles = [:]
-        latestEnvironments = [:]
+        latestInfo = nil
         subscriptions = []
     }
 }
@@ -136,24 +137,27 @@ extension TunnelManager {
 
 extension TunnelManager {
     public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        activeProfiles.keys.contains(profileId)
+        latestInfo?.keys.contains(profileId) ?? false
     }
 
-    public func status(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        activeProfiles[profileId]?.status ?? .inactive
+    public func status(ofProfileId profileId: Profile.ID) -> ABI.AppProfileStatus {
+        latestInfo?[profileId]?.status ?? .disconnected
+    }
+
+    public func tunnelStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
+        latestInfo?[profileId]?.tunnelStatus ?? .inactive
     }
 
     public func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
-        dataCount(ofProfileId: profileId)?.abiTransfer
+        latestInfo?[profileId]?.transfer
     }
 
-    public func lastError(ofProfileId profileId: Profile.ID) -> ABI.AppError? {
-        guard let code = lastErrorCode(ofProfileId: profileId) else { return nil }
-        return ABI.AppError.partout(PartoutError(code))
+    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
+        latestInfo?[profileId]?.lastErrorCode
     }
 
-    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) -> T? where T: Decodable {
-        latestEnvironments[profileId]?.environmentValue(forKey: key)
+    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
+        await tunnel.environment(for: profileId)?.environmentValue(forKey: key)
     }
 }
 
@@ -164,22 +168,26 @@ extension TunnelManager {
         let tunnelEvents = tunnel.activeProfilesStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
             guard let self else { return }
-            for await newActiveProfiles in tunnelEvents {
+            for await activeProfiles in tunnelEvents {
                 guard !Task.isCancelled else {
                     pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break
                 }
                 // Copy locally for sync access
-                latestActiveProfiles = newActiveProfiles
-                latestEnvironments = await tunnel.allEnvironments()
+                let latestEnvironments = await tunnel.allEnvironments()
+                let newInfo = latestInfo?.with(
+                    activeProfiles: activeProfiles,
+                    lastUsedProfile: lastUsedProfile,
+                    environments: latestEnvironments
+                ) ?? [:]
                 // TODO: #218, keep "last used profile" until .multiple
-                if let first = newActiveProfiles.first {
+                if let first = activeProfiles.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
-                // Publish compound statuses
-                didChange.send(.refresh(.init(
-                    active: computedTunnelInfos(from: newActiveProfiles)
-                )))
+                // Publish compound info
+                if newInfo != latestInfo {
+                    latestInfo = newInfo
+                }
             }
         }
 
@@ -190,9 +198,10 @@ extension TunnelManager {
                     pspLog(.core, .debug, "Cancelled TunnelManager.timerSubscription")
                     break
                 }
-                latestEnvironments = await tunnel.allEnvironments()
-                if !latestEnvironments.isEmpty {
-                    didChange.send(.dataCount())
+                let latestEnvironments = await tunnel.allEnvironments()
+                let newInfo = latestInfo?.updated(with: latestEnvironments) ?? [:]
+                if newInfo != latestInfo {
+                    latestInfo = newInfo
                 }
                 try? await Task.sleep(interval: interval)
             }
@@ -223,10 +232,10 @@ private extension TunnelManager {
     }
 }
 
-// MARK: - Helpers
+// MARK: - Internal state
 
-// TODO: #218, keep "last used profile" until .multiple
 private extension TunnelManager {
+    // TODO: #218, keep "last used profile" until .multiple
     var lastUsedProfile: TunnelActiveProfile? {
         guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
               let uuid = UniqueID(uuidString: uuidString) else {
@@ -238,74 +247,27 @@ private extension TunnelManager {
             onDemand: false
         )
     }
+}
 
-    func profileStatus(ofProfileId profileId: Profile.ID) -> ABI.AppTunnelStatus {
-        let status = status(ofProfileId: profileId)
-        guard let environment = latestEnvironments[profileId] else {
-            return status.abiStatus
-        }
-        return status.withEnvironment(environment).abiStatus
-    }
-
-    func computedTunnelInfos(from activeProfiles: [Profile.ID: TunnelActiveProfile]) -> [Profile.ID: ABI.AppTunnelInfo] {
+private extension Dictionary where Key == Profile.ID, Value == ABI.AppTunnelInfo {
+    func with(
+        activeProfiles: [Profile.ID: TunnelActiveProfile],
+        lastUsedProfile: TunnelActiveProfile?,
+        environments: [Profile.ID: TunnelEnvironmentReader],
+    ) -> Self {
         var info = activeProfiles.mapValues {
-            let profileStatus = profileStatus(ofProfileId: $0.id)
-            return ABI.AppTunnelInfo(id: $0.id, status: profileStatus, onDemand: $0.onDemand)
+            $0.abiInfo(withEnvironment: environments[$0.id])
         }
         if info.isEmpty, let last = lastUsedProfile {
-            info = [last.id: last.abiInfo]
+            info = [last.id: last.abiInfo(withEnvironment: nil)]
         }
         return info
     }
-}
 
-extension TunnelStatus {
-    func withEnvironment(_ environment: TunnelEnvironmentReader) -> TunnelStatus {
-        var status = self
-        if status == .active, let connectionStatus = environment.environmentValue(forKey: TunnelEnvironmentKeys.connectionStatus) {
-            switch connectionStatus {
-            case .connecting:
-                status = .activating
-            case .connected:
-                status = .active
-            case .disconnecting:
-                status = .deactivating
-            case .disconnected:
-                status = .inactive
-            }
+    func updated(with environments: [Profile.ID: TunnelEnvironmentReader]) -> Self {
+        mapValues {
+            guard let env = environments[$0.id] else { return $0 }
+            return $0.with(environment: env)
         }
-        return status
-    }
-}
-
-// MARK: - Internal state
-
-private extension TunnelManager {
-    var activeProfiles: [Profile.ID: TunnelActiveProfile] {
-        guard !latestActiveProfiles.isEmpty else {
-            if let last = lastUsedProfile {
-                return [last.id: last]
-            }
-            return [:]
-        }
-        return latestActiveProfiles
-    }
-
-    func connectionStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        let status = status(ofProfileId: profileId)
-        guard let environment = latestEnvironments[profileId] else {
-            return status
-        }
-        return status.withEnvironment(environment)
-    }
-
-    func dataCount(ofProfileId profileId: Profile.ID) -> DataCount? {
-        latestEnvironments[profileId]?
-            .environmentValue(forKey: TunnelEnvironmentKeys.dataCount)
-    }
-
-    func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
-        latestEnvironments[profileId]?
-            .environmentValue(forKey: TunnelEnvironmentKeys.lastErrorCode)
     }
 }

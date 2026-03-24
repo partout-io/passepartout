@@ -308,21 +308,7 @@ components:
       - fingerprint
       - sharingFlags
       - requiredFeatures
-    AppTunnelInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        status:
-          "$ref": "#/components/schemas/AppTunnelStatus"
-        onDemand:
-          type: boolean
-      required:
-      - id
-      - status
-      - onDemand
-    AppTunnelStatus:
+    AppProfileStatus:
       type: string
       x-enum-varnames:
       - disconnected
@@ -334,6 +320,24 @@ components:
       - connecting
       - connected
       - disconnecting
+    AppTunnelInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        status:
+          "$ref": "#/components/schemas/AppProfileStatus"
+        onDemand:
+          type: boolean
+        transfer:
+          "$ref": "#/components/schemas/ProfileTransfer"
+        lastErrorCode:
+          type: string
+      required:
+      - id
+      - status
+      - onDemand
     AppUserLevel:
       type: string
       x-enum-varnames:
@@ -363,7 +367,6 @@ components:
           ProfileEventSave: "#/components/schemas/ProfileEventSave"
           ProfileEventStartRemoteImport: "#/components/schemas/ProfileEventStartRemoteImport"
           ProfileEventStopRemoteImport: "#/components/schemas/ProfileEventStopRemoteImport"
-          TunnelEventDataCount: "#/components/schemas/TunnelEventDataCount"
           TunnelEventRefresh: "#/components/schemas/TunnelEventRefresh"
           VersionEventNew: "#/components/schemas/VersionEventNew"
           WebReceiverEventNewUpload: "#/components/schemas/WebReceiverEventNewUpload"
@@ -686,6 +689,19 @@ components:
       enum:
       - shared
       - tv
+    ProfileTransfer:
+      type: object
+      additionalProperties: false
+      properties:
+        received:
+          type: integer
+          default: 0
+        sent:
+          type: integer
+          default: 0
+      required:
+      - received
+      - sent
     ProviderInfo:
       type: object
       additionalProperties: false
@@ -713,17 +729,6 @@ components:
     Timestamp:
       description: ISO8601 timestamp string.
       type: string
-    TunnelEventDataCount:
-      type: object
-      additionalProperties: false
-      allOf:
-      - "$ref": "#/components/schemas/Event"
-      properties:
-        type:
-          const: TunnelEventDataCount
-          type: string
-      required:
-      - type
     TunnelEventRefresh:
       type: object
       additionalProperties: false
