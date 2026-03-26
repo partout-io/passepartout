@@ -15,8 +15,6 @@
 
 package com.algoritmico.passepartout.abi
 
-import com.algoritmico.passepartout.abi.Event
-import io.partout.abi.TaggedProfile
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -25,21 +23,20 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param profile 
- * @param previous 
+ * @param received 
+ * @param sent 
  */
 @Serializable
 
-@SerialName(value = "ProfileEventSave")
-data class ProfileEventSave (
+data class ProfileTransfer (
 
-    @Contextual @SerialName(value = "profile")
-    val profile: TaggedProfile,
+    @SerialName(value = "received")
+    val received: kotlin.Int = 0,
 
-    @Contextual @SerialName(value = "previous")
-    val previous: TaggedProfile? = null
+    @SerialName(value = "sent")
+    val sent: kotlin.Int = 0
 
-) : Event() {
+) {
 
 
 }

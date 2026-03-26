@@ -11,12 +11,15 @@ models_out=$models_tmp/Sources/OpenAPIClient/Models
 models_gen=$models_dir/Codegen
 abi_prefix=OpenAPI
 
+# TaggedProfile is an external Partout type. Keep the schema ref, but do not
+# generate a Swift model for it here.
 $codegen generate \
     -i $infile \
     -o $models_tmp \
     -g swift6 \
     --global-property=models,modelDocs=false,modelTests=false \
     --type-mappings JSONValue=JSON \
+    --schema-mappings TaggedProfile=TaggedProfile \
     --import-mappings JSONValue=JSON \
     --model-name-prefix=$abi_prefix \
     --additional-properties=enumPropertyNaming=original
@@ -34,6 +37,9 @@ sed -i '' "s/import Foundation/import Partout/" $abi_output
 # Replace String with URL in fields ending in "URL"
 sed -i '' 's/let \([A-Za-z0-9_ ,]*\)URL: String/let \1URL: URL/g' $abi_output
 sed -i '' 's/\([A-Za-z0-9_]*\)URL: String/\1URL: URL/g' $abi_output
+
+# ProfileEventSave uses the external Partout TaggedProfile type.
+sed -i '' 's/OpenAPITaggedProfile/TaggedProfile/g' $models_gen/${abi_prefix}ProfileEventSave.swift
 
 # openapi-generator models the event discriminator as a regular property.
 # Keep the Swift payloads aligned with the ABI by hardcoding the discriminator

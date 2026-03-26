@@ -26,7 +26,7 @@ import kotlinx.serialization.Serializable
  * Values: disconnected,connecting,connected,disconnecting
  */
 @Serializable
-enum class AppTunnelStatus(val value: kotlin.String) {
+enum class AppProfileStatus(val value: kotlin.String) {
 
     @SerialName(value = "disconnected")
     disconnected("disconnected"),
@@ -53,12 +53,12 @@ enum class AppTunnelStatus(val value: kotlin.String) {
         /**
          * Converts the provided [data] to a [String] on success, null otherwise.
          */
-        fun encode(data: kotlin.Any?): kotlin.String? = if (data is AppTunnelStatus) "$data" else null
+        fun encode(data: kotlin.Any?): kotlin.String? = if (data is AppProfileStatus) "$data" else null
 
         /**
-         * Returns a valid [AppTunnelStatus] for [data], null otherwise.
+         * Returns a valid [AppProfileStatus] for [data], null otherwise.
          */
-        fun decode(data: kotlin.Any?): AppTunnelStatus? = data?.let {
+        fun decode(data: kotlin.Any?): AppProfileStatus? = data?.let {
           val normalizedData = "$it".lowercase()
           entries.firstOrNull { value ->
             it == value || normalizedData == "$value".lowercase()

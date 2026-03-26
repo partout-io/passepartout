@@ -13,9 +13,10 @@
     "UnusedImport"
 )
 
-package com.algoritmico.passepartout.abi
+package io.partout.abi
 
-import com.algoritmico.passepartout.abi.Event
+import io.partout.abi.OpenVPNModule
+import io.partout.abi.TaggedModule
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -24,13 +25,17 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
+ * @param `value` 
  */
 @Serializable
 
-@SerialName(value = "TunnelEventDataCount")
-class TunnelEventDataCount (
+@SerialName(value = "OpenVPN")
+data class TaggedModuleOpenVPN (
 
-) : Event() {
+    @SerialName(value = "value")
+    val `value`: OpenVPNModule
+
+) : TaggedModule() {
 
 
 }

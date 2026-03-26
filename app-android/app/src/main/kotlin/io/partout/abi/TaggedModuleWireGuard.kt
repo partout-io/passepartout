@@ -13,10 +13,10 @@
     "UnusedImport"
 )
 
-package com.algoritmico.passepartout.abi
+package io.partout.abi
 
-import com.algoritmico.passepartout.abi.Event
-import io.partout.abi.TaggedProfile
+import io.partout.abi.TaggedModule
+import io.partout.abi.WireGuardModule
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -25,21 +25,17 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param profile 
- * @param previous 
+ * @param `value` 
  */
 @Serializable
 
-@SerialName(value = "ProfileEventSave")
-data class ProfileEventSave (
+@SerialName(value = "WireGuard")
+data class TaggedModuleWireGuard (
 
-    @Contextual @SerialName(value = "profile")
-    val profile: TaggedProfile,
+    @SerialName(value = "value")
+    val `value`: WireGuardModule
 
-    @Contextual @SerialName(value = "previous")
-    val previous: TaggedProfile? = null
-
-) : Event() {
+) : TaggedModule() {
 
 
 }

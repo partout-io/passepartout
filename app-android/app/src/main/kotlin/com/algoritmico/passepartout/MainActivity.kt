@@ -17,6 +17,7 @@ import com.algoritmico.passepartout.abi.AppConstants
 import com.algoritmico.passepartout.abi.AppProfileHeader
 import com.algoritmico.passepartout.abi.Event
 import com.algoritmico.passepartout.abi.ProfileEventRefresh
+import com.algoritmico.passepartout.abi.ProfileEventSave
 import com.algoritmico.passepartout.helpers.ABIEventCallback
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import kotlinx.serialization.json.Json
@@ -35,6 +36,9 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
         when (event) {
             is ProfileEventRefresh -> {
                 headers.value = event.headers
+            }
+            is ProfileEventSave -> {
+                Log.i("Passepartout", ">>> MainActivity: profile = ${event.profile}")
             }
             else -> {
                 // Other events

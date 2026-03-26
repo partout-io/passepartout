@@ -65,7 +65,10 @@ extension ABI.ProfileEvent {
         public let previous: Profile?
         public func encode(to encoder: any Encoder) throws {
             var container = encoder.singleValueContainer()
-            try container.encode(OpenAPIProfileEventSave())
+            try container.encode(OpenAPIProfileEventSave(
+                profile: profile.asTaggedProfile,
+                previous: previous?.asTaggedProfile
+            ))
         }
     }
 }

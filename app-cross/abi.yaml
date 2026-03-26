@@ -659,8 +659,13 @@ components:
         type:
           const: ProfileEventSave
           type: string
+        profile:
+          "$ref": "#/components/schemas/TaggedProfile"
+        previous:
+          "$ref": "#/components/schemas/TaggedProfile"
       required:
       - type
+      - profile
     ProfileEventStartRemoteImport:
       type: object
       additionalProperties: false
@@ -728,6 +733,8 @@ components:
       - major
       - minor
       - patch
+    TaggedProfile:
+      type: object
     Timestamp:
       description: ISO8601 timestamp string.
       type: string
