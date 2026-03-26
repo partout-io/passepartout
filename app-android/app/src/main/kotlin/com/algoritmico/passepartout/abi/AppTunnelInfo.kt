@@ -15,7 +15,8 @@
 
 package com.algoritmico.passepartout.abi
 
-import com.algoritmico.passepartout.abi.AppTunnelStatus
+import com.algoritmico.passepartout.abi.AppProfileStatus
+import com.algoritmico.passepartout.abi.ProfileTransfer
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -27,6 +28,8 @@ import kotlinx.serialization.Contextual
  * @param id 
  * @param status 
  * @param onDemand 
+ * @param transfer 
+ * @param lastErrorCode 
  */
 @Serializable
 
@@ -36,10 +39,16 @@ data class AppTunnelInfo (
     val id: kotlin.String,
 
     @Contextual @SerialName(value = "status")
-    val status: AppTunnelStatus,
+    val status: AppProfileStatus,
 
     @SerialName(value = "onDemand")
-    val onDemand: kotlin.Boolean
+    val onDemand: kotlin.Boolean,
+
+    @SerialName(value = "transfer")
+    val transfer: ProfileTransfer? = null,
+
+    @SerialName(value = "lastErrorCode")
+    val lastErrorCode: kotlin.String? = null
 
 ) {
 

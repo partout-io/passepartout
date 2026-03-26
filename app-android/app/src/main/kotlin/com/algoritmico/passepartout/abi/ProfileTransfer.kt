@@ -15,7 +15,6 @@
 
 package com.algoritmico.passepartout.abi
 
-import com.algoritmico.passepartout.abi.Event
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -24,13 +23,20 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
+ * @param received 
+ * @param sent 
  */
 @Serializable
 
-@SerialName(value = "TunnelEventDataCount")
-class TunnelEventDataCount (
+data class ProfileTransfer (
 
-) : Event() {
+    @SerialName(value = "received")
+    val received: kotlin.Int = 0,
+
+    @SerialName(value = "sent")
+    val sent: kotlin.Int = 0
+
+) {
 
 
 }
