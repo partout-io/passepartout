@@ -37,7 +37,7 @@ data class ConfigEventRefresh (
     val flags: kotlin.collections.List<@Contextual ConfigFlag>,
 
     @Contextual @SerialName(value = "data")
-    val `data`: kotlin.Any
+    val `data`: kotlinx.serialization.json.JsonElement
 
 ) : Event() {
 

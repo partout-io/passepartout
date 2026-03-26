@@ -13,12 +13,18 @@ public struct OpenAPIProfileEventSave: Sendable, Codable, Hashable {
         case profileEventSave = "ProfileEventSave"
     }
     public let type: OpenAPIType = .profileEventSave
+    public var profile: TaggedProfile
+    public var previous: TaggedProfile?
 
-    public init() {
+    public init(profile: TaggedProfile, previous: TaggedProfile? = nil) {
+        self.profile = profile
+        self.previous = previous
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
+        case profile
+        case previous
     }
 
     // Encodable protocol methods
@@ -26,6 +32,8 @@ public struct OpenAPIProfileEventSave: Sendable, Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
+        try container.encode(profile, forKey: .profile)
+        try container.encodeIfPresent(previous, forKey: .previous)
     }
 }
 

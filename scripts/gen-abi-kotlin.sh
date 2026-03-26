@@ -18,7 +18,7 @@ shared_flags=(
     -o "$models_dir"
     -g kotlin
     --global-property=models,modelDocs=false,modelTests=false
-    --type-mappings number=Double,URI=String
+    --type-mappings number=Double,URI=String,kotlin.Any=kotlinx.serialization.json.JsonElement
     --import-mappings Double=kotlin.Double,String=kotlin.String
     --additional-properties=serializationLibrary=kotlinx_serialization
 )
@@ -35,4 +35,6 @@ shared_flags=(
     -i "$abi_infile" \
     --additional-properties=packageName=$abi_package \
     --additional-properties=modelPackage=$abi_package \
+    --schema-mappings TaggedProfile=TaggedProfile \
+    --import-mappings TaggedProfile=io.partout.abi.TaggedProfile \
     "${shared_flags[@]}"
