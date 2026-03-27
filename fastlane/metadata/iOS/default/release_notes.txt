@@ -1,1 +1,1 @@
-* Update Partout with fix to WireGuard recovery
+Test legacy
