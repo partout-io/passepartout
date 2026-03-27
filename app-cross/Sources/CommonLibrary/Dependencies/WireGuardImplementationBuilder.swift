@@ -18,13 +18,21 @@ struct WireGuardImplementationBuilder: Sendable {
             importerBlock: { newParser() },
             validatorBlock: { newParser() },
             connectionBlock: {
-//                let flags = configBlock()
+                let flags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
-                return try WireGuardConnection(
-                    ctx,
-                    parameters: $0,
-                    module: $1
-                )
+                if flags.contains(.wgCrossV2) {
+                    return try WireGuardConnectionV2(
+                        ctx,
+                        parameters: $0,
+                        module: $1
+                    )
+                } else {
+                    return try WireGuardConnection(
+                        ctx,
+                        parameters: $0,
+                        module: $1
+                    )
+                }
             }
         )
     }
