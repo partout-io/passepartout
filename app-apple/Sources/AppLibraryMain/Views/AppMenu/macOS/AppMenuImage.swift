@@ -21,7 +21,12 @@ public struct AppMenuImage: View {
 
 private extension AppMenuImage {
     var status: ABI.AppProfileStatus {
-        // TODO: #218, must be per-tunnel
+        // TODO: #218, Must be per-tunnel
+        let tunnelErrors = tunnel.activeProfiles.compactMap(\.value.lastErrorCode)
+        guard tunnelErrors.isEmpty else {
+            // TODO: #218, Better show a warning sign here
+            return .disconnected
+        }
         guard let id = tunnel.activeProfiles.first?.value.id else {
             return .disconnected
         }

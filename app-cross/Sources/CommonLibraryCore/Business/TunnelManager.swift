@@ -165,10 +165,10 @@ extension TunnelManager {
 
 extension TunnelManager {
     public func observeObjects() -> AsyncStream<ABI.TunnelEvent> {
-        let tunnelEvents = tunnel.activeProfilesStream.removeDuplicates()
+        let tunnelEvents = tunnel.snapshotsStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
             guard let self else { return }
-            for await activeProfiles in tunnelEvents {
+            for await snapshots in tunnelEvents {
                 guard !Task.isCancelled else {
                     pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break
@@ -176,12 +176,12 @@ extension TunnelManager {
                 // Copy locally for sync access
                 let latestEnvironments = await tunnel.allEnvironments()
                 let newInfo = latestInfo?.with(
-                    activeProfiles: activeProfiles,
+                    snapshots: snapshots,
                     lastUsedProfile: lastUsedProfile,
                     environments: latestEnvironments
                 ) ?? [:]
                 // TODO: #218, keep "last used profile" until .multiple
-                if let first = activeProfiles.first {
+                if let first = snapshots.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
                 // Publish compound info
@@ -236,12 +236,12 @@ private extension TunnelManager {
 
 private extension TunnelManager {
     // TODO: #218, keep "last used profile" until .multiple
-    var lastUsedProfile: TunnelActiveProfile? {
+    var lastUsedProfile: TunnelSnapshot? {
         guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
               let uuid = UniqueID(uuidString: uuidString) else {
             return nil
         }
-        return TunnelActiveProfile(
+        return TunnelSnapshot(
             id: uuid,
             status: .inactive,
             onDemand: false
@@ -251,11 +251,11 @@ private extension TunnelManager {
 
 private extension Dictionary where Key == Profile.ID, Value == ABI.AppTunnelInfo {
     func with(
-        activeProfiles: [Profile.ID: TunnelActiveProfile],
-        lastUsedProfile: TunnelActiveProfile?,
+        snapshots: [Profile.ID: TunnelSnapshot],
+        lastUsedProfile: TunnelSnapshot?,
         environments: [Profile.ID: TunnelEnvironmentReader],
     ) -> Self {
-        var info = activeProfiles.mapValues {
+        var info = snapshots.mapValues {
             $0.abiInfo(withEnvironment: environments[$0.id])
         }
         if info.isEmpty, let last = lastUsedProfile {

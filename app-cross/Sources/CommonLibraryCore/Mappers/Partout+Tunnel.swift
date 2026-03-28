@@ -35,7 +35,7 @@ extension TunnelStatus {
     }
 }
 
-extension TunnelActiveProfile {
+extension TunnelSnapshot {
     func abiInfo(withEnvironment environment: TunnelEnvironmentReader?) -> ABI.AppTunnelInfo {
         ABI.AppTunnelInfo(
             id: id,
