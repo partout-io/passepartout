@@ -45,9 +45,9 @@
                 "retryInterval": 300.0
             },
             "beta": {
-                "delay": 600.0,
-                "interval": 600.0,
-                "attempts": 3,
+                "delay": 1800.0,
+                "interval": 1800.0,
+                "attempts": 6,
                 "retryInterval": 10.0
             }
         }
