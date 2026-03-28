@@ -1,2 +1,2 @@
-* Add "Extensive logging" preference in Diagnostics (#1729)
-* Update encoding of Partout profiles and modules (#1728)
+* Fix VPN appearing as connected when it's not (#1736)
+* WireGuard: Fix regressions from official stack (#1735)
