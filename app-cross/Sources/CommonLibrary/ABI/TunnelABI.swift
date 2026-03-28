@@ -61,6 +61,7 @@ public final class TunnelABI: TunnelABIProtocol {
                 pspLog(.core, .info, "Tunnel is on hold")
                 guard isInteractive else {
                     pspLog(.core, .error, "Tunnel was started non-interactively, hang here")
+                    await daemon.hold()
                     return
                 }
                 pspLog(.core, .info, "Tunnel was started interactively, clear hold flag")
