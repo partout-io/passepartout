@@ -24,7 +24,8 @@ private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSocketUDP,
         .neSocketTCP,
-        .newProfileEncoding
+        .newProfileEncoding,
+        .wgCrossV2
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
@@ -36,6 +37,8 @@ private extension PreferencesAdvancedView {
             return V.neSocketTCP
         case .newProfileEncoding:
             return "New profile encoding"
+        case .wgCrossV2:
+            return "Cross-platform WireGuard v2"
         default:
             assertionFailure()
             return ""
@@ -55,7 +58,7 @@ private extension PreferencesAdvancedView {
     }
 
     func isOnBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
-        Binding<Bool> {
+        Binding {
             experimental.isUsed(flag)
         } set: {
             experimental.setUsed(flag, isUsed: $0)

@@ -407,6 +407,7 @@ components:
       - neSocketUDP
       - neSocketTCP
       - newProfileEncoding
+      - wgCrossV2
       - unknown
       enum:
       - allowsRelaxedVerification
@@ -414,6 +415,7 @@ components:
       - neSocketUDP
       - neSocketTCP
       - newProfileEncoding
+      - wgCrossV2
       - unknown
     Credits:
       type: object
