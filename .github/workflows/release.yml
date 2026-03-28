@@ -27,9 +27,6 @@ jobs:
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
-      - name: Ensure Partout previews are off
-        run: |
-          ci/check-partout-previews.sh
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}

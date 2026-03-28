@@ -1,4 +1,4 @@
-MARKETING_VERSION = 3.6.11
+MARKETING_VERSION = 3.6.12
 CURRENT_PROJECT_VERSION = 4010
 
 // Tweak these based on app and team
