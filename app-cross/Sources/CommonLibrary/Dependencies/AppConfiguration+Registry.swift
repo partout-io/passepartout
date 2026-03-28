@@ -13,29 +13,20 @@ extension ABI.AppConfiguration {
         let customHandlers: [ModuleHandler] = [
             ProviderModule.moduleHandler
         ]
-        var allImplementations: [ModuleImplementation] = []
-        var providerResolvers: [ProviderModuleResolver] = []
-#if USE_CMAKE || canImport(PartoutOpenVPNConnection)
-        allImplementations.append(
+        let allImplementations: [ModuleImplementation] = [
             OpenVPNImplementationBuilder(
                 distributionTarget: bundle.distributionTarget,
                 cachesURL: cachesURL,
                 configBlock: configBlock
-            ).build()
-        )
-#if !USE_CMAKE
-        providerResolvers.append(OpenVPNProviderResolver())
-#endif
-#endif
-#if USE_CMAKE || canImport(PartoutWireGuardConnection)
-        allImplementations.append(
+            ).build(),
             WireGuardImplementationBuilder(
                 configBlock: configBlock
             ).build()
-        )
-#if !USE_CMAKE
+        ]
+        var providerResolvers: [ProviderModuleResolver] = []
+#if !PSP_CROSS
+        providerResolvers.append(OpenVPNProviderResolver())
         providerResolvers.append(WireGuardProviderResolver(deviceId: deviceId))
-#endif
 #endif
         let mappedResolvers = providerResolvers
             .reduce(into: [:]) {

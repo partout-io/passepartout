@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if USE_CMAKE || canImport(PartoutWireGuardConnection)
 import Partout
 
 struct WireGuardImplementationBuilder: Sendable {
@@ -41,4 +40,3 @@ struct WireGuardImplementationBuilder: Sendable {
         StandardWireGuardParser()
     }
 }
-#endif

@@ -34,7 +34,6 @@ struct MullvadProviderTests: APITestSuite {
             try infra.presets.forEach {
                 switch $0.moduleType {
                 case .openVPN:
-#if canImport(PartoutOpenVPN)
                     let template = try JSONDecoder().decode(OpenVPNProviderTemplate.self, from: $0.templateData)
                     switch $0.presetId {
                     case "default":
@@ -52,9 +51,7 @@ struct MullvadProviderTests: APITestSuite {
                     default:
                         break
                     }
-#endif
                 case .wireGuard:
-#if canImport(PartoutWireGuard)
                     let template = try JSONDecoder().decode(WireGuardProviderTemplate.self, from: $0.templateData)
                     switch $0.presetId {
                     case "default":
@@ -62,7 +59,6 @@ struct MullvadProviderTests: APITestSuite {
                     default:
                         break
                     }
-#endif
                 default:
                     #expect(Bool(false), "Preset of unexpected module type \($0.moduleType)")
                 }

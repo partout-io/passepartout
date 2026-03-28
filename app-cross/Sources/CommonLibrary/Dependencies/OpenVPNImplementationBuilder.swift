@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if USE_CMAKE || canImport(PartoutOpenVPNConnection)
 import Partout
 
 struct OpenVPNImplementationBuilder: Sendable {
@@ -50,4 +49,3 @@ private extension OpenVPNImplementationBuilder {
         )
     }
 }
-#endif
