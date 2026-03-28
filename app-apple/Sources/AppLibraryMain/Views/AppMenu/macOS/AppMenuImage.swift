@@ -23,7 +23,7 @@ private extension AppMenuImage {
     var status: ABI.AppProfileStatus {
         // TODO: #218, must be per-tunnel
         let tunnelErrors = tunnel.activeProfiles.compactMap(\.value.lastErrorCode)
-        guard !tunnelErrors.isEmpty else {
+        guard tunnelErrors.isEmpty else {
             return .disconnected
         }
         guard let id = tunnel.activeProfiles.first?.value.id else {
