@@ -224,6 +224,10 @@ private struct AppABIProfile: AppABIProfileProtocol {
     let profileManager: ProfileManager
     let registry: Registry
 
+    var isRemoteImportingEnabled: Bool {
+        profileManager.isRemoteImportingEnabled
+    }
+
     func save(_ profile: Profile, remotelyShared: Bool?) async throws {
         try await profileManager.save(profile, isLocal: true, remotelyShared: remotelyShared)
     }
