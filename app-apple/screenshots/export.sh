@@ -24,7 +24,7 @@ case $device in
 
   "ipad")
     xcplan="MainScreenshots"
-    xcdestination="name=iPad Pro 13-inch (M4)"
+    xcdestination="name=iPad Pro 13-inch (M5)"
     ;;
 
   "mac")

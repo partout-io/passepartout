@@ -27,7 +27,7 @@ public final class ProfileObservable {
         allHeaders = [:]
         filteredHeaders = []
         isReady = false
-        isRemoteImportingEnabled = false
+        isRemoteImportingEnabled = abi.isRemoteImportingEnabled
         searchSubject = CurrentValueSubject("")
 
         observeEvents(searchDebounce: searchDebounce)

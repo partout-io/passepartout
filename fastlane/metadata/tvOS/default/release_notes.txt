@@ -1,2 +1,2 @@
-* Fix VPN appearing as connected when it's not (#1736)
-* WireGuard: Fix regressions from official stack (#1735)
+* WireGuard: Restore official code (#1737)
+* Fix sharing icons initially disabled (#1738)

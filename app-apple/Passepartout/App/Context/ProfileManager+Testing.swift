@@ -121,7 +121,7 @@ private extension ProfileManager {
 
     static let mockParameters: [Parameters] = [
         Parameters("CloudFlare DoT", false, false, [.dns]),
-        Parameters("Coffee VPN", true, false, [.wireGuard, .onDemand]),
+        Parameters("Coffee VPN", true, false, [.wireGuard]),
         Parameters("Hide.me", true, true, [.provider, .onDemand, .dns], .hideme),
         Parameters("My VPS", true, true, [.openVPN, .onDemand]),
         Parameters("Office", true, false, [.onDemand, .httpProxy]),
