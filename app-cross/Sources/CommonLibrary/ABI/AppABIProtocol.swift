@@ -36,6 +36,7 @@ public protocol AppABIProfileProtocol: Sendable {
     func remove(_ ids: [Profile.ID]) async
     func removeAllRemote() async throws
     // Non-observable
+    var isRemoteImportingEnabled: Bool { get }
     func profile(withId id: Profile.ID) -> Profile?
 }
 
