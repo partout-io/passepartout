@@ -20,13 +20,13 @@ struct WireGuardImplementationBuilder: Sendable {
                 let flags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
                 if flags.contains(.wgCrossV2) {
-                    return try WireGuardConnectionV2(
+                    return try WireGuardConnection(
                         ctx,
                         parameters: $0,
                         module: $1
                     )
                 } else {
-                    return try WireGuardConnection(
+                    return try LegacyWireGuardConnection(
                         ctx,
                         parameters: $0,
                         module: $1
