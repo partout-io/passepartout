@@ -1,2 +1,2 @@
 * WireGuard: Restore official code (#1737)
-* Fix VPN appearing as connected when it's not (#1736)
+* Fix sharing icons initially disabled (#1738)
