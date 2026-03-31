@@ -41,11 +41,11 @@ public protocol AppABIProfileProtocol: Sendable {
 }
 
 public protocol AppABIRegistryProtocol: Sendable {
-    func importedProfile(from input: ABI.ProfileImporterInput) throws -> Profile
+    func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile
     func newModule(ofType type: ModuleType) -> any ModuleBuilder
     func validate(_ builder: any ModuleBuilder) throws
-    func implementation(for id: ModuleHandler.ID) -> ModuleImplementation?
-    func resolvedModule(_ module: ProviderModule) throws -> Module
+    func implementation(for moduleType: ModuleType) -> ModuleImplementation?
+    func resolvedModule(_ module: ProviderModule, in profile: Profile?) throws -> Module
 }
 
 public enum AppABITunnelValueKey: Sendable {

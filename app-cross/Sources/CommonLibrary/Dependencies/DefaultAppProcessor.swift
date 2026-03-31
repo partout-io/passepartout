@@ -38,7 +38,7 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
     private let apiManager: APIManager?
 
-    private let registry: Registry
+    private let resolver: Resolver
 
     private let title: @Sendable (Profile) -> String
 
@@ -46,12 +46,12 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
 
     init(
         apiManager: APIManager?,
-        registry: Registry,
+        resolver: Resolver,
         title: @escaping @Sendable (Profile) -> String,
         providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
         self.apiManager = apiManager
-        self.registry = registry
+        self.resolver = resolver
         self.title = title
         self.providerServerSorter = providerServerSorter
     }
@@ -85,7 +85,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
 
         // Validate provider modules
         do {
-            _ = try registry.resolvedProfile(newProfile)
+            _ = try resolver.resolvedProfile(newProfile)
             return newProfile
         } catch {
             pspLog(.core, .error, "Unable to inject provider modules: \(error)")

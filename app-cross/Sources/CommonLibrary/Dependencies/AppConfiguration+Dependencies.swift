@@ -37,7 +37,7 @@ extension ABI.AppConfiguration {
         configManager: ConfigManager,
         kvStore: KeyValueStore,
         cachesURL: URL
-    ) -> Registry {
+    ) -> CodingRegistry {
         newRegistry(
             deviceId: {
                 if let existingId = kvStore.string(forAppPreference: .deviceId) {
@@ -60,7 +60,7 @@ extension ABI.AppConfiguration {
     public func newTunnelRegistry(
         preferences: ABI.AppPreferenceValues,
         cachesURL: URL
-    ) -> Registry {
+    ) -> CodingRegistry {
         assert(preferences.deviceId != nil, "No Device ID found in preferences")
         pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
         return newRegistry(
@@ -115,12 +115,12 @@ extension ABI.AppConfiguration {
 
     public func newAppTunnelProcessor(
         apiManager: APIManager?,
-        registry: Registry,
+        resolver: Resolver,
         providerServerSorter: @escaping ProviderServerParameters.Sorter
     ) -> AppTunnelProcessor {
         DefaultAppTunnelProcessor(
             apiManager: apiManager,
-            registry: registry,
+            resolver: resolver,
             title: {
                 String(format: constants.tunnel.profileTitleFormat, $0.name)
             },
@@ -389,21 +389,19 @@ extension ABI.AppConfiguration {
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
     }
 
-    public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, registry: Registry) -> NEProtocolCoder {
+    public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NEProtocolCoder {
         if bundle.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
-                registry: registry,
-                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId)),
-                withLegacyEncoding: false
+                coder: coder,
+                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
-                registry: registry,
-                withLegacyEncoding: false
+                coder: coder
             )
         }
     }

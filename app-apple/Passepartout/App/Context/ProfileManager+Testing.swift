@@ -6,7 +6,7 @@ import AppLibrary
 import CommonLibrary
 
 extension ProfileManager {
-    public static func forUITesting(withRegistry registry: Registry, processor: ProfileProcessor) -> ProfileManager {
+    public static func forUITesting(withRegistry registry: CodingRegistry, processor: ProfileProcessor) -> ProfileManager {
         let repository = InMemoryProfileRepository()
         let remoteRepository = InMemoryProfileRepository()
         let manager = ProfileManager(processor: processor, repository: repository)

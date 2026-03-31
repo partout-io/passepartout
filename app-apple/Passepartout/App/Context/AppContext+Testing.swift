@@ -18,7 +18,7 @@ extension AppContext {
             configBlock: { [] }
         )
         let kvStore = InMemoryStore()
-        let appEncoder = AppEncoder(registry: registry, kvStore: kvStore)
+        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
 
         let logFormatter = DummyLogFormatter()
         pspLogRegister(
@@ -58,7 +58,7 @@ extension AppContext {
         }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
-            registry: registry,
+            resolver: registry,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }

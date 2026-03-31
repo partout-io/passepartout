@@ -9,7 +9,7 @@ extension ABI.AppConfiguration {
         deviceId: String,
         cachesURL: URL,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
-    ) -> Registry {
+    ) -> CodingRegistry {
         let customHandlers: [ModuleHandler] = [
             ProviderModule.moduleHandler
         ]
@@ -47,7 +47,10 @@ extension ABI.AppConfiguration {
             }
         )
         registry.assertMissingImplementations()
-        return registry
+        return CodingRegistry(registry: registry, withLegacyEncoding: {
+            let flags = configBlock()
+            return !flags.contains(.newProfileEncoding)
+        })
     }
 }
 

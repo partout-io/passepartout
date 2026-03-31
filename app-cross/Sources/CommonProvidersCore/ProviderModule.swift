@@ -164,7 +164,7 @@ extension ProviderModule {
         guard !(otherModule is Self) else {
             throw PartoutError(.incompatibleModules, [self, otherModule])
         }
-        guard (otherModule as? ProviderModule)?.providerModuleType != moduleHandler.id else {
+        guard (otherModule as? ProviderModule)?.providerModuleType != moduleType else {
             throw PartoutError(.incompatibleModules, [self, otherModule])
         }
     }

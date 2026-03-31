@@ -61,7 +61,7 @@ extension AppABI {
             cachesURL: cachesURL
         )
 
-        let appEncoder = AppEncoder(registry: registry, kvStore: kvStore)
+        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         // FIXME: #1656, C ABI, profile manager (real profiles)
         let profileManager = ProfileManager(profiles: [])
         // FIXME: #1656, C ABI, tunnel manager (real tunnel)

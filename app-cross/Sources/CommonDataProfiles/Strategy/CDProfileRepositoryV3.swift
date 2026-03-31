@@ -52,7 +52,7 @@ private extension CommonData {
         _ context: NSManagedObjectContext,
         encoder: AppEncoder
     ) throws -> CDProfileV3 {
-        let encoded = try encoder.json(fromProfile: profile)
+        let encoded = try encoder.string(fromProfile: profile)
 
         let cdProfile = CDProfileV3(context: context)
         cdProfile.uuid = profile.id

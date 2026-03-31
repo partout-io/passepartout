@@ -14,7 +14,7 @@ extension AppABI {
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore,
-        assertModule: (ModuleType, Registry) -> Void,
+        assertModule: (ModuleType, ModuleRegistry) -> Void,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
         webStringsBundle: Bundle?,
@@ -118,11 +118,11 @@ extension AppABI {
 
         // MARK: Profiles and Tunnel (NE)
 
-        let appEncoder = AppEncoder(registry: registry, kvStore: kvStore)
+        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
-            registry: registry,
+            resolver: registry,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }
@@ -140,7 +140,7 @@ extension AppABI {
         let tunnelStrategy = NETunnelStrategy(
             ctx,
             bundleIdentifier: tunnelIdentifier,
-            coder: appConfiguration.newNEProtocolCoder(ctx, registry: registry)
+            coder: appConfiguration.newNEProtocolCoder(ctx, coder: registry)
         )
         let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
             tunnelProcessor?.title(for: $0) ?? $0.name
