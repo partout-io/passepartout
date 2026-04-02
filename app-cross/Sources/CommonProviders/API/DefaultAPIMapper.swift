@@ -50,7 +50,7 @@ public final class DefaultAPIMapper: APIMapper {
         guard let auth = module.authentication, !auth.isEmpty else {
             throw PartoutError(.authentication)
         }
-        guard let storage: WireGuardProviderStorage = try module.options(for: .wireGuard) else {
+        guard let storage: WireGuardProviderStorage = try module.options(for: .WireGuard) else {
             throw PartoutError(.Providers.missingOption)
         }
         guard storage.sessions?[deviceId] != nil else {

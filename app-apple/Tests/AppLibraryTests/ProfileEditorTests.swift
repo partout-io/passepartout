@@ -52,12 +52,12 @@ extension ProfileEditorTests {
         ])
         let moduleTypes = sut.availableModuleTypes(forTarget: .appStore)
 
-        #expect(!moduleTypes.contains(.dns))
-        #expect(moduleTypes.contains(.httpProxy))
-        #expect(!moduleTypes.contains(.ip))
-        #expect(moduleTypes.contains(.onDemand))
-        #expect(moduleTypes.contains(.openVPN))
-        #expect(moduleTypes.contains(.wireGuard))
+        #expect(!moduleTypes.contains(.DNS))
+        #expect(moduleTypes.contains(.HTTPProxy))
+        #expect(!moduleTypes.contains(.IP))
+        #expect(moduleTypes.contains(.OnDemand))
+        #expect(moduleTypes.contains(.OpenVPN))
+        #expect(moduleTypes.contains(.WireGuard))
     }
 
     @Test

@@ -7,14 +7,14 @@ import Partout
 extension ModuleType: @retroactive CaseIterable {
     public static let allCases: [ModuleType] = {
         var list: [ModuleType] = [
-            .openVPN,
-            .wireGuard,
-            .dns,
-            .httpProxy,
-            .ip,
-            .onDemand
+            .OpenVPN,
+            .WireGuard,
+            .DNS,
+            .HTTPProxy,
+            .IP,
+            .OnDemand
         ]
-        list.append(.provider)
+        list.append(.Provider)
         return list
     }()
 }
@@ -22,7 +22,7 @@ extension ModuleType: @retroactive CaseIterable {
 extension ModuleType {
     public var isConnection: Bool {
         switch self {
-        case .openVPN, .wireGuard:
+        case .OpenVPN, .WireGuard:
             return true
         default:
             return false

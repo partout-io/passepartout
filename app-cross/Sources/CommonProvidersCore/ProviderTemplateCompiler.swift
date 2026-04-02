@@ -21,7 +21,7 @@ public protocol ProviderTemplateCompiler {
 
 extension ProviderTemplateCompiler {
     public var moduleType: ModuleType {
-        CompiledModule.moduleHandler.id
+        CompiledModule.moduleType
     }
 }
 

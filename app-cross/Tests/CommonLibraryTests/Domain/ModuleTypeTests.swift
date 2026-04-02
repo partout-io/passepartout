@@ -9,7 +9,7 @@ import Testing
 struct ModuleTypeTests {
     @Test
     func givenModuleType_whenModuleIsConnectionType_thenIsConnection() {
-        #expect(ModuleType.openVPN.isConnection)
-        #expect(ModuleType.wireGuard.isConnection)
+        #expect(ModuleType.OpenVPN.isConnection)
+        #expect(ModuleType.WireGuard.isConnection)
     }
 }

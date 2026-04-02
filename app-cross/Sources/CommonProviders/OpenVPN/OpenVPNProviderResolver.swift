@@ -6,7 +6,7 @@ import Partout
 
 public struct OpenVPNProviderResolver: ProviderModuleResolver {
     public var moduleType: ModuleType {
-        .openVPN
+        .OpenVPN
     }
 
     public init() {}
