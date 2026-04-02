@@ -1,1 +1,1 @@
-* Encapsulate encoding in CodingRegistry (#1739)
+* Bump version
