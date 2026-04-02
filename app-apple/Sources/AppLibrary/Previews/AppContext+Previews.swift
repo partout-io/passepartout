@@ -12,7 +12,10 @@ extension AppContext {
             buildTarget: .app
         )
         let logFormatter = DummyLogFormatter()
-        let registry = CodingRegistry(registry: Registry(), withLegacyEncoding: { false })
+        let registry = CodingRegistry(
+            registry: Registry(withKnown: true),
+            withLegacyEncoding: { false }
+        )
         let kvStore = InMemoryStore()
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let configManager = ConfigManager()

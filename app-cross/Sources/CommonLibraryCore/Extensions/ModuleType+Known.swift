@@ -14,7 +14,7 @@ extension ModuleType: @retroactive CaseIterable {
             .IP,
             .OnDemand
         ]
-        list.append(.provider)
+        list.append(.Provider)
         return list
     }()
 }
