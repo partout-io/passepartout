@@ -5,16 +5,11 @@
 import Partout
 
 public final class AppEncoder: Sendable {
-    private let registry: Registry
+    private let coder: ProfileCoder
     private let kvStore: KeyValueStore
 
-    private var withLegacyEncoding: Bool {
-        !kvStore.bool(forAppPreference: .newProfileEncoding) ||
-        kvStore.preferences.experimental.ignoredConfigFlags.contains(.newProfileEncoding)
-    }
-
-    public init(registry: Registry, kvStore: KeyValueStore) {
-        self.registry = registry
+    public init(coder: ProfileCoder, kvStore: KeyValueStore) {
+        self.coder = coder
         self.kvStore = kvStore
     }
 
@@ -23,20 +18,16 @@ public final class AppEncoder: Sendable {
     }
 
     public func profile(fromString string: String) throws -> Profile {
-#if !PSP_CROSS
-        try registry.fallbackProfile(fromString: string)
-#else
-        try registry.profile(fromJSON: string)
-#endif
+        try coder.profile(fromString: string)
     }
 
-    public func json(fromProfile profile: Profile) throws -> String {
-        try registry.json(fromProfile: profile, withLegacyEncoding: withLegacyEncoding)
+    public func string(fromProfile profile: Profile) throws -> String {
+        try coder.string(fromProfile: profile)
     }
 
     public func writeToFile(_ profile: Profile) throws -> String {
-        let json = try json(fromProfile: profile)
-        let data = Data(json.utf8)
+        let string = try string(fromProfile: profile)
+        let data = Data(string.utf8)
         let filename = "\(profile.id.uuidString).json"
         let path = FileManager.default.makeTemporaryURL(filename: filename).filePath()
         try data.write(toFile: path)

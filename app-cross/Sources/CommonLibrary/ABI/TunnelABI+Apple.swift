@@ -27,7 +27,7 @@ extension TunnelABI {
         let originalProfile: Profile
         let processedProfile: Profile
         do {
-            let decoder = appConfiguration.newNEProtocolCoder(.global, registry: registry)
+            let decoder = appConfiguration.newNEProtocolCoder(.global, coder: registry)
             originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
             let resolvedProfile = try registry.resolvedProfile(originalProfile)
             let processor = appConfiguration.newTunnelProcessor()
@@ -92,7 +92,7 @@ extension TunnelABI {
         )
         let messageHandler = DefaultMessageHandler(ctx, environment: environment)
         let params = SimpleConnectionDaemon.Parameters(
-            registry: registry,
+            connectionFactory: registry,
             connectionParameters: connectionParameters,
             messageHandler: messageHandler
         )

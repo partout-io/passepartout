@@ -54,7 +54,7 @@ public final class AppABI: Sendable {
         logFormatter: LogFormatter,
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
-        registry partoutRegistry: Registry,
+        registry partoutRegistry: CodingRegistry,
         tunnelManager: TunnelManager,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
@@ -173,7 +173,7 @@ private struct AppABIEncoder: AppABIEncoderProtocol {
     }
 
     func json(fromProfile profile: Profile) throws -> String {
-        try appEncoder.json(fromProfile: profile)
+        try appEncoder.string(fromProfile: profile)
     }
 
     func writeToFile(_ profile: Profile) throws -> String {
@@ -222,7 +222,7 @@ private struct AppABIIAP: AppABIIAPProtocol {
 
 private struct AppABIProfile: AppABIProfileProtocol {
     let profileManager: ProfileManager
-    let registry: Registry
+    let registry: CodingRegistry
 
     var isRemoteImportingEnabled: Bool {
         profileManager.isRemoteImportingEnabled
@@ -274,10 +274,10 @@ private struct AppABIProfile: AppABIProfileProtocol {
 }
 
 private struct AppABIRegistry: AppABIRegistryProtocol {
-    let registry: Registry
+    let registry: CodingRegistry
 
-    func importedProfile(from input: ABI.ProfileImporterInput) throws -> Profile {
-        try registry.importedProfile(from: input, passphrase: nil)
+    func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
+        try registry.importedProfile(from: input, passphrase: passphrase)
     }
 
     func newModule(ofType moduleType: ModuleType) -> any ModuleBuilder {
@@ -285,18 +285,19 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
     }
 
     func validate(_ builder: any ModuleBuilder) throws {
-        guard let impl = registry.implementation(for: builder) as? ModuleBuilderValidator else {
+        guard let impl = registry.implementation(for: builder.moduleType),
+              let validator = impl as? ModuleBuilderValidator else {
             return
         }
-        try impl.validate(builder)
+        try validator.validate(builder)
     }
 
-    func implementation(for id: ModuleHandler.ID) -> (any ModuleImplementation)? {
-        registry.implementation(for: id)
+    func implementation(for moduleType: ModuleType) -> (any ModuleImplementation)? {
+        registry.implementation(for: moduleType)
     }
 
-    func resolvedModule(_ module: ProviderModule) throws -> Module {
-        try registry.resolvedModule(module, in: nil)
+    func resolvedModule(_ module: ProviderModule, in profile: Profile?) throws -> Module {
+        try registry.resolvedModule(module, in: profile)
     }
 }
 
@@ -550,6 +551,7 @@ private extension AppABI {
             // Import
             var profile = try registry.importedProfile(
                 from: .contents(filename: upload.name, data: upload.contents),
+                passphrase: nil
             )
             // Add TV availability flag
             var builder = profile.builder()

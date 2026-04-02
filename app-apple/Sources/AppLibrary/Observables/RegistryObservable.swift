@@ -26,6 +26,6 @@ public final class RegistryObservable {
     }
 
     public func resolvedModule(_ module: ProviderModule) throws -> Module {
-        try abi.resolvedModule(module)
+        try abi.resolvedModule(module, in: nil)
     }
 }
