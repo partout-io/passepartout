@@ -1,2 +1,1 @@
-* WireGuard: Restore official code (#1737)
-* Fix sharing icons initially disabled (#1738)
+* Encapsulate encoding in CodingRegistry (#1739)
