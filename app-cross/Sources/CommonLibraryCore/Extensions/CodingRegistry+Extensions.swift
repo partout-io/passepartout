@@ -10,11 +10,11 @@ extension ModuleRegistry {
             fatalError("Unknown module type: \(self)")
         }
         switch moduleType {
-        case .openVPN:
+        case .OpenVPN:
             guard newBuilder is OpenVPNModule.Builder else {
                 fatalError("Unexpected module builder type: \(type(of: newBuilder)) != \(self)")
             }
-        case .wireGuard:
+        case .WireGuard:
             guard var builder = newBuilder as? WireGuardModule.Builder else {
                 fatalError("Unexpected module builder type: \(type(of: newBuilder)) != \(self)")
             }

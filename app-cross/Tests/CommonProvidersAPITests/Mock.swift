@@ -7,13 +7,13 @@ import CommonProvidersCore
 import Partout
 
 struct MockModule: Module {
-    static let moduleHandler = ModuleHandler(ModuleType("mock-module"), decoder: nil, factory: nil)
+    static let moduleType = ModuleType("mock-module")
 
     var supportedField = 123
 }
 
 struct MockUnsupportedModule: Module {
-    static let moduleHandler = ModuleHandler(ModuleType("mock-unsupported-module"), decoder: nil, factory: nil)
+    static let moduleType = ModuleType("mock-unsupported-module")
 
     let unsupportedField: Int
 }
@@ -139,7 +139,7 @@ extension ProviderServer {
             serverId: "mock",
             hostname: "mock-hostname.com",
             ipAddresses: [Data(hex: "01020304")],
-            supportedModuleTypes: [MockModule.moduleHandler.id],
+            supportedModuleTypes: [MockModule.moduleType],
             supportedPresetIds: []
         )
     }

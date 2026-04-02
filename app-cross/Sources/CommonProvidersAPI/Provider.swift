@@ -13,7 +13,7 @@ public struct Provider: Identifiable, Hashable, CustomStringConvertible, Sendabl
 
     public init(_ id: String, description: String, moduleTypes: [Module.Type]) {
         self.init(id, description: description, metadata: moduleTypes.reduce(into: [:]) {
-            $0[$1.moduleHandler.id] = Metadata()
+            $0[$1.moduleType] = Metadata()
         })
     }
 
@@ -35,11 +35,11 @@ extension Provider {
         metadata.keys.contains(moduleType)
     }
 
-    public func supports<M>(_ moduleType: M.Type) -> Bool where M: Module {
-        metadata.keys.contains(moduleType.moduleHandler.id)
+    public func supports<M>(_ moduleClass: M.Type) -> Bool where M: Module {
+        metadata.keys.contains(moduleClass.moduleType)
     }
 
-    public func metadata<M>(for moduleType: M.Type) -> Metadata? where M: Module {
-        metadata[moduleType.moduleHandler.id]
+    public func metadata<M>(for moduleClass: M.Type) -> Metadata? where M: Module {
+        metadata[moduleClass.moduleType]
     }
 }

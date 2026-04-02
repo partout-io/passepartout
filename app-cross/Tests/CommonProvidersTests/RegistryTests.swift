@@ -9,7 +9,10 @@ import Testing
 struct RegistryTests {
     @Test(arguments: [true, false])
     func givenKnownHandlers_whenSerializeProfile_thenIsDeserialized(legacy: Bool) throws {
-        let sut = CodingRegistry(registry: Registry(), withLegacyEncoding: { legacy })
+        let sut = CodingRegistry(
+            registry: Registry(withKnown: true),
+            withLegacyEncoding: { legacy }
+        )
 
         var ovpnBuilder = OpenVPN.Configuration.Builder()
         ovpnBuilder.ca = OpenVPN.CryptoContainer(pem: "ca is required")

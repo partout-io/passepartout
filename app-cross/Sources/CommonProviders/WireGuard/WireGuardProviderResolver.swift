@@ -8,7 +8,7 @@ public struct WireGuardProviderResolver: ProviderModuleResolver {
     private let deviceId: String
 
     public var moduleType: ModuleType {
-        .wireGuard
+        .WireGuard
     }
 
     public init(deviceId: String) {

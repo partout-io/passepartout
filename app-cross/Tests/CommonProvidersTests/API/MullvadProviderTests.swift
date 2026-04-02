@@ -33,7 +33,7 @@ struct MullvadProviderTests: APITestSuite {
 
             try infra.presets.forEach {
                 switch $0.moduleType {
-                case .openVPN:
+                case .OpenVPN:
                     let template = try JSONDecoder().decode(OpenVPNProviderTemplate.self, from: $0.templateData)
                     switch $0.presetId {
                     case "default":
@@ -51,7 +51,7 @@ struct MullvadProviderTests: APITestSuite {
                     default:
                         break
                     }
-                case .wireGuard:
+                case .WireGuard:
                     let template = try JSONDecoder().decode(WireGuardProviderTemplate.self, from: $0.templateData)
                     switch $0.presetId {
                     case "default":
@@ -142,7 +142,7 @@ struct MullvadProviderTests: APITestSuite {
             builder.token = ProviderAuthentication.Token(accessToken: accessToken, expiryDate: tokenExpiry)
         }
 
-        builder.providerModuleType = .wireGuard
+        builder.providerModuleType = .WireGuard
 
         let peer = input.existingPeerId.map {
             WireGuardProviderStorage.Peer(id: $0, creationDate: Date(), addresses: [])
@@ -152,7 +152,7 @@ struct MullvadProviderTests: APITestSuite {
 
         var storage = WireGuardProviderStorage()
         storage.sessions = [deviceId: session]
-        try builder.setOptions(storage, for: .wireGuard)
+        try builder.setOptions(storage, for: .WireGuard)
 
         let module = try builder.build()
         print("Original module: \(module)")
@@ -160,7 +160,7 @@ struct MullvadProviderTests: APITestSuite {
         print("Updated module: \(newModule)")
 
         print("Original storage: \(storage)")
-        let newStorage: WireGuardProviderStorage = try #require(try newModule.options(for: .wireGuard))
+        let newStorage: WireGuardProviderStorage = try #require(try newModule.options(for: .WireGuard))
         print("Updated storage: \(newStorage)")
 
         // assert token reuse or renewal

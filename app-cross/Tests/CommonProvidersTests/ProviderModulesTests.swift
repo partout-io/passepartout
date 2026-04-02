@@ -15,7 +15,7 @@ struct ProviderModulesTests {
     func givenProviderModule_whenOpenVPN_thenResolves() throws {
         var sut = ProviderModule.Builder()
         sut.providerId = mockId
-        sut.providerModuleType = .openVPN
+        sut.providerModuleType = .OpenVPN
         sut.entity = try openVPNEntity()
 
         let module = try sut.build()
@@ -40,13 +40,13 @@ struct ProviderModulesTests {
 
         var sut = ProviderModule.Builder()
         sut.providerId = mockId
-        sut.providerModuleType = .wireGuard
+        sut.providerModuleType = .WireGuard
 
         let session = WireGuardProviderStorage.Session(privateKey: "", publicKey: "")
             .with(peer: WireGuardProviderStorage.Peer(id: deviceId, creationDate: Date(), addresses: addresses))
         var storage = WireGuardProviderStorage()
         storage.sessions = [deviceId: session]
-        try sut.setOptions(storage, for: .wireGuard)
+        try sut.setOptions(storage, for: .WireGuard)
 
         sut.entity = try wireGuardEntity()
 
@@ -77,7 +77,7 @@ private extension ProviderModulesTests {
                 providerId: mockId,
                 presetId: "default",
                 description: "Default",
-                moduleType: .openVPN,
+                moduleType: .OpenVPN,
                 templateData: templateData
             ),
             heuristic: nil
@@ -94,7 +94,7 @@ private extension ProviderModulesTests {
                 providerId: mockId,
                 presetId: "default",
                 description: "Default",
-                moduleType: .wireGuard,
+                moduleType: .WireGuard,
                 templateData: templateData
             ),
             heuristic: nil
@@ -113,7 +113,7 @@ private extension ProviderModulesTests {
             serverId: "be-v4",
             hostname: "be-v4.hideservers.net",
             ipAddresses: withIPAddresses ? [Data(hex: "01020304")] : nil, // 1.2.3.4
-            supportedModuleTypes: [.openVPN, .wireGuard],
+            supportedModuleTypes: [.OpenVPN, .WireGuard],
             supportedPresetIds: nil,
             userInfo: [
                 "wgPublicKey": ""

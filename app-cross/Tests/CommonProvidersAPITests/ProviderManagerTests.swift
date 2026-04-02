@@ -14,7 +14,7 @@ struct ProviderManagerTests {
     func givenManager_whenFetchSupportedPresets_thenIsNotEmpty() async throws {
         let repository = try await Self.repository(for: .mock)
         let sut = ProviderManager()
-        try await sut.setRepository(repository, for: MockModule.moduleHandler.id)
+        try await sut.setRepository(repository, for: MockModule.moduleType)
 
         print(sut.presets)
         #expect(sut.presets.count == 1)
@@ -24,7 +24,7 @@ struct ProviderManagerTests {
     func givenManager_whenFetchUnsupportedPresets_thenIsEmpty() async throws {
         let repository = try await Self.repository(for: .mock)
         let sut = ProviderManager()
-        try await sut.setRepository(repository, for: MockUnsupportedModule.moduleHandler.id)
+        try await sut.setRepository(repository, for: MockUnsupportedModule.moduleType)
 
         print(sut.presets)
         #expect(sut.presets.isEmpty)
@@ -34,7 +34,7 @@ struct ProviderManagerTests {
     func givenManager_whenSetProvider_thenReturnsServers() async throws {
         let repository = try await Self.repository(for: .mock)
         let sut = ProviderManager()
-        try await sut.setRepository(repository, for: MockModule.moduleHandler.id)
+        try await sut.setRepository(repository, for: MockModule.moduleType)
 
         #expect(sut.options.countryCodes.count == 1)
         let servers = try await sut.filteredServers()
@@ -53,7 +53,7 @@ struct ProviderManagerTests {
     func givenManager_whenSetFilters_thenReturnsFilteredServers() async throws {
         let repository = try await Self.repository(for: .mock)
         let sut = ProviderManager()
-        try await sut.setRepository(repository, for: MockModule.moduleHandler.id)
+        try await sut.setRepository(repository, for: MockModule.moduleType)
 
         var filters = ProviderFilters()
         filters.categoryName = "foobar"
@@ -65,7 +65,7 @@ struct ProviderManagerTests {
     func givenManager_whenSetFiltersThenReset_thenReturnsAllServers() async throws {
         let repository = try await Self.repository(for: .mock)
         let sut = ProviderManager()
-        try await sut.setRepository(repository, for: MockModule.moduleHandler.id)
+        try await sut.setRepository(repository, for: MockModule.moduleType)
 
         var filters = ProviderFilters()
         filters.categoryName = "foobar"
