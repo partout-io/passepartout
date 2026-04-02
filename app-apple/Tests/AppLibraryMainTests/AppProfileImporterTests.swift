@@ -112,7 +112,7 @@ struct AppProfileImporterTests {
 
 private struct SomeModule: Module {
     final class Implementation: ModuleImplementation {
-        var moduleHandlerId: ModuleType {
+        var moduleType: ModuleType {
             moduleHandler.id
         }
     }
