@@ -6,7 +6,7 @@ import Partout
 
 extension ModuleRegistry {
     public func newModule(ofType moduleType: ModuleType) -> any ModuleBuilder {
-        guard var newBuilder = newModuleBuilder(withModuleType: moduleType) else {
+        guard var newBuilder = moduleType.builderType?.empty() else {
             fatalError("Unknown module type: \(self)")
         }
         switch moduleType {
@@ -55,5 +55,29 @@ extension CodingRegistry {
         // Fall back to parsing a single module
         let importedModule = try module(fromContents: contents, object: passphrase)
         return try Profile(withName: name, singleModule: importedModule)
+    }
+}
+
+private extension ModuleType {
+    var builderType: (any ModuleBuilder.Type)? {
+        switch self {
+        case .DNS:
+            return DNSModule.Builder.self
+        case .HTTPProxy:
+            return HTTPProxyModule.Builder.self
+        case .IP:
+            return IPModule.Builder.self
+        case .OnDemand:
+            return OnDemandModule.Builder.self
+        case .OpenVPN:
+            return OpenVPNModule.Builder.self
+        case .Provider:
+            return ProviderModule.Builder.self
+        case .WireGuard:
+            return WireGuardModule.Builder.self
+        default:
+            assertionFailure("ModuleType '\(rawValue)' has no ModuleBuilder associated")
+            return nil
+        }
     }
 }
