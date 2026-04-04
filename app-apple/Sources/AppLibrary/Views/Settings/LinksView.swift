@@ -32,7 +32,6 @@ private extension LinksView {
 
     var supportSection: some View {
         Group {
-            Link(Strings.Views.Settings.Links.Rows.joinCommunity, destination: constants.websites.subredditURL)
             Link(Strings.Views.Settings.Links.Rows.openDiscussion, destination: constants.github.discussionsURL)
 //            if distributionTarget.supportsIAP && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)

@@ -260,7 +260,6 @@
 "modules.wireguard.preshared_key" = "Współdzielony klucz";
 "modules.wireguard.private_key.generate" = "Wygeneruj nowy klucz";
 "onboarding.community.dismiss" = "Nie, dziękuję";
-"onboarding.community.message" = "Czy wiesz, że %@ ma subreddit? Zasubskrybuj, aby otrzymywać aktualizacje lub omawiać problemy, funkcje, nowe platformy lub cokolwiek innego.\n\nTo także świetny sposób na okazanie wsparcia dla tego projektu.";
 "onboarding.community.subscribe" = "Zasubskrybuj teraz";
 "onboarding.drop_lzo.message" = "Ze względów bezpieczeństwa (w szczególności z powodu podatności VORACLE) OpenVPN już lata temu zrezygnował z obsługi kompresji. Od grudnia 2025 Passepartout również usunie obsługę kompresji LZO. Jeśli Twoje połączenie OpenVPN przestanie działać, upewnij się, że kompresja jest wyłączona na serwerze. Większość publicznych dostawców VPN już to zrobiła, więc prawdopodobnie nie zostaniesz dotknięty tym problemem.";
 "onboarding.migrate_3_2_3.message" = "Wersja 3.2.3 zmieniła sposób przechowywania dostawców.";

@@ -53,8 +53,6 @@ struct OnboardingModifier: ViewModifier {
 private extension OnboardingModifier {
     func alertTitle(for item: OnboardingStep?) -> String {
         switch item {
-        case .community:
-            return Strings.Unlocalized.reddit
         case .migrateV3_2_3, .migrateV3_5_15:
             return Strings.Global.Nouns.migration
         case .dropLZOCompression:
@@ -67,13 +65,6 @@ private extension OnboardingModifier {
     @ViewBuilder
     func alertActions(for item: OnboardingStep) -> some View {
         switch item {
-        case .community:
-            Link(Strings.Onboarding.Community.subscribe, destination: appConfiguration.constants.websites.subredditURL)
-                .environment(\.openURL, OpenURLAction { _ in
-                    advance()
-                    return .systemAction
-                })
-            Button(Strings.Onboarding.Community.dismiss, role: .cancel, action: advance)
         case .migrateV3_2_3:
             Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
         case .migrateV3_5_15:
@@ -88,8 +79,6 @@ private extension OnboardingModifier {
     @ViewBuilder
     func alertMessage(for item: OnboardingStep) -> some View {
         switch item {
-        case .community:
-            Text(Strings.Onboarding.Community.message(Strings.Unlocalized.appName))
         case .migrateV3_2_3:
             Text([
                 Strings.Onboarding.Migrate323.message,
