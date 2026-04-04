@@ -76,9 +76,6 @@ components:
             homeURL:
               type: string
               format: uri
-            subredditURL:
-              type: string
-              format: uri
             eulaURL:
               type: string
               format: uri
@@ -92,7 +89,6 @@ components:
               type: number
           required:
           - homeURL
-          - subredditURL
           - eulaURL
           - appStoreDownloadURL
           - macDownloadURL

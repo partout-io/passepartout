@@ -8,7 +8,6 @@
     },
     "websites": {
         "homeURL": "https://passepartoutvpn.app",
-        "subredditURL": "https://www.reddit.com/r/passepartout/",
         "eulaURL": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
         "appStoreDownloadURL": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
         "macDownloadURL": "https://passepartoutvpn.app/#app-mac",

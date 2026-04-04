@@ -24,7 +24,6 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param homeURL 
- * @param subredditURL 
  * @param eulaURL 
  * @param appStoreDownloadURL 
  * @param macDownloadURL 
@@ -36,9 +35,6 @@ data class AppConstantsWebsites (
 
     @SerialName(value = "homeURL")
     val homeURL: kotlin.String,
-
-    @SerialName(value = "subredditURL")
-    val subredditURL: kotlin.String,
 
     @SerialName(value = "eulaURL")
     val eulaURL: kotlin.String,
