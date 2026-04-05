@@ -28,23 +28,23 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class IPSocketType(val value: kotlin.String) {
 
-    @SerialName(value = "udp")
-    udp("udp"),
+    @SerialName(value = "UDP")
+    udp("UDP"),
 
-    @SerialName(value = "tcp")
-    tcp("tcp"),
+    @SerialName(value = "TCP")
+    tcp("TCP"),
 
-    @SerialName(value = "udp4")
-    udp4("udp4"),
+    @SerialName(value = "UDP4")
+    udp4("UDP4"),
 
-    @SerialName(value = "tcp4")
-    tcp4("tcp4"),
+    @SerialName(value = "TCP4")
+    tcp4("TCP4"),
 
-    @SerialName(value = "udp6")
-    udp6("udp6"),
+    @SerialName(value = "UDP6")
+    udp6("UDP6"),
 
-    @SerialName(value = "tcp6")
-    tcp6("tcp6");
+    @SerialName(value = "TCP6")
+    tcp6("TCP6");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

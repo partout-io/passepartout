@@ -28,20 +28,20 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class OpenVPNDigest(val value: kotlin.String) {
 
-    @SerialName(value = "sha1")
-    sha1("sha1"),
+    @SerialName(value = "SHA1")
+    sha1("SHA1"),
 
-    @SerialName(value = "sha224")
-    sha224("sha224"),
+    @SerialName(value = "SHA224")
+    sha224("SHA224"),
 
-    @SerialName(value = "sha256")
-    sha256("sha256"),
+    @SerialName(value = "SHA256")
+    sha256("SHA256"),
 
-    @SerialName(value = "sha384")
-    sha384("sha384"),
+    @SerialName(value = "SHA384")
+    sha384("SHA384"),
 
-    @SerialName(value = "sha512")
-    sha512("sha512");
+    @SerialName(value = "SHA512")
+    sha512("SHA512");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

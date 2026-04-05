@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: auth,crypt
+ * Values: auth,crypt,cryptV2
  */
 @Serializable
 enum class OpenVPNTLSWrapStrategy(val value: kotlin.String) {
@@ -32,7 +32,10 @@ enum class OpenVPNTLSWrapStrategy(val value: kotlin.String) {
     auth("auth"),
 
     @SerialName(value = "crypt")
-    crypt("crypt");
+    crypt("crypt"),
+
+    @SerialName(value = "crypt-v2")
+    cryptV2("crypt-v2");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

@@ -8,7 +8,6 @@ if [ -z $ANDROID_NDK_ROOT ]; then
 fi
 cmake_bin_path="bin/android-aarch64/dist"
 cpp_path=`realpath app-android/app/src/main/cpp`
-java_path=`realpath app-android/app/src/main/java`
 headers_path="$cpp_path/src"
 swift_version="6_2"
 
