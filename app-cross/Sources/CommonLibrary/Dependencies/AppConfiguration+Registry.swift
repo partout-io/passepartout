@@ -47,10 +47,27 @@ extension ABI.AppConfiguration {
             }
         )
         registry.assertMissingImplementations()
-        return CodingRegistry(registry: registry, withLegacyEncoding: {
-            let flags = configBlock()
-            return !flags.contains(.newProfileEncoding)
-        })
+        return CodingRegistry(
+            registry: registry,
+            withLegacyEncoding: {
+                let flags = configBlock()
+                return !flags.contains(.newProfileEncoding)
+            },
+            customModuleHandler: {
+                switch $0.innerType {
+                case .Provider:
+                    do {
+                        let data = try JSONEncoder().encode($0.json)
+                        return try JSONDecoder().decode(ProviderModule.self, from: data)
+                    } catch {
+                        pspLog(.profiles, .error, "Unable to decode ProviderModule: \(error)")
+                        return $0
+                    }
+                default:
+                    return $0
+                }
+            }
+        )
     }
 }
 
