@@ -27,6 +27,7 @@ import kotlinx.serialization.Contextual
  *
  * @param key 
  * @param strategy 
+ * @param wrappedKey 
  */
 @Serializable
 
@@ -36,7 +37,10 @@ data class OpenVPNTLSWrap (
     val key: OpenVPNStaticKey,
 
     @Contextual @SerialName(value = "strategy")
-    val strategy: OpenVPNTLSWrapStrategy
+    val strategy: OpenVPNTLSWrapStrategy,
+
+    @SerialName(value = "wrappedKey")
+    val wrappedKey: kotlin.String? = null
 
 ) {
 

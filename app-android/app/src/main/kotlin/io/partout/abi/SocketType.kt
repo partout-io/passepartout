@@ -28,11 +28,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class SocketType(val value: kotlin.String) {
 
-    @SerialName(value = "udp")
-    udp("udp"),
+    @SerialName(value = "UDP")
+    udp("UDP"),
 
-    @SerialName(value = "tcp")
-    tcp("tcp");
+    @SerialName(value = "TCP")
+    tcp("TCP");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

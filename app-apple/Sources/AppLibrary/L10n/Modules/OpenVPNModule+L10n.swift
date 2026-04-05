@@ -195,6 +195,8 @@ private extension Optional where Wrapped == OpenVPN.TLSWrap {
             return "--tls-auth"
         case .crypt:
             return "--tls-crypt"
+        case .cryptV2:
+            return "--tls-crypt-v2"
         @unknown default:
             return ""
         }

@@ -28,23 +28,23 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class OpenVPNCipher(val value: kotlin.String) {
 
-    @SerialName(value = "aes128cbc")
-    aes128cbc("aes128cbc"),
+    @SerialName(value = "AES-128-CBC")
+    aes128cbc("AES-128-CBC"),
 
-    @SerialName(value = "aes192cbc")
-    aes192cbc("aes192cbc"),
+    @SerialName(value = "AES-192-CBC")
+    aes192cbc("AES-192-CBC"),
 
-    @SerialName(value = "aes256cbc")
-    aes256cbc("aes256cbc"),
+    @SerialName(value = "AES-256-CBC")
+    aes256cbc("AES-256-CBC"),
 
-    @SerialName(value = "aes128gcm")
-    aes128gcm("aes128gcm"),
+    @SerialName(value = "AES-128-GCM")
+    aes128gcm("AES-128-GCM"),
 
-    @SerialName(value = "aes192gcm")
-    aes192gcm("aes192gcm"),
+    @SerialName(value = "AES-192-GCM")
+    aes192gcm("AES-192-GCM"),
 
-    @SerialName(value = "aes256gcm")
-    aes256gcm("aes256gcm");
+    @SerialName(value = "AES-256-GCM")
+    aes256gcm("AES-256-GCM");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use
