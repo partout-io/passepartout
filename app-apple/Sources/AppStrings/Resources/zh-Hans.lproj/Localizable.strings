@@ -114,6 +114,7 @@
 "global.actions.save" = "保存";
 "global.actions.select" = "选择";
 "global.actions.send" = "发送";
+"global.actions.share" = "分享";
 "global.actions.show" = "显示";
 "global.actions.update" = "更新";
 "global.nouns.about" = "关于";
@@ -420,3 +421,4 @@
 "web_uploader.submit" = "上传";
 "web_uploader.success" = "上传完成！";
 "web_uploader.title" = "上传到 Apple TV";
+```

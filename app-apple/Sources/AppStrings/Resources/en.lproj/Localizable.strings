@@ -325,6 +325,7 @@
 "global.actions.save" = "Save";
 "global.actions.select" = "Select";
 "global.actions.send" = "Send";
+"global.actions.share" = "Share";
 "global.actions.show" = "Show";
 "global.actions.update" = "Update";
 

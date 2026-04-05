@@ -114,6 +114,7 @@
 "global.actions.save" = "Zapisz";
 "global.actions.select" = "Wybierz";
 "global.actions.send" = "Wyślij";
+"global.actions.share" = "Udostępnij";
 "global.actions.show" = "Pokaż";
 "global.actions.update" = "Aktualizuj";
 "global.nouns.about" = "O programie";

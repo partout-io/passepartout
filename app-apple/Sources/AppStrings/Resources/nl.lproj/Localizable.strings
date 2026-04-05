@@ -114,6 +114,7 @@
 "global.actions.save" = "Opslaan";
 "global.actions.select" = "Selecteren";
 "global.actions.send" = "Verzenden";
+"global.actions.share" = "Delen";
 "global.actions.show" = "Weergeven";
 "global.actions.update" = "Bijwerken";
 "global.nouns.about" = "Over";
