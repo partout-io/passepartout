@@ -94,6 +94,7 @@ private extension ProfileEditView {
             addModuleMenu
                 .themeTip(.Profile.buildYourProfile)
         }
+        .id(modulesOrder)
         .themeSection(
             header: Strings.Global.Nouns.modules,
             footer: Strings.Views.Profile.ModuleList.Section.footer
@@ -156,6 +157,10 @@ private extension ProfileEditView {
 }
 
 private extension ProfileEditView {
+    var modulesOrder: [UUID] {
+        profileEditor.modules.map(\.id)
+    }
+
     var availableTypes: [ModuleType] {
         profileEditor.availableModuleTypes(forTarget: appConfiguration.bundle.distributionTarget)
     }
