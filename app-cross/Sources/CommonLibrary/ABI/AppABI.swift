@@ -386,7 +386,8 @@ extension AppABI {
             // Imply some hidden preferences from config flags
             kvStore.preferences.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
-            // Disable .relaxedVerification if ConfigManager disallows it
+            // Constrain .relaxedVerification preference to .allows and
+            // .forces combinations in ConfigManager. At most, it's left as is
             kvStore.constrainRelaxedVerification(to: configManager)
         }
     }
