@@ -338,6 +338,8 @@ public enum Strings {
       public static let select = Strings.tr("Localizable", "global.actions.select", fallback: "Select")
       /// Send
       public static let send = Strings.tr("Localizable", "global.actions.send", fallback: "Send")
+      /// Share
+      public static let share = Strings.tr("Localizable", "global.actions.share", fallback: "Share")
       /// Show
       public static let show = Strings.tr("Localizable", "global.actions.show", fallback: "Show")
       /// Update

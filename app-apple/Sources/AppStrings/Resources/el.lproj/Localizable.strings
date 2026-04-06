@@ -114,6 +114,7 @@
 "global.actions.save" = "Αποθήκευση";
 "global.actions.select" = "Επιλογή";
 "global.actions.send" = "Αποστολή";
+"global.actions.share" = "Κοινοποίηση";
 "global.actions.show" = "Εμφάνιση";
 "global.actions.update" = "Ενημέρωση";
 "global.nouns.about" = "Πληροφορίες";

@@ -30,6 +30,12 @@ struct ProfileEditView: View, Routable {
     @State
     private var errorModuleIds: Set<UUID> = []
 
+    @State
+    private var isExporting = false
+
+    @State
+    private var exportedDocument: SerializedModuleFile?
+
     var body: some View {
         debugChanges()
         return List {
@@ -61,7 +67,6 @@ struct ProfileEditView: View, Routable {
 // MARK: -
 
 private extension ProfileEditView {
-
     @ToolbarContentBuilder
     func toolbarContent() -> some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
@@ -114,12 +119,28 @@ private extension ProfileEditView {
             }
         }
         .contextMenu {
+            if let file = module.serializedIgnoringErrors(withName: profileEditor.profile.name) {
+                ModuleShareGroup(
+                    file: file,
+                    isExporting: $isExporting,
+                    exportedDocument: $exportedDocument,
+                    paywallReason: $paywallReason
+                )
+                Divider()
+            }
             ModuleSendMenu(
                 profileId: profileEditor.profile.id,
                 module: module,
                 errorHandler: errorHandler
             )
         }
+        .fileExporter(
+            isPresented: $isExporting,
+            document: exportedDocument.map { TextFile(string: $0.content) },
+            contentType: .text,
+            defaultFilename: exportedDocument?.filename,
+            onCompletion: { _ in }
+        )
     }
 
     var addModuleMenu: some View {

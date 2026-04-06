@@ -7,8 +7,8 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-public struct JSONFile: FileDocument {
-    public static let readableContentTypes: [UTType] = [.json]
+public struct TextFile: FileDocument {
+    public static let readableContentTypes: [UTType] = [.json, .plainText, .text]
 
     private var string = ""
 

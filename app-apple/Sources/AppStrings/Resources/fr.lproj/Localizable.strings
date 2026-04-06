@@ -114,6 +114,7 @@
 "global.actions.save" = "Sauvegarder";
 "global.actions.select" = "Sélectionner";
 "global.actions.send" = "Envoyer";
+"global.actions.share" = "Partager";
 "global.actions.show" = "Montrer";
 "global.actions.update" = "Mettre à jour";
 "global.nouns.about" = "À propos";

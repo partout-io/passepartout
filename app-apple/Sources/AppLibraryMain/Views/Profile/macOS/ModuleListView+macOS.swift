@@ -32,6 +32,12 @@ struct ModuleListView: View, Routable {
 
     var flow: ProfileCoordinator.Flow?
 
+    @State
+    private var isExporting = false
+
+    @State
+    private var exportedDocument: SerializedModuleFile?
+
     var body: some View {
         List(selection: $selectedModuleId) {
             Section {
@@ -83,12 +89,28 @@ private extension ModuleListView {
             }
         }
         .contextMenu {
+            if let file = module.serializedIgnoringErrors(withName: profileEditor.profile.name) {
+                ModuleShareGroup(
+                    file: file,
+                    isExporting: $isExporting,
+                    exportedDocument: $exportedDocument,
+                    paywallReason: $paywallReason
+                )
+                Divider()
+            }
             ModuleSendMenu(
                 profileId: profileEditor.profile.id,
                 module: module,
                 errorHandler: errorHandler
             )
         }
+        .fileExporter(
+            isPresented: $isExporting,
+            document: exportedDocument.map { TextFile(string: $0.content) },
+            contentType: .text,
+            defaultFilename: exportedDocument?.filename,
+            onCompletion: { _ in }
+        )
     }
 
     @ViewBuilder

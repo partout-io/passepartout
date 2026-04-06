@@ -114,6 +114,7 @@
 "global.actions.save" = "Сохранить";
 "global.actions.select" = "Выбрать";
 "global.actions.send" = "Отправить";
+"global.actions.share" = "Поделиться";
 "global.actions.show" = "Показать";
 "global.actions.update" = "Обновить";
 "global.nouns.about" = "О программе";

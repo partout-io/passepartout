@@ -44,7 +44,7 @@ struct ProfileExportButton: View {
             .disabled(!iapObservable.isEligible(for: .sharing))
             .fileExporter(
                 isPresented: $viewModel.isExporting,
-                document: viewModel.jsonString.map(JSONFile.init(string:)),
+                document: viewModel.jsonString.map(TextFile.init),
                 contentType: .json,
                 defaultFilename: appEncoder.defaultFilename(for: profile),
                 onCompletion: { _ in }

@@ -114,6 +114,7 @@
 "global.actions.save" = "Spara";
 "global.actions.select" = "Välj";
 "global.actions.send" = "Skicka";
+"global.actions.share" = "Dela";
 "global.actions.show" = "Visa";
 "global.actions.update" = "Uppdatera";
 "global.nouns.about" = "Om";
