@@ -1,29 +1,29 @@
-Proteja sua privacidade online com o Passepartout, um cliente VPN inteligente perfeitamente integrado ao iOS, macOS, iPadOS e tvOS. Passepartout é sua solução tudo-em-um.
+Proteja sua privacidade online com o Passepartout, um cliente VPN inteligente perfeitamente integrado ao iOS, macOS, iPadOS e tvOS.
 
-POR QUE ESCOLHER O PASSEPARTOUT?
+COMO O PASSEPARTOUT FUNCIONA
 
-Basta importar arquivos .ovpn ou .conf para configurar seus servidores VPN pessoais.
+O Passepartout inclui recursos básicos de importação e conexão. Recursos adicionais exigem uma compra no app.
 
-RECURSOS GRATUITOS:
+RECURSOS INCLUÍDOS:
 
-- Suporte aos protocolos OpenVPN e WireGuard.  
-- Ofuscação OpenVPN (usando --scramble).  
-- Automação com Atalhos para operações simplificadas.  
+- Suporte aos protocolos OpenVPN e WireGuard.
+- Ofuscação OpenVPN (usando --scramble).
+- Automação com Atalhos para operações simplificadas.
 - Exclusão de endpoints para controle preciso.
 
-RECURSOS PAGOS:
+EXIGE UMA COMPRA NO APP:
 
-- Suporte para Apple TV.  
-- Regras sob demanda para conexões automáticas e inteligentes.  
-- Compartilhamento via iCloud para uso contínuo em vários dispositivos.  
-- DoH/DoT para consultas DNS seguras.  
-- Roteamento personalizado para configurações avançadas.  
-- Login interativo com suporte para senhas de uso único (OTP).  
-- Perfis não-VPN (por exemplo, configurações apenas de DNS/Proxy).  
+- Suporte para Apple TV.
+- Regras sob demanda para conexões automáticas e inteligentes.
+- Compartilhamento via iCloud para uso contínuo em vários dispositivos.
+- DoH/DoT para consultas DNS seguras.
+- Roteamento personalizado para configurações avançadas.
+- Login interativo com suporte para senhas de uso único (OTP).
+- Perfis não-VPN (por exemplo, configurações apenas de DNS/Proxy).
 
 COMPARTILHAMENTO FAMILIAR
 
-Passepartout suporta o Compartilhamento Familiar, permitindo que você compartilhe sua compra com membros da família.
+Todas as compras oferecem suporte ao Compartilhamento Familiar, para que você possa compartilhá-las com seus familiares.
 
 PRIVACIDADE EM QUE VOCÊ PODE CONFIAR
 
@@ -34,8 +34,6 @@ Passepartout foi projetado com transparência e privacidade em mente:
 CÓDIGO ABERTO E SUPORTE DA COMUNIDADE
 
 Passepartout é um projeto de código aberto e está em constante evolução graças à ajuda da comunidade. Confira o projeto no GitHub: https://github.com/partout-io
-
-Assuma o controle da sua experiência com VPN. Baixe o Passepartout hoje e desfrute de uma conectividade segura, privada e sem esforço em todos os seus dispositivos Apple.
 
 ~
 
