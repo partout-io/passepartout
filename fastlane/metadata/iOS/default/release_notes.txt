@@ -1,1 +1,4 @@
+* Relax receipt verification (#1701)
+* Export OpenVPN and WireGuard as files from module menu (#1745)
+* WireGuard: Ignore empty fields in editor (#1744)
 * OpenVPN: Add --tls-crypt-v2 support (#1743)
