@@ -72,3 +72,13 @@ extension OpenAPIAppConstantsTunnel {
         isBeta ? verification.beta : verification.production
     }
 }
+
+extension OpenAPIAppConstantsTunnelVerificationParameters {
+    public var delay: Double {
+#if os(tvOS)
+        tvDelay ?? defaultDelay
+#else
+        defaultDelay
+#endif
+    }
+}
