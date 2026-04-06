@@ -82,7 +82,7 @@ public final class TunnelABI: TunnelABIProtocol {
 
             // Prepare for periodic receipt verification
             let params = iap.verificationParameters
-            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds")
+            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds (\(iap.usesRelaxedVerification ? "relaxed" : "strict"))")
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may
