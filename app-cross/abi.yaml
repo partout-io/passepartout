@@ -400,6 +400,7 @@ components:
       x-enum-varnames:
       - allowsRelaxedVerification
       - appNotWorking
+      - forcesRelaxedVerification
       - neSocketUDP
       - neSocketTCP
       - newProfileEncoding
@@ -408,6 +409,7 @@ components:
       enum:
       - allowsRelaxedVerification
       - appNotWorking
+      - forcesRelaxedVerification
       - neSocketUDP
       - neSocketTCP
       - newProfileEncoding
