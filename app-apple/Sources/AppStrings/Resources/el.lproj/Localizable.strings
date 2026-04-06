@@ -259,8 +259,6 @@
 "modules.wireguard.peer" = "Ομότιμος #%d";
 "modules.wireguard.preshared_key" = "Προμοιρασμένο κλειδί";
 "modules.wireguard.private_key.generate" = "Δημιουργία νέου κλειδιού";
-"onboarding.community.dismiss" = "Όχι, ευχαριστώ";
-"onboarding.community.subscribe" = "Εγγραφή τώρα";
 "onboarding.drop_lzo.message" = "Λόγω ανησυχιών ασφαλείας (συγκεκριμένα της ευπάθειας VORACLE), το OpenVPN κατάργησε την υποστήριξη συμπίεσης εδώ και χρόνια. Από τον Δεκέμβριο του 2025, το Passepartout θα αφαιρέσει επίσης την υποστήριξη για συμπίεση LZO. Εάν η σύνδεσή σας OpenVPN σταματήσει ν λειτουργεί, βεβαιωθείτε ότι η συμπίεση είναι απενεργοποιημένη στον διακομιστή σας. Οι περισσότεροι δημόσιοι πάροχοι VPN το έχουν ήδη κάνει, οπότε είναι απίθανο να επηρεαστείτε.";
 "onboarding.migrate_3_2_3.message" = "Η έκδοση 3.2.3 άλλαξε τον τρόπο αποθήκευσης των παρόχων.";
 "onboarding.migrate_3_5_15.message" = "Η έκδοση 3.5.15 άλλαξε τον τρόπο αποθήκευσης των προφίλ.";
@@ -388,7 +386,6 @@
 "views.settings.links.rows.blog" = "Ιστολόγιο";
 "views.settings.links.rows.disclaimer" = "Αποποίηση ευθυνών";
 "views.settings.links.rows.home_page" = "Αρχική σελίδα";
-"views.settings.links.rows.join_community" = "Γίνετε μέλος της κοινότητας";
 "views.settings.links.rows.open_discussion" = "Ξεκινήστε μια συζήτηση";
 "views.settings.links.rows.privacy_policy" = "Πολιτική απορρήτου";
 "views.settings.links.rows.write_review" = "Γράψτε μια κριτική";

@@ -725,12 +725,6 @@ public enum Strings {
     }
   }
   public enum Onboarding {
-    public enum Community {
-      /// No, thanks
-      public static let dismiss = Strings.tr("Localizable", "onboarding.community.dismiss", fallback: "No, thanks")
-      /// Subscribe now
-      public static let subscribe = Strings.tr("Localizable", "onboarding.community.subscribe", fallback: "Subscribe now")
-    }
     public enum DropLzo {
       /// Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.
       public static let message = Strings.tr("Localizable", "onboarding.drop_lzo.message", fallback: "Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.")
@@ -1216,8 +1210,6 @@ public enum Strings {
           public static let disclaimer = Strings.tr("Localizable", "views.settings.links.rows.disclaimer", fallback: "Disclaimer")
           /// Home page
           public static let homePage = Strings.tr("Localizable", "views.settings.links.rows.home_page", fallback: "Home page")
-          /// Join community
-          public static let joinCommunity = Strings.tr("Localizable", "views.settings.links.rows.join_community", fallback: "Join community")
           /// Start a discussion
           public static let openDiscussion = Strings.tr("Localizable", "views.settings.links.rows.open_discussion", fallback: "Start a discussion")
           /// Privacy policy

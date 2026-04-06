@@ -130,7 +130,7 @@ private extension OnboardingModifier {
 
     func performCurrentStep() {
         switch onboardingObservable.step {
-        case .community, .migrateV3_2_3, .migrateV3_5_15, .dropLZOCompression:
+        case .migrateV3_2_3, .migrateV3_5_15, .dropLZOCompression:
             isAlertPresented = true
         default:
             if onboardingObservable.step < .last {

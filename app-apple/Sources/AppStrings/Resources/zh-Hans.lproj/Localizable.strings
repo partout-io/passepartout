@@ -259,8 +259,6 @@
 "modules.wireguard.peer" = "对等 #%d";
 "modules.wireguard.preshared_key" = "预共享密钥";
 "modules.wireguard.private_key.generate" = "生成新密钥";
-"onboarding.community.dismiss" = "不，谢谢";
-"onboarding.community.subscribe" = "立即订阅";
 "onboarding.drop_lzo.message" = "出于安全考虑（尤其是 VORACLE 漏洞），OpenVPN 多年前已弃用压缩支持。从 2025 年 12 月起，Passepartout 也将移除对 LZO 压缩的支持。如果您的 OpenVPN 连接停止工作，请确保服务器上已禁用压缩。大多数公共 VPN 提供商已完成此操作，因此您不太可能受到影响。";
 "onboarding.migrate_3_2_3.message" = "3.2.3 版本更改了提供商的存储方式。";
 "onboarding.migrate_3_5_15.message" = "3.5.15 版本更改了配置文件的存储方式。";
@@ -388,7 +386,6 @@
 "views.settings.links.rows.blog" = "博客";
 "views.settings.links.rows.disclaimer" = "免责声明";
 "views.settings.links.rows.home_page" = "主页";
-"views.settings.links.rows.join_community" = "加入社区";
 "views.settings.links.rows.open_discussion" = "开始讨论";
 "views.settings.links.rows.privacy_policy" = "隐私政策";
 "views.settings.links.rows.write_review" = "撰写评价";

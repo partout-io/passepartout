@@ -259,8 +259,6 @@
 "modules.wireguard.peer" = "Peer #%d";
 "modules.wireguard.preshared_key" = "Chiave precondivisa";
 "modules.wireguard.private_key.generate" = "Genera nuova chiave";
-"onboarding.community.dismiss" = "No, grazie";
-"onboarding.community.subscribe" = "Iscriviti ora";
 "onboarding.drop_lzo.message" = "Per motivi di sicurezza (in particolare la vulnerabilità VORACLE), OpenVPN ha deprecato il supporto per la compressione già da diversi anni. A partire da dicembre 2025, anche Passepartout rimuoverà il supporto per la compressione LZO. Se la tua connessione OpenVPN smette di funzionare, assicurati che la compressione sia disabilitata sul tuo server. La maggior parte dei provider VPN pubblici lo ha già fatto, quindi è improbabile che tu sia interessato.";
 "onboarding.migrate_3_2_3.message" = "La versione 3.2.3 ha modificato il modo in cui vengono salvati i provider.";
 "onboarding.migrate_3_5_15.message" = "La versione 3.5.15 ha modificato il modo in cui vengono salvati i profili.";
@@ -388,7 +386,6 @@
 "views.settings.links.rows.blog" = "Blog";
 "views.settings.links.rows.disclaimer" = "Esclusione di responsabilità";
 "views.settings.links.rows.home_page" = "Pagina principale";
-"views.settings.links.rows.join_community" = "Unisciti alla comunità";
 "views.settings.links.rows.open_discussion" = "Avvia una discussione";
 "views.settings.links.rows.privacy_policy" = "Politica sulla privacy";
 "views.settings.links.rows.write_review" = "Scrivi una recensione";

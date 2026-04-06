@@ -259,8 +259,6 @@
 "modules.wireguard.peer" = "Узел #%d";
 "modules.wireguard.preshared_key" = "Предварительно общий ключ";
 "modules.wireguard.private_key.generate" = "Сгенерировать новый ключ";
-"onboarding.community.dismiss" = "Нет, спасибо";
-"onboarding.community.subscribe" = "Подписаться";
 "onboarding.drop_lzo.message" = "По соображениям безопасности (в частности, из-за уязвимости VORACLE) OpenVPN уже несколько лет назад прекратил поддержку сжатия. Начиная с декабря 2025 года, Passepartout также удалит поддержку сжатия LZO. Если ваше соединение OpenVPN перестанет работать, убедитесь, что сжатие отключено на вашем сервере. Большинство публичных VPN-провайдеров уже сделали это, поэтому маловероятно, что вы пострадаете.";
 "onboarding.migrate_3_2_3.message" = "Версия 3.2.3 изменила способ хранения провайдеров.";
 "onboarding.migrate_3_5_15.message" = "Версия 3.5.15 изменила способ хранения профилей.";
@@ -388,7 +386,6 @@
 "views.settings.links.rows.blog" = "Блог";
 "views.settings.links.rows.disclaimer" = "Отказ от ответственности";
 "views.settings.links.rows.home_page" = "Домашняя страница";
-"views.settings.links.rows.join_community" = "Присоединиться к сообществу";
 "views.settings.links.rows.open_discussion" = "Начать обсуждение";
 "views.settings.links.rows.privacy_policy" = "Политика конфиденциальности";
 "views.settings.links.rows.write_review" = "Написать отзыв";

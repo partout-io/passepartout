@@ -259,8 +259,6 @@
 "modules.wireguard.peer" = "Вузол #%d";
 "modules.wireguard.preshared_key" = "Попередньо спільний ключ";
 "modules.wireguard.private_key.generate" = "Згенерувати новий ключ";
-"onboarding.community.dismiss" = "Ні, дякую";
-"onboarding.community.subscribe" = "Підписатися зараз";
 "onboarding.drop_lzo.message" = "Через міркування безпеки (зокрема вразливість VORACLE) OpenVPN припинив підтримку стиснення кілька років тому. Починаючи з грудня 2025 року, Passepartout також видалить підтримку стиснення LZO. Якщо ваше з’єднання OpenVPN перестане працювати, переконайтеся, що стиснення вимкнено на вашому сервері. Більшість публічних VPN-провайдерів уже робили це, тож навряд чи ви будете зачеплені.";
 "onboarding.migrate_3_2_3.message" = "Версія 3.2.3 змінила спосіб збереження провайдерів.";
 "onboarding.migrate_3_5_15.message" = "Версія 3.5.15 змінила спосіб збереження профілів.";
@@ -388,7 +386,6 @@
 "views.settings.links.rows.blog" = "Блог";
 "views.settings.links.rows.disclaimer" = "Відмова від відповідальності";
 "views.settings.links.rows.home_page" = "Домашня сторінка";
-"views.settings.links.rows.join_community" = "Приєднатися до спільноти";
 "views.settings.links.rows.open_discussion" = "Почати обговорення";
 "views.settings.links.rows.privacy_policy" = "Політика конфіденційності";
 "views.settings.links.rows.write_review" = "Написати відгук";

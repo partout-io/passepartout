@@ -259,8 +259,6 @@
 "modules.wireguard.peer" = "Peer #%d";
 "modules.wireguard.preshared_key" = "Vooraf gedeelde sleutel";
 "modules.wireguard.private_key.generate" = "Nieuwe sleutel genereren";
-"onboarding.community.dismiss" = "Nee, bedankt";
-"onboarding.community.subscribe" = "Nu abonneren";
 "onboarding.drop_lzo.message" = "Om veiligheidsredenen (met name de VORACLE-kwetsbaarheid) heeft OpenVPN jaren geleden al compressieondersteuning afgeschaft. Vanaf december 2025 zal Passepartout ook de ondersteuning voor LZO-compressie verwijderen. Als je OpenVPN-verbinding stopt met werken, zorg er dan voor dat compressie is uitgeschakeld op je server. De meeste openbare VPN-providers hebben dit al gedaan, dus de kans is klein dat je wordt getroffen.";
 "onboarding.migrate_3_2_3.message" = "Versie 3.2.3 heeft de manier waarop providers worden opgeslagen gewijzigd.";
 "onboarding.migrate_3_5_15.message" = "Versie 3.5.15 heeft de manier waarop profielen worden opgeslagen gewijzigd.";
@@ -388,7 +386,6 @@
 "views.settings.links.rows.blog" = "Blog";
 "views.settings.links.rows.disclaimer" = "Disclaimer";
 "views.settings.links.rows.home_page" = "Startpagina";
-"views.settings.links.rows.join_community" = "Word lid van de community";
 "views.settings.links.rows.open_discussion" = "Discussie starten";
 "views.settings.links.rows.privacy_policy" = "Privacybeleid";
 "views.settings.links.rows.write_review" = "Schrijf een beoordeling";
