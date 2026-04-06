@@ -9,20 +9,23 @@ import Partout
 
 public struct OpenAPIAppConstantsTunnelVerificationParameters: Sendable, Codable, Hashable {
 
-    public var delay: Double
+    public var defaultDelay: Double
+    public var tvDelay: Double?
     public var interval: Double
     public var attempts: Int
     public var retryInterval: Double
 
-    public init(delay: Double, interval: Double, attempts: Int, retryInterval: Double) {
-        self.delay = delay
+    public init(defaultDelay: Double, tvDelay: Double? = nil, interval: Double, attempts: Int, retryInterval: Double) {
+        self.defaultDelay = defaultDelay
+        self.tvDelay = tvDelay
         self.interval = interval
         self.attempts = attempts
         self.retryInterval = retryInterval
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case delay
+        case defaultDelay
+        case tvDelay
         case interval
         case attempts
         case retryInterval
@@ -32,7 +35,8 @@ public struct OpenAPIAppConstantsTunnelVerificationParameters: Sendable, Codable
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(delay, forKey: .delay)
+        try container.encode(defaultDelay, forKey: .defaultDelay)
+        try container.encodeIfPresent(tvDelay, forKey: .tvDelay)
         try container.encode(interval, forKey: .interval)
         try container.encode(attempts, forKey: .attempts)
         try container.encode(retryInterval, forKey: .retryInterval)

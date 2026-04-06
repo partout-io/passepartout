@@ -233,7 +233,9 @@ components:
     AppConstants.Tunnel.Verification.Parameters:
       type: object
       properties:
-        delay:
+        defaultDelay:
+          type: number
+        tvDelay:
           type: number
         interval:
           type: number
@@ -242,7 +244,7 @@ components:
         retryInterval:
           type: number
       required:
-      - delay
+      - defaultDelay
       - interval
       - attempts
       - retryInterval

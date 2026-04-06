@@ -1,29 +1,29 @@
-Skydda din integritet online med Passepartout, en smart VPN-klient som är sömlöst integrerad med iOS, macOS, iPadOS och tvOS. Är Passepartout din kompletta lösning.
+Skydda din integritet online med Passepartout, en smart VPN-klient som är sömlöst integrerad med iOS, macOS, iPadOS och tvOS.
 
-VARFÖR VÄLJA PASSEPARTOUT?
+SÅ FUNGERAR PASSEPARTOUT
 
-Importera bara .ovpn- eller .conf-filer för att konfigurera dina egna VPN-servrar.
+Passepartout innehåller grundläggande funktioner för import och anslutning. Ytterligare funktioner kräver ett köp i appen.
 
-GRATIS FUNKTIONER:
+INGÅENDE FUNKTIONER:
 
-- Stöd för OpenVPN- och WireGuard-protokoll.  
-- Fördunkling av OpenVPN (med --scramble).  
-- Automatisering med Genvägar för smidiga arbetsflöden.  
+- Stöd för OpenVPN- och WireGuard-protokoll.
+- Fördunkling av OpenVPN (med --scramble).
+- Automatisering med Genvägar för smidiga arbetsflöden.
 - Exkludera ändpunkter för exakt kontroll.
 
-BETALFUNKTIONER:
+KRÄVER KÖP I APPEN:
 
-- Stöd för Apple TV.  
-- Regler vid behov för smarta och automatiska anslutningar.  
-- iCloud-delning för sömlös användning på flera enheter.  
-- DoH/DoT för säkra DNS-frågor.  
-- Anpassad routing för avancerade konfigurationer.  
-- Interaktiv inloggning med stöd för engångslösenord (OTP).  
-- Icke-VPN-profiler (till exempel endast DNS/Proxy-inställningar).  
+- Stöd för Apple TV.
+- Regler vid behov för smarta och automatiska anslutningar.
+- iCloud-delning för sömlös användning på flera enheter.
+- DoH/DoT för säkra DNS-frågor.
+- Anpassad routing för avancerade konfigurationer.
+- Interaktiv inloggning med stöd för engångslösenord (OTP).
+- Icke-VPN-profiler (till exempel endast DNS/Proxy-inställningar).
 
-FAMILJESHARING
+FAMILJEDELNING
 
-Passepartout stöder Familjedelning, så att du kan dela ditt köp med familjemedlemmar.
+Alla köp stöder Familjedelning, så att du kan dela dem med dina familjemedlemmar.
 
 INTEGRITET DU KAN LITA PÅ
 
@@ -34,8 +34,6 @@ Passepartout är designat med transparens och integritet i åtanke:
 ÖPPEN KÄLLKOD OCH COMMUNITY-DRIVET
 
 Passepartout är ett projekt med öppen källkod som ständigt utvecklas med hjälp av communityn. Kolla in projektet på GitHub: https://github.com/partout-io
-
-Ta kontroll över din VPN-upplevelse. Ladda ner Passepartout idag och njut av säker, privat och smidig uppkoppling på alla dina Apple-enheter.
 
 ~
 

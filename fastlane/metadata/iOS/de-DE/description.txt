@@ -1,29 +1,29 @@
-Schützen Sie Ihre Online-Privatsphäre mit Passepartout, einem intelligenten VPN-Client, der nahtlos in iOS, macOS, iPadOS und tvOS integriert ist. Passepartout ist Ihre All-in-One-Lösung.
+Schützen Sie Ihre Online-Privatsphäre mit Passepartout, einem intelligenten VPN-Client, der nahtlos in iOS, macOS, iPadOS und tvOS integriert ist.
 
-WARUM PASSEPARTOUT WÄHLEN?
+SO FUNKTIONIERT PASSEPARTOUT
 
-Importieren Sie einfach .ovpn- oder .conf-Dateien, um Ihre persönlichen VPN-Server zu konfigurieren.
+Passepartout umfasst grundlegende Import- und Verbindungsfunktionen. Zusätzliche Funktionen erfordern einen In-App-Kauf.
 
-KOSTENLOSE FUNKTIONEN:
+ENTHALTENE FUNKTIONEN:
 
 - Unterstützung für OpenVPN- und WireGuard-Protokolle.
 - OpenVPN-Verschleierung (mit --scramble).
 - Automatisierung mit Kurzbefehlen für optimierte Abläufe.
 - Ausschluss von Endpunkten für präzise Kontrolle.
 
-BEZAHLTE FUNKTIONEN:
+ERFORDERT EINEN IN-APP-KAUF:
 
 - Unterstützung für Apple TV.
 - On-Demand-Regeln für intelligente, automatisierte Verbindungen.
-- iCloud-Sharing für nahtlose Nutzung auf mehreren Geräten.
+- iCloud-Freigabe für nahtlose Nutzung auf mehreren Geräten.
 - DoH/DoT für sichere DNS-Abfragen.
 - Benutzerdefiniertes Routing für erweiterte Konfigurationen.
-- Interaktives Login mit Unterstützung für Einmalpasswörter (OTP).
-- Nicht-VPN-Profile (z.B. nur DNS/Proxy-Setups).
+- Interaktive Anmeldung mit Unterstützung für Einmalpasswörter (OTP).
+- Nicht-VPN-Profile (z.B. reine DNS-/Proxy-Konfigurationen).
 
 FAMILIENFREIGABE AKTIVIERT
 
-Passepartout unterstützt die Familienfreigabe, sodass Sie Ihren Kauf mit Ihren Familienmitgliedern teilen können.
+Alle Käufe unterstützen die Familienfreigabe, sodass Sie diese mit Ihren Familienmitgliedern teilen können.
 
 VERTRAUENSWÜRDIGE PRIVATSPHÄRE
 
@@ -34,8 +34,6 @@ Passepartout wurde mit Blick auf Transparenz und Datenschutz entwickelt:
 OPEN SOURCE UND COMMUNITY-GESTEUERT
 
 Passepartout ist Open Source und entwickelt sich ständig mit Hilfe seiner Community weiter. Schauen Sie sich das Projekt auf GitHub an: https://github.com/partout-io
-
-Übernehmen Sie die Kontrolle über Ihr VPN-Erlebnis. Laden Sie Passepartout noch heute herunter und genießen Sie sichere, private und mühelose Konnektivität auf all Ihren Apple-Geräten!
 
 ~
 
