@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "Nieszyfrowane";
 "entities.dns_protocol.https" = "Przez HTTPS";
 "entities.dns_protocol.tls" = "Przez TLS";
+"entities.dns.match_domains" = "Pasujące domeny";
 "entities.dns.search_domains" = "Domeny wyszukiwania";
 "entities.dns.servers" = "Serwery";
 "entities.http_proxy.bypass_domains" = "Pominięte domeny";

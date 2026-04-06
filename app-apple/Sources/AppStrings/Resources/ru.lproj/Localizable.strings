@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "Не зашифровано";
 "entities.dns_protocol.https" = "Через HTTPS";
 "entities.dns_protocol.tls" = "Через TLS";
+"entities.dns.match_domains" = "Соответствующие домены";
 "entities.dns.search_domains" = "Доменные имена";
 "entities.dns.servers" = "Серверы";
 "entities.http_proxy.bypass_domains" = "Исключенные домены";

@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "Onversleuteld";
 "entities.dns_protocol.https" = "Over HTTPS";
 "entities.dns_protocol.tls" = "Over TLS";
+"entities.dns.match_domains" = "Overeenkomende domeinen";
 "entities.dns.search_domains" = "Zoekdomeinen";
 "entities.dns.servers" = "Servers";
 "entities.http_proxy.bypass_domains" = "Bypass-domeinen";

@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "明文";
 "entities.dns_protocol.https" = "HTTPS";
 "entities.dns_protocol.tls" = "TLS";
+"entities.dns.match_domains" = "匹配的域名";
 "entities.dns.search_domains" = "搜索域";
 "entities.dns.servers" = "服务器";
 "entities.http_proxy.bypass_domains" = "绕过域";

@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "Απλό κείμενο";
 "entities.dns_protocol.https" = "Μέσω HTTPS";
 "entities.dns_protocol.tls" = "Μέσω TLS";
+"entities.dns.match_domains" = "Τομείς αντιστοίχισης";
 "entities.dns.search_domains" = "Τομείς αναζήτησης";
 "entities.dns.servers" = "Διακομιστές";
 "entities.http_proxy.bypass_domains" = "Τομείς παράκαμψης";

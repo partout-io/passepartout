@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "Відкритий текст";
 "entities.dns_protocol.https" = "Через HTTPS";
 "entities.dns_protocol.tls" = "Через TLS";
+"entities.dns.match_domains" = "Відповідні домени";
 "entities.dns.search_domains" = "Домени пошуку";
 "entities.dns.servers" = "Сервери";
 "entities.http_proxy.bypass_domains" = "Домени виключення";

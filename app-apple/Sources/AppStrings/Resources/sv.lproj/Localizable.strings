@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "Okrypterat";
 "entities.dns_protocol.https" = "Via HTTPS";
 "entities.dns_protocol.tls" = "Via TLS";
+"entities.dns.match_domains" = "Matchande domäner";
 "entities.dns.search_domains" = "Sökdomäner";
 "entities.dns.servers" = "Servrar";
 "entities.http_proxy.bypass_domains" = "Kringgående domäner";

@@ -4,6 +4,7 @@
 "entities.dns_protocol.cleartext" = "En texto claro";
 "entities.dns_protocol.https" = "Sobre HTTPS";
 "entities.dns_protocol.tls" = "Sobre TLS";
+"entities.dns.match_domains" = "Dominios coincidentes";
 "entities.dns.search_domains" = "Dominios de búsqueda";
 "entities.dns.servers" = "Servidores";
 "entities.http_proxy.bypass_domains" = "Dominios a omitir";
