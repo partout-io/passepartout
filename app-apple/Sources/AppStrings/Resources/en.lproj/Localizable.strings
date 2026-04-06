@@ -257,6 +257,7 @@
 
 "entities.dns.servers" = "Servers";
 "entities.dns.search_domains" = "Search domains";
+"entities.dns.match_domains" = "Match domains";
 
 "entities.dns_protocol.cleartext" = "Cleartext";
 "entities.dns_protocol.https" = "Over HTTPS";

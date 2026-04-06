@@ -27,6 +27,7 @@ struct DNSView: View, ModuleDraftEditing {
                 domainSection
                 serversSection
                 searchDomainsSection
+                matchDomainsSection
             }
             .labelsHidden()
         }
@@ -111,6 +112,25 @@ private extension DNSView {
             Strings.Entities.Dns.searchDomains,
             addTitle: Strings.Modules.Dns.SearchDomains.add,
             originalItems: $draft.module.searchDomains ?? [],
+            itemLabel: {
+                if $0 {
+                    Text($1.wrappedValue)
+                } else {
+                    ThemeTextField(
+                        "",
+                        text: $1,
+                        placeholder: Strings.Unlocalized.Placeholders.hostname
+                    )
+                }
+            }
+        )
+    }
+
+    var matchDomainsSection: some View {
+        theme.listSection(
+            Strings.Entities.Dns.matchDomains,
+            addTitle: Strings.Modules.Dns.SearchDomains.add,
+            originalItems: $draft.module.matchDomains ?? [],
             itemLabel: {
                 if $0 {
                     Text($1.wrappedValue)

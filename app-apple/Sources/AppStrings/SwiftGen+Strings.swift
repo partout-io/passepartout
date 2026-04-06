@@ -30,6 +30,8 @@ public enum Strings {
   }
   public enum Entities {
     public enum Dns {
+      /// Match domains
+      public static let matchDomains = Strings.tr("Localizable", "entities.dns.match_domains", fallback: "Match domains")
       /// Search domains
       public static let searchDomains = Strings.tr("Localizable", "entities.dns.search_domains", fallback: "Search domains")
       /// Servers
