@@ -243,13 +243,17 @@ extension WireGuardView.ConfigurationView {
             fallback: WireGuard.Configuration.Builder
         ) {
             var configuration = draft.module.configurationBuilder ?? fallback
-            configuration.interface.privateKey = privateKey
+            if !privateKey.trimmingCharacters(in: .whitespaces).isEmpty {
+                configuration.interface.privateKey = privateKey
+            }
             configuration.interface.addresses = addresses.trimmedSplit(separator: separator)
             configuration.interface.mtu = UInt16(mtu)
 
             var dns = DNSModule.Builder()
             dns.servers = dnsServers.trimmedSplit(separator: separator)
-            dns.domainName = dnsDomain
+            if !dnsDomain.trimmingCharacters(in: .whitespaces).isEmpty {
+                dns.domainName = dnsDomain
+            }
             dns.searchDomains = dnsSearchDomains.trimmedSplit(separator: separator)
             configuration.interface.dns = dns
 
@@ -259,8 +263,12 @@ extension WireGuardView.ConfigurationView {
                         return nil
                     }
                     var peer = WireGuard.RemoteInterface.Builder(publicKey: model.publicKey)
-                    peer.preSharedKey = model.preSharedKey
-                    peer.endpoint = model.endpoint
+                    if !model.preSharedKey.trimmingCharacters(in: .whitespaces).isEmpty {
+                        peer.preSharedKey = model.preSharedKey
+                    }
+                    if !model.endpoint.trimmingCharacters(in: .whitespaces).isEmpty {
+                        peer.endpoint = model.endpoint
+                    }
                     peer.allowedIPs = model.allowedIPs.trimmedSplit(separator: separator)
                     peer.keepAlive = UInt16(model.keepAlive)
                     return peer
