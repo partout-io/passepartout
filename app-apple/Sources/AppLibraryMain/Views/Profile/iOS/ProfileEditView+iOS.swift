@@ -123,7 +123,8 @@ private extension ProfileEditView {
                 ModuleShareGroup(
                     file: file,
                     isExporting: $isExporting,
-                    exportedDocument: $exportedDocument
+                    exportedDocument: $exportedDocument,
+                    paywallReason: $paywallReason
                 )
                 Divider()
             }
