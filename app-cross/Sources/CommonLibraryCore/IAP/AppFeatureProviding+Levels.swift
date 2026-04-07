@@ -7,6 +7,7 @@ extension ABI.AppUserLevel: AppFeatureProviding {
         switch self {
         case .beta:
             return [
+                .dns,
                 .otp,
                 .routing,
                 .sharing
