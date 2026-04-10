@@ -291,6 +291,10 @@ private extension IAPManager {
         pspLog(.iap, .notice, "\tPurchased products: \(purchasedProducts.map(\.rawValue))")
         pspLog(.iap, .notice, "\tEligible features: \(eligibleFeatures)")
 
+        pspLog(.iap, .notice, "Extra features")
+        pspLog(.iap, .notice, "\tUser level \(userLevel): \(userLevel.features)")
+        pspLog(.iap, .notice, "\tUnrestricted: \(unrestrictedFeatures)")
+
         self.originalPurchase = originalPurchase
         self.purchasedProducts = purchasedProducts
         didChange.send(.newReceipt(.init(
