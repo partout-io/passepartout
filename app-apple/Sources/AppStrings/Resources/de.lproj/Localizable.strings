@@ -6,10 +6,10 @@
 "entities.dns_protocol.tls" = "Über TLS";
 "entities.dns.domains.first_is_primary.footer" = "Verwende die erste Domain als primäre Domain.";
 "entities.dns.domains.first_is_primary" = "Erste Domain ist primär";
-"entities.dns.domains.use_for.default" = "Abgleichen und Suchen";
+"entities.dns.domain_policy.default" = "Abgleichen und Suchen";
 "entities.dns.domains.use_for.footer" = "Abgleichen wendet diese DNS-Einstellungen nur auf die aufgeführten Domains an. Suchen hilft beim Auflösen kurzer Namen wie „printer“.";
-"entities.dns.domains.use_for.match" = "Nur abgleichen";
-"entities.dns.domains.use_for.search" = "Nur suchen";
+"entities.dns.domain_policy.match" = "Nur abgleichen";
+"entities.dns.domain_policy.search" = "Nur suchen";
 "entities.dns.domains.use_for" = "Domains verwenden für";
 "entities.dns.domains" = "Domains";
 "entities.dns.search_domains" = "Suchdomains";

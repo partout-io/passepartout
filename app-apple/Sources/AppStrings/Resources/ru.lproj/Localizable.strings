@@ -6,10 +6,10 @@
 "entities.dns_protocol.tls" = "Через TLS";
 "entities.dns.domains.first_is_primary.footer" = "Используйте первый домен как основной.";
 "entities.dns.domains.first_is_primary" = "Первый домен — основной";
-"entities.dns.domains.use_for.default" = "Сопоставления и поиска";
+"entities.dns.domain_policy.default" = "Сопоставления и поиска";
 "entities.dns.domains.use_for.footer" = "Сопоставление применяет эти настройки DNS только к перечисленным доменам. Поиск помогает разрешать короткие имена, такие как «printer».";
-"entities.dns.domains.use_for.match" = "Только сопоставление";
-"entities.dns.domains.use_for.search" = "Только поиск";
+"entities.dns.domain_policy.match" = "Только сопоставление";
+"entities.dns.domain_policy.search" = "Только поиск";
 "entities.dns.domains.use_for" = "Использовать домены для";
 "entities.dns.domains" = "Домены";
 "entities.dns.search_domains" = "Доменные имена";

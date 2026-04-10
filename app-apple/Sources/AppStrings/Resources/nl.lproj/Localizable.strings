@@ -6,10 +6,10 @@
 "entities.dns_protocol.tls" = "Over TLS";
 "entities.dns.domains.first_is_primary.footer" = "Gebruik het eerste domein als primair domein.";
 "entities.dns.domains.first_is_primary" = "Eerste domein is primair";
-"entities.dns.domains.use_for.default" = "Matchen en zoeken";
+"entities.dns.domain_policy.default" = "Matchen en zoeken";
 "entities.dns.domains.use_for.footer" = "Matchen past deze DNS-instellingen alleen toe op de opgegeven domeinen. Zoeken helpt bij het oplossen van korte namen zoals «printer».";
-"entities.dns.domains.use_for.match" = "Alleen matchen";
-"entities.dns.domains.use_for.search" = "Alleen zoeken";
+"entities.dns.domain_policy.match" = "Alleen matchen";
+"entities.dns.domain_policy.search" = "Alleen zoeken";
 "entities.dns.domains.use_for" = "Domeinen gebruiken voor";
 "entities.dns.domains" = "Domeinen";
 "entities.dns.search_domains" = "Zoekdomeinen";

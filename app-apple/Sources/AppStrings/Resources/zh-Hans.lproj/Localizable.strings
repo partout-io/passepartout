@@ -6,10 +6,10 @@
 "entities.dns_protocol.tls" = "TLS";
 "entities.dns.domains.first_is_primary.footer" = "将第一个域名用作主域名。";
 "entities.dns.domains.first_is_primary" = "第一个域名为主域名";
-"entities.dns.domains.use_for.default" = "匹配和搜索";
+"entities.dns.domain_policy.default" = "匹配和搜索";
 "entities.dns.domains.use_for.footer" = "“匹配”仅将这些 DNS 设置应用于列出的域名。“搜索”有助于解析如「printer」这样的短名称。";
-"entities.dns.domains.use_for.match" = "仅匹配";
-"entities.dns.domains.use_for.search" = "仅搜索";
+"entities.dns.domain_policy.match" = "仅匹配";
+"entities.dns.domain_policy.search" = "仅搜索";
 "entities.dns.domains.use_for" = "域名用于";
 "entities.dns.domains" = "域名";
 "entities.dns.search_domains" = "搜索域";

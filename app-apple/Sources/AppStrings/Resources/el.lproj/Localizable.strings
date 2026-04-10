@@ -6,10 +6,10 @@
 "entities.dns_protocol.tls" = "Μέσω TLS";
 "entities.dns.domains.first_is_primary.footer" = "Χρησιμοποιήστε τον πρώτο τομέα ως κύριο τομέα.";
 "entities.dns.domains.first_is_primary" = "Ο πρώτος τομέας είναι κύριος";
-"entities.dns.domains.use_for.default" = "Αντιστοίχιση και αναζήτηση";
+"entities.dns.domain_policy.default" = "Αντιστοίχιση και αναζήτηση";
 "entities.dns.domains.use_for.footer" = "Η αντιστοίχιση εφαρμόζει αυτές τις ρυθμίσεις DNS μόνο στους αναφερόμενους τομείς. Η αναζήτηση βοηθά στην επίλυση σύντομων ονομάτων όπως «printer».";
-"entities.dns.domains.use_for.match" = "Μόνο αντιστοίχιση";
-"entities.dns.domains.use_for.search" = "Μόνο αναζήτηση";
+"entities.dns.domain_policy.match" = "Μόνο αντιστοίχιση";
+"entities.dns.domain_policy.search" = "Μόνο αναζήτηση";
 "entities.dns.domains.use_for" = "Χρήση τομέων για";
 "entities.dns.domains" = "Τομείς";
 "entities.dns.search_domains" = "Τομείς αναζήτησης";
