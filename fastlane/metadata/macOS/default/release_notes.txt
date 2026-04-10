@@ -1,7 +1,1 @@
-* Disconnect from unmatched network when on-demand policy is "Including"
-* Fix ineffective exclusion of default route
-* Fix modules order not retained after drag/drop (#1747)
-* Relax receipt verification (#1701)
-* Export OpenVPN and WireGuard as files from module menu (#1745)
-* WireGuard: Ignore empty fields in editor (#1744)
-* OpenVPN: Add --tls-crypt-v2 support (#1743)
+* Use domains to match split DNS
