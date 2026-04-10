@@ -50,8 +50,7 @@ extension ProfileManager {
                                 dnsBuilder.protocolType = .https
                                 dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
                                 dnsBuilder.servers = ["1.1.1.1", "1.0.0.1"]
-                                dnsBuilder.domainName = "my-domain.com"
-                                dnsBuilder.searchDomains = ["search-one.com", "search-two.org"]
+                                dnsBuilder.domains = ["my-domain.com", "search-one.com", "search-two.org"]
                                 moduleBuilder = dnsBuilder
                             }
                         }
