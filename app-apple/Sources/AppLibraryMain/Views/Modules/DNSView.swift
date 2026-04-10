@@ -27,7 +27,7 @@ struct DNSView: View, ModuleDraftEditing {
                 domainsSection
             }
             .labelsHidden()
-            domainsBehaviorSections
+            domainsBehaviorSection
         }
         .moduleView(draft: draft)
     }
@@ -114,7 +114,7 @@ private extension DNSView {
         )
     }
 
-    var domainsBehaviorSections: some View {
+    var domainsBehaviorSection: some View {
         let V = Strings.Entities.Dns.Domains.self
         return Group {
             Toggle(V.firstIsPrimary, isOn: $draft.module.isFirstDomainPrimary)
