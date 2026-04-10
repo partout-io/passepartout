@@ -120,12 +120,10 @@ private extension DNSView {
             Toggle(V.firstIsPrimary, isOn: $draft.module.isFirstDomainPrimary)
                 .themeContainerEntry(subtitle: V.FirstIsPrimary.footer)
             Picker(V.useFor, selection: $draft.module.domainPolicy) {
-                Text(V.UseFor.default)
-                    .tag(nil as DNSModule.DomainPolicy?)
-                Text(V.UseFor.match)
-                    .tag(DNSModule.DomainPolicy.match)
-                Text(V.UseFor.search)
-                    .tag(DNSModule.DomainPolicy.search)
+                ForEach(Self.allPolicies, id: \.?.rawValue) {
+                    Text($0.localizedDescription)
+                        .tag($0)
+                }
             }
             .themeContainerEntry(subtitle: V.UseFor.footer)
         }
@@ -135,6 +133,8 @@ private extension DNSView {
 }
 
 private extension DNSView {
+    static let allPolicies: [DNSModule.DomainPolicy?] = [nil, .match, .search]
+
     var hasNonEmptyDomains: Bool {
         draft.module.domains?.contains { !$0.isEmpty } ?? false
     }

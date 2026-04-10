@@ -91,6 +91,17 @@ extension DataCount: LocalizableEntity {
     }
 }
 
+extension Optional: LocalizableEntity where Wrapped == DNSModule.DomainPolicy {
+    public var localizedDescription: String {
+        let V = Strings.Entities.Dns.DomainPolicy.self
+        switch self {
+        case .match: return V.match
+        case .search: return V.search
+        default: return V.default
+        }
+    }
+}
+
 extension Address.Family: LocalizableEntity {
     public var localizedDescription: String {
         switch self {

@@ -36,6 +36,14 @@ public enum Strings {
       public static let searchDomains = Strings.tr("Localizable", "entities.dns.search_domains", fallback: "Search domains")
       /// Servers
       public static let servers = Strings.tr("Localizable", "entities.dns.servers", fallback: "Servers")
+      public enum DomainPolicy {
+        /// Match and Search
+        public static let `default` = Strings.tr("Localizable", "entities.dns.domain_policy.default", fallback: "Match and Search")
+        /// Match only
+        public static let match = Strings.tr("Localizable", "entities.dns.domain_policy.match", fallback: "Match only")
+        /// Search only
+        public static let search = Strings.tr("Localizable", "entities.dns.domain_policy.search", fallback: "Search only")
+      }
       public enum Domains {
         /// First is primary
         public static let firstIsPrimary = Strings.tr("Localizable", "entities.dns.domains.first_is_primary", fallback: "First is primary")
@@ -46,14 +54,8 @@ public enum Strings {
           public static let footer = Strings.tr("Localizable", "entities.dns.domains.first_is_primary.footer", fallback: "Use the first domain as the primary domain.")
         }
         public enum UseFor {
-          /// Match and Search
-          public static let `default` = Strings.tr("Localizable", "entities.dns.domains.use_for.default", fallback: "Match and Search")
           /// Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.
           public static let footer = Strings.tr("Localizable", "entities.dns.domains.use_for.footer", fallback: "Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.")
-          /// Match only
-          public static let match = Strings.tr("Localizable", "entities.dns.domains.use_for.match", fallback: "Match only")
-          /// Search only
-          public static let search = Strings.tr("Localizable", "entities.dns.domains.use_for.search", fallback: "Search only")
         }
       }
     }
