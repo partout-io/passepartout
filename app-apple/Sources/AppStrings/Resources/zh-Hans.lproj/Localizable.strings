@@ -4,6 +4,14 @@
 "entities.dns_protocol.cleartext" = "明文";
 "entities.dns_protocol.https" = "HTTPS";
 "entities.dns_protocol.tls" = "TLS";
+"entities.dns.domains.first_is_primary.footer" = "将第一个域名用作主域名。";
+"entities.dns.domains.first_is_primary" = "第一个域名为主域名";
+"entities.dns.domains.use_for.default" = "匹配和搜索";
+"entities.dns.domains.use_for.footer" = "“匹配”仅将这些 DNS 设置应用于列出的域名。“搜索”有助于解析如「printer」这样的短名称。";
+"entities.dns.domains.use_for.match" = "仅匹配";
+"entities.dns.domains.use_for.search" = "仅搜索";
+"entities.dns.domains.use_for" = "域名用于";
+"entities.dns.domains" = "域名";
 "entities.dns.search_domains" = "搜索域";
 "entities.dns.servers" = "服务器";
 "entities.http_proxy.bypass_domains" = "绕过域";
@@ -196,9 +204,9 @@
 "global.nouns.username" = "用户名";
 "global.nouns.version" = "版本";
 "global.nouns.yes" = "是";
+"modules.dns.domains.add" = "添加域名";
 "modules.dns.route_through_vpn.footer" = "如果启用，DNS 查询将通过 VPN 隧道进行路由。";
 "modules.dns.route_through_vpn" = "通过 VPN 路由";
-"modules.dns.search_domains.add" = "添加域名";
 "modules.dns.servers.add" = "添加地址";
 "modules.general.rows.appletv.purchase" = "取消 TV 限制";
 "modules.general.rows.appletv" = "%@";

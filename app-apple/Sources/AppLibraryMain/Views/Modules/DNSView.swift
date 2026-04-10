@@ -7,7 +7,6 @@ import CommonLibrary
 import SwiftUI
 
 struct DNSView: View, ModuleDraftEditing {
-
     @Environment(Theme.self)
     private var theme
 
@@ -24,11 +23,11 @@ struct DNSView: View, ModuleDraftEditing {
             protocolSection
             routingSection
             Group {
-                domainSection
                 serversSection
-                searchDomainsSection
+                domainsSection
             }
             .labelsHidden()
+            domainsBehaviorSections
         }
         .moduleView(draft: draft)
     }
@@ -51,15 +50,12 @@ private extension DNSView {
             switch draft.module.protocolType {
             case .cleartext:
                 EmptyView()
-
             case .https:
                 ThemeTextField(Strings.Unlocalized.url, text: $draft.module.dohURL, placeholder: Strings.Unlocalized.Placeholders.dohURL)
                     .labelsHidden()
-
             case .tls:
                 ThemeTextField(Strings.Global.Nouns.hostname, text: $draft.module.dotHostname, placeholder: Strings.Unlocalized.Placeholders.dotHostname)
                     .labelsHidden()
-
             @unknown default:
                 EmptyView()
             }
@@ -77,13 +73,6 @@ private extension DNSView {
         }
         .themeContainerWithSingleEntry(
             footer: Strings.Modules.Dns.RouteThroughVpn.footer)
-    }
-
-    var domainSection: some View {
-        Group {
-            ThemeTextField(Strings.Global.Nouns.domain, text: $draft.module.domainName ?? "", placeholder: Strings.Unlocalized.Placeholders.hostname)
-        }
-        .themeSection(header: Strings.Global.Nouns.domain)
     }
 
     var serversSection: some View {
@@ -106,11 +95,11 @@ private extension DNSView {
         )
     }
 
-    var searchDomainsSection: some View {
+    var domainsSection: some View {
         theme.listSection(
-            Strings.Entities.Dns.searchDomains,
-            addTitle: Strings.Modules.Dns.SearchDomains.add,
-            originalItems: $draft.module.searchDomains ?? [],
+            Strings.Entities.Dns.domains,
+            addTitle: Strings.Modules.Dns.Domains.add,
+            originalItems: $draft.module.domains ?? [],
             itemLabel: {
                 if $0 {
                     Text($1.wrappedValue)
@@ -124,6 +113,31 @@ private extension DNSView {
             }
         )
     }
+
+    var domainsBehaviorSections: some View {
+        let V = Strings.Entities.Dns.Domains.self
+        return Group {
+            Toggle(V.firstIsPrimary, isOn: $draft.module.isFirstDomainPrimary)
+                .themeContainerEntry(subtitle: V.FirstIsPrimary.footer)
+            Picker(V.useFor, selection: $draft.module.domainPolicy) {
+                Text(V.UseFor.default)
+                    .tag(nil as DNSModule.DomainPolicy?)
+                Text(V.UseFor.match)
+                    .tag(DNSModule.DomainPolicy.match)
+                Text(V.UseFor.search)
+                    .tag(DNSModule.DomainPolicy.search)
+            }
+            .themeContainerEntry(subtitle: V.UseFor.footer)
+        }
+        .themeContainer()
+        .disabled(!hasNonEmptyDomains)
+    }
+}
+
+private extension DNSView {
+    var hasNonEmptyDomains: Bool {
+        draft.module.domains?.contains { !$0.isEmpty } ?? false
+    }
 }
 
 // MARK: - Previews
@@ -134,7 +148,6 @@ private extension DNSView {
     module.servers = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
     module.dohURL = "https://doh.com/query"
     module.dotHostname = "tls.com"
-    module.domainName = "domain.com"
-    module.searchDomains = ["one.com", "two.net", "three.com"]
+    module.domains = ["one.com", "two.net", "three.com"]
     return module.preview()
 }

@@ -4,6 +4,14 @@
 "entities.dns_protocol.cleartext" = "Відкритий текст";
 "entities.dns_protocol.https" = "Через HTTPS";
 "entities.dns_protocol.tls" = "Через TLS";
+"entities.dns.domains.first_is_primary.footer" = "Використовуйте перший домен як основний.";
+"entities.dns.domains.first_is_primary" = "Перший домен — основний";
+"entities.dns.domains.use_for.default" = "Зіставлення та пошуку";
+"entities.dns.domains.use_for.footer" = "Зіставлення застосовує ці налаштування DNS лише до перелічених доменів. Пошук допомагає розв’язувати короткі імена, такі як «printer».";
+"entities.dns.domains.use_for.match" = "Лише зіставлення";
+"entities.dns.domains.use_for.search" = "Лише пошук";
+"entities.dns.domains.use_for" = "Використовувати домени для";
+"entities.dns.domains" = "Домени";
 "entities.dns.search_domains" = "Домени пошуку";
 "entities.dns.servers" = "Сервери";
 "entities.http_proxy.bypass_domains" = "Домени виключення";
@@ -196,9 +204,9 @@
 "global.nouns.username" = "Ім'я користувача";
 "global.nouns.version" = "Версія";
 "global.nouns.yes" = "Так";
+"modules.dns.domains.add" = "Додати домен";
 "modules.dns.route_through_vpn.footer" = "Якщо ввімкнено, DNS-запити будуть спрямовані через VPN-тунель.";
 "modules.dns.route_through_vpn" = "Маршрутизувати через VPN";
-"modules.dns.search_domains.add" = "Додати домен";
 "modules.dns.servers.add" = "Додати адресу";
 "modules.general.rows.appletv.purchase" = "Зняти обмеження TV";
 "modules.general.rows.appletv" = "%@";

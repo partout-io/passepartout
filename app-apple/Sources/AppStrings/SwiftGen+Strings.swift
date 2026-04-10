@@ -30,10 +30,32 @@ public enum Strings {
   }
   public enum Entities {
     public enum Dns {
+      /// Domains
+      public static let domains = Strings.tr("Localizable", "entities.dns.domains", fallback: "Domains")
       /// Search domains
       public static let searchDomains = Strings.tr("Localizable", "entities.dns.search_domains", fallback: "Search domains")
       /// Servers
       public static let servers = Strings.tr("Localizable", "entities.dns.servers", fallback: "Servers")
+      public enum Domains {
+        /// First is primary
+        public static let firstIsPrimary = Strings.tr("Localizable", "entities.dns.domains.first_is_primary", fallback: "First is primary")
+        /// Use domains for
+        public static let useFor = Strings.tr("Localizable", "entities.dns.domains.use_for", fallback: "Use domains for")
+        public enum FirstIsPrimary {
+          /// Use the first domain as the primary domain.
+          public static let footer = Strings.tr("Localizable", "entities.dns.domains.first_is_primary.footer", fallback: "Use the first domain as the primary domain.")
+        }
+        public enum UseFor {
+          /// Match and Search
+          public static let `default` = Strings.tr("Localizable", "entities.dns.domains.use_for.default", fallback: "Match and Search")
+          /// Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.
+          public static let footer = Strings.tr("Localizable", "entities.dns.domains.use_for.footer", fallback: "Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.")
+          /// Match only
+          public static let match = Strings.tr("Localizable", "entities.dns.domains.use_for.match", fallback: "Match only")
+          /// Search only
+          public static let search = Strings.tr("Localizable", "entities.dns.domains.use_for.search", fallback: "Search only")
+        }
+      }
     }
     public enum DnsProtocol {
       /// Cleartext
@@ -516,13 +538,13 @@ public enum Strings {
     public enum Dns {
       /// Route through VPN
       public static let routeThroughVpn = Strings.tr("Localizable", "modules.dns.route_through_vpn", fallback: "Route through VPN")
+      public enum Domains {
+        /// Add domain
+        public static let add = Strings.tr("Localizable", "modules.dns.domains.add", fallback: "Add domain")
+      }
       public enum RouteThroughVpn {
         /// If enabled, DNS queries will be routed through the VPN tunnel.
         public static let footer = Strings.tr("Localizable", "modules.dns.route_through_vpn.footer", fallback: "If enabled, DNS queries will be routed through the VPN tunnel.")
-      }
-      public enum SearchDomains {
-        /// Add domain
-        public static let add = Strings.tr("Localizable", "modules.dns.search_domains.add", fallback: "Add domain")
       }
       public enum Servers {
         /// Add address
