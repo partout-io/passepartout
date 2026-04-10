@@ -96,14 +96,9 @@ private extension WireGuardView.ConfigurationView {
                 inputType: .ipAddress,
                 preview: \.asNumberOfEntries
             )
-            ThemeTextField(
-                Strings.Global.Nouns.domain,
-                text: $viewModel.dnsDomain,
-                placeholder: Strings.Unlocalized.Placeholders.hostname
-            )
             ThemeLongContentLink(
                 Strings.Entities.Dns.searchDomains,
-                text: $viewModel.dnsSearchDomains,
+                text: $viewModel.dnsDomains,
                 preview: \.asNumberOfEntries
             )
         }
@@ -175,8 +170,7 @@ private extension WireGuardView.ConfigurationView {
     var dnsRows: [Any?] {
         [
             configurationBuilder.interface.dns.servers.nilIfEmpty,
-            configurationBuilder.interface.dns.domainName,
-            configurationBuilder.interface.dns.searchDomains?.nilIfEmpty
+            configurationBuilder.interface.dns.domains?.nilIfEmpty
         ]
     }
 }
@@ -209,9 +203,7 @@ extension WireGuardView.ConfigurationView {
 
         var dnsServers = ""
 
-        var dnsDomain = ""
-
-        var dnsSearchDomains = ""
+        var dnsDomains = ""
 
         var peers: [String: Peer] = [:]
 
@@ -223,8 +215,7 @@ extension WireGuardView.ConfigurationView {
             mtu = configuration.interface.mtu?.description ?? ""
 
             dnsServers = configuration.interface.dns.servers.joined(separator: separator)
-            dnsDomain = configuration.interface.dns.domainName ?? ""
-            dnsSearchDomains = configuration.interface.dns.searchDomains?.joined(separator: separator) ?? ""
+            dnsDomains = configuration.interface.dns.domains?.joined(separator: separator) ?? ""
 
             peers = configuration.peers.reduce(into: [:]) {
                 var peer = Peer()
@@ -251,10 +242,7 @@ extension WireGuardView.ConfigurationView {
 
             var dns = DNSModule.Builder()
             dns.servers = dnsServers.trimmedSplit(separator: separator)
-            if !dnsDomain.trimmingCharacters(in: .whitespaces).isEmpty {
-                dns.domainName = dnsDomain
-            }
-            dns.searchDomains = dnsSearchDomains.trimmedSplit(separator: separator)
+            dns.domains = dnsDomains.trimmedSplit(separator: separator)
             configuration.interface.dns = dns
 
             configuration.peers = peersOrder

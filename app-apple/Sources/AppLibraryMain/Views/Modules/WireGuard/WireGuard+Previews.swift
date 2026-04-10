@@ -15,8 +15,7 @@ extension WireGuard.Configuration.Builder {
         builder.interface.mtu = 1200
         builder.interface.dns.protocolType = .cleartext
         builder.interface.dns.servers = ["8.8.8.8", "4.4.4.4"]
-        builder.interface.dns.domainName = "domain.com"
-        builder.interface.dns.searchDomains = ["search1.com", "search2.net"]
+        builder.interface.dns.domains = ["domain.com", "search1.com", "search2.net"]
 
         builder.peers = (0..<3).map { _ in
             var peer = WireGuard.RemoteInterface.Builder(publicKey: try! gen.publicKey(for: gen.newPrivateKey()))
