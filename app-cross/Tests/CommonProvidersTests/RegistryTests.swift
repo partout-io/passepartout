@@ -25,7 +25,7 @@ struct RegistryTests {
         wgBuilder.peers = [WireGuard.RemoteInterface.Builder(publicKey: "")]
 
         var profileBuilder = Profile.Builder()
-        profileBuilder.modules.append(try DNSModule.Builder().build())
+        profileBuilder.modules.append(try DNSModule.Builder(servers: ["6.7.8.9"]).build())
         profileBuilder.modules.append(IPModule.Builder(ipv4: .init(subnet: try .init("1.2.3.4", 16))).build())
         profileBuilder.modules.append(OnDemandModule.Builder().build())
         profileBuilder.modules.append(try HTTPProxyModule.Builder(address: "1.1.1.1", port: 1080).build())
