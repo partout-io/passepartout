@@ -4,12 +4,12 @@
 "entities.dns_protocol.cleartext" = "Nieszyfrowane";
 "entities.dns_protocol.https" = "Przez HTTPS";
 "entities.dns_protocol.tls" = "Przez TLS";
-"entities.dns.domains.first_is_primary.footer" = "Użyj pierwszej domeny jako domeny głównej.";
-"entities.dns.domains.first_is_primary" = "Pierwsza domena jest główna";
 "entities.dns.domain_policy.default" = "Dopasowywania i wyszukiwania";
-"entities.dns.domains.use_for.footer" = "Dopasowywanie stosuje te ustawienia DNS tylko do wymienionych domen. Wyszukiwanie pomaga rozwiązywać krótkie nazwy, takie jak «printer».";
 "entities.dns.domain_policy.match" = "Tylko dopasowywanie";
 "entities.dns.domain_policy.search" = "Tylko wyszukiwanie";
+"entities.dns.domains.first_is_primary.footer" = "Użyj pierwszej domeny jako domeny głównej.";
+"entities.dns.domains.first_is_primary" = "Pierwsza domena jest główna";
+"entities.dns.domains.use_for.footer" = "Dopasowywanie stosuje te ustawienia DNS tylko do wymienionych domen. Wyszukiwanie pomaga rozwiązywać krótkie nazwy, takie jak «printer».";
 "entities.dns.domains.use_for" = "Użyj domen do";
 "entities.dns.domains" = "Domeny";
 "entities.dns.search_domains" = "Domeny wyszukiwania";
@@ -262,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Ponowne negocjacje";
 "modules.openvpn.tls_wrap" = "TLS";
 "modules.wireguard.allowed_ips" = "Dozwolone IP";
+"modules.wireguard.interface.dns.footer" = "Określenie pustych serwerów spowoduje odrzucenie tych ustawień DNS.";
 "modules.wireguard.interface" = "Interfejs";
 "modules.wireguard.peer.add" = "Dodaj peer";
 "modules.wireguard.peer.delete" = "Usuń peer";

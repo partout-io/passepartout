@@ -4,12 +4,12 @@
 "entities.dns_protocol.cleartext" = "Okrypterat";
 "entities.dns_protocol.https" = "Via HTTPS";
 "entities.dns_protocol.tls" = "Via TLS";
-"entities.dns.domains.first_is_primary.footer" = "Använd den första domänen som primär domän.";
-"entities.dns.domains.first_is_primary" = "Första domänen är primär";
 "entities.dns.domain_policy.default" = "Matchning och sökning";
-"entities.dns.domains.use_for.footer" = "Matchning tillämpar dessa DNS-inställningar endast på de angivna domänerna. Sökning hjälper till att lösa korta namn som «printer».";
 "entities.dns.domain_policy.match" = "Endast matchning";
 "entities.dns.domain_policy.search" = "Endast sökning";
+"entities.dns.domains.first_is_primary.footer" = "Använd den första domänen som primär domän.";
+"entities.dns.domains.first_is_primary" = "Första domänen är primär";
+"entities.dns.domains.use_for.footer" = "Matchning tillämpar dessa DNS-inställningar endast på de angivna domänerna. Sökning hjälper till att lösa korta namn som «printer».";
 "entities.dns.domains.use_for" = "Använd domäner för";
 "entities.dns.domains" = "Domäner";
 "entities.dns.search_domains" = "Sökdomäner";
@@ -262,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Ombeslut";
 "modules.openvpn.tls_wrap" = "TLS-omslag";
 "modules.wireguard.allowed_ips" = "Tillåtna IP";
+"modules.wireguard.interface.dns.footer" = "Att ange tomma servrar kommer att ignorera dessa DNS-inställningar.";
 "modules.wireguard.interface" = "Gränssnitt";
 "modules.wireguard.peer.add" = "Lägg till peer";
 "modules.wireguard.peer.delete" = "Ta bort peer";

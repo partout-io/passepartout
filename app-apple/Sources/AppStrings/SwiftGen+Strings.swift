@@ -738,6 +738,12 @@ public enum Strings {
       }
       /// Pre-shared key
       public static let presharedKey = Strings.tr("Localizable", "modules.wireguard.preshared_key", fallback: "Pre-shared key")
+      public enum Interface {
+        public enum Dns {
+          /// Specifying empty servers will discard these DNS settings.
+          public static let footer = Strings.tr("Localizable", "modules.wireguard.interface.dns.footer", fallback: "Specifying empty servers will discard these DNS settings.")
+        }
+      }
       public enum Peer {
         /// Add peer
         public static let add = Strings.tr("Localizable", "modules.wireguard.peer.add", fallback: "Add peer")

@@ -233,6 +233,7 @@
 
 "modules.wireguard.private_key.generate" = "Generate new key";
 "modules.wireguard.interface" = "Interface";
+"modules.wireguard.interface.dns.footer" = "Specifying empty servers will discard these DNS settings.";
 "modules.wireguard.peer" = "Peer #%d";
 "modules.wireguard.peer.add" = "Add peer";
 "modules.wireguard.peer.delete" = "Delete peer";

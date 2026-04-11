@@ -89,7 +89,10 @@ private extension WireGuardView.ConfigurationView {
     }
 
     var dnsSection: some View {
-        themeModuleSection(header: Strings.Unlocalized.dns) {
+        themeModuleSection(
+            header: Strings.Unlocalized.dns,
+            footer: Strings.Modules.Wireguard.Interface.Dns.footer
+        ) {
             ThemeLongContentLink(
                 Strings.Global.Nouns.servers,
                 text: $viewModel.dnsServers,
@@ -169,8 +172,8 @@ private extension WireGuardView.ConfigurationView {
 private extension WireGuardView.ConfigurationView {
     var dnsRows: [Any?] {
         [
-            configurationBuilder.interface.dns.servers.nilIfEmpty,
-            configurationBuilder.interface.dns.domains?.nilIfEmpty
+            configurationBuilder.interface.dns?.servers.nilIfEmpty,
+            configurationBuilder.interface.dns?.domains?.nilIfEmpty
         ]
     }
 }
@@ -214,8 +217,8 @@ extension WireGuardView.ConfigurationView {
             addresses = configuration.interface.addresses.joined(separator: separator)
             mtu = configuration.interface.mtu?.description ?? ""
 
-            dnsServers = configuration.interface.dns.servers.joined(separator: separator)
-            dnsDomains = configuration.interface.dns.domains?.joined(separator: separator) ?? ""
+            dnsServers = configuration.interface.dns?.servers.joined(separator: separator) ?? ""
+            dnsDomains = configuration.interface.dns?.domains?.joined(separator: separator) ?? ""
 
             peers = configuration.peers.reduce(into: [:]) {
                 var peer = Peer()
@@ -240,10 +243,16 @@ extension WireGuardView.ConfigurationView {
             configuration.interface.addresses = addresses.trimmedSplit(separator: separator)
             configuration.interface.mtu = UInt16(mtu)
 
-            var dns = DNSModule.Builder()
-            dns.servers = dnsServers.trimmedSplit(separator: separator)
-            dns.domains = dnsDomains.trimmedSplit(separator: separator)
-            configuration.interface.dns = dns
+            let servers = dnsServers.trimmedSplit(separator: separator)
+            let domains = dnsDomains.trimmedSplit(separator: separator)
+            if !servers.isEmpty {
+                configuration.interface.dns = DNSModule.Builder(
+                    servers: servers,
+                    domains: domains
+                )
+            } else {
+                configuration.interface.dns = nil
+            }
 
             configuration.peers = peersOrder
                 .compactMap {

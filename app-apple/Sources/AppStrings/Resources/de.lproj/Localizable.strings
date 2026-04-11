@@ -4,12 +4,12 @@
 "entities.dns_protocol.cleartext" = "Im Klartext";
 "entities.dns_protocol.https" = "Über HTTPS";
 "entities.dns_protocol.tls" = "Über TLS";
-"entities.dns.domains.first_is_primary.footer" = "Verwende die erste Domain als primäre Domain.";
-"entities.dns.domains.first_is_primary" = "Erste Domain ist primär";
 "entities.dns.domain_policy.default" = "Abgleichen und Suchen";
-"entities.dns.domains.use_for.footer" = "Abgleichen wendet diese DNS-Einstellungen nur auf die aufgeführten Domains an. Suchen hilft beim Auflösen kurzer Namen wie „printer“.";
 "entities.dns.domain_policy.match" = "Nur abgleichen";
 "entities.dns.domain_policy.search" = "Nur suchen";
+"entities.dns.domains.first_is_primary.footer" = "Verwende die erste Domain als primäre Domain.";
+"entities.dns.domains.first_is_primary" = "Erste Domain ist primär";
+"entities.dns.domains.use_for.footer" = "Abgleichen wendet diese DNS-Einstellungen nur auf die aufgeführten Domains an. Suchen hilft beim Auflösen kurzer Namen wie „printer“.";
 "entities.dns.domains.use_for" = "Domains verwenden für";
 "entities.dns.domains" = "Domains";
 "entities.dns.search_domains" = "Suchdomains";
@@ -262,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Neuverhandlung";
 "modules.openvpn.tls_wrap" = "Verpackung";
 "modules.wireguard.allowed_ips" = "Zulässige IPs";
+"modules.wireguard.interface.dns.footer" = "Das Angeben leerer Server verwirft diese DNS-Einstellungen.";
 "modules.wireguard.interface" = "Schnittstelle";
 "modules.wireguard.peer.add" = "Peer hinzufügen";
 "modules.wireguard.peer.delete" = "Peer löschen";

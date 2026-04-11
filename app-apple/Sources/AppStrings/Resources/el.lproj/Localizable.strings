@@ -4,12 +4,12 @@
 "entities.dns_protocol.cleartext" = "Απλό κείμενο";
 "entities.dns_protocol.https" = "Μέσω HTTPS";
 "entities.dns_protocol.tls" = "Μέσω TLS";
-"entities.dns.domains.first_is_primary.footer" = "Χρησιμοποιήστε τον πρώτο τομέα ως κύριο τομέα.";
-"entities.dns.domains.first_is_primary" = "Ο πρώτος τομέας είναι κύριος";
 "entities.dns.domain_policy.default" = "Αντιστοίχιση και αναζήτηση";
-"entities.dns.domains.use_for.footer" = "Η αντιστοίχιση εφαρμόζει αυτές τις ρυθμίσεις DNS μόνο στους αναφερόμενους τομείς. Η αναζήτηση βοηθά στην επίλυση σύντομων ονομάτων όπως «printer».";
 "entities.dns.domain_policy.match" = "Μόνο αντιστοίχιση";
 "entities.dns.domain_policy.search" = "Μόνο αναζήτηση";
+"entities.dns.domains.first_is_primary.footer" = "Χρησιμοποιήστε τον πρώτο τομέα ως κύριο τομέα.";
+"entities.dns.domains.first_is_primary" = "Ο πρώτος τομέας είναι κύριος";
+"entities.dns.domains.use_for.footer" = "Η αντιστοίχιση εφαρμόζει αυτές τις ρυθμίσεις DNS μόνο στους αναφερόμενους τομείς. Η αναζήτηση βοηθά στην επίλυση σύντομων ονομάτων όπως «printer».";
 "entities.dns.domains.use_for" = "Χρήση τομέων για";
 "entities.dns.domains" = "Τομείς";
 "entities.dns.search_domains" = "Τομείς αναζήτησης";
@@ -262,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Επαναδιαπραγμάτευση";
 "modules.openvpn.tls_wrap" = "Περίβλημα TLS";
 "modules.wireguard.allowed_ips" = "Επιτρεπόμενες IP";
+"modules.wireguard.interface.dns.footer" = "Ο καθορισμός κενών διακομιστών θα απορρίψει αυτές τις ρυθμίσεις DNS.";
 "modules.wireguard.interface" = "Διασύνδεση";
 "modules.wireguard.peer.add" = "Προσθήκη ομότιμου";
 "modules.wireguard.peer.delete" = "Διαγραφή ομότιμου";
