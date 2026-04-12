@@ -4,6 +4,14 @@
 "entities.dns_protocol.cleartext" = "In chiaro";
 "entities.dns_protocol.https" = "Su HTTPS";
 "entities.dns_protocol.tls" = "Su TLS";
+"entities.dns.domain_policy.matchAndSearch" = "Corrispondenza e ricerca";
+"entities.dns.domain_policy.match" = "Solo corrispondenza";
+"entities.dns.domain_policy.default" = "Solo ricerca";
+"entities.dns.domains.first_is_primary.footer" = "Usa il primo dominio come dominio principale.";
+"entities.dns.domains.first_is_primary" = "Il primo dominio è principale";
+"entities.dns.domains.use_for.footer" = "La corrispondenza applica queste impostazioni DNS solo ai domini elencati. La ricerca aiuta a risolvere nomi brevi come «printer».";
+"entities.dns.domains.use_for" = "Usa i domini per";
+"entities.dns.domains" = "Domini";
 "entities.dns.search_domains" = "Domini di ricerca";
 "entities.dns.servers" = "Server";
 "entities.http_proxy.bypass_domains" = "Domini da bypassare";
@@ -196,9 +204,9 @@
 "global.nouns.username" = "Nome utente";
 "global.nouns.version" = "Versione";
 "global.nouns.yes" = "Sì";
+"modules.dns.domains.add" = "Aggiungi dominio";
 "modules.dns.route_through_vpn.footer" = "Se abilitato, le query DNS verranno instradate attraverso il tunnel VPN.";
 "modules.dns.route_through_vpn" = "Instrada tramite VPN";
-"modules.dns.search_domains.add" = "Aggiungi dominio";
 "modules.dns.servers.add" = "Aggiungi indirizzo";
 "modules.general.rows.appletv.purchase" = "Rimuovi restrizione TV";
 "modules.general.rows.appletv" = "%@";
@@ -254,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Rinegoziazione";
 "modules.openvpn.tls_wrap" = "Wrapping";
 "modules.wireguard.allowed_ips" = "IP consentiti";
+"modules.wireguard.interface.dns.footer" = "Specificare server vuoti farà scartare queste impostazioni DNS.";
 "modules.wireguard.interface" = "Interfaccia";
 "modules.wireguard.peer.add" = "Aggiungi peer";
 "modules.wireguard.peer.delete" = "Elimina peer";

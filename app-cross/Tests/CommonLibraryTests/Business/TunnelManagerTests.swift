@@ -24,7 +24,7 @@ extension TunnelManagerTests {
         }
         let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
 
-        let module = try DNSModule.Builder().build()
+        let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
         try await sut.connect(with: profile)
         env.setEnvironmentValue(.crypto, forKey: TunnelEnvironmentKeys.lastErrorCode)
@@ -62,7 +62,7 @@ extension TunnelManagerTests {
         let stream = sut.observeObjects()
         #expect(await stream.nextActiveProfiles() == [:])
 
-        let module = try DNSModule.Builder().build()
+        let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.connect(with: profile)
@@ -88,7 +88,7 @@ extension TunnelManagerTests {
         let stream = sut.observeObjects()
         #expect(await stream.nextActiveProfiles() == [:])
 
-        let module = try DNSModule.Builder().build()
+        let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
@@ -110,7 +110,7 @@ extension TunnelManagerTests {
         let stream = sut.observeObjects()
         #expect(await stream.nextActiveProfiles() == [:])
 
-        let module = try DNSModule.Builder().build()
+        let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)

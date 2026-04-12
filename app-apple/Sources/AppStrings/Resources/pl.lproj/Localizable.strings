@@ -4,6 +4,14 @@
 "entities.dns_protocol.cleartext" = "Nieszyfrowane";
 "entities.dns_protocol.https" = "Przez HTTPS";
 "entities.dns_protocol.tls" = "Przez TLS";
+"entities.dns.domain_policy.matchAndSearch" = "Dopasowywania i wyszukiwania";
+"entities.dns.domain_policy.match" = "Tylko dopasowywanie";
+"entities.dns.domain_policy.default" = "Tylko wyszukiwanie";
+"entities.dns.domains.first_is_primary.footer" = "Użyj pierwszej domeny jako domeny głównej.";
+"entities.dns.domains.first_is_primary" = "Pierwsza domena jest główna";
+"entities.dns.domains.use_for.footer" = "Dopasowywanie stosuje te ustawienia DNS tylko do wymienionych domen. Wyszukiwanie pomaga rozwiązywać krótkie nazwy, takie jak «printer».";
+"entities.dns.domains.use_for" = "Użyj domen do";
+"entities.dns.domains" = "Domeny";
 "entities.dns.search_domains" = "Domeny wyszukiwania";
 "entities.dns.servers" = "Serwery";
 "entities.http_proxy.bypass_domains" = "Pominięte domeny";
@@ -196,9 +204,9 @@
 "global.nouns.username" = "Nazwa użytkownika";
 "global.nouns.version" = "Wersja";
 "global.nouns.yes" = "Tak";
+"modules.dns.domains.add" = "Dodaj domenę";
 "modules.dns.route_through_vpn.footer" = "Jeśli włączone, zapytania DNS będą kierowane przez tunel VPN.";
 "modules.dns.route_through_vpn" = "Trasuj przez VPN";
-"modules.dns.search_domains.add" = "Dodaj domenę";
 "modules.dns.servers.add" = "Dodaj adres";
 "modules.general.rows.appletv.purchase" = "Usuń ograniczenie TV";
 "modules.general.rows.appletv" = "%@";
@@ -254,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Ponowne negocjacje";
 "modules.openvpn.tls_wrap" = "TLS";
 "modules.wireguard.allowed_ips" = "Dozwolone IP";
+"modules.wireguard.interface.dns.footer" = "Określenie pustych serwerów spowoduje odrzucenie tych ustawień DNS.";
 "modules.wireguard.interface" = "Interfejs";
 "modules.wireguard.peer.add" = "Dodaj peer";
 "modules.wireguard.peer.delete" = "Usuń peer";

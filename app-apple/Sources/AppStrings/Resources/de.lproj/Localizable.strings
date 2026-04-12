@@ -4,6 +4,14 @@
 "entities.dns_protocol.cleartext" = "Im Klartext";
 "entities.dns_protocol.https" = "Über HTTPS";
 "entities.dns_protocol.tls" = "Über TLS";
+"entities.dns.domain_policy.matchAndSearch" = "Abgleichen und Suchen";
+"entities.dns.domain_policy.match" = "Nur abgleichen";
+"entities.dns.domain_policy.default" = "Nur suchen";
+"entities.dns.domains.first_is_primary.footer" = "Verwende die erste Domain als primäre Domain.";
+"entities.dns.domains.first_is_primary" = "Erste Domain ist primär";
+"entities.dns.domains.use_for.footer" = "Abgleichen wendet diese DNS-Einstellungen nur auf die aufgeführten Domains an. Suchen hilft beim Auflösen kurzer Namen wie „printer“.";
+"entities.dns.domains.use_for" = "Domains verwenden für";
+"entities.dns.domains" = "Domains";
 "entities.dns.search_domains" = "Suchdomains";
 "entities.dns.servers" = "Server";
 "entities.http_proxy.bypass_domains" = "Domains umgehen";
@@ -196,9 +204,9 @@
 "global.nouns.username" = "Benutzername";
 "global.nouns.version" = "Version";
 "global.nouns.yes" = "Ja";
+"modules.dns.domains.add" = "Domain hinzufügen";
 "modules.dns.route_through_vpn.footer" = "Wenn aktiviert, werden DNS-Anfragen durch den VPN-Tunnel geleitet.";
 "modules.dns.route_through_vpn" = "Über VPN routen";
-"modules.dns.search_domains.add" = "Domain hinzufügen";
 "modules.dns.servers.add" = "Adresse hinzufügen";
 "modules.general.rows.appletv.purchase" = "TV-Einschränkung entfernen";
 "modules.general.rows.appletv" = "%@";
@@ -254,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Neuverhandlung";
 "modules.openvpn.tls_wrap" = "Verpackung";
 "modules.wireguard.allowed_ips" = "Zulässige IPs";
+"modules.wireguard.interface.dns.footer" = "Das Angeben leerer Server verwirft diese DNS-Einstellungen.";
 "modules.wireguard.interface" = "Schnittstelle";
 "modules.wireguard.peer.add" = "Peer hinzufügen";
 "modules.wireguard.peer.delete" = "Peer löschen";

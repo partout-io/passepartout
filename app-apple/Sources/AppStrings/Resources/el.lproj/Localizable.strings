@@ -4,6 +4,14 @@
 "entities.dns_protocol.cleartext" = "Απλό κείμενο";
 "entities.dns_protocol.https" = "Μέσω HTTPS";
 "entities.dns_protocol.tls" = "Μέσω TLS";
+"entities.dns.domain_policy.matchAndSearch" = "Αντιστοίχιση και αναζήτηση";
+"entities.dns.domain_policy.match" = "Μόνο αντιστοίχιση";
+"entities.dns.domain_policy.default" = "Μόνο αναζήτηση";
+"entities.dns.domains.first_is_primary.footer" = "Χρησιμοποιήστε τον πρώτο τομέα ως κύριο τομέα.";
+"entities.dns.domains.first_is_primary" = "Ο πρώτος τομέας είναι κύριος";
+"entities.dns.domains.use_for.footer" = "Η αντιστοίχιση εφαρμόζει αυτές τις ρυθμίσεις DNS μόνο στους αναφερόμενους τομείς. Η αναζήτηση βοηθά στην επίλυση σύντομων ονομάτων όπως «printer».";
+"entities.dns.domains.use_for" = "Χρήση τομέων για";
+"entities.dns.domains" = "Τομείς";
 "entities.dns.search_domains" = "Τομείς αναζήτησης";
 "entities.dns.servers" = "Διακομιστές";
 "entities.http_proxy.bypass_domains" = "Τομείς παράκαμψης";
@@ -196,9 +204,9 @@
 "global.nouns.username" = "Όνομα χρήστη";
 "global.nouns.version" = "Έκδοση";
 "global.nouns.yes" = "Ναι";
+"modules.dns.domains.add" = "Προσθήκη τομέα";
 "modules.dns.route_through_vpn.footer" = "Εάν ενεργοποιηθεί, τα DNS ερωτήματα θα δρομολογούνται μέσω της σήραγγας VPN.";
 "modules.dns.route_through_vpn" = "Δρομολόγηση μέσω VPN";
-"modules.dns.search_domains.add" = "Προσθήκη τομέα";
 "modules.dns.servers.add" = "Προσθήκη διεύθυνσης";
 "modules.general.rows.appletv.purchase" = "Κατάργηση περιορισμού TV";
 "modules.general.rows.appletv" = "%@";
@@ -254,6 +262,7 @@
 "modules.openvpn.renegotiation" = "Επαναδιαπραγμάτευση";
 "modules.openvpn.tls_wrap" = "Περίβλημα TLS";
 "modules.wireguard.allowed_ips" = "Επιτρεπόμενες IP";
+"modules.wireguard.interface.dns.footer" = "Ο καθορισμός κενών διακομιστών θα απορρίψει αυτές τις ρυθμίσεις DNS.";
 "modules.wireguard.interface" = "Διασύνδεση";
 "modules.wireguard.peer.add" = "Προσθήκη ομότιμου";
 "modules.wireguard.peer.delete" = "Διαγραφή ομότιμου";
