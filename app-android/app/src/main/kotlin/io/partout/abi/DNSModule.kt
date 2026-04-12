@@ -15,6 +15,7 @@
 
 package io.partout.abi
 
+import io.partout.abi.DNSModuleDomainPolicy
 import io.partout.abi.DNSModuleProtocolType
 
 import kotlinx.serialization.Serializable
@@ -28,6 +29,7 @@ import kotlinx.serialization.Contextual
  * @param protocolType 
  * @param servers 
  * @param domainName 
+ * @param domainPolicy 
  * @param routesThroughVPN 
  * @param searchDomains 
  */
@@ -46,6 +48,9 @@ data class DNSModule (
 
     @SerialName(value = "domainName")
     val domainName: kotlin.String? = null,
+
+    @Contextual @SerialName(value = "domainPolicy")
+    val domainPolicy: DNSModuleDomainPolicy? = null,
 
     @SerialName(value = "routesThroughVPN")
     val routesThroughVPN: kotlin.Boolean? = null,
