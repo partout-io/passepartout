@@ -115,14 +115,11 @@ private extension ModuleListView {
 
     @ViewBuilder
     func toolbarContent() -> some View {
-        addModuleMenu
-            .themeTip(.Profile.buildYourProfile)
-
-        Button(action: removeSelectedModule) {
-            ThemeImage(.remove)
+        HStack {
+            addModuleMenu
+                .themeTip(.Profile.buildYourProfile)
+            removeModuleButton
         }
-        .disabled(!canRemoveSelectedModule)
-
         EmptyView()
             .themeTip(Strings.Views.Profile.ModuleList.Section.footer, edge: .bottom)
     }
@@ -135,7 +132,16 @@ private extension ModuleListView {
             flow?.onNewModule($0)
         } label: {
             ThemeImage(.add)
+                .frame(maxHeight: .infinity)
         }
+    }
+
+    var removeModuleButton: some View {
+        Button(action: removeSelectedModule) {
+            ThemeImage(.remove)
+                .frame(maxHeight: .infinity)
+        }
+        .disabled(!canRemoveSelectedModule)
     }
 }
 
