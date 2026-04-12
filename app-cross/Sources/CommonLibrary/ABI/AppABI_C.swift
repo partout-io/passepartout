@@ -13,7 +13,7 @@ private enum AppABIError: Error {
     case eventEncoding(reason: Error? = nil)
 }
 
-@_cdecl("psp_app_init")
+@c(psp_app_init)
 public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -73,19 +73,19 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     }
 }
 
-@_cdecl("psp_app_deinit")
+@c(psp_app_deinit)
 public func __psp_app_deinit() {
     abi = nil
 }
 
-@_cdecl("psp_app_on_foreground")
+@c(psp_app_on_foreground)
 public func __psp_app_on_foreground() {
     ABI.run {
         abi?.onApplicationActive()
     }
 }
 
-@_cdecl("psp_app_import_profile_path")
+@c(psp_app_import_profile_path)
 public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
     context: UnsafeMutableRawPointer?,
@@ -103,7 +103,7 @@ public func __psp_app_import_profile_path(
     }
 }
 
-@_cdecl("psp_app_import_profile_text")
+@c(psp_app_import_profile_text)
 public func __psp_app_import_profile_text(
     text: UnsafePointer<CChar>?,
     filename: UnsafePointer<CChar>?,
@@ -123,7 +123,7 @@ public func __psp_app_import_profile_text(
     }
 }
 
-@_cdecl("psp_app_flush_log")
+@c(psp_app_flush_log)
 public func __psp_app_flush_log() {
     pspLogFlush()
 }

@@ -6,7 +6,7 @@ import Partout
 #if PSP_ABI
 import CommonLibrary_C
 
-@_cdecl("psp_partout_version")
+@c(psp_partout_version)
 public nonisolated func __psp_partout_version() -> UnsafePointer<CChar>! {
     PartoutConstants.cVersionIdentifier
 }

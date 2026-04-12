@@ -9,7 +9,7 @@ import Partout
 nonisolated(unsafe)
 private var globalABI: TunnelABIProtocol?
 
-@_cdecl("psp_tunnel_start")
+@c(psp_tunnel_start)
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
     context: UnsafeMutableRawPointer?,
@@ -59,7 +59,7 @@ public func __psp_tunnel_start(
     pspLock(isDaemon: isDaemon)
 }
 
-@_cdecl("psp_tunnel_stop")
+@c(psp_tunnel_stop)
 public func __psp_tunnel_stop(
     context: UnsafeMutableRawPointer?,
     callback: psp_abi_cb_void?
