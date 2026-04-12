@@ -37,12 +37,12 @@ public enum Strings {
       /// Servers
       public static let servers = Strings.tr("Localizable", "entities.dns.servers", fallback: "Servers")
       public enum DomainPolicy {
-        /// Match and Search
-        public static let `default` = Strings.tr("Localizable", "entities.dns.domain_policy.default", fallback: "Match and Search")
+        /// Search only
+        public static let `default` = Strings.tr("Localizable", "entities.dns.domain_policy.default", fallback: "Search only")
         /// Match only
         public static let match = Strings.tr("Localizable", "entities.dns.domain_policy.match", fallback: "Match only")
-        /// Search only
-        public static let search = Strings.tr("Localizable", "entities.dns.domain_policy.search", fallback: "Search only")
+        /// Match and Search
+        public static let matchAndSearch = Strings.tr("Localizable", "entities.dns.domain_policy.matchAndSearch", fallback: "Match and Search")
       }
       public enum Domains {
         /// First is primary

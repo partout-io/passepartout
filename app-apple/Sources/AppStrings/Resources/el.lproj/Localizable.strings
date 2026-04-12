@@ -4,9 +4,9 @@
 "entities.dns_protocol.cleartext" = "Απλό κείμενο";
 "entities.dns_protocol.https" = "Μέσω HTTPS";
 "entities.dns_protocol.tls" = "Μέσω TLS";
-"entities.dns.domain_policy.default" = "Αντιστοίχιση και αναζήτηση";
+"entities.dns.domain_policy.matchAndSearch" = "Αντιστοίχιση και αναζήτηση";
 "entities.dns.domain_policy.match" = "Μόνο αντιστοίχιση";
-"entities.dns.domain_policy.search" = "Μόνο αναζήτηση";
+"entities.dns.domain_policy.default" = "Μόνο αναζήτηση";
 "entities.dns.domains.first_is_primary.footer" = "Χρησιμοποιήστε τον πρώτο τομέα ως κύριο τομέα.";
 "entities.dns.domains.first_is_primary" = "Ο πρώτος τομέας είναι κύριος";
 "entities.dns.domains.use_for.footer" = "Η αντιστοίχιση εφαρμόζει αυτές τις ρυθμίσεις DNS μόνο στους αναφερόμενους τομείς. Η αναζήτηση βοηθά στην επίλυση σύντομων ονομάτων όπως «printer».";

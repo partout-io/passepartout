@@ -4,9 +4,9 @@
 "entities.dns_protocol.cleartext" = "Відкритий текст";
 "entities.dns_protocol.https" = "Через HTTPS";
 "entities.dns_protocol.tls" = "Через TLS";
-"entities.dns.domain_policy.default" = "Зіставлення та пошуку";
+"entities.dns.domain_policy.matchAndSearch" = "Зіставлення та пошуку";
 "entities.dns.domain_policy.match" = "Лише зіставлення";
-"entities.dns.domain_policy.search" = "Лише пошук";
+"entities.dns.domain_policy.default" = "Лише пошук";
 "entities.dns.domains.first_is_primary.footer" = "Використовуйте перший домен як основний.";
 "entities.dns.domains.first_is_primary" = "Перший домен — основний";
 "entities.dns.domains.use_for.footer" = "Зіставлення застосовує ці налаштування DNS лише до перелічених доменів. Пошук допомагає розв’язувати короткі імена, такі як «printer».";

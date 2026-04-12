@@ -96,7 +96,7 @@ extension Optional: LocalizableEntity where Wrapped == DNSModule.DomainPolicy {
         let V = Strings.Entities.Dns.DomainPolicy.self
         switch self {
         case .match: return V.match
-        case .search: return V.search
+        case .matchAndSearch: return V.matchAndSearch
         default: return V.default
         }
     }

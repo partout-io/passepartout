@@ -4,9 +4,9 @@
 "entities.dns_protocol.cleartext" = "Im Klartext";
 "entities.dns_protocol.https" = "Über HTTPS";
 "entities.dns_protocol.tls" = "Über TLS";
-"entities.dns.domain_policy.default" = "Abgleichen und Suchen";
+"entities.dns.domain_policy.matchAndSearch" = "Abgleichen und Suchen";
 "entities.dns.domain_policy.match" = "Nur abgleichen";
-"entities.dns.domain_policy.search" = "Nur suchen";
+"entities.dns.domain_policy.default" = "Nur suchen";
 "entities.dns.domains.first_is_primary.footer" = "Verwende die erste Domain als primäre Domain.";
 "entities.dns.domains.first_is_primary" = "Erste Domain ist primär";
 "entities.dns.domains.use_for.footer" = "Abgleichen wendet diese DNS-Einstellungen nur auf die aufgeführten Domains an. Suchen hilft beim Auflösen kurzer Namen wie „printer“.";

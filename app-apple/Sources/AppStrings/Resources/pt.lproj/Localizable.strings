@@ -4,9 +4,9 @@
 "entities.dns_protocol.cleartext" = "Texto claro";
 "entities.dns_protocol.https" = "Sobre HTTPS";
 "entities.dns_protocol.tls" = "Sobre TLS";
-"entities.dns.domain_policy.default" = "Corresponder e pesquisar";
+"entities.dns.domain_policy.matchAndSearch" = "Corresponder e pesquisar";
 "entities.dns.domain_policy.match" = "Apenas corresponder";
-"entities.dns.domain_policy.search" = "Apenas pesquisar";
+"entities.dns.domain_policy.default" = "Apenas pesquisar";
 "entities.dns.domains.first_is_primary.footer" = "Use o primeiro domínio como domínio principal.";
 "entities.dns.domains.first_is_primary" = "O primeiro domínio é principal";
 "entities.dns.domains.use_for.footer" = "Corresponder aplica estas definições de DNS apenas aos domínios listados. Pesquisar ajuda a resolver nomes curtos como «printer».";

@@ -263,9 +263,9 @@
 "entities.dns.domains.first_is_primary.footer" = "Use the first domain as the primary domain.";
 "entities.dns.domains.use_for" = "Use domains for";
 "entities.dns.domains.use_for.footer" = "Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.";
-"entities.dns.domain_policy.default" = "Match and Search";
+"entities.dns.domain_policy.matchAndSearch" = "Match and Search";
 "entities.dns.domain_policy.match" = "Match only";
-"entities.dns.domain_policy.search" = "Search only";
+"entities.dns.domain_policy.default" = "Search only";
 
 "entities.dns_protocol.cleartext" = "Cleartext";
 "entities.dns_protocol.https" = "Over HTTPS";

@@ -133,7 +133,7 @@ private extension DNSView {
 }
 
 private extension DNSView {
-    static let allPolicies: [DNSModule.DomainPolicy?] = [nil, .match, .search]
+    static let allPolicies: [DNSModule.DomainPolicy?] = [.matchAndSearch, .match, nil]
 
     var hasNonEmptyDomains: Bool {
         draft.module.domains?.contains { !$0.isEmpty } ?? false
