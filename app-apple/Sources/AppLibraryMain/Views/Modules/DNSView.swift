@@ -20,7 +20,7 @@ struct DNSView: View, ModuleDraftEditing {
     var body: some View {
         debugChanges()
         return Group {
-            policySection
+            behaviorSection
             inheritsSection
             if draft.module.inheritsVPN != true {
                 overrideGroup
@@ -31,7 +31,7 @@ struct DNSView: View, ModuleDraftEditing {
 }
 
 private extension DNSView {
-    var policySection: some View {
+    var behaviorSection: some View {
         Group {
             routesThroughPicker
                 .themeContainerEntry(subtitle: Strings.Modules.Dns.Policy.RouteThroughVpn.footer)
