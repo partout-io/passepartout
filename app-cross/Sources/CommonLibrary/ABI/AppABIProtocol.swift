@@ -22,6 +22,7 @@ public protocol AppABIIAPProtocol: Sendable {
     func restorePurchases() async throws
     func suggestedProducts(for features: Set<ABI.AppFeature>, hints: Set<ABI.StoreProductHint>?) -> Set<ABI.AppProduct>
     func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct]
+    // Non-observable
     var verificationDelayMinutes: Int { get }
 }
 
@@ -36,7 +37,6 @@ public protocol AppABIProfileProtocol: Sendable {
     func remove(_ ids: [Profile.ID]) async
     func removeAllRemote() async throws
     // Non-observable
-    var isRemoteImportingEnabled: Bool { get }
     func profile(withId id: Profile.ID) -> Profile?
 }
 

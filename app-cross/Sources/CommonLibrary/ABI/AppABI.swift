@@ -112,6 +112,11 @@ extension AppABI {
         let tunnelEvents = tunnelManager.observeObjects()
         let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
+
+        // Post initial state AFTER events registration (in case it was missed)
+        iapManager.postInitialState()
+        profileManager.postInitialState()
+
         subscriptions.append(Task {
             for await event in configEvents {
                 dispatch(.config(event), handler)
