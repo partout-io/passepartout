@@ -185,10 +185,16 @@
 "modules.general.rows.enforce_tunnel" = "Enforce tunnel";
 "modules.general.rows.enforce_tunnel.footer" = "Try to send most network traffic over the tunnel. Beware that this may degrade your connectivity.";
 
-"modules.dns.route_through_vpn" = "Route through VPN";
-"modules.dns.route_through_vpn.footer" = "If enabled, DNS queries will be routed through the VPN tunnel.";
+"modules.dns.policy.inherits_vpn" = "Inherit from VPN";
+"modules.dns.policy.inherits_vpn.footer" = "Reuse the DNS settings provided by the VPN.";
+"modules.dns.policy.use_only" = "Only for configured domains";
+"modules.dns.policy.use_only.footer" = "Use the VPN DNS resolver only for the configured domains (split DNS).";
+"modules.dns.policy.route_through_vpn" = "Route through VPN";
+"modules.dns.policy.route_through_vpn.footer" = "If enabled, DNS queries will be routed through the VPN tunnel.";
 "modules.dns.servers.add" = "Add address";
 "modules.dns.domains.add" = "Add domain";
+"modules.dns.domains.first_is_primary" = "First is primary";
+"modules.dns.domains.first_is_primary.footer" = "Use the first domain as the primary domain.";
 "modules.http_proxy.bypass_domains.add" = "Add bypass domain";
 
 "modules.ip.address.footer" = "Leave empty to assign automatically.";
@@ -259,13 +265,6 @@
 "entities.dns.servers" = "Servers";
 "entities.dns.domains" = "Domains";
 "entities.dns.search_domains" = "Search domains";
-"entities.dns.domains.first_is_primary" = "First is primary";
-"entities.dns.domains.first_is_primary.footer" = "Use the first domain as the primary domain.";
-"entities.dns.domains.use_for" = "Use domains for";
-"entities.dns.domains.use_for.footer" = "Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.";
-"entities.dns.domain_policy.matchAndSearch" = "Match and Search";
-"entities.dns.domain_policy.match" = "Match only";
-"entities.dns.domain_policy.default" = "Search only";
 
 "entities.dns_protocol.cleartext" = "Cleartext";
 "entities.dns_protocol.https" = "Over HTTPS";
