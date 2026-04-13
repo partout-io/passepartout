@@ -118,7 +118,7 @@ private extension Registry {
                 }
             } catch {
                 switch (error as? PartoutError)?.code {
-                case .incompleteModule, .invalidFields, .WireGuard.emptyPeers:
+                case .incompleteModule, .invalidField, .WireGuard.emptyPeers:
                     return
                 default:
                     fatalError("\(moduleType): empty module is not buildable: \(error)")
