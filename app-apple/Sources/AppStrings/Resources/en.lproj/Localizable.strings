@@ -468,6 +468,25 @@
 "errors.tunnel.shutdown" = "Server shutdown";
 "errors.tunnel.tls" = "TLS failed";
 
+"errors.modules.DNS.emptyServers" = "Empty servers.";
+"errors.modules.DNS.ipDomains" = "Domains must be hostnames.";
+"errors.modules.DNS.nonIPServers" = "Servers must be IP addresses.";
+"errors.modules.DNS.invalidDoHURL" = "Invalid DoH URL.";
+"errors.modules.DNS.emptyDoTHostname" = "Empty DoT hostname.";
+"errors.modules.HTTPProxy.address" = "Invalid HTTP address.";
+"errors.modules.HTTPProxy.secureAddress" = "Invalid HTTPS address.";
+"errors.modules.HTTPProxy.pacURLString" = "Invalid PAC URL.";
+"errors.modules.HTTPProxy.bypassDomains" = "Invalid bypass domains.";
+"errors.modules.OpenVPN.ca" = "Missing CA.";
+"errors.modules.OpenVPN.remotes" = "Empty remotes.";
+"errors.modules.WireGuard.privateKey" = "Invalid private key.";
+"errors.modules.WireGuard.addresses" = "Invalid address.";
+"errors.modules.WireGuard.publicKey" = "Invalid public key.";
+"errors.modules.WireGuard.preSharedKey" = "Invalid preshared key.";
+"errors.modules.WireGuard.endpoint" = "Invalid endpoint.";
+"errors.modules.WireGuard.allowedIPs" = "Invalid allowed IPs.";
+"errors.modules.generic" = "Invalid fields.";
+
 // MARK: Global (Theme)
 
 "theme.confirmation.ok" = "Confirm";

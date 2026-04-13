@@ -159,6 +159,52 @@ public enum Strings {
         public static let timeout = Strings.tr("Localizable", "errors.app.passepartout.timeout", fallback: "The operation timed out.")
       }
     }
+    public enum Modules {
+      /// Invalid fields.
+      public static let generic = Strings.tr("Localizable", "errors.modules.generic", fallback: "Invalid fields.")
+      public enum Dns {
+        /// Empty DoT hostname.
+        public static let emptyDoTHostname = Strings.tr("Localizable", "errors.modules.DNS.emptyDoTHostname", fallback: "Empty DoT hostname.")
+        /// Empty servers.
+        public static let emptyServers = Strings.tr("Localizable", "errors.modules.DNS.emptyServers", fallback: "Empty servers.")
+        /// Invalid DoH URL.
+        public static let invalidDoHURL = Strings.tr("Localizable", "errors.modules.DNS.invalidDoHURL", fallback: "Invalid DoH URL.")
+        /// Domains must be hostnames.
+        public static let ipDomains = Strings.tr("Localizable", "errors.modules.DNS.ipDomains", fallback: "Domains must be hostnames.")
+        /// Servers must be IP addresses.
+        public static let nonIPServers = Strings.tr("Localizable", "errors.modules.DNS.nonIPServers", fallback: "Servers must be IP addresses.")
+      }
+      public enum HTTPProxy {
+        /// Invalid HTTP address.
+        public static let address = Strings.tr("Localizable", "errors.modules.HTTPProxy.address", fallback: "Invalid HTTP address.")
+        /// Invalid bypass domains.
+        public static let bypassDomains = Strings.tr("Localizable", "errors.modules.HTTPProxy.bypassDomains", fallback: "Invalid bypass domains.")
+        /// Invalid PAC URL.
+        public static let pacURLString = Strings.tr("Localizable", "errors.modules.HTTPProxy.pacURLString", fallback: "Invalid PAC URL.")
+        /// Invalid HTTPS address.
+        public static let secureAddress = Strings.tr("Localizable", "errors.modules.HTTPProxy.secureAddress", fallback: "Invalid HTTPS address.")
+      }
+      public enum OpenVPN {
+        /// Missing CA.
+        public static let ca = Strings.tr("Localizable", "errors.modules.OpenVPN.ca", fallback: "Missing CA.")
+        /// Empty remotes.
+        public static let remotes = Strings.tr("Localizable", "errors.modules.OpenVPN.remotes", fallback: "Empty remotes.")
+      }
+      public enum WireGuard {
+        /// Invalid address.
+        public static let addresses = Strings.tr("Localizable", "errors.modules.WireGuard.addresses", fallback: "Invalid address.")
+        /// Invalid allowed IPs.
+        public static let allowedIPs = Strings.tr("Localizable", "errors.modules.WireGuard.allowedIPs", fallback: "Invalid allowed IPs.")
+        /// Invalid endpoint.
+        public static let endpoint = Strings.tr("Localizable", "errors.modules.WireGuard.endpoint", fallback: "Invalid endpoint.")
+        /// Invalid preshared key.
+        public static let preSharedKey = Strings.tr("Localizable", "errors.modules.WireGuard.preSharedKey", fallback: "Invalid preshared key.")
+        /// Invalid private key.
+        public static let privateKey = Strings.tr("Localizable", "errors.modules.WireGuard.privateKey", fallback: "Invalid private key.")
+        /// Invalid public key.
+        public static let publicKey = Strings.tr("Localizable", "errors.modules.WireGuard.publicKey", fallback: "Invalid public key.")
+      }
+    }
     public enum Tunnel {
       /// Auth failed
       public static let auth = Strings.tr("Localizable", "errors.tunnel.auth", fallback: "Auth failed")
@@ -542,8 +588,8 @@ public enum Strings {
           public static let footer = Strings.tr("Localizable", "modules.dns.policy.route_through_vpn.footer", fallback: "If enabled, DNS queries will be routed through the VPN tunnel.")
         }
         public enum UseOnly {
-          /// Use the VPN DNS resolver only for the configured domains (split DNS).
-          public static let footer = Strings.tr("Localizable", "modules.dns.policy.use_only.footer", fallback: "Use the VPN DNS resolver only for the configured domains (split DNS).")
+          /// Use the VPN DNS resolver only for the configured domains (split DNS). This works as intended only when the VPN is not the default gateway.
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.use_only.footer", fallback: "Use the VPN DNS resolver only for the configured domains (split DNS). This works as intended only when the VPN is not the default gateway.")
         }
       }
       public enum Servers {
