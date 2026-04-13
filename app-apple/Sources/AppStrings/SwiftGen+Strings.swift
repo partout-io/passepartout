@@ -36,28 +36,6 @@ public enum Strings {
       public static let searchDomains = Strings.tr("Localizable", "entities.dns.search_domains", fallback: "Search domains")
       /// Servers
       public static let servers = Strings.tr("Localizable", "entities.dns.servers", fallback: "Servers")
-      public enum DomainPolicy {
-        /// Search only
-        public static let `default` = Strings.tr("Localizable", "entities.dns.domain_policy.default", fallback: "Search only")
-        /// Match only
-        public static let match = Strings.tr("Localizable", "entities.dns.domain_policy.match", fallback: "Match only")
-        /// Match and Search
-        public static let matchAndSearch = Strings.tr("Localizable", "entities.dns.domain_policy.matchAndSearch", fallback: "Match and Search")
-      }
-      public enum Domains {
-        /// First is primary
-        public static let firstIsPrimary = Strings.tr("Localizable", "entities.dns.domains.first_is_primary", fallback: "First is primary")
-        /// Use domains for
-        public static let useFor = Strings.tr("Localizable", "entities.dns.domains.use_for", fallback: "Use domains for")
-        public enum FirstIsPrimary {
-          /// Use the first domain as the primary domain.
-          public static let footer = Strings.tr("Localizable", "entities.dns.domains.first_is_primary.footer", fallback: "Use the first domain as the primary domain.")
-        }
-        public enum UseFor {
-          /// Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.
-          public static let footer = Strings.tr("Localizable", "entities.dns.domains.use_for.footer", fallback: "Match applies these DNS settings only to the listed domains. Search helps resolve short names like “printer”.")
-        }
-      }
     }
     public enum DnsProtocol {
       /// Cleartext
@@ -538,15 +516,35 @@ public enum Strings {
   }
   public enum Modules {
     public enum Dns {
-      /// Route through VPN
-      public static let routeThroughVpn = Strings.tr("Localizable", "modules.dns.route_through_vpn", fallback: "Route through VPN")
       public enum Domains {
         /// Add domain
         public static let add = Strings.tr("Localizable", "modules.dns.domains.add", fallback: "Add domain")
+        /// First is primary
+        public static let firstIsPrimary = Strings.tr("Localizable", "modules.dns.domains.first_is_primary", fallback: "First is primary")
+        public enum FirstIsPrimary {
+          /// Use the first domain as the primary domain.
+          public static let footer = Strings.tr("Localizable", "modules.dns.domains.first_is_primary.footer", fallback: "Use the first domain as the primary domain.")
+        }
       }
-      public enum RouteThroughVpn {
-        /// If enabled, DNS queries will be routed through the VPN tunnel.
-        public static let footer = Strings.tr("Localizable", "modules.dns.route_through_vpn.footer", fallback: "If enabled, DNS queries will be routed through the VPN tunnel.")
+      public enum Policy {
+        /// Inherit from VPN
+        public static let inheritsVpn = Strings.tr("Localizable", "modules.dns.policy.inherits_vpn", fallback: "Inherit from VPN")
+        /// Route through VPN
+        public static let routeThroughVpn = Strings.tr("Localizable", "modules.dns.policy.route_through_vpn", fallback: "Route through VPN")
+        /// Only for configured domains
+        public static let useOnly = Strings.tr("Localizable", "modules.dns.policy.use_only", fallback: "Only for configured domains")
+        public enum InheritsVpn {
+          /// Reuse the DNS settings provided by the VPN.
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.inherits_vpn.footer", fallback: "Reuse the DNS settings provided by the VPN.")
+        }
+        public enum RouteThroughVpn {
+          /// If enabled, DNS queries will be routed through the VPN tunnel.
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.route_through_vpn.footer", fallback: "If enabled, DNS queries will be routed through the VPN tunnel.")
+        }
+        public enum UseOnly {
+          /// Use the VPN DNS resolver only for the configured domains (split DNS).
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.use_only.footer", fallback: "Use the VPN DNS resolver only for the configured domains (split DNS).")
+        }
       }
       public enum Servers {
         /// Add address

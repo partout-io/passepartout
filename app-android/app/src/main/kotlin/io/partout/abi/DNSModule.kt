@@ -30,6 +30,7 @@ import kotlinx.serialization.Contextual
  * @param servers 
  * @param domainName 
  * @param domainPolicy 
+ * @param inheritsVPN 
  * @param routesThroughVPN 
  * @param searchDomains 
  */
@@ -51,6 +52,9 @@ data class DNSModule (
 
     @Contextual @SerialName(value = "domainPolicy")
     val domainPolicy: DNSModuleDomainPolicy? = null,
+
+    @SerialName(value = "inheritsVPN")
+    val inheritsVPN: kotlin.Boolean? = null,
 
     @SerialName(value = "routesThroughVPN")
     val routesThroughVPN: kotlin.Boolean? = null,
