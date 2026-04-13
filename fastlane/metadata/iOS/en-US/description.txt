@@ -17,6 +17,8 @@ REQUIRES AN IN-APP PURCHASE:
 - On-demand rules for smart, automated connections.
 - iCloud sharing for seamless multi-device use.
 - DoH/DoT for secure DNS queries.
+- Domain matching for split DNS.
+- Export and share profiles.
 - Custom routing for advanced configurations.
 - Interactive login with support for one-time passwords (OTP).
 - Non-VPN profiles (e.g. DNS/Proxy-only setups).

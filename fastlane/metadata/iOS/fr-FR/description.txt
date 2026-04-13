@@ -17,6 +17,8 @@ NÉCESSITE UN ACHAT INTÉGRÉ :
 - Règles à la demande pour des connexions automatiques et intelligentes.
 - Partage iCloud pour une utilisation fluide sur plusieurs appareils.
 - DoH/DoT pour des requêtes DNS sécurisées.
+- Correspondance de domaines pour le split DNS.
+- Exporter et partager des profils.
 - Routage personnalisé pour des configurations avancées.
 - Connexion interactive avec prise en charge des mots de passe à usage unique (OTP).
 - Profils sans VPN (par exemple, configurations DNS/Proxy uniquement).
