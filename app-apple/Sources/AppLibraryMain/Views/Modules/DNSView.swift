@@ -20,25 +20,58 @@ struct DNSView: View, ModuleDraftEditing {
     var body: some View {
         debugChanges()
         return Group {
-            protocolSection
-            routingSection
-            Group {
-                serversSection
-                domainsSection
+            policySection
+            inheritsSection
+            if draft.module.inheritsVPN != true {
+                overrideGroup
             }
-            .labelsHidden()
-            domainsBehaviorSection
         }
         .moduleView(draft: draft)
     }
 }
 
 private extension DNSView {
-    static let allProtocols: [DNSProtocol] = [
-        .cleartext,
-        .https,
-        .tls
-    ]
+    var policySection: some View {
+        Group {
+            routesThroughPicker
+                .themeContainerEntry(subtitle: Strings.Modules.Dns.Policy.RouteThroughVpn.footer)
+            onlyInDomainsToggle
+                .themeContainerEntry(subtitle: Strings.Modules.Dns.Policy.UseOnly.footer)
+        }
+        .themeContainer()
+    }
+
+    var routesThroughPicker: some View {
+        Picker(Strings.Modules.Dns.Policy.routeThroughVpn, selection: $draft.module.routesThroughVPN) {
+            Text(Strings.Global.Nouns.default)
+                .tag(nil as Bool?)
+            Text(Strings.Global.Nouns.yes)
+                .tag(true as Bool?)
+            Text(Strings.Global.Nouns.no)
+                .tag(false as Bool?)
+        }
+    }
+
+    var onlyInDomainsToggle: some View {
+        Toggle(Strings.Modules.Dns.Policy.useOnly, isOn: bindingToOnlyInDomains)
+            .disabled(!canApplyDomainPolicy)
+    }
+
+    var inheritsSection: some View {
+        Toggle(Strings.Modules.Dns.Policy.inheritsVpn, isOn: $draft.module.inheritsVPN)
+            .themeContainerWithSingleEntry(footer: Strings.Modules.Dns.Policy.InheritsVpn.footer)
+    }
+
+    var overrideGroup: some View {
+        Group {
+            protocolSection
+            serversSection.labelsHidden()
+            if draft.module.protocolType == .cleartext {
+                domainsSection.labelsHidden()
+                firstDomainToggle
+            }
+        }
+    }
 
     var protocolSection: some View {
         Section {
@@ -60,19 +93,6 @@ private extension DNSView {
                 EmptyView()
             }
         }
-    }
-
-    var routingSection: some View {
-        Picker(Strings.Modules.Dns.routeThroughVpn, selection: $draft.module.routesThroughVPN) {
-            Text(Strings.Global.Nouns.default)
-                .tag(nil as Bool?)
-            Text(Strings.Global.Nouns.yes)
-                .tag(true as Bool?)
-            Text(Strings.Global.Nouns.no)
-                .tag(false as Bool?)
-        }
-        .themeContainerWithSingleEntry(
-            footer: Strings.Modules.Dns.RouteThroughVpn.footer)
     }
 
     var serversSection: some View {
@@ -114,29 +134,39 @@ private extension DNSView {
         )
     }
 
-    var domainsBehaviorSection: some View {
-        let V = Strings.Entities.Dns.Domains.self
-        return Group {
-            Toggle(V.firstIsPrimary, isOn: $draft.module.isFirstDomainPrimary)
-                .themeContainerEntry(subtitle: V.FirstIsPrimary.footer)
-            Picker(V.useFor, selection: $draft.module.domainPolicy) {
-                ForEach(Self.allPolicies, id: \.?.rawValue) {
-                    Text($0.localizedDescription)
-                        .tag($0)
-                }
-            }
-            .themeContainerEntry(subtitle: V.UseFor.footer)
-        }
-        .themeContainer()
-        .disabled(!hasNonEmptyDomains)
+    var firstDomainToggle: some View {
+        Toggle(Strings.Modules.Dns.Domains.firstIsPrimary, isOn: $draft.module.isFirstDomainPrimary)
+            .themeContainerWithSingleEntry(footer: Strings.Modules.Dns.Domains.FirstIsPrimary.footer)
+            .disabled(!hasNonEmptyDomains)
     }
 }
 
 private extension DNSView {
-    static let allPolicies: [DNSModule.DomainPolicy?] = [.matchAndSearch, .match, nil]
+    static let allProtocols: [DNSProtocol] = [
+        .cleartext,
+        .https,
+        .tls
+    ]
+
+    static let allPolicies: [DNSModule.DomainPolicy?] = [
+        .matchAndSearch,
+        nil
+    ]
+
+    var bindingToOnlyInDomains: Binding<Bool> {
+        Binding {
+            canApplyDomainPolicy ? draft.module.domainPolicy == .matchAndSearch : false
+        } set: {
+            draft.module.domainPolicy = $0 ? .matchAndSearch : nil
+        }
+    }
+
+    var canApplyDomainPolicy: Bool {
+        draft.module.inheritsVPN == true || draft.module.protocolType == .cleartext
+    }
 
     var hasNonEmptyDomains: Bool {
-        draft.module.domains?.contains { !$0.isEmpty } ?? false
+        draft.module.inheritsVPN == true || draft.module.domains?.contains { !$0.isEmpty } ?? false
     }
 }
 
