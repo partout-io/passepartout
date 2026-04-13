@@ -1,1 +1,4 @@
-* Use domains to match split DNS
+* Use domains to match split DNS (#1753)
+* Rework DNS view and inherit settings from VPN (#1761)
+* Update OpenSSL to 3.6.2
+* Align heights of add/remove module buttons (#1760)
