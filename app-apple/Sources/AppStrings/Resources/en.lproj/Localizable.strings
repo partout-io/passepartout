@@ -188,7 +188,7 @@
 "modules.dns.policy.inherits_vpn" = "Inherit from VPN";
 "modules.dns.policy.inherits_vpn.footer" = "Reuse the DNS settings provided by the VPN.";
 "modules.dns.policy.use_only" = "Only for configured domains";
-"modules.dns.policy.use_only.footer" = "Use the VPN DNS resolver only for the configured domains (split DNS).";
+"modules.dns.policy.use_only.footer" = "Use the VPN DNS resolver only for the configured domains (split DNS). This works as intended only when the VPN is not the default gateway.";
 "modules.dns.policy.route_through_vpn" = "Route through VPN";
 "modules.dns.policy.route_through_vpn.footer" = "If enabled, DNS queries will be routed through the VPN tunnel.";
 "modules.dns.servers.add" = "Add address";

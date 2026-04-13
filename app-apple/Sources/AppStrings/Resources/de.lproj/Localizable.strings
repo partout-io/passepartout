@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "Vom VPN übernehmen";
 "modules.dns.policy.route_through_vpn.footer" = "Wenn aktiviert, werden DNS-Anfragen durch den VPN-Tunnel geleitet.";
 "modules.dns.policy.route_through_vpn" = "Über VPN routen";
-"modules.dns.policy.use_only.footer" = "Den VPN-DNS-Resolver nur für die konfigurierten Domains verwenden (split DNS).";
+"modules.dns.policy.use_only.footer" = "Den VPN-DNS-Resolver nur für die konfigurierten Domains verwenden (split DNS). Dies funktioniert wie beabsichtigt nur, wenn das VPN nicht das Standard-Gateway ist.";
 "modules.dns.policy.use_only" = "Nur für konfigurierte Domains";
 "modules.dns.servers.add" = "Adresse hinzufügen";
 "modules.general.rows.appletv.purchase" = "TV-Einschränkung entfernen";

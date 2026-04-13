@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "Успадкувати від VPN";
 "modules.dns.policy.route_through_vpn.footer" = "Якщо ввімкнено, DNS-запити будуть спрямовані через VPN-тунель.";
 "modules.dns.policy.route_through_vpn" = "Маршрутизувати через VPN";
-"modules.dns.policy.use_only.footer" = "Використовувати DNS-резолвер VPN лише для налаштованих доменів (split DNS).";
+"modules.dns.policy.use_only.footer" = "Використовувати DNS-резолвер VPN лише для налаштованих доменів (split DNS). Це працює як задумано лише тоді, коли VPN не є типовим шлюзом.";
 "modules.dns.policy.use_only" = "Лише для налаштованих доменів";
 "modules.dns.servers.add" = "Додати адресу";
 "modules.general.rows.appletv.purchase" = "Зняти обмеження TV";

@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "Heredar del VPN";
 "modules.dns.policy.route_through_vpn.footer" = "Si está habilitado, las consultas DNS se enviarán a través del túnel VPN.";
 "modules.dns.policy.route_through_vpn" = "Encaminar a través de VPN";
-"modules.dns.policy.use_only.footer" = "Usar el resolvedor DNS de la VPN solo para los dominios configurados (split DNS).";
+"modules.dns.policy.use_only.footer" = "Usar el resolvedor DNS de la VPN solo para los dominios configurados (split DNS). Esto funciona como se espera solo cuando la VPN no es la puerta de enlace predeterminada.";
 "modules.dns.policy.use_only" = "Solo para dominios configurados";
 "modules.dns.servers.add" = "Añadir dirección";
 "modules.general.rows.appletv.purchase" = "Eliminar restricción de TV";

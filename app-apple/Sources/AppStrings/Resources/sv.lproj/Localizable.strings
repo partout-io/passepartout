@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "Ärv från VPN";
 "modules.dns.policy.route_through_vpn.footer" = "Om aktiverat, kommer DNS-förfrågningar att routas genom VPN-tunneln.";
 "modules.dns.policy.route_through_vpn" = "Routa via VPN";
-"modules.dns.policy.use_only.footer" = "Använd VPN:ens DNS-resolver endast för de konfigurerade domänerna (split DNS).";
+"modules.dns.policy.use_only.footer" = "Använd VPN:ens DNS-resolver endast för de konfigurerade domänerna (split DNS). Detta fungerar som avsett endast när VPN inte är standardgatewayen.";
 "modules.dns.policy.use_only" = "Endast för konfigurerade domäner";
 "modules.dns.servers.add" = "Lägg till adress";
 "modules.general.rows.appletv.purchase" = "Ta bort TV-begränsning";

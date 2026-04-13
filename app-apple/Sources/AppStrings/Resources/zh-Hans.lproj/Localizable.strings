@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "继承自 VPN";
 "modules.dns.policy.route_through_vpn.footer" = "如果启用，DNS 查询将通过 VPN 隧道进行路由。";
 "modules.dns.policy.route_through_vpn" = "通过 VPN 路由";
-"modules.dns.policy.use_only.footer" = "仅对已配置的域名使用 VPN DNS 解析器（split DNS）。";
+"modules.dns.policy.use_only.footer" = "仅对已配置的域名使用 VPN DNS 解析器（split DNS）。仅当 VPN 不是默认网关时，此功能才会按预期工作。";
 "modules.dns.policy.use_only" = "仅用于已配置的域名";
 "modules.dns.servers.add" = "添加地址";
 "modules.general.rows.appletv.purchase" = "取消 TV 限制";

@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "Overnemen van VPN";
 "modules.dns.policy.route_through_vpn.footer" = "Indien ingeschakeld, worden DNS-verzoeken via de VPN-tunnel geleid.";
 "modules.dns.policy.route_through_vpn" = "Routeren via VPN";
-"modules.dns.policy.use_only.footer" = "Gebruik de VPN-DNS-resolver alleen voor de geconfigureerde domeinen (split DNS).";
+"modules.dns.policy.use_only.footer" = "Gebruik de VPN-DNS-resolver alleen voor de geconfigureerde domeinen (split DNS). Dit werkt alleen zoals bedoeld wanneer de VPN niet de standaardgateway is.";
 "modules.dns.policy.use_only" = "Alleen voor geconfigureerde domeinen";
 "modules.dns.servers.add" = "Adres toevoegen";
 "modules.general.rows.appletv.purchase" = "TV-beperking verwijderen";

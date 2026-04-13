@@ -204,7 +204,7 @@
 "modules.dns.policy.inherits_vpn" = "Κληρονομία από VPN";
 "modules.dns.policy.route_through_vpn.footer" = "Εάν ενεργοποιηθεί, τα DNS ερωτήματα θα δρομολογούνται μέσω της σήραγγας VPN.";
 "modules.dns.policy.route_through_vpn" = "Δρομολόγηση μέσω VPN";
-"modules.dns.policy.use_only.footer" = "Χρησιμοποιήστε τον επιλυτή DNS του VPN μόνο για τους διαμορφωμένους τομείς (split DNS).";
+"modules.dns.policy.use_only.footer" = "Χρησιμοποιήστε τον επιλυτή DNS του VPN μόνο για τους διαμορφωμένους τομείς (split DNS). Αυτό λειτουργεί όπως προβλέπεται μόνο όταν το VPN δεν είναι η προεπιλεγμένη πύλη.";
 "modules.dns.policy.use_only" = "Μόνο για διαμορφωμένους τομείς";
 "modules.dns.servers.add" = "Προσθήκη διεύθυνσης";
 "modules.general.rows.appletv.purchase" = "Κατάργηση περιορισμού TV";
