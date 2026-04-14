@@ -47,7 +47,7 @@ private extension SettingsContentView {
                 linkContent(.version)
                 VersionUpdateLink()
             }
-            .themeSection(header: Strings.Global.Nouns.about)
+            .themeSection()
             Group {
                 linkContent(.links)
                 linkContent(.credits)
@@ -56,10 +56,8 @@ private extension SettingsContentView {
                 }
             }
             .themeSection(header: Strings.Global.Nouns.about)
-
             ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faqURL)
                 .themeSection(header: Strings.Global.Nouns.troubleshooting)
-
             Group {
                 linkContent(.diagnostics)
                 if appConfiguration.bundle.distributionTarget.supportsIAP {
