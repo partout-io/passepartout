@@ -562,6 +562,10 @@ public enum Strings {
   }
   public enum Modules {
     public enum Dns {
+      public enum CustomSettings {
+        /// Custom settings
+        public static let header = Strings.tr("Localizable", "modules.dns.custom_settings.header", fallback: "Custom settings")
+      }
       public enum Domains {
         /// Add domain
         public static let add = Strings.tr("Localizable", "modules.dns.domains.add", fallback: "Add domain")
