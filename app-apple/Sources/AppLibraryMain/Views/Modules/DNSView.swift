@@ -20,8 +20,8 @@ struct DNSView: View, ModuleDraftEditing {
     var body: some View {
         debugChanges()
         return Group {
-            behaviorSection
             inheritsSection
+            behaviorSection
             if draft.module.inheritsVPN != true {
                 overrideGroup
             }
