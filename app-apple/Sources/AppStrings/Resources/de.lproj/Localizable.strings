@@ -171,7 +171,7 @@
 "global.nouns.hostname" = "Host-Name";
 "global.nouns.interface" = "Schnittstelle";
 "global.nouns.interval" = "Intervall";
-"global.nouns.keep_alive" = "Am Leben halten";
+"global.nouns.keep_alive" = "Dauerhafter Keepalive";
 "global.nouns.key" = "Schlüssel";
 "global.nouns.last_update" = "Letztes Update";
 "global.nouns.loading" = "Lädt";
@@ -285,7 +285,7 @@
 "modules.wireguard.peer.add" = "Peer hinzufügen";
 "modules.wireguard.peer.delete" = "Peer löschen";
 "modules.wireguard.peer" = "Peer #%d";
-"modules.wireguard.preshared_key" = "Vorgeschlüsselter Schlüssel";
+"modules.wireguard.preshared_key" = "Symmetrischer Schlüssel";
 "modules.wireguard.private_key.generate" = "Neuen Schlüssel generieren";
 "onboarding.drop_lzo.message" = "Aus Sicherheitsgründen (insbesondere aufgrund der VORACLE-Sicherheitslücke) hat OpenVPN die Unterstützung für Kompression bereits vor Jahren eingestellt. Ab Dezember 2025 wird auch Passepartout die Unterstützung für LZO-Kompression entfernen. Wenn Ihre OpenVPN-Verbindung nicht mehr funktioniert, stellen Sie bitte sicher, dass die Kompression auf Ihrem Server deaktiviert ist. Die meisten öffentlichen VPN-Anbieter haben dies bereits getan, sodass Sie wahrscheinlich nicht betroffen sind.";
 "onboarding.migrate_3_2_3.message" = "Version 3.2.3 hat die Art und Weise geändert, wie Anbieter gespeichert werden.";
