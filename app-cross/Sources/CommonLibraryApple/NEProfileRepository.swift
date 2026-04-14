@@ -23,14 +23,14 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
         self.title = title
         profilesSubject = CurrentValueStream([])
 
-        let managers = repository.managersStream
+        let stream = repository.managersStream
         managersSubscription = Task { [weak self] in
-            for await manager in managers {
+            for await managers in stream {
                 guard !Task.isCancelled else {
                     pspLog(.profiles, .debug, "Cancelled NEProfileRepository.managersStream")
                     return
                 }
-                self?.onUpdatedManagers(manager)
+                self?.onUpdatedManagers(managers)
             }
         }
     }
