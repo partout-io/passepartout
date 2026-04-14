@@ -62,8 +62,10 @@ extension AppABI {
         )
 
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
-        // FIXME: #1656, C ABI, profile manager (real profiles)
-        let profileManager = ProfileManager(profiles: [])
+        let profileRepository = try FileProfileRepository(
+            directoryURL: URL(filePath: profilesDir, directoryHint: .isDirectory)
+        )
+        let profileManager = ProfileManager(repository: profileRepository)
         // FIXME: #1656, C ABI, tunnel manager (real tunnel)
         let tunnel = Tunnel(ctx, strategy: FakeTunnelStrategy()) { @Sendable profileId in
             // FIXME: #1656, C ABI, IPC tunnel environment
