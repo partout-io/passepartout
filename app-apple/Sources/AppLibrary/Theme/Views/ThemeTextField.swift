@@ -5,16 +5,16 @@
 import SwiftUI
 
 public struct ThemeTextField: View {
-    private let title: String?
+    let title: String?
 
     @Binding
-    private var text: String
+    var text: String
 
-    private let placeholder: String
+    let placeholder: String
 
-    private let inputType: ThemeInputType
+    let inputType: ThemeInputType
 
-    private let sideAligned: Bool
+    let sideAligned: Bool
 
     public init(
         _ title: String?,
