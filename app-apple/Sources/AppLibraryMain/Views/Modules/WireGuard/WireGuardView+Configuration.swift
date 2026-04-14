@@ -83,7 +83,8 @@ private extension WireGuardView.ConfigurationView {
                 Strings.Unlocalized.mtu,
                 text: $viewModel.mtu,
                 placeholder: Strings.Unlocalized.Placeholders.mtu,
-                inputType: .number
+                inputType: .number,
+                sideAligned: true
             )
         }
     }

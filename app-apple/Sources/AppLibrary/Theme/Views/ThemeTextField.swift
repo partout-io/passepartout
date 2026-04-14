@@ -5,35 +5,42 @@
 import SwiftUI
 
 public struct ThemeTextField: View {
-    let title: String?
+    private let title: String?
 
     @Binding
-    var text: String
+    private var text: String
 
-    let placeholder: String
+    private let placeholder: String
 
-    let inputType: ThemeInputType
+    private let inputType: ThemeInputType
+
+    private let sideAligned: Bool
 
     public init(
         _ title: String?,
         text: Binding<String>,
         placeholder: String,
-        inputType: ThemeInputType = .text
+        inputType: ThemeInputType = .text,
+        sideAligned: Bool = false
     ) {
         self.title = title
         _text = text
         self.placeholder = placeholder
         self.inputType = inputType
+        self.sideAligned = sideAligned
     }
 }
 
 extension ThemeTextField {
-
     @ViewBuilder
     var labeledView: some View {
         if let title {
             LabeledContent {
                 fieldView
+#if os(iOS)
+                    .multilineTextAlignment(sideAligned ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: sideAligned ? .trailing : .leading)
+#endif
             } label: {
                 Text(title)
             }
