@@ -20,8 +20,8 @@ struct DNSView: View, ModuleDraftEditing {
     var body: some View {
         debugChanges()
         return Group {
-            behaviorSection
             inheritsSection
+            behaviorSection
             if draft.module.inheritsVPN != true {
                 overrideGroup
             }
@@ -74,7 +74,7 @@ private extension DNSView {
     }
 
     var protocolSection: some View {
-        Section {
+        Group {
             Picker(Strings.Global.Nouns.protocol, selection: $draft.module.protocolType) {
                 ForEach(Self.allProtocols, id: \.self) {
                     Text($0.localizedDescription)
@@ -93,6 +93,7 @@ private extension DNSView {
                 EmptyView()
             }
         }
+        .themeSection(header: Strings.Modules.Dns.CustomSettings.header)
     }
 
     var serversSection: some View {
