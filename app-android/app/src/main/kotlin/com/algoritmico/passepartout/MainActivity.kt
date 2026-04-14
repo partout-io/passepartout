@@ -21,6 +21,7 @@ import com.algoritmico.passepartout.abi.ProfileEventSave
 import com.algoritmico.passepartout.helpers.ABIEventCallback
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import kotlinx.serialization.json.Json
+import java.io.File
 
 val globalJsonCoder = Json {
     ignoreUnknownKeys = true
@@ -56,7 +57,9 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
         // Initialize app and event callback
         var bundle = String(assets.open("bundle.json").readBytes())
         var constants = String(assets.open("constants.json").readBytes())
-        var profilesDir = "." // FIXME: #1656, C ABI, profiles dir
+        val profilesDir = File(noBackupFilesDir, "profiles-v1").apply {
+            mkdirs()
+        }.absolutePath
         val cachePath = cacheDir.absolutePath
         var eventHandler = this
         wrapper.appInit(
