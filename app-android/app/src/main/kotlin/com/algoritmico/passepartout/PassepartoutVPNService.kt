@@ -120,9 +120,9 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
         }
     }
 
-    override fun onStatus(statusCtx: Any?, statusJSON: String) {
-        val status = globalJsonCoder.decodeFromString<OnConnectionStatus>(statusJSON)
-        Log.i("Passepartout", ">>> onStatus = ${status}")
+    override fun onStatus(statusCtx: Any?, onStatusJSON: String) {
+        val onStatus = globalJsonCoder.decodeFromString<OnConnectionStatus>(onStatusJSON)
+        Log.i("Passepartout", ">>> onStatus = ${onStatus}")
     }
 
     private suspend fun readAsset(name: String): String = withContext(Dispatchers.IO) {
