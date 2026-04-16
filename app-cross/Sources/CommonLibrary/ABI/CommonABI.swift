@@ -70,7 +70,7 @@ private extension ABI.Event {
 }
 
 extension ABI.AppPreferenceValues {
-    init(with decoder: JSONDecoder, data: Data?, newDeviceId: Bool) {
+    init(with decoder: JSONDecoder, data: Data?, newDeviceId: Bool, deviceIdLength: Int) {
         var values = ABI.AppPreferenceValues()
         if let data {
             do {
@@ -82,8 +82,7 @@ extension ABI.AppPreferenceValues {
             pspLog(.core, .info, "No preferences provided")
         }
         if newDeviceId && values.deviceId == nil {
-            // FIXME: #1656, C ABI, app device ID
-            values.deviceId = ""
+            values.deviceId = String.random(count: deviceIdLength)
         }
         self = values
     }

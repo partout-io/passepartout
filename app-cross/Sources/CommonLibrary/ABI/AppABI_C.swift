@@ -89,7 +89,7 @@ public func __psp_app_on_foreground() {
 public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
     context: UnsafeMutableRawPointer?,
-    completion: psp_abi_cb_error?
+    completion: psp_abi_completion?
 ) {
     guard let abi, let path else { return }
     let swiftPath = String(cString: path)
@@ -108,7 +108,7 @@ public func __psp_app_import_profile_text(
     text: UnsafePointer<CChar>?,
     filename: UnsafePointer<CChar>?,
     context: UnsafeMutableRawPointer?,
-    completion: psp_abi_cb_error?
+    completion: psp_abi_completion?
 ) {
     guard let abi, let text, let filename else { return }
     let swiftText = String(cString: text)

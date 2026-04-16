@@ -18,7 +18,7 @@ extension TunnelABI {
         let logFormatter = appConfiguration.newLogFormatter()
 
         // Create global registry
-        let registry = appConfiguration.newTunnelRegistry(
+        let registry = appConfiguration.newRegistryForTunnel(
             preferences: preferences,
             cachesURL: cachesURL
         )
