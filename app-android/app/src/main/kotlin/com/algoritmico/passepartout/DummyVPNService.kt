@@ -15,10 +15,6 @@ class DummyVPNService: VpnService() {
     private val vpnWrapper = PartoutVpnWrapper(this)
     private var isRunning = false
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == "STOP_VPN") {
             stopVpn()
@@ -42,24 +38,8 @@ class DummyVPNService: VpnService() {
         var bundle = String(assets.open("bundle.json").readBytes())
         var constants = String(assets.open("constants.json").readBytes())
         // FIXME: read profile from intent
-//        val testProfile = String(assets.open("vps.conf").readBytes())
-        val testProfile = String(assets.open("vps-tcp.ovpn").readBytes())
-
-        // FIXME: protect main socket from VPN to avoid circular
-        // register daemon callback to report any new
-        // descriptor (pp_socket or wg) in order to update the "protection list"
-        // You need to call back into Kotlin and protect it before connecting
-//            protect(fd)
-
-        // FIXME: the daemon requires access to Builder as TunnelController
-//                val builder = Builder()
-//                    .setSession("MyVPN")
-//                    .addAddress("10.0.0.2", 24) // Example VPN interface address
-//                    .addDnsServer("8.8.8.8")
-//                    .addRoute("0.0.0.0", 0) // Route all traffic
-//                // FIXME: this is the interface to the tun device
-//                val tun = builder.establish()
-//            tun?.fd
+        val testProfile = String(assets.open("vps.conf").readBytes())
+//        val testProfile = String(assets.open("vps-tcp.ovpn").readBytes())
 
         val cachePath = cacheDir.absolutePath
         Log.e("Passepartout", ">>> Starting daemon (cache: $cachePath)")
