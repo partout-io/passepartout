@@ -14,6 +14,10 @@ public nonisolated func __psp_partout_version() -> UnsafePointer<CChar>! {
 
 // MARK: - Helpers
 
+enum ABIError: Error {
+    case wrapping(reason: Error? = nil)
+}
+
 extension ABI {
     static func run(
         _ block: @escaping @Sendable @BusinessActor () async -> Void
@@ -32,6 +36,22 @@ extension ABI {
             await block(unsafeCtx)
         }
     }
+
+    static func encodeWrapper<T>(_ wrapper: T) throws -> String where T: Encodable {
+        let data: Data
+        do {
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .iso8601
+            data = try encoder.encode(wrapper)
+        } catch {
+            throw ABIError.wrapping(reason: error)
+        }
+        guard let json = String(data: data, encoding: .utf8) else {
+            throw ABIError.wrapping()
+        }
+        // Dispatch JSON event to cross-platform apps
+        return json
+    }
 }
 
 extension UnsafePointer where Pointee == CChar {
@@ -40,7 +60,7 @@ extension UnsafePointer where Pointee == CChar {
     }
 }
 
-// MARK: - Event wrapping
+// MARK: - Wrapping
 
 extension ABI {
     struct EventWrapper: Encodable {
