@@ -57,7 +57,7 @@ public func __psp_tunnel_start(
     ABI.run(context) { ctx in
         defer { pspUnlock() }
         do {
-            let abi = try TunnelABI.forCrossPlatform(
+            globalABI = try TunnelABI.forCrossPlatform(
                 appBundleData: appBundleData,
                 appConstantsData: appConstantsData,
                 preferencesData: preferencesData,
@@ -66,8 +66,7 @@ public func __psp_tunnel_start(
                 onStatus: onStatus,
                 jniWrapper: jniWrapper
             )
-            try await abi.start(isInteractive: isInteractive)
-            globalABI = abi
+            try await globalABI?.start(isInteractive: isInteractive)
             callback?(ctx, 0, nil)
         } catch {
             callback?(ctx, -1, error.localizedDescription)
