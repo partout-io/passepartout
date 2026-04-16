@@ -74,7 +74,8 @@ extension TunnelABI {
         let daemonParameters = SimpleConnectionDaemon.Parameters(
             connectionFactory: registry,
             connectionParameters: connectionParameters,
-            messageHandler: DefaultMessageHandler(ctx, environment: environment)
+            messageHandler: DefaultMessageHandler(ctx, environment: environment),
+            startsImmediately: false
         )
         let daemon = try SimpleConnectionDaemon(params: daemonParameters)
 
