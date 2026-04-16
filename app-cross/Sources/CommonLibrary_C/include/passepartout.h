@@ -18,8 +18,7 @@ typedef void (*psp_event_callback)(void *event_ctx, const char *event);
 
 /* Completion callbacks. */
 /* Success: code == 0. */
-typedef void (*psp_abi_cb_error)(void *ctx, int code, const char *error_message);
-typedef void (*psp_abi_cb_void)(void *ctx);
+typedef void (*psp_abi_completion)(void *ctx, int code, const char *error_message);
 
 /* App initialization. */
 typedef struct {
@@ -35,20 +34,9 @@ typedef struct {
 /* App functions. */
 void psp_app_init(const psp_app_init_args *args);
 void psp_app_on_foreground(void);
-void psp_app_import_profile_path(const char *path, void *ctx, psp_abi_cb_error completion);
-void psp_app_import_profile_text(const char *text, const char *filename, void *ctx, psp_abi_cb_error completion);
+void psp_app_import_profile_path(const char *path, void *ctx, psp_abi_completion completion);
+void psp_app_import_profile_text(const char *text, const char *filename, void *ctx, psp_abi_completion completion);
 void psp_app_flush_log(void);
-
-/* Options. */
-//typedef enum {
-//    PSPOptionDNSFallsBack,
-//    PSPOptionLogsPrivateData,
-//    PSPOptionSkipsPurchases
-//} psp_option;
-//void psp_option_set_bool(psp_option, bool);
-//void psp_option_set_int(psp_option, int);
-//void psp_option_set_string(psp_option, const char *);
-//void psp_option_set_object(psp_option, const psp_json *);
 
 /* Daemon initialization. */
 typedef struct {
@@ -59,11 +47,13 @@ typedef struct {
     const char *profile;
     bool is_interactive;
     bool is_daemon;
+    void *status_ctx;
+    psp_event_callback status_cb;
     void *jni_wrapper;
 } psp_tunnel_start_args;
 
 /* Daemon functions. */
-void psp_tunnel_start(const psp_tunnel_start_args *args, void *ctx, psp_abi_cb_error callback);
-void psp_tunnel_stop(void *ctx, psp_abi_cb_void callback);
+void psp_tunnel_start(const psp_tunnel_start_args *args, void *ctx, psp_abi_completion completion);
+void psp_tunnel_stop(void *ctx, psp_abi_completion completion);
 
 #endif

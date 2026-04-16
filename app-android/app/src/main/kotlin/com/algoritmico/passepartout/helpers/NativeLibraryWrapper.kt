@@ -28,9 +28,14 @@ class NativeLibraryWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        vpn: AndroidTunnelController
+        statusContext: Any,
+        statusCallback: ConnectionStatusCallback,
+        vpn: AndroidTunnelController,
+        completion: ABICompletionCallback
     )
-    external fun tunnelStop(): Unit
+    external fun tunnelStop(
+        completion: ABICompletionCallback
+    )
 
     companion object {
         init {

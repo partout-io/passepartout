@@ -45,16 +45,14 @@ extension AppABI {
                 await betaChecker.isBeta()
             },
             fetcher: {
-                var request = URLRequest(url: $0)
-                request.cachePolicy = .reloadIgnoringCacheData
-                return try await URLSession.shared.data(for: request).0
+                try await appConfiguration.newRequest(for: $0, cached: false)
             }
         )
 
         // MARK: Registry
 
         let cachesURL = FileManager.default.temporaryDirectory
-        let registry = appConfiguration.newAppRegistry(
+        let registry = appConfiguration.newRegistryForApp(
             configManager: configManager,
             kvStore: kvStore,
             cachesURL: cachesURL
@@ -193,9 +191,7 @@ extension AppABI {
                 }
             }(),
             fetcher: {
-                var request = URLRequest(url: $0)
-                request.cachePolicy = .useProtocolCachePolicy
-                return try await URLSession.shared.data(for: request).0
+                try await appConfiguration.newRequest(for: $0, cached: true)
             }
         )
 

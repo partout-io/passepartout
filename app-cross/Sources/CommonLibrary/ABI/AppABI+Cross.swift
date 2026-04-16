@@ -16,23 +16,22 @@ extension AppABI {
     ) throws -> AppABI {
         let decoder = JSONDecoder()
 
-        // Parse preferences
-        let preferences = ABI.AppPreferenceValues(
-            with: decoder,
-            data: preferencesData,
-            newDeviceId: true
-        )
-
         // Decode app configuration
         let bundle = try decoder.decode(ABI.AppBundle.self, from: appBundleData)
         let constants = try decoder.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
-        // FIXME: #1656, C ABI, get cross-platform from AppConfiguration
+        // Parse preferences
+        let preferences = ABI.AppPreferenceValues(
+            with: decoder,
+            data: preferencesData,
+            newDeviceId: true,
+            deviceIdLength: constants.deviceIdLength
+        )
 
-        // FIXME: #1656, C ABI, cross-platform log formatter and preferences
-        let logFormatter = DummyLogFormatter()
-        let kvStore = InMemoryStore()
+        let logFormatter = appConfiguration.newLogFormatter()
+        let kvStore = appConfiguration.newKeyValueStore()
+        kvStore.preferences = preferences
 
         // Logging context
         let ctx = pspLogRegister(
@@ -50,26 +49,22 @@ extension AppABI {
             isBeta: {
                 false
             },
-            fetcher: { _ in
-                // FIXME: #1656, C ABI, cross-platform URL requests
-                Data()
+            fetcher: {
+                try await appConfiguration.newRequest(for: $0, cached: false)
             }
         )
-        let registry = appConfiguration.newAppRegistry(
+        let registry = appConfiguration.newRegistryForApp(
             configManager: configManager,
             kvStore: kvStore,
             cachesURL: cachesURL
         )
 
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
-        let profileRepository = try FileProfileRepository(
-            directoryURL: URL(filePath: profilesDir, directoryHint: .isDirectory)
-        )
+        let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
-        // FIXME: #1656, C ABI, tunnel manager (real tunnel)
-        let tunnel = Tunnel(ctx, strategy: FakeTunnelStrategy()) { @Sendable profileId in
-            // FIXME: #1656, C ABI, IPC tunnel environment
-            SharedTunnelEnvironment(profileId: profileId)
+        let tunnelStrategy = appConfiguration.newStandaloneTunnelStrategy()
+        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) { @Sendable in
+            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
         }
         let tunnelManager = TunnelManager(tunnel: tunnel, interval: 1.0)
 

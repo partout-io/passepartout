@@ -9,10 +9,6 @@ import Partout
 nonisolated(unsafe)
 private var abi: AppABI?
 
-private enum AppABIError: Error {
-    case eventEncoding(reason: Error? = nil)
-}
-
 @c(psp_app_init)
 public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     guard let args,
@@ -32,21 +28,11 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
         context: eventContext,
         callback: { ctx, event in
             guard let eventCallback else { return }
+            // Enrich event JSON with metadata for decoding
+            let wrapper = ABI.EventWrapper(event)
             do {
-                // Enrich event JSON with metadata for decoding
-                let wrapper = ABI.EventWrapper(event)
-                let data: Data
-                do {
-                    let encoder = JSONEncoder()
-                    encoder.dateEncodingStrategy = .iso8601
-                    data = try encoder.encode(wrapper)
-                } catch {
-                    throw AppABIError.eventEncoding(reason: error)
-                }
-                guard let json = String(data: data, encoding: .utf8) else {
-                    throw AppABIError.eventEncoding()
-                }
                 // Dispatch JSON event to cross-platform apps
+                let json = try ABI.encodeWrapper(wrapper)
                 json.withCString {
                     eventCallback(ctx, $0)
                 }
@@ -89,7 +75,7 @@ public func __psp_app_on_foreground() {
 public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
     context: UnsafeMutableRawPointer?,
-    completion: psp_abi_cb_error?
+    completion: psp_abi_completion?
 ) {
     guard let abi, let path else { return }
     let swiftPath = String(cString: path)
@@ -108,7 +94,7 @@ public func __psp_app_import_profile_text(
     text: UnsafePointer<CChar>?,
     filename: UnsafePointer<CChar>?,
     context: UnsafeMutableRawPointer?,
-    completion: psp_abi_cb_error?
+    completion: psp_abi_completion?
 ) {
     guard let abi, let text, let filename else { return }
     let swiftText = String(cString: text)
