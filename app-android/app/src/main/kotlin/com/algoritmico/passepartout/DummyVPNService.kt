@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
 package com.algoritmico.passepartout
 
 import android.app.Notification
@@ -8,11 +12,11 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
-import io.partout.jni.PartoutVpnWrapper
+import io.partout.jni.AndroidTunnelController
 
 class DummyVPNService: VpnService() {
     private val library = NativeLibraryWrapper()
-    private val vpnWrapper = PartoutVpnWrapper(this)
+    private val vpnWrapper = AndroidTunnelController(this)
     private var isRunning = false
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
