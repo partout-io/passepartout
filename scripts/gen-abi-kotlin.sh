@@ -28,6 +28,7 @@ shared_flags=(
     -i "$partout_infile" \
     --additional-properties=packageName=$partout_package \
     --additional-properties=modelPackage=$partout_package \
+    --schema-mappings OpenVPN.CryptoContainer=kotlin.String \
     "${shared_flags[@]}"
 
 # Generate Passepartout ABI entities
