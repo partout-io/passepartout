@@ -417,6 +417,8 @@ components:
       - newProfileEncoding
       - wgCrossV2
       - unknown
+    ConnectionStatus:
+      type: object
     Credits:
       type: object
       properties:
@@ -589,6 +591,17 @@ components:
       - OnDemand
       - OpenVPN
       - WireGuard
+    OnConnectionStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        profileId:
+          type: string
+        status:
+          "$ref": "#/components/schemas/ConnectionStatus"
+      required:
+      - profileId
+      - status
     OriginalPurchase:
       type: object
       additionalProperties: false

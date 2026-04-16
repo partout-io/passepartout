@@ -29,12 +29,29 @@ public func __psp_tunnel_start(
     }
     let profileInput: ABI.ProfileImporterInput = {
         let json = String(cString: cProfileJSON)
-        // FIXME: #1656, C ABI, filename is used if module, discarded if JSON profile
-        return .contents(filename: "FIXME", data: json)
+        // XXX: filename is ignored when importing a JSON profile
+        return .contents(filename: "ThisIsIgnored", data: json)
     }()
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
+    nonisolated(unsafe) let statusContext = args.pointee.status_ctx
+    let statusCallback = args.pointee.status_cb
+    let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
+        guard let statusCallback else { return }
+        let wrapper = OpenAPIOnConnectionStatus(
+            profileId: profileId.uuidString,
+            status: status
+        )
+        do {
+            let json = try ABI.encodeWrapper(wrapper)
+            json.withCString {
+                statusCallback(statusContext, $0)
+            }
+        } catch {
+            assertionFailure("Unable to encode status: \(status), \(error)")
+        }
+    }
     nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
     // Start tunnel ABI
     ABI.run(context) { ctx in
@@ -46,6 +63,7 @@ public func __psp_tunnel_start(
                 preferencesData: preferencesData,
                 profileInput: profileInput,
                 cachesURL: cachesURL,
+                onStatus: onStatus,
                 jniWrapper: jniWrapper
             )
             try await abi.start(isInteractive: isInteractive)

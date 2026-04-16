@@ -36,6 +36,6 @@ shared_flags=(
     -i "$abi_infile" \
     --additional-properties=packageName=$abi_package \
     --additional-properties=modelPackage=$abi_package \
-    --schema-mappings TaggedProfile=TaggedProfile \
-    --import-mappings TaggedProfile=io.partout.abi.TaggedProfile \
+    --schema-mappings ConnectionStatus=ConnectionStatus,TaggedProfile=TaggedProfile \
+    --import-mappings ConnectionStatus=io.partout.abi.ConnectionStatus,TaggedProfile=io.partout.abi.TaggedProfile \
     "${shared_flags[@]}"
