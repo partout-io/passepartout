@@ -39,7 +39,7 @@ public func __psp_tunnel_start(
     let statusCallback = args.pointee.status_cb
     let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
         guard let statusCallback else { return }
-        let wrapper = OpenAPIOnConnectionStatus(
+        let wrapper = ABI.OnConnectionStatus(
             profileId: profileId.uuidString,
             status: status
         )

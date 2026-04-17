@@ -12,6 +12,7 @@ extension ABI {
     public typealias ConfigFlag = OpenAPIConfigFlag
     public typealias Credits = OpenAPICredits
     public typealias DistributionTarget = OpenAPIDistributionTarget
+    public typealias OnConnectionStatus = OpenAPIOnConnectionStatus
     public typealias ProfileSharingFlag = OpenAPIProfileSharingFlag
     public typealias ProfileTransfer = OpenAPIProfileTransfer
     public typealias SemanticVersion = OpenAPISemanticVersion
