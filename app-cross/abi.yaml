@@ -406,6 +406,7 @@ components:
       - neSocketUDP
       - neSocketTCP
       - newProfileEncoding
+      - ovpnCrossV2
       - wgCrossV2
       - unknown
       enum:
@@ -415,6 +416,7 @@ components:
       - neSocketUDP
       - neSocketTCP
       - newProfileEncoding
+      - ovpnCrossV2
       - wgCrossV2
       - unknown
     ConnectionStatus:
