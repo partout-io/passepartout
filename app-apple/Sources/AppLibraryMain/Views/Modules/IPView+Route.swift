@@ -35,13 +35,15 @@ extension IPView {
                             Strings.Global.Nouns.destination,
                             text: $destinationString,
                             placeholder: Strings.Unlocalized.Placeholders.ipDestination(forFamily: family),
-                            inputType: .ipAddress
+                            inputType: .ipAddress,
+                            sideAligned: true
                         )
                         ThemeTextField(
                             Strings.Global.Nouns.gateway,
                             text: $gatewayString,
                             placeholder: Strings.Unlocalized.Placeholders.ipAddress(forFamily: family),
-                            inputType: .ipAddress
+                            inputType: .ipAddress,
+                            sideAligned: true
                         )
                     }
                 }

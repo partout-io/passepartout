@@ -23,17 +23,18 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param delay 
+ * @param defaultDelay 
  * @param interval 
  * @param attempts 
  * @param retryInterval 
+ * @param tvDelay 
  */
 @Serializable
 
 data class AppConstantsTunnelVerificationParameters (
 
-    @SerialName(value = "delay")
-    val delay: kotlin.Double,
+    @SerialName(value = "defaultDelay")
+    val defaultDelay: kotlin.Double,
 
     @SerialName(value = "interval")
     val interval: kotlin.Double,
@@ -42,7 +43,10 @@ data class AppConstantsTunnelVerificationParameters (
     val attempts: kotlin.Int,
 
     @SerialName(value = "retryInterval")
-    val retryInterval: kotlin.Double
+    val retryInterval: kotlin.Double,
+
+    @SerialName(value = "tvDelay")
+    val tvDelay: kotlin.Double? = null
 
 ) {
 

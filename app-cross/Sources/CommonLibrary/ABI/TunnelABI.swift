@@ -24,7 +24,7 @@ public final class TunnelABI: TunnelABIProtocol {
         }
     }
 
-    private let daemon: ConnectionDaemon
+    private var daemon: ConnectionDaemon?
     private let environment: TunnelEnvironment
     private let iap: IAP?
     private let logFormatter: LogFormatter
@@ -53,6 +53,7 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public func start(isInteractive: Bool) async throws {
+        guard let daemon else { return }
         try trackContext()
 
         do {
@@ -107,13 +108,16 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public func stop() async {
+        guard let daemon else { return }
         verifierSubscription?.cancel()
         await daemon.stop()
         flushLogs()
         untrackContext()
+        self.daemon = nil
     }
 
     public func sendMessage(_ messageData: Data) async -> Data? {
+        guard let daemon else { return nil }
         pspLog(.core, .debug, "Handle tunnel message")
         do {
             let input = try JSONDecoder().decode(Message.Input.self, from: messageData)
@@ -155,6 +159,7 @@ private extension TunnelABI {
     }
 
     func trackContext() throws {
+        guard let daemon else { return }
         // TODO: #218, keep this until supported
         guard Self.activeTunnels.isEmpty else {
             throw PartoutError(.App.multipleTunnels)
@@ -164,6 +169,7 @@ private extension TunnelABI {
     }
 
     func untrackContext() {
+        guard let daemon else { return }
         pspLog(.core, .info, "Untrack context: \(daemon.profile.id)")
         Self.activeTunnels.remove(daemon.profile.id)
     }
@@ -181,9 +187,8 @@ private extension TunnelABI {
     ) async {
         var attempts = params.attempts
         while true {
-            guard !Task.isCancelled else {
-                return
-            }
+            guard let daemon else { return }
+            guard !Task.isCancelled else { return }
             do {
                 pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()

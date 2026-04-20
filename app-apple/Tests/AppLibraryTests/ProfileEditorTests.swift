@@ -29,7 +29,7 @@ extension ProfileEditorTests {
     @Test
     func givenProfile_thenMatchesProfile() throws {
         let name = "foobar"
-        let dns = try DNSModule.Builder().build()
+        let dns = try DNSModule.Builder(servers: ["3.4.5.6"]).build()
         let ip = IPModule.Builder().build()
         let profile = try Profile.Builder(
             name: name,
@@ -221,7 +221,7 @@ extension ProfileEditorTests {
     @Test
     func givenProfileManager_whenSave_thenSavesProfileToManager() async throws {
         let name = "foobar"
-        let dns = try DNSModule.Builder().build()
+        let dns = try DNSModule.Builder(servers: ["1.2.3.4"]).build()
         let ip = IPModule.Builder().build()
         let profile = try Profile.Builder(
             name: name,

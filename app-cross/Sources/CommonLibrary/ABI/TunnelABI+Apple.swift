@@ -18,7 +18,7 @@ extension TunnelABI {
         let logFormatter = appConfiguration.newLogFormatter()
 
         // Create global registry
-        let registry = appConfiguration.newTunnelRegistry(
+        let registry = appConfiguration.newRegistryForTunnel(
             preferences: preferences,
             cachesURL: cachesURL
         )
@@ -94,7 +94,8 @@ extension TunnelABI {
         let params = SimpleConnectionDaemon.Parameters(
             connectionFactory: registry,
             connectionParameters: connectionParameters,
-            messageHandler: messageHandler
+            messageHandler: messageHandler,
+            startsImmediately: true
         )
         let daemon = try SimpleConnectionDaemon(params: params)
 

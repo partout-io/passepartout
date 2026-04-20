@@ -17,6 +17,8 @@ ERFORDERT EINEN IN-APP-KAUF:
 - On-Demand-Regeln für intelligente, automatisierte Verbindungen.
 - iCloud-Freigabe für nahtlose Nutzung auf mehreren Geräten.
 - DoH/DoT für sichere DNS-Abfragen.
+- Domain-Abgleich für Split-DNS.
+- Profile exportieren und teilen.
 - Benutzerdefiniertes Routing für erweiterte Konfigurationen.
 - Interaktive Anmeldung mit Unterstützung für Einmalpasswörter (OTP).
 - Nicht-VPN-Profile (z.B. reine DNS-/Proxy-Konfigurationen).

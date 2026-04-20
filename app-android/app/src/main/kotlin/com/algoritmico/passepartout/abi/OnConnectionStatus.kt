@@ -13,8 +13,9 @@
     "UnusedImport"
 )
 
-package io.partout.abi
+package com.algoritmico.passepartout.abi
 
+import io.partout.abi.ConnectionStatus
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -23,14 +24,18 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param pem 
+ * @param profileId 
+ * @param status 
  */
 @Serializable
 
-data class OpenVPNCryptoContainer (
+data class OnConnectionStatus (
 
-    @SerialName(value = "pem")
-    val pem: kotlin.String
+    @SerialName(value = "profileId")
+    val profileId: kotlin.String,
+
+    @Contextual @SerialName(value = "status")
+    val status: ConnectionStatus
 
 ) {
 

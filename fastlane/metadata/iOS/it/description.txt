@@ -17,6 +17,8 @@ RICHIEDE UN ACQUISTO IN-APP:
 - Regole su richiesta per connessioni intelligenti e automatiche.
 - Condivisione su iCloud per un utilizzo senza interruzioni su più dispositivi.
 - DoH/DoT per query DNS sicure.
+- Corrispondenza dei domini per split DNS.
+- Esportare e condividere i profili.
 - Routing personalizzato per configurazioni avanzate.
 - Accesso interattivo con supporto per password monouso (OTP).
 - Profili senza VPN (ad esempio, configurazioni solo DNS/Proxy).

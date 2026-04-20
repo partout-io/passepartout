@@ -17,6 +17,8 @@ VEREIST EEN IN-APPAANKOOP:
 - On-demand regels voor slimme en automatische verbindingen.
 - iCloud-deling voor naadloos gebruik op meerdere apparaten.
 - DoH/DoT voor veilige DNS-queries.
+- Domeinmatch voor split DNS.
+- Profielen exporteren en delen.
 - Aangepast routeren voor geavanceerde configuraties.
 - Interactieve login met ondersteuning voor eenmalige wachtwoorden (OTP).
 - Niet-VPN-profielen (bijvoorbeeld alleen DNS/Proxy-instellingen).

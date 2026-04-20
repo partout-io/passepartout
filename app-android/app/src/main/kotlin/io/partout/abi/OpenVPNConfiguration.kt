@@ -19,7 +19,6 @@ import io.partout.abi.IPSettings
 import io.partout.abi.OpenVPNCipher
 import io.partout.abi.OpenVPNCompressionAlgorithm
 import io.partout.abi.OpenVPNCompressionFraming
-import io.partout.abi.OpenVPNCryptoContainer
 import io.partout.abi.OpenVPNDigest
 import io.partout.abi.OpenVPNObfuscationMethod
 import io.partout.abi.OpenVPNPullMask
@@ -87,7 +86,7 @@ data class OpenVPNConfiguration (
     val authUserPass: kotlin.Boolean? = null,
 
     @SerialName(value = "ca")
-    val ca: OpenVPNCryptoContainer? = null,
+    val ca: kotlin.String? = null,
 
     @SerialName(value = "checksEKU")
     val checksEKU: kotlin.Boolean? = null,
@@ -99,10 +98,10 @@ data class OpenVPNConfiguration (
     val cipher: OpenVPNCipher? = null,
 
     @SerialName(value = "clientCertificate")
-    val clientCertificate: OpenVPNCryptoContainer? = null,
+    val clientCertificate: kotlin.String? = null,
 
     @SerialName(value = "clientKey")
-    val clientKey: OpenVPNCryptoContainer? = null,
+    val clientKey: kotlin.String? = null,
 
     @Contextual @SerialName(value = "compressionAlgorithm")
     val compressionAlgorithm: OpenVPNCompressionAlgorithm? = null,

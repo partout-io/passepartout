@@ -47,11 +47,11 @@ extension ProfileManager {
                                 ]
                                 moduleBuilder = onDemandBuilder
                             } else if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
-                                dnsBuilder.protocolType = .https
-                                dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
+//                                dnsBuilder.protocolType = .https
+//                                dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
+                                dnsBuilder.protocolType = .cleartext
                                 dnsBuilder.servers = ["1.1.1.1", "1.0.0.1"]
-                                dnsBuilder.domainName = "my-domain.com"
-                                dnsBuilder.searchDomains = ["search-one.com", "search-two.org"]
+                                dnsBuilder.domains = ["my-domain.com", "search-one.com", "search-two.org"]
                                 moduleBuilder = dnsBuilder
                             }
                         }
@@ -75,6 +75,11 @@ extension ProfileManager {
                             cfgBuilder.peers = [.init(publicKey: "")]
                             wgBuilder.configurationBuilder = cfgBuilder
                             moduleBuilder = wgBuilder
+                        }
+
+                        if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
+                            dnsBuilder.servers = ["1.1.1.1"]
+                            moduleBuilder = dnsBuilder
                         }
 
                         let module = try moduleBuilder.build()

@@ -1,7 +1,11 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
 package com.algoritmico.passepartout.helpers
 
 import android.util.Log
-import io.partout.jni.PartoutVpnWrapper
+import io.partout.jni.AndroidTunnelController
 
 class NativeLibraryWrapper {
     external fun partoutVersion(): String
@@ -24,9 +28,14 @@ class NativeLibraryWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        vpn: PartoutVpnWrapper
+        statusContext: Any,
+        statusCallback: ConnectionStatusCallback,
+        vpn: AndroidTunnelController,
+        completion: ABICompletionCallback
     )
-    external fun tunnelStop(): Unit
+    external fun tunnelStop(
+        completion: ABICompletionCallback
+    )
 
     companion object {
         init {

@@ -17,9 +17,9 @@ struct WireGuardImplementationBuilder: Sendable {
             importerBlock: { newParser() },
             validatorBlock: { newParser() },
             connectionBlock: {
-                let flags = configBlock()
                 let ctx = PartoutLoggerContext($0.profile.id)
 #if !PSP_CROSS
+                let flags = configBlock()
                 if flags.contains(.wgCrossV2) {
                     return try WireGuardConnection(
                         ctx,

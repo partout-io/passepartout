@@ -30,6 +30,8 @@ public enum Strings {
   }
   public enum Entities {
     public enum Dns {
+      /// Domains
+      public static let domains = Strings.tr("Localizable", "entities.dns.domains", fallback: "Domains")
       /// Search domains
       public static let searchDomains = Strings.tr("Localizable", "entities.dns.search_domains", fallback: "Search domains")
       /// Servers
@@ -155,6 +157,52 @@ public enum Strings {
         public static let parsing = Strings.tr("Localizable", "errors.app.passepartout.parsing", fallback: "Unable to parse file.")
         /// The operation timed out.
         public static let timeout = Strings.tr("Localizable", "errors.app.passepartout.timeout", fallback: "The operation timed out.")
+      }
+    }
+    public enum Modules {
+      /// Invalid fields.
+      public static let generic = Strings.tr("Localizable", "errors.modules.generic", fallback: "Invalid fields.")
+      public enum Dns {
+        /// Empty DoT hostname.
+        public static let emptyDoTHostname = Strings.tr("Localizable", "errors.modules.DNS.emptyDoTHostname", fallback: "Empty DoT hostname.")
+        /// Empty servers.
+        public static let emptyServers = Strings.tr("Localizable", "errors.modules.DNS.emptyServers", fallback: "Empty servers.")
+        /// Invalid DoH URL.
+        public static let invalidDoHURL = Strings.tr("Localizable", "errors.modules.DNS.invalidDoHURL", fallback: "Invalid DoH URL.")
+        /// Domains must be hostnames.
+        public static let ipDomains = Strings.tr("Localizable", "errors.modules.DNS.ipDomains", fallback: "Domains must be hostnames.")
+        /// Servers must be IP addresses.
+        public static let nonIPServers = Strings.tr("Localizable", "errors.modules.DNS.nonIPServers", fallback: "Servers must be IP addresses.")
+      }
+      public enum HTTPProxy {
+        /// Invalid HTTP address.
+        public static let address = Strings.tr("Localizable", "errors.modules.HTTPProxy.address", fallback: "Invalid HTTP address.")
+        /// Invalid bypass domains.
+        public static let bypassDomains = Strings.tr("Localizable", "errors.modules.HTTPProxy.bypassDomains", fallback: "Invalid bypass domains.")
+        /// Invalid PAC URL.
+        public static let pacURLString = Strings.tr("Localizable", "errors.modules.HTTPProxy.pacURLString", fallback: "Invalid PAC URL.")
+        /// Invalid HTTPS address.
+        public static let secureAddress = Strings.tr("Localizable", "errors.modules.HTTPProxy.secureAddress", fallback: "Invalid HTTPS address.")
+      }
+      public enum OpenVPN {
+        /// Missing CA.
+        public static let ca = Strings.tr("Localizable", "errors.modules.OpenVPN.ca", fallback: "Missing CA.")
+        /// Empty remotes.
+        public static let remotes = Strings.tr("Localizable", "errors.modules.OpenVPN.remotes", fallback: "Empty remotes.")
+      }
+      public enum WireGuard {
+        /// Invalid address.
+        public static let addresses = Strings.tr("Localizable", "errors.modules.WireGuard.addresses", fallback: "Invalid address.")
+        /// Invalid allowed IPs.
+        public static let allowedIPs = Strings.tr("Localizable", "errors.modules.WireGuard.allowedIPs", fallback: "Invalid allowed IPs.")
+        /// Invalid endpoint.
+        public static let endpoint = Strings.tr("Localizable", "errors.modules.WireGuard.endpoint", fallback: "Invalid endpoint.")
+        /// Invalid preshared key.
+        public static let preSharedKey = Strings.tr("Localizable", "errors.modules.WireGuard.preSharedKey", fallback: "Invalid preshared key.")
+        /// Invalid private key.
+        public static let privateKey = Strings.tr("Localizable", "errors.modules.WireGuard.privateKey", fallback: "Invalid private key.")
+        /// Invalid public key.
+        public static let publicKey = Strings.tr("Localizable", "errors.modules.WireGuard.publicKey", fallback: "Invalid public key.")
       }
     }
     public enum Tunnel {
@@ -514,15 +562,39 @@ public enum Strings {
   }
   public enum Modules {
     public enum Dns {
-      /// Route through VPN
-      public static let routeThroughVpn = Strings.tr("Localizable", "modules.dns.route_through_vpn", fallback: "Route through VPN")
-      public enum RouteThroughVpn {
-        /// If enabled, DNS queries will be routed through the VPN tunnel.
-        public static let footer = Strings.tr("Localizable", "modules.dns.route_through_vpn.footer", fallback: "If enabled, DNS queries will be routed through the VPN tunnel.")
+      public enum CustomSettings {
+        /// Custom settings
+        public static let header = Strings.tr("Localizable", "modules.dns.custom_settings.header", fallback: "Custom settings")
       }
-      public enum SearchDomains {
+      public enum Domains {
         /// Add domain
-        public static let add = Strings.tr("Localizable", "modules.dns.search_domains.add", fallback: "Add domain")
+        public static let add = Strings.tr("Localizable", "modules.dns.domains.add", fallback: "Add domain")
+        /// First is primary
+        public static let firstIsPrimary = Strings.tr("Localizable", "modules.dns.domains.first_is_primary", fallback: "First is primary")
+        public enum FirstIsPrimary {
+          /// Use the first domain as the primary domain.
+          public static let footer = Strings.tr("Localizable", "modules.dns.domains.first_is_primary.footer", fallback: "Use the first domain as the primary domain.")
+        }
+      }
+      public enum Policy {
+        /// Inherit from VPN
+        public static let inheritsVpn = Strings.tr("Localizable", "modules.dns.policy.inherits_vpn", fallback: "Inherit from VPN")
+        /// Route through VPN
+        public static let routeThroughVpn = Strings.tr("Localizable", "modules.dns.policy.route_through_vpn", fallback: "Route through VPN")
+        /// Only for configured domains
+        public static let useOnly = Strings.tr("Localizable", "modules.dns.policy.use_only", fallback: "Only for configured domains")
+        public enum InheritsVpn {
+          /// Reuse the DNS settings provided by the VPN.
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.inherits_vpn.footer", fallback: "Reuse the DNS settings provided by the VPN.")
+        }
+        public enum RouteThroughVpn {
+          /// If enabled, DNS queries will be routed through the VPN tunnel.
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.route_through_vpn.footer", fallback: "If enabled, DNS queries will be routed through the VPN tunnel.")
+        }
+        public enum UseOnly {
+          /// Use the VPN DNS resolver only for the configured domains (split DNS). This works as intended only when the VPN is not the default gateway.
+          public static let footer = Strings.tr("Localizable", "modules.dns.policy.use_only.footer", fallback: "Use the VPN DNS resolver only for the configured domains (split DNS). This works as intended only when the VPN is not the default gateway.")
+        }
       }
       public enum Servers {
         /// Add address
@@ -714,6 +786,12 @@ public enum Strings {
       }
       /// Pre-shared key
       public static let presharedKey = Strings.tr("Localizable", "modules.wireguard.preshared_key", fallback: "Pre-shared key")
+      public enum Interface {
+        public enum Dns {
+          /// Specifying empty servers will discard these DNS settings.
+          public static let footer = Strings.tr("Localizable", "modules.wireguard.interface.dns.footer", fallback: "Specifying empty servers will discard these DNS settings.")
+        }
+      }
       public enum Peer {
         /// Add peer
         public static let add = Strings.tr("Localizable", "modules.wireguard.peer.add", fallback: "Add peer")

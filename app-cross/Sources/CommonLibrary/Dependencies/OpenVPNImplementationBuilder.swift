@@ -40,12 +40,33 @@ private extension OpenVPNImplementationBuilder {
         var options = OpenVPNConnection.Options()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
-        return try OpenVPNConnection(
+#if !PSP_CROSS
+        let flags = configBlock()
+        if flags.contains(.ovpnCrossV2) {
+            return try OpenVPNConnectionV2(
+                ctx,
+                parameters: parameters,
+                module: module,
+                cachesURL: cachesURL,
+                options: options
+            )
+        } else {
+            return try OpenVPNConnection(
+                ctx,
+                parameters: parameters,
+                module: module,
+                cachesURL: cachesURL,
+                options: options
+            )
+        }
+#else
+        return try OpenVPNConnectionV2(
             ctx,
             parameters: parameters,
             module: module,
             cachesURL: cachesURL,
             options: options
         )
+#endif
     }
 }

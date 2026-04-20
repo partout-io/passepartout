@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if PSP_ABI
+import CommonLibrary_C
 import Partout
 
 extension TunnelABI {
@@ -13,36 +14,34 @@ extension TunnelABI {
         preferencesData: Data?,
         profileInput: ABI.ProfileImporterInput,
         cachesURL: URL,
+        onStatus: SimpleConnectionDaemon.StatusCallback?,
         jniWrapper: UnsafeMutableRawPointer?
     ) throws -> TunnelABI {
         let decoder = JSONDecoder()
-
-        // Parse preferences
-        let preferences = ABI.AppPreferenceValues(
-            with: decoder,
-            data: preferencesData,
-            newDeviceId: true
-        )
 
         // Decode app configuration
         let bundle = try decoder.decode(ABI.AppBundle.self, from: appBundleData)
         let constants = try decoder.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
+        // Parse preferences
+        var preferences = ABI.AppPreferenceValues(
+            with: decoder,
+            data: preferencesData,
+            newDeviceId: true,
+            deviceIdLength: constants.deviceIdLength
+        )
+        preferences.configFlags = [.wgCrossV2]
+
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile
-        let registry = appConfiguration.newTunnelRegistry(
+        let registry = appConfiguration.newRegistryForTunnel(
             preferences: preferences,
             cachesURL: cachesURL
         )
         let profile = try registry.importedProfile(from: profileInput, passphrase: nil)
-        // FIXME: #1656, C ABI, move these to AppConfiguration+Dependencies (PSP_CROSS)
-        // FIXME: #1656, C ABI, tunnel environment
-        let environment = SharedTunnelEnvironment(profileId: profile.id)
-        // FIXME: #1656, C ABI, log formatter
-        let logFormatter = DummyLogFormatter()
-//        let environment = appConfiguration.newTunnelEnvironment(profileId: profile.id)
-//        let logFormatter = appConfiguration.newLogFormatter()
+        let environment = appConfiguration.newStandaloneTunnelEnvironment(profileId: profile.id)
+        let logFormatter = appConfiguration.newLogFormatter()
 
         // Logging context
         let ctx = pspLogRegister(
@@ -55,7 +54,6 @@ extension TunnelABI {
         )
 
         // Create platform-specific objects
-        // FIXME: #1656, C ABI, move these to AppConfiguration+Dependencies (PSP_CROSS)
         let controller = try VirtualTunnelController(ctx, impl: jniWrapper)
         // FIXME: #1656, C ABI, better path block
         let factory = POSIXInterfaceFactory(ctx, betterPathBlock: { PassthroughStream() })
@@ -74,7 +72,9 @@ extension TunnelABI {
         let daemonParameters = SimpleConnectionDaemon.Parameters(
             connectionFactory: registry,
             connectionParameters: connectionParameters,
-            messageHandler: DefaultMessageHandler(ctx, environment: environment)
+            messageHandler: DefaultMessageHandler(ctx, environment: environment),
+            startsImmediately: false,
+            onStatus: onStatus
         )
         let daemon = try SimpleConnectionDaemon(params: daemonParameters)
 

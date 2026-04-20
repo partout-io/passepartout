@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Davide De Rosa
+ * SPDX-FileCopyrightText: 2026 Davide De Rosa
  *
  * SPDX-License-Identifier: GPL-3.0
  */
@@ -65,6 +65,29 @@ void abi_event_callback_proxy(void *ctx, const char *event_json) {
             (*env)->CallVoidMethod(env, handler->event_cb, methodID, handler->event_ctx,
                                    jeventJSON);
             (*env)->DeleteLocalRef(env, jeventJSON);
+        }
+        (*env)->DeleteLocalRef(env, cls);
+    }
+
+    (*jvm)->DetachCurrentThread(jvm);
+}
+
+void connection_status_callback_proxy(void *ctx, const char *status_json) {
+    JNIEnv *env;
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+
+    assert(ctx);
+    assert(status_json);
+    connection_status_handler *handler = (connection_status_handler *)ctx;
+    jclass cls = (*env)->GetObjectClass(env, handler->status_cb);
+    if (cls) {
+        jmethodID methodID = (*env)->GetMethodID(env, cls, "onStatus",
+                                                 "(Ljava/lang/Object;Ljava/lang/String;)V");
+        if (methodID) {
+            jstring jstatusJSON = (*env)->NewStringUTF(env, status_json);
+            (*env)->CallVoidMethod(env, handler->status_cb, methodID, handler->status_ctx,
+                                   jstatusJSON);
+            (*env)->DeleteLocalRef(env, jstatusJSON);
         }
         (*env)->DeleteLocalRef(env, cls);
     }

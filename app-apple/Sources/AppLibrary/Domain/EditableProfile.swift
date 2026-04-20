@@ -56,12 +56,22 @@ public struct EditableProfile: MutableProfileType {
 
         // some modules may require an active connection module (VPN)
         // for example, IP and HTTP Proxy modules require a VPN in NE
-        if builder.activeConnectionModule == nil,
+        if !builder.hasConnection,
            let requiringConnection = builder.activeModules.first(where: \.requiresConnection) {
             throw ABI.AppError.moduleRequiresConnection(requiringConnection)
         }
 
         return builder
+    }
+}
+
+private extension Profile.Builder {
+    var hasConnection: Bool {
+        if activeConnectionModule != nil { return true }
+        if let providerModule = firstModule(ofType: ProviderModule.self, ifActive: true) {
+            return providerModule.buildsConnection
+        }
+        return false
     }
 }
 

@@ -44,7 +44,13 @@ target_include_directories(passepartout_shared PUBLIC ${ABI_INCLUDE})
 # Depend on Partout
 add_dependencies(passepartout_shared partout)
 target_include_directories(passepartout_shared PRIVATE ${OUTPUT_DIR}/partout)
-target_link_libraries(passepartout_shared PRIVATE partout)
+target_link_libraries(passepartout_shared PRIVATE
+    partout
+    $<TARGET_OBJECTS:partout_c>
+)
+# if(LINUX OR ANDROID)
+#    target_link_options(passepartout_shared PRIVATE "LINKER:-z,defs")
+# endif()
 
 # Configure Linux RPATH stuff
 if(LINUX)

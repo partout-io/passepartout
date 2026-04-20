@@ -17,6 +17,8 @@ KRÄVER KÖP I APPEN:
 - Regler vid behov för smarta och automatiska anslutningar.
 - iCloud-delning för sömlös användning på flera enheter.
 - DoH/DoT för säkra DNS-frågor.
+- Domänmatchning för split DNS.
+- Exportera och dela profiler.
 - Anpassad routing för avancerade konfigurationer.
 - Interaktiv inloggning med stöd för engångslösenord (OTP).
 - Icke-VPN-profiler (till exempel endast DNS/Proxy-inställningar).

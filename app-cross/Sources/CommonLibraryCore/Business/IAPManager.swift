@@ -110,6 +110,10 @@ public final class IAPManager {
 // MARK: - Actions
 
 extension IAPManager {
+    public func postInitialState() {
+        didChange.send(.status(.init(isEnabled: isEnabled)))
+    }
+
     public func fetchPurchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
         guard isEnabled else { return [] }
         do {

@@ -1,4 +1,4 @@
-name: Try export
+name: Try Xcode Export
 
 on:
   push:

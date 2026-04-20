@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppStrings
 import CommonLibrary
 import Foundation
 
@@ -22,10 +23,9 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
         case .moduleRequiresConnection(let module):
-            let connectionTypes = ModuleType.allCases.filter(\.isConnection)
             return V.moduleRequiresConnection(
                 module.moduleType.localizedDescription,
-                connectionTypes
+                ModuleType.connectionTypes
                     .map(\.localizedDescription)
                     .joined(separator: ", ")
             )
@@ -84,18 +84,12 @@ extension PartoutError: @retroactive LocalizedError {
             }
             return V.incompleteModule(builder.moduleType.localizedDescription)
 
-        case .invalidFields:
-            let fields = (userInfo as? [String: String?])
-                .map {
-                    $0.map {
-                        "\($0)=\($1?.description ?? "")"
-                    }
-                    .joined(separator: ",")
-                }
-
-            return [V.invalidFields, fields]
-                .compactMap { $0 }
-                .joined(separator: " ")
+        case .invalidField:
+            guard let userInfo = userInfo as? PartoutError.ModuleField else {
+                return Strings.Errors.Modules.generic
+            }
+            let stringKey = "errors.modules.\(userInfo.key)"
+            return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
 
         case .Providers.missingEntity:
             return V.missingProviderEntity

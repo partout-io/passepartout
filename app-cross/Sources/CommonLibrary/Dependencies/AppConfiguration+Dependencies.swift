@@ -4,7 +4,28 @@
 
 import Partout
 
+// MARK: Shared
+
 extension ABI.AppConfiguration {
+    public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
+        DefaultProfileProcessor(iapManager: iapManager)
+    }
+
+    public func newAppTunnelProcessor(
+        apiManager: APIManager?,
+        resolver: Resolver,
+        providerServerSorter: @escaping ProviderServerParameters.Sorter
+    ) -> AppTunnelProcessor {
+        DefaultAppTunnelProcessor(
+            apiManager: apiManager,
+            resolver: resolver,
+            title: {
+                String(format: constants.tunnel.profileTitleFormat, $0.name)
+            },
+            providerServerSorter: providerServerSorter
+        )
+    }
+
     public func newConfigManager(
         withTestBundle: Bool,
         isBeta: @escaping @Sendable () async -> Bool,
@@ -30,45 +51,6 @@ extension ABI.AppConfiguration {
                 fetcher: fetcher
             ),
             buildNumber: bundle.buildNumber
-        )
-    }
-
-    public func newAppRegistry(
-        configManager: ConfigManager,
-        kvStore: KeyValueStore,
-        cachesURL: URL
-    ) -> CodingRegistry {
-        newRegistry(
-            deviceId: {
-                if let existingId = kvStore.string(forAppPreference: .deviceId) {
-                    pspLog(.core, .info, "Device ID: \(existingId)")
-                    return existingId
-                }
-                let newId = String.random(count: constants.deviceIdLength)
-                kvStore.set(newId, forAppPreference: .deviceId)
-                pspLog(.core, .info, "Device ID (new): \(newId)")
-                return newId
-            }(),
-            cachesURL: cachesURL,
-            configBlock: { [weak configManager, weak kvStore] in
-                guard let configManager, let kvStore else { return [] }
-                return kvStore.preferences.enabledFlags(of: configManager.activeFlags)
-            }
-        )
-    }
-
-    public func newTunnelRegistry(
-        preferences: ABI.AppPreferenceValues,
-        cachesURL: URL
-    ) -> CodingRegistry {
-        assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
-        return newRegistry(
-            deviceId: preferences.deviceId ?? "MissingDeviceID",
-            cachesURL: cachesURL,
-            configBlock: {
-                preferences.enabledFlags()
-            }
         )
     }
 
@@ -109,27 +91,49 @@ extension ABI.AppConfiguration {
 #endif
     }
 
-    public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
-        DefaultProfileProcessor(iapManager: iapManager)
-    }
-
-    public func newAppTunnelProcessor(
-        apiManager: APIManager?,
-        resolver: Resolver,
-        providerServerSorter: @escaping ProviderServerParameters.Sorter
-    ) -> AppTunnelProcessor {
-        DefaultAppTunnelProcessor(
-            apiManager: apiManager,
-            resolver: resolver,
-            title: {
-                String(format: constants.tunnel.profileTitleFormat, $0.name)
-            },
-            providerServerSorter: providerServerSorter
+    public func newRegistryForApp(
+        configManager: ConfigManager,
+        kvStore: KeyValueStore,
+        cachesURL: URL
+    ) -> CodingRegistry {
+        newRegistry(
+            deviceId: {
+                if let existingId = kvStore.string(forAppPreference: .deviceId) {
+                    pspLog(.core, .info, "Device ID: \(existingId)")
+                    return existingId
+                }
+                let newId = String.random(count: constants.deviceIdLength)
+                kvStore.set(newId, forAppPreference: .deviceId)
+                pspLog(.core, .info, "Device ID (new): \(newId)")
+                return newId
+            }(),
+            cachesURL: cachesURL,
+            configBlock: { [weak configManager, weak kvStore] in
+                guard let configManager, let kvStore else { return [] }
+                return kvStore.preferences.enabledFlags(of: configManager.activeFlags)
+            }
         )
     }
 
-    public func newTunnelProcessor() -> PacketTunnelProcessor {
-        DefaultTunnelProcessor()
+    public func newRegistryForTunnel(
+        preferences: ABI.AppPreferenceValues,
+        cachesURL: URL
+    ) -> CodingRegistry {
+        assert(preferences.deviceId != nil, "No Device ID found in preferences")
+        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        return newRegistry(
+            deviceId: preferences.deviceId ?? "MissingDeviceID",
+            cachesURL: cachesURL,
+            configBlock: {
+                preferences.enabledFlags()
+            }
+        )
+    }
+
+    public func newFileProfileRepository(path: String) throws -> ProfileRepository {
+        try FileProfileRepository(
+           directoryURL: URL(filePath: path, directoryHint: .isDirectory)
+       )
     }
 
     @BusinessActor
@@ -146,6 +150,10 @@ extension ABI.AppConfiguration {
             processor: processor,
             interval: constants.tunnel.refreshInterval
         )
+    }
+
+    public func newTunnelProcessor() -> PacketTunnelProcessor {
+        DefaultTunnelProcessor()
     }
 
     public func newVersionChecker(
@@ -359,14 +367,13 @@ private extension URL {
 // MARK: Dependencies
 
 extension ABI.AppConfiguration {
-    public func newKeyValueStore() -> KeyValueStore {
-        UserDefaultsStore(.standard)
-    }
-
-    public func newLogFormatter() -> LogFormatter {
-        FoundationLogFormatter(
-            dateFormat: constants.log.formatter.timestamp,
-            messageFormat: constants.log.formatter.message
+    public func newAppProductHelper() -> InAppHelper {
+        StoreKitHelper(
+            products: ABI.AppProduct.all,
+            inAppIdentifier: {
+                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
+                return "\(iapBundlePrefix).\($0.rawValue)"
+            }
         )
     }
 
@@ -381,12 +388,19 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func newTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        let appGroup = bundle.bundleString(for: .groupId)
-        guard let defaults = UserDefaults(suiteName: appGroup) else {
-            fatalError("No access to App Group: \(appGroup)")
-        }
-        return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
+    public func newBetaChecker() -> BetaChecker {
+        TestFlightChecker()
+    }
+
+    public func newKeyValueStore() -> KeyValueStore {
+        UserDefaultsStore(.standard)
+    }
+
+    public func newLogFormatter() -> LogFormatter {
+        FoundationLogFormatter(
+            dateFormat: constants.log.formatter.timestamp,
+            messageFormat: constants.log.formatter.message
+        )
     }
 
     public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NEProtocolCoder {
@@ -406,18 +420,20 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func newBetaChecker() -> BetaChecker {
-        TestFlightChecker()
+    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
+        var request = URLRequest(url: url)
+        request.cachePolicy = cached ? .useProtocolCachePolicy : .reloadIgnoringCacheData
+        return try await URLSession.shared.data(for: request).0
     }
 
-    public func newAppProductHelper() -> InAppHelper {
-        StoreKitHelper(
-            products: ABI.AppProduct.all,
-            inAppIdentifier: {
-                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
-                return "\(iapBundlePrefix).\($0.rawValue)"
-            }
-        )
+    // FIXME: ###, Cross UI, Apple standalone tunnel environment
+    public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+        SharedTunnelEnvironment(profileId: profileId)
+    }
+
+    // FIXME: ###, Cross UI, Apple standalone tunnel strategy
+    public func newStandaloneTunnelStrategy() -> TunnelObservableStrategy {
+        FakeTunnelStrategy()
     }
 
     public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
@@ -429,6 +445,14 @@ extension ABI.AppConfiguration {
             version: bundle.versionNumber,
             build: bundle.buildNumber
         )
+    }
+
+    public func newTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+        let appGroup = bundle.bundleString(for: .groupId)
+        guard let defaults = UserDefaults(suiteName: appGroup) else {
+            fatalError("No access to App Group: \(appGroup)")
+        }
+        return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
     }
 
 #if os(tvOS)
@@ -446,6 +470,37 @@ extension ABI.AppConfiguration {
         }
     }
 #endif
+}
+
+#else
+
+// MARK: - Non-Apple
+
+// FIXME: #1656, C ABI, non-Apple strategies
+extension ABI.AppConfiguration {
+    public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+        SharedTunnelEnvironment(profileId: profileId)
+    }
+
+    public func newKeyValueStore() -> KeyValueStore {
+        InMemoryStore()
+    }
+
+    public func newLogFormatter() -> LogFormatter {
+        DummyLogFormatter()
+    }
+
+    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
+        Data()
+    }
+
+    public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+        SharedTunnelEnvironment(profileId: profileId)
+    }
+
+    public func newStandaloneTunnelStrategy() -> TunnelObservableStrategy {
+        FakeTunnelStrategy()
+    }
 }
 
 #endif

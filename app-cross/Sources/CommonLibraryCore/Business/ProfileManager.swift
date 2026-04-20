@@ -94,6 +94,10 @@ public final class ProfileManager {
 // MARK: - Actions
 
 extension ProfileManager {
+    public func postInitialState() {
+        didChange.send(.changeRemoteImporting(.init(isImporting: isRemoteImportingEnabled)))
+    }
+
     public func enableRemoteImporting(_ isRemoteImportingEnabled: Bool) {
         self.isRemoteImportingEnabled = isRemoteImportingEnabled
     }

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Davide De Rosa
+ * SPDX-FileCopyrightText: 2026 Davide De Rosa
  *
  * SPDX-License-Identifier: GPL-3.0
  */
@@ -83,7 +83,11 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
         jstring constants,
         jstring profile,
         jstring cacheDir,
-        jobject vpnWrapper) {
+        jobject statusContext,
+        jobject statusCallback,
+        jobject vpnWrapper,
+        jobject completion
+) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
@@ -91,6 +95,11 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
 
     // Store global reference of builder wrapper
     jobject jniVPNWrapper = (*env)->NewGlobalRef(env, vpnWrapper);
+
+    // JNI handler is the context of the event callback
+    connection_status_handler *handler = malloc(sizeof(connection_status_handler));
+    handler->status_ctx = (*env)->NewGlobalRef(env, statusContext);
+    handler->status_cb = (*env)->NewGlobalRef(env, statusCallback);
 
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
@@ -100,9 +109,14 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     args.profile = cProfile;
     args.is_interactive = true;
     args.is_daemon = false;
+    args.status_ctx = handler;
+    args.status_cb = connection_status_callback_proxy;
     args.jni_wrapper = jniVPNWrapper;
-    // FIXME: #1656, C ABI, completion can inform about start errors
-    psp_tunnel_start(&args, NULL, NULL);
+
+    abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
+    cmp->completion_ctx = NULL;
+    cmp->completion_cb = (*env)->NewGlobalRef(env, completion);
+    psp_tunnel_start(&args, cmp, abi_completion_callback_proxy);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
@@ -111,6 +125,13 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStop(JNIEnv *env, jobject thiz) {
-    psp_tunnel_stop(NULL, NULL);
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStop(
+        JNIEnv *env,
+        jobject thiz,
+        jobject completion
+) {
+    abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
+    cmp->completion_ctx = NULL;
+    cmp->completion_cb = (*env)->NewGlobalRef(env, completion);
+    psp_tunnel_stop(cmp, abi_completion_callback_proxy);
 }

@@ -16,7 +16,7 @@ extension ModuleBuilder {
                 content: mod.serialized()
             )
         } catch {
-            pspLog(.profiles, .error, "Unable to serialize module \(id): \(error)")
+            pspLog(.profiles, .debug, "Unable to serialize module \(id): \(error)")
             return nil
         }
     }
