@@ -257,6 +257,7 @@
 "modules.on_demand.policy.footer" = "Activeer de VPN %@.";
 "modules.on_demand.policy" = "Beleid";
 "modules.on_demand.ssid.add" = "SSID toevoegen";
+"modules.openvpn.data_ciphers" = "Data ciphers";
 "modules.openvpn.cipher" = "Cipher";
 "modules.openvpn.communication" = "Communicatie";
 "modules.openvpn.compression_algorithm" = "Algoritme";
