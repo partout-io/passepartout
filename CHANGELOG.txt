@@ -1,1 +1,1 @@
-* OpenVPN: Update connection to v2 with config flag (#1771)
+* OpenVPN: Use modern cipher negotiation (#1775)
