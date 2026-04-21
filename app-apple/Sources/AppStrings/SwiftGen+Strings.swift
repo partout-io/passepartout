@@ -732,6 +732,8 @@ public enum Strings {
       public static let compressionFraming = Strings.tr("Localizable", "modules.openvpn.compression_framing", fallback: "Framing")
       /// Credentials
       public static let credentials = Strings.tr("Localizable", "modules.openvpn.credentials", fallback: "Credentials")
+      /// Data ciphers
+      public static let dataCiphers = Strings.tr("Localizable", "modules.openvpn.data_ciphers", fallback: "Data ciphers")
       /// Digest
       public static let digest = Strings.tr("Localizable", "modules.openvpn.digest", fallback: "Digest")
       /// Extended verification
