@@ -257,6 +257,7 @@
 "modules.on_demand.policy.footer" = "激活 VPN %@。";
 "modules.on_demand.policy" = "策略";
 "modules.on_demand.ssid.add" = "添加 SSID";
+"modules.openvpn.data_ciphers" = "数据加密算法";
 "modules.openvpn.cipher" = "加密算法";
 "modules.openvpn.communication" = "通信";
 "modules.openvpn.compression_algorithm" = "算法";

@@ -224,6 +224,7 @@
 "modules.openvpn.credentials.guidance.link" = "See your OpenVPN credentials";
 "modules.openvpn.remotes" = "Remote endpoints";
 "modules.openvpn.communication" = "Communication";
+"modules.openvpn.data_ciphers" = "Data ciphers";
 "modules.openvpn.cipher" = "Cipher";
 "modules.openvpn.digest" = "Digest";
 "modules.openvpn.compression" = "Compression";
