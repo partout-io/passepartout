@@ -11,6 +11,8 @@ public struct ProfileSelectorMenu: View {
 
     private let title: String
 
+    private let image: Theme.ImageName
+
     private let newTitle: String?
 
     private let excludedProfileId: Profile.ID?
@@ -19,11 +21,13 @@ public struct ProfileSelectorMenu: View {
 
     public init(
         _ title: String,
+        image: Theme.ImageName,
         withNewTitle newTitle: String? = nil,
         excluding excludedProfileId: Profile.ID? = nil,
         onSelect: @escaping (ABI.AppProfileHeader?) -> Void
     ) {
         self.title = title
+        self.image = image
         self.newTitle = newTitle
         self.excludedProfileId = excludedProfileId
         self.onSelect = onSelect
@@ -31,7 +35,7 @@ public struct ProfileSelectorMenu: View {
 
     public var body: some View {
         headers.map { headers in
-            Menu(title) {
+            Menu {
                 ForEach(headers, id: \.id) { header in
                     Button(header.name) {
                         onSelect(header)
@@ -45,6 +49,8 @@ public struct ProfileSelectorMenu: View {
                     // XXX: Header renders bad on macOS
                     .themeSection(header: Strings.Views.App.Toolbar.NewProfile.empty)
                 }
+            } label: {
+                ThemeImageLabel(title, image)
             }
         }
     }
