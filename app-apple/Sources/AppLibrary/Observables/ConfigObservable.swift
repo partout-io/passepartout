@@ -33,3 +33,13 @@ public final class ConfigObservable {
         }
     }
 }
+
+extension ConfigObservable {
+    public var isUsingExperimentalFeatures: Bool {
+        !activeFlags.isDisjoint(with: [
+            .bsdSockets,
+            .ovpnCrossV2,
+            .wgCrossV2
+        ])
+    }
+}

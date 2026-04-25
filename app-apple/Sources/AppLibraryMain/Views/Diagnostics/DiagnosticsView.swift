@@ -157,13 +157,7 @@ private extension DiagnosticsView {
         AppCommandLine.contains(.withReportIssue) ||
             iapObservable.isEligibleForFeedback ||
             appConfiguration.bundle.distributionTarget.canAlwaysReportIssue ||
-            isUsingExperimentalFeatures
-    }
-
-    var isUsingExperimentalFeatures: Bool {
-        !configObservable.activeFlags.isDisjoint(with: [
-            .bsdSockets
-        ])
+            configObservable.isUsingExperimentalFeatures
     }
 
     func computedTunnelLogs() async -> [ABI.LogEntry] {
