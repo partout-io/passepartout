@@ -13,7 +13,7 @@ private var globalABI: TunnelABIProtocol?
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
     context: UnsafeMutableRawPointer?,
-    callback: psp_abi_completion?
+    completion: psp_abi_completion?
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -67,9 +67,9 @@ public func __psp_tunnel_start(
                 jniWrapper: jniWrapper
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            callback?(ctx, 0, nil)
+            completion?(ctx, 0, nil)
         } catch {
-            callback?(ctx, -1, error.localizedDescription)
+            completion?(ctx, -1, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }
     }
@@ -79,12 +79,12 @@ public func __psp_tunnel_start(
 @c(psp_tunnel_stop)
 public func __psp_tunnel_stop(
     context: UnsafeMutableRawPointer?,
-    callback: psp_abi_completion?
+    completion: psp_abi_completion?
 ) {
     ABI.run(context) { ctx in
         await globalABI?.stop()
         globalABI = nil
-        callback?(ctx, 0, nil)
+        completion?(ctx, 0, nil)
     }
 }
 
