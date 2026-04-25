@@ -19,10 +19,6 @@
 "entities.tunnel_status.active" = "Activo";
 "entities.tunnel_status.deactivating" = "Desactivando";
 "entities.tunnel_status.inactive" = "Inactivo";
-"entities.ui.config_flag.neSocketTCP" = "TCP moderno";
-"entities.ui.config_flag.neSocketUDP" = "UDP moderno";
-"entities.ui.config_flag.ovpnCrossConnection" = "OpenVPN multiplataforma";
-"entities.ui.config_flag.wgCrossConnection" = "WireGuard multiplataforma";
 "entities.ui.system_appearance.dark" = "Oscuro";
 "entities.ui.system_appearance.light" = "Claro";
 "entities.ui.system_appearance.system" = "Sistema";

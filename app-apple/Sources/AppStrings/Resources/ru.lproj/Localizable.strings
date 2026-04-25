@@ -19,10 +19,6 @@
 "entities.tunnel_status.active" = "Активный";
 "entities.tunnel_status.deactivating" = "Деактивация";
 "entities.tunnel_status.inactive" = "Неактивный";
-"entities.ui.config_flag.neSocketTCP" = "Современный TCP";
-"entities.ui.config_flag.neSocketUDP" = "Современный UDP";
-"entities.ui.config_flag.ovpnCrossConnection" = "Кроссплатформенный OpenVPN";
-"entities.ui.config_flag.wgCrossConnection" = "Кроссплатформенный WireGuard";
 "entities.ui.system_appearance.dark" = "Тёмная";
 "entities.ui.system_appearance.light" = "Светлая";
 "entities.ui.system_appearance.system" = "Система";

@@ -19,10 +19,6 @@
 "entities.tunnel_status.active" = "Ενεργό";
 "entities.tunnel_status.deactivating" = "Απενεργοποίηση";
 "entities.tunnel_status.inactive" = "Ανενεργό";
-"entities.ui.config_flag.neSocketTCP" = "Σύγχρονο TCP";
-"entities.ui.config_flag.neSocketUDP" = "Σύγχρονο UDP";
-"entities.ui.config_flag.ovpnCrossConnection" = "Διαπλατφορμικό OpenVPN";
-"entities.ui.config_flag.wgCrossConnection" = "Διαπλατφορμικό WireGuard";
 "entities.ui.system_appearance.dark" = "Σκούρο";
 "entities.ui.system_appearance.light" = "Φωτεινό";
 "entities.ui.system_appearance.system" = "Σύστημα";

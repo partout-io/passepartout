@@ -2,13 +2,10 @@
     "wgCrossV2": {
         "rate": 100
     },
+    "bsdSockets": {
+        "rate": 100
+    },
     "newProfileEncoding": {
-        "rate": 100
-    },
-    "neSocketUDP": {
-        "rate": 100
-    },
-    "neSocketTCP": {
         "rate": 100
     },
     "allowsRelaxedVerification": {

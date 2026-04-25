@@ -22,19 +22,15 @@ struct PreferencesAdvancedView: View {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .neSocketUDP,
-        .neSocketTCP,
+        .bsdSockets,
         .newProfileEncoding,
         .wgCrossV2
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
-        let V = Strings.Entities.Ui.ConfigFlag.self
         switch flag {
-        case .neSocketUDP:
-            return V.neSocketUDP
-        case .neSocketTCP:
-            return V.neSocketTCP
+        case .bsdSockets:
+            return "BSD sockets"
         case .newProfileEncoding:
             return "New profile encoding"
         case .wgCrossV2:

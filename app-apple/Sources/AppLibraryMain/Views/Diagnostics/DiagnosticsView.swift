@@ -162,8 +162,7 @@ private extension DiagnosticsView {
 
     var isUsingExperimentalFeatures: Bool {
         !configObservable.activeFlags.isDisjoint(with: [
-            .neSocketUDP,
-            .neSocketTCP
+            .bsdSockets
         ])
     }
 

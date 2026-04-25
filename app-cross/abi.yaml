@@ -402,9 +402,8 @@ components:
       x-enum-varnames:
       - allowsRelaxedVerification
       - appNotWorking
+      - bsdSockets
       - forcesRelaxedVerification
-      - neSocketUDP
-      - neSocketTCP
       - newProfileEncoding
       - ovpnCrossV2
       - wgCrossV2
@@ -412,9 +411,8 @@ components:
       enum:
       - allowsRelaxedVerification
       - appNotWorking
+      - bsdSockets
       - forcesRelaxedVerification
-      - neSocketUDP
-      - neSocketTCP
       - newProfileEncoding
       - ovpnCrossV2
       - wgCrossV2

@@ -286,11 +286,6 @@
 
 // MARK: Entities (Library)
 
-"entities.ui.config_flag.neSocketUDP" = "Modern UDP";
-"entities.ui.config_flag.neSocketTCP" = "Modern TCP";
-"entities.ui.config_flag.ovpnCrossConnection" = "Cross-platform OpenVPN";
-"entities.ui.config_flag.wgCrossConnection" = "Cross-platform WireGuard";
-
 "entities.ui.system_appearance.system" = "System";
 "entities.ui.system_appearance.light" = "Light";
 "entities.ui.system_appearance.dark" = "Dark";
