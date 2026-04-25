@@ -31,7 +31,7 @@ struct KeyValueStoreTests {
 
     @Test
     func givenKeyValue_whenSetConfigFlags_thenIsExpected() throws {
-        let flags: Set<ABI.ConfigFlag> = [.neSocketUDP, .allowsRelaxedVerification]
+        let flags: Set<ABI.ConfigFlag> = [.newProfileEncoding, .allowsRelaxedVerification]
         let sut = InMemoryStore()
         sut.preferences.configFlags = flags
         #expect(sut.preferences.configFlags == flags)

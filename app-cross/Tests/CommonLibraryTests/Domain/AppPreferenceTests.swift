@@ -9,8 +9,8 @@ struct AppPreferenceTests {
     @Test
     func givenFlags_whenSet_thenDataMatches() throws {
         var sut = ABI.AppPreferenceValues()
-        sut.configFlags = [.neSocketUDP, .neSocketTCP]
-        sut.experimental.ignoredConfigFlags = [.appNotWorking, .neSocketUDP]
+        sut.configFlags = [.bsdSockets, .newProfileEncoding]
+        sut.experimental.ignoredConfigFlags = [.appNotWorking, .bsdSockets]
 
         let configFlagsData = try #require(sut.configFlagsData)
         let experimentalData = try #require(sut.experimentalData)
@@ -39,10 +39,10 @@ struct AppPreferenceTests {
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut = ABI.AppPreferenceValues()
-        sut.configFlags = [.neSocketUDP, .neSocketTCP]
-        sut.experimental.ignoredConfigFlags = [.appNotWorking, .neSocketUDP]
-        #expect(sut.isFlagEnabled(.neSocketTCP))
-        #expect(!sut.isFlagEnabled(.neSocketUDP))
+        sut.configFlags = [.bsdSockets, .newProfileEncoding]
+        sut.experimental.ignoredConfigFlags = [.appNotWorking, .bsdSockets]
+        #expect(sut.isFlagEnabled(.newProfileEncoding))
+        #expect(!sut.isFlagEnabled(.bsdSockets))
         #expect(!sut.isFlagEnabled(.appNotWorking))
     }
 }

@@ -19,10 +19,6 @@
 "entities.tunnel_status.active" = "已激活";
 "entities.tunnel_status.deactivating" = "停用中";
 "entities.tunnel_status.inactive" = "未激活";
-"entities.ui.config_flag.neSocketTCP" = "现代 TCP";
-"entities.ui.config_flag.neSocketUDP" = "现代 UDP";
-"entities.ui.config_flag.ovpnCrossConnection" = "跨平台 OpenVPN";
-"entities.ui.config_flag.wgCrossConnection" = "跨平台 WireGuard";
 "entities.ui.system_appearance.dark" = "深色";
 "entities.ui.system_appearance.light" = "浅色";
 "entities.ui.system_appearance.system" = "系统";

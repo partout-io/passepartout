@@ -55,8 +55,10 @@ extension TunnelABI {
 
         // Create platform-specific objects
         let controller = try VirtualTunnelController(ctx, impl: jniWrapper)
-        // FIXME: #1656, C ABI, better path block
-        let factory = POSIXInterfaceFactory(ctx, betterPathBlock: { PassthroughStream() })
+        let factory = POSIXInterfaceFactory(ctx) {
+            // FIXME: #1656, C ABI, better path block
+            PassthroughStream()
+        }
         // FIXME: #1656, C ABI, reachability observer
         let reachability = DummyReachabilityObserver()
 

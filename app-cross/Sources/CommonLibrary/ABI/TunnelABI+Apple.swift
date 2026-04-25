@@ -72,13 +72,19 @@ extension TunnelABI {
             }()
         )
 
-        // Pick socket and crypto strategy from preferences
-        var factoryOptions = NEInterfaceFactory.Options()
-        factoryOptions.usesNEUDP = preferences.isFlagEnabled(.neSocketUDP)
-        factoryOptions.usesNETCP = preferences.isFlagEnabled(.neSocketTCP)
-
         // Create daemon
-        let factory = NEInterfaceFactory(ctx, provider: neProvider, options: factoryOptions)
+        let factory: NetworkInterfaceFactory
+        if preferences.isFlagEnabled(.bsdSockets) {
+            factory = POSIXInterfaceFactory(ctx) {
+                // FIXME: #190, BetterPathBlock via NWPathMonitor
+                PassthroughStream()
+            }
+        } else {
+            // MUST enable .withReadPackets for OpenVPN V2 to work!
+            var options = NEInterfaceFactory.Options()
+            options.withReadPackets = preferences.isFlagEnabled(.ovpnCrossV2)
+            factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
+        }
         let reachability = NEObservablePath(ctx)
         let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
         let connectionOptions = ConnectionParameters.Options()
