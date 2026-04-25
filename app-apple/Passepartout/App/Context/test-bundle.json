@@ -1,8 +1,11 @@
 {
+    "bsdSockets": {
+        "rate": 0
+    },
     "wgCrossV2": {
         "rate": 100
     },
-    "bsdSockets": {
+    "ovpnCrossV2": {
         "rate": 100
     },
     "newProfileEncoding": {

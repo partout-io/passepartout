@@ -24,6 +24,7 @@ private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .bsdSockets,
         .newProfileEncoding,
+        .ovpnCrossV2,
         .wgCrossV2
     ]
 
@@ -33,6 +34,8 @@ private extension PreferencesAdvancedView {
             return "BSD sockets"
         case .newProfileEncoding:
             return "New profile encoding"
+        case .ovpnCrossV2:
+            return "Cross-platform OpenVPN v2"
         case .wgCrossV2:
             return "Cross-platform WireGuard v2"
         default:
