@@ -130,8 +130,8 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
     }
 
     fun importProfile(connect: Boolean = false) {
-        val file = String(assets.open("vps.conf").readBytes())
-//        val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
+//        val file = String(assets.open("vps.conf").readBytes())
+        val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
         wrapper.appImportProfileText(file, "SomeName") { ctx, code, errorMessage ->
             if (code == 0) {
                 Log.i("Passepartout", "Import success!")
