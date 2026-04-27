@@ -143,10 +143,10 @@ private extension ProviderView {
     var optionsSection: some View {
         Group {
             switch providerType {
-            case .openVPN:
+            case .OpenVPN:
                 OpenVPNCredentialsLink()
                 resolvedModuleLink
-            case .wireGuard:
+            case .WireGuard:
                 // TODO: #507, WireGuard provider private key
                 EmptyView()
             default:
@@ -161,7 +161,7 @@ private extension ProviderView {
             return nil
         }
         switch providerType {
-        case .openVPN:
+        case .OpenVPN:
             return providerType.localizedDescription
         default:
             return nil

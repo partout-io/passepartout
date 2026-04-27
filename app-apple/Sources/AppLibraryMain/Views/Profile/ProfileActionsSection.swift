@@ -9,6 +9,9 @@ struct ProfileActionsSection: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Environment(\.dismissProfile)
     private var dismissProfile
 
@@ -24,10 +27,12 @@ struct ProfileActionsSection: View {
 
     var body: some View {
 #if os(iOS)
-        Section {
-            exportButton
-            shareButton
-            purchaseSharingButton
+        if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
+            Section {
+                exportButton
+                shareButton
+                purchaseSharingButton
+            }
         }
         Section {
             uuidView
@@ -51,7 +56,7 @@ struct ProfileActionsSection: View {
 
 private extension ProfileActionsSection {
     var isExistingProfile: Bool {
-        profileObservable.profile(withId: profileId) != nil
+        profileObservable.header(withId: profileId) != nil
     }
 
     var uuidView: some View {
@@ -76,7 +81,7 @@ private extension ProfileActionsSection {
     }
 
     func removeContent() -> some View {
-        profileObservable.profile(withId: profileId)
+        profileObservable.header(withId: profileId)
             .map { _ in
                 removeButton
                     .themeConfirmation(

@@ -6,13 +6,12 @@ import CommonLibrary
 import SwiftUI
 
 struct ActiveTunnelButton: View {
-
     @Environment(Theme.self)
     private var theme
 
     let tunnel: TunnelObservable
 
-    let profile: Profile?
+    let header: ABI.AppProfileHeader?
 
     @FocusState.Binding
     var focusedField: ConnectionView.Field?
@@ -24,7 +23,7 @@ struct ActiveTunnelButton: View {
     var body: some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             errorHandler: errorHandler,
             flow: flow
         ) { isOn, canInteract in

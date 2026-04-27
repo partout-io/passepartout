@@ -10,7 +10,7 @@ import Observation
 public final class AppFormatter {
     private let dateFormatter: DateFormatter
 
-    public init(constants: ABI.Constants) {
+    public init(constants: ABI.AppConstants) {
         dateFormatter = DateFormatter()
         dateFormatter.dateFormat = constants.formats.timestamp
     }

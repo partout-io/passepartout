@@ -47,13 +47,15 @@ extension View {
         }
     }
 
-    public func scrollableOnTV() -> some View {
+    @ViewBuilder
+    public func scrollableOnTV(isText: Bool = false) -> some View {
 #if os(tvOS)
 //        focusable()
-        Button {
-            //
-        } label: {
-            self
+        if isText {
+            Button {} label: { self }
+                .buttonStyle(.plain)
+        } else {
+            Button {} label: { self }
         }
 #else
         self

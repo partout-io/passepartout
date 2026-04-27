@@ -90,8 +90,8 @@ private extension PaywallScrollableView {
 
     var linksView: some View {
         Section {
-            Link(Strings.Unlocalized.eula, destination: appConfiguration.constants.websites.eula)
-            Link(Strings.Views.Settings.Links.Rows.privacyPolicy, destination: appConfiguration.constants.websites.privacyPolicy)
+            Link(Strings.Unlocalized.eula, destination: appConfiguration.constants.websites.eulaURL)
+            Link(Strings.Views.Settings.Links.Rows.privacyPolicy, destination: appConfiguration.constants.websites.privacyPolicyURL)
         }
     }
 

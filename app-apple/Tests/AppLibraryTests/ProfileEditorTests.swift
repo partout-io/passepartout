@@ -29,7 +29,7 @@ extension ProfileEditorTests {
     @Test
     func givenProfile_thenMatchesProfile() throws {
         let name = "foobar"
-        let dns = try DNSModule.Builder().build()
+        let dns = try DNSModule.Builder(servers: ["3.4.5.6"]).build()
         let ip = IPModule.Builder().build()
         let profile = try Profile.Builder(
             name: name,
@@ -52,12 +52,12 @@ extension ProfileEditorTests {
         ])
         let moduleTypes = sut.availableModuleTypes(forTarget: .appStore)
 
-        #expect(!moduleTypes.contains(.dns))
-        #expect(moduleTypes.contains(.httpProxy))
-        #expect(!moduleTypes.contains(.ip))
-        #expect(moduleTypes.contains(.onDemand))
-        #expect(moduleTypes.contains(.openVPN))
-        #expect(moduleTypes.contains(.wireGuard))
+        #expect(!moduleTypes.contains(.DNS))
+        #expect(moduleTypes.contains(.HTTPProxy))
+        #expect(!moduleTypes.contains(.IP))
+        #expect(moduleTypes.contains(.OnDemand))
+        #expect(moduleTypes.contains(.OpenVPN))
+        #expect(moduleTypes.contains(.WireGuard))
     }
 
     @Test
@@ -221,7 +221,7 @@ extension ProfileEditorTests {
     @Test
     func givenProfileManager_whenSave_thenSavesProfileToManager() async throws {
         let name = "foobar"
-        let dns = try DNSModule.Builder().build()
+        let dns = try DNSModule.Builder(servers: ["1.2.3.4"]).build()
         let ip = IPModule.Builder().build()
         let profile = try Profile.Builder(
             name: name,
@@ -237,7 +237,8 @@ extension ProfileEditorTests {
         Task {
             for await event in profileEvents {
                 switch event {
-                case .save(let savedProfile, _):
+                case .save(let payload):
+                    let savedProfile = payload.profile
                     do {
                         let lhs = try savedProfile.withoutUserInfo()
                         let rhs = try profile.withoutUserInfo()

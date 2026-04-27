@@ -33,7 +33,7 @@ struct AddProfileMenu: View {
             importQRButton
 #endif
             importTextButton
-            if appConfiguration.distributionTarget.supportsPaidFeatures {
+            if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
                 Divider()
                 providerProfileMenu
             }

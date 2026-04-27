@@ -8,7 +8,7 @@ import SwiftUI
 struct ProfileDuplicateButton<Label>: View where Label: View {
     let profileObservable: ProfileObservable
 
-    let preview: ABI.ProfilePreview
+    let header: ABI.AppProfileHeader
 
     let errorHandler: ErrorHandler
 
@@ -18,12 +18,12 @@ struct ProfileDuplicateButton<Label>: View where Label: View {
         Button {
             Task {
                 do {
-                    try await profileObservable.duplicate(profileWithId: preview.id)
+                    try await profileObservable.duplicate(profileWithId: header.id)
                 } catch {
                     errorHandler.handle(
                         error,
                         title: Strings.Global.Actions.duplicate,
-                        message: Strings.Errors.App.duplicate(preview.name)
+                        message: Strings.Errors.App.duplicate(header.name)
                     )
                 }
             }

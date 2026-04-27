@@ -9,6 +9,7 @@ import SwiftUI
 extension Theme {
     public func listSection<ItemView: View, T: EditableValue>(
         _ title: String?,
+        footer: String? = nil,
         addTitle: String,
         originalItems: Binding<[T]>,
         emptyValue: (() async -> T)? = nil,
@@ -17,6 +18,7 @@ extension Theme {
     ) -> some View {
         EditableListSection(
             title,
+            footer: footer,
             addTitle: addTitle,
             originalItems: originalItems,
             emptyValue: emptyValue,

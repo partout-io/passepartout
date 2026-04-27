@@ -15,13 +15,13 @@ public struct ProfileSelectorMenu: View {
 
     private let excludedProfileId: Profile.ID?
 
-    private let onSelect: (ABI.ProfilePreview?) -> Void
+    private let onSelect: (ABI.AppProfileHeader?) -> Void
 
     public init(
         _ title: String,
         withNewTitle newTitle: String? = nil,
         excluding excludedProfileId: Profile.ID? = nil,
-        onSelect: @escaping (ABI.ProfilePreview?) -> Void
+        onSelect: @escaping (ABI.AppProfileHeader?) -> Void
     ) {
         self.title = title
         self.newTitle = newTitle
@@ -30,11 +30,11 @@ public struct ProfileSelectorMenu: View {
     }
 
     public var body: some View {
-        previews.map { previews in
+        headers.map { headers in
             Menu(title) {
-                ForEach(previews, id: \.id) { profile in
-                    Button(profile.name) {
-                        onSelect(profile)
+                ForEach(headers, id: \.id) { header in
+                    Button(header.name) {
+                        onSelect(header)
                     }
                 }
                 if let newTitle {
@@ -51,7 +51,7 @@ public struct ProfileSelectorMenu: View {
 }
 
 private extension ProfileSelectorMenu {
-    var previews: [ABI.ProfilePreview]? {
+    var headers: [ABI.AppProfileHeader]? {
         let filtered = profileObservable
             .filteredHeaders
             .filter {
@@ -62,8 +62,6 @@ private extension ProfileSelectorMenu {
         guard !filtered.isEmpty || newTitle != nil else {
             return nil
         }
-        return filtered.map {
-            ABI.ProfilePreview(id: $0.id, name: $0.name)
-        }
+        return filtered
     }
 }

@@ -6,7 +6,8 @@ import CommonLibrary
 import Foundation
 import Observation
 
-@MainActor @Observable
+// Fully non-isolated, no @MainActor here
+@Observable
 public final class AppEncoderObservable {
     private let abi: AppABIEncoderProtocol
 
@@ -14,19 +15,15 @@ public final class AppEncoderObservable {
         self.abi = abi
     }
 
-    public func profile(fromString string: String) throws -> Profile {
-        try abi.profile(fromString: string)
-    }
-
-    public func json(fromProfile profile: Profile) throws -> String {
+    public nonisolated func json(fromProfile profile: Profile) throws -> String {
         try abi.json(fromProfile: profile)
     }
 
-    public func defaultFilename(for profile: Profile) -> String {
+    public nonisolated func defaultFilename(for profile: Profile) -> String {
         abi.defaultFilename(for: profile.name)
     }
 
-    public func writeToURL(_ profile: Profile) throws -> URL {
+    public nonisolated func writeToURL(_ profile: Profile) throws -> URL {
         let path = try abi.writeToFile(profile)
         // Make sure to convert to URL to share actual file content
         return URL(fileURLWithPath: path)

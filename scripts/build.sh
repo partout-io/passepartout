@@ -11,7 +11,7 @@ if [[ -n "$android_flag" && "$android_flag" != "-android" ]]; then
 fi
 
 build_dir=".cmake${android_flag}"
-toolchain_dir=`realpath submodules/partout/toolchains`
+toolchain_dir=`realpath $toolchains_path`
 if [ ! -d $build_dir ]; then
     mkdir $build_dir
 fi

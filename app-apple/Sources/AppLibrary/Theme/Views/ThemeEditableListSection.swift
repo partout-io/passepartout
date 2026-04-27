@@ -42,6 +42,8 @@ public struct EditableListSection<ItemView: View, RemoveView: View, EditView: Vi
 
     private let title: String?
 
+    private let footer: String?
+
     private let addTitle: String
 
     @Binding
@@ -68,6 +70,7 @@ public struct EditableListSection<ItemView: View, RemoveView: View, EditView: Vi
 
     public init(
         _ title: String?,
+        footer: String? = nil,
         addTitle: String,
         originalItems: Binding<[T]>,
         emptyValue: (() async -> T)? = nil,
@@ -77,6 +80,7 @@ public struct EditableListSection<ItemView: View, RemoveView: View, EditView: Vi
         @ViewBuilder editLabel: @escaping () -> EditView
     ) {
         self.title = title
+        self.footer = footer
         self.addTitle = addTitle
         _originalItems = originalItems
         self.emptyValue = emptyValue
@@ -127,7 +131,7 @@ public struct EditableListSection<ItemView: View, RemoveView: View, EditView: Vi
 #endif
             }
         }
-        .themeSection(header: title)
+        .themeSection(header: title, footer: footer)
         .onLoad(perform: importItems)
     }
 }

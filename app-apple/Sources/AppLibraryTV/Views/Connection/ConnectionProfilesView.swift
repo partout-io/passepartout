@@ -55,7 +55,7 @@ private extension ConnectionProfilesView {
     func toggleButton(for header: ABI.AppProfileHeader) -> some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profileObservable.profile(withId: header.id),
+            header: header,
             errorHandler: errorHandler,
             flow: flow,
             label: { isOn, _ in
@@ -93,7 +93,7 @@ private extension ConnectionProfilesView {
 #Preview("Empty") {
     ContentPreview(profileObservable: .forPreviews)
         .task {
-            try? await ProfileObservable.forPreviews.removeAll()
+            await ProfileObservable.forPreviews.removeAll()
         }
 }
 

@@ -21,7 +21,7 @@ struct ProfileContextMenu: View, Routable {
 
     let tunnel: TunnelObservable
 
-    let preview: ABI.ProfilePreview
+    let header: ABI.AppProfileHeader
 
     let errorHandler: ErrorHandler
 
@@ -44,29 +44,27 @@ struct ProfileContextMenu: View, Routable {
 
 @MainActor
 private extension ProfileContextMenu {
-    var profile: Profile? {
-        profileObservable.profile(withId: preview.id)
-    }
-
     var providerConnectToButton: some View {
-        profile.map { profile in
-            ProviderConnectToButton(
-                profile: profile,
-                onTap: {
-                    flow?.connectionFlow?.onProviderEntityRequired($0)
-                },
-                label: {
-                    ThemeImageLabel(profile.providerServerSelectionTitle, .profileProvider)
+        ProviderConnectToButton(
+            header: header,
+            onTap: {
+                guard let profile = profileObservable.profile(withId: $0.id) else {
+                    pspLog(.profiles, .error, "Unable to find profile from header: \($0.id)")
+                    return
                 }
-            )
-            .uiAccessibility(.App.ProfileMenu.connectTo)
-        }
+                flow?.connectionFlow?.onProviderEntityRequired(profile)
+            },
+            label: {
+                ThemeImageLabel(header.providerServerSelectionTitle, .profileProvider)
+            }
+        )
+        .uiAccessibility(.App.ProfileMenu.connectTo)
     }
 
     var tunnelRestartButton: some View {
         TunnelRestartButton(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             errorHandler: errorHandler,
             flow: flow?.connectionFlow,
             label: {
@@ -77,7 +75,7 @@ private extension ProfileContextMenu {
 
     var profileEditButton: some View {
         Button {
-            flow?.onEditProfile(preview)
+            flow?.onEditProfile(header)
         } label: {
             ThemeImageLabel(Strings.Global.Actions.edit, .profileEdit)
         }
@@ -87,7 +85,7 @@ private extension ProfileContextMenu {
     var profileDuplicateButton: some View {
         ProfileDuplicateButton(
             profileObservable: profileObservable,
-            preview: preview,
+            header: header,
             errorHandler: errorHandler
         ) {
             ThemeImageLabel(Strings.Global.Actions.duplicate, .contextDuplicate)
@@ -96,16 +94,16 @@ private extension ProfileContextMenu {
 
     var profileRemoveButton: some View {
         Button(role: .destructive) {
-            flow?.onDeleteProfile(preview)
+            flow?.onDeleteProfile(header)
         } label: {
             ThemeImageLabel(Strings.Global.Actions.remove, .contextRemove)
         }
     }
 }
 
-private extension Profile {
+private extension ABI.AppProfileHeader {
     var providerServerSelectionTitle: String {
-        (attributes.isAvailableForTV == true ?
+        (sharingFlags.contains(.tv) ?
          Strings.Views.Providers.selectEntity : Strings.Views.App.ProfileContext.connectTo).forMenu
     }
 }
@@ -117,7 +115,7 @@ private extension Profile {
                 style: .installedProfile,
                 profileObservable: .forPreviews,
                 tunnel: .forPreviews,
-                preview: .init(.forPreviews),
+                header: .forPreviews,
                 errorHandler: .default()
             )
         }

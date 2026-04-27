@@ -14,9 +14,11 @@ extension AppContext {
         )
         let registry = appConfiguration.newRegistry(
             deviceId: "TestDeviceID",
+            cachesURL: FileManager.default.temporaryDirectory,
             configBlock: { [] }
         )
-        let appEncoder = AppEncoder(registry: registry)
+        let kvStore = InMemoryStore()
+        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
 
         let logFormatter = DummyLogFormatter()
         pspLogRegister(
@@ -26,7 +28,6 @@ extension AppContext {
             mapper: \.message
         )
 
-        let kvStore = InMemoryStore()
         let apiManager = APIManager(
             from: API.bundled,
             repository: InMemoryAPIRepository()
@@ -45,20 +46,19 @@ extension AppContext {
             }
         )
         let profileProcessor = appConfiguration.newAppProfileProcessor(
-            iapManager: iapManager,
-            preview: \.localizedPreview
+            iapManager: iapManager
         )
         let profileManager: ProfileManager = .forUITesting(
             withRegistry: registry,
             processor: profileProcessor
         )
-        profileManager.isRemoteImportingEnabled = true
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
+        profileManager.enableRemoteImporting(true)
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
-            registry: registry,
+            resolver: registry,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }

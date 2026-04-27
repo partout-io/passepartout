@@ -74,7 +74,7 @@ extension SettingsCoordinator {
         case .version:
             Text(Strings.Global.Nouns.version)
 #if os(iOS)
-                .themeTrailingValue(appConfiguration.versionString)
+                .themeTrailingValue(appConfiguration.bundle.versionString)
 #endif
 
         default:
@@ -140,8 +140,8 @@ extension SettingsCoordinator {
             )
             .navigationTitle(title)
 
-        case .profile(let profile):
-            DiagnosticsProfileView(tunnel: tunnel, profile: profile)
+        case .profile(let header):
+            DiagnosticsProfileView(tunnel: tunnel, header: header)
 
         case .tunnelLog(let title, let url):
             if let url {

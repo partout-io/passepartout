@@ -46,11 +46,11 @@ public struct ChangelogView: View {
 
 private extension ChangelogView {
     var versionString: String {
-        appConfiguration.versionString
+        appConfiguration.bundle.versionString
     }
 
     var versionNumber: String {
-        appConfiguration.versionNumber
+        appConfiguration.bundle.versionNumber
     }
 
     func loadChangelog() async {

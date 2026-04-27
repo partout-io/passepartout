@@ -47,22 +47,20 @@ private extension SettingsContentView {
                 linkContent(.version)
                 VersionUpdateLink()
             }
-            .themeSection(header: Strings.Global.Nouns.about)
+            .themeSection()
             Group {
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && appConfiguration.distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.bundle.distributionTarget.supportsIAP {
                     linkContent(.donate)
                 }
             }
             .themeSection(header: Strings.Global.Nouns.about)
-
-            ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
+            ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faqURL)
                 .themeSection(header: Strings.Global.Nouns.troubleshooting)
-
             Group {
                 linkContent(.diagnostics)
-                if appConfiguration.distributionTarget.supportsIAP {
+                if appConfiguration.bundle.distributionTarget.supportsIAP {
                     linkContent(.purchased)
                 }
             }

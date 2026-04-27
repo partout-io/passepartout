@@ -25,7 +25,7 @@ extension AppCoordinatorConforming {
                 }
             }
         }
-        // FIXME: #1678, Map this inside TunnelManager
+        // FIXME: #1696, Map this inside TunnelManager
         catch let ppError as PartoutError {
             switch ppError.code {
             case .Providers.missingEntity:

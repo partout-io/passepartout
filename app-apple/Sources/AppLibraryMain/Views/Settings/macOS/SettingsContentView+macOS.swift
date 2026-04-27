@@ -63,26 +63,26 @@ private extension SettingsContentView {
                 linkContent(.version)
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && appConfiguration.distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.bundle.distributionTarget.supportsIAP {
                     linkContent(.donate)
                 }
             }
             .themeSection(header: Strings.Global.Nouns.about)
 
             Group {
-                ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faq)
-                if appConfiguration.distributionTarget == .developerID {
+                ExternalLink(Strings.Unlocalized.faq, url: appConfiguration.constants.websites.faqURL)
+                if appConfiguration.bundle.distributionTarget == .developerID {
                     linkContent(.systemExtension)
                 }
                 linkContent(.diagnostics)
-                if appConfiguration.distributionTarget.supportsIAP {
+                if appConfiguration.bundle.distributionTarget.supportsIAP {
                     linkContent(.purchased)
                 }
             }
             .themeSection(header: Strings.Global.Nouns.troubleshooting)
         }
         .safeAreaInset(edge: .bottom) {
-            Text(appConfiguration.versionString)
+            Text(appConfiguration.bundle.versionString)
                 .padding(.bottom)
         }
         .navigationTitle(Strings.Views.Settings.title)

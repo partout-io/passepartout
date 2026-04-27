@@ -37,11 +37,6 @@ public final class ProfileObservable {
 // MARK: - Actions
 
 extension ProfileObservable {
-    // To avoid dup/expensive tracking of localProfiles
-    public func profile(withId profileId: Profile.ID) -> Profile? {
-        abi.profile(withId: profileId)
-    }
-
     public func save(_ profile: Profile, sharingFlag: ABI.ProfileSharingFlag? = nil) async throws {
         var copy = profile
         if sharingFlag == .tv {
@@ -97,6 +92,16 @@ extension ProfileObservable {
         !filteredHeaders.isEmpty
     }
 
+    // DO USE headers for UI to react (locally observed)
+    public func header(withId profileId: Profile.ID) -> ABI.AppProfileHeader? {
+        allHeaders[profileId]
+    }
+
+    // Use full profiles for actions (manually pulled)
+    public func profile(withId profileId: Profile.ID) -> Profile? {
+        abi.profile(withId: profileId)
+    }
+
     public func firstUniqueName(from name: String) -> String {
         let allNames = Set(allHeaders.values.map(\.name))
         var newName = name
@@ -131,10 +136,10 @@ extension ProfileObservable {
         switch event {
         case .ready:
             isReady = true
-        case .refresh(let headers):
-            allHeaders = headers
-        case .changeRemoteImporting(let isEnabled):
-            isRemoteImportingEnabled = isEnabled
+        case .refresh(let payload):
+            allHeaders = payload.headers
+        case .changeRemoteImporting(let payload):
+            isRemoteImportingEnabled = payload.isImporting
         default:
             break
         }

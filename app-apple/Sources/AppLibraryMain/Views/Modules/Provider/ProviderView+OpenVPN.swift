@@ -89,7 +89,7 @@ private extension ProviderView.OpenVPNCredentialsView {
             return
         }
         do {
-            if let options: OpenVPNProviderTemplate.Options = try draft.module.options(for: .openVPN),
+            if let options: OpenVPNProviderTemplate.Options = try draft.module.options(for: .OpenVPN),
                let credentials = options.credentials {
                 builder = credentials.builder()
             }
@@ -102,9 +102,9 @@ private extension ProviderView.OpenVPNCredentialsView {
 
     func saveCredentials() {
         do {
-            var options: OpenVPNProviderTemplate.Options = try draft.module.options(for: .openVPN) ?? .init()
+            var options: OpenVPNProviderTemplate.Options = try draft.module.options(for: .OpenVPN) ?? .init()
             options.credentials = builder.build()
-            try draft.module.setOptions(options, for: .openVPN)
+            try draft.module.setOptions(options, for: .OpenVPN)
         } catch {
             pspLog(.core, .error, "Unable to store OpenVPN credentials to options: \(error)")
         }

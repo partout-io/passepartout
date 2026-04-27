@@ -89,7 +89,7 @@ extension ProviderModule.Builder: ModuleShortcutsProviding {
         }
         ProviderServerLink(entity: entity)
         switch providerModuleType {
-        case .openVPN:
+        case .OpenVPN:
             ProviderView.OpenVPNCredentialsLink()
         default:
             EmptyView()

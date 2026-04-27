@@ -14,7 +14,7 @@ struct InstalledProfileView: View, Routable {
 
     let profileObservable: ProfileObservable
 
-    let profile: Profile?
+    let header: ABI.AppProfileHeader?
 
     let tunnel: TunnelObservable
 
@@ -34,18 +34,23 @@ struct InstalledProfileView: View, Routable {
 }
 
 private extension InstalledProfileView {
+    var profile: Profile? {
+        guard let header else { return nil }
+        return profileObservable.profile(withId: header.id)
+    }
+
     var cardView: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .center) {
-                if profile != nil {
-                    actionableNameView
+                if let header {
+                    actionableNameView(header: header)
                     Spacer(minLength: 10)
                 } else {
                     nameView()
                 }
             }
             Group {
-                if profile != nil {
+                if header != nil {
                     statusView
                 } else {
                     Text(Strings.Views.App.InstalledProfile.None.status)
@@ -57,12 +62,17 @@ private extension InstalledProfileView {
         .modifier(CardModifier(layout: layout))
     }
 
-    var actionableNameView: some View {
-        ThemeDisclosableMenu(content: menuContent, label: nameView)
+    func actionableNameView(header: ABI.AppProfileHeader) -> some View {
+        ThemeDisclosableMenu(
+            content: {
+                menuContent(header: header)
+            },
+            label: nameView
+        )
     }
 
     func nameView() -> some View {
-        Text(profile?.name ?? Strings.Views.App.InstalledProfile.None.name)
+        Text(header?.name ?? Strings.Views.App.InstalledProfile.None.name)
             .font(.title2)
             .fontWeight(theme.relevantWeight)
             .themeMultiLine(true)
@@ -76,30 +86,32 @@ private extension InstalledProfileView {
     }
 
     var providerServerButton: some View {
-        profile?.providerSelectorButton(onSelect: flow?.connectionFlow?.onProviderEntityRequired)
+        profile?.providerSelectorButton(
+            onSelect: flow?.connectionFlow?.onProviderEntityRequired
+        )
     }
 
     var statusText: some View {
-        ConnectionStatusText(tunnel: tunnel, profileId: profile?.id)
+        ConnectionStatusText(tunnel: tunnel, profileId: header?.id)
     }
 
     var toggleButton: some View {
         TunnelToggle(
             tunnel: tunnel,
-            profile: profile,
+            header: header,
             errorHandler: errorHandler,
             flow: flow?.connectionFlow
         )
         .labelsHidden()
-        .opaque(profile != nil)
+        .opaque(header != nil)
     }
 
-    func menuContent() -> some View {
+    func menuContent(header: ABI.AppProfileHeader) -> some View {
         ProfileContextMenu(
             style: .installedProfile,
             profileObservable: profileObservable,
             tunnel: tunnel,
-            preview: .init(profile ?? .forPreviews),
+            header: header,
             errorHandler: errorHandler,
             flow: flow
         )
@@ -109,7 +121,6 @@ private extension InstalledProfileView {
 // MARK: - Subviews (observing)
 
 private struct HeaderModifier: ViewModifier {
-
     @Environment(Theme.self)
     private var theme
 
@@ -183,7 +194,7 @@ private struct HeaderView: View {
         InstalledProfileView(
             layout: layout,
             profileObservable: .forPreviews,
-            profile: .forPreviews,
+            header: .forPreviews,
             tunnel: .forPreviews,
             errorHandler: .default()
         )
@@ -197,7 +208,7 @@ private struct ContentView: View {
                 style: .full,
                 profileObservable: .forPreviews,
                 tunnel: .forPreviews,
-                preview: .init(.forPreviews),
+                header: .forPreviews,
                 errorHandler: .default()
             )
         }

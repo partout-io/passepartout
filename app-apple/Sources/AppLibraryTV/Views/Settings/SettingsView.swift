@@ -63,7 +63,7 @@ private extension SettingsView {
             } label: {
                 ThemeRow(
                     Strings.Global.Nouns.version,
-                    value: appConfiguration.versionString
+                    value: appConfiguration.bundle.versionString
                 )
             }
             .focused($focus, equals: .version)
@@ -83,6 +83,7 @@ private extension SettingsView {
         Group {
             NavigationLink(Strings.Views.Diagnostics.Rows.app, value: AppCoordinatorRoute.appLog)
             NavigationLink(Strings.Views.Diagnostics.Rows.tunnel, value: AppCoordinatorRoute.tunnelLog)
+            ExtensiveLoggingToggle()
             LogsPrivateDataToggle()
             Button(Strings.Views.Purchased.title) {}
                 .focused($focus, equals: .purchased)

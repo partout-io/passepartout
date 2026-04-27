@@ -38,7 +38,7 @@ extension AppCoordinator {
     }
 
     enum ConfirmationAction: Sendable {
-        case deleteProfile(ABI.ProfilePreview)
+        case deleteProfile(ABI.AppProfileHeader)
     }
 }
 

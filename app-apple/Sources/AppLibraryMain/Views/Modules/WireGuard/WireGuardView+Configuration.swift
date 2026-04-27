@@ -83,27 +83,26 @@ private extension WireGuardView.ConfigurationView {
                 Strings.Unlocalized.mtu,
                 text: $viewModel.mtu,
                 placeholder: Strings.Unlocalized.Placeholders.mtu,
-                inputType: .number
+                inputType: .number,
+                sideAligned: true
             )
         }
     }
 
     var dnsSection: some View {
-        themeModuleSection(header: Strings.Unlocalized.dns) {
+        themeModuleSection(
+            header: Strings.Unlocalized.dns,
+            footer: Strings.Modules.Wireguard.Interface.Dns.footer
+        ) {
             ThemeLongContentLink(
                 Strings.Global.Nouns.servers,
                 text: $viewModel.dnsServers,
                 inputType: .ipAddress,
                 preview: \.asNumberOfEntries
             )
-            ThemeTextField(
-                Strings.Global.Nouns.domain,
-                text: $viewModel.dnsDomain,
-                placeholder: Strings.Unlocalized.Placeholders.hostname
-            )
             ThemeLongContentLink(
                 Strings.Entities.Dns.searchDomains,
-                text: $viewModel.dnsSearchDomains,
+                text: $viewModel.dnsDomains,
                 preview: \.asNumberOfEntries
             )
         }
@@ -174,9 +173,8 @@ private extension WireGuardView.ConfigurationView {
 private extension WireGuardView.ConfigurationView {
     var dnsRows: [Any?] {
         [
-            configurationBuilder.interface.dns.servers.nilIfEmpty,
-            configurationBuilder.interface.dns.domainName,
-            configurationBuilder.interface.dns.searchDomains?.nilIfEmpty
+            configurationBuilder.interface.dns?.servers.nilIfEmpty,
+            configurationBuilder.interface.dns?.domains?.nilIfEmpty
         ]
     }
 }
@@ -209,9 +207,7 @@ extension WireGuardView.ConfigurationView {
 
         var dnsServers = ""
 
-        var dnsDomain = ""
-
-        var dnsSearchDomains = ""
+        var dnsDomains = ""
 
         var peers: [String: Peer] = [:]
 
@@ -222,9 +218,8 @@ extension WireGuardView.ConfigurationView {
             addresses = configuration.interface.addresses.joined(separator: separator)
             mtu = configuration.interface.mtu?.description ?? ""
 
-            dnsServers = configuration.interface.dns.servers.joined(separator: separator)
-            dnsDomain = configuration.interface.dns.domainName ?? ""
-            dnsSearchDomains = configuration.interface.dns.searchDomains?.joined(separator: separator) ?? ""
+            dnsServers = configuration.interface.dns?.servers.joined(separator: separator) ?? ""
+            dnsDomains = configuration.interface.dns?.domains?.joined(separator: separator) ?? ""
 
             peers = configuration.peers.reduce(into: [:]) {
                 var peer = Peer()
@@ -243,15 +238,22 @@ extension WireGuardView.ConfigurationView {
             fallback: WireGuard.Configuration.Builder
         ) {
             var configuration = draft.module.configurationBuilder ?? fallback
-            configuration.interface.privateKey = privateKey
+            if !privateKey.trimmingCharacters(in: .whitespaces).isEmpty {
+                configuration.interface.privateKey = privateKey
+            }
             configuration.interface.addresses = addresses.trimmedSplit(separator: separator)
             configuration.interface.mtu = UInt16(mtu)
 
-            var dns = DNSModule.Builder()
-            dns.servers = dnsServers.trimmedSplit(separator: separator)
-            dns.domainName = dnsDomain
-            dns.searchDomains = dnsSearchDomains.trimmedSplit(separator: separator)
-            configuration.interface.dns = dns
+            let servers = dnsServers.trimmedSplit(separator: separator)
+            let domains = dnsDomains.trimmedSplit(separator: separator)
+            if !servers.isEmpty {
+                configuration.interface.dns = DNSModule.Builder(
+                    servers: servers,
+                    domains: domains
+                )
+            } else {
+                configuration.interface.dns = nil
+            }
 
             configuration.peers = peersOrder
                 .compactMap {
@@ -259,8 +261,12 @@ extension WireGuardView.ConfigurationView {
                         return nil
                     }
                     var peer = WireGuard.RemoteInterface.Builder(publicKey: model.publicKey)
-                    peer.preSharedKey = model.preSharedKey
-                    peer.endpoint = model.endpoint
+                    if !model.preSharedKey.trimmingCharacters(in: .whitespaces).isEmpty {
+                        peer.preSharedKey = model.preSharedKey
+                    }
+                    if !model.endpoint.trimmingCharacters(in: .whitespaces).isEmpty {
+                        peer.endpoint = model.endpoint
+                    }
                     peer.allowedIPs = model.allowedIPs.trimmedSplit(separator: separator)
                     peer.keepAlive = UInt16(model.keepAlive)
                     return peer

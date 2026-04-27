@@ -36,7 +36,7 @@ struct PassepartoutApp: App {
 
 extension PassepartoutApp {
     var appName: String {
-        context.appConfiguration.displayName
+        context.appConfiguration.bundle.displayName
     }
 
     var context: AppContext {

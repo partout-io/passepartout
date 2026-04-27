@@ -1,4 +1,4 @@
 *.ovpn
 *.wg
 *.conf
-*.json
+vps*

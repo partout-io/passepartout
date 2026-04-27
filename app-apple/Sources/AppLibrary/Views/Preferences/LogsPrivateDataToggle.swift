@@ -14,5 +14,6 @@ public struct LogsPrivateDataToggle: View {
 
     public var body: some View {
         Toggle(Strings.Views.Diagnostics.Rows.includePrivateData, isOn: userPreferences.binding(\.logsPrivateData))
+            .themeContainerEntry(subtitle: Strings.Views.Diagnostics.Rows.IncludePrivateData.subtitle)
     }
 }

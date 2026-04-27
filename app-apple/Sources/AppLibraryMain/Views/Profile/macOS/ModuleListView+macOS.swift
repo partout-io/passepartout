@@ -32,6 +32,12 @@ struct ModuleListView: View, Routable {
 
     var flow: ProfileCoordinator.Flow?
 
+    @State
+    private var isExporting = false
+
+    @State
+    private var exportedDocument: SerializedModuleFile?
+
     var body: some View {
         List(selection: $selectedModuleId) {
             Section {
@@ -83,24 +89,37 @@ private extension ModuleListView {
             }
         }
         .contextMenu {
+            if let file = module.serializedIgnoringErrors(withName: profileEditor.profile.name) {
+                ModuleShareGroup(
+                    file: file,
+                    isExporting: $isExporting,
+                    exportedDocument: $exportedDocument,
+                    paywallReason: $paywallReason
+                )
+                Divider()
+            }
             ModuleSendMenu(
                 profileId: profileEditor.profile.id,
                 module: module,
                 errorHandler: errorHandler
             )
         }
+        .fileExporter(
+            isPresented: $isExporting,
+            document: exportedDocument.map { TextFile(string: $0.content) },
+            contentType: .text,
+            defaultFilename: exportedDocument?.filename,
+            onCompletion: { _ in }
+        )
     }
 
     @ViewBuilder
     func toolbarContent() -> some View {
-        addModuleMenu
-            .themeTip(.Profile.buildYourProfile)
-
-        Button(action: removeSelectedModule) {
-            ThemeImage(.remove)
+        HStack {
+            addModuleMenu
+                .themeTip(.Profile.buildYourProfile)
+            removeModuleButton
         }
-        .disabled(!canRemoveSelectedModule)
-
         EmptyView()
             .themeTip(Strings.Views.Profile.ModuleList.Section.footer, edge: .bottom)
     }
@@ -108,18 +127,27 @@ private extension ModuleListView {
     var addModuleMenu: some View {
         AddModuleMenu(
             moduleTypes: availableTypes,
-            withProviderType: appConfiguration.distributionTarget.supportsPaidFeatures
+            withProviderType: appConfiguration.bundle.distributionTarget.supportsPaidFeatures
         ) {
             flow?.onNewModule($0)
         } label: {
             ThemeImage(.add)
+                .frame(maxHeight: .infinity)
         }
+    }
+
+    var removeModuleButton: some View {
+        Button(action: removeSelectedModule) {
+            ThemeImage(.remove)
+                .frame(maxHeight: .infinity)
+        }
+        .disabled(!canRemoveSelectedModule)
     }
 }
 
 private extension ModuleListView {
     var availableTypes: [ModuleType] {
-        profileEditor.availableModuleTypes(forTarget: appConfiguration.distributionTarget)
+        profileEditor.availableModuleTypes(forTarget: appConfiguration.bundle.distributionTarget)
     }
 
     var requiredGeneralFeatures: Set<ABI.AppFeature> {

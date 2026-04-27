@@ -1,29 +1,31 @@
-Chroń swoją prywatność online z Passepartout, inteligentnym klientem VPN, który bezproblemowo integruje się z iOS, macOS, iPadOS i tvOS. Passepartout to kompleksowe rozwiązanie dla Ciebie.
+Chroń swoją prywatność online z Passepartout, inteligentnym klientem VPN, który bezproblemowo integruje się z iOS, macOS, iPadOS i tvOS.
 
-DLACZEGO WARTO WYBRAĆ PASSEPARTOUT?
+JAK DZIAŁA PASSEPARTOUT
 
-Wystarczy zaimportować pliki .ovpn lub .conf, aby skonfigurować swoje serwery VPN.
+Passepartout obejmuje podstawowe funkcje importu i połączenia. Dodatkowe funkcje wymagają zakupu w aplikacji.
 
-FUNKCJE DARMOWE:
+ZAWARTE FUNKCJE:
 
 - Obsługa protokołów OpenVPN i WireGuard.
 - Zaciemnianie OpenVPN (za pomocą --scramble).
 - Automatyzacja za pomocą Skrótów dla uproszczonych operacji.
 - Wykluczanie punktów końcowych dla precyzyjnej kontroli.
 
-FUNKCJE PŁATNE:
+WYMAGA ZAKUPU W APLIKACJI:
 
 - Obsługa Apple TV.
 - Reguły na żądanie dla inteligentnych, automatycznych połączeń.
 - Udostępnianie w iCloud dla płynnego korzystania na wielu urządzeniach.
 - DoH/DoT dla bezpiecznych zapytań DNS.
+- Dopasowywanie domen dla split DNS.
+- Eksportuj i udostępniaj profile.
 - Niestandardowe trasy dla zaawansowanych konfiguracji.
 - Interaktywne logowanie z obsługą jednorazowych haseł (OTP).
 - Profile inne niż VPN (np. ustawienia tylko DNS/Proxy).
 
 UDOSTĘPNIANIE RODZINNE
 
-Passepartout obsługuje Udostępnianie Rodzinne, dzięki czemu możesz dzielić się swoim zakupem z członkami rodziny.
+Wszystkie zakupy obsługują Udostępnianie Rodzinne, dzięki czemu możesz udostępniać je członkom rodziny.
 
 PRYWATNOŚĆ, KTÓREJ MOŻESZ UFAĆ
 
@@ -34,8 +36,6 @@ Passepartout zostało zaprojektowane z myślą o przejrzystości i prywatności:
 OPEN SOURCE I WSPARCIE SPOŁECZNOŚCI
 
 Passepartout to projekt open source, który nieustannie się rozwija dzięki pomocy społeczności. Sprawdź projekt na GitHub: https://github.com/partout-io
-
-Przejmij kontrolę nad swoim doświadczeniem z VPN. Pobierz Passepartout już dziś i ciesz się bezpieczną, prywatną i bezproblemową łącznością na wszystkich swoich urządzeniach Apple.
 
 ~
 

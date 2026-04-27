@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -43,12 +44,18 @@ android {
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
-            version = "4.0.1"
         }
     }
     sourceSets {
         getByName("main") {
+            java.srcDirs("src/main/kotlin")
             jniLibs.srcDirs("src/main/cpp/libs")
+        }
+        getByName("test") {
+            java.srcDirs("src/test/kotlin")
+        }
+        getByName("androidTest") {
+            java.srcDirs("src/androidTest/kotlin")
         }
     }
     buildToolsVersion = "36.0.0"
@@ -65,6 +72,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

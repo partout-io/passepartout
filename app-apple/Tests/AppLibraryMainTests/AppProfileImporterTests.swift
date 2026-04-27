@@ -33,7 +33,8 @@ struct AppProfileImporterTests {
         Task {
             for await event in profileEvents {
                 switch event {
-                case .save(let profile, _):
+                case .save(let payload):
+                    let profile = payload.profile
                     #expect(profile.modules.count == 2)
                     #expect(profile.modules.first is SomeModule)
                     #expect(profile.modules.last is OnDemandModule)
@@ -64,7 +65,8 @@ struct AppProfileImporterTests {
         Task {
             for await event in profileEvents {
                 switch event {
-                case .save(let profile, _):
+                case .save(let payload):
+                    let profile = payload.profile
                     #expect(profile.modules.count == 2)
                     #expect(profile.modules.first is SomeModule)
                     #expect(profile.modules.last is OnDemandModule)
@@ -110,9 +112,7 @@ struct AppProfileImporterTests {
 
 private struct SomeModule: Module {
     final class Implementation: ModuleImplementation {
-        var moduleHandlerId: ModuleType {
-            moduleHandler.id
-        }
+        let moduleType = SomeModule.moduleType
     }
 }
 

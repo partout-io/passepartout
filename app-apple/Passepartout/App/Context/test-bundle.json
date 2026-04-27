@@ -1,11 +1,20 @@
 {
-    "neSocketUDP": {
+    "bsdSockets": {
         "rate": 100
     },
-    "neSocketTCP": {
+    "wgCrossV2": {
+        "rate": 100
+    },
+    "ovpnCrossV2": {
+        "rate": 100
+    },
+    "newProfileEncoding": {
         "rate": 100
     },
     "allowsRelaxedVerification": {
+        "rate": 100
+    },
+    "forcesRelaxedVerification": {
         "rate": 100
     },
     "appNotWorking": {

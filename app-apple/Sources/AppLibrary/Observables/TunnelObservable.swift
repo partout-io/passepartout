@@ -10,15 +10,13 @@ public final class TunnelObservable {
     private let abi: AppABITunnelProtocol
     private let formatter: LogFormatter?
 
-    public private(set) var activeProfiles: [Profile.ID: ABI.AppProfileInfo]
-    public private(set) var transfers: [Profile.ID: ABI.ProfileTransfer]
+    public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
     private var subscription: Task<Void, Never>?
 
     public init(abi: AppABITunnelProtocol, formatter: LogFormatter?) {
         self.abi = abi
         self.formatter = formatter
         activeProfiles = [:]
-        transfers = [:]
     }
 }
 
@@ -51,7 +49,7 @@ extension TunnelObservable {
 // MARK: - State
 
 extension TunnelObservable {
-    public var activeProfile: ABI.AppProfileInfo? {
+    public var activeProfile: ABI.AppTunnelInfo? {
         activeProfiles.first?.value
     }
 
@@ -63,24 +61,26 @@ extension TunnelObservable {
         activeProfiles[profileId]?.status ?? .disconnected
     }
 
-    public func lastError(for profileId: Profile.ID) -> ABI.AppError? {
-        abi.lastError(ofProfileId: profileId)
+    public func transfer(for profileId: Profile.ID) -> ABI.ProfileTransfer? {
+        activeProfiles[profileId]?.transfer
     }
 
-    public func openVPNServerConfiguration(for profileId: Profile.ID) -> OpenVPN.Configuration? {
-        abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
+    public func lastError(for profileId: Profile.ID) -> ABI.AppError? {
+        activeProfiles[profileId]?.lastErrorCode.map {
+            ABI.AppError.partout(PartoutError($0))
+        }
+    }
+
+    public func openVPNServerConfiguration(for profileId: Profile.ID) async -> OpenVPN.Configuration? {
+        await abi.environmentValue(for: .openVPNServerConfiguration, ofProfileId: profileId) as? OpenVPN.Configuration
     }
 
     func onUpdate(_ event: ABI.TunnelEvent) {
-//        abi.log(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
+//        pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
         switch event {
-        case .refresh(let active):
+        case .refresh(let payload):
             pspLog(.core, .debug, "TunnelObservable.onUpdate(): \(event)")
-            activeProfiles = active
-        case .dataCount:
-            transfers = activeProfiles.compactMapValues {
-                abi.transfer(ofProfileId: $0.id)
-            }
+            activeProfiles = payload.active
         }
     }
 }

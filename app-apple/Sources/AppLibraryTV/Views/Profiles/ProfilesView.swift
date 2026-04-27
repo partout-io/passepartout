@@ -162,7 +162,7 @@ private extension DetailView {
     )
     .withMockEnvironment()
     .task {
-        try? await ProfileObservable.forPreviews.removeAll()
+        await ProfileObservable.forPreviews.removeAll()
     }
 }
 

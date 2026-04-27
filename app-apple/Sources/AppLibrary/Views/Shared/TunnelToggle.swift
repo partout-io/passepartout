@@ -6,9 +6,12 @@ import CommonLibrary
 import SwiftUI
 
 public struct TunnelToggle<Label>: View where Label: View {
+    @Environment(ProfileObservable.self)
+    private var profileObservable
+
     private let tunnel: TunnelObservable
 
-    private let profile: Profile?
+    private let header: ABI.AppProfileHeader?
 
     private let errorHandler: ErrorHandler
 
@@ -18,13 +21,13 @@ public struct TunnelToggle<Label>: View where Label: View {
 
     public init(
         tunnel: TunnelObservable,
-        profile: Profile?,
+        header: ABI.AppProfileHeader?,
         errorHandler: ErrorHandler,
         flow: ConnectionFlow?,
         label: @escaping (Binding<Bool>, Bool) -> Label
     ) {
         self.tunnel = tunnel
-        self.profile = profile
+        self.header = header
         self.errorHandler = errorHandler
         self.flow = flow
         self.label = label
@@ -53,8 +56,14 @@ public struct TunnelTextToggle: View {
 }
 
 extension TunnelToggle where Label == TunnelTextToggle {
-    public init(_ title: String = "", tunnel: TunnelObservable, profile: Profile?, errorHandler: ErrorHandler, flow: ConnectionFlow?) {
-        self.init(tunnel: tunnel, profile: profile, errorHandler: errorHandler, flow: flow) { isOn, _ in
+    public init(
+        _ title: String = "",
+        tunnel: TunnelObservable,
+        header: ABI.AppProfileHeader?,
+        errorHandler: ErrorHandler,
+        flow: ConnectionFlow?
+    ) {
+        self.init(tunnel: tunnel, header: header, errorHandler: errorHandler, flow: flow) { isOn, _ in
             TunnelTextToggle(title: title, isOn: isOn)
         }
     }
@@ -73,50 +82,44 @@ private extension TunnelToggle {
 }
 
 private extension TunnelToggle {
-    var tunnelProfile: ABI.AppProfileInfo? {
-        guard let profile else {
-            return nil
-        }
-        return tunnel.activeProfiles[profile.id]
+    var tunnelProfile: ABI.AppTunnelInfo? {
+        guard let header else { return nil }
+        return tunnel.activeProfiles[header.id]
     }
 
     var isOn: Bool {
-        guard let tunnelProfile else {
-            return false
-        }
+        guard let tunnelProfile else { return false }
         return tunnelProfile.status != .disconnected || tunnelProfile.onDemand
     }
 
     var canInteract: Bool {
-        profile != nil && tunnelProfile?.status != .disconnecting
+        header != nil && tunnelProfile?.status != .disconnecting
     }
 
     func tryPerform(isOn: Bool) {
-        guard let profile else {
-            return
-        }
+        guard let header else { return }
         Task {
-            await perform(isOn: isOn, with: profile)
+            await perform(isOn: isOn, with: header)
         }
     }
 
-    func perform(isOn: Bool, with profile: Profile) async {
+    func perform(isOn: Bool, with header: ABI.AppProfileHeader) async {
         do {
             if tunnelProfile != nil {
                 if isOn {
-                    await flow?.onConnect(profile)
+                    await flow?.onConnect(header)
                 } else {
-                    try await tunnel.disconnect(from: profile.id)
+                    try await tunnel.disconnect(from: header.id)
                 }
             } else {
-                await flow?.onConnect(profile)
+                await flow?.onConnect(header)
             }
         } catch is CancellationError {
             //
         } catch {
             errorHandler.handle(
                 error,
-                title: profile.name,
+                title: header.name,
                 message: Strings.Errors.App.tunnel
             )
         }

@@ -31,12 +31,12 @@ private extension WebReceiverView {
     func view(forWebsite website: ABI.WebsiteWithPasscode) -> some View {
         VStack {
             Text(Strings.Views.Tv.WebReceiver.qr)
-            QRCodeView(text: website.url.absoluteString)
+            QRCodeView(text: website.url)
                 .frame(width: 400)
                 .padding(.vertical)
 
             VStack {
-                Text(website.url.absoluteString)
+                Text(website.url)
                     .fontWeight(.bold)
 
                 if let passcode = website.passcode {
@@ -57,8 +57,8 @@ private extension WebReceiverView {
 private extension WebReceiverView {
     @Sendable
     func handleUploadFailure() async {
-        for await error in webReceiverObservable.uploadFailure.subscribe() {
-            errorHandler.handle(error)
+        for await errorDescription in webReceiverObservable.uploadFailure.subscribe() {
+            errorHandler.handle(errorDescription)
         }
     }
 }

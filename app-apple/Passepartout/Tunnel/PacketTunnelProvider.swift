@@ -55,6 +55,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             let kvStore = appConfiguration.newKeyValueStore()
             if let startPreferences {
                 kvStore.preferences = startPreferences
+                pspLog(.core, .debug, "PTP: kvStore.preferences: \(kvStore.preferences)")
+                pspLog(.core, .debug, "PTP: startPreferences: \(startPreferences)")
+                assert(kvStore.preferences == startPreferences)
+                return startPreferences
             }
             return kvStore.preferences
         }()
@@ -62,10 +66,13 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         // Defer to ABI
         Task { @MainActor in
             do {
-                abi = try await TunnelABI.forProduction(
+                // TODO: #218, cachesURL must be per-profile
+                let cachesURL = FileManager.default.temporaryDirectory
+                abi = try await TunnelABI.forNetworkExtension(
                     appConfiguration: appConfiguration,
                     preferences: preferences,
                     startPreferences: startPreferences,
+                    cachesURL: cachesURL,
                     neProvider: self
                 )
                 abi?.log(.core, .notice, "Start PTP")

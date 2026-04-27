@@ -6,7 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct IPView: View, ModuleDraftEditing {
-
     @ObservedObject
     var draft: ModuleDraft<IPModule.Builder>
 
@@ -76,13 +75,13 @@ private extension IPView {
             Strings.Global.Nouns.address,
             text: $subnets[family] ?? "",
             placeholder: Strings.Unlocalized.Placeholders.ipDestination(forFamily: family),
-            inputType: .ipAddress
+            inputType: .ipAddress,
+            sideAligned: true
         )
         .themeContainerWithSingleEntry(
             header: family.localizedDescription,
             footer: Strings.Modules.Ip.Address.footer
         )
-
         Group {
             ForEach(Array(ip.wrappedValue.includedRoutes.enumerated()), id: \.offset) { item in
                 row(forRoute: item.element) {
@@ -138,7 +137,8 @@ private extension IPView {
                     draft.module.mtu = Int($0)
                 },
                 placeholder: Strings.Unlocalized.Placeholders.mtu,
-                inputType: .number
+                inputType: .number,
+                sideAligned: true
             )
         }
         .themeSection(header: Strings.Global.Nouns.interface)

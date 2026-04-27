@@ -6,17 +6,17 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileInfoButton: View {
-    let preview: ABI.ProfilePreview
+    let header: ABI.AppProfileHeader
 
-    let onEdit: (ABI.ProfilePreview) -> Void
+    let onEdit: (ABI.AppProfileHeader) -> Void
 
     var body: some View {
         Button {
-            onEdit(preview)
+            onEdit(header)
         } label: {
             ThemeImage(.info)
         }
-        // XXX: #584, necessary to avoid cell selection
+        // XXX: #584, Necessary to avoid cell selection
         .buttonStyle(.borderless)
     }
 }
