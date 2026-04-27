@@ -22,17 +22,22 @@ struct PreferencesAdvancedView: View {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .neSocketUDP,
-        .neSocketTCP
+        .bsdSockets,
+        .newProfileEncoding,
+        .ovpnCrossV2,
+        .wgCrossV2
     ]
 
     static func description(for flag: ABI.ConfigFlag) -> String {
-        let V = Strings.Entities.Ui.ConfigFlag.self
         switch flag {
-        case .neSocketUDP:
-            return V.neSocketUDP
-        case .neSocketTCP:
-            return V.neSocketTCP
+        case .bsdSockets:
+            return "BSD sockets"
+        case .newProfileEncoding:
+            return "New profile encoding"
+        case .ovpnCrossV2:
+            return "Cross-platform OpenVPN v2"
+        case .wgCrossV2:
+            return "Cross-platform WireGuard v2"
         default:
             assertionFailure()
             return ""
@@ -52,7 +57,7 @@ private extension PreferencesAdvancedView {
     }
 
     func isOnBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
-        Binding<Bool> {
+        Binding {
             experimental.isUsed(flag)
         } set: {
             experimental.setUsed(flag, isUsed: $0)

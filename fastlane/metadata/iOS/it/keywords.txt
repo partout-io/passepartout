@@ -1,1 +1,1 @@
-wireguard,openvpn,xor,patch,mullvad,protonvpn,nordvpn,windscribe,expressvpn,gratis,anonimo,proxy
+wireguard,openvpn,xor,patch,mullvad,protonvpn,nordvpn,windscribe,expressvpn,proxy

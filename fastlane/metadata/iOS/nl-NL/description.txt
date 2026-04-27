@@ -1,29 +1,31 @@
-Bescherm je online privacy met Passepartout, een slimme VPN-client die naadloos is geïntegreerd met iOS, macOS, iPadOS en tvOS. Passepartout is jouw alles-in-één-oplossing.
+Bescherm je online privacy met Passepartout, een slimme VPN-client die naadloos is geïntegreerd met iOS, macOS, iPadOS en tvOS.
 
-WAAROM KIEZEN VOOR PASSEPARTOUT?
+ZO WERKT PASSEPARTOUT
 
-Importeer eenvoudig .ovpn- of .conf-bestanden om je persoonlijke VPN-servers in te stellen.
+Passepartout bevat basisfuncties voor importeren en verbinden. Extra functies vereisen een in-appaankoop.
 
-GRATIS FUNCTIES:
+INBEGREPEN FUNCTIES:
 
-- Ondersteuning voor de protocollen OpenVPN en WireGuard.  
-- Obfuscatie van OpenVPN (met --scramble).  
-- Automatisering met Snelkoppelingen voor eenvoudige workflows.  
+- Ondersteuning voor de protocollen OpenVPN en WireGuard.
+- Obfuscatie van OpenVPN (met --scramble).
+- Automatisering met Snelkoppelingen voor eenvoudige workflows.
 - Uitsluiten van eindpunten voor nauwkeurige controle.
 
-BETAALDE FUNCTIES:
+VEREIST EEN IN-APPAANKOOP:
 
-- Ondersteuning voor Apple TV.  
-- On-demand regels voor slimme en automatische verbindingen.  
-- iCloud-deling voor naadloos gebruik op meerdere apparaten.  
-- DoH/DoT voor veilige DNS-queries.  
-- Aangepast routeren voor geavanceerde configuraties.  
-- Interactieve login met ondersteuning voor eenmalige wachtwoorden (OTP).  
-- Niet-VPN-profielen (bijvoorbeeld alleen DNS/Proxy-instellingen).  
+- Ondersteuning voor Apple TV.
+- On-demand regels voor slimme en automatische verbindingen.
+- iCloud-deling voor naadloos gebruik op meerdere apparaten.
+- DoH/DoT voor veilige DNS-queries.
+- Domeinmatch voor split DNS.
+- Profielen exporteren en delen.
+- Aangepast routeren voor geavanceerde configuraties.
+- Interactieve login met ondersteuning voor eenmalige wachtwoorden (OTP).
+- Niet-VPN-profielen (bijvoorbeeld alleen DNS/Proxy-instellingen).
 
-GEZINDELING
+DELEN MET GEZIN
 
-Passepartout ondersteunt Gezinsharing, zodat je je aankoop kunt delen met gezinsleden.
+Alle aankopen ondersteunen Delen met gezin, zodat je ze kunt delen met je gezinsleden.
 
 PRIVACY WAAR JE OP KUNT VERTROUWEN
 
@@ -34,8 +36,6 @@ Passepartout is ontworpen met transparantie en privacy in gedachten:
 OPEN SOURCE EN COMMUNITY-GEDREVEN
 
 Passepartout is open source en evolueert voortdurend dankzij de hulp van de community. Bekijk het project op GitHub: https://github.com/partout-io
-
-Neem de controle over je VPN-ervaring. Download Passepartout vandaag en geniet van veilige, privé en moeiteloze connectiviteit op al je Apple-apparaten.
 
 ~
 

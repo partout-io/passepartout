@@ -7,7 +7,6 @@ import CommonLibrary
 import SwiftUI
 
 struct DNSView: View, ModuleDraftEditing {
-
     @Environment(Theme.self)
     private var theme
 
@@ -21,28 +20,61 @@ struct DNSView: View, ModuleDraftEditing {
     var body: some View {
         debugChanges()
         return Group {
-            protocolSection
-            routingSection
-            Group {
-                domainSection
-                serversSection
-                searchDomainsSection
+            inheritsSection
+            behaviorSection
+            if draft.module.inheritsVPN != true {
+                overrideGroup
             }
-            .labelsHidden()
         }
         .moduleView(draft: draft)
     }
 }
 
 private extension DNSView {
-    static let allProtocols: [DNSProtocol] = [
-        .cleartext,
-        .https,
-        .tls
-    ]
+    var behaviorSection: some View {
+        Group {
+            routesThroughPicker
+                .themeContainerEntry(subtitle: Strings.Modules.Dns.Policy.RouteThroughVpn.footer)
+            onlyInDomainsToggle
+                .themeContainerEntry(subtitle: Strings.Modules.Dns.Policy.UseOnly.footer)
+        }
+        .themeContainer()
+    }
+
+    var routesThroughPicker: some View {
+        Picker(Strings.Modules.Dns.Policy.routeThroughVpn, selection: $draft.module.routesThroughVPN) {
+            Text(Strings.Global.Nouns.default)
+                .tag(nil as Bool?)
+            Text(Strings.Global.Nouns.yes)
+                .tag(true as Bool?)
+            Text(Strings.Global.Nouns.no)
+                .tag(false as Bool?)
+        }
+    }
+
+    var onlyInDomainsToggle: some View {
+        Toggle(Strings.Modules.Dns.Policy.useOnly, isOn: bindingToOnlyInDomains)
+            .disabled(!canApplyDomainPolicy)
+    }
+
+    var inheritsSection: some View {
+        Toggle(Strings.Modules.Dns.Policy.inheritsVpn, isOn: $draft.module.inheritsVPN)
+            .themeContainerWithSingleEntry(footer: Strings.Modules.Dns.Policy.InheritsVpn.footer)
+    }
+
+    var overrideGroup: some View {
+        Group {
+            protocolSection
+            serversSection.labelsHidden()
+            if draft.module.protocolType == .cleartext {
+                domainsSection.labelsHidden()
+                firstDomainToggle
+            }
+        }
+    }
 
     var protocolSection: some View {
-        Section {
+        Group {
             Picker(Strings.Global.Nouns.protocol, selection: $draft.module.protocolType) {
                 ForEach(Self.allProtocols, id: \.self) {
                     Text($0.localizedDescription)
@@ -51,39 +83,17 @@ private extension DNSView {
             switch draft.module.protocolType {
             case .cleartext:
                 EmptyView()
-
             case .https:
                 ThemeTextField(Strings.Unlocalized.url, text: $draft.module.dohURL, placeholder: Strings.Unlocalized.Placeholders.dohURL)
                     .labelsHidden()
-
             case .tls:
                 ThemeTextField(Strings.Global.Nouns.hostname, text: $draft.module.dotHostname, placeholder: Strings.Unlocalized.Placeholders.dotHostname)
                     .labelsHidden()
-
             @unknown default:
                 EmptyView()
             }
         }
-    }
-
-    var routingSection: some View {
-        Picker(Strings.Modules.Dns.routeThroughVpn, selection: $draft.module.routesThroughVPN) {
-            Text(Strings.Global.Nouns.default)
-                .tag(nil as Bool?)
-            Text(Strings.Global.Nouns.yes)
-                .tag(true as Bool?)
-            Text(Strings.Global.Nouns.no)
-                .tag(false as Bool?)
-        }
-        .themeContainerWithSingleEntry(
-            footer: Strings.Modules.Dns.RouteThroughVpn.footer)
-    }
-
-    var domainSection: some View {
-        Group {
-            ThemeTextField(Strings.Global.Nouns.domain, text: $draft.module.domainName ?? "", placeholder: Strings.Unlocalized.Placeholders.hostname)
-        }
-        .themeSection(header: Strings.Global.Nouns.domain)
+        .themeSection(header: Strings.Modules.Dns.CustomSettings.header)
     }
 
     var serversSection: some View {
@@ -106,11 +116,11 @@ private extension DNSView {
         )
     }
 
-    var searchDomainsSection: some View {
+    var domainsSection: some View {
         theme.listSection(
-            Strings.Entities.Dns.searchDomains,
-            addTitle: Strings.Modules.Dns.SearchDomains.add,
-            originalItems: $draft.module.searchDomains ?? [],
+            Strings.Entities.Dns.domains,
+            addTitle: Strings.Modules.Dns.Domains.add,
+            originalItems: $draft.module.domains ?? [],
             itemLabel: {
                 if $0 {
                     Text($1.wrappedValue)
@@ -124,6 +134,41 @@ private extension DNSView {
             }
         )
     }
+
+    var firstDomainToggle: some View {
+        Toggle(Strings.Modules.Dns.Domains.firstIsPrimary, isOn: $draft.module.isFirstDomainPrimary)
+            .themeContainerWithSingleEntry(footer: Strings.Modules.Dns.Domains.FirstIsPrimary.footer)
+            .disabled(!hasNonEmptyDomains)
+    }
+}
+
+private extension DNSView {
+    static let allProtocols: [DNSProtocol] = [
+        .cleartext,
+        .https,
+        .tls
+    ]
+
+    static let allPolicies: [DNSModule.DomainPolicy?] = [
+        .matchAndSearch,
+        nil
+    ]
+
+    var bindingToOnlyInDomains: Binding<Bool> {
+        Binding {
+            canApplyDomainPolicy ? draft.module.domainPolicy == .matchAndSearch : false
+        } set: {
+            draft.module.domainPolicy = $0 ? .matchAndSearch : nil
+        }
+    }
+
+    var canApplyDomainPolicy: Bool {
+        draft.module.inheritsVPN == true || draft.module.protocolType == .cleartext
+    }
+
+    var hasNonEmptyDomains: Bool {
+        draft.module.inheritsVPN == true || draft.module.domains?.contains { !$0.isEmpty } ?? false
+    }
 }
 
 // MARK: - Previews
@@ -134,7 +179,6 @@ private extension DNSView {
     module.servers = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
     module.dohURL = "https://doh.com/query"
     module.dotHostname = "tls.com"
-    module.domainName = "domain.com"
-    module.searchDomains = ["one.com", "two.net", "three.com"]
+    module.domains = ["one.com", "two.net", "three.com"]
     return module.preview()
 }

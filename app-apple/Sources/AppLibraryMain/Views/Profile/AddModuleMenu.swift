@@ -19,7 +19,7 @@ struct AddModuleMenu<Label>: View where Label: View {
     let label: () -> Label
 
     var body: some View {
-        let providerType: ModuleType = .provider
+        let providerType: ModuleType = .Provider
         let nonProviderTypes = moduleTypes.filter { $0 != providerType }
         let connectionModuleTypes = nonProviderTypes.filter(\.isConnection)
         let otherModuleTypes = nonProviderTypes.filter { !$0.isConnection }

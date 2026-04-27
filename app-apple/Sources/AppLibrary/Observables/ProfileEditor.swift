@@ -49,7 +49,7 @@ extension ProfileEditor {
         if target.supportsPaidFeatures {
             types = ModuleType.allCases
         } else {
-            types = [.onDemand, .openVPN, .wireGuard]
+            types = [.OnDemand, .OpenVPN, .WireGuard]
         }
         return types
             .filter {

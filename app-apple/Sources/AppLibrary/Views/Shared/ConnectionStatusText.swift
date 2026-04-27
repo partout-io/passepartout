@@ -32,7 +32,7 @@ private struct ConnectionStatusStaticText: View {
 
     private let color: Color
 
-    init(status: ABI.AppTunnelStatus, color: Color) {
+    init(status: ABI.AppProfileStatus, color: Color) {
         statusDescription = status.localizedDescription
         self.color = color
     }
@@ -76,7 +76,7 @@ private extension ConnectionStatusDynamicText {
         let status = tunnel.status(for: profileId)
         switch status {
         case .connected:
-            if let dataCount = tunnel.transfers[profileId] {
+            if let dataCount = tunnel.transfer(for: profileId) {
                 let down = dataCount.received.descriptionAsDataUnit
                 let up = dataCount.sent.descriptionAsDataUnit
                 return "↓\(down) ↑\(up)"

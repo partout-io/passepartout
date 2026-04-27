@@ -8,12 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Library versions
-set(PASSEPARTOUT_SHA1 ec6d68cd9)
 set(SWIFT_VERSION 6_2)
 set(JNI_DIR ${CMAKE_SOURCE_DIR}/libs)
 
 # Partout + dependencies (dynamic, will be loaded at runtime)
-file(GLOB PASSEPARTOUT_SOS "${JNI_DIR}/passepartout-${PASSEPARTOUT_SHA1}/${ANDROID_ABI}/lib*.so")
+file(GLOB PASSEPARTOUT_SOS "${JNI_DIR}/passepartout/${ANDROID_ABI}/lib*.so")
 set(ALL_SOS ${PASSEPARTOUT_SOS} ${SWIFT_SOS})
 
 foreach(SO_FILE ${ALL_SOS})
@@ -28,5 +27,8 @@ foreach(SO_FILE ${ALL_SOS})
 endforeach()
 
 # Native wrappings for JNI
-add_library(passepartout_wrapper SHARED src/wrapper.c)
+add_library(passepartout_wrapper SHARED
+        src/passepartout.c
+        src/helpers.c
+)
 target_link_libraries(passepartout_wrapper PRIVATE ${AUTO_LIBS})

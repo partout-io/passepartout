@@ -46,8 +46,9 @@ struct DiagnosticsView: View {
                 BetaSection()
             }
             liveLogSection
+            togglesSection
             profilesSection
-            if appConfiguration.distributionTarget.supportsAppGroups {
+            if appConfiguration.bundle.distributionTarget.supportsAppGroups {
                 tunnelLogsSection
             }
             if canReportIssue {
@@ -79,9 +80,16 @@ private extension DiagnosticsView {
                 Strings.Views.Diagnostics.Rows.tunnel,
                 to: .tunnelLog(title: Strings.Views.Diagnostics.Rows.tunnel, url: nil)
             )
-            LogsPrivateDataToggle()
         }
         .themeSection(header: Strings.Views.Diagnostics.Sections.live)
+    }
+
+    var togglesSection: some View {
+        Group {
+            ExtensiveLoggingToggle()
+            LogsPrivateDataToggle()
+        }
+        .themeContainer()
     }
 
     var profilesSection: some View {
@@ -148,15 +156,8 @@ private extension DiagnosticsView {
     var canReportIssue: Bool {
         AppCommandLine.contains(.withReportIssue) ||
             iapObservable.isEligibleForFeedback ||
-            appConfiguration.distributionTarget.canAlwaysReportIssue ||
-            isUsingExperimentalFeatures
-    }
-
-    var isUsingExperimentalFeatures: Bool {
-        !configObservable.activeFlags.isDisjoint(with: [
-            .neSocketUDP,
-            .neSocketTCP
-        ])
+            appConfiguration.bundle.distributionTarget.canAlwaysReportIssue ||
+            configObservable.isUsingExperimentalFeatures
     }
 
     func computedTunnelLogs() async -> [ABI.LogEntry] {
@@ -164,7 +165,7 @@ private extension DiagnosticsView {
     }
 
     func defaultTunnelLogs() async -> [ABI.LogEntry] {
-        let url = appConfiguration.urlForTunnelLog
+        let url = appConfiguration.bundle.urlForTunnelLog
         return await Task.detached {
             pspLogEntriesAvailable(at: url)
         }.value
@@ -186,7 +187,7 @@ private extension DiagnosticsView {
     }
 
     func removeTunnelLogs() {
-        pspLogEntriesPurge(at: appConfiguration.urlForTunnelLog)
+        pspLogEntriesPurge(at: appConfiguration.bundle.urlForTunnelLog)
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

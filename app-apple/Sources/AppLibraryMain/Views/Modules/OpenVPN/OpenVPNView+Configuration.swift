@@ -213,6 +213,13 @@ private extension OpenVPNView.ConfigurationView {
 
     var communicationSection: some View {
         themeModuleSection(if: communicationRows, header: Strings.Modules.Openvpn.communication) {
+            configuration.dataCiphers
+                .map {
+                    ThemeLongContentLink(
+                        Strings.Modules.Openvpn.dataCiphers,
+                        text: .constant($0.localizedDescription(style: .dataCiphers))
+                    )
+                }
             configuration.cipher
                 .map {
                     ThemeRow(Strings.Modules.Openvpn.cipher, value: $0.localizedDescription)
@@ -387,6 +394,7 @@ private extension OpenVPNView.ConfigurationView {
 
     var communicationRows: [Any?] {
         [
+            configuration.dataCiphers,
             configuration.cipher,
             configuration.digest,
             configuration.xorMethod

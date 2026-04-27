@@ -52,7 +52,7 @@ public struct AppMenu: View {
 
 private extension AppMenu {
     var versionItem: some View {
-        Text(appConfiguration.versionString)
+        Text(appConfiguration.bundle.versionString)
     }
 
     var updateButton: some View {
@@ -103,14 +103,14 @@ private extension AppMenu {
     }
 
     var quitButton: some View {
-        Button(Strings.Views.AppMenu.Items.quit(appConfiguration.displayName), action: quit)
+        Button(Strings.Views.AppMenu.Items.quit(appConfiguration.bundle.displayName), action: quit)
     }
 }
 
 private extension AppMenu {
     var isTunnelActionable: Bool {
         // TODO: #218, must be per-tunnel
-        [.connecting, .connected].contains(tunnelStatus)
+        [.connecting, .connected].contains(status)
     }
 
     func showApp(completion: (() -> Void)? = nil) {
@@ -191,7 +191,7 @@ private extension AppMenu {
 
 private extension AppMenu {
     // TODO: #218, must be per-tunnel
-    var tunnelStatus: ABI.AppTunnelStatus {
+    var status: ABI.AppProfileStatus {
         installedProfile?.status ?? .disconnected
     }
 

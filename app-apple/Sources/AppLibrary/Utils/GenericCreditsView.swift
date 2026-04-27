@@ -60,11 +60,17 @@ private extension GenericCreditsView {
         var body: some View {
             ZStack {
                 content.map { unwrapped in
-                    ScrollView {
-                        Text(unwrapped)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                            .monospaced()
-                            .padding()
+                    ScrollView(.vertical) {
+                        LazyVStack(alignment: .leading) {
+                            let rows = unwrapped.components(separatedBy: .newlines)
+                            ForEach(rows.indices, id: \.self) { index in
+                                Text(rows[index])
+                                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                                    .monospaced()
+                                    .scrollableOnTV(isText: true)
+                            }
+                        }
+                        .padding()
                     }
                 }
                 if content == nil {

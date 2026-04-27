@@ -6,15 +6,14 @@ import CommonLibrary
 import SwiftUI
 
 extension ModuleBuilder {
-
     @MainActor
     public var themeIcon: Theme.ImageName {
         switch moduleType {
-        case .openVPN, .wireGuard:
+        case .OpenVPN, .WireGuard:
             .moduleConnection
-        case .onDemand:
+        case .OnDemand:
             .moduleOnDemand
-        case .dns, .httpProxy, .ip:
+        case .DNS, .HTTPProxy, .IP:
             .moduleSettings
         default:
             .moduleSettings
@@ -23,7 +22,6 @@ extension ModuleBuilder {
 }
 
 extension TunnelStatus {
-
     @MainActor
     public func color(_ theme: Theme) -> Color {
         switch self {
@@ -58,7 +56,7 @@ extension TunnelObservable {
     }
 }
 
-private extension ABI.AppTunnelStatus {
+private extension ABI.AppProfileStatus {
     var imageName: Theme.ImageName? {
         switch self {
         case .connected:

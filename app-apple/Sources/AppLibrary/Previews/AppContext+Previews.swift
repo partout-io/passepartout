@@ -12,9 +12,12 @@ extension AppContext {
             buildTarget: .app
         )
         let logFormatter = DummyLogFormatter()
-        let registry = Registry()
-        let appEncoder = AppEncoder(registry: registry)
+        let registry = CodingRegistry(
+            registry: Registry(withKnown: true),
+            withLegacyEncoding: { false }
+        )
         let kvStore = InMemoryStore()
+        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let configManager = ConfigManager()
         let apiManager = APIManager(
             from: API.bundled,
@@ -41,7 +44,7 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { _ in
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelManager = TunnelManager(

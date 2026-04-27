@@ -38,19 +38,19 @@ extension ModuleBuilder {
 extension ModuleType: LocalizableEntity {
     public var localizedDescription: String {
         switch self {
-        case .openVPN:
+        case .OpenVPN:
             return Strings.Unlocalized.openVPN
-        case .wireGuard:
+        case .WireGuard:
             return Strings.Unlocalized.wireGuard
-        case .dns:
+        case .DNS:
             return Strings.Unlocalized.dns
-        case .httpProxy:
+        case .HTTPProxy:
             return Strings.Unlocalized.httpProxy
-        case .ip:
+        case .IP:
             return Strings.Global.Nouns.routing
-        case .onDemand:
+        case .OnDemand:
             return Strings.Global.Nouns.onDemand
-        case .provider:
+        case .Provider:
             return Strings.Global.Nouns.provider
         default:
             assertionFailure("Missing localization for ModuleType: \(rawValue)")

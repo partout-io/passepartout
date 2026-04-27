@@ -54,8 +54,6 @@ extension ThemeContainerModifier {
             content
         } header: {
             header.map(Text.init)
-        } footer: {
-            footer.map(Text.init)
         }
     }
 }
@@ -66,8 +64,6 @@ extension ThemeContainerEntryModifier {
             content
         } header: {
             header.map(Text.init)
-        } footer: {
-            subtitle.map(Text.init)
         }
     }
 }

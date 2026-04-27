@@ -1,0 +1,42 @@
+name: Try Xcode Export
+
+on:
+  push:
+    branches:
+      - bugfix/try-export
+
+env:
+  APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+  TESTFLIGHT_PREFACE: ${{ vars.TESTFLIGHT_PREFACE }}
+  APPLE_ROOT: app-apple
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  try_export:
+    name: Try Xcode export
+    runs-on: macos-26
+    strategy:
+      fail-fast: true
+      matrix:
+        platform: ["iOS"]
+    steps:
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true
+          certificates-url: ${{ vars.CERTIFICATES_URL }}
+          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Archive app
+        working-directory: ${{ env.APPLE_ROOT }}
+        run: |
+          ci/xcode-archive.sh ${{ matrix.platform }}
+      - name: Export archive
+        working-directory: ${{ env.APPLE_ROOT }}
+        run: |
+          ci/xcode-export.sh ${{ matrix.platform }}

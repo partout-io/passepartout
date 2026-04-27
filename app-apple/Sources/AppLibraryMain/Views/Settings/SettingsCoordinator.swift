@@ -74,7 +74,7 @@ extension SettingsCoordinator {
         case .version:
             Text(Strings.Global.Nouns.version)
 #if os(iOS)
-                .themeTrailingValue(appConfiguration.versionString)
+                .themeTrailingValue(appConfiguration.bundle.versionString)
 #endif
 
         default:

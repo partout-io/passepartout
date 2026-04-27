@@ -1,0 +1,86 @@
+set(CMAKE_C_FLAGS "-Wall -W -pedantic")
+set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
+
+# Define app target
+add_executable(passepartout "")
+set_target_properties(passepartout PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+)
+file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.cc)
+target_sources(passepartout PRIVATE ${APP_SOURCES})
+target_include_directories(passepartout PRIVATE
+    ${OUTPUT_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/include
+)
+target_link_libraries(passepartout PRIVATE passepartout_shared)
+
+# Define tunnel target
+add_executable(passepartout-tunnel "")
+set_target_properties(passepartout-tunnel PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+)
+file(GLOB_RECURSE TUNNEL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/*.c)
+target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
+target_include_directories(passepartout-tunnel PRIVATE
+    ${OUTPUT_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
+)
+target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
+
+# wxWidgets only required to build executable
+include("wx.cmake")
+
+if(APPLE)
+    # Mangle macOS @rpath
+    set_target_properties(passepartout PROPERTIES
+        MACOSX_RPATH ON
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@loader_path"
+        INSTALL_NAME_DIR "@rpath"
+    )
+    set_target_properties(passepartout-tunnel PROPERTIES
+        MACOSX_RPATH ON
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@loader_path"
+        INSTALL_NAME_DIR "@rpath"
+    )
+elseif(LINUX)
+    # Mangle Linux RPATH
+    set_target_properties(passepartout PROPERTIES
+        BUILD_RPATH "\$ORIGIN"
+        INSTALL_RPATH "\$ORIGIN"
+        SKIP_BUILD_RPATH OFF
+    )
+    set_target_properties(passepartout-tunnel PROPERTIES
+        BUILD_RPATH "\$ORIGIN"
+        INSTALL_RPATH "\$ORIGIN"
+        SKIP_BUILD_RPATH OFF
+    )
+elseif(WIN32)
+    # Build WinMain app
+    set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
+endif()
+
+# Strip executables except on Windows
+set(APP_DIR ${OUTPUT_DIR}/${DIST_DIR})
+if(WIN32)
+    set(STRIP rem)
+else()
+    set(STRIP ${CMAKE_STRIP})
+endif()
+add_custom_command(
+    TARGET passepartout
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:passepartout> ${APP_DIR}
+    COMMAND ${STRIP} ${APP_DIR}/passepartout
+)
+add_custom_command(
+    TARGET passepartout-tunnel
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:passepartout-tunnel> ${APP_DIR}
+    COMMAND ${STRIP} ${APP_DIR}/passepartout-tunnel
+)

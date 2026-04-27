@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/openssl-apple",
       "state" : {
-        "revision" : "5eaf588e6e46677779d23f184211ae7d406ec0e7",
-        "version" : "3.5.501"
+        "revision" : "4c152e7f49de4b0ae6e4059ba1425bd969ca4a84",
+        "version" : "3.6.300"
       }
     },
     {

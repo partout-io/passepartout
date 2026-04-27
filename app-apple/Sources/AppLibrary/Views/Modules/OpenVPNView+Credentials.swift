@@ -76,7 +76,7 @@ private extension OpenVPNCredentialsGroup {
             }
             .themeContainerEntry(subtitle: Strings.Modules.Openvpn.Credentials.Interactive.footer)
 
-            if appConfiguration.distributionTarget.supportsPaidFeatures &&
+            if appConfiguration.bundle.distributionTarget.supportsPaidFeatures &&
                 draft.module.isInteractive && !isAuthenticating {
                 Picker(Strings.Unlocalized.otp, selection: $builder.otpMethod) {
                     ForEach(otpMethods, id: \.self) {

@@ -22,10 +22,10 @@ public final class RegistryObservable {
     }
 
     public func implementation(for builder: any ModuleBuilder) -> ModuleImplementation? {
-        abi.implementation(for: builder.moduleHandler.id)
+        abi.implementation(for: builder.moduleType)
     }
 
     public func resolvedModule(_ module: ProviderModule) throws -> Module {
-        try abi.resolvedModule(module)
+        try abi.resolvedModule(module, in: nil)
     }
 }

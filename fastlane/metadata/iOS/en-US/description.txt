@@ -1,29 +1,31 @@
-Protect your online privacy with Passepartout, a smart VPN client seamlessly integrated with iOS, macOS, iPadOS, and tvOS. Passepartout is your all-in-one solution.
+Protect your online privacy with Passepartout, a smart VPN client seamlessly integrated with iOS, macOS, iPadOS, and tvOS.
 
-WHY CHOOSE PASSEPARTOUT?
+HOW PASSEPARTOUT WORKS
 
-Simply import .ovpn or .conf files to configure your personal VPN servers.
+Passepartout includes basic import and connection features. Additional features require an in-app purchase.
 
-FREE FEATURES:
+INCLUDED FEATURES:
 
 - Support for OpenVPN and WireGuard protocols.
 - OpenVPN obfuscation (using --scramble).
 - Shortcuts automation for streamlined operations.
 - Exclude endpoints for precise control.
 
-PAID FEATURES:
+REQUIRES AN IN-APP PURCHASE:
 
 - Support for Apple TV.
 - On-demand rules for smart, automated connections.
 - iCloud sharing for seamless multi-device use.
 - DoH/DoT for secure DNS queries.
+- Domain matching for split DNS.
+- Export and share profiles.
 - Custom routing for advanced configurations.
 - Interactive login with support for one-time passwords (OTP).
 - Non-VPN profiles (e.g. DNS/Proxy-only setups).
 
 FAMILY SHARING ENABLED
 
-Passepartout supports Family Sharing, so you can share your purchase with your family members.
+All purchases support Family Sharing, so you can share them with your family members.
 
 PRIVACY YOU CAN TRUST
 
@@ -34,8 +36,6 @@ Passepartout is built with transparency and privacy in mind:
 OPEN SOURCE AND COMMUNITY-DRIVEN
 
 Passepartout is open source and constantly evolving with the help of its community. Check out the project on GitHub: https://github.com/partout-io
-
-Take control of your VPN experience. Download Passepartout today and enjoy secure, private, and effortless connectivity across all your Apple devices!
 
 ~
 

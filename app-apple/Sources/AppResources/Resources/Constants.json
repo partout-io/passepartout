@@ -7,18 +7,17 @@
         "preferences": "Preferences-v3"
     },
     "websites": {
-        "home": "https://passepartoutvpn.app",
-        "subreddit": "https://www.reddit.com/r/passepartout/",
-        "eula": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
-        "appStoreDownload": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
-        "macDownload": "https://passepartoutvpn.app/#app-mac",
+        "homeURL": "https://passepartoutvpn.app",
+        "eulaURL": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
+        "appStoreDownloadURL": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
+        "macDownloadURL": "https://passepartoutvpn.app/#app-mac",
         "configTTL": 3600.0
     },
     "github": {
-        "discussions": "http://github.com/orgs/partout-io/discussions",
-        "issues": "https://github.com/partout-io/passepartout/issues",
-        "raw": "https://raw.githubusercontent.com/partout-io/passepartout",
-        "latestRelease": "https://api.github.com/repos/partout-io/passepartout/releases/latest"
+        "discussionsURL": "http://github.com/orgs/partout-io/discussions",
+        "issuesURL": "https://github.com/partout-io/passepartout/issues",
+        "rawURL": "https://raw.githubusercontent.com/partout-io/passepartout",
+        "latestReleaseURL": "https://api.github.com/repos/partout-io/passepartout/releases/latest"
     },
     "emails": {
         "domain": "passepartoutvpn.app",
@@ -39,15 +38,16 @@
         ],
         "verification": {
             "production": {
-                "delay": 120.0,
+                "defaultDelay": 120.0,
+                "tvDelay": 900.0,
                 "interval": 21600.0,
                 "attempts": 3,
                 "retryInterval": 300.0
             },
             "beta": {
-                "delay": 600.0,
-                "interval": 600.0,
-                "attempts": 3,
+                "defaultDelay": 1800.0,
+                "interval": 1800.0,
+                "attempts": 6,
                 "retryInterval": 10.0
             }
         }
@@ -66,8 +66,6 @@
         "passcodeLength": 6
     },
     "log": {
-        "appPath": "app.log",
-        "tunnelPath": "tunnel.log",
         "sinceLast": 86400.0,
         "options": {
             "maxLevel": 3,

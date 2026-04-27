@@ -1,0 +1,231 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+import Partout
+
+public final class TunnelABI: TunnelABIProtocol {
+    public struct IAP: Sendable {
+        let manager: IAPManager
+        let skipsPurchases: Bool
+        let verificationParameters: ABI.AppConstants.TunnelVerificationParameters
+        let usesRelaxedVerification: Bool
+
+        public init(
+            manager: IAPManager,
+            skipsPurchases: Bool,
+            verificationParameters: ABI.AppConstants.TunnelVerificationParameters,
+            usesRelaxedVerification: Bool
+        ) {
+            self.manager = manager
+            self.skipsPurchases = skipsPurchases
+            self.verificationParameters = verificationParameters
+            self.usesRelaxedVerification = usesRelaxedVerification
+        }
+    }
+
+    private var daemon: ConnectionDaemon?
+    private let environment: TunnelEnvironment
+    private let iap: IAP?
+    private let logFormatter: LogFormatter
+    private let originalProfile: Profile
+
+    nonisolated(unsafe)
+    private var verifierSubscription: Task<Void, Error>?
+
+    public init(
+        daemon: ConnectionDaemon,
+        environment: TunnelEnvironment,
+        iap: IAP?,
+        logFormatter: LogFormatter,
+        originalProfile: Profile
+    ) {
+        self.daemon = daemon
+        self.environment = environment
+        self.iap = iap
+        self.logFormatter = logFormatter
+        self.originalProfile = originalProfile
+
+        // Disable if skips purchases
+        if let iap {
+            iap.manager.isEnabled = !iap.skipsPurchases
+        }
+    }
+
+    public func start(isInteractive: Bool) async throws {
+        guard let daemon else { return }
+        try trackContext()
+
+        do {
+            // Check hold flag and hang the tunnel if set
+            if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
+                pspLog(.core, .info, "Tunnel is on hold")
+                guard isInteractive else {
+                    pspLog(.core, .error, "Tunnel was started non-interactively, hang here")
+                    await daemon.hold()
+                    return
+                }
+                pspLog(.core, .info, "Tunnel was started interactively, clear hold flag")
+                environment.removeEnvironmentValue(forKey: TunnelEnvironmentKeys.holdFlag)
+            }
+
+            // Start the tunnel
+            try await daemon.start()
+
+            // Do not run the verification loop if IAPs are not supported
+            guard let iap else {
+                // Just ensure that the profile does not require any paid feature
+                guard originalProfile.features.isEmpty else {
+                    throw PartoutError(.App.ineligibleProfile)
+                }
+                return
+            }
+
+            // Prepare for periodic receipt verification
+            let params = iap.verificationParameters
+            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds (\(iap.usesRelaxedVerification ? "relaxed" : "strict"))")
+
+            // Do not wait for this to start the tunnel. If on-demand is
+            // enabled, networking will stall and StoreKit network calls may
+            // produce a deadlock (see #1070)
+            verifierSubscription = Task { [weak self] in
+                guard let self else { return }
+                try await Task.sleep(for: .seconds(params.delay))
+                guard !Task.isCancelled else { return }
+                await verifyEligibility(
+                    of: originalProfile,
+                    iapManager: iap.manager,
+                    environment: environment,
+                    params: params,
+                    isRelaxed: iap.usesRelaxedVerification
+                )
+            }
+        } catch {
+            pspLog(.core, .fault, "Unable to start tunnel: \(error)")
+            flushLogs()
+            throw error
+        }
+    }
+
+    public func stop() async {
+        guard let daemon else { return }
+        verifierSubscription?.cancel()
+        await daemon.stop()
+        flushLogs()
+        untrackContext()
+        self.daemon = nil
+    }
+
+    public func sendMessage(_ messageData: Data) async -> Data? {
+        guard let daemon else { return nil }
+        pspLog(.core, .debug, "Handle tunnel message")
+        do {
+            let input = try JSONDecoder().decode(Message.Input.self, from: messageData)
+            let output = try await daemon.sendMessage(input)
+            let encodedOutput = try JSONEncoder().encode(output)
+            switch input {
+            case .environment:
+                break
+            default:
+                pspLog(.core, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
+            }
+            return encodedOutput
+        } catch {
+            pspLog(.core, .error, "Unable to decode message: \(messageData)")
+            return nil
+        }
+    }
+
+    public nonisolated func cancel(_ error: Error?) {
+        flushLogs()
+    }
+
+    public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
+        pspLog(category, level, message)
+    }
+
+    public nonisolated func flushLogs() {
+        pspLogFlush()
+    }
+}
+
+// MARK: - Tracking and Logging
+
+private extension TunnelABI {
+    static var activeTunnels: Set<Profile.ID> = [] {
+        didSet {
+            pspLog(.core, .info, "Active tunnels: \(activeTunnels)")
+        }
+    }
+
+    func trackContext() throws {
+        guard let daemon else { return }
+        // TODO: #218, keep this until supported
+        guard Self.activeTunnels.isEmpty else {
+            throw PartoutError(.App.multipleTunnels)
+        }
+        pspLog(.core, .info, "Track context: \(daemon.profile.id)")
+        Self.activeTunnels.insert(daemon.profile.id)
+    }
+
+    func untrackContext() {
+        guard let daemon else { return }
+        pspLog(.core, .info, "Untrack context: \(daemon.profile.id)")
+        Self.activeTunnels.remove(daemon.profile.id)
+    }
+}
+
+// MARK: - Receipt verification
+
+private extension TunnelABI {
+    func verifyEligibility(
+        of profile: Profile,
+        iapManager: IAPManager,
+        environment: TunnelEnvironment,
+        params: ABI.AppConstants.TunnelVerificationParameters,
+        isRelaxed: Bool
+    ) async {
+        var attempts = params.attempts
+        while true {
+            guard let daemon else { return }
+            guard !Task.isCancelled else { return }
+            do {
+                pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
+                await iapManager.reloadReceipt()
+                try iapManager.verify(profile)
+            } catch {
+                if isRelaxed {
+                    // Mitigate the StoreKit inability to report errors, sometimes it
+                    // would just return empty products, e.g. on network failure. In those
+                    // cases, retry a few times before failing
+                    if attempts > 0 {
+                        attempts -= 1
+                        let products = iapManager.purchasedProducts
+                        pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
+                        try? await Task.sleep(interval: params.retryInterval)
+                        continue
+                    }
+                }
+
+                let error = PartoutError(.App.ineligibleProfile)
+                environment.setEnvironmentValue(error.code, forKey: TunnelEnvironmentKeys.lastErrorCode)
+                pspLog(.iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
+
+                // Hold on failure to prevent on-demand reconnection
+                environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
+                await daemon.hold()
+                return
+            }
+
+            pspLog(.iap, .info, "Will verify profile again in \(params.interval) seconds...")
+            try? await Task.sleep(interval: params.interval)
+
+            // On successful verification, reset attempts for the next verification
+            attempts = params.attempts
+        }
+    }
+}
+
+private extension TunnelEnvironmentKeys {
+    static let holdFlag = TunnelEnvironmentKey<Bool>("Tunnel.onHold")
+}

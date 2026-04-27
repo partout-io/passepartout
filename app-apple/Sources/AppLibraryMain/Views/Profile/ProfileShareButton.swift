@@ -23,7 +23,7 @@ struct ProfileShareButton: View {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
-            pspLog(.profiles, .error, "Unable to build profile from editor: \(error)")
+            pspLog(.profiles, .debug, "Unable to build profile from editor: \(error)")
             return nil
         }
     }

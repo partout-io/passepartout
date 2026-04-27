@@ -26,6 +26,19 @@ extension OpenVPN.Cipher: LocalizableEntity {
     }
 }
 
+extension Array: StyledLocalizableEntity where Element == OpenVPN.Cipher {
+    public enum Style {
+        case dataCiphers
+    }
+
+    public func localizedDescription(style: Style) -> String {
+        switch style {
+        case .dataCiphers:
+            map(\.rawValue).joined(separator: ":")
+        }
+    }
+}
+
 extension OpenVPN.Digest: LocalizableEntity {
     public var localizedDescription: String {
         description
@@ -195,6 +208,8 @@ private extension Optional where Wrapped == OpenVPN.TLSWrap {
             return "--tls-auth"
         case .crypt:
             return "--tls-crypt"
+        case .cryptV2:
+            return "--tls-crypt-v2"
         @unknown default:
             return ""
         }

@@ -5,7 +5,6 @@
 "views.settings.links.title" = "Links";
 "views.settings.links.sections.support" = "Support";
 "views.settings.links.sections.web" = "Web";
-"views.settings.links.rows.join_community" = "Join community";
 "views.settings.links.rows.open_discussion" = "Start a discussion";
 "views.settings.links.rows.write_review" = "Write a review";
 "views.settings.links.rows.home_page" = "Home page";
@@ -43,7 +42,10 @@
 "views.diagnostics.sections.tunnel" = "Tunnel logs";
 "views.diagnostics.rows.app" = "App";
 "views.diagnostics.rows.tunnel" = "Tunnel";
+"views.diagnostics.rows.extensive_logging" = "Extensive logging";
+"views.diagnostics.rows.extensive_logging.subtitle" = "Very, very verbose. Keep this off except for troubleshooting.";
 "views.diagnostics.rows.include_private_data" = "Include private data";
+"views.diagnostics.rows.include_private_data.subtitle" = "Only use for local inspection.";
 "views.diagnostics.rows.remove_tunnel_logs" = "Delete all logs";
 "views.diagnostics.openvpn.rows.server_configuration" = "Server configuration";
 "views.diagnostics.report_issue.title" = "Report issue";
@@ -183,10 +185,18 @@
 "modules.general.rows.enforce_tunnel" = "Enforce tunnel";
 "modules.general.rows.enforce_tunnel.footer" = "Try to send most network traffic over the tunnel. Beware that this may degrade your connectivity.";
 
-"modules.dns.route_through_vpn" = "Route through VPN";
-"modules.dns.route_through_vpn.footer" = "If enabled, DNS queries will be routed through the VPN tunnel.";
+"modules.dns.policy.inherits_vpn" = "Inherit from VPN";
+"modules.dns.policy.inherits_vpn.footer" = "Reuse the DNS settings provided by the VPN.";
+"modules.dns.policy.use_only" = "Only for configured domains";
+"modules.dns.policy.use_only.footer" = "Use the VPN DNS resolver only for the configured domains (split DNS). This works as intended only when the VPN is not the default gateway.";
+"modules.dns.policy.route_through_vpn" = "Route through VPN";
+"modules.dns.policy.route_through_vpn.footer" = "If enabled, DNS queries will be routed through the VPN tunnel.";
+"modules.dns.custom_settings.header" = "Custom settings";
 "modules.dns.servers.add" = "Add address";
-"modules.dns.search_domains.add" = "Add domain";
+"modules.dns.domains.add" = "Add domain";
+"modules.dns.domains.first_is_primary" = "First is primary";
+"modules.dns.domains.first_is_primary.footer" = "Use the first domain as the primary domain.";
+
 "modules.http_proxy.bypass_domains.add" = "Add bypass domain";
 
 "modules.ip.address.footer" = "Leave empty to assign automatically.";
@@ -214,6 +224,7 @@
 "modules.openvpn.credentials.guidance.link" = "See your OpenVPN credentials";
 "modules.openvpn.remotes" = "Remote endpoints";
 "modules.openvpn.communication" = "Communication";
+"modules.openvpn.data_ciphers" = "Data ciphers";
 "modules.openvpn.cipher" = "Cipher";
 "modules.openvpn.digest" = "Digest";
 "modules.openvpn.compression" = "Compression";
@@ -231,6 +242,7 @@
 
 "modules.wireguard.private_key.generate" = "Generate new key";
 "modules.wireguard.interface" = "Interface";
+"modules.wireguard.interface.dns.footer" = "Specifying empty servers will discard these DNS settings.";
 "modules.wireguard.peer" = "Peer #%d";
 "modules.wireguard.peer.add" = "Add peer";
 "modules.wireguard.peer.delete" = "Delete peer";
@@ -239,9 +251,6 @@
 
 // MARK: Views (Onboarding)
 
-"onboarding.community.message" = "Did you know that %@ has a subreddit? Subscribe for updates or to discuss issues, features, new platforms or whatever you like.\n\nIt's also a great way to show you care about this project.";
-"onboarding.community.subscribe" = "Subscribe now";
-"onboarding.community.dismiss" = "No, thanks";
 "onboarding.migrate_3_2_3.message" = "Version 3.2.3 changed the way providers are stored.";
 "onboarding.migrate_3_5_15.message" = "Version 3.5.15 changed the way profiles are stored.";
 "onboarding.migrate.message" = "Make sure to upgrade all your devices to the latest version to use the new profiles.";
@@ -257,6 +266,7 @@
 // MARK: Entities (Modules)
 
 "entities.dns.servers" = "Servers";
+"entities.dns.domains" = "Domains";
 "entities.dns.search_domains" = "Search domains";
 
 "entities.dns_protocol.cleartext" = "Cleartext";
@@ -275,11 +285,6 @@
 "entities.openvpn.otp_method.encode" = "Encode";
 
 // MARK: Entities (Library)
-
-"entities.ui.config_flag.neSocketUDP" = "Modern UDP";
-"entities.ui.config_flag.neSocketTCP" = "Modern TCP";
-"entities.ui.config_flag.ovpnCrossConnection" = "Cross-platform OpenVPN";
-"entities.ui.config_flag.wgCrossConnection" = "Cross-platform WireGuard";
 
 "entities.ui.system_appearance.system" = "System";
 "entities.ui.system_appearance.light" = "Light";
@@ -326,6 +331,7 @@
 "global.actions.save" = "Save";
 "global.actions.select" = "Select";
 "global.actions.send" = "Send";
+"global.actions.share" = "Share";
 "global.actions.show" = "Show";
 "global.actions.update" = "Update";
 
@@ -459,6 +465,25 @@
 "errors.tunnel.routing" = "Missing routing";
 "errors.tunnel.shutdown" = "Server shutdown";
 "errors.tunnel.tls" = "TLS failed";
+
+"errors.modules.DNS.emptyServers" = "Empty servers.";
+"errors.modules.DNS.ipDomains" = "Domains must be hostnames.";
+"errors.modules.DNS.nonIPServers" = "Servers must be IP addresses.";
+"errors.modules.DNS.invalidDoHURL" = "Invalid DoH URL.";
+"errors.modules.DNS.emptyDoTHostname" = "Empty DoT hostname.";
+"errors.modules.HTTPProxy.address" = "Invalid HTTP address.";
+"errors.modules.HTTPProxy.secureAddress" = "Invalid HTTPS address.";
+"errors.modules.HTTPProxy.pacURLString" = "Invalid PAC URL.";
+"errors.modules.HTTPProxy.bypassDomains" = "Invalid bypass domains.";
+"errors.modules.OpenVPN.ca" = "Missing CA.";
+"errors.modules.OpenVPN.remotes" = "Empty remotes.";
+"errors.modules.WireGuard.privateKey" = "Invalid private key.";
+"errors.modules.WireGuard.addresses" = "Invalid address.";
+"errors.modules.WireGuard.publicKey" = "Invalid public key.";
+"errors.modules.WireGuard.preSharedKey" = "Invalid preshared key.";
+"errors.modules.WireGuard.endpoint" = "Invalid endpoint.";
+"errors.modules.WireGuard.allowedIPs" = "Invalid allowed IPs.";
+"errors.modules.generic" = "Invalid fields.";
 
 // MARK: Global (Theme)
 

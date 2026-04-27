@@ -48,14 +48,13 @@ public struct PreferencesView: View {
 #endif
             pinActiveProfileSection
             dnsFallsBackSection
-            if appConfiguration.distributionTarget.supportsIAP {
+            if appConfiguration.bundle.distributionTarget.supportsIAP {
                 enablesPurchasesSection
             }
-            if appConfiguration.distributionTarget.supportsIAP &&
-                configObservable.isActive(.allowsRelaxedVerification) {
+            if showsRelaxedVerification {
                 relaxedVerificationSection
             }
-            if appConfiguration.distributionTarget.supportsCloudKit {
+            if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
             NavigationLink(advancedTitle, destination: advancedView)
@@ -179,13 +178,12 @@ public struct PreferencesView: View {
     }
 
     public var body: some View {
-        Group {
-            if appConfiguration.distributionTarget.supportsIAP &&
-                configObservable.isActive(.allowsRelaxedVerification) {
+        if showsRelaxedVerification {
+            Group {
                 relaxedVerificationToggle
             }
+            .themeSection(header: Strings.Global.Nouns.preferences)
         }
-        .themeSection(header: Strings.Global.Nouns.preferences)
     }
 }
 
@@ -196,6 +194,14 @@ private extension PreferencesView {
 }
 
 #endif
+
+private extension PreferencesView {
+    var showsRelaxedVerification: Bool {
+        appConfiguration.bundle.distributionTarget.supportsIAP &&
+            configObservable.isActive(.allowsRelaxedVerification) &&
+            !configObservable.isActive(.forcesRelaxedVerification)
+    }
+}
 
 #Preview {
     PreferencesView(profileObservable: .forPreviews)

@@ -4,4 +4,4 @@
 
 import CommonLibrary
 
-public typealias LogFormatterBlock = @Sendable (ABI.AppLogLine) -> String
+public typealias LogFormatterBlock = @Sendable (ABI.LogLine) -> String

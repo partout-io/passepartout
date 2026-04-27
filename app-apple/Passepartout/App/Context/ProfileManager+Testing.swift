@@ -6,7 +6,7 @@ import AppLibrary
 import CommonLibrary
 
 extension ProfileManager {
-    public static func forUITesting(withRegistry registry: Registry, processor: ProfileProcessor) -> ProfileManager {
+    public static func forUITesting(withRegistry registry: CodingRegistry, processor: ProfileProcessor) -> ProfileManager {
         let repository = InMemoryProfileRepository()
         let remoteRepository = InMemoryProfileRepository()
         let manager = ProfileManager(processor: processor, repository: repository)
@@ -28,7 +28,7 @@ extension ProfileManager {
                         if parameters.name == "Hide.me" {
                             if var ovpnBuilder = moduleBuilder as? ProviderModule.Builder {
                                 ovpnBuilder.providerId = parameters.providerId
-                                ovpnBuilder.providerModuleType = .openVPN
+                                ovpnBuilder.providerModuleType = .OpenVPN
                                 ovpnBuilder.entity = mockHideMeEntity
                                 let credentials = OpenVPN.Credentials.Builder(username: "foo", password: "bar").build()
                                 var options = OpenVPNProviderTemplate.Options()
@@ -47,11 +47,11 @@ extension ProfileManager {
                                 ]
                                 moduleBuilder = onDemandBuilder
                             } else if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
-                                dnsBuilder.protocolType = .https
-                                dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
+//                                dnsBuilder.protocolType = .https
+//                                dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
+                                dnsBuilder.protocolType = .cleartext
                                 dnsBuilder.servers = ["1.1.1.1", "1.0.0.1"]
-                                dnsBuilder.domainName = "my-domain.com"
-                                dnsBuilder.searchDomains = ["search-one.com", "search-two.org"]
+                                dnsBuilder.domains = ["my-domain.com", "search-one.com", "search-two.org"]
                                 moduleBuilder = dnsBuilder
                             }
                         }
@@ -75,6 +75,11 @@ extension ProfileManager {
                             cfgBuilder.peers = [.init(publicKey: "")]
                             wgBuilder.configurationBuilder = cfgBuilder
                             moduleBuilder = wgBuilder
+                        }
+
+                        if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
+                            dnsBuilder.servers = ["1.1.1.1"]
+                            moduleBuilder = dnsBuilder
                         }
 
                         let module = try moduleBuilder.build()
@@ -120,12 +125,12 @@ private extension ProfileManager {
     }
 
     static let mockParameters: [Parameters] = [
-        Parameters("CloudFlare DoT", false, false, [.dns]),
-        Parameters("Coffee VPN", true, false, [.wireGuard, .onDemand]),
-        Parameters("Hide.me", true, true, [.provider, .onDemand, .dns], .hideme),
-        Parameters("My VPS", true, true, [.openVPN, .onDemand]),
-        Parameters("Office", true, false, [.onDemand, .httpProxy]),
-        Parameters("Personal DoH", false, false, [.dns, .onDemand])
+        Parameters("CloudFlare DoT", false, false, [.DNS]),
+        Parameters("Coffee VPN", true, false, [.WireGuard]),
+        Parameters("Hide.me", true, true, [.Provider, .OnDemand, .DNS], .hideme),
+        Parameters("My VPS", true, true, [.OpenVPN, .OnDemand]),
+        Parameters("Office", true, false, [.OnDemand, .HTTPProxy]),
+        Parameters("Personal DoH", false, false, [.DNS, .OnDemand])
     ]
 
     static var mockHideMeEntity: ProviderEntity {
@@ -141,7 +146,7 @@ private extension ProfileManager {
                 providerId: .hideme,
                 presetId: "default",
                 description: "Default",
-                moduleType: .openVPN,
+                moduleType: .OpenVPN,
                 templateData: templateData
             )
 
@@ -157,7 +162,7 @@ private extension ProfileManager {
                     serverId: "be-v4",
                     hostname: "be-v4.hideservers.net",
                     ipAddresses: nil,
-                    supportedModuleTypes: [.openVPN],
+                    supportedModuleTypes: [.OpenVPN],
                     supportedPresetIds: nil
                 ),
                 preset: preset,

@@ -54,8 +54,8 @@ public final class AppContext {
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
-        let ctx = ABI.EventContext(pointer: opaqueEnvironment)
-        abi.registerEvents(context: ctx, callback: Self.abiCallback)
+        let handler = ABI.EventHandler(context: opaqueEnvironment, callback: Self.abiCallback)
+        abi.registerEvents(handler)
     }
 }
 
@@ -67,27 +67,27 @@ extension AppContext {
 
 private extension AppContext {
     static nonisolated func abiCallback(
-        ctx: ABI.EventContext?,
+        ctx: UnsafeMutableRawPointer?,
         event mainEvent: ABI.Event
     ) {
-        guard let opaqueEnvironment = ctx?.pointer else {
+        guard let opaqueContext = ctx else {
             fatalError("Missing AppContext from ctx. Bad arguments to abi.registerEvents?")
         }
-        let env = Unmanaged<AppContext>.fromOpaque(opaqueEnvironment).takeUnretainedValue()
+        let appContext = Unmanaged<AppContext>.fromOpaque(opaqueContext).takeUnretainedValue()
         Task { @MainActor in
             switch mainEvent {
             case .config(let event):
-                env.configObservable.onUpdate(event)
+                appContext.configObservable.onUpdate(event)
             case .iap(let event):
-                env.iapObservable.onUpdate(event)
+                appContext.iapObservable.onUpdate(event)
             case .profile(let event):
-                env.profileObservable.onUpdate(event)
+                appContext.profileObservable.onUpdate(event)
             case .tunnel(let event):
-                env.tunnelObservable.onUpdate(event)
+                appContext.tunnelObservable.onUpdate(event)
             case .version(let event):
-                env.versionObservable.onUpdate(event)
+                appContext.versionObservable.onUpdate(event)
             case .webReceiver(let event):
-                env.webReceiverObservable.onUpdate(event)
+                appContext.webReceiverObservable.onUpdate(event)
             }
         }
     }

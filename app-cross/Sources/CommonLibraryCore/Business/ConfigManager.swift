@@ -1,0 +1,104 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+import Dispatch
+import Partout
+
+@BusinessActor
+public final class ConfigManager {
+    private let queue = DispatchQueue(label: "ConfigManager")
+
+    private let strategy: ConfigManagerStrategy?
+
+    private let buildNumber: Int
+
+    private var bundle: ConfigBundle? {
+        didSet {
+            // Take a snapshot of the active flags
+            queue.sync {
+                synchronousActiveFlags = Set(ABI.ConfigFlag.allCases.filter {
+                    isActive($0)
+                })
+                let data = bundle?.map
+                    .filter { synchronousActiveFlags.contains($0.key) }
+                    .compactMapValues(\.data) ?? [:]
+                didChange.send(.refresh(.init(
+                    flags: synchronousActiveFlags,
+                    data: data
+                )))
+            }
+        }
+    }
+
+    nonisolated(unsafe)
+    private var synchronousActiveFlags: Set<ABI.ConfigFlag> = []
+
+    private var isPending = false
+
+    public nonisolated let didChange: PassthroughStream<ABI.ConfigEvent>
+
+    public nonisolated init() {
+        strategy = nil
+        buildNumber = .max // Activate flags regardless of .minBuild
+        didChange = PassthroughStream()
+    }
+
+    public nonisolated init(strategy: ConfigManagerStrategy, buildNumber: Int) {
+        self.strategy = strategy
+        self.buildNumber = buildNumber
+        didChange = PassthroughStream()
+    }
+
+    // TODO: #1447, handle 0-100 deployment values with local random value
+    public func refreshBundle() async {
+        guard let strategy else {
+            return
+        }
+        guard !isPending else {
+            return
+        }
+        isPending = true
+        defer {
+            isPending = false
+        }
+        do {
+            pspLog(.core, .debug, "Config: refreshing bundle...")
+            let newBundle = try await strategy.bundle()
+            bundle = newBundle
+            let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
+            pspLog(.core, .info, "Config: active flags = \(activeFlags)")
+            pspLog(.core, .debug, "Config: \(newBundle)")
+        } catch ABI.AppError.rateLimit {
+            pspLog(.core, .debug, "Config: TTL")
+        } catch {
+            pspLog(.core, .error, "Unable to refresh config flags: \(error)")
+        }
+    }
+
+    public func isActive(_ flag: ABI.ConfigFlag) -> Bool {
+        activeMap(for: flag) != nil
+    }
+
+    public func data(for flag: ABI.ConfigFlag) -> JSON? {
+        activeMap(for: flag)?.data
+    }
+
+    public nonisolated var activeFlags: Set<ABI.ConfigFlag> {
+        queue.sync {
+            synchronousActiveFlags
+        }
+    }
+}
+
+private extension ConfigManager {
+    func activeMap(for flag: ABI.ConfigFlag) -> ConfigBundle.Config? {
+        guard let map = bundle?.map[flag] else {
+            return nil
+        }
+        guard map.isActive(withBuild: buildNumber) else {
+            return nil
+        }
+        return map
+    }
+}

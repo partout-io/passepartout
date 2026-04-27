@@ -34,7 +34,7 @@ struct ProfileExportButton: View {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
-            pspLog(.profiles, .error, "Unable to build profile from editor: \(error)")
+            pspLog(.profiles, .debug, "Unable to build profile from editor: \(error)")
             return nil
         }
     }
@@ -44,7 +44,7 @@ struct ProfileExportButton: View {
             .disabled(!iapObservable.isEligible(for: .sharing))
             .fileExporter(
                 isPresented: $viewModel.isExporting,
-                document: viewModel.jsonString.map(JSONFile.init(string:)),
+                document: viewModel.jsonString.map(TextFile.init),
                 contentType: .json,
                 defaultFilename: appEncoder.defaultFilename(for: profile),
                 onCompletion: { _ in }

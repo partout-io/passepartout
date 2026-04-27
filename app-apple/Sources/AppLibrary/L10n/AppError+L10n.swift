@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppStrings
 import CommonLibrary
 import Foundation
 
@@ -11,68 +12,50 @@ extension ABI.AppError: @retroactive LocalizedError {
         switch self {
         case .couldNotLaunch(let reason):
             return reason.localizedDescription
-
         case .emptyProducts:
             return V.emptyProducts
-
         case .emptyProfileName:
             return V.emptyProfileName
-
         case .ineligibleProfile:
             return nil
-
         case .interactiveLogin:
             return nil
-
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
-
         case .missingProviderEntity:
             return V.missingProviderEntity
-
         case .moduleRequiresConnection(let module):
-            let connectionTypes = ModuleType.allCases.filter(\.isConnection)
             return V.moduleRequiresConnection(
                 module.moduleType.localizedDescription,
-                connectionTypes
+                ModuleType.connectionTypes
                     .map(\.localizedDescription)
                     .joined(separator: ", ")
             )
-
         case .notFound:
             return nil
-
         case .partout(let error):
             return error.localizedDescription
-
         case .permissionDenied:
             return V.permissionDenied
-
-        // handled manually
         case .rateLimit:
+            // Handled manually
             return nil
-
         case .systemExtension:
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
-
         case .timeout:
+            // Handled manually
             return Strings.Errors.App.Partout.timeout
-
-        // handled manually
         case .unexpectedResponse:
+            // Handled manually
             return nil
-
         case .unknown:
             return nil
-
-        // handled manually
         case .verificationReceiptIsLoading, .verificationRequiredFeatures:
+            // Handled manually
             return nil
-
         case .webReceiver:
             return Strings.Errors.App.webReceiver
-
         case .webUploader(let status, let error):
             switch status {
             case 403:
@@ -104,18 +87,12 @@ extension PartoutError: @retroactive LocalizedError {
             }
             return V.incompleteModule(builder.moduleType.localizedDescription)
 
-        case .invalidFields:
-            let fields = (userInfo as? [String: String?])
-                .map {
-                    $0.map {
-                        "\($0)=\($1?.description ?? "")"
-                    }
-                    .joined(separator: ",")
-                }
-
-            return [V.invalidFields, fields]
-                .compactMap { $0 }
-                .joined(separator: " ")
+        case .invalidField:
+            guard let userInfo = userInfo as? PartoutError.ModuleField else {
+                return Strings.Errors.Modules.generic
+            }
+            let stringKey = "errors.modules.\(userInfo.key)"
+            return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
 
         case .noActiveModules:
             return V.noActiveModules
