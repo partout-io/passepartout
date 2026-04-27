@@ -1,6 +1,6 @@
 {
     "bsdSockets": {
-        "rate": 0
+        "rate": 100
     },
     "wgCrossV2": {
         "rate": 100

@@ -42,7 +42,7 @@ private extension OpenVPNImplementationBuilder {
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
 #if !PSP_CROSS
         let flags = configBlock()
-        if flags.contains(.ovpnCrossV2) {
+        if flags.contains(.ovpnCrossV2) || flags.contains(.bsdSockets) {
             return try OpenVPNConnectionV2(
                 ctx,
                 parameters: parameters,

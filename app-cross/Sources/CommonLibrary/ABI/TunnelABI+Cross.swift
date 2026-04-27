@@ -55,7 +55,7 @@ extension TunnelABI {
 
         // Create platform-specific objects
         let controller = try VirtualTunnelController(ctx, impl: jniWrapper)
-        let factory = POSIXInterfaceFactory(ctx) {
+        let factory = BSDSocketFactory(ctx) {
             // FIXME: #1656, C ABI, better path block
             PassthroughStream()
         }

@@ -75,7 +75,7 @@ extension TunnelABI {
         // Create daemon
         let factory: NetworkInterfaceFactory
         if preferences.isFlagEnabled(.bsdSockets) {
-            factory = POSIXInterfaceFactory(ctx) {
+            factory = BSDSocketFactory(ctx) {
                 // FIXME: #190, BetterPathBlock via NWPathMonitor
                 PassthroughStream()
             }
