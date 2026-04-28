@@ -16,9 +16,11 @@ char *psp_readfile(const char *rel_path, const char *parent);
 /* Events callback. */
 typedef void (*psp_event_callback)(void *event_ctx, const char *event);
 
-/* Completion callbacks. */
-/* Success: code == 0. */
-typedef void (*psp_abi_completion)(void *ctx, int code, const char *error_message);
+/* Completion callback.
+ * - Success: code == 0, data = JSON (optional)
+ * - Error:   code != 0, data = String
+ */
+typedef void (*psp_abi_completion)(void *ctx, int code, const char *data);
 
 /* App initialization. */
 typedef struct {
