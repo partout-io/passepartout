@@ -44,7 +44,8 @@ typedef struct {
 } psp_app_init_args;
 
 /* App functions. */
-void psp_app_init(const psp_app_init_args *args);
+void psp_app_init(const psp_app_init_args *args, void *ctx, psp_abi_completion completion);
+void psp_app_deinit(void *ctx, psp_abi_completion completion);
 void psp_app_on_foreground(void);
 void psp_app_import_profile_path(const char *path, void *ctx, psp_abi_completion completion);
 void psp_app_import_profile_text(const char *text, const char *filename, void *ctx, psp_abi_completion completion);

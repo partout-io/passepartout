@@ -14,8 +14,10 @@ class NativeLibraryWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
-        eventHandler: ABIEventHandler
+        eventHandler: ABIEventHandler,
+        completion: ABICompletionCallback
     )
+    external fun appDeinit(completion: ABICompletionCallback)
     external fun appOnForeground()
     external fun appImportProfileText(
         text: String,

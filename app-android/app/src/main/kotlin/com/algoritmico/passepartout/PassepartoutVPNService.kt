@@ -88,6 +88,7 @@ class PassepartoutVPNService: VpnService(), ABIConnectionStatusHandler {
                             stopForeground(STOP_FOREGROUND_REMOVE)
                             stopSelf()
                             isRunning = false
+                            library.tunnelRelease()
                         }
                     }
                 }
@@ -113,6 +114,7 @@ class PassepartoutVPNService: VpnService(), ABIConnectionStatusHandler {
                         stopSelf()
                         serviceScope.cancel()
                         isRunning = false
+                        library.tunnelRelease()
                     }
                 }
             }

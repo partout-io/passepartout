@@ -79,7 +79,8 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
             constants,
             profilesDir,
             cachePath,
-            this
+            this,
+            { _, _ -> }
         )
         tunnelStrategy = AndroidTunnelStrategy(
             context = this,
@@ -104,6 +105,13 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
     override fun onStart() {
         super.onStart()
         library.appOnForeground()
+    }
+
+    override fun onDestroy() {
+        library.appDeinit { _, _ ->
+            library.appRelease()
+        }
+        super.onDestroy()
     }
 
     fun startVpnService() {

@@ -37,7 +37,8 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
         jstring constants,
         jstring profilesDir,
         jstring cacheDir,
-        jobject eventHandler
+        jobject eventHandler,
+        jobject completion
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
@@ -55,12 +56,21 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
     args.cache_dir = cCacheDir;
     args.bindings.event_ctx = app_references.eventHandler;
     args.bindings.event_cb = abi_event_handler_proxy;
-    psp_app_init(&args);
+    psp_app_init(&args, abi_handler_create(env, completion), abi_completion_proxy);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
     (*env)->ReleaseStringUTFChars(env, profilesDir, cProfilesDir);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appDeinit(
+        JNIEnv *env,
+        jobject thiz,
+        jobject completion
+) {
+    psp_app_deinit(abi_handler_create(env, completion), abi_completion_proxy);
 }
 
 JNIEXPORT void JNICALL
