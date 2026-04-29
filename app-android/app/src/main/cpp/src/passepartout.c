@@ -78,7 +78,10 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appRelease(
         JNIEnv *env,
         jobject thiz
 ) {
-    abi_handler_free(env, app_references.eventHandler);
+    if (app_references.eventHandler) {
+        abi_handler_free(env, app_references.eventHandler);
+        app_references.eventHandler = NULL;
+    }
 }
 
 JNIEXPORT void JNICALL
@@ -154,6 +157,12 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelRelease(
         JNIEnv *env,
         jobject thiz
 ) {
-    (*env)->DeleteGlobalRef(env, tunnel_references.jniController);
-    abi_handler_free(env, tunnel_references.statusHandler);
+    if (tunnel_references.jniController) {
+        (*env)->DeleteGlobalRef(env, tunnel_references.jniController);
+        tunnel_references.jniController = NULL;
+    }
+    if (tunnel_references.statusHandler) {
+        abi_handler_free(env, tunnel_references.statusHandler);
+        tunnel_references.statusHandler = NULL;
+    }
 }
