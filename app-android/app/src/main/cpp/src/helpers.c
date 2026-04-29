@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include "helpers.h"
 
@@ -14,6 +15,24 @@ JavaVM *jvm = NULL;
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     jvm = vm;
     return JNI_VERSION_1_6;
+}
+
+static
+JNIEnv *jni_attach_thread(bool *did_attach) {
+    JNIEnv *env;
+    jint status = (*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
+    switch (status) {
+        case JNI_OK:
+            *did_attach = false;
+            return env;
+        case JNI_EDETACHED:
+            status = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+            if (status != JNI_OK) return NULL;
+            *did_attach = true;
+            return env;
+        default:
+            return NULL;
+    }
 }
 
 typedef struct {
@@ -37,10 +56,13 @@ void abi_handler_free(JNIEnv *env, abi_handler *handler) {
 
 void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
     assert(ctx);
+    assert(method_id);
     assert(json);
 
-    JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+    bool did_attach;
+    JNIEnv *env = jni_attach_thread(&did_attach);
+    if (!env) return;
+
     abi_handler *handler = (abi_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->ref);
     if (cls) {
@@ -53,7 +75,7 @@ void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
         }
         (*env)->DeleteLocalRef(env, cls);
     }
-    (*jvm)->DetachCurrentThread(jvm);
+    if (did_attach) (*jvm)->DetachCurrentThread(jvm);
 }
 
 void abi_event_handler_proxy(void *ctx, const char *event_json) {
@@ -69,8 +91,9 @@ void abi_connection_status_handler_proxy(void *ctx, const char *status_json) {
 void abi_completion_proxy(void *ctx, int code, const char *json) {
     assert(ctx);
 
-    JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+    bool did_attach;
+    JNIEnv *env = jni_attach_thread(&did_attach);
+    if (!env) return;
 
     abi_handler *handler = (abi_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->ref);
@@ -87,5 +110,5 @@ void abi_completion_proxy(void *ctx, int code, const char *json) {
     // Release handler on completion
     abi_handler_free(env, handler);
 
-    (*jvm)->DetachCurrentThread(jvm);
+    if (did_attach) (*jvm)->DetachCurrentThread(jvm);
 }
