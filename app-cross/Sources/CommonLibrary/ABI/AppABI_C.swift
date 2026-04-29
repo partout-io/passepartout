@@ -10,7 +10,11 @@ nonisolated(unsafe)
 private var abi: AppABI?
 
 @c(psp_app_init)
-public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
+public func __psp_app_init(
+    args: UnsafePointer<psp_app_init_args>?,
+    context: UnsafeMutableRawPointer?,
+    completion: psp_abi_completion?
+) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
           let appConstantsData = args.pointee.constants?.asJSONData,
@@ -25,6 +29,7 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     let profilesDir = String(cString: cProfilesDir)
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     nonisolated(unsafe) let bindings = args.pointee.bindings
+    nonisolated(unsafe) let unsafeCtx = context
     ABI.run {
         do {
             abi = try AppABI.forCrossPlatform(
@@ -35,6 +40,7 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
+            completion?(unsafeCtx, 0, nil)
         } catch {
             fatalError("Unable to start app: \(error)")
         }
@@ -42,8 +48,16 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
 }
 
 @c(psp_app_deinit)
-public func __psp_app_deinit() {
-    abi = nil
+public func __psp_app_deinit(
+    context: UnsafeMutableRawPointer?,
+    completion: psp_abi_completion?
+) {
+    nonisolated(unsafe) let unsafeCtx = context
+    ABI.run {
+        abi?.unregisterEvents()
+        abi = nil
+        completion?(unsafeCtx, 0, nil)
+    }
 }
 
 @c(psp_app_on_foreground)

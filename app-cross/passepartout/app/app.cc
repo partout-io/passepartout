@@ -50,7 +50,7 @@ bool MyApp::OnInit()
     args.cache_dir = cache_dir;
     args.bindings.event_ctx = this;
     args.bindings.event_cb = onABIEvent;
-    psp_app_init(&args);
+    psp_app_init(&args, NULL, NULL);
     free(bundle);
     free(constants);
 
