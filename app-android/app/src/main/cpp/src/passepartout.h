@@ -21,9 +21,9 @@ typedef void (*psp_event_callback)(void *event_ctx, const char *event);
  * - Success: code == 0, data = JSON (optional)
  * - Error:   code != 0, data = String
  */
-#define PSPABICompletionCodeOK          0
-#define PSPABICompletionCodeArgs        -2
-#define PSPABICompletionCodeFailure     -1
+#define PSPCompletionCodeOK         0
+#define PSPCompletionCodeArgs       -2
+#define PSPCompletionCodeFailure    -1
 typedef void (*psp_completion_cb)(void *ctx, int code, const char *data);
 typedef struct {
     void *ctx;
