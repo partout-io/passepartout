@@ -56,7 +56,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
     args.cache_dir = cCacheDir;
     args.bindings.event_ctx = app_references.eventHandler;
     args.bindings.event_cb = abi_event_handler_proxy;
-    psp_app_init(&args, abi_handler_create(env, completion), abi_completion_proxy);
+    psp_app_init(&args, PSP_CB(abi_handler_create(env, completion), abi_completion_proxy));
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
@@ -70,7 +70,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appDeinit(
         jobject thiz,
         jobject completion
 ) {
-    psp_app_deinit(abi_handler_create(env, completion), abi_completion_proxy);
+    psp_app_deinit(PSP_CB(abi_handler_create(env, completion), abi_completion_proxy));
 }
 
 JNIEXPORT void JNICALL
@@ -95,7 +95,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appImportProfileT
     const char *cText = (*env)->GetStringUTFChars(env, text, NULL);
     const char *cName = (*env)->GetStringUTFChars(env, name, NULL);
     void *handler = abi_handler_create(env, completion);
-    psp_app_import_profile_text(cText, cName, handler, abi_completion_proxy);
+    psp_app_import_profile_text(cText, cName, PSP_CB(handler, abi_completion_proxy));
     (*env)->ReleaseStringUTFChars(env, text, cText);
     (*env)->ReleaseStringUTFChars(env, name, cName);
 }
@@ -134,7 +134,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     args.bindings.status_cb = abi_connection_status_handler_proxy;
 
     void *handler = abi_handler_create(env, completion);
-    psp_tunnel_start(&args, handler, abi_completion_proxy);
+    psp_tunnel_start(&args, PSP_CB(handler, abi_completion_proxy));
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
@@ -149,7 +149,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStop(
         jobject completion
 ) {
     void *handler = abi_handler_create(env, completion);
-    psp_tunnel_stop(handler, abi_completion_proxy);
+    psp_tunnel_stop(PSP_CB(handler, abi_completion_proxy));
 }
 
 JNIEXPORT void JNICALL

@@ -12,8 +12,7 @@ private var abi: AppABI?
 @c(psp_app_init)
 public func __psp_app_init(
     args: UnsafePointer<psp_app_init_args>?,
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
+    completion: psp_abi_completion
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -29,8 +28,7 @@ public func __psp_app_init(
     let profilesDir = String(cString: cProfilesDir)
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     nonisolated(unsafe) let bindings = args.pointee.bindings
-    nonisolated(unsafe) let unsafeCtx = context
-    ABI.run {
+    ABI.run(completion) { callback in
         do {
             abi = try AppABI.forCrossPlatform(
                 bindings: bindings,
@@ -40,7 +38,7 @@ public func __psp_app_init(
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
-            completion?(unsafeCtx, 0, nil)
+            callback(0, nil)
         } catch {
             fatalError("Unable to start app: \(error)")
         }
@@ -48,15 +46,11 @@ public func __psp_app_init(
 }
 
 @c(psp_app_deinit)
-public func __psp_app_deinit(
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
-) {
-    nonisolated(unsafe) let unsafeCtx = context
-    ABI.run {
+public func __psp_app_deinit(completion: psp_abi_completion) {
+    ABI.run(completion) { callback in
         abi?.unregisterEvents()
         abi = nil
-        completion?(unsafeCtx, 0, nil)
+        callback(0, nil)
     }
 }
 
@@ -70,17 +64,16 @@ public func __psp_app_on_foreground() {
 @c(psp_app_import_profile_path)
 public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
+    completion: psp_abi_completion
 ) {
     guard let abi, let path else { return }
     let swiftPath = String(cString: path)
-    ABI.run(context) { ctx in
+    ABI.run(completion) { callback in
         do {
             try await abi.profile.importFile(swiftPath, passphrase: nil)
-            completion?(ctx, 0, nil)
+            callback(0, nil)
         } catch {
-            completion?(ctx, -1, error.localizedDescription)
+            callback(-1, error.localizedDescription)
         }
     }
 }
@@ -89,18 +82,17 @@ public func __psp_app_import_profile_path(
 public func __psp_app_import_profile_text(
     text: UnsafePointer<CChar>?,
     filename: UnsafePointer<CChar>?,
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
+    completion: psp_abi_completion
 ) {
     guard let abi, let text, let filename else { return }
     let swiftText = String(cString: text)
     let swiftFilename = String(cString: filename)
-    ABI.run(context) { ctx in
+    ABI.run(completion) { callback in
         do {
             try await abi.profile.importText(swiftText, filename: swiftFilename, passphrase: nil)
-            completion?(ctx, 0, nil)
+            callback(0, nil)
         } catch {
-            completion?(ctx, -1, error.localizedDescription)
+            callback(-1, error.localizedDescription)
         }
     }
 }

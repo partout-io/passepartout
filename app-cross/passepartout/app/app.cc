@@ -50,7 +50,7 @@ bool MyApp::OnInit()
     args.cache_dir = cache_dir;
     args.bindings.event_ctx = this;
     args.bindings.event_cb = onABIEvent;
-    psp_app_init(&args, NULL, NULL);
+    psp_app_init(&args, PSP_CB_NOP());
     free(bundle);
     free(constants);
 
@@ -112,10 +112,10 @@ void MyFrame::OnImportProfile(wxCommandEvent &)
     const wxString path = openFileDialog.GetPath();
     const char *cPath = path.utf8_str().data();
     printf("Path: %s\n", cPath);
-    psp_app_import_profile_path(cPath, this, [](void *ctx, int code, const char *error) {
-        printf(">>> ABI Result: (ctx=%p), %d, %s\n", ctx, code, error);
+    psp_app_import_profile_path(cPath, PSP_CB(this, [](void *ctx, int code, const char *json) {
+        printf(">>> ABI Result: (ctx=%p), %d, %p\n", ctx, code, json);
         wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
-    });
+    }));
 }
 
 void MyFrame::OnFlushLog(wxCommandEvent &)

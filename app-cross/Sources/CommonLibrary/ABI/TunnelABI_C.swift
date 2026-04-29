@@ -12,8 +12,7 @@ private var globalABI: TunnelABIProtocol?
 @c(psp_tunnel_start)
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
+    completion: psp_abi_completion
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -37,7 +36,7 @@ public func __psp_tunnel_start(
     let isDaemon = args.pointee.is_daemon
     nonisolated(unsafe) let bindings = args.pointee.bindings
     // Start tunnel ABI
-    ABI.run(context) { ctx in
+    ABI.run(completion) { callback in
         defer { pspUnlock() }
         do {
             globalABI = try TunnelABI.forCrossPlatform(
@@ -49,9 +48,9 @@ public func __psp_tunnel_start(
                 cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            completion?(ctx, 0, nil)
+            callback(0, nil)
         } catch {
-            completion?(ctx, -1, error.localizedDescription)
+            callback(-1, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }
     }
@@ -59,14 +58,11 @@ public func __psp_tunnel_start(
 }
 
 @c(psp_tunnel_stop)
-public func __psp_tunnel_stop(
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
-) {
-    ABI.run(context) { ctx in
+public func __psp_tunnel_stop(completion: psp_abi_completion) {
+    ABI.run(completion) { callback in
         await globalABI?.stop()
         globalABI = nil
-        completion?(ctx, 0, nil)
+        callback(0, nil)
     }
 }
 

@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     args.bindings.controller = NULL;
 
     /* Will block indefinitely. */
-    psp_tunnel_start(&args, NULL, start_callback);
+    psp_tunnel_start(&args, PSP_CB(NULL, start_callback));
 
     free(bundle);
     free(constants);

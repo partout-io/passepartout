@@ -30,7 +30,8 @@ extension TunnelABI {
             newDeviceId: true,
             deviceIdLength: constants.deviceIdLength
         )
-        preferences.configFlags = [.wgCrossV2]
+        // FIXME: ###, Cross, Hardcoded config flags
+        preferences.configFlags = [.ovpnCrossV2, .wgCrossV2]
 
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile
