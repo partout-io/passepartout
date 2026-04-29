@@ -35,7 +35,7 @@ val globalJsonCoder = Json {
 }
 
 class MainActivity : ComponentActivity(), ABIEventHandler {
-    private val wrapper = NativeLibraryWrapper()
+    private val library = NativeLibraryWrapper()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
     private lateinit var tunnelStrategy: AndroidTunnelStrategy
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
         super.onCreate(savedInstanceState)
 
         // Start easy, test Partout version
-        val version = wrapper.partoutVersion()
+        val version = library.partoutVersion()
         Log.e("Passepartout", ">>> $version")
 
         // Initialize app and event callback
@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
             mkdirs()
         }.absolutePath
         val cachePath = cacheDir.absolutePath
-        wrapper.appInit(
+        library.appInit(
             bundle,
             constants,
             profilesDir,
@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
 
     override fun onStart() {
         super.onStart()
-        wrapper.appOnForeground()
+        library.appOnForeground()
     }
 
     fun startVpnService() {
@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
     fun importProfile(connect: Boolean = false) {
 //        val file = String(assets.open("vps.conf").readBytes())
         val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
-        wrapper.appImportProfileText(file, "SomeName") { code, json ->
+        library.appImportProfileText(file, "SomeName") { code, json ->
             if (code == 0) {
                 Log.i("Passepartout", "Import success!")
             } else {
