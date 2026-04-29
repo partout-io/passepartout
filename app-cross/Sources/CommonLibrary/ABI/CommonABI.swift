@@ -19,7 +19,7 @@ enum ABIError: Error {
 }
 
 extension ABI {
-    typealias RunCallbackBlock = @Sendable (_ code: Int32, _ json: String?) -> Void
+    typealias RunCallback = @Sendable (_ code: Int32, _ json: String?) -> Void
 
     static func run(
         _ block: @escaping @Sendable @BusinessActor () async -> Void
@@ -31,19 +31,19 @@ extension ABI {
 
     static func run(
         _ completion: psp_completion,
-        _ block: @escaping @Sendable @BusinessActor (RunCallbackBlock?) async -> Void
+        _ block: @escaping @Sendable @BusinessActor (RunCallback?) async -> Void
     ) {
         nonisolated(unsafe) let completion = completion
         Task { @Sendable @BusinessActor in
-            let callback: RunCallbackBlock?
+            let runCallback: RunCallback?
             if let cb = completion.callback {
-                callback = { code, json in
+                runCallback = { code, json in
                     cb(completion.ctx, code, json)
                 }
             } else {
-                callback = nil
+                runCallback = nil
             }
-            await block(callback)
+            await block(runCallback)
         }
     }
 
