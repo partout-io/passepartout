@@ -38,7 +38,7 @@ public func __psp_app_init(
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
-            callback(0, nil)
+            callback(PSPABICompletionCodeOK, nil)
         } catch {
             fatalError("Unable to start app: \(error)")
         }
@@ -50,7 +50,7 @@ public func __psp_app_deinit(completion: psp_abi_completion) {
     ABI.run(completion) { callback in
         abi?.unregisterEvents()
         abi = nil
-        callback(0, nil)
+        callback(PSPABICompletionCodeOK, nil)
     }
 }
 
@@ -66,14 +66,17 @@ public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
     completion: psp_abi_completion
 ) {
-    guard let abi, let path else { return }
+    guard let abi, let path else {
+        completion.callback?(completion.ctx, PSPABICompletionCodeArgs, nil)
+        return
+    }
     let swiftPath = String(cString: path)
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importFile(swiftPath, passphrase: nil)
-            callback(0, nil)
+            callback(PSPABICompletionCodeOK, nil)
         } catch {
-            callback(-1, error.localizedDescription)
+            callback(PSPABICompletionCodeFailure, error.localizedDescription)
         }
     }
 }
@@ -84,15 +87,18 @@ public func __psp_app_import_profile_text(
     filename: UnsafePointer<CChar>?,
     completion: psp_abi_completion
 ) {
-    guard let abi, let text, let filename else { return }
+    guard let abi, let text, let filename else {
+        completion.callback?(completion.ctx, PSPABICompletionCodeArgs, nil)
+        return
+    }
     let swiftText = String(cString: text)
     let swiftFilename = String(cString: filename)
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importText(swiftText, filename: swiftFilename, passphrase: nil)
-            callback(0, nil)
+            callback(PSPABICompletionCodeOK, nil)
         } catch {
-            callback(-1, error.localizedDescription)
+            callback(PSPABICompletionCodeFailure, error.localizedDescription)
         }
     }
 }
