@@ -22,37 +22,19 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     if args.pointee.preferences != nil {
         assert(preferencesData != nil, "Unable to decode preferences")
     }
-    let eventContext = args.pointee.bindings.event_ctx
-    let eventCallback = args.pointee.bindings.event_cb
-    let eventHandler = ABI.EventHandler(
-        context: eventContext,
-        callback: { ctx, event in
-            guard let eventCallback else { return }
-            // Enrich event JSON with metadata for decoding
-            let wrapper = ABI.EventWrapper(event)
-            do {
-                // Dispatch JSON event to cross-platform apps
-                let json = try ABI.encodeWrapper(wrapper)
-                json.withCString {
-                    eventCallback(ctx, $0)
-                }
-            } catch {
-                assertionFailure("Unable to encode event: \(event), \(error)")
-            }
-        }
-    )
     let profilesDir = String(cString: cProfilesDir)
     let cachesURL = URL(filePath: String(cString: cCacheDir))
+    nonisolated(unsafe) let bindings = args.pointee.bindings
     ABI.run {
         do {
             abi = try AppABI.forCrossPlatform(
+                bindings: bindings,
                 appBundleData: appBundleData,
                 appConstantsData: appConstantsData,
                 preferencesData: preferencesData,
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
-            abi?.registerEvents(eventHandler)
         } catch {
             fatalError("Unable to start app: \(error)")
         }

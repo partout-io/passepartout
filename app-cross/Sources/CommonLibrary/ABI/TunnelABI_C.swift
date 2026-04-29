@@ -35,23 +35,6 @@ public func __psp_tunnel_start(
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
-    nonisolated(unsafe) let statusContext = args.pointee.bindings.status_ctx
-    let statusCallback = args.pointee.bindings.status_cb
-    let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
-        guard let statusCallback else { return }
-        let wrapper = ABI.OnConnectionStatus(
-            profileId: profileId.uuidString,
-            status: status
-        )
-        do {
-            let json = try ABI.encodeWrapper(wrapper)
-            json.withCString {
-                statusCallback(statusContext, $0)
-            }
-        } catch {
-            assertionFailure("Unable to encode status: \(status), \(error)")
-        }
-    }
     nonisolated(unsafe) let bindings = args.pointee.bindings
     // Start tunnel ABI
     ABI.run(context) { ctx in
@@ -63,8 +46,7 @@ public func __psp_tunnel_start(
                 appConstantsData: appConstantsData,
                 preferencesData: preferencesData,
                 profileInput: profileInput,
-                cachesURL: cachesURL,
-                onStatus: onStatus
+                cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
             completion?(ctx, 0, nil)

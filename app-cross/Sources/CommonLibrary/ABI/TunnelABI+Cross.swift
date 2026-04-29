@@ -14,8 +14,7 @@ extension TunnelABI {
         appConstantsData: Data,
         preferencesData: Data?,
         profileInput: ABI.ProfileImporterInput,
-        cachesURL: URL,
-        onStatus: SimpleConnectionDaemon.StatusCallback?
+        cachesURL: URL
     ) throws -> TunnelABI {
         let decoder = JSONDecoder()
 
@@ -61,6 +60,25 @@ extension TunnelABI {
         }
         // FIXME: #1656, C ABI, reachability observer
         let reachability = DummyReachabilityObserver()
+
+        // Wrap onStatus callback
+        nonisolated(unsafe) let statusContext = bindings.status_ctx
+        let statusCallback = bindings.status_cb
+        let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
+            guard let statusCallback else { return }
+            let wrapper = ABI.OnConnectionStatus(
+                profileId: profileId.uuidString,
+                status: status
+            )
+            do {
+                let json = try ABI.encodeWrapper(wrapper)
+                json.withCString {
+                    statusCallback(statusContext, $0)
+                }
+            } catch {
+                assertionFailure("Unable to encode status: \(status), \(error)")
+            }
+        }
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(

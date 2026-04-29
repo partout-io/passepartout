@@ -8,6 +8,7 @@ import Partout
 
 extension AppABI {
     public static func forCrossPlatform(
+        bindings: psp_app_bindings,
         appBundleData: Data,
         appConstantsData: Data,
         preferencesData: Data?,
@@ -73,7 +74,7 @@ extension AppABI {
         let versionChecker = VersionChecker()
         let webReceiverManager = WebReceiverManager()
 
-        return AppABI(
+        let abi = AppABI(
             apiManager: nil,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
@@ -89,6 +90,30 @@ extension AppABI {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
+
+        // Register for events
+        let eventContext = bindings.event_ctx
+        let eventCallback = bindings.event_cb
+        let eventHandler = ABI.EventHandler(
+            context: eventContext,
+            callback: { ctx, event in
+                guard let eventCallback else { return }
+                // Enrich event JSON with metadata for decoding
+                let wrapper = ABI.EventWrapper(event)
+                do {
+                    // Dispatch JSON event to cross-platform apps
+                    let json = try ABI.encodeWrapper(wrapper)
+                    json.withCString {
+                        eventCallback(ctx, $0)
+                    }
+                } catch {
+                    assertionFailure("Unable to encode event: \(event), \(error)")
+                }
+            }
+        )
+        abi.registerEvents(eventHandler)
+
+        return abi
     }
 }
 #endif
