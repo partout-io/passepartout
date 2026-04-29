@@ -83,7 +83,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
-    // Store global reference of builder wrapper
+    // Store global JNI references (ownership is transferred)
     jobject jniController = (*env)->NewGlobalRef(env, controller);
 
     psp_tunnel_start_args args = { 0 };
