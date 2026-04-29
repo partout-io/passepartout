@@ -22,6 +22,17 @@ typedef void (*psp_event_callback)(void *event_ctx, const char *event);
  */
 typedef void (*psp_abi_completion)(void *ctx, int code, const char *data);
 
+typedef struct {
+    void *event_ctx;
+    psp_event_callback event_cb;
+} psp_app_bindings;
+
+typedef struct {
+    void *controller;
+    void *status_ctx;
+    psp_event_callback status_cb;
+} psp_tunnel_bindings;
+
 /* App initialization. */
 typedef struct {
     const char *bundle;
@@ -29,8 +40,7 @@ typedef struct {
     const char *preferences;
     const char *profiles_dir;
     const char *cache_dir;
-    void *event_ctx;
-    psp_event_callback event_cb;
+    psp_app_bindings bindings;
 } psp_app_init_args;
 
 /* App functions. */
@@ -49,9 +59,7 @@ typedef struct {
     const char *profile;
     bool is_interactive;
     bool is_daemon;
-    void *status_ctx;
-    psp_event_callback status_cb;
-    void *jni_wrapper;
+    psp_tunnel_bindings bindings;
 } psp_tunnel_start_args;
 
 /* Daemon functions. */

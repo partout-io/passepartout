@@ -48,8 +48,8 @@ bool MyApp::OnInit()
     args.preferences = NULL;
     args.profiles_dir = profiles_dir;
     args.cache_dir = cache_dir;
-    args.event_ctx = this;
-    args.event_cb = onABIEvent;
+    args.bindings.event_ctx = this;
+    args.bindings.event_cb = onABIEvent;
     psp_app_init(&args);
     free(bundle);
     free(constants);

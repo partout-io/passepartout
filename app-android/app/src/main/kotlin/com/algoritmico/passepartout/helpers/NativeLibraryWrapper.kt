@@ -28,7 +28,7 @@ class NativeLibraryWrapper {
         profile: String,
         cacheDir: String,
         statusHandler: ABIConnectionStatusHandler,
-        vpn: AndroidTunnelController,
+        controller: AndroidTunnelController,
         completion: ABICompletionCallback
     )
     external fun tunnelStop(

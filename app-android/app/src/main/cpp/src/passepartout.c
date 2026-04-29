@@ -40,8 +40,8 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
     args.preferences = "{\"logsPrivateData\": true}";
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
-    args.event_ctx = abi_handler_create(env, eventHandler);
-    args.event_cb = abi_event_handler_proxy;
+    args.bindings.event_ctx = abi_handler_create(env, eventHandler);
+    args.bindings.event_cb = abi_event_handler_proxy;
     psp_app_init(&args);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
@@ -75,7 +75,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
         jstring profile,
         jstring cacheDir,
         jobject statusHandler,
-        jobject vpnWrapper,
+        jobject controller,
         jobject completion
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
@@ -84,7 +84,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
     // Store global reference of builder wrapper
-    jobject jniVPNWrapper = (*env)->NewGlobalRef(env, vpnWrapper);
+    jobject jniController = (*env)->NewGlobalRef(env, controller);
 
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
@@ -94,9 +94,9 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     args.profile = cProfile;
     args.is_interactive = true;
     args.is_daemon = false;
-    args.status_ctx = abi_handler_create(env, statusHandler);
-    args.status_cb = abi_connection_status_handler_proxy;
-    args.jni_wrapper = jniVPNWrapper;
+    args.bindings.controller = jniController;
+    args.bindings.status_ctx = abi_handler_create(env, statusHandler);
+    args.bindings.status_cb = abi_connection_status_handler_proxy;
 
     void *handler = abi_handler_create(env, completion);
     psp_tunnel_start(&args, handler, abi_completion_proxy);

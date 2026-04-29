@@ -22,8 +22,8 @@ public func __psp_app_init(args: UnsafePointer<psp_app_init_args>?) {
     if args.pointee.preferences != nil {
         assert(preferencesData != nil, "Unable to decode preferences")
     }
-    let eventContext = args.pointee.event_ctx
-    let eventCallback = args.pointee.event_cb
+    let eventContext = args.pointee.bindings.event_ctx
+    let eventCallback = args.pointee.bindings.event_cb
     let eventHandler = ABI.EventHandler(
         context: eventContext,
         callback: { ctx, event in

@@ -9,13 +9,13 @@ import Partout
 extension TunnelABI {
     // TODO: #218, cachesURL must be per-profile
     public static func forCrossPlatform(
+        bindings: psp_tunnel_bindings,
         appBundleData: Data,
         appConstantsData: Data,
         preferencesData: Data?,
         profileInput: ABI.ProfileImporterInput,
         cachesURL: URL,
-        onStatus: SimpleConnectionDaemon.StatusCallback?,
-        jniWrapper: UnsafeMutableRawPointer?
+        onStatus: SimpleConnectionDaemon.StatusCallback?
     ) throws -> TunnelABI {
         let decoder = JSONDecoder()
 
@@ -54,7 +54,7 @@ extension TunnelABI {
         )
 
         // Create platform-specific objects
-        let controller = try VirtualTunnelController(ctx, impl: jniWrapper)
+        let controller = try VirtualTunnelController(ctx, impl: bindings.controller)
         let factory = BSDSocketFactory(ctx) {
             // FIXME: #1656, C ABI, better path block
             PassthroughStream()
