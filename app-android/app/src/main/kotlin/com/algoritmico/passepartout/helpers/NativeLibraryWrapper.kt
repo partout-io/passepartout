@@ -35,6 +35,10 @@ class NativeLibraryWrapper {
         completion: ABICompletionCallback
     )
 
+    // These are specific to Android to release JNI references
+    external fun appRelease()
+    external fun tunnelRelease()
+
     companion object {
         init {
             try {
