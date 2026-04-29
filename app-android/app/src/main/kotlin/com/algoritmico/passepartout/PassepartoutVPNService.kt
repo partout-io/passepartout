@@ -79,12 +79,12 @@ class PassepartoutVPNService: VpnService(), ABIConnectionStatusHandler {
                     cachePath,
                     statusHandler,
                     vpnWrapper
-                ) { _, code, errorMessage ->
+                ) { code, json ->
                     serviceScope.launch {
                         if (code == 0) {
                             Log.e("Passepartout", ">>> Started daemon")
                         } else {
-                            Log.e("Passepartout", "Unable to start daemon (code=$code): $errorMessage")
+                            Log.e("Passepartout", "Unable to start daemon (code=$code): $json")
                             stopForeground(STOP_FOREGROUND_REMOVE)
                             stopSelf()
                             isRunning = false
@@ -102,12 +102,12 @@ class PassepartoutVPNService: VpnService(), ABIConnectionStatusHandler {
         stopJob = serviceScope.launch {
             Log.e("Passepartout", ">>> Stopping daemon")
             withContext(Dispatchers.IO) {
-                library.tunnelStop { _, code, errorMessage ->
+                library.tunnelStop { code, json ->
                     serviceScope.launch {
                         if (code == 0) {
                             Log.e("Passepartout", ">>> Stopped daemon")
                         } else {
-                            Log.e("Passepartout", "Unable to stop daemon (code=$code): $errorMessage")
+                            Log.e("Passepartout", "Unable to stop daemon (code=$code): $json")
                         }
                         stopForeground(STOP_FOREGROUND_REMOVE)
                         stopSelf()

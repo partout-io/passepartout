@@ -58,13 +58,10 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appImportProfileT
         jstring name,
         jobject completion
 ) {
-    abi_completion_handler *handler = malloc(sizeof(abi_completion_handler));
-    handler->completion_ctx = NULL;
-    handler->completion_cb = (*env)->NewGlobalRef(env, completion);
-
     const char *cText = (*env)->GetStringUTFChars(env, text, NULL);
     const char *cName = (*env)->GetStringUTFChars(env, name, NULL);
-    psp_app_import_profile_text(cText, cName, handler, abi_completion_callback_proxy);
+    void *handler = abi_handler_create(env, completion);
+    psp_app_import_profile_text(cText, cName, handler, abi_completion_proxy);
     (*env)->ReleaseStringUTFChars(env, text, cText);
     (*env)->ReleaseStringUTFChars(env, name, cName);
 }
@@ -101,10 +98,8 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     args.status_cb = abi_connection_status_handler_proxy;
     args.jni_wrapper = jniVPNWrapper;
 
-    abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
-    cmp->completion_ctx = NULL;
-    cmp->completion_cb = (*env)->NewGlobalRef(env, completion);
-    psp_tunnel_start(&args, cmp, abi_completion_callback_proxy);
+    void *handler = abi_handler_create(env, completion);
+    psp_tunnel_start(&args, handler, abi_completion_proxy);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
@@ -118,8 +113,6 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStop(
         jobject thiz,
         jobject completion
 ) {
-    abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
-    cmp->completion_ctx = NULL;
-    cmp->completion_cb = (*env)->NewGlobalRef(env, completion);
-    psp_tunnel_stop(cmp, abi_completion_callback_proxy);
+    void *handler = abi_handler_create(env, completion);
+    psp_tunnel_stop(handler, abi_completion_proxy);
 }

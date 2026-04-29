@@ -130,11 +130,11 @@ class MainActivity : ComponentActivity(), ABIEventHandler {
     fun importProfile(connect: Boolean = false) {
 //        val file = String(assets.open("vps.conf").readBytes())
         val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
-        wrapper.appImportProfileText(file, "SomeName") { ctx, code, errorMessage ->
+        wrapper.appImportProfileText(file, "SomeName") { code, json ->
             if (code == 0) {
                 Log.i("Passepartout", "Import success!")
             } else {
-                Log.e("Passepartout", "Import failure (code=$code): $errorMessage")
+                Log.e("Passepartout", "Import failure (code=$code): $json")
             }
         }
     }
