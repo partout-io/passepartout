@@ -100,9 +100,9 @@ void abi_completion_proxy(void *ctx, int code, const char *json) {
     if (cls) {
         jmethodID methodID = (*env)->GetMethodID(env, cls, "onComplete", "(ILjava/lang/String;)V");
         if (methodID) {
-            jstring jJSON = (*env)->NewStringUTF(env, json);
+            jstring jJSON = json ? (*env)->NewStringUTF(env, json) : NULL;
             (*env)->CallVoidMethod(env, handler->ref, methodID, code, jJSON);
-            (*env)->DeleteLocalRef(env, jJSON);
+            if (jJSON) (*env)->DeleteLocalRef(env, jJSON);
         }
         (*env)->DeleteLocalRef(env, cls);
     }
