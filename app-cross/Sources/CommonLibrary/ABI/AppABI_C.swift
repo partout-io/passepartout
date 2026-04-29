@@ -38,7 +38,7 @@ public func __psp_app_init(
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
-            callback(PSPCompletionCodeOK, nil)
+            callback?(PSPCompletionCodeOK, nil)
         } catch {
             fatalError("Unable to start app: \(error)")
         }
@@ -50,7 +50,7 @@ public func __psp_app_deinit(completion: psp_completion) {
     ABI.run(completion) { callback in
         abi?.unregisterEvents()
         abi = nil
-        callback(PSPCompletionCodeOK, nil)
+        callback?(PSPCompletionCodeOK, nil)
     }
 }
 
@@ -74,9 +74,9 @@ public func __psp_app_import_profile_path(
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importFile(swiftPath, passphrase: nil)
-            callback(PSPCompletionCodeOK, nil)
+            callback?(PSPCompletionCodeOK, nil)
         } catch {
-            callback(PSPCompletionCodeFailure, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
         }
     }
 }
@@ -96,9 +96,9 @@ public func __psp_app_import_profile_text(
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importText(swiftText, filename: swiftFilename, passphrase: nil)
-            callback(PSPCompletionCodeOK, nil)
+            callback?(PSPCompletionCodeOK, nil)
         } catch {
-            callback(PSPCompletionCodeFailure, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
         }
     }
 }

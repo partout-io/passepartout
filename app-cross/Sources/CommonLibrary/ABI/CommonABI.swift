@@ -31,12 +31,17 @@ extension ABI {
 
     static func run(
         _ completion: psp_completion,
-        _ block: @escaping @Sendable @BusinessActor (RunCallbackBlock) async -> Void
+        _ block: @escaping @Sendable @BusinessActor (RunCallbackBlock?) async -> Void
     ) {
         nonisolated(unsafe) let completion = completion
         Task { @Sendable @BusinessActor in
-            let callback: RunCallbackBlock = { code, json in
-                completion.callback?(completion.ctx, code, json)
+            let callback: RunCallbackBlock?
+            if let cb = completion.callback {
+                callback = { code, json in
+                    cb(completion.ctx, code, json)
+                }
+            } else {
+                callback = nil
             }
             await block(callback)
         }

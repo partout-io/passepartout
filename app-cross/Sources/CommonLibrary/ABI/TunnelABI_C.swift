@@ -48,9 +48,9 @@ public func __psp_tunnel_start(
                 cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            callback(PSPCompletionCodeOK, nil)
+            callback?(PSPCompletionCodeOK, nil)
         } catch {
-            callback(PSPCompletionCodeFailure, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }
     }
@@ -62,7 +62,7 @@ public func __psp_tunnel_stop(completion: psp_completion) {
     ABI.run(completion) { callback in
         await globalABI?.stop()
         globalABI = nil
-        callback(PSPCompletionCodeOK, nil)
+        callback?(PSPCompletionCodeOK, nil)
     }
 }
 
