@@ -12,7 +12,7 @@ private var abi: AppABI?
 @c(psp_app_init)
 public func __psp_app_init(
     args: UnsafePointer<psp_app_init_args>?,
-    completion: psp_abi_completion
+    completion: psp_completion
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -38,7 +38,7 @@ public func __psp_app_init(
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
-            callback(PSPABICompletionCodeOK, nil)
+            callback(PSPCompletionCodeOK, nil)
         } catch {
             fatalError("Unable to start app: \(error)")
         }
@@ -46,11 +46,11 @@ public func __psp_app_init(
 }
 
 @c(psp_app_deinit)
-public func __psp_app_deinit(completion: psp_abi_completion) {
+public func __psp_app_deinit(completion: psp_completion) {
     ABI.run(completion) { callback in
         abi?.unregisterEvents()
         abi = nil
-        callback(PSPABICompletionCodeOK, nil)
+        callback(PSPCompletionCodeOK, nil)
     }
 }
 
@@ -64,19 +64,19 @@ public func __psp_app_on_foreground() {
 @c(psp_app_import_profile_path)
 public func __psp_app_import_profile_path(
     path: UnsafePointer<CChar>?,
-    completion: psp_abi_completion
+    completion: psp_completion
 ) {
     guard let abi, let path else {
-        completion.callback?(completion.ctx, PSPABICompletionCodeArgs, nil)
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
         return
     }
     let swiftPath = String(cString: path)
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importFile(swiftPath, passphrase: nil)
-            callback(PSPABICompletionCodeOK, nil)
+            callback(PSPCompletionCodeOK, nil)
         } catch {
-            callback(PSPABICompletionCodeFailure, error.localizedDescription)
+            callback(PSPCompletionCodeFailure, error.localizedDescription)
         }
     }
 }
@@ -85,10 +85,10 @@ public func __psp_app_import_profile_path(
 public func __psp_app_import_profile_text(
     text: UnsafePointer<CChar>?,
     filename: UnsafePointer<CChar>?,
-    completion: psp_abi_completion
+    completion: psp_completion
 ) {
     guard let abi, let text, let filename else {
-        completion.callback?(completion.ctx, PSPABICompletionCodeArgs, nil)
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
         return
     }
     let swiftText = String(cString: text)
@@ -96,9 +96,9 @@ public func __psp_app_import_profile_text(
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importText(swiftText, filename: swiftFilename, passphrase: nil)
-            callback(PSPABICompletionCodeOK, nil)
+            callback(PSPCompletionCodeOK, nil)
         } catch {
-            callback(PSPABICompletionCodeFailure, error.localizedDescription)
+            callback(PSPCompletionCodeFailure, error.localizedDescription)
         }
     }
 }

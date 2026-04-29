@@ -30,7 +30,7 @@ extension ABI {
     }
 
     static func run(
-        _ completion: psp_abi_completion,
+        _ completion: psp_completion,
         _ block: @escaping @Sendable @BusinessActor (RunCallbackBlock) async -> Void
     ) {
         nonisolated(unsafe) let completion = completion

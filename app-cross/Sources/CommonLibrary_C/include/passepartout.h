@@ -21,22 +21,19 @@ typedef void (*psp_event_callback)(void *event_ctx, const char *event);
  * - Success: code == 0, data = JSON (optional)
  * - Error:   code != 0, data = String
  */
-#define PSPABICompletionCodeOK          0
-#define PSPABICompletionCodeArgs        -2
-#define PSPABICompletionCodeFailure     -1
-typedef void (*psp_abi_completion_cb)(void *ctx, int code, const char *data);
+#define PSPCompletionCodeOK         0
+#define PSPCompletionCodeArgs       -2
+#define PSPCompletionCodeFailure    -1
+typedef void (*psp_completion_cb)(void *ctx, int code, const char *data);
 typedef struct {
     void *ctx;
-    psp_abi_completion_cb callback;
-} psp_abi_completion;
+    psp_completion_cb callback;
+} psp_completion;
 
 /* Macros for completion blocks. */
 static inline
-psp_abi_completion PSP_CB(void *ctx, psp_abi_completion_cb callback) {
-    psp_abi_completion completion = {
-        ctx,
-        callback
-    };
+psp_completion PSP_CB(void *ctx, psp_completion_cb callback) {
+    psp_completion completion = { ctx, callback };
     return completion;
 }
 #define PSP_CB_NOP() PSP_CB(NULL, NULL)
@@ -63,11 +60,11 @@ typedef struct {
 } psp_app_init_args;
 
 /* App functions. */
-void psp_app_init(const psp_app_init_args *args, psp_abi_completion completion);
-void psp_app_deinit(psp_abi_completion completion);
+void psp_app_init(const psp_app_init_args *args, psp_completion completion);
+void psp_app_deinit(psp_completion completion);
 void psp_app_on_foreground(void);
-void psp_app_import_profile_path(const char *path, psp_abi_completion completion);
-void psp_app_import_profile_text(const char *text, const char *filename, psp_abi_completion completion);
+void psp_app_import_profile_path(const char *path, psp_completion completion);
+void psp_app_import_profile_text(const char *text, const char *filename, psp_completion completion);
 void psp_app_flush_log(void);
 
 /* Daemon initialization. */
@@ -83,7 +80,7 @@ typedef struct {
 } psp_tunnel_start_args;
 
 /* Daemon functions. */
-void psp_tunnel_start(const psp_tunnel_start_args *args, psp_abi_completion completion);
-void psp_tunnel_stop(psp_abi_completion completion);
+void psp_tunnel_start(const psp_tunnel_start_args *args, psp_completion completion);
+void psp_tunnel_stop(psp_completion completion);
 
 #endif

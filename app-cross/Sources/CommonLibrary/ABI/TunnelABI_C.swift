@@ -12,7 +12,7 @@ private var globalABI: TunnelABIProtocol?
 @c(psp_tunnel_start)
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
-    completion: psp_abi_completion
+    completion: psp_completion
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -48,9 +48,9 @@ public func __psp_tunnel_start(
                 cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            callback(PSPABICompletionCodeOK, nil)
+            callback(PSPCompletionCodeOK, nil)
         } catch {
-            callback(PSPABICompletionCodeFailure, error.localizedDescription)
+            callback(PSPCompletionCodeFailure, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }
     }
@@ -58,11 +58,11 @@ public func __psp_tunnel_start(
 }
 
 @c(psp_tunnel_stop)
-public func __psp_tunnel_stop(completion: psp_abi_completion) {
+public func __psp_tunnel_stop(completion: psp_completion) {
     ABI.run(completion) { callback in
         await globalABI?.stop()
         globalABI = nil
-        callback(PSPABICompletionCodeOK, nil)
+        callback(PSPCompletionCodeOK, nil)
     }
 }
 
