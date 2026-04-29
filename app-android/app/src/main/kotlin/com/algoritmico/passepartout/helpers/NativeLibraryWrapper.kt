@@ -14,8 +14,7 @@ class NativeLibraryWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
-        eventContext: Any,
-        eventCallback: ABIEventCallback
+        eventHandler: ABIEventHandler
     )
     external fun appOnForeground()
     external fun appImportProfileText(
@@ -28,8 +27,7 @@ class NativeLibraryWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        statusContext: Any,
-        statusCallback: ConnectionStatusCallback,
+        statusHandler: ABIConnectionStatusHandler,
         vpn: AndroidTunnelController,
         completion: ABICompletionCallback
     )

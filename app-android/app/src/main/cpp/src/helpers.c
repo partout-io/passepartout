@@ -17,11 +17,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 void abi_completion_callback_proxy(void *ctx, int code, const char *error_msg) {
-    JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
-
     assert(ctx);
 
+    JNIEnv *env;
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
     abi_completion_handler *handler = (abi_completion_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->completion_cb);
     if (cls) {
@@ -45,52 +44,44 @@ void abi_completion_callback_proxy(void *ctx, int code, const char *error_msg) {
     (*env)->DeleteGlobalRef(env, handler->completion_cb);
     // Clean up temporary proxy handler
     free(handler);
-
     (*jvm)->DetachCurrentThread(jvm);
 }
 
-void abi_event_callback_proxy(void *ctx, const char *event_json) {
+typedef struct {
+    jobject ref;
+} abi_handler;
+
+void *abi_handler_create(JNIEnv *env, jobject ref) {
+    abi_handler *handler = malloc(sizeof(abi_handler));
+    handler->ref = (*env)->NewGlobalRef(env, ref);
+    return handler;
+}
+
+void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
+    assert(ctx);
+    assert(json);
+
     JNIEnv *env;
     (*jvm)->AttachCurrentThread(jvm, &env, NULL);
-
-    assert(ctx);
-    assert(event_json);
-    abi_event_handler *handler = (abi_event_handler *)ctx;
-    jclass cls = (*env)->GetObjectClass(env, handler->event_cb);
+    abi_handler *handler = (abi_handler *)ctx;
+    jclass cls = (*env)->GetObjectClass(env, handler->ref);
     if (cls) {
-        jmethodID methodID = (*env)->GetMethodID(env, cls, "onEvent",
-                                                 "(Ljava/lang/Object;Ljava/lang/String;)V");
+        jmethodID methodID = (*env)->GetMethodID(env, cls, method_id,
+                                                 "(Ljava/lang/String;)V");
         if (methodID) {
-            jstring jeventJSON = (*env)->NewStringUTF(env, event_json);
-            (*env)->CallVoidMethod(env, handler->event_cb, methodID, handler->event_ctx,
-                                   jeventJSON);
+            jstring jeventJSON = (*env)->NewStringUTF(env, json);
+            (*env)->CallVoidMethod(env, handler->ref, methodID, jeventJSON);
             (*env)->DeleteLocalRef(env, jeventJSON);
         }
         (*env)->DeleteLocalRef(env, cls);
     }
-
     (*jvm)->DetachCurrentThread(jvm);
 }
 
-void connection_status_callback_proxy(void *ctx, const char *status_json) {
-    JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+void abi_event_handler_proxy(void *ctx, const char *event_json) {
+    abi_handler_proxy(ctx, "onEvent", event_json);
+}
 
-    assert(ctx);
-    assert(status_json);
-    connection_status_handler *handler = (connection_status_handler *)ctx;
-    jclass cls = (*env)->GetObjectClass(env, handler->status_cb);
-    if (cls) {
-        jmethodID methodID = (*env)->GetMethodID(env, cls, "onStatus",
-                                                 "(Ljava/lang/Object;Ljava/lang/String;)V");
-        if (methodID) {
-            jstring jstatusJSON = (*env)->NewStringUTF(env, status_json);
-            (*env)->CallVoidMethod(env, handler->status_cb, methodID, handler->status_ctx,
-                                   jstatusJSON);
-            (*env)->DeleteLocalRef(env, jstatusJSON);
-        }
-        (*env)->DeleteLocalRef(env, cls);
-    }
-
-    (*jvm)->DetachCurrentThread(jvm);
+void abi_connection_status_handler_proxy(void *ctx, const char *status_json) {
+    abi_handler_proxy(ctx, "onStatus", status_json);
 }

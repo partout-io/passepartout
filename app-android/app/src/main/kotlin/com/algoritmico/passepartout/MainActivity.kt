@@ -18,7 +18,7 @@ import com.algoritmico.passepartout.abi.AppProfileHeader
 import com.algoritmico.passepartout.abi.Event
 import com.algoritmico.passepartout.abi.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.ProfileEventSave
-import com.algoritmico.passepartout.helpers.ABIEventCallback
+import com.algoritmico.passepartout.helpers.ABIEventHandler
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import io.partout.abi.TaggedProfile
 import io.partout.jni.AndroidTunnelStrategy
@@ -34,13 +34,13 @@ val globalJsonCoder = Json {
     ignoreUnknownKeys = true
 }
 
-class MainActivity : ComponentActivity(), ABIEventCallback {
+class MainActivity : ComponentActivity(), ABIEventHandler {
     private val wrapper = NativeLibraryWrapper()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
     private lateinit var tunnelStrategy: AndroidTunnelStrategy
 
-    override fun onEvent(eventCtx: Any?, eventJSON: String) {
+    override fun onEvent(eventJSON: String) {
         mainHandler.post {
             val event: Event = globalJsonCoder.decodeFromString(eventJSON)
             Log.i("Passepartout", ">>> MainActivity: $event")
@@ -74,14 +74,12 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
             mkdirs()
         }.absolutePath
         val cachePath = cacheDir.absolutePath
-        val eventHandler = this
         wrapper.appInit(
             bundle,
             constants,
             profilesDir,
             cachePath,
-            this,
-            eventHandler
+            this
         )
         tunnelStrategy = AndroidTunnelStrategy(
             context = this,

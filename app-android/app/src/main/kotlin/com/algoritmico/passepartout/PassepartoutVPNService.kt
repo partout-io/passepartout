@@ -12,7 +12,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.algoritmico.passepartout.abi.OnConnectionStatus
-import com.algoritmico.passepartout.helpers.ConnectionStatusCallback
+import com.algoritmico.passepartout.helpers.ABIConnectionStatusHandler
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import io.partout.jni.AndroidTunnelController
 import io.partout.jni.AndroidTunnelStrategy
@@ -24,7 +24,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
+class PassepartoutVPNService: VpnService(), ABIConnectionStatusHandler {
     private val library = NativeLibraryWrapper()
     private val vpnWrapper = AndroidTunnelController(this)
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -78,7 +78,6 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
                     profileJSON,
                     cachePath,
                     statusHandler,
-                    statusHandler,
                     vpnWrapper
                 ) { _, code, errorMessage ->
                     serviceScope.launch {
@@ -120,7 +119,7 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
         }
     }
 
-    override fun onStatus(statusCtx: Any?, onStatusJSON: String) {
+    override fun onStatus(onStatusJSON: String) {
         val onStatus = globalJsonCoder.decodeFromString<OnConnectionStatus>(onStatusJSON)
         Log.i("Passepartout", ">>> onStatus = ${onStatus}")
     }

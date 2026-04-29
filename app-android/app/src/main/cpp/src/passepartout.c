@@ -28,17 +28,11 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
         jstring constants,
         jstring profilesDir,
         jstring cacheDir,
-        jobject eventContext,
-        jobject eventCallback) {
+        jobject eventHandler) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
     const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
-
-    // JNI handler is the context of the event callback
-    abi_event_handler *handler = malloc(sizeof(abi_event_handler));
-    handler->event_ctx = (*env)->NewGlobalRef(env, eventContext);
-    handler->event_cb = (*env)->NewGlobalRef(env, eventCallback);
 
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
@@ -46,8 +40,8 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
     args.preferences = "{\"logsPrivateData\": true}";
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
-    args.event_ctx = handler;
-    args.event_cb = abi_event_callback_proxy;
+    args.event_ctx = abi_handler_create(env, eventHandler);
+    args.event_cb = abi_event_handler_proxy;
     psp_app_init(&args);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
@@ -83,8 +77,7 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
         jstring constants,
         jstring profile,
         jstring cacheDir,
-        jobject statusContext,
-        jobject statusCallback,
+        jobject statusHandler,
         jobject vpnWrapper,
         jobject completion
 ) {
@@ -96,11 +89,6 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     // Store global reference of builder wrapper
     jobject jniVPNWrapper = (*env)->NewGlobalRef(env, vpnWrapper);
 
-    // JNI handler is the context of the event callback
-    connection_status_handler *handler = malloc(sizeof(connection_status_handler));
-    handler->status_ctx = (*env)->NewGlobalRef(env, statusContext);
-    handler->status_cb = (*env)->NewGlobalRef(env, statusCallback);
-
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
@@ -109,8 +97,8 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     args.profile = cProfile;
     args.is_interactive = true;
     args.is_daemon = false;
-    args.status_ctx = handler;
-    args.status_cb = connection_status_callback_proxy;
+    args.status_ctx = abi_handler_create(env, statusHandler);
+    args.status_cb = abi_connection_status_handler_proxy;
     args.jni_wrapper = jniVPNWrapper;
 
     abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
