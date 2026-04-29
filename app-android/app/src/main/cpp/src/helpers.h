@@ -7,7 +7,12 @@
 #pragma once
 #include <jni.h>
 
-void *abi_handler_create(JNIEnv *env, jobject ref);
+typedef struct {
+    jobject ref;
+} abi_handler;
+
+abi_handler *abi_handler_create(JNIEnv *env, jobject ref);
+void abi_handler_free(JNIEnv *env, abi_handler *handler);
 
 /* Global handlers (lifescope = application). */
 void abi_event_handler_proxy(void *ctx, const char *event_json);

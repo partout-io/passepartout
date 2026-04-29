@@ -35,17 +35,12 @@ JNIEnv *jni_attach_thread(bool *did_attach) {
     }
 }
 
-typedef struct {
-    jobject ref;
-} abi_handler;
-
-void *abi_handler_create(JNIEnv *env, jobject ref) {
+abi_handler *abi_handler_create(JNIEnv *env, jobject ref) {
     abi_handler *handler = malloc(sizeof(abi_handler));
     handler->ref = (*env)->NewGlobalRef(env, ref);
     return handler;
 }
 
-static
 void abi_handler_free(JNIEnv *env, abi_handler *handler) {
     if (!handler) return;
     (*env)->DeleteGlobalRef(env, handler->ref);
