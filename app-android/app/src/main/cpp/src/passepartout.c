@@ -10,12 +10,12 @@
 #include "helpers.h"
 
 struct {
-    jobject eventHandler;
+    abi_handler *eventHandler;
 } app_references;
 
 struct {
     jobject jniController;
-    jobject statusHandler;
+    abi_handler *statusHandler;
 } tunnel_references;
 
 JNIEXPORT jstring JNICALL
