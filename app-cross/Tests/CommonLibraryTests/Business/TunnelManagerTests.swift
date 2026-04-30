@@ -182,7 +182,7 @@ extension TunnelManagerTests {
         env.setEnvironmentValue(.connecting, forKey: TunnelEnvironmentKeys.connectionStatus)
 
         let info = ABI.AppTunnelInfo(
-            rawId: UniqueID().uuidString,
+            id: UniqueID().uuidString,
             isEnabled: true,
             tunnelStatus: .active,
             onDemand: false,

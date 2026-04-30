@@ -6,47 +6,34 @@ import Partout
 
 extension ABI.AppTunnelInfo {
     public init(
-        rawId: String,
+        id: String,
         isEnabled: Bool,
         tunnelStatus: TunnelStatus,
         onDemand: Bool,
         environment: TunnelEnvironmentReader?
     ) {
-        self.rawId = rawId
+        self.id = id
         self.isEnabled = isEnabled
         // Merge Partout status with environment to compute profile status
         status = tunnelStatus.considering(environment).abiStatus
-        self.rawTunnelStatus = tunnelStatus.rawValue
+        partoutTunnelStatus = tunnelStatus.rawValue
         self.onDemand = onDemand
         transfer = environment?.transfer
-        rawLastErrorCode = environment?.lastErrorCode
+        lastErrorCode = environment?.lastErrorCode
+    }
+
+    public var tunnelStatus: TunnelStatus {
+        TunnelStatus(rawValue: partoutTunnelStatus) ?? .inactive
     }
 
     public func with(environment: TunnelEnvironmentReader) -> Self {
         Self(
-            rawId: rawId,
+            id: id,
             isEnabled: isEnabled,
             tunnelStatus: tunnelStatus,
             onDemand: onDemand,
             environment: environment
         )
-    }
-
-    public var id: Profile.ID {
-        guard let id = Profile.ID(uuidString: rawId) else {
-            fatalError("rawId is not an UUID")
-        }
-        return id
-    }
-
-    public var tunnelStatus: TunnelStatus {
-        TunnelStatus(rawValue: rawTunnelStatus) ?? .inactive
-    }
-
-    public var lastErrorCode: PartoutError.Code? {
-        rawLastErrorCode.map {
-            PartoutError.Code(rawValue: $0)
-        }
     }
 }
 

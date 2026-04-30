@@ -9,45 +9,47 @@ import Partout
 
 public struct OpenAPIAppTunnelInfo: Sendable, Codable, Hashable {
 
-    public var rawId: String
+    public var id: String
     public var isEnabled: Bool
     public var status: OpenAPIAppProfileStatus
-    public var rawTunnelStatus: String
+    public var partoutTunnelStatus: String
     public var onDemand: Bool
     public var transfer: OpenAPIProfileTransfer?
-    public var rawLastErrorCode: String?
+    public var lastErrorCode: String?
 
-    public init(rawId: String, isEnabled: Bool, status: OpenAPIAppProfileStatus, rawTunnelStatus: String, onDemand: Bool, transfer: OpenAPIProfileTransfer? = nil, rawLastErrorCode: String? = nil) {
-        self.rawId = rawId
+    public init(id: String, isEnabled: Bool, status: OpenAPIAppProfileStatus, partoutTunnelStatus: String, onDemand: Bool, transfer: OpenAPIProfileTransfer? = nil, lastErrorCode: String? = nil) {
+        self.id = id
         self.isEnabled = isEnabled
         self.status = status
-        self.rawTunnelStatus = rawTunnelStatus
+        self.partoutTunnelStatus = partoutTunnelStatus
         self.onDemand = onDemand
         self.transfer = transfer
-        self.rawLastErrorCode = rawLastErrorCode
+        self.lastErrorCode = lastErrorCode
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case rawId
+        case id
         case isEnabled
         case status
-        case rawTunnelStatus
+        case partoutTunnelStatus
         case onDemand
         case transfer
-        case rawLastErrorCode
+        case lastErrorCode
     }
 
     // Encodable protocol methods
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(rawId, forKey: .rawId)
+        try container.encode(id, forKey: .id)
         try container.encode(isEnabled, forKey: .isEnabled)
         try container.encode(status, forKey: .status)
-        try container.encode(rawTunnelStatus, forKey: .rawTunnelStatus)
+        try container.encode(partoutTunnelStatus, forKey: .partoutTunnelStatus)
         try container.encode(onDemand, forKey: .onDemand)
         try container.encodeIfPresent(transfer, forKey: .transfer)
-        try container.encodeIfPresent(rawLastErrorCode, forKey: .rawLastErrorCode)
+        try container.encodeIfPresent(lastErrorCode, forKey: .lastErrorCode)
     }
 }
 
+
+extension OpenAPIAppTunnelInfo: Identifiable {}

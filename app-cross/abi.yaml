@@ -322,25 +322,25 @@ components:
       type: object
       additionalProperties: false
       properties:
-        rawId:
+        id:
           type: string
         isEnabled:
           type: boolean
         status:
           "$ref": "#/components/schemas/AppProfileStatus"
-        rawTunnelStatus:
+        partoutTunnelStatus:
           type: string
         onDemand:
           type: boolean
         transfer:
           "$ref": "#/components/schemas/ProfileTransfer"
-        rawLastErrorCode:
+        lastErrorCode:
           type: string
       required:
-      - rawId
+      - id
       - isEnabled
       - status
-      - rawTunnelStatus
+      - partoutTunnelStatus
       - onDemand
     AppUserLevel:
       type: string
