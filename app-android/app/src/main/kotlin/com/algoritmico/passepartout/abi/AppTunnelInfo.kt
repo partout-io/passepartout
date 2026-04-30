@@ -25,20 +25,20 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param id 
+ * @param rawId 
  * @param isEnabled 
  * @param status 
- * @param partoutTunnelStatus 
+ * @param rawTunnelStatus 
  * @param onDemand 
  * @param transfer 
- * @param lastErrorCode 
+ * @param rawLastErrorCode 
  */
 @Serializable
 
 data class AppTunnelInfo (
 
-    @SerialName(value = "id")
-    val id: kotlin.String,
+    @SerialName(value = "rawId")
+    val rawId: kotlin.String,
 
     @SerialName(value = "isEnabled")
     val isEnabled: kotlin.Boolean,
@@ -46,8 +46,8 @@ data class AppTunnelInfo (
     @Contextual @SerialName(value = "status")
     val status: AppProfileStatus,
 
-    @SerialName(value = "partoutTunnelStatus")
-    val partoutTunnelStatus: kotlin.String,
+    @SerialName(value = "rawTunnelStatus")
+    val rawTunnelStatus: kotlin.String,
 
     @SerialName(value = "onDemand")
     val onDemand: kotlin.Boolean,
@@ -55,8 +55,8 @@ data class AppTunnelInfo (
     @SerialName(value = "transfer")
     val transfer: ProfileTransfer? = null,
 
-    @SerialName(value = "lastErrorCode")
-    val lastErrorCode: kotlin.String? = null
+    @SerialName(value = "rawLastErrorCode")
+    val rawLastErrorCode: kotlin.String? = null
 
 ) {
 

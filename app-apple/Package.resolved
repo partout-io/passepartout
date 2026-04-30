@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/openssl-apple",
       "state" : {
-        "revision" : "3252c9386a195198ae49911a06ef595698f48c5a",
-        "version" : "3.6.200"
+        "revision" : "4c152e7f49de4b0ae6e4059ba1425bd969ca4a84",
+        "version" : "3.6.300"
       }
     },
     {
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "b31565862a8f39866af50bc6676160d8dda7de35",
         "version" : "2.96.0"
-      }
-    },
-    {
-      "identity" : "swift-syntax",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-syntax",
-      "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
       }
     },
     {
