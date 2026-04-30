@@ -175,6 +175,25 @@ extension TunnelManagerTests {
                 #expect($0.considering(env) == $0)
             }
     }
+
+    @Test
+    func givenTunnelInfo_whenEnvironmentConnectionStatusChanges_thenProfileStatusIsRecomputed() async throws {
+        let env = SharedTunnelEnvironment(profileId: nil)
+        env.setEnvironmentValue(.connecting, forKey: TunnelEnvironmentKeys.connectionStatus)
+
+        let info = ABI.AppTunnelInfo(
+            id: UniqueID(),
+            tunnelStatus: .active,
+            onDemand: false,
+            environment: env
+        )
+        #expect(info.status == .connecting)
+
+        env.setEnvironmentValue(.connected, forKey: TunnelEnvironmentKeys.connectionStatus)
+
+        let updated = info.with(environment: env)
+        #expect(updated.status == .connected)
+    }
 }
 
 private extension AsyncStream where Element == ABI.TunnelEvent {

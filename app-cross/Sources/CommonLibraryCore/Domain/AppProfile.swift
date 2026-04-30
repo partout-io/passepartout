@@ -83,14 +83,12 @@ extension ABI {
         }
 
         public func with(environment: TunnelEnvironmentReader) -> Self {
-            var copy = self
-            copy.transfer = environment.environmentValue(
-                forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer
-            copy.lastErrorCode = environment.environmentValue(
-                forKey: TunnelEnvironmentKeys.lastErrorCode
+            Self(
+                id: id,
+                tunnelStatus: tunnelStatus,
+                onDemand: onDemand,
+                environment: environment
             )
-            return copy
         }
     }
 }
