@@ -8,7 +8,6 @@ extension ABI {
     public typealias AppConstants = OpenAPIAppConstants
     public typealias AppFeature = OpenAPIAppFeature
     public typealias AppProfileStatus = OpenAPIAppProfileStatus
-    public typealias AppTunnelInfo = OpenAPIAppTunnelInfo
     public typealias AppUserLevel = OpenAPIAppUserLevel
     public typealias ConfigFlag = OpenAPIConfigFlag
     public typealias Credits = OpenAPICredits

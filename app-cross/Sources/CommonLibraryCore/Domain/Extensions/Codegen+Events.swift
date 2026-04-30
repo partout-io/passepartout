@@ -80,7 +80,7 @@ extension ABI.TunnelEvent {
             var container = encoder.singleValueContainer()
             try container.encode(OpenAPITunnelEventRefresh(
                 active: active.reduce(into: [:]) {
-                    $0[$1.key.uuidString] = $1.value
+                    $0[$1.key.uuidString] = $1.value.toProto
                 }
             ))
         }
