@@ -157,10 +157,12 @@ class MainActivity : ComponentActivity() {
 //        val file = String(assets.open("vps.conf").readBytes())
         val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
         library.appImportProfileText(file, "SomeName") { code, json ->
-            if (code == 0) {
-                Log.i("Passepartout", "Import success!")
-            } else {
-                Log.e("Passepartout", "Import failure (code=$code): $json")
+            runOnUiThread {
+                if (code == 0) {
+                    Log.i("Passepartout", "Import success!")
+                } else {
+                    Log.e("Passepartout", "Import failure (code=$code): $json")
+                }
             }
         }
     }
