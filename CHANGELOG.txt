@@ -1,1 +1,1 @@
-* OpenVPN: Use modern cipher negotiation (#1775)
+* Fix tunnel occasionally stuck on incorrect status (#1781)
