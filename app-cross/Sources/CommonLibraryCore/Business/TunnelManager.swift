@@ -153,7 +153,9 @@ extension TunnelManager {
     }
 
     public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
-        latestInfo?[profileId]?.lastErrorCode
+        latestInfo?[profileId]?.lastErrorCode.map {
+            PartoutError.Code(rawValue: $0)
+        }
     }
 
     public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
@@ -267,7 +269,8 @@ private extension Dictionary where Key == Profile.ID, Value == ABI.AppTunnelInfo
 
     func updated(with environments: [Profile.ID: TunnelEnvironmentReader]) -> Self {
         mapValues {
-            guard let env = environments[$0.id] else { return $0 }
+            guard let uuid = Profile.ID(uuidString: $0.id) else { return $0 }
+            guard let env = environments[uuid] else { return $0 }
             return $0.with(environment: env)
         }
     }

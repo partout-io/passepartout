@@ -52,47 +52,4 @@ extension ABI {
             lhs.name.lowercased() < rhs.name.lowercased()
         }
     }
-
-    public struct AppTunnelInfo: Identifiable, Hashable, Sendable {
-        public let id: Profile.ID
-        public let isEnabled: Bool
-        public let status: AppProfileStatus
-        public let tunnelStatus: TunnelStatus
-        public let onDemand: Bool
-        public private(set) var transfer: ABI.ProfileTransfer?
-        public private(set) var lastErrorCode: PartoutError.Code?
-
-        public init(
-            id: Profile.ID,
-            isEnabled: Bool,
-            tunnelStatus: TunnelStatus,
-            onDemand: Bool,
-            environment: TunnelEnvironmentReader?
-        ) {
-            self.id = id
-            self.isEnabled = isEnabled
-            status = tunnelStatus.considering(environment).abiStatus
-            self.tunnelStatus = tunnelStatus
-            self.onDemand = onDemand
-            transfer = nil
-            lastErrorCode = nil
-
-            transfer = environment?.environmentValue(
-                forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer
-            lastErrorCode = environment?.environmentValue(
-                forKey: TunnelEnvironmentKeys.lastErrorCode
-            )
-        }
-
-        public func with(environment: TunnelEnvironmentReader) -> Self {
-            Self(
-                id: id,
-                isEnabled: isEnabled,
-                tunnelStatus: tunnelStatus,
-                onDemand: onDemand,
-                environment: environment
-            )
-        }
-    }
 }

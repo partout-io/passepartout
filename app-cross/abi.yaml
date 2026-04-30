@@ -324,8 +324,12 @@ components:
       properties:
         id:
           type: string
+        isEnabled:
+          type: boolean
         status:
           "$ref": "#/components/schemas/AppProfileStatus"
+        partoutTunnelStatus:
+          type: string
         onDemand:
           type: boolean
         transfer:
@@ -334,7 +338,9 @@ components:
           type: string
       required:
       - id
+      - isEnabled
       - status
+      - partoutTunnelStatus
       - onDemand
     AppUserLevel:
       type: string

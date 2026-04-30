@@ -32,18 +32,6 @@ extension ABI.AppProfileHeader: OpenAPIEncodable {
     }
 }
 
-extension ABI.AppTunnelInfo: OpenAPIEncodable {
-    var toProto: OpenAPIAppTunnelInfo {
-        OpenAPIAppTunnelInfo(
-            id: id.uuidString,
-            status: status,
-            onDemand: onDemand,
-            transfer: transfer,
-            lastErrorCode: lastErrorCode?.rawValue
-        )
-    }
-}
-
 extension ABI.OriginalPurchase: OpenAPIEncodable {
     var toProto: OpenAPIOriginalPurchase {
         OpenAPIOriginalPurchase(
