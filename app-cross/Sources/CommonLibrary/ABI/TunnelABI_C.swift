@@ -12,8 +12,7 @@ private var globalABI: TunnelABIProtocol?
 @c(psp_tunnel_start)
 public func __psp_tunnel_start(
     args: UnsafePointer<psp_tunnel_start_args>?,
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
+    completion: psp_completion
 ) {
     guard let args,
           let appBundleData = args.pointee.bundle?.asJSONData,
@@ -35,41 +34,23 @@ public func __psp_tunnel_start(
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
-    nonisolated(unsafe) let statusContext = args.pointee.status_ctx
-    let statusCallback = args.pointee.status_cb
-    let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
-        guard let statusCallback else { return }
-        let wrapper = ABI.OnConnectionStatus(
-            profileId: profileId.uuidString,
-            status: status
-        )
-        do {
-            let json = try ABI.encodeWrapper(wrapper)
-            json.withCString {
-                statusCallback(statusContext, $0)
-            }
-        } catch {
-            assertionFailure("Unable to encode status: \(status), \(error)")
-        }
-    }
-    nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
+    nonisolated(unsafe) let bindings = args.pointee.bindings
     // Start tunnel ABI
-    ABI.run(context) { ctx in
+    ABI.run(completion) { callback in
         defer { pspUnlock() }
         do {
             globalABI = try TunnelABI.forCrossPlatform(
+                bindings: bindings,
                 appBundleData: appBundleData,
                 appConstantsData: appConstantsData,
                 preferencesData: preferencesData,
                 profileInput: profileInput,
-                cachesURL: cachesURL,
-                onStatus: onStatus,
-                jniWrapper: jniWrapper
+                cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            completion?(ctx, 0, nil)
+            callback?(PSPCompletionCodeOK, nil)
         } catch {
-            completion?(ctx, -1, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }
     }
@@ -77,14 +58,11 @@ public func __psp_tunnel_start(
 }
 
 @c(psp_tunnel_stop)
-public func __psp_tunnel_stop(
-    context: UnsafeMutableRawPointer?,
-    completion: psp_abi_completion?
-) {
-    ABI.run(context) { ctx in
+public func __psp_tunnel_stop(completion: psp_completion) {
+    ABI.run(completion) { callback in
         await globalABI?.stop()
         globalABI = nil
-        completion?(ctx, 0, nil)
+        callback?(PSPCompletionCodeOK, nil)
     }
 }
 

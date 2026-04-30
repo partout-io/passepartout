@@ -62,10 +62,10 @@ int main(int argc, char *argv[]) {
     args.profile = profile;
     args.is_interactive = true;
     args.is_daemon = true;
-    args.jni_wrapper = NULL;
+    args.bindings.controller = NULL;
 
     /* Will block indefinitely. */
-    psp_tunnel_start(&args, NULL, start_callback);
+    psp_tunnel_start(&args, PSP_CB(NULL, start_callback));
 
     free(bundle);
     free(constants);

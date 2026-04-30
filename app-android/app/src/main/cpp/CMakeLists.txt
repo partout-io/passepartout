@@ -1,20 +1,24 @@
-cmake_minimum_required(VERSION 3.21)
-project(Passepartout)
+cmake_minimum_required(VERSION 3.22)
+project(Passepartout LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-# Include headers
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-# Library versions
-set(SWIFT_VERSION 6_2)
-set(JNI_DIR ${CMAKE_SOURCE_DIR}/libs)
-
-# Partout + dependencies (dynamic, will be loaded at runtime)
-file(GLOB PASSEPARTOUT_SOS "${JNI_DIR}/passepartout/${ANDROID_ABI}/lib*.so")
+# Copy libpassepartout and dependencies (dynamic, will be loaded at runtime)
+set(JNI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+file(GLOB PASSEPARTOUT_SOS "${JNI_DIR}/${ANDROID_ABI}/lib*.so")
 set(ALL_SOS ${PASSEPARTOUT_SOS} ${SWIFT_SOS})
 
+# Native JNI wrapper
+add_library(passepartout_wrapper SHARED
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/passepartout.c
+)
+target_include_directories(passepartout_wrapper PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+# Link to libpassepartout and dependencies
 foreach(SO_FILE ${ALL_SOS})
     get_filename_component(SO_NAME ${SO_FILE} NAME_WE)
     string(REPLACE "lib" "" lib ${SO_NAME})
@@ -25,10 +29,6 @@ foreach(SO_FILE ${ALL_SOS})
     )
     list(APPEND AUTO_LIBS ${lib})
 endforeach()
-
-# Native wrappings for JNI
-add_library(passepartout_wrapper SHARED
-        src/passepartout.c
-        src/helpers.c
+target_link_libraries(passepartout_wrapper PRIVATE
+    ${AUTO_LIBS}
 )
-target_link_libraries(passepartout_wrapper PRIVATE ${AUTO_LIBS})

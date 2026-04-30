@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include "helpers.h"
 
@@ -16,81 +17,93 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     return JNI_VERSION_1_6;
 }
 
-void abi_completion_callback_proxy(void *ctx, int code, const char *error_msg) {
+static
+JNIEnv *jni_attach_thread(bool *did_attach) {
     JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
-
-    assert(ctx);
-
-    abi_completion_handler *handler = (abi_completion_handler *)ctx;
-    jclass cls = (*env)->GetObjectClass(env, handler->completion_cb);
-    if (cls) {
-        jmethodID methodID = (*env)->GetMethodID(env, cls, "onComplete",
-                                                 "(Ljava/lang/Object;ILjava/lang/String;)V");
-        if (methodID) {
-            if (error_msg) {
-                jstring jerrorMsg = (*env)->NewStringUTF(env, error_msg);
-                (*env)->CallVoidMethod(env, handler->completion_cb, methodID,
-                                       handler->completion_ctx, code, jerrorMsg);
-                (*env)->DeleteLocalRef(env, jerrorMsg);
-            } else {
-                (*env)->CallVoidMethod(env, handler->completion_cb, methodID,
-                                       handler->completion_ctx, code, NULL);
-            }
-        }
-        (*env)->DeleteLocalRef(env, cls);
+    jint status = (*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
+    switch (status) {
+        case JNI_OK:
+            *did_attach = false;
+            return env;
+        case JNI_EDETACHED:
+            status = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+            if (status != JNI_OK) return NULL;
+            *did_attach = true;
+            return env;
+        default:
+            return NULL;
     }
-
-    // Clean up JNI ref to completion callback
-    (*env)->DeleteGlobalRef(env, handler->completion_cb);
-    // Clean up temporary proxy handler
-    free(handler);
-
-    (*jvm)->DetachCurrentThread(jvm);
 }
 
-void abi_event_callback_proxy(void *ctx, const char *event_json) {
-    JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+abi_handler *abi_handler_create(JNIEnv *env, jobject ref) {
+    abi_handler *handler = malloc(sizeof(abi_handler));
+    handler->ref = (*env)->NewGlobalRef(env, ref);
+    return handler;
+}
 
+void abi_handler_free(JNIEnv *env, abi_handler *handler) {
+    if (!handler) return;
+    (*env)->DeleteGlobalRef(env, handler->ref);
+    free(handler);
+}
+
+/* Global */
+
+void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
     assert(ctx);
-    assert(event_json);
-    abi_event_handler *handler = (abi_event_handler *)ctx;
-    jclass cls = (*env)->GetObjectClass(env, handler->event_cb);
+    assert(method_id);
+    assert(json);
+
+    bool did_attach;
+    JNIEnv *env = jni_attach_thread(&did_attach);
+    if (!env) return;
+
+    abi_handler *handler = (abi_handler *)ctx;
+    jclass cls = (*env)->GetObjectClass(env, handler->ref);
     if (cls) {
-        jmethodID methodID = (*env)->GetMethodID(env, cls, "onEvent",
-                                                 "(Ljava/lang/Object;Ljava/lang/String;)V");
+        jmethodID methodID = (*env)->GetMethodID(env, cls, method_id,
+                                                 "(Ljava/lang/String;)V");
         if (methodID) {
-            jstring jeventJSON = (*env)->NewStringUTF(env, event_json);
-            (*env)->CallVoidMethod(env, handler->event_cb, methodID, handler->event_ctx,
-                                   jeventJSON);
+            jstring jeventJSON = (*env)->NewStringUTF(env, json);
+            (*env)->CallVoidMethod(env, handler->ref, methodID, jeventJSON);
             (*env)->DeleteLocalRef(env, jeventJSON);
         }
         (*env)->DeleteLocalRef(env, cls);
     }
-
-    (*jvm)->DetachCurrentThread(jvm);
+    if (did_attach) (*jvm)->DetachCurrentThread(jvm);
 }
 
-void connection_status_callback_proxy(void *ctx, const char *status_json) {
-    JNIEnv *env;
-    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+void abi_event_handler_proxy(void *ctx, const char *event_json) {
+    abi_handler_proxy(ctx, "onEvent", event_json);
+}
 
+void abi_connection_status_handler_proxy(void *ctx, const char *status_json) {
+    abi_handler_proxy(ctx, "onStatus", status_json);
+}
+
+/* Completion (fire and release) */
+
+void abi_completion_proxy(void *ctx, int code, const char *json) {
     assert(ctx);
-    assert(status_json);
-    connection_status_handler *handler = (connection_status_handler *)ctx;
-    jclass cls = (*env)->GetObjectClass(env, handler->status_cb);
+
+    bool did_attach;
+    JNIEnv *env = jni_attach_thread(&did_attach);
+    if (!env) return;
+
+    abi_handler *handler = (abi_handler *)ctx;
+    jclass cls = (*env)->GetObjectClass(env, handler->ref);
     if (cls) {
-        jmethodID methodID = (*env)->GetMethodID(env, cls, "onStatus",
-                                                 "(Ljava/lang/Object;Ljava/lang/String;)V");
+        jmethodID methodID = (*env)->GetMethodID(env, cls, "onComplete", "(ILjava/lang/String;)V");
         if (methodID) {
-            jstring jstatusJSON = (*env)->NewStringUTF(env, status_json);
-            (*env)->CallVoidMethod(env, handler->status_cb, methodID, handler->status_ctx,
-                                   jstatusJSON);
-            (*env)->DeleteLocalRef(env, jstatusJSON);
+            jstring jJSON = json ? (*env)->NewStringUTF(env, json) : NULL;
+            (*env)->CallVoidMethod(env, handler->ref, methodID, code, jJSON);
+            if (jJSON) (*env)->DeleteLocalRef(env, jJSON);
         }
         (*env)->DeleteLocalRef(env, cls);
     }
 
-    (*jvm)->DetachCurrentThread(jvm);
+    // Release handler on completion
+    abi_handler_free(env, handler);
+
+    if (did_attach) (*jvm)->DetachCurrentThread(jvm);
 }

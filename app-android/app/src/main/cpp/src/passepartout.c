@@ -9,6 +9,17 @@
 #include "passepartout.h"
 #include "helpers.h"
 
+struct {
+    abi_handler *eventHandler;
+} app_references;
+
+struct {
+    jobject jniController;
+    abi_handler *statusHandler;
+} tunnel_references;
+
+#define PSP_JNI_CB(e, c) PSP_CB(abi_handler_create(e, c), abi_completion_proxy)
+
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
     jstring jmsg = (*env)->NewStringUTF(env, psp_partout_version());
@@ -28,17 +39,16 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
         jstring constants,
         jstring profilesDir,
         jstring cacheDir,
-        jobject eventContext,
-        jobject eventCallback) {
+        jobject eventHandler,
+        jobject completion
+) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
     const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
-    // JNI handler is the context of the event callback
-    abi_event_handler *handler = malloc(sizeof(abi_event_handler));
-    handler->event_ctx = (*env)->NewGlobalRef(env, eventContext);
-    handler->event_cb = (*env)->NewGlobalRef(env, eventCallback);
+    // Store globally
+    app_references.eventHandler = abi_handler_create(env, eventHandler);
 
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
@@ -46,14 +56,34 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appInit(
     args.preferences = "{\"logsPrivateData\": true}";
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
-    args.event_ctx = handler;
-    args.event_cb = abi_event_callback_proxy;
-    psp_app_init(&args);
+    args.bindings.event_ctx = app_references.eventHandler;
+    args.bindings.event_cb = abi_event_handler_proxy;
+    psp_app_init(&args, PSP_JNI_CB(env, completion));
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
     (*env)->ReleaseStringUTFChars(env, profilesDir, cProfilesDir);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appDeinit(
+        JNIEnv *env,
+        jobject thiz,
+        jobject completion
+) {
+    psp_app_deinit(PSP_JNI_CB(env, completion));
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appRelease(
+        JNIEnv *env,
+        jobject thiz
+) {
+    if (app_references.eventHandler) {
+        abi_handler_free(env, app_references.eventHandler);
+        app_references.eventHandler = NULL;
+    }
 }
 
 JNIEXPORT void JNICALL
@@ -64,13 +94,9 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appImportProfileT
         jstring name,
         jobject completion
 ) {
-    abi_completion_handler *handler = malloc(sizeof(abi_completion_handler));
-    handler->completion_ctx = NULL;
-    handler->completion_cb = (*env)->NewGlobalRef(env, completion);
-
     const char *cText = (*env)->GetStringUTFChars(env, text, NULL);
     const char *cName = (*env)->GetStringUTFChars(env, name, NULL);
-    psp_app_import_profile_text(cText, cName, handler, abi_completion_callback_proxy);
+    psp_app_import_profile_text(cText, cName, PSP_JNI_CB(env, completion));
     (*env)->ReleaseStringUTFChars(env, text, cText);
     (*env)->ReleaseStringUTFChars(env, name, cName);
 }
@@ -83,9 +109,8 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
         jstring constants,
         jstring profile,
         jstring cacheDir,
-        jobject statusContext,
-        jobject statusCallback,
-        jobject vpnWrapper,
+        jobject statusHandler,
+        jobject controller,
         jobject completion
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
@@ -93,13 +118,9 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
-    // Store global reference of builder wrapper
-    jobject jniVPNWrapper = (*env)->NewGlobalRef(env, vpnWrapper);
-
-    // JNI handler is the context of the event callback
-    connection_status_handler *handler = malloc(sizeof(connection_status_handler));
-    handler->status_ctx = (*env)->NewGlobalRef(env, statusContext);
-    handler->status_cb = (*env)->NewGlobalRef(env, statusCallback);
+    // Store global JNI references (ownership is transferred)
+    tunnel_references.jniController = (*env)->NewGlobalRef(env, controller);
+    tunnel_references.statusHandler = abi_handler_create(env, statusHandler);
 
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
@@ -109,14 +130,11 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
     args.profile = cProfile;
     args.is_interactive = true;
     args.is_daemon = false;
-    args.status_ctx = handler;
-    args.status_cb = connection_status_callback_proxy;
-    args.jni_wrapper = jniVPNWrapper;
+    args.bindings.controller = tunnel_references.jniController;
+    args.bindings.status_ctx = tunnel_references.statusHandler;
+    args.bindings.status_cb = abi_connection_status_handler_proxy;
 
-    abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
-    cmp->completion_ctx = NULL;
-    cmp->completion_cb = (*env)->NewGlobalRef(env, completion);
-    psp_tunnel_start(&args, cmp, abi_completion_callback_proxy);
+    psp_tunnel_start(&args, PSP_JNI_CB(env, completion));
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
@@ -130,8 +148,20 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStop(
         jobject thiz,
         jobject completion
 ) {
-    abi_completion_handler *cmp = malloc(sizeof(abi_completion_handler));
-    cmp->completion_ctx = NULL;
-    cmp->completion_cb = (*env)->NewGlobalRef(env, completion);
-    psp_tunnel_stop(cmp, abi_completion_callback_proxy);
+    psp_tunnel_stop(PSP_JNI_CB(env, completion));
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelRelease(
+        JNIEnv *env,
+        jobject thiz
+) {
+    if (tunnel_references.jniController) {
+        (*env)->DeleteGlobalRef(env, tunnel_references.jniController);
+        tunnel_references.jniController = NULL;
+    }
+    if (tunnel_references.statusHandler) {
+        abi_handler_free(env, tunnel_references.statusHandler);
+        tunnel_references.statusHandler = NULL;
+    }
 }

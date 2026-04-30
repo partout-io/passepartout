@@ -9,13 +9,12 @@ import Partout
 extension TunnelABI {
     // TODO: #218, cachesURL must be per-profile
     public static func forCrossPlatform(
+        bindings: psp_tunnel_bindings,
         appBundleData: Data,
         appConstantsData: Data,
         preferencesData: Data?,
         profileInput: ABI.ProfileImporterInput,
-        cachesURL: URL,
-        onStatus: SimpleConnectionDaemon.StatusCallback?,
-        jniWrapper: UnsafeMutableRawPointer?
+        cachesURL: URL
     ) throws -> TunnelABI {
         let decoder = JSONDecoder()
 
@@ -31,7 +30,8 @@ extension TunnelABI {
             newDeviceId: true,
             deviceIdLength: constants.deviceIdLength
         )
-        preferences.configFlags = [.wgCrossV2]
+        // FIXME: ###, Cross, Hardcoded config flags
+        preferences.configFlags = [.ovpnCrossV2, .wgCrossV2]
 
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile
@@ -54,13 +54,32 @@ extension TunnelABI {
         )
 
         // Create platform-specific objects
-        let controller = try VirtualTunnelController(ctx, impl: jniWrapper)
+        let controller = try VirtualTunnelController(ctx, impl: bindings.controller)
         let factory = BSDSocketFactory(ctx) {
             // FIXME: #1656, C ABI, better path block
             PassthroughStream()
         }
         // FIXME: #1656, C ABI, reachability observer
         let reachability = DummyReachabilityObserver()
+
+        // Wrap onStatus callback
+        nonisolated(unsafe) let statusContext = bindings.status_ctx
+        let statusCallback = bindings.status_cb
+        let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
+            guard let statusCallback else { return }
+            let wrapper = ABI.OnConnectionStatus(
+                profileId: profileId.uuidString,
+                status: status
+            )
+            do {
+                let json = try ABI.encodeWrapper(wrapper)
+                json.withCString {
+                    statusCallback(statusContext, $0)
+                }
+            } catch {
+                assertionFailure("Unable to encode status: \(status), \(error)")
+            }
+        }
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(

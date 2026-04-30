@@ -41,6 +41,7 @@ public final class AppABI: Sendable {
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?
+    private var handler: ABI.EventHandler?
     private var subscriptions: [Task<Void, Never>]
 
     public init(
@@ -105,13 +106,16 @@ public final class AppABI: Sendable {
 }
 
 extension AppABI {
-    public func registerEvents(_ handler: ABI.EventHandler?) {
+    public func registerEvents(_ newHandler: ABI.EventHandler?) {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
         let tunnelEvents = tunnelManager.observeObjects()
         let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
+
+        // Set new handler
+        handler = newHandler
 
         // Post initial state AFTER events registration (in case it was missed)
         iapManager.postInitialState()
@@ -160,6 +164,10 @@ extension AppABI {
                 }
             }
         })
+    }
+
+    public func unregisterEvents() {
+        handler = nil
     }
 
     func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
