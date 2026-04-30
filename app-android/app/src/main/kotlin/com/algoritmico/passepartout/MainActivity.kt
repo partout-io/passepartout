@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
     private val library = NativeLibraryWrapper()
     private var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
     private var eventSubscription: Closeable? = null
+    private var isAppInitialized = false
     private lateinit var tunnelStrategy: AndroidTunnelStrategy
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +61,17 @@ class MainActivity : ComponentActivity() {
             profilesDir,
             cachePath,
             ABIEventDispatcher,
-            { _, _ -> }
+            { code, json ->
+                runOnUiThread {
+                    if (code == 0) {
+                        isAppInitialized = true
+                        Log.e("Passepartout", ">>> Started app")
+                    } else {
+                        Log.e("Passepartout", "Unable to init app (code=$code): $json")
+                        destroyApp()
+                    }
+                }
+            }
         )
         tunnelStrategy = AndroidTunnelStrategy(
             context = this,
@@ -90,10 +101,19 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         eventSubscription?.close()
         eventSubscription = null
-        library.appDeinit { _, _ ->
+        if (isAppInitialized) {
+            library.appDeinit { _, _ ->
+                library.appRelease()
+            }
+        } else {
             library.appRelease()
         }
         super.onDestroy()
+    }
+
+    private fun destroyApp() {
+        if (isFinishing || isDestroyed) return
+        finishAndRemoveTask()
     }
 
     private fun handleEvent(eventJSON: String) {
@@ -103,11 +123,9 @@ class MainActivity : ComponentActivity() {
             is ProfileEventRefresh -> {
                 headers.value = event.headers
             }
-
             is ProfileEventSave -> {
                 Log.i("Passepartout", ">>> MainActivity: profile = ${event.profile}")
             }
-
             else -> {
                 // Other events
             }
