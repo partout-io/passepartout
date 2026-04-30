@@ -26,7 +26,9 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param id 
+ * @param isEnabled 
  * @param status 
+ * @param partoutTunnelStatus 
  * @param onDemand 
  * @param transfer 
  * @param lastErrorCode 
@@ -38,8 +40,14 @@ data class AppTunnelInfo (
     @SerialName(value = "id")
     val id: kotlin.String,
 
+    @SerialName(value = "isEnabled")
+    val isEnabled: kotlin.Boolean,
+
     @Contextual @SerialName(value = "status")
     val status: AppProfileStatus,
+
+    @SerialName(value = "partoutTunnelStatus")
+    val partoutTunnelStatus: kotlin.String,
 
     @SerialName(value = "onDemand")
     val onDemand: kotlin.Boolean,
