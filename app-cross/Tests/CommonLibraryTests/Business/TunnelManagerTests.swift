@@ -183,6 +183,7 @@ extension TunnelManagerTests {
 
         let info = ABI.AppTunnelInfo(
             id: UniqueID(),
+            isEnabled: true,
             tunnelStatus: .active,
             onDemand: false,
             environment: env
