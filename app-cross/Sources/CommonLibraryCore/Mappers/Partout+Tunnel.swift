@@ -39,6 +39,7 @@ extension TunnelSnapshot {
     func abiInfo(withEnvironment environment: TunnelEnvironmentReader?) -> ABI.AppTunnelInfo {
         ABI.AppTunnelInfo(
             id: id,
+            isEnabled: isEnabled,
             tunnelStatus: status,
             onDemand: onDemand,
             environment: environment

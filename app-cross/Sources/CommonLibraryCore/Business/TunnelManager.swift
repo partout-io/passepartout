@@ -243,6 +243,7 @@ private extension TunnelManager {
         }
         return TunnelSnapshot(
             id: uuid,
+            isEnabled: false,
             status: .inactive,
             onDemand: false
         )

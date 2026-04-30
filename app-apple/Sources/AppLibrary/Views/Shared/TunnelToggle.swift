@@ -88,8 +88,7 @@ private extension TunnelToggle {
     }
 
     var isOn: Bool {
-        guard let tunnelProfile else { return false }
-        return tunnelProfile.status != .disconnected || tunnelProfile.onDemand
+        tunnelProfile?.isEnabled == true
     }
 
     var canInteract: Bool {
