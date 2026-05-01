@@ -26,7 +26,7 @@ private struct ProviderCountryFlag: View {
     var body: some View {
         ThemeCountryFlag(
             entity?.countryCode,
-            placeholderTip: Strings.Errors.App.Passepartout.missingProviderEntity,
+            placeholderTip: Strings.Errors.App.missingProviderEntity,
             countryTip: {
                 $0.localizedAsRegionCode
             }

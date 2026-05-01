@@ -22,6 +22,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             return nil
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
+        case .missingProviderEntity:
+            return V.missingProviderEntity
         case .moduleRequiresConnection(let module):
             return V.moduleRequiresConnection(
                 module.moduleType.localizedDescription,
@@ -42,7 +44,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
         case .timeout:
-            return Strings.Errors.App.Passepartout.timeout
+            // Handled manually
+            return Strings.Errors.App.Partout.timeout
         case .unexpectedResponse:
             // Handled manually
             return nil
@@ -70,7 +73,7 @@ extension ABI.AppError: @retroactive LocalizedError {
 
 extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
-        let V = Strings.Errors.App.Passepartout.self
+        let V = Strings.Errors.App.Partout.self
         switch code {
         case .Providers.corruptModule:
             return V.corruptProviderModule(reason?.localizedDescription ?? "")
@@ -90,9 +93,6 @@ extension PartoutError: @retroactive LocalizedError {
             }
             let stringKey = "errors.modules.\(userInfo.key)"
             return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
-
-        case .Providers.missingEntity:
-            return V.missingProviderEntity
 
         case .noActiveModules:
             return V.noActiveModules
