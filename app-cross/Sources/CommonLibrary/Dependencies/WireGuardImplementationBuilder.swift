@@ -21,20 +21,20 @@ struct WireGuardImplementationBuilder: Sendable {
 #if !PSP_CROSS
                 let flags = configBlock()
                 if flags.contains(.wgCrossV2) {
-                    return try WireGuardConnection(
+                    return try _WireGuardConnectionV2(
                         ctx,
                         parameters: $0,
                         module: $1
                     )
                 } else {
-                    return try LegacyWireGuardConnection(
+                    return try _WireGuardConnectionV1(
                         ctx,
                         parameters: $0,
                         module: $1
                     )
                 }
 #else
-                return try WireGuardConnection(
+                return try _WireGuardConnectionV2(
                     ctx,
                     parameters: $0,
                     module: $1
