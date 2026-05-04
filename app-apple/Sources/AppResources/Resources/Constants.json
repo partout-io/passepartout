@@ -38,7 +38,7 @@
         ],
         "verification": {
             "production": {
-                "defaultDelay": 120.0,
+                "defaultDelay": 240.0,
                 "tvDelay": 900.0,
                 "interval": 21600.0,
                 "attempts": 3,

@@ -38,16 +38,16 @@
         ],
         "verification": {
             "production": {
-                "defaultDelay": 120.0,
+                "defaultDelay": 240.0,
                 "tvDelay": 900.0,
                 "interval": 21600.0,
                 "attempts": 3,
                 "retryInterval": 300.0
             },
             "beta": {
-                "defaultDelay": 600.0,
-                "interval": 600.0,
-                "attempts": 3,
+                "defaultDelay": 1800.0,
+                "interval": 1800.0,
+                "attempts": 6,
                 "retryInterval": 10.0
             }
         }
