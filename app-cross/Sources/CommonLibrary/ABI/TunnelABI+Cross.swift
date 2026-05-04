@@ -55,10 +55,16 @@ extension TunnelABI {
 
         // Create platform-specific objects
         let controller = try VirtualTunnelController(ctx, impl: bindings.controller)
-        let factory = BSDSocketFactory(ctx) {
+        let betterPathBlock: BetterPathBlock
+#if !PSP_CROSS
+        betterPathBlock = NEBetterPathBlock(ctx).block
+#else
+        betterPathBlock = {
             // FIXME: #1656, C ABI, better path block
             PassthroughStream()
         }
+#endif
+        let factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
         // FIXME: #1656, C ABI, reachability observer
         let reachability = DummyReachabilityObserver()
 
