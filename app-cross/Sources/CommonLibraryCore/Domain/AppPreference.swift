@@ -79,7 +79,15 @@ extension ABI {
 extension ABI.AppPreferenceValues {
     public struct Experimental: Hashable, Codable, Sendable {
         public var ignoredConfigFlags: Set<ABI.ConfigFlag> = []
+        public var enabledConfigFlags: Set<ABI.ConfigFlag> = []
+
         public init() {}
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            ignoredConfigFlags = try container.decodeIfPresent(Set<ABI.ConfigFlag>.self, forKey: .ignoredConfigFlags) ?? []
+            enabledConfigFlags = try container.decodeIfPresent(Set<ABI.ConfigFlag>.self, forKey: .enabledConfigFlags) ?? []
+        }
     }
 
     public var configFlags: Set<ABI.ConfigFlag> {
@@ -121,11 +129,14 @@ extension ABI.AppPreferenceValues {
     }
 
     public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
-        configFlags.contains(flag) && !experimental.ignoredConfigFlags.contains(flag)
+        enabledFlags().contains(flag)
     }
 
     public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
-        (flags ?? configFlags).subtracting(experimental.ignoredConfigFlags)
+        var result = flags ?? configFlags
+        result.formUnion(experimental.enabledConfigFlags)
+        result.subtract(experimental.ignoredConfigFlags)
+        return result
     }
 }
 

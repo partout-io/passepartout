@@ -9,6 +9,9 @@ struct PreferencesAdvancedView: View {
     @Environment(ConfigObservable.self)
     private var configObservable
 
+    @Environment(IAPObservable.self)
+    private var iapObservable
+
     @Binding
     var experimental: ABI.AppPreferenceValues.Experimental
 
@@ -45,7 +48,7 @@ private extension PreferencesAdvancedView {
     }
 
     var remoteSection: some View {
-        ForEach(Self.flags, id: \.rawValue) { flag in
+        ForEach(visibleFlags, id: \.rawValue) { flag in
             Toggle(isOn: isOnBinding(for: flag)) {
                 flagView(for: flag)
             }
@@ -56,11 +59,24 @@ private extension PreferencesAdvancedView {
         )
     }
 
+    var visibleFlags: [ABI.ConfigFlag] {
+        Self.flags.filter {
+            iapObservable.isBeta || configObservable.isActive($0)
+        }
+    }
+
     func isOnBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
         Binding {
-            experimental.isUsed(flag)
+            experimental.isUsed(
+                flag,
+                isActive: configObservable.isActive(flag)
+            )
         } set: {
-            experimental.setUsed(flag, isUsed: $0)
+            experimental.setUsed(
+                flag,
+                isUsed: $0,
+                isActive: configObservable.isActive(flag)
+            )
         }
     }
 
@@ -74,14 +90,32 @@ private extension PreferencesAdvancedView {
 }
 
 private extension ABI.AppPreferenceValues.Experimental {
-    func isUsed(_ flag: ABI.ConfigFlag) -> Bool {
-        !ignoredConfigFlags.contains(flag)
+    func isUsed(
+        _ flag: ABI.ConfigFlag,
+        isActive: Bool
+    ) -> Bool {
+        if isActive {
+            return !ignoredConfigFlags.contains(flag)
+        }
+        return enabledConfigFlags.contains(flag)
     }
 
-    mutating func setUsed(_ flag: ABI.ConfigFlag, isUsed: Bool) {
-        if isUsed {
-            ignoredConfigFlags.remove(flag)
-        } else {
+    mutating func setUsed(
+        _ flag: ABI.ConfigFlag,
+        isUsed: Bool,
+        isActive: Bool
+    ) {
+        ignoredConfigFlags.remove(flag)
+        enabledConfigFlags.remove(flag)
+
+        guard !isUsed else {
+            if !isActive {
+                enabledConfigFlags.insert(flag)
+            }
+            return
+        }
+
+        if isActive {
             ignoredConfigFlags.insert(flag)
         }
     }
