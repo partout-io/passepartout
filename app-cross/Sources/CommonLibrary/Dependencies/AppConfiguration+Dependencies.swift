@@ -54,6 +54,12 @@ extension ABI.AppConfiguration {
         )
     }
 
+    public func newFileProfileRepository(path: String) throws -> ProfileRepository {
+        try FileProfileRepository(
+           directoryURL: URL(filePath: path, directoryHint: .isDirectory)
+       )
+    }
+
     public func newIAPManager(
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
@@ -128,12 +134,6 @@ extension ABI.AppConfiguration {
                 preferences.enabledFlags()
             }
         )
-    }
-
-    public func newFileProfileRepository(path: String) throws -> ProfileRepository {
-        try FileProfileRepository(
-           directoryURL: URL(filePath: path, directoryHint: .isDirectory)
-       )
     }
 
     @BusinessActor

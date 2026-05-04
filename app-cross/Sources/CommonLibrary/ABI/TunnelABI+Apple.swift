@@ -58,6 +58,7 @@ extension TunnelABI {
         let configFlags = preferences.configFlags
         pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
         pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences.experimental.enabledConfigFlags)")
 
         // Create TunnelController for connnection management
         let neTunnelController = NETunnelController(
