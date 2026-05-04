@@ -76,10 +76,8 @@ extension TunnelABI {
         // Create daemon
         let factory: NetworkInterfaceFactory
         if preferences.isFlagEnabled(.bsdSockets) {
-            factory = BSDSocketFactory(ctx) {
-                // FIXME: #190, BetterPathBlock via NWPathMonitor
-                PassthroughStream()
-            }
+            let betterPathBlock = NEBetterPathBlock(ctx).block
+            factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
         } else {
             // MUST enable .withReadPackets for OpenVPN V2 to work!
             var options = NEInterfaceFactory.Options()
