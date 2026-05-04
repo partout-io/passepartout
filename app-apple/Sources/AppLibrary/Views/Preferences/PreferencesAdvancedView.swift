@@ -23,6 +23,27 @@ struct PreferencesAdvancedView: View {
     }
 }
 
+private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
+    case enable
+    case disable
+    case remote
+
+    var id: Self {
+        self
+    }
+
+    var localizedDescription: String {
+        switch self {
+        case .enable:
+            return Strings.Global.Actions.enable
+        case .disable:
+            return Strings.Global.Actions.disable
+        case .remote:
+            return Strings.Global.Nouns.default
+        }
+    }
+}
+
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .bsdSockets,
@@ -48,9 +69,11 @@ private extension PreferencesAdvancedView {
     }
 
     var remoteSection: some View {
-        ForEach(visibleFlags, id: \.rawValue) { flag in
-            Toggle(isOn: isOnBinding(for: flag)) {
-                flagView(for: flag)
+        ForEach(Self.flags, id: \.rawValue) { flag in
+            if iapObservable.isBeta {
+                configPicker(for: flag)
+            } else {
+                configToggle(for: flag)
             }
         }
         .themeSection(
@@ -59,24 +82,36 @@ private extension PreferencesAdvancedView {
         )
     }
 
-    var visibleFlags: [ABI.ConfigFlag] {
-        Self.flags.filter {
-            iapObservable.isBeta || configObservable.isActive($0)
+    func configPicker(for flag: ABI.ConfigFlag) -> some View {
+        Picker(selection: preferenceBinding(for: flag)) {
+            ForEach(ConfigFlagPreference.allCases) { pref in
+                Text(pref.localizedDescription)
+                    .tag(pref)
+            }
+        } label: {
+            flagView(for: flag)
         }
     }
 
-    func isOnBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
+    func configToggle(for flag: ABI.ConfigFlag) -> some View {
+        Toggle(isOn: isAllowedBinding(for: flag)) {
+            flagView(for: flag)
+        }
+    }
+
+    func isAllowedBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
         Binding {
-            experimental.isUsed(
-                flag,
-                isActive: configObservable.isActive(flag)
-            )
+            experimental.isAllowed(flag)
         } set: {
-            experimental.setUsed(
-                flag,
-                isUsed: $0,
-                isActive: configObservable.isActive(flag)
-            )
+            experimental.setAllowed(flag, isAllowed: $0)
+        }
+    }
+
+    func preferenceBinding(for flag: ABI.ConfigFlag) -> Binding<ConfigFlagPreference> {
+        Binding {
+            experimental.preference(for: flag)
+        } set: {
+            experimental.setPreference($0, for: flag)
         }
     }
 
@@ -90,33 +125,39 @@ private extension PreferencesAdvancedView {
 }
 
 private extension ABI.AppPreferenceValues.Experimental {
-    func isUsed(
-        _ flag: ABI.ConfigFlag,
-        isActive: Bool
-    ) -> Bool {
-        if isActive {
-            return !ignoredConfigFlags.contains(flag)
-        }
-        return enabledConfigFlags.contains(flag)
+    func isAllowed(_ flag: ABI.ConfigFlag) -> Bool {
+        !ignoredConfigFlags.contains(flag)
     }
 
-    mutating func setUsed(
-        _ flag: ABI.ConfigFlag,
-        isUsed: Bool,
-        isActive: Bool
-    ) {
+    mutating func setAllowed(_ flag: ABI.ConfigFlag, isAllowed: Bool) {
+        if isAllowed {
+            ignoredConfigFlags.remove(flag)
+        } else {
+            ignoredConfigFlags.insert(flag)
+        }
+    }
+
+    func preference(for flag: ABI.ConfigFlag) -> ConfigFlagPreference {
+        if ignoredConfigFlags.contains(flag) {
+            return .disable
+        }
+        if enabledConfigFlags.contains(flag) {
+            return .enable
+        }
+        return .remote
+    }
+
+    mutating func setPreference(_ preference: ConfigFlagPreference, for flag: ABI.ConfigFlag) {
         ignoredConfigFlags.remove(flag)
         enabledConfigFlags.remove(flag)
 
-        guard !isUsed else {
-            if !isActive {
-                enabledConfigFlags.insert(flag)
-            }
-            return
-        }
-
-        if isActive {
+        switch preference {
+        case .enable:
+            enabledConfigFlags.insert(flag)
+        case .disable:
             ignoredConfigFlags.insert(flag)
+        case .remote:
+            break
         }
     }
 }
