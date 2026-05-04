@@ -17,30 +17,19 @@ struct PreferencesAdvancedView: View {
 
     var body: some View {
         Form {
-            remoteSection
+            configSection
         }
         .themeForm()
     }
 }
 
 private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
+    case remote
     case enable
     case disable
-    case remote
 
     var id: Self {
         self
-    }
-
-    var localizedDescription: String {
-        switch self {
-        case .enable:
-            return Strings.Global.Actions.enable
-        case .disable:
-            return Strings.Global.Actions.disable
-        case .remote:
-            return Strings.Global.Nouns.default
-        }
     }
 }
 
@@ -52,29 +41,27 @@ private extension PreferencesAdvancedView {
         .wgCrossV2
     ]
 
-    static func description(for flag: ABI.ConfigFlag) -> String {
-        switch flag {
-        case .bsdSockets:
-            return "BSD sockets"
-        case .newProfileEncoding:
-            return "New profile encoding"
-        case .ovpnCrossV2:
-            return "Cross-platform OpenVPN v2"
-        case .wgCrossV2:
-            return "Cross-platform WireGuard v2"
-        default:
-            assertionFailure()
-            return ""
+    @ViewBuilder
+    var configSection: some View {
+        if iapObservable.isBeta {
+            overrideSection
+        } else {
+            remoteSection
         }
+    }
+
+    var overrideSection: some View {
+        ForEach(Self.flags, id: \.rawValue) { flag in
+            configPicker(for: flag)
+        }
+        .themeSection(
+            footer: Strings.Views.Preferences.Advanced.Override.footer
+        )
     }
 
     var remoteSection: some View {
         ForEach(Self.flags, id: \.rawValue) { flag in
-            if iapObservable.isBeta {
-                configPicker(for: flag)
-            } else {
-                configToggle(for: flag)
-            }
+            configToggle(for: flag)
         }
         .themeSection(
             header: Strings.Global.Actions.allow,
@@ -117,7 +104,7 @@ private extension PreferencesAdvancedView {
 
     func flagView(for flag: ABI.ConfigFlag) -> some View {
         VStack(alignment: .leading) {
-            Text(Self.description(for: flag))
+            Text(flag.localizedDescription)
             Text(configObservable.isActive(flag) ? Strings.Global.Nouns.enabled : Strings.Global.Nouns.disabled)
                 .themeSubtitle()
         }
@@ -158,6 +145,39 @@ private extension ABI.AppPreferenceValues.Experimental {
             ignoredConfigFlags.insert(flag)
         case .remote:
             break
+        }
+    }
+}
+
+// MARK: - Localization
+
+private extension ABI.ConfigFlag {
+    public var localizedDescription: String {
+        switch self {
+        case .bsdSockets:
+            return "BSD sockets"
+        case .newProfileEncoding:
+            return "New profile encoding"
+        case .ovpnCrossV2:
+            return "Cross-platform OpenVPN v2"
+        case .wgCrossV2:
+            return "Cross-platform WireGuard v2"
+        default:
+            assertionFailure()
+            return ""
+        }
+    }
+}
+
+private extension ConfigFlagPreference {
+    var localizedDescription: String {
+        switch self {
+        case .remote:
+            return Strings.Views.Preferences.Advanced.Override.Picker.remote
+        case .enable:
+            return Strings.Global.Actions.enable
+        case .disable:
+            return Strings.Global.Actions.disable
         }
     }
 }
