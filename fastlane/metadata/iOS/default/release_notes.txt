@@ -1,3 +1,5 @@
+* IAP: Skip purchases verification alert (#1787)
+* IAP: Treat empty receipt as invalid (#1786)
 * Fix regression in tunnel toggle condition (#1784)
 * Fix inconsistent enabled status of profile toggles (#1782)
 * Fix tunnel occasionally stuck on incorrect status (#1781)
