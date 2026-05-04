@@ -79,6 +79,7 @@ private extension StoreKitReceiptReader {
                 let jws = mode.isCaching ? appTransaction.jwsRepresentation : nil
                 switch appTransaction {
                 case .verified(let tx):
+                    pspLog(.iap, .debug, "Fetched original transaction: \(tx)")
                     result = (tx.originalPurchase, jws, true)
                 case .unverified(let tx, let error):
                     let json = String(data: tx.jsonRepresentation, encoding: .utf8)
