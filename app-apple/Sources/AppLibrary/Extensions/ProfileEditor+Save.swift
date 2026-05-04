@@ -25,13 +25,11 @@ extension ProfileEditor {
             do {
                 try iapObservable.verify(profileToSave, extra: extraFeatures)
             } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
-
-                // still loading receipt
+                // Still loading receipt
                 guard !iapObservable.isLoadingReceipt else {
                     throw ABI.AppError.verificationReceiptIsLoading
                 }
-
-                // purchase required
+                // Purchase required
                 guard requiredFeatures.isEmpty else {
                     throw ABI.AppError.verificationRequiredFeatures(requiredFeatures)
                 }

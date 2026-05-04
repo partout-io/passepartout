@@ -156,11 +156,11 @@ private extension ProfileCoordinator {
             return savedProfile
         } catch ABI.AppError.verificationReceiptIsLoading {
             pspLog(.profiles, .error, "Unable to commit profile: loading receipt")
-            let V = Strings.Views.Paywall.Alerts.self
-            errorHandler.handle(
-                title: V.Confirmation.title,
-                message: [V.Verification.edit, V.Verification.boot].joined(separator: "\n\n")
-            )
+//            let V = Strings.Views.Paywall.Alerts.self
+//            errorHandler.handle(
+//                title: V.Confirmation.title,
+//                message: [V.Verification.edit, V.Verification.boot].joined(separator: "\n\n")
+//            )
             return nil
         } catch ABI.AppError.verificationRequiredFeatures(let requiredFeatures) {
             pspLog(.profiles, .error, "Unable to commit profile: required features \(requiredFeatures)")
