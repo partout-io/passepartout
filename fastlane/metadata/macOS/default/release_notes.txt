@@ -1,2 +1,3 @@
+* Fix regression in tunnel toggle condition (#1784)
 * Fix inconsistent enabled status of profile toggles (#1782)
 * Fix tunnel occasionally stuck on incorrect status (#1781)
