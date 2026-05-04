@@ -70,7 +70,8 @@ extension ABI {
             environment: TunnelEnvironmentReader?
         ) {
             self.id = id
-            self.isEnabled = isEnabled
+            // Use .tunnelStatus (system-oriented), not .status (connection-oriented)
+            self.isEnabled = isEnabled && (onDemand || tunnelStatus != .inactive)
             status = tunnelStatus.considering(environment).abiStatus
             self.tunnelStatus = tunnelStatus
             self.onDemand = onDemand
