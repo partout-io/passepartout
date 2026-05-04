@@ -49,7 +49,6 @@ private extension StoreKitReceiptReader {
     struct EntitlementsResult {
         let originalPurchase: ABI.OriginalPurchase?
         let appTransactionJWS: String?
-        let didFetchAppTransaction: Bool
         let transactions: [TransactionEvidence]
 
         var purchaseReceipts: [ABI.StoreReceipt.PurchaseReceipt]? {
@@ -65,7 +64,7 @@ private extension StoreKitReceiptReader {
         }
 
         var hasFreshEvidence: Bool {
-            didFetchAppTransaction || !transactions.isEmpty
+            originalPurchase != nil || !transactions.isEmpty
         }
     }
 
@@ -73,22 +72,22 @@ private extension StoreKitReceiptReader {
         async let build = Task {
             let startDate = Date()
             pspLog(.iap, .debug, "Start fetching original transaction...")
-            let result: (purchase: ABI.OriginalPurchase?, jws: String?, didFetch: Bool)
+            let result: (purchase: ABI.OriginalPurchase?, jws: String?)
             do {
                 let appTransaction = try await AppTransaction.shared
                 let jws = mode.isCaching ? appTransaction.jwsRepresentation : nil
                 switch appTransaction {
                 case .verified(let tx):
                     pspLog(.iap, .debug, "Fetched original transaction: \(tx)")
-                    result = (tx.originalPurchase, jws, true)
+                    result = (tx.originalPurchase, jws)
                 case .unverified(let tx, let error):
                     let json = String(data: tx.jsonRepresentation, encoding: .utf8)
                     pspLog(.iap, .error, "Unable to process original transaction: \(error), json=\(json ?? "")")
-                    result = (nil, nil, false)
+                    result = (nil, nil)
                 }
             } catch {
                 pspLog(.iap, .error, "Unable to fetch original transaction: \(error)")
-                result = (nil, nil, false)
+                result = (nil, nil)
             }
             let elapsed = -startDate.timeIntervalSinceNow
             pspLog(.iap, .debug, "Fetched original transaction in \(elapsed)")
@@ -117,7 +116,6 @@ private extension StoreKitReceiptReader {
         return EntitlementsResult(
             originalPurchase: result.0.purchase,
             appTransactionJWS: result.0.jws,
-            didFetchAppTransaction: result.0.didFetch,
             transactions: result.1
         )
     }
