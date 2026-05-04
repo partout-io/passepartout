@@ -367,16 +367,6 @@ private extension URL {
 // MARK: Dependencies
 
 extension ABI.AppConfiguration {
-    public func newAppProductHelper() -> InAppHelper {
-        StoreKitHelper(
-            products: ABI.AppProduct.all,
-            inAppIdentifier: {
-                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
-                return "\(iapBundlePrefix).\($0.rawValue)"
-            }
-        )
-    }
-
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if bundle.distributionTarget.supportsAppGroups {
             return newTunnelEnvironment(profileId: profileId)
@@ -390,6 +380,22 @@ extension ABI.AppConfiguration {
 
     public func newBetaChecker() -> BetaChecker {
         TestFlightChecker()
+    }
+
+    public func newInAppHelper() -> InAppHelper {
+        StoreKitHelper(
+            products: ABI.AppProduct.all,
+            inAppIdentifier: {
+                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
+                return "\(iapBundlePrefix).\($0.rawValue)"
+            }
+        )
+    }
+
+    public func newInAppReceiptReader(
+        modeBlock: @escaping @Sendable @BusinessActor () async -> StoreKitReceiptReader.Mode
+    ) -> InAppReceiptReader {
+        StoreKitReceiptReader(modeBlock: modeBlock)
     }
 
     public func newKeyValueStore() -> KeyValueStore {
