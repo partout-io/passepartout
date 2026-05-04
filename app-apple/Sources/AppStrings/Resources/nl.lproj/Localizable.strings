@@ -253,7 +253,6 @@
 "modules.on_demand.policy.footer" = "Activeer de VPN %@.";
 "modules.on_demand.policy" = "Beleid";
 "modules.on_demand.ssid.add" = "SSID toevoegen";
-"modules.openvpn.data_ciphers" = "Data ciphers";
 "modules.openvpn.cipher" = "Cipher";
 "modules.openvpn.communication" = "Communicatie";
 "modules.openvpn.compression_algorithm" = "Algoritme";
@@ -267,6 +266,7 @@
 "modules.openvpn.credentials.otp_method.approach.append" = "De OTP wordt aan het wachtwoord toegevoegd.";
 "modules.openvpn.credentials.otp_method.approach.encode" = "De OTP wordt gecodeerd in Base64 met het wachtwoord.";
 "modules.openvpn.credentials" = "Inloggegevens";
+"modules.openvpn.data_ciphers" = "Data ciphers";
 "modules.openvpn.digest" = "Digest";
 "modules.openvpn.eku" = "Uitgebreide verificatie";
 "modules.openvpn.pull" = "Ophalen";
@@ -357,6 +357,8 @@
 "views.paywall.sections.required_features.header" = "Vereiste functies";
 "views.paywall.sections.restore.footer" = "Als je eerder aankopen hebt gedaan, kun je ze hier herstellen.";
 "views.paywall.sections.restore.header" = "Herstellen";
+"views.preferences.advanced.override.footer" = "Deze functies worden extern aangestuurd, maar je kunt hun ingeschakelde status overschrijven voor testdoeleinden.";
+"views.preferences.advanced.override.picker.remote" = "Extern";
 "views.preferences.advanced.remote.footer" = "Deze functies worden op afstand beheerd. Zet de schakelaars uit als iets niet werkt.";
 "views.preferences.dns_falls_back.footer" = "Valt terug op CloudFlare-servers wanneer het VPN geen DNS-instellingen biedt.";
 "views.preferences.dns_falls_back" = "DNS-terugval";
