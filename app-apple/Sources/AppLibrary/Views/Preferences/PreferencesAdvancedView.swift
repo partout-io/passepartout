@@ -12,6 +12,9 @@ struct PreferencesAdvancedView: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Binding
     var experimental: ABI.AppPreferenceValues.Experimental
 
@@ -41,9 +44,13 @@ private extension PreferencesAdvancedView {
         .wgCrossV2
     ]
 
+    var canOverride: Bool {
+        iapObservable.isBeta || appConfiguration.bundle.distributionTarget == .developerID
+    }
+
     @ViewBuilder
     var configSection: some View {
-        if iapObservable.isBeta {
+        if canOverride {
             overrideSection
         } else {
             remoteSection
