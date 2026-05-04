@@ -129,7 +129,10 @@ extension ABI.AppPreferenceValues {
     }
 
     public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
-        enabledFlags().contains(flag)
+        var result = configFlags.contains(flag)
+        result = result || experimental.enabledConfigFlags.contains(flag)
+        result = result && !experimental.ignoredConfigFlags.contains(flag)
+        return result
     }
 
     public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
