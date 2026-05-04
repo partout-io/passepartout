@@ -108,9 +108,12 @@ extension TunnelABI {
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.newAppProductHelper(),
+            inAppHelper: appConfiguration.newInAppHelper(),
             receiptReader: SharedReceiptReader(
-                reader: StoreKitReceiptReader(),
+                reader: appConfiguration.newInAppReceiptReader {
+                    // TODO: ###, StoreKit receipt caching
+                    .uncached
+                },
             ),
             betaChecker: appConfiguration.newBetaChecker()
         )
