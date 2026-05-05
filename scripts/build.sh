@@ -18,7 +18,7 @@ fi
 mkdir -p bin
 
 # To be 100% sure
-rm -f bin/*/libpassepartout.*
+rm -rf bin/*/libpassepartout.*
 
 if [ "$android_flag" == "-android" ]; then
     source $cwd/env-android.sh
