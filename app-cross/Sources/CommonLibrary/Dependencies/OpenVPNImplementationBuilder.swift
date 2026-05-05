@@ -37,7 +37,7 @@ private extension OpenVPNImplementationBuilder {
         module: OpenVPNModule
     ) throws -> Connection {
         let ctx = PartoutLoggerContext(parameters.profile.id)
-        var options = OpenVPNConnection.Options()
+        var options = OpenVPNConnectionOptions()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
 #if !PSP_CROSS
