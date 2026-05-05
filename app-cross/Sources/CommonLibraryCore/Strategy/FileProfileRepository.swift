@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Foundation
 import Partout
 
 public actor FileProfileRepository: ProfileRepository {
@@ -98,10 +97,7 @@ public actor FileProfileRepository: ProfileRepository {
     }
 
     public func removeAllProfiles() async throws {
-        let existingFiles = try FileManager.default.contentsOfDirectory(
-            at: objectsURL,
-            includingPropertiesForKeys: nil
-        )
+        let existingFiles = try FileManager.default.contentsOfDirectory(at: objectsURL)
         for fileURL in existingFiles where fileURL.pathExtension == "json" {
             try? FileManager.default.removeItem(at: fileURL)
         }
@@ -241,10 +237,7 @@ private extension FileProfileRepository {
         objectsURL: URL,
         decoder: JSONDecoder
     ) throws -> [String: Profile] {
-        let fileURLs = try FileManager.default.contentsOfDirectory(
-            at: objectsURL,
-            includingPropertiesForKeys: nil
-        )
+        let fileURLs = try FileManager.default.contentsOfDirectory(at: objectsURL)
         var profilesById: [String: Profile] = [:]
         for fileURL in fileURLs where fileURL.pathExtension == "json" {
             let data = try Data(contentsOf: fileURL)
