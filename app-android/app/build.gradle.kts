@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.serialization.json)
