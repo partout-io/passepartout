@@ -167,8 +167,8 @@ extension TunnelManager {
     public func observeObjects() -> AsyncStream<ABI.TunnelEvent> {
         let tunnelEvents = tunnel.snapshotsStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
-            guard let self else { return }
             for await snapshots in tunnelEvents {
+                guard let self else { return }
                 guard !Task.isCancelled else {
                     pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
                     break

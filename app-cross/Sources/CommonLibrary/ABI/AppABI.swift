@@ -121,33 +121,39 @@ extension AppABI {
         iapManager.postInitialState()
         profileManager.postInitialState()
 
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in configEvents {
+                guard let self else { return }
                 dispatch(.config(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in iapEvents {
+                guard let self else { return }
                 dispatch(.iap(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in profileEvents {
+                guard let self else { return }
                 dispatch(.profile(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in tunnelEvents {
+                guard let self else { return }
                 dispatch(.tunnel(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in versionEvents {
+                guard let self else { return }
                 dispatch(.version(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in webReceiverEvents {
+                guard let self else { return }
                 switch event {
                 case .newUpload(let payload):
                     do {
@@ -429,8 +435,8 @@ private extension AppABI {
         pspLog(.iap, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
-            guard let self else { return }
             for await event in iapEvents {
+                guard let self else { return }
                 switch event {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
@@ -455,8 +461,8 @@ private extension AppABI {
         pspLog(.profiles, .info, "\tObserve changes in ProfileManager...")
         let profileEvents = profileManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
-            guard let self else { return }
             for await event in profileEvents {
+                guard let self else { return }
                 switch event {
                 case .save(let payload):
                     do {
