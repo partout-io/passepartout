@@ -27,13 +27,24 @@
 }
 
 # The native core calls these handlers by method name through GetMethodID.
--keepclassmembers class * implements com.algoritmico.passepartout.helpers.ABIEventHandler {
+# Keep both the fun-interface methods and their generated lambda/object
+# implementors so R8 cannot rename the callback entry points.
+-keep interface com.algoritmico.passepartout.helpers.ABIEventHandler {
     public void onEvent(java.lang.String);
 }
--keepclassmembers class * implements com.algoritmico.passepartout.helpers.ABIConnectionStatusHandler {
+-keep class * implements com.algoritmico.passepartout.helpers.ABIEventHandler {
+    public void onEvent(java.lang.String);
+}
+-keep interface com.algoritmico.passepartout.helpers.ABIConnectionStatusHandler {
     public void onStatus(java.lang.String);
 }
--keepclassmembers class * implements com.algoritmico.passepartout.helpers.ABICompletionCallback {
+-keep class * implements com.algoritmico.passepartout.helpers.ABIConnectionStatusHandler {
+    public void onStatus(java.lang.String);
+}
+-keep interface com.algoritmico.passepartout.helpers.ABICompletionCallback {
+    public void onComplete(int, java.lang.String);
+}
+-keep class * implements com.algoritmico.passepartout.helpers.ABICompletionCallback {
     public void onComplete(int, java.lang.String);
 }
 
