@@ -2,15 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
 #if PSP_ABI
 import CommonLibrary_C
+import Partout
 
 @c(psp_partout_version)
 public nonisolated func __psp_partout_version() -> UnsafePointer<CChar>! {
     PartoutConstants.cVersionIdentifier
 }
-#endif
 
 // MARK: - Helpers
 
@@ -19,6 +18,8 @@ enum ABIError: Error {
 }
 
 extension ABI {
+    typealias RunCallback = @Sendable (_ code: Int32, _ json: String?) -> Void
+
     static func run(
         _ block: @escaping @Sendable @BusinessActor () async -> Void
     ) {
@@ -28,12 +29,20 @@ extension ABI {
     }
 
     static func run(
-        _ ctx: UnsafeMutableRawPointer?,
-        _ block: @escaping @Sendable @BusinessActor (UnsafeMutableRawPointer?) async -> Void
+        _ completion: psp_completion,
+        _ block: @escaping @Sendable @BusinessActor (RunCallback?) async -> Void
     ) {
-        nonisolated(unsafe) let unsafeCtx = ctx
+        nonisolated(unsafe) let completion = completion
         Task { @Sendable @BusinessActor in
-            await block(unsafeCtx)
+            let runCallback: RunCallback?
+            if let cb = completion.callback {
+                runCallback = { code, json in
+                    cb(completion.ctx, code, json)
+                }
+            } else {
+                runCallback = nil
+            }
+            await block(runCallback)
         }
     }
 
@@ -107,3 +116,5 @@ extension ABI.AppPreferenceValues {
         self = values
     }
 }
+
+#endif

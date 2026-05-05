@@ -253,7 +253,6 @@
 "modules.on_demand.policy.footer" = "激活 VPN %@。";
 "modules.on_demand.policy" = "策略";
 "modules.on_demand.ssid.add" = "添加 SSID";
-"modules.openvpn.data_ciphers" = "数据加密算法";
 "modules.openvpn.cipher" = "加密算法";
 "modules.openvpn.communication" = "通信";
 "modules.openvpn.compression_algorithm" = "算法";
@@ -267,6 +266,7 @@
 "modules.openvpn.credentials.otp_method.approach.append" = "OTP 将附加到密码后面。";
 "modules.openvpn.credentials.otp_method.approach.encode" = "OTP 将与密码一起编码为 Base64。";
 "modules.openvpn.credentials" = "凭证";
+"modules.openvpn.data_ciphers" = "数据加密算法";
 "modules.openvpn.digest" = "摘要";
 "modules.openvpn.eku" = "扩展验证";
 "modules.openvpn.pull" = "拉取";
@@ -357,6 +357,8 @@
 "views.paywall.sections.required_features.header" = "必需功能";
 "views.paywall.sections.restore.footer" = "如果您过去有购买记录，可以在此恢复。";
 "views.paywall.sections.restore.header" = "恢复";
+"views.preferences.advanced.override.footer" = "这些功能由远程控制，但你可以为测试目的覆盖其启用状态。";
+"views.preferences.advanced.override.picker.remote" = "远程";
 "views.preferences.advanced.remote.footer" = "这些功能由远程控制。如果某些功能无法正常工作，请关闭开关。";
 "views.preferences.dns_falls_back.footer" = "当 VPN 不提供 DNS 设置时，回退到 CloudFlare 服务器。";
 "views.preferences.dns_falls_back" = "DNS 备用";

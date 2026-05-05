@@ -8,19 +8,15 @@
 #include <jni.h>
 
 typedef struct {
-    void *completion_ctx;
-    jobject completion_cb; // Global ref to Kotlin callback
-} abi_completion_handler;
-void abi_completion_callback_proxy(void *ctx, int code, const char *error_msg);
+    jobject ref;
+} abi_handler;
 
-typedef struct {
-    void *event_ctx;
-    jobject event_cb; // Global ref to Kotlin callback
-} abi_event_handler;
-void abi_event_callback_proxy(void *ctx, const char *event_json);
+abi_handler *abi_handler_create(JNIEnv *env, jobject ref);
+void abi_handler_free(JNIEnv *env, abi_handler *handler);
 
-typedef struct {
-    void *status_ctx;
-    jobject status_cb; // Global ref to Kotlin callback
-} connection_status_handler;
-void connection_status_callback_proxy(void *ctx, const char *status_json);
+/* Global handlers (lifescope = application). */
+void abi_event_handler_proxy(void *ctx, const char *event_json);
+void abi_connection_status_handler_proxy(void *ctx, const char *status_json);
+
+/* Completion handlers (lifescope = function call, released on call). */
+void abi_completion_proxy(void *ctx, int code, const char *json);

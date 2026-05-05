@@ -99,9 +99,24 @@ extension AppABI {
 
         // MARK: IAP (StoreKit)
 
+        let iapHelper: InAppHelper
+        let iapReceiptReader: UserInAppReceiptReader
+        if !withFakeIAPs {
+            iapHelper = appConfiguration.newInAppHelper()
+            iapReceiptReader = SharedReceiptReader(
+                reader: appConfiguration.newInAppReceiptReader {
+                    // TODO: ###, StoreKit receipt caching
+                    .uncached
+                }
+            )
+        } else {
+            let fakeHelper = appConfiguration.newInAppFakeHelper()
+            iapHelper = fakeHelper
+            iapReceiptReader = fakeHelper.receiptReader
+        }
         let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
-            receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs),
+            inAppHelper: iapHelper,
+            receiptReader: iapReceiptReader,
             betaChecker: betaChecker
         )
 
@@ -323,21 +338,8 @@ private extension ABI.AppConfiguration {
         )
     }
 
-    func simulatedAppProductHelper(isFake: Bool) -> InAppHelper {
-        guard !isFake else { return FakeInAppHelper() }
-        return newAppProductHelper()
-    }
-
-    func simulatedAppReceiptReader(isFake: Bool) -> UserInAppReceiptReader {
-        guard !isFake else {
-            guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeInAppHelper else {
-                fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
-            }
-            return mockHelper.receiptReader
-        }
-        return SharedReceiptReader(
-            reader: StoreKitReceiptReader()
-        )
+    func newInAppFakeHelper() -> FakeInAppHelper {
+        FakeInAppHelper()
     }
 }
 #endif

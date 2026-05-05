@@ -41,6 +41,7 @@ public final class AppABI: Sendable {
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?
+    private var handler: ABI.EventHandler?
     private var subscriptions: [Task<Void, Never>]
 
     public init(
@@ -105,7 +106,7 @@ public final class AppABI: Sendable {
 }
 
 extension AppABI {
-    public func registerEvents(_ handler: ABI.EventHandler?) {
+    public func registerEvents(_ newHandler: ABI.EventHandler?) {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
@@ -113,37 +114,46 @@ extension AppABI {
         let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
 
+        // Set new handler
+        handler = newHandler
+
         // Post initial state AFTER events registration (in case it was missed)
         iapManager.postInitialState()
         profileManager.postInitialState()
 
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in configEvents {
+                guard let self else { return }
                 dispatch(.config(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in iapEvents {
+                guard let self else { return }
                 dispatch(.iap(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in profileEvents {
+                guard let self else { return }
                 dispatch(.profile(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in tunnelEvents {
+                guard let self else { return }
                 dispatch(.tunnel(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in versionEvents {
+                guard let self else { return }
                 dispatch(.version(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in webReceiverEvents {
+                guard let self else { return }
                 switch event {
                 case .newUpload(let payload):
                     do {
@@ -160,6 +170,10 @@ extension AppABI {
                 }
             }
         })
+    }
+
+    public func unregisterEvents() {
+        handler = nil
     }
 
     func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
@@ -421,8 +435,8 @@ private extension AppABI {
         pspLog(.iap, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
-            guard let self else { return }
             for await event in iapEvents {
+                guard let self else { return }
                 switch event {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
@@ -447,8 +461,8 @@ private extension AppABI {
         pspLog(.profiles, .info, "\tObserve changes in ProfileManager...")
         let profileEvents = profileManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
-            guard let self else { return }
             for await event in profileEvents {
+                guard let self else { return }
                 switch event {
                 case .save(let payload):
                     do {

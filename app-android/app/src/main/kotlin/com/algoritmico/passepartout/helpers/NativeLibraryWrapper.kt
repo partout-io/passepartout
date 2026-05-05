@@ -14,9 +14,10 @@ class NativeLibraryWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
-        eventContext: Any,
-        eventCallback: ABIEventCallback
+        eventHandler: ABIEventHandler,
+        completion: ABICompletionCallback
     )
+    external fun appDeinit(completion: ABICompletionCallback)
     external fun appOnForeground()
     external fun appImportProfileText(
         text: String,
@@ -28,14 +29,17 @@ class NativeLibraryWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        statusContext: Any,
-        statusCallback: ConnectionStatusCallback,
-        vpn: AndroidTunnelController,
+        statusHandler: ABIConnectionStatusHandler,
+        controller: AndroidTunnelController,
         completion: ABICompletionCallback
     )
     external fun tunnelStop(
         completion: ABICompletionCallback
     )
+
+    // These are specific to Android to release JNI references
+    external fun appRelease()
+    external fun tunnelRelease()
 
     companion object {
         init {

@@ -253,7 +253,6 @@
 "modules.on_demand.policy.footer" = "Активировать VPN %@.";
 "modules.on_demand.policy" = "Политика";
 "modules.on_demand.ssid.add" = "Добавить SSID";
-"modules.openvpn.data_ciphers" = "Шифры данных";
 "modules.openvpn.cipher" = "Шифр";
 "modules.openvpn.communication" = "Коммуникация";
 "modules.openvpn.compression_algorithm" = "Алгоритм";
@@ -267,6 +266,7 @@
 "modules.openvpn.credentials.otp_method.approach.append" = "OTP будет добавлено к паролю.";
 "modules.openvpn.credentials.otp_method.approach.encode" = "OTP будет закодировано в Base64 вместе с паролем.";
 "modules.openvpn.credentials" = "Учетные данные";
+"modules.openvpn.data_ciphers" = "Шифры данных";
 "modules.openvpn.digest" = "Контрольная сумма";
 "modules.openvpn.eku" = "Расширенная проверка";
 "modules.openvpn.pull" = "Получить";
@@ -357,6 +357,8 @@
 "views.paywall.sections.required_features.header" = "Необходимые функции";
 "views.paywall.sections.restore.footer" = "Если вы совершали покупки ранее, вы можете восстановить их здесь.";
 "views.paywall.sections.restore.header" = "Восстановить";
+"views.preferences.advanced.override.footer" = "Эти функции управляются удалённо, но вы можете переопределить их состояние включения в целях тестирования.";
+"views.preferences.advanced.override.picker.remote" = "Удалённо";
 "views.preferences.advanced.remote.footer" = "Эти функции управляются удалённо. Отключите переключатели, если что-то не работает.";
 "views.preferences.dns_falls_back.footer" = "Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.";
 "views.preferences.dns_falls_back" = "Резервный DNS";

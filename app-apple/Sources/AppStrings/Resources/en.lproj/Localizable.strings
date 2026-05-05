@@ -103,6 +103,8 @@
 "views.preferences.erase_icloud" = "Erase profiles from iCloud";
 "views.preferences.erase_icloud.footer" = "To erase all profiles from the iCloud store securely, do so on all your synced devices. This will not affect local profiles.";
 
+"views.preferences.advanced.override.picker.remote" = "Remote";
+"views.preferences.advanced.override.footer" = "These features are controlled remotely, but you may override their enabled status for testing purposes.";
 "views.preferences.advanced.remote.footer" = "These features are controlled remotely. Turn off the toggles if something does not work.";
 
 "views.profile.sections.name.footer" = "Use this name to create your VPN automations from the Shortcuts app.";

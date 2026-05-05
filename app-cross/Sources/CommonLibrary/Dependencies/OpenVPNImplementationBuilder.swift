@@ -43,7 +43,7 @@ private extension OpenVPNImplementationBuilder {
 #if !PSP_CROSS
         let flags = configBlock()
         if flags.contains(.ovpnCrossV2) || flags.contains(.bsdSockets) {
-            return try OpenVPNConnectionV2(
+            return try _OpenVPNConnectionV2(
                 ctx,
                 parameters: parameters,
                 module: module,
@@ -51,7 +51,7 @@ private extension OpenVPNImplementationBuilder {
                 options: options
             )
         } else {
-            return try OpenVPNConnection(
+            return try _OpenVPNConnectionV1(
                 ctx,
                 parameters: parameters,
                 module: module,
@@ -60,7 +60,7 @@ private extension OpenVPNImplementationBuilder {
             )
         }
 #else
-        return try OpenVPNConnectionV2(
+        return try _OpenVPNConnectionV2(
             ctx,
             parameters: parameters,
             module: module,

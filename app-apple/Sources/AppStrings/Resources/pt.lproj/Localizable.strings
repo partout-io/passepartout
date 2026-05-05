@@ -253,7 +253,6 @@
 "modules.on_demand.policy.footer" = "Ative o VPN %@.";
 "modules.on_demand.policy" = "Política";
 "modules.on_demand.ssid.add" = "Adicionar SSID";
-"modules.openvpn.data_ciphers" = "Cifras de dados";
 "modules.openvpn.cipher" = "Cifra";
 "modules.openvpn.communication" = "Comunicação";
 "modules.openvpn.compression_algorithm" = "Algoritmo";
@@ -267,6 +266,7 @@
 "modules.openvpn.credentials.otp_method.approach.append" = "O OTP será anexado à senha.";
 "modules.openvpn.credentials.otp_method.approach.encode" = "O OTP será codificado em Base64 com a senha.";
 "modules.openvpn.credentials" = "Credenciais";
+"modules.openvpn.data_ciphers" = "Cifras de dados";
 "modules.openvpn.digest" = "Resumo";
 "modules.openvpn.eku" = "Verificação estendida";
 "modules.openvpn.pull" = "Puxar";
@@ -357,6 +357,8 @@
 "views.paywall.sections.required_features.header" = "Recursos necessários";
 "views.paywall.sections.restore.footer" = "Se você fez compras anteriormente, pode restaurá-las aqui.";
 "views.paywall.sections.restore.header" = "Restaurar";
+"views.preferences.advanced.override.footer" = "Estas funcionalidades são controladas remotamente, mas pode substituir o seu estado de ativação para fins de teste.";
+"views.preferences.advanced.override.picker.remote" = "Remoto";
 "views.preferences.advanced.remote.footer" = "Esses recursos são controlados remotamente. Desative as opções se algo não funcionar.";
 "views.preferences.dns_falls_back.footer" = "Reverte para os servidores CloudFlare quando o VPN não fornece configurações de DNS.";
 "views.preferences.dns_falls_back" = "Fallback de DNS";

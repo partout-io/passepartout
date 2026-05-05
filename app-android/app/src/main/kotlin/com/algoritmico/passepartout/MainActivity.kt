@@ -5,8 +5,6 @@
 package com.algoritmico.passepartout
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +16,7 @@ import com.algoritmico.passepartout.abi.AppProfileHeader
 import com.algoritmico.passepartout.abi.Event
 import com.algoritmico.passepartout.abi.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.ProfileEventSave
-import com.algoritmico.passepartout.helpers.ABIEventCallback
+import com.algoritmico.passepartout.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import io.partout.abi.TaggedProfile
 import io.partout.jni.AndroidTunnelStrategy
@@ -29,42 +27,24 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.Closeable
 
 val globalJsonCoder = Json {
     ignoreUnknownKeys = true
 }
 
-class MainActivity : ComponentActivity(), ABIEventCallback {
-    private val wrapper = NativeLibraryWrapper()
-    private val mainHandler = Handler(Looper.getMainLooper())
+class MainActivity : ComponentActivity() {
+    private val library = NativeLibraryWrapper()
     private var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
+    private var eventSubscription: Closeable? = null
+    private var isAppInitialized = false
     private lateinit var tunnelStrategy: AndroidTunnelStrategy
-
-    override fun onEvent(eventCtx: Any?, eventJSON: String) {
-        mainHandler.post {
-            val event: Event = globalJsonCoder.decodeFromString(eventJSON)
-            Log.i("Passepartout", ">>> MainActivity: $event")
-            when (event) {
-                is ProfileEventRefresh -> {
-                    headers.value = event.headers
-                }
-
-                is ProfileEventSave -> {
-                    Log.i("Passepartout", ">>> MainActivity: profile = ${event.profile}")
-                }
-
-                else -> {
-                    // Other events
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Start easy, test Partout version
-        val version = wrapper.partoutVersion()
+        val version = library.partoutVersion()
         Log.e("Passepartout", ">>> $version")
 
         // Initialize app and event callback
@@ -74,14 +54,24 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
             mkdirs()
         }.absolutePath
         val cachePath = cacheDir.absolutePath
-        val eventHandler = this
-        wrapper.appInit(
+        eventSubscription = ABIEventDispatcher.register(::handleEvent)
+        library.appInit(
             bundle,
             constants,
             profilesDir,
             cachePath,
-            this,
-            eventHandler
+            ABIEventDispatcher,
+            { code, json ->
+                runOnUiThread {
+                    if (code == 0) {
+                        isAppInitialized = true
+                        Log.e("Passepartout", ">>> Started app")
+                    } else {
+                        Log.e("Passepartout", "Unable to init app (code=$code): $json")
+                        destroyApp()
+                    }
+                }
+            }
         )
         tunnelStrategy = AndroidTunnelStrategy(
             context = this,
@@ -105,7 +95,41 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
 
     override fun onStart() {
         super.onStart()
-        wrapper.appOnForeground()
+        library.appOnForeground()
+    }
+
+    override fun onDestroy() {
+        eventSubscription?.close()
+        eventSubscription = null
+        if (isAppInitialized) {
+            library.appDeinit { _, _ ->
+                library.appRelease()
+            }
+        } else {
+            library.appRelease()
+        }
+        super.onDestroy()
+    }
+
+    private fun destroyApp() {
+        if (isFinishing || isDestroyed) return
+        finishAndRemoveTask()
+    }
+
+    private fun handleEvent(eventJSON: String) {
+        val event: Event = globalJsonCoder.decodeFromString(eventJSON)
+        Log.i("Passepartout", ">>> MainActivity: $event")
+        when (event) {
+            is ProfileEventRefresh -> {
+                headers.value = event.headers
+            }
+            is ProfileEventSave -> {
+                Log.i("Passepartout", ">>> MainActivity: profile = ${event.profile}")
+            }
+            else -> {
+                // Other events
+            }
+        }
     }
 
     fun startVpnService() {
@@ -132,11 +156,13 @@ class MainActivity : ComponentActivity(), ABIEventCallback {
     fun importProfile(connect: Boolean = false) {
 //        val file = String(assets.open("vps.conf").readBytes())
         val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
-        wrapper.appImportProfileText(file, "SomeName") { ctx, code, errorMessage ->
-            if (code == 0) {
-                Log.i("Passepartout", "Import success!")
-            } else {
-                Log.e("Passepartout", "Import failure (code=$code): $errorMessage")
+        library.appImportProfileText(file, "SomeName") { code, json ->
+            runOnUiThread {
+                if (code == 0) {
+                    Log.i("Passepartout", "Import success!")
+                } else {
+                    Log.e("Passepartout", "Import failure (code=$code): $json")
+                }
             }
         }
     }

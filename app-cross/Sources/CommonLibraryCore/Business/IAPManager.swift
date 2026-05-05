@@ -324,8 +324,8 @@ extension IAPManager {
             do {
                 // Reload the receipt on in-app updates
                 receiptSubscription = Task { [weak self] in
-                    guard let self else { return }
                     for await _ in inAppEvents {
+                        guard let self else { return }
                         await reloadReceipt()
                     }
                 }

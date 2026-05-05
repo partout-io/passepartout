@@ -58,6 +58,7 @@ extension TunnelABI {
         let configFlags = preferences.configFlags
         pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
         pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences.experimental.enabledConfigFlags)")
 
         // Create TunnelController for connnection management
         let neTunnelController = NETunnelController(
@@ -75,10 +76,8 @@ extension TunnelABI {
         // Create daemon
         let factory: NetworkInterfaceFactory
         if preferences.isFlagEnabled(.bsdSockets) {
-            factory = BSDSocketFactory(ctx) {
-                // FIXME: #190, BetterPathBlock via NWPathMonitor
-                PassthroughStream()
-            }
+            let betterPathBlock = NEBetterPathBlock(ctx).block
+            factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
         } else {
             // MUST enable .withReadPackets for OpenVPN V2 to work!
             var options = NEInterfaceFactory.Options()
@@ -107,9 +106,12 @@ extension TunnelABI {
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.newAppProductHelper(),
+            inAppHelper: appConfiguration.newInAppHelper(),
             receiptReader: SharedReceiptReader(
-                reader: StoreKitReceiptReader(),
+                reader: appConfiguration.newInAppReceiptReader {
+                    // TODO: ###, StoreKit receipt caching
+                    .uncached
+                },
             ),
             betaChecker: appConfiguration.newBetaChecker()
         )
