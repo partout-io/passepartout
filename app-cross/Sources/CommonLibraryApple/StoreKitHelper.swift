@@ -44,8 +44,8 @@ extension StoreKitHelper {
     public func startObserving() {
         observer?.cancel()
         observer = Task { [weak self] in
-            guard let self else { return }
             for await update in Transaction.updates {
+                guard let self else { return }
                 guard let transaction = try? update.payloadValue else {
                     continue
                 }

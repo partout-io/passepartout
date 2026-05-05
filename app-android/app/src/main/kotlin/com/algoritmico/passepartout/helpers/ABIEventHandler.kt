@@ -4,6 +4,6 @@
 
 package com.algoritmico.passepartout.helpers
 
-fun interface ABIEventCallback {
-    fun onEvent(eventCtx: Any?, eventJSON: String)
+fun interface ABIEventHandler {
+    fun onEvent(eventJSON: String)
 }

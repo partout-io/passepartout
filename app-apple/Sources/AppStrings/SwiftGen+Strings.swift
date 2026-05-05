@@ -1109,6 +1109,14 @@ public enum Strings {
       /// Appearance
       public static let systemAppearance = Strings.tr("Localizable", "views.preferences.system_appearance", fallback: "Appearance")
       public enum Advanced {
+        public enum Override {
+          /// These features are controlled remotely, but you may override their enabled status for testing purposes.
+          public static let footer = Strings.tr("Localizable", "views.preferences.advanced.override.footer", fallback: "These features are controlled remotely, but you may override their enabled status for testing purposes.")
+          public enum Picker {
+            /// Remote
+            public static let remote = Strings.tr("Localizable", "views.preferences.advanced.override.picker.remote", fallback: "Remote")
+          }
+        }
         public enum Remote {
           /// These features are controlled remotely. Turn off the toggles if something does not work.
           public static let footer = Strings.tr("Localizable", "views.preferences.advanced.remote.footer", fallback: "These features are controlled remotely. Turn off the toggles if something does not work.")

@@ -190,25 +190,17 @@ private extension APIManager {
         subscriptions = []
 
         subscriptions.append(Task { @MainActor [weak self] in
-            guard let self else {
-                return
-            }
             for await providers in repository.indexStream {
-                guard !Task.isCancelled else {
-                    return
-                }
+                guard let self else { return }
+                guard !Task.isCancelled else { return }
                 self.providers = providers
             }
         })
 
         subscriptions.append(Task { @MainActor [weak self] in
-            guard let self else {
-                return
-            }
             for await cache in repository.cacheStream {
-                guard !Task.isCancelled else {
-                    return
-                }
+                guard let self else { return }
+                guard !Task.isCancelled else { return }
                 self.cache = cache
             }
         })

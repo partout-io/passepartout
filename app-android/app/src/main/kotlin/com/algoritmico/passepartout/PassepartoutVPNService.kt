@@ -12,7 +12,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.algoritmico.passepartout.abi.OnConnectionStatus
-import com.algoritmico.passepartout.helpers.ConnectionStatusCallback
+import com.algoritmico.passepartout.helpers.ABIStatusDispatcher
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import io.partout.jni.AndroidTunnelController
 import io.partout.jni.AndroidTunnelStrategy
@@ -23,13 +23,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.Closeable
 
-class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
+class PassepartoutVPNService: VpnService() {
     private val library = NativeLibraryWrapper()
     private val vpnWrapper = AndroidTunnelController(this)
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var startJob: Job? = null
     private var stopJob: Job? = null
+    private var statusSubscription: Closeable? = null
     private var isRunning = false
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -52,6 +54,8 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
         if (isRunning) {
             stopVpn()
         } else {
+            statusSubscription?.close()
+            statusSubscription = null
             serviceScope.cancel()
         }
         super.onDestroy()
@@ -59,7 +63,6 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
 
     private fun startVpn(profileJSON: String) {
         if (isRunning) { return }
-        val statusHandler = this
         val notification = createNotification()
         startForeground(1, notification)
         isRunning = true
@@ -71,24 +74,26 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
 
             val cachePath = cacheDir.absolutePath
             Log.e("Passepartout", ">>> Starting daemon (cache: $cachePath)")
+            statusSubscription?.close()
+            statusSubscription = ABIStatusDispatcher.register(::handleStatus)
             withContext(Dispatchers.IO) {
                 library.tunnelStart(
                     bundle,
                     constants,
                     profileJSON,
                     cachePath,
-                    statusHandler,
-                    statusHandler,
+                    ABIStatusDispatcher,
                     vpnWrapper
-                ) { _, code, errorMessage ->
+                ) { code, json ->
                     serviceScope.launch {
                         if (code == 0) {
                             Log.e("Passepartout", ">>> Started daemon")
                         } else {
-                            Log.e("Passepartout", "Unable to start daemon (code=$code): $errorMessage")
+                            Log.e("Passepartout", "Unable to start daemon (code=$code): $json")
                             stopForeground(STOP_FOREGROUND_REMOVE)
                             stopSelf()
                             isRunning = false
+                            releaseTunnelReferences()
                         }
                     }
                 }
@@ -103,24 +108,31 @@ class PassepartoutVPNService: VpnService(), ConnectionStatusCallback {
         stopJob = serviceScope.launch {
             Log.e("Passepartout", ">>> Stopping daemon")
             withContext(Dispatchers.IO) {
-                library.tunnelStop { _, code, errorMessage ->
+                library.tunnelStop { code, json ->
                     serviceScope.launch {
                         if (code == 0) {
                             Log.e("Passepartout", ">>> Stopped daemon")
                         } else {
-                            Log.e("Passepartout", "Unable to stop daemon (code=$code): $errorMessage")
+                            Log.e("Passepartout", "Unable to stop daemon (code=$code): $json")
                         }
                         stopForeground(STOP_FOREGROUND_REMOVE)
                         stopSelf()
-                        serviceScope.cancel()
                         isRunning = false
+                        releaseTunnelReferences()
+                        serviceScope.cancel()
                     }
                 }
             }
         }
     }
 
-    override fun onStatus(statusCtx: Any?, onStatusJSON: String) {
+    private fun releaseTunnelReferences() {
+        statusSubscription?.close()
+        statusSubscription = null
+        library.tunnelRelease()
+    }
+
+    private fun handleStatus(onStatusJSON: String) {
         val onStatus = globalJsonCoder.decodeFromString<OnConnectionStatus>(onStatusJSON)
         Log.i("Passepartout", ">>> onStatus = ${onStatus}")
     }
