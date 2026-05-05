@@ -1,7 +1,3 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Passepartout" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-    </style>
+<resources>
+    <style name="Base.Theme.Passepartout" parent="@android:style/Theme.Material.NoActionBar" />
 </resources>

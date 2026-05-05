@@ -167,7 +167,8 @@ class MainActivity : ComponentActivity() {
             Log.e("Passepartout", "Unable to start missing profile: $profileId")
             return false
         }
-        return tunnelStrategy.connect(profile)
+        tunnelStrategy.connect(profile)
+        return true
     }
 
     private fun openProfileImporter() {
