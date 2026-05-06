@@ -107,3 +107,40 @@ void abi_completion_proxy(void *ctx, int code, const char *json) {
 
     if (did_attach) (*jvm)->DetachCurrentThread(jvm);
 }
+
+/* Types */
+
+jni_string_array *jni_string_array_create(JNIEnv *env, jobjectArray v) {
+    if (env == NULL || v == NULL) return NULL;
+    const char **cs = NULL;
+    jstring *js = NULL;
+    const jsize count = (*env)->GetArrayLength(env, v);
+    cs = calloc(count > 0 ? count : 1, sizeof(*cs));
+    if (!cs) goto failure;
+    js = calloc(count > 0 ? count : 1, sizeof(*js));
+    if (!js) goto failure;
+    for (jsize i = 0; i < count; i++) {
+        js[i] = (jstring) (*env)->GetObjectArrayElement(env, v, i);
+        cs[i] = (*env)->GetStringUTFChars(env, js[i], NULL);
+    }
+    jni_string_array *ja = (jni_string_array *) malloc(sizeof(*ja));
+    ja->cs = cs;
+    ja->js = js;
+    ja->count = count;
+    return ja;
+failure:
+    if (cs) free(cs);
+    if (js) free(js);
+    return NULL;
+}
+
+void jni_string_array_free(JNIEnv *env, jni_string_array *ja) {
+    if (!ja) return;
+    for (jsize i = 0; i < ja->count; i++) {
+        (*env)->ReleaseStringUTFChars(env, ja->js[i], ja->cs[i]);
+        (*env)->DeleteLocalRef(env, ja->js[i]);
+    }
+    free(ja->js);
+    free(ja->cs);
+    free(ja);
+}

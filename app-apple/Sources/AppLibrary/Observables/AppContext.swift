@@ -10,8 +10,6 @@ public final class AppContext {
     private let abi: AppABI
     public let appConfiguration: ABI.AppConfiguration
 
-    // Observables (yet unused in Main app and active TV app)
-
     // ABI concerns (reusable cross-platform)
     public let appEncoderObservable: AppEncoderObservable
     public let configObservable: ConfigObservable

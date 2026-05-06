@@ -102,6 +102,30 @@ Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appImportProfileT
 }
 
 JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appDeleteProfile(
+        JNIEnv *env,
+        jobject thiz,
+        jstring id,
+        jobject completion
+) {
+    const char *cID = (*env)->GetStringUTFChars(env, id, NULL);
+    psp_app_delete_profile(cID, PSP_JNI_CB(env, completion));
+    (*env)->ReleaseStringUTFChars(env, id, cID);
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_appDeleteProfiles(
+        JNIEnv *env,
+        jobject thiz,
+        jobjectArray ids,
+        jobject completion
+) {
+    jni_string_array *ja = jni_string_array_create(env, ids);
+    psp_app_delete_profiles(ja->cs, ja->count, PSP_JNI_CB(env, completion));
+    jni_string_array_free(env, ja);
+}
+
+JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_helpers_NativeLibraryWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,

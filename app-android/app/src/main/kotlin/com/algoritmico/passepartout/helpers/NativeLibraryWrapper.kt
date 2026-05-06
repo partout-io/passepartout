@@ -24,6 +24,14 @@ class NativeLibraryWrapper {
         name: String,
         completion: ABICompletionCallback
     )
+    external fun appDeleteProfile(
+        id: String,
+        completion: ABICompletionCallback
+    )
+    external fun appDeleteProfiles(
+        ids: Array<String>,
+        completion: ABICompletionCallback
+    )
     external fun tunnelStart(
         bundle: String,
         constants: String,

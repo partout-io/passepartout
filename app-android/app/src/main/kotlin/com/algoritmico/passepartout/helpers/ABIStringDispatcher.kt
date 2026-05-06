@@ -10,7 +10,7 @@ import android.util.Log
 import java.io.Closeable
 import java.util.concurrent.CopyOnWriteArraySet
 
-private class ABIStringDispatcher {
+class ABIStringDispatcher {
     private val mainHandler = Handler(Looper.getMainLooper())
     private val listeners = CopyOnWriteArraySet<(String) -> Unit>()
 
@@ -42,26 +42,4 @@ private class ABIStringDispatcher {
             }
         }
     }
-}
-
-object ABIEventDispatcher : ABIEventHandler {
-    private val dispatcher = ABIStringDispatcher()
-
-    override fun onEvent(eventJSON: String) {
-        dispatcher.dispatch(eventJSON)
-    }
-
-    fun register(listener: (String) -> Unit): Closeable =
-        dispatcher.register(listener)
-}
-
-object ABIStatusDispatcher : ABIConnectionStatusHandler {
-    private val dispatcher = ABIStringDispatcher()
-
-    override fun onStatus(onStatusJSON: String) {
-        dispatcher.dispatch(onStatusJSON)
-    }
-
-    fun register(listener: (String) -> Unit): Closeable =
-        dispatcher.register(listener)
 }

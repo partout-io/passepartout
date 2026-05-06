@@ -20,3 +20,12 @@ void abi_connection_status_handler_proxy(void *ctx, const char *status_json);
 
 /* Completion handlers (lifescope = function call, released on call). */
 void abi_completion_proxy(void *ctx, int code, const char *json);
+
+/* Type helpers. */
+typedef struct {
+    const char **cs;
+    jstring *js;
+    jsize count;
+} jni_string_array;
+jni_string_array *jni_string_array_create(JNIEnv *env, jobjectArray v);
+void jni_string_array_free(JNIEnv *env, jni_string_array *ja);
