@@ -39,6 +39,8 @@ public func __psp_tunnel_start(
     ABI.run(completion) { callback in
         defer { pspUnlock() }
         do {
+            await globalABI?.stop()
+            globalABI = nil
             globalABI = try TunnelABI.forCrossPlatform(
                 bindings: bindings,
                 appBundleData: appBundleData,
@@ -50,6 +52,8 @@ public func __psp_tunnel_start(
             try await globalABI?.start(isInteractive: isInteractive)
             callback?(PSPCompletionCodeOK, nil)
         } catch {
+            await globalABI?.stop()
+            globalABI = nil
             callback?(PSPCompletionCodeFailure, error.localizedDescription)
             fatalError("Unable to start tunnel: \(error)")
         }

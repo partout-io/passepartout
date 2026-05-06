@@ -183,6 +183,7 @@ private extension PartoutLogger.Builder {
             .os,
             .openvpn,
             .wireguard,
+            .App.abi,
             .App.core,
             .App.iap,
             .App.profiles,
@@ -222,6 +223,7 @@ private extension PartoutLogger.Builder {
 private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {
         switch self {
+        case .abi: .App.abi
         case .core: .App.core
         case .iap: .App.iap
         case .profiles: .App.profiles
@@ -244,6 +246,8 @@ private extension ABI.AppLogLevel {
 
 private extension LoggerCategory {
     enum App {
+        static let abi = LoggerCategory(appCategory: .abi)
+
         static let core = LoggerCategory(appCategory: .core)
 
         static let iap = LoggerCategory(appCategory: .iap)

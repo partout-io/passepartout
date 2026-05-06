@@ -103,6 +103,44 @@ public func __psp_app_import_profile_text(
     }
 }
 
+@c(psp_app_delete_profile)
+public func __psp_app_delete_profile(
+    uuid: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let uuid, let id = UUID(uuidString: String(cString: uuid)) else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    ABI.run(completion) { callback in
+        await abi.profile.remove(id)
+        callback?(PSPCompletionCodeOK, nil)
+    }
+}
+
+@c(psp_app_delete_profiles)
+public func __psp_app_delete_profiles(
+    uuids: UnsafePointer<UnsafePointer<CChar>>?,
+    num: Int,
+    completion: psp_completion
+) {
+    guard let abi, let uuids else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    var ids: [Profile.ID] = []
+    for cID in UnsafeBufferPointer(start: uuids, count: num) {
+        guard let id = Profile.ID(uuidString: String(cString: cID)) else {
+            continue
+        }
+        ids.append(id)
+    }
+    ABI.run(completion) { callback in
+        await abi.profile.remove(ids)
+        callback?(PSPCompletionCodeOK, nil)
+    }
+}
+
 @c(psp_app_flush_log)
 public func __psp_app_flush_log() {
     pspLogFlush()
