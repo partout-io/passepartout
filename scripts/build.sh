@@ -17,9 +17,6 @@ if [ ! -d $build_dir ]; then
 fi
 mkdir -p bin
 
-# To be 100% sure
-rm -rf bin/*/libpassepartout.*
-
 if [ "$android_flag" == "-android" ]; then
     if [[ ! -d $ANDROID_NDK_HOME ]]; then
         echo "\$ANDROID_NDK_HOME must point to the Android NDK"
@@ -28,18 +25,15 @@ if [ "$android_flag" == "-android" ]; then
     source $cwd/env-android.sh
     toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"
     pushd $build_dir
-    #rm -f *.txt
     cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg ..
     cmake --build .
     popd
-    $cwd/pull-android-libraries.sh
 else
     if [ $(uname -s) == "Linux" ]; then
         source $cwd/env-linux.sh
         toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/linux.toolchain.cmake"
     fi
     pushd $build_dir
-    #rm -f *.txt
     cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg -DBUILD_APP=ON ..
     cmake --build .
     popd
