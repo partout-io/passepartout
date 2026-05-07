@@ -40,6 +40,7 @@ Tailored for Apple platforms:
 - Xcode 26
 - Swift 6
 - Git (preinstalled with the Xcode Command Line Tools)
+- Java (optional, for the OpenAPI Generator)
 
 It's highly recommended that you use the Git and Ruby packages provided by [Homebrew][dep-brew].
 
