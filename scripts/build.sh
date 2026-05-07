@@ -21,6 +21,10 @@ mkdir -p bin
 rm -rf bin/*/libpassepartout.*
 
 if [ "$android_flag" == "-android" ]; then
+    if [[ ! -d $ANDROID_NDK_HOME ]]; then
+        echo "\$ANDROID_NDK_HOME must point to the Android NDK"
+        exit 1
+    fi
     source $cwd/env-android.sh
     toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"
     pushd $build_dir
