@@ -23,7 +23,6 @@ rm -rf bin/*/libpassepartout.*
 if [ "$android_flag" == "-android" ]; then
     source $cwd/env-android.sh
     toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"
-    PATH=$ANDROID_NDK_TOOLCHAIN:$PATH
     pushd $build_dir
     #rm -f *.txt
     cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg ..
