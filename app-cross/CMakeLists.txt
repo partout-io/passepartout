@@ -63,7 +63,7 @@ endif()
 
 # Distribute with dependencies
 if(ANDROID)
-    set(STRIP llvm-strip)
+    set(STRIP "${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-strip")
 else()
     set(STRIP ${CMAKE_STRIP})
 endif()
