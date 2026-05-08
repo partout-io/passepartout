@@ -3,18 +3,21 @@ libpassepartout=libpassepartout.cmake
 passepartout=passepartout.cmake
 
 cd app-cross
-echo 'set(PSP_SOURCES' >${libpassepartout}
-find Sources -name "*.swift" >>${libpassepartout}
-echo ')' >>${libpassepartout}
-echo 'set(PSP_C_SOURCES' >>${libpassepartout}
-find Sources -name "*.c" >>${libpassepartout}
-echo ')' >>${libpassepartout}
+cat >${libpassepartout} <<EOF
+set(PSP_SOURCES
+$(find Sources -name "*.swift")
+)
+set(PSP_C_SOURCES
+$(find Sources -name "*.c")
+)
+EOF
 
 cd passepartout
-echo 'set(APP_SOURCES' >${passepartout}
-find app -name "*.c" >>${passepartout}
-find app -name "*.cc" >>${passepartout}
-echo ')' >>${passepartout}
-echo 'set(TUNNEL_SOURCES' >>${passepartout}
-find tunnel -name "*.c" >>${passepartout}
-echo ')' >>${passepartout}
+cat >${passepartout} <<EOF
+set(APP_SOURCES
+$(find app -name "*.cc")
+)
+set(TUNNEL_SOURCES
+$(find tunnel -name "*.c")
+)
+EOF
