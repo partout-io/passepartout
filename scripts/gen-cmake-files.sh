@@ -1,4 +1,5 @@
 #!/bin/bash
+LC_ALL=C
 libpassepartout=passepartout_shared.cmake
 passepartout=passepartout.cmake
 
