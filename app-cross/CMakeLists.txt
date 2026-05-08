@@ -12,6 +12,7 @@ set_target_properties(libpassepartout PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     OUTPUT_NAME passepartout
+    Swift_COMPILATION_MODE incremental
 )
 
 # Build Partout dependency
