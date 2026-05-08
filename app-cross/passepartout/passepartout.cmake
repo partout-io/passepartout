@@ -1,7 +1,7 @@
 set(APP_SOURCES
-app/main.cc
-app/app.cc
 app/abi.cc
+app/app.cc
+app/main.cc
 )
 set(TUNNEL_SOURCES
 tunnel/main.c
