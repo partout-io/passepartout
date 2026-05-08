@@ -1,5 +1,5 @@
 #!/bin/bash
-libpassepartout=libpassepartout.cmake
+libpassepartout=passepartout_shared.cmake
 passepartout=passepartout.cmake
 
 cd app-cross
