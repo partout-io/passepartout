@@ -1,8 +1,9 @@
 # Configure as shared library
 add_library(libpassepartout SHARED "")
-file(GLOB_RECURSE PSP_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift
-)
+
+# Include file lists
+include("libpassepartout.cmake")
+
 target_compile_options(libpassepartout PRIVATE
     -DUSE_CMAKE
 )
@@ -33,7 +34,6 @@ endforeach()
 target_sources(libpassepartout PRIVATE ${PSP_SOURCES})
 
 # Link the C ABI code
-file(GLOB_RECURSE PSP_C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/*.c)
 add_library(libpassepartout_c STATIC ${PSP_C_SOURCES})
 target_link_libraries(libpassepartout PUBLIC libpassepartout_c)
 
