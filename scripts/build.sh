@@ -14,7 +14,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -config)
-            cmake_opts+=("-DCMAKE_BUILD_TYPE=$2")
+            build_type=$2
             shift
             shift
             ;;
@@ -36,6 +36,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 set -- "${positional_args[@]}"
+
+if [[ -z $build_type ]]; then
+    build_type=Debug
+fi
+cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 
 if [[ $(uname -s) == "Linux" && $for_android != 1 ]]; then
     source $cwd/env-linux.sh
