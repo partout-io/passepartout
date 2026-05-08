@@ -2,40 +2,58 @@
 cwd=`dirname $0`
 source $cwd/env.sh
 set -e
+build_dir=.cmake
+bin_dir=bin
 
-# Use switch statement later for more flags
-android_flag="$1"
-if [[ -n "$android_flag" && "$android_flag" != "-android" ]]; then
-    echo "Either pass -android or nothing"
-    exit 1
+positional_args=()
+cmake_opts=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -gen)
+            gen_build=1
+            shift
+            ;;
+        -config)
+            cmake_opts+=("-DCMAKE_BUILD_TYPE=$2")
+            shift
+            shift
+            ;;
+        -app)
+            cmake_opts+=("-DBUILD_APP=ON")
+            shift
+            ;;
+        -android)
+            if [[ ! -d $ANDROID_NDK_HOME ]]; then
+                echo "\$ANDROID_NDK_HOME must point to the Android NDK"
+                exit 1
+            fi
+            source $cwd/env-android.sh
+            build_dir=${build_dir}-android
+            for_android=1
+            cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/android.toolchain.cmake")
+            shift
+            ;;
+    esac
+done
+set -- "${positional_args[@]}"
+
+if [[ $(uname -s) == "Linux" && $for_android != 1 ]]; then
+    source $cwd/env-linux.sh
+    cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/linux.toolchain.cmake")
 fi
 
-build_dir=".cmake${android_flag}"
-toolchain_dir=`realpath $toolchains_path`
-if [ ! -d $build_dir ]; then
+if [[ ! -d $build_dir ]]; then
     mkdir $build_dir
 fi
-mkdir -p bin
-
-if [ "$android_flag" == "-android" ]; then
-    if [[ ! -d $ANDROID_NDK_HOME ]]; then
-        echo "\$ANDROID_NDK_HOME must point to the Android NDK"
-        exit 1
-    fi
-    source $cwd/env-android.sh
-    toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"
+if [[ ! -d $bin_dir ]]; then
+    mkdir $bin_dir
+fi
+if [[ $gen_build == 1 ]]; then
     scripts/gen-cmake-files.sh
     pushd $build_dir
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg ..
-    cmake --build .
-    popd
+    cmake -G Ninja "${cmake_opts[@]}" ..
 else
-    if [ $(uname -s) == "Linux" ]; then
-        source $cwd/env-linux.sh
-        toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/linux.toolchain.cmake"
-    fi
     pushd $build_dir
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg -DBUILD_APP=ON ..
-    cmake --build .
-    popd
 fi
+cmake --build .
+popd
