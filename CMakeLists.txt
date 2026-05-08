@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
+if(POLICY CMP0157)
+    cmake_policy(SET CMP0157 NEW)
+endif()
 project(Passepartout LANGUAGES Swift C CXX)
 include(ExternalProject)
 
