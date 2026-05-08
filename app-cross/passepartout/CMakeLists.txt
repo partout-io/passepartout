@@ -16,7 +16,7 @@ target_include_directories(passepartout PRIVATE
     ${OUTPUT_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/app/include
 )
-target_link_libraries(passepartout PRIVATE passepartout_shared)
+target_link_libraries(passepartout PRIVATE libpassepartout)
 
 # Define tunnel target
 add_executable(passepartout-tunnel "")
@@ -30,7 +30,7 @@ target_include_directories(passepartout-tunnel PRIVATE
     ${OUTPUT_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
 )
-target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
+target_link_libraries(passepartout-tunnel PRIVATE libpassepartout)
 
 # wxWidgets only required to build executable
 include("wx.cmake")
