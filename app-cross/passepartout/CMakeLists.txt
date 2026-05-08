@@ -1,6 +1,9 @@
 set(CMAKE_C_FLAGS "-Wall -W -pedantic")
 set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
+# Include file lists
+include("passepartout.cmake")
+
 # Define app target
 add_executable(passepartout "")
 set_target_properties(passepartout PROPERTIES
@@ -8,7 +11,6 @@ set_target_properties(passepartout PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.cc)
 target_sources(passepartout PRIVATE ${APP_SOURCES})
 target_include_directories(passepartout PRIVATE
     ${OUTPUT_DIR}
@@ -23,7 +25,6 @@ set_target_properties(passepartout-tunnel PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
-file(GLOB_RECURSE TUNNEL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/*.c)
 target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
 target_include_directories(passepartout-tunnel PRIVATE
     ${OUTPUT_DIR}

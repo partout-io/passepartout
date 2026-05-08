@@ -24,6 +24,7 @@ if [ "$android_flag" == "-android" ]; then
     fi
     source $cwd/env-android.sh
     toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=$toolchain_dir/android.toolchain.cmake"
+    scripts/gen-cmake-files.sh
     pushd $build_dir
     cmake -G Ninja -DCMAKE_BUILD_TYPE=$build_type $toolchain_arg ..
     cmake --build .
