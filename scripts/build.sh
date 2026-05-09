@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -app)
-            cmake_opts+=("-DBUILD_APP=ON")
+            build_app=1
             shift
             ;;
         -android)
@@ -28,6 +28,7 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             for_android=1
+            build_dir=${build_dir}-android
             shift
             ;;
     esac
@@ -42,12 +43,15 @@ cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 if [[ $gen_build == 1 ]]; then
     if [[ $for_android == 1 ]]; then
         source $cwd/env-android.sh
-        build_dir=${build_dir}-android
         cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/android.toolchain.cmake")
     elif [[ $(uname -s) == "Linux" && $for_android != 1 ]]; then
         source $cwd/env-linux.sh
         cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/linux.toolchain.cmake")
     fi
+fi
+
+if [[ $build_app == 1 && $for_android != 1 ]]; then
+    cmake_opts+=("-DBUILD_APP=ON")
 fi
 
 if [[ ! -d $build_dir ]]; then
