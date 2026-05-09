@@ -15,7 +15,8 @@ set(ENV_ANDROID
 
 # Build app-cross dependency with given environment
 include(ExternalProject)
-set(LIBPASSEPARTOUT_DIST ${CMAKE_CURRENT_SOURCE_DIR}/bin/dist)
+set(JNI_LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI})
+set(LIBPASSEPARTOUT_DIST ${JNI_LIBS_DIR})
 set(LIBPASSEPARTOUT_INCLUDE ${PROJECT_ROOT}/app-cross/Sources/CommonLibrary_C/include)
 set(LIBPASSEPARTOUT_SOS
     ${LIBPASSEPARTOUT_DIST}/libcrypto.so
@@ -25,10 +26,6 @@ set(LIBPASSEPARTOUT_SOS
 )
 set(LIBPASSEPARTOUT_NDK_TRIPLE aarch64-linux-android)
 set(LIBPASSEPARTOUT_CXX_SHARED_SO ${ANDROID_TOOLCHAIN_ROOT}/sysroot/usr/lib/${LIBPASSEPARTOUT_NDK_TRIPLE}/libc++_shared.so)
-set(LIBPASSEPARTOUT_JNI_SOS
-    ${LIBPASSEPARTOUT_SOS}
-    ${LIBPASSEPARTOUT_CXX_SHARED_SO}
-)
 ExternalProject_Add(libpassepartout
     SOURCE_DIR ${PROJECT_ROOT}
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env ${ENV_ANDROID}
@@ -57,7 +54,6 @@ add_dependencies(passepartout_wrapper libpassepartout)
 target_include_directories(passepartout_wrapper PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${LIBPASSEPARTOUT_INCLUDE}
-    ${LIBPASSEPARTOUT_DIST}
 )
 
 # Import libpassepartout and deps
@@ -77,14 +73,11 @@ target_link_libraries(passepartout_wrapper PRIVATE
     ${LIBPASSEPARTOUT_IMPORTED_LIBS}
 )
 
-# Distribute as JNI libs
-set(JNI_LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI})
+# Distribute the NDK C++ runtime as a JNI lib.
 add_custom_command(
     TARGET passepartout_wrapper
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${JNI_LIBS_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${LIBPASSEPARTOUT_JNI_SOS}
-        ${JNI_LIBS_DIR}
-    COMMENT "Copying app-cross shared libraries to jniLibs"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBPASSEPARTOUT_CXX_SHARED_SO} ${JNI_LIBS_DIR}
+    COMMENT "Copying C++ runtime to jniLibs"
 )
