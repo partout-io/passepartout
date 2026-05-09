@@ -63,11 +63,6 @@ if(LINUX)
 endif()
 
 # Distribute with dependencies
-if(ANDROID)
-    set(STRIP "${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-strip")
-else()
-    set(STRIP ${CMAKE_STRIP})
-endif()
 if(WIN32)
     set(LIBEXT lib)
 elseif(APPLE)
@@ -82,7 +77,8 @@ add_custom_command(
         -DABI_INCLUDE=${ABI_INCLUDE}
         -DOUTPUT_DIR=${OUTPUT_DIR}
         -DDIST_DIR=${DIST_DIR}
-        -DSTRIP=${STRIP} -DLIBEXT=${LIBEXT}
+        -DSTRIP=${CMAKE_STRIP}
+        -DLIBEXT=${LIBEXT}
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )
 
