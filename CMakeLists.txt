@@ -8,12 +8,18 @@ include(ExternalProject)
 option(BUILD_APP "Build app executable" 0)
 
 # Configure output location
-get_filename_component(OUTPUT_DIR "bin/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" ABSOLUTE)
-string(TOLOWER "${OUTPUT_DIR}" OUTPUT_DIR)
-set(DIST_DIR "dist")
+if(NOT DEFINED OUTPUT_DIR)
+    string(TOLOWER "${CMAKE_SYSTEM_NAME}" PLATFORM_NAME)
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" ARCH_NAME)
+    set(OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/${PLATFORM_NAME}-${ARCH_NAME}")
+endif()
+if(NOT DEFINED DIST_DIR)
+    set(DIST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/dist")
+endif()
 
 # Options
 message(STATUS "Option OUTPUT_DIR = ${OUTPUT_DIR}")
+message(STATUS "Option DIST_DIR = ${DIST_DIR}")
 message(STATUS "Option BUILD_APP = ${BUILD_APP}")
 
 # Build Passepartout cross-platform app and library
