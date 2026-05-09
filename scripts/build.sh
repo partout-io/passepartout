@@ -27,6 +27,7 @@ while [[ $# -gt 0 ]]; do
                 echo "\$ANDROID_NDK_HOME must point to the Android NDK"
                 exit 1
             fi
+            source $cwd/env-android.sh
             for_android=1
             build_dir=${build_dir}-android
             shift
@@ -40,12 +41,15 @@ if [[ -z $build_type ]]; then
 fi
 cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 
+if [[ $(uname -s) == "Linux" && $for_android != 1 ]]; then
+    is_linux=1
+    source $cwd/env-linux.sh
+fi
+
 if [[ $gen_build == 1 ]]; then
     if [[ $for_android == 1 ]]; then
-        source $cwd/env-android.sh
         cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/android.toolchain.cmake")
-    elif [[ $(uname -s) == "Linux" && $for_android != 1 ]]; then
-        source $cwd/env-linux.sh
+    elif [[ $is_linux == 1 ]]; then
         cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/linux.toolchain.cmake")
     fi
 fi
