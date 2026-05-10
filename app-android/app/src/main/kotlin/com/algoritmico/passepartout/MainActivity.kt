@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.abi.AppProfileStatus
 import com.algoritmico.passepartout.abi.AppTunnelInfo
 import com.algoritmico.passepartout.abi.Event
@@ -21,6 +22,7 @@ import com.algoritmico.passepartout.helpers.ABIConnectionStatusDispatcher
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import com.algoritmico.passepartout.helpers.globalJsonCoder
 import com.algoritmico.passepartout.ui.PassepartoutApp
+import com.algoritmico.passepartout.ui.ProfileObservable
 import io.partout.abi.ConnectionStatus
 import io.partout.abi.TaggedProfile
 import io.partout.jni.AndroidTunnelStrategy
@@ -36,6 +38,8 @@ class MainActivity : ComponentActivity() {
     private val appEvents = appEventChannel.receiveAsFlow()
 
     private lateinit var profilesDirectory: File
+
+    private lateinit var profileObservable: ProfileObservable
 
     private lateinit var tunnelStrategy: AndroidTunnelStrategy
 
@@ -56,6 +60,11 @@ class MainActivity : ComponentActivity() {
         profilesDirectory = File(noBackupFilesDir, "profiles-v1").apply {
             mkdirs()
         }
+        profileObservable = ProfileObservable(
+            events = appEvents,
+            abi = library.profile,
+            coroutineScope = lifecycleScope
+        )
 
         eventSubscription = ABIEventDispatcher.register(::handleEvent)
         statusSubscription = ABIConnectionStatusDispatcher.register(::handleConnectionStatus)
@@ -87,7 +96,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PassepartoutApp(
-                events = appEvents,
+                profileObservable = profileObservable,
                 onImportProfile = ::openProfileImporter,
                 onProfileToggle = ::onProfileToggle,
                 onProfilesDelete = ::onProfilesDelete
@@ -105,6 +114,7 @@ class MainActivity : ComponentActivity() {
         eventSubscription = null
         statusSubscription?.close()
         statusSubscription = null
+        profileObservable.close()
         appEventChannel.close()
         if (isAppInitialized) {
             library.appDeinit { _, _ ->

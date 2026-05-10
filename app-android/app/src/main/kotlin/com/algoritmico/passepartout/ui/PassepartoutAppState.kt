@@ -34,25 +34,6 @@ class PassepartoutAppState {
     var selectedProfileId by mutableStateOf<String?>(null)
         private set
 
-    val profiles: List<ProfileItemUiState>
-        get() = headers.values
-            .sortedBy { it.name.lowercase() }
-            .map { header ->
-                val info = activeTunnels[header.id]
-                var status = info?.status
-                    ?: requestedConnection?.statusFor(header.id)
-                    ?: AppProfileStatus.disconnected
-
-                ProfileItemUiState(
-                    id = header.id,
-                    isEnabled = info?.isEnabled ?: false,
-                    name = header.name,
-                    moduleSummary = header.moduleSummary(),
-                    fingerprint = header.fingerprint,
-                    status = status
-                )
-            }
-
     fun updateProfiles(headers: Map<String, AppProfileHeader>) {
         this.headers = headers
         val sortedIds = headers.values.sortedBy { it.name.lowercase() }.map { it.id }
@@ -99,6 +80,16 @@ class PassepartoutAppState {
         }
     }
 
+    fun isProfileEnabled(profileId: String): Boolean {
+        return activeTunnels[profileId]?.isEnabled ?: false
+    }
+
+    fun profileStatus(profileId: String): AppProfileStatus {
+        return activeTunnels[profileId]?.status
+            ?: requestedConnection?.statusFor(profileId)
+            ?: AppProfileStatus.disconnected
+    }
+
     fun handleEvent(event: Event) {
         when (event) {
             is ProfileEventRefresh -> {
@@ -131,10 +122,4 @@ private data class RequestedConnection(
             AppProfileStatus.disconnecting
         }
     }
-}
-
-private fun AppProfileHeader.moduleSummary(): String {
-    return primaryModuleType?.value
-        ?: moduleTypes.firstOrNull()?.value
-        ?: "Profile"
 }

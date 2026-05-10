@@ -14,14 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.algoritmico.passepartout.abi.Event
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @Composable
 fun PassepartoutApp(
-    events: Flow<Event>,
+    profileObservable: ProfileObservable,
     onImportProfile: () -> Unit,
     onProfileToggle: suspend (String, Boolean) -> Boolean,
     onProfilesDelete: (Array<String>) -> Unit
@@ -29,8 +27,14 @@ fun PassepartoutApp(
     val state = rememberPassepartoutAppState()
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(events) {
-        events.collect(state::handleEvent)
+    LaunchedEffect(profileObservable) {
+        profileObservable.state.collect { profileState ->
+            state.updateProfiles(profileState.filteredHeaders.associateBy { it.id })
+        }
+    }
+
+    LaunchedEffect(profileObservable) {
+        profileObservable.events.collect(state::handleEvent)
     }
 
     val colorScheme = if (isSystemInDarkTheme()) {
@@ -46,8 +50,10 @@ fun PassepartoutApp(
         ) {
             AppCoordinator(
                 title = "Passepartout",
-                profiles = state.profiles,
+                profileObservable = profileObservable,
                 selectedProfileId = state.selectedProfileId,
+                isProfileEnabled = state::isProfileEnabled,
+                profileStatus = state::profileStatus,
                 onProfileSelected = state::selectProfile,
                 onProfileToggle = { profileId, enabled ->
                     state.requestProfileToggle(profileId, enabled)
