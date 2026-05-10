@@ -12,11 +12,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.abi.AppProfileStatus
-import com.algoritmico.passepartout.abi.AppTunnelInfo
-import com.algoritmico.passepartout.abi.Event
-import com.algoritmico.passepartout.abi.OnConnectionStatus
-import com.algoritmico.passepartout.abi.TunnelEventRefresh
+import com.algoritmico.passepartout.abi.models.AppProfileStatus
+import com.algoritmico.passepartout.abi.models.AppTunnelInfo
+import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.OnConnectionStatus
+import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
 import com.algoritmico.passepartout.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.helpers.ABIConnectionStatusDispatcher
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper

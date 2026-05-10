@@ -4,13 +4,13 @@
 
 package com.algoritmico.passepartout.ui
 
-import com.algoritmico.passepartout.abi.AppFeature
-import com.algoritmico.passepartout.abi.AppProfileHeader
-import com.algoritmico.passepartout.abi.Event
-import com.algoritmico.passepartout.abi.ProfileEventChangeRemoteImporting
-import com.algoritmico.passepartout.abi.ProfileEventReady
-import com.algoritmico.passepartout.abi.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.ProfileSharingFlag
+import com.algoritmico.passepartout.abi.models.AppFeature
+import com.algoritmico.passepartout.abi.models.AppProfileHeader
+import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.ProfileEventChangeRemoteImporting
+import com.algoritmico.passepartout.abi.models.ProfileEventReady
+import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
+import com.algoritmico.passepartout.abi.models.ProfileSharingFlag
 import com.algoritmico.passepartout.helpers.AppABIProfileProtocol
 import io.partout.abi.TaggedProfile
 import java.io.Closeable

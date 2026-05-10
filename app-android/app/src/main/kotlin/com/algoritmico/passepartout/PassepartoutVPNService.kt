@@ -11,7 +11,7 @@ import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.algoritmico.passepartout.abi.OnConnectionStatus
+import com.algoritmico.passepartout.abi.models.OnConnectionStatus
 import com.algoritmico.passepartout.helpers.ABIConnectionStatusDispatcher
 import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
 import com.algoritmico.passepartout.helpers.globalJsonCoder

@@ -35,8 +35,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.abi.AppProfileHeader
-import com.algoritmico.passepartout.abi.AppProfileStatus
+import com.algoritmico.passepartout.abi.models.AppProfileHeader
+import com.algoritmico.passepartout.abi.models.AppProfileStatus
 
 @Composable
 fun ProfileContainerView(
