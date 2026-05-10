@@ -12,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.algoritmico.passepartout.abi.AppABIProfile
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.Event
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
         }
         profileObservable = ProfileObservable(
             events = appEvents,
-            abi = library.profile,
+            abi = AppABIProfile(library),
             coroutineScope = lifecycleScope
         )
 

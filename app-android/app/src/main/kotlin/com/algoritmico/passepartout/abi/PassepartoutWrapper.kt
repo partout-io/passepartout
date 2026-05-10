@@ -7,8 +7,6 @@ import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
 import io.partout.jni.AndroidTunnelController
 
 class PassepartoutWrapper {
-    val profile: AppABIProfileProtocol = AppABIProfile(this)
-
     external fun partoutVersion(): String
     external fun appInit(
         bundle: String,
