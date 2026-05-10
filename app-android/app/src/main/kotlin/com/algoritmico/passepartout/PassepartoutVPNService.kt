@@ -11,10 +11,9 @@ import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.algoritmico.passepartout.abi.OnConnectionStatus
-import com.algoritmico.passepartout.helpers.ABIConnectionStatusDispatcher
-import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
-import com.algoritmico.passepartout.helpers.globalJsonCoder
+import com.algoritmico.passepartout.abi.models.OnConnectionStatus
+import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
+import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import io.partout.abi.ConnectionStatus
 import io.partout.abi.TaggedProfile
 import io.partout.jni.AndroidTunnelController
@@ -31,7 +30,7 @@ import kotlinx.coroutines.withContext
 import java.io.Closeable
 
 class PassepartoutVPNService: VpnService() {
-    private val library = NativeLibraryWrapper()
+    private val library = PassepartoutWrapper()
     private val vpnWrapper = AndroidTunnelController(this)
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val commandMutex = Mutex()

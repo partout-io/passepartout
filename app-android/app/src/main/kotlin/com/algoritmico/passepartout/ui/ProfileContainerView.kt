@@ -27,26 +27,34 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.abi.AppProfileStatus
+import com.algoritmico.passepartout.abi.models.AppProfileHeader
+import com.algoritmico.passepartout.abi.models.AppProfileStatus
 
 @Composable
 fun ProfileContainerView(
     modifier: Modifier = Modifier,
-    profiles: List<ProfileItemUiState>,
+    profileObservable: ProfileObservable,
     selectedProfileId: String?,
     contextualProfileIds: List<String>,
+    isProfileEnabled: (String) -> Boolean,
+    profileStatus: (String) -> AppProfileStatus,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit,
     onImportProfile: () -> Unit
 ) {
-    if (profiles.isEmpty()) {
+    val state by profileObservable.state.collectAsState()
+    val headers = state.filteredHeaders
+
+    if (headers.isEmpty()) {
         EmptyProfilesView(
             modifier = modifier,
             onImportProfile = onImportProfile
@@ -54,15 +62,17 @@ fun ProfileContainerView(
         return
     }
 
-    val selectedProfile = profiles.firstOrNull { it.id == selectedProfileId } ?: profiles.first()
+    val selectedHeader = headers.firstOrNull { it.id == selectedProfileId } ?: headers.first()
     val isTablet = LocalConfiguration.current.screenWidthDp >= 840
 
     if (isTablet) {
         TabletProfilesView(
             modifier = modifier,
-            profiles = profiles,
-            selectedProfile = selectedProfile,
+            headers = headers,
+            selectedHeader = selectedHeader,
             contextualProfileIds = contextualProfileIds,
+            isProfileEnabled = isProfileEnabled,
+            profileStatus = profileStatus,
             onProfileSelected = onProfileSelected,
             onProfileToggle = onProfileToggle,
             onProfileContextualAction = onProfileContextualAction
@@ -70,9 +80,11 @@ fun ProfileContainerView(
     } else {
         MobileProfilesView(
             modifier = modifier,
-            profiles = profiles,
-            selectedProfileId = selectedProfile.id,
+            headers = headers,
+            selectedProfileId = selectedHeader.id,
             contextualProfileIds = contextualProfileIds,
+            isProfileEnabled = isProfileEnabled,
+            profileStatus = profileStatus,
             onProfileSelected = onProfileSelected,
             onProfileToggle = onProfileToggle,
             onProfileContextualAction = onProfileContextualAction
@@ -83,9 +95,11 @@ fun ProfileContainerView(
 @Composable
 private fun MobileProfilesView(
     modifier: Modifier,
-    profiles: List<ProfileItemUiState>,
+    headers: List<AppProfileHeader>,
     selectedProfileId: String,
     contextualProfileIds: List<String>,
+    isProfileEnabled: (String) -> Boolean,
+    profileStatus: (String) -> AppProfileStatus,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
@@ -102,15 +116,17 @@ private fun MobileProfilesView(
             )
         }
         items(
-            items = profiles,
+            items = headers,
             key = { it.id }
-        ) { profile ->
+        ) { header ->
             ProfileRow(
-                profile = profile,
+                header = header,
+                isEnabled = isProfileEnabled(header.id),
+                status = profileStatus(header.id),
                 isSelected = if (contextualProfileIds.isNotEmpty()) {
-                    profile.id in contextualProfileIds
+                    header.id in contextualProfileIds
                 } else {
-                    profile.id == selectedProfileId
+                    header.id == selectedProfileId
                 },
                 onProfileSelected = onProfileSelected,
                 onProfileToggle = onProfileToggle,
@@ -123,9 +139,11 @@ private fun MobileProfilesView(
 @Composable
 private fun TabletProfilesView(
     modifier: Modifier,
-    profiles: List<ProfileItemUiState>,
-    selectedProfile: ProfileItemUiState,
+    headers: List<AppProfileHeader>,
+    selectedHeader: AppProfileHeader,
     contextualProfileIds: List<String>,
+    isProfileEnabled: (String) -> Boolean,
+    profileStatus: (String) -> AppProfileStatus,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
@@ -152,15 +170,17 @@ private fun TabletProfilesView(
                     )
                 }
                 items(
-                    items = profiles,
+                    items = headers,
                     key = { it.id }
-                ) { profile ->
+                ) { header ->
                     ProfileRow(
-                        profile = profile,
+                        header = header,
+                        isEnabled = isProfileEnabled(header.id),
+                        status = profileStatus(header.id),
                         isSelected = if (contextualProfileIds.isNotEmpty()) {
-                            profile.id in contextualProfileIds
+                            header.id in contextualProfileIds
                         } else {
-                            profile.id == selectedProfile.id
+                            header.id == selectedHeader.id
                         },
                         onProfileSelected = onProfileSelected,
                         onProfileToggle = onProfileToggle,
@@ -174,7 +194,9 @@ private fun TabletProfilesView(
             modifier = Modifier
                 .weight(0.58f)
                 .fillMaxHeight(),
-            profile = selectedProfile,
+            header = selectedHeader,
+            isEnabled = isProfileEnabled(selectedHeader.id),
+            status = profileStatus(selectedHeader.id),
             onProfileToggle = onProfileToggle
         )
     }
@@ -183,7 +205,9 @@ private fun TabletProfilesView(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProfileRow(
-    profile: ProfileItemUiState,
+    header: AppProfileHeader,
+    isEnabled: Boolean,
+    status: AppProfileStatus,
     isSelected: Boolean,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
@@ -200,10 +224,10 @@ private fun ProfileRow(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
-                    onProfileSelected(profile.id)
+                    onProfileSelected(header.id)
                 },
                 onLongClick = {
-                    onProfileContextualAction(profile.id)
+                    onProfileContextualAction(header.id)
                 }
             ),
         colors = CardDefaults.outlinedCardColors(
@@ -221,30 +245,30 @@ private fun ProfileRow(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = profile.name,
+                    text = header.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = profile.moduleSummary,
+                    text = header.moduleSummary(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = profile.statusText,
+                    text = status.statusText(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = statusColor(profile.status)
+                    color = statusColor(status)
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
             Switch(
-                checked = profile.isEnabled,
-                enabled = profile.canToggle,
+                checked = isEnabled,
+                enabled = status.canToggle(),
                 onCheckedChange = { isEnabled ->
-                    onProfileSelected(profile.id)
-                    onProfileToggle(profile.id, isEnabled)
+                    onProfileSelected(header.id)
+                    onProfileToggle(header.id, isEnabled)
                 }
             )
         }
@@ -254,7 +278,9 @@ private fun ProfileRow(
 @Composable
 private fun ProfileDetailCard(
     modifier: Modifier,
-    profile: ProfileItemUiState,
+    header: AppProfileHeader,
+    isEnabled: Boolean,
+    status: AppProfileStatus,
     onProfileToggle: (String, Boolean) -> Unit
 ) {
     ElevatedCard(
@@ -270,27 +296,27 @@ private fun ProfileDetailCard(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = profile.name,
+                    text = header.name,
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Text(
-                    text = profile.statusText,
+                    text = status.statusText(),
                     style = MaterialTheme.typography.titleMedium,
-                    color = statusColor(profile.status)
+                    color = statusColor(status)
                 )
             }
 
             DetailLine(
                 title = "Primary module",
-                value = profile.moduleSummary
+                value = header.moduleSummary()
             )
             DetailLine(
                 title = "Fingerprint",
-                value = profile.fingerprint
+                value = header.fingerprint
             )
             DetailLine(
                 title = "Profile ID",
-                value = profile.id
+                value = header.id
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -315,10 +341,10 @@ private fun ProfileDetailCard(
                 }
 
                 Switch(
-                    checked = profile.isEnabled,
-                    enabled = profile.canToggle,
+                    checked = isEnabled,
+                    enabled = status.canToggle(),
                     onCheckedChange = { isEnabled ->
-                        onProfileToggle(profile.id, isEnabled)
+                        onProfileToggle(header.id, isEnabled)
                     }
                 )
             }
@@ -382,4 +408,29 @@ private fun statusColor(status: AppProfileStatus): Color = when (status) {
     AppProfileStatus.disconnecting -> MaterialTheme.colorScheme.secondary
 
     AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant
+}
+
+private fun AppProfileHeader.moduleSummary(): String {
+    return primaryModuleType?.value
+        ?: moduleTypes.firstOrNull()?.value
+        ?: "Profile"
+}
+
+private fun AppProfileStatus.statusText(): String {
+    return when (this) {
+        AppProfileStatus.disconnected -> "Disconnected"
+        AppProfileStatus.connecting -> "Connecting"
+        AppProfileStatus.connected -> "Connected"
+        AppProfileStatus.disconnecting -> "Disconnecting"
+    }
+}
+
+private fun AppProfileStatus.canToggle(): Boolean {
+    return when (this) {
+        AppProfileStatus.disconnecting -> false
+
+        AppProfileStatus.connecting,
+        AppProfileStatus.disconnected,
+        AppProfileStatus.connected -> true
+    }
 }

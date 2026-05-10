@@ -7,12 +7,12 @@ set -e
 partout_infile=app-cross/partout/scripts/openapi.yaml
 partout_package=io.partout.abi
 abi_infile=app-cross/abi.yaml
-abi_package=com.algoritmico.passepartout.abi
+abi_package=com.algoritmico.passepartout.abi.models
 models_dir=`realpath app-android/app`
 
 # Clean up
 rm -rf $models_dir/src/main/kotlin/io/partout/abi
-rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/abi
+rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/abi/models
 
 shared_flags=(
     -o "$models_dir"

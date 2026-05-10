@@ -26,13 +26,16 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.abi.models.AppProfileStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppCoordinator(
     title: String,
-    profiles: List<ProfileItemUiState>,
+    profileObservable: ProfileObservable,
     selectedProfileId: String?,
+    isProfileEnabled: (String) -> Boolean,
+    profileStatus: (String) -> AppProfileStatus,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfilesDelete: (Array<String>) -> Unit,
@@ -112,9 +115,11 @@ fun AppCoordinator(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            profiles = profiles,
+            profileObservable = profileObservable,
             selectedProfileId = selectedProfileId,
             contextualProfileIds = contextualProfileIds,
+            isProfileEnabled = isProfileEnabled,
+            profileStatus = profileStatus,
             onProfileSelected = { profileId ->
                 if (isContextualMode) {
                     toggleContextualProfile(profileId)

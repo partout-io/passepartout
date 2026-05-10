@@ -10,13 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.algoritmico.passepartout.abi.AppProfileHeader
-import com.algoritmico.passepartout.abi.AppProfileStatus
-import com.algoritmico.passepartout.abi.AppTunnelInfo
-import com.algoritmico.passepartout.abi.Event
-import com.algoritmico.passepartout.abi.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.ProfileEventSave
-import com.algoritmico.passepartout.abi.TunnelEventRefresh
+import com.algoritmico.passepartout.abi.models.AppProfileHeader
+import com.algoritmico.passepartout.abi.models.AppProfileStatus
+import com.algoritmico.passepartout.abi.models.AppTunnelInfo
+import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
+import com.algoritmico.passepartout.abi.models.ProfileEventSave
+import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
 
 @Composable
 fun rememberPassepartoutAppState(): PassepartoutAppState {
@@ -33,25 +33,6 @@ class PassepartoutAppState {
 
     var selectedProfileId by mutableStateOf<String?>(null)
         private set
-
-    val profiles: List<ProfileItemUiState>
-        get() = headers.values
-            .sortedBy { it.name.lowercase() }
-            .map { header ->
-                val info = activeTunnels[header.id]
-                var status = info?.status
-                    ?: requestedConnection?.statusFor(header.id)
-                    ?: AppProfileStatus.disconnected
-
-                ProfileItemUiState(
-                    id = header.id,
-                    isEnabled = info?.isEnabled ?: false,
-                    name = header.name,
-                    moduleSummary = header.moduleSummary(),
-                    fingerprint = header.fingerprint,
-                    status = status
-                )
-            }
 
     fun updateProfiles(headers: Map<String, AppProfileHeader>) {
         this.headers = headers
@@ -99,6 +80,16 @@ class PassepartoutAppState {
         }
     }
 
+    fun isProfileEnabled(profileId: String): Boolean {
+        return activeTunnels[profileId]?.isEnabled ?: false
+    }
+
+    fun profileStatus(profileId: String): AppProfileStatus {
+        return activeTunnels[profileId]?.status
+            ?: requestedConnection?.statusFor(profileId)
+            ?: AppProfileStatus.disconnected
+    }
+
     fun handleEvent(event: Event) {
         when (event) {
             is ProfileEventRefresh -> {
@@ -131,10 +122,4 @@ private data class RequestedConnection(
             AppProfileStatus.disconnecting
         }
     }
-}
-
-private fun AppProfileHeader.moduleSummary(): String {
-    return primaryModuleType?.value
-        ?: moduleTypes.firstOrNull()?.value
-        ?: "Profile"
 }

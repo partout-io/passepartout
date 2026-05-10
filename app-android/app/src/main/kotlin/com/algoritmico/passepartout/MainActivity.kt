@@ -11,16 +11,18 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import com.algoritmico.passepartout.abi.AppProfileStatus
-import com.algoritmico.passepartout.abi.AppTunnelInfo
-import com.algoritmico.passepartout.abi.Event
-import com.algoritmico.passepartout.abi.OnConnectionStatus
-import com.algoritmico.passepartout.abi.TunnelEventRefresh
-import com.algoritmico.passepartout.helpers.ABIEventDispatcher
-import com.algoritmico.passepartout.helpers.ABIConnectionStatusDispatcher
-import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
-import com.algoritmico.passepartout.helpers.globalJsonCoder
+import androidx.lifecycle.lifecycleScope
+import com.algoritmico.passepartout.abi.AppABIProfile
+import com.algoritmico.passepartout.abi.models.AppProfileStatus
+import com.algoritmico.passepartout.abi.models.AppTunnelInfo
+import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.OnConnectionStatus
+import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
+import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
+import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
+import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.ui.PassepartoutApp
+import com.algoritmico.passepartout.ui.ProfileObservable
 import io.partout.abi.ConnectionStatus
 import io.partout.abi.TaggedProfile
 import io.partout.jni.AndroidTunnelStrategy
@@ -30,12 +32,14 @@ import java.io.Closeable
 import java.io.File
 
 class MainActivity : ComponentActivity() {
-    private val library = NativeLibraryWrapper()
+    private val library = PassepartoutWrapper()
 
     private val appEventChannel = Channel<Event>(Channel.UNLIMITED)
     private val appEvents = appEventChannel.receiveAsFlow()
 
     private lateinit var profilesDirectory: File
+
+    private lateinit var profileObservable: ProfileObservable
 
     private lateinit var tunnelStrategy: AndroidTunnelStrategy
 
@@ -56,6 +60,11 @@ class MainActivity : ComponentActivity() {
         profilesDirectory = File(noBackupFilesDir, "profiles-v1").apply {
             mkdirs()
         }
+        profileObservable = ProfileObservable(
+            events = appEvents,
+            abi = AppABIProfile(library),
+            coroutineScope = lifecycleScope
+        )
 
         eventSubscription = ABIEventDispatcher.register(::handleEvent)
         statusSubscription = ABIConnectionStatusDispatcher.register(::handleConnectionStatus)
@@ -87,7 +96,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PassepartoutApp(
-                events = appEvents,
+                profileObservable = profileObservable,
                 onImportProfile = ::openProfileImporter,
                 onProfileToggle = ::onProfileToggle,
                 onProfilesDelete = ::onProfilesDelete
@@ -105,6 +114,7 @@ class MainActivity : ComponentActivity() {
         eventSubscription = null
         statusSubscription?.close()
         statusSubscription = null
+        profileObservable.close()
         appEventChannel.close()
         if (isAppInitialized) {
             library.appDeinit { _, _ ->

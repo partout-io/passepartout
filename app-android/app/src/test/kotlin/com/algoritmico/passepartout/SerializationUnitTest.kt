@@ -1,6 +1,5 @@
 package com.algoritmico.passepartout
 
-import com.algoritmico.passepartout.helpers.globalJsonCoder
 import io.partout.abi.DNSModuleProtocolType
 import io.partout.abi.DNSModuleProtocolTypecleartext
 import io.partout.abi.DNSModuleProtocolTypehttps
