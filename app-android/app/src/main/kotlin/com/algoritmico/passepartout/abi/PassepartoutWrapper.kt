@@ -6,7 +6,7 @@ import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusHandler
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
 import io.partout.jni.AndroidTunnelController
 
-class NativeLibraryWrapper {
+class PassepartoutWrapper {
     val profile: AppABIProfileProtocol = AppABIProfile(this)
 
     external fun partoutVersion(): String

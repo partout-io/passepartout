@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 internal class AppABIProfile(
-    private val library: NativeLibraryWrapper
+    private val library: PassepartoutWrapper
 ) : AppABIProfileProtocol {
     override suspend fun importText(text: String, filename: String) {
         awaitCompletion { completion ->

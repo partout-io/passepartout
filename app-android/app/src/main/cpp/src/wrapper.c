@@ -21,18 +21,18 @@ struct {
 #define PSP_JNI_CB(e, c) PSP_CB(abi_handler_create(e, c), abi_completion_proxy)
 
 JNIEXPORT jstring JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
     jstring jmsg = (*env)->NewStringUTF(env, psp_partout_version());
     return jmsg;
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appOnForeground(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appOnForeground(JNIEnv *env, jobject thiz) {
     psp_app_on_foreground();
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appInit(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -67,7 +67,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appInit(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appDeinit(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDeinit(
         JNIEnv *env,
         jobject thiz,
         jobject completion
@@ -76,7 +76,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appDeinit(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appRelease(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appRelease(
         JNIEnv *env,
         jobject thiz
 ) {
@@ -87,7 +87,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appRelease(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appImportProfileText(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appImportProfileText(
         JNIEnv *env,
         jobject thiz,
         jstring text,
@@ -102,7 +102,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appImportProfileText(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appDeleteProfile(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDeleteProfile(
         JNIEnv *env,
         jobject thiz,
         jstring id,
@@ -114,7 +114,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appDeleteProfile(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appDeleteProfiles(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDeleteProfiles(
         JNIEnv *env,
         jobject thiz,
         jobjectArray ids,
@@ -126,7 +126,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_appDeleteProfiles(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStart(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
@@ -167,7 +167,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStart(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStop(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStop(
         JNIEnv *env,
         jobject thiz,
         jobject completion
@@ -176,7 +176,7 @@ Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelStop(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_NativeLibraryWrapper_tunnelRelease(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelRelease(
         JNIEnv *env,
         jobject thiz
 ) {

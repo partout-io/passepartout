@@ -19,7 +19,7 @@ import com.algoritmico.passepartout.abi.models.OnConnectionStatus
 import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
-import com.algoritmico.passepartout.abi.NativeLibraryWrapper
+import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import com.algoritmico.passepartout.ui.ProfileObservable
 import io.partout.abi.ConnectionStatus
@@ -31,7 +31,7 @@ import java.io.Closeable
 import java.io.File
 
 class MainActivity : ComponentActivity() {
-    private val library = NativeLibraryWrapper()
+    private val library = PassepartoutWrapper()
 
     private val appEventChannel = Channel<Event>(Channel.UNLIMITED)
     private val appEvents = appEventChannel.receiveAsFlow()
