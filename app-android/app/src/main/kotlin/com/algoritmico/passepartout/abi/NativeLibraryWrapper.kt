@@ -1,6 +1,9 @@
-package com.algoritmico.passepartout.helpers
+package com.algoritmico.passepartout.abi
 
 import android.util.Log
+import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
+import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusHandler
+import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
 import io.partout.jni.AndroidTunnelController
 
 class NativeLibraryWrapper {

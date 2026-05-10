@@ -2,8 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.helpers
+package com.algoritmico.passepartout.abi
 
+import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
+import com.algoritmico.passepartout.abi.helpers.ABIResult
 import io.partout.abi.TaggedProfile
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers

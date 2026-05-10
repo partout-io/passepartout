@@ -17,10 +17,9 @@ import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.abi.models.OnConnectionStatus
 import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
-import com.algoritmico.passepartout.helpers.ABIEventDispatcher
-import com.algoritmico.passepartout.helpers.ABIConnectionStatusDispatcher
-import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
-import com.algoritmico.passepartout.helpers.globalJsonCoder
+import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
+import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
+import com.algoritmico.passepartout.abi.NativeLibraryWrapper
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import com.algoritmico.passepartout.ui.ProfileObservable
 import io.partout.abi.ConnectionStatus

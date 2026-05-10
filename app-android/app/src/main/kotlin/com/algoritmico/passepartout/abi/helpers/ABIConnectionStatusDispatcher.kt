@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.helpers
+package com.algoritmico.passepartout.abi.helpers
 
 import java.io.Closeable
 
-object ABIEventDispatcher : ABIEventHandler {
+object ABIConnectionStatusDispatcher : ABIConnectionStatusHandler {
     private val dispatcher = ABIStringDispatcher()
 
-    override fun onEvent(eventJSON: String) {
-        dispatcher.dispatch(eventJSON)
+    override fun onStatus(onStatusJSON: String) {
+        dispatcher.dispatch(onStatusJSON)
     }
 
     fun register(listener: (String) -> Unit): Closeable =

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.helpers
+package com.algoritmico.passepartout.abi.helpers
 
 fun interface ABIEventHandler {
     fun onEvent(eventJSON: String)

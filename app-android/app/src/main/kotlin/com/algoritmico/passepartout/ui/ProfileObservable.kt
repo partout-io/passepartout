@@ -11,7 +11,7 @@ import com.algoritmico.passepartout.abi.models.ProfileEventChangeRemoteImporting
 import com.algoritmico.passepartout.abi.models.ProfileEventReady
 import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.models.ProfileSharingFlag
-import com.algoritmico.passepartout.helpers.AppABIProfileProtocol
+import com.algoritmico.passepartout.abi.AppABIProfileProtocol
 import io.partout.abi.TaggedProfile
 import java.io.Closeable
 import kotlinx.coroutines.CoroutineScope
