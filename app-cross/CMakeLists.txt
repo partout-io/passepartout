@@ -19,7 +19,8 @@ set_target_properties(passepartout_shared PROPERTIES
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
-set(PP_BUILD_USE_WGGO ON)
+set(PP_BUILD_USE_OPENVPN ON)
+set(PP_BUILD_USE_WIREGUARD ON)
 add_subdirectory(partout)
 
 # Set exclusions and symbols for non-Apple builds
