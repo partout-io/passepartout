@@ -4,12 +4,8 @@
 
 package com.algoritmico.passepartout.abi
 
-import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
-import com.algoritmico.passepartout.abi.helpers.ABIResult
+import com.algoritmico.passepartout.abi.helpers.awaitCompletion
 import io.partout.abi.TaggedProfile
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 internal class AppABIProfile(
     private val library: PassepartoutWrapper
@@ -18,7 +14,6 @@ internal class AppABIProfile(
         awaitCompletion { completion ->
             library.appImportProfileText(text, filename, completion)
         }
-        library.appOnForeground()
     }
 
     override suspend fun remove(profileId: String) {
@@ -36,15 +31,5 @@ internal class AppABIProfile(
     override fun profile(profileId: String): TaggedProfile? {
         // FIXME: Implement through C/JNI App ABI.
         return null
-    }
-
-    private suspend fun awaitCompletion(
-        block: (ABICompletionCallback) -> Unit
-    ) = withContext(Dispatchers.IO) {
-        val result = CompletableDeferred<ABIResult>()
-        block { code, json ->
-            result.complete(ABIResult(code, json))
-        }
-        result.await().getOrThrow()
     }
 }
