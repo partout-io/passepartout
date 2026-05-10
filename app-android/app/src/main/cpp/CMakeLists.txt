@@ -47,8 +47,8 @@ ExternalProject_Add(libpassepartout
 
 # Native wrapper for JNI (.so)
 add_library(passepartout_wrapper SHARED
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/passepartout.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/wrapper.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers.c
 )
 add_dependencies(passepartout_wrapper libpassepartout)
 target_include_directories(passepartout_wrapper PRIVATE
