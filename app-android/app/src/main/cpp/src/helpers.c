@@ -17,24 +17,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     return JNI_VERSION_1_6;
 }
 
-static
-JNIEnv *jni_attach_thread(bool *did_attach) {
-    JNIEnv *env;
-    jint status = (*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
-    switch (status) {
-        case JNI_OK:
-            *did_attach = false;
-            return env;
-        case JNI_EDETACHED:
-            status = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
-            if (status != JNI_OK) return NULL;
-            *did_attach = true;
-            return env;
-        default:
-            return NULL;
-    }
-}
-
 abi_handler *abi_handler_create(JNIEnv *env, jobject ref) {
     abi_handler *handler = malloc(sizeof(abi_handler));
     handler->ref = (*env)->NewGlobalRef(env, ref);
@@ -53,10 +35,7 @@ void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
     assert(ctx);
     assert(method_id);
     assert(json);
-
-    bool did_attach;
-    JNIEnv *env = jni_attach_thread(&did_attach);
-    if (!env) return;
+    JNI_ATTACH_OR_RETURN_VOID(env);
 
     abi_handler *handler = (abi_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->ref);
@@ -70,7 +49,8 @@ void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
         }
         (*env)->DeleteLocalRef(env, cls);
     }
-    if (did_attach) (*jvm)->DetachCurrentThread(jvm);
+
+    JNI_DETACH(env);
 }
 
 void abi_event_handler_proxy(void *ctx, const char *event_json) {
@@ -85,10 +65,7 @@ void abi_connection_status_handler_proxy(void *ctx, const char *status_json) {
 
 void abi_completion_proxy(void *ctx, int code, const char *json) {
     assert(ctx);
-
-    bool did_attach;
-    JNIEnv *env = jni_attach_thread(&did_attach);
-    if (!env) return;
+    JNI_ATTACH_OR_RETURN_VOID(env);
 
     abi_handler *handler = (abi_handler *)ctx;
     jclass cls = (*env)->GetObjectClass(env, handler->ref);
@@ -105,10 +82,27 @@ void abi_completion_proxy(void *ctx, int code, const char *json) {
     // Release handler on completion
     abi_handler_free(env, handler);
 
-    if (did_attach) (*jvm)->DetachCurrentThread(jvm);
+    JNI_DETACH(env);
 }
 
-/* Types */
+/* JNI */
+
+JNIEnv *jni_attach_thread(bool *did_attach) {
+    JNIEnv *env;
+    jint status = (*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_6);
+    switch (status) {
+        case JNI_OK:
+            *did_attach = false;
+            return env;
+        case JNI_EDETACHED:
+            status = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+            if (status != JNI_OK) return NULL;
+            *did_attach = true;
+            return env;
+        default:
+            return NULL;
+    }
+}
 
 jni_string_array *jni_string_array_create(JNIEnv *env, jobjectArray v) {
     if (env == NULL || v == NULL) return NULL;
