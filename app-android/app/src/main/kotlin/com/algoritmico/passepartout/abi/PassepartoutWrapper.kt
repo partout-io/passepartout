@@ -8,6 +8,8 @@ import android.util.Log
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
 import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusHandler
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
+import io.partout.abi.TaggedProfile
+import io.partout.jni.AndroidTunnel
 import io.partout.jni.AndroidTunnelController
 
 class PassepartoutWrapper {
@@ -17,9 +19,9 @@ class PassepartoutWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
-        eventHandler: ABIEventHandler,
-        completion: ABICompletionCallback
-    )
+        tunnel: AndroidTunnel,
+        eventHandler: ABIEventHandler
+    ): Int
     external fun appDeinit(completion: ABICompletionCallback)
     external fun appOnForeground()
     external fun appImportProfileText(
@@ -40,18 +42,12 @@ class PassepartoutWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        statusHandler: ABIConnectionStatusHandler,
         controller: AndroidTunnelController,
-        completion: ABICompletionCallback
-    )
+        statusHandler: ABIConnectionStatusHandler
+    ): Int
     external fun tunnelStop(
         completion: ABICompletionCallback
     )
-
-    // These are specific to Android to release JNI references
-    // FIXME: Remove and let appDeinit/tunnelStop in JNI do the deallocation
-    external fun appRelease()
-    external fun tunnelRelease()
 
     companion object {
         init {

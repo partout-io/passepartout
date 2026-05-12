@@ -9,16 +9,9 @@
 #include "passepartout.h"
 #include "helpers.h"
 
-struct {
-    abi_handler *eventHandler;
-} app_references;
-
-struct {
-    jobject jniController;
-    abi_handler *statusHandler;
-} tunnel_references;
-
 #define PSP_JNI_CB(e, c) PSP_CB(abi_handler_create(e, c), abi_completion_proxy)
+static void app_bindings_free(psp_app_bindings *b);
+static void tunnel_bindings_free(psp_tunnel_bindings *b);
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
@@ -31,7 +24,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appOnForeground(JNIEnv
     psp_app_on_foreground();
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         JNIEnv *env,
         jobject thiz,
@@ -39,16 +32,19 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         jstring constants,
         jstring profilesDir,
         jstring cacheDir,
-        jobject eventHandler,
-        jobject completion
+        jobject tunnel,
+        jobject eventHandler
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
     const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
-    // Store globally
-    app_references.eventHandler = abi_handler_create(env, eventHandler);
+    psp_app_bindings bindings = { 0 };
+    bindings.tunnel = (*env)->NewGlobalRef(env, tunnel);
+    bindings.event_ctx = abi_handler_create(env, eventHandler);
+    bindings.event_cb = abi_event_handler_proxy;
+    bindings.free = app_bindings_free;
 
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
@@ -56,14 +52,14 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
     args.preferences = "{\"logsPrivateData\": true}";
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
-    args.bindings.event_ctx = app_references.eventHandler;
-    args.bindings.event_cb = abi_event_handler_proxy;
-    psp_app_init(&args, PSP_JNI_CB(env, completion));
+    args.bindings = bindings;
+    const jint result = psp_app_init(&args);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
     (*env)->ReleaseStringUTFChars(env, profilesDir, cProfilesDir);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
+    return result;
 }
 
 JNIEXPORT void JNICALL
@@ -73,17 +69,6 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDeinit(
         jobject completion
 ) {
     psp_app_deinit(PSP_JNI_CB(env, completion));
-}
-
-JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appRelease(
-        JNIEnv *env,
-        jobject thiz
-) {
-    if (app_references.eventHandler) {
-        abi_handler_free(env, app_references.eventHandler);
-        app_references.eventHandler = NULL;
-    }
 }
 
 JNIEXPORT void JNICALL
@@ -133,18 +118,19 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         jstring constants,
         jstring profile,
         jstring cacheDir,
-        jobject statusHandler,
         jobject controller,
-        jobject completion
+        jobject statusHandler
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
-    // Store global JNI references (ownership is transferred)
-    tunnel_references.jniController = (*env)->NewGlobalRef(env, controller);
-    tunnel_references.statusHandler = abi_handler_create(env, statusHandler);
+    psp_tunnel_bindings bindings = { 0 };
+    bindings.controller = (*env)->NewGlobalRef(env, controller);
+    bindings.status_ctx = abi_handler_create(env, statusHandler);
+    bindings.status_cb = abi_connection_status_handler_proxy;
+    bindings.free = tunnel_bindings_free;
 
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
@@ -154,16 +140,15 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
     args.profile = cProfile;
     args.is_interactive = true;
     args.is_daemon = false;
-    args.bindings.controller = tunnel_references.jniController;
-    args.bindings.status_ctx = tunnel_references.statusHandler;
-    args.bindings.status_cb = abi_connection_status_handler_proxy;
+    args.bindings = bindings;
 
-    psp_tunnel_start(&args, PSP_JNI_CB(env, completion));
+    const jint result = psp_tunnel_start(&args);
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
     (*env)->ReleaseStringUTFChars(env, profile, cProfile);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
+    return result;
 }
 
 JNIEXPORT void JNICALL
@@ -175,17 +160,28 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStop(
     psp_tunnel_stop(PSP_JNI_CB(env, completion));
 }
 
-JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelRelease(
-        JNIEnv *env,
-        jobject thiz
-) {
-    if (tunnel_references.jniController) {
-        (*env)->DeleteGlobalRef(env, tunnel_references.jniController);
-        tunnel_references.jniController = NULL;
+void app_bindings_free(psp_app_bindings *b) {
+    JNI_ATTACH_OR_RETURN_VOID(env);
+    if (b->tunnel) {
+        (*env)->DeleteGlobalRef(env, b->tunnel);
+        b->tunnel = NULL;
     }
-    if (tunnel_references.statusHandler) {
-        abi_handler_free(env, tunnel_references.statusHandler);
-        tunnel_references.statusHandler = NULL;
+    if (b->event_ctx) {
+        abi_handler_free(env, b->event_ctx);
+        b->event_ctx = NULL;
     }
+    JNI_DETACH(env);
+}
+
+void tunnel_bindings_free(psp_tunnel_bindings *b) {
+    JNI_ATTACH_OR_RETURN_VOID(env);
+    if (b->controller) {
+        (*env)->DeleteGlobalRef(env, b->controller);
+        b->controller = NULL;
+    }
+    if (b->status_ctx) {
+        abi_handler_free(env, b->status_ctx);
+        b->status_ctx = NULL;
+    }
+    JNI_DETACH(env);
 }
