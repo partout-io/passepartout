@@ -13,23 +13,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.abi.AppABIProfile
+import com.algoritmico.passepartout.abi.PassepartoutWrapper
+import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
+import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.abi.models.OnConnectionStatus
 import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
-import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
-import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
-import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import com.algoritmico.passepartout.ui.ProfileObservable
 import io.partout.abi.ConnectionStatus
-import io.partout.abi.TaggedProfile
-import io.partout.jni.AndroidTunnelStrategy
+import io.partout.jni.AndroidTunnel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
 import java.io.File
+import kotlin.coroutines.resume
 
 class MainActivity : ComponentActivity() {
     private val library = PassepartoutWrapper()
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var profileObservable: ProfileObservable
 
-    private lateinit var tunnelStrategy: AndroidTunnelStrategy
+    private lateinit var tunnel: AndroidTunnel
 
     private var eventSubscription: Closeable? = null
 
@@ -65,34 +66,31 @@ class MainActivity : ComponentActivity() {
             abi = AppABIProfile(library),
             coroutineScope = lifecycleScope
         )
-
-        eventSubscription = ABIEventDispatcher.register(::handleEvent)
-        statusSubscription = ABIConnectionStatusDispatcher.register(::handleConnectionStatus)
-        library.appInit(
-            bundle,
-            constants,
-            profilesDirectory.absolutePath,
-            cacheDir.absolutePath,
-            ABIEventDispatcher,
-            { code, json ->
-                runOnUiThread {
-                    if (code == 0) {
-                        isAppInitialized = true
-                        Log.e("Passepartout", ">>> Started app")
-                    } else {
-                        Log.e("Passepartout", "Unable to init app (code=$code): $json")
-                        destroyApp()
-                    }
-                }
-            }
-        )
-        tunnelStrategy = AndroidTunnelStrategy(
+        tunnel = AndroidTunnel(
             context = this,
             vpnServiceClass = PassepartoutVPNService::class.java,
             requestVpnPermission = { permissionIntent ->
                 vpnPermissionLauncher.launch(permissionIntent)
             }
         )
+
+        eventSubscription = ABIEventDispatcher.register(::handleEvent)
+        statusSubscription = ABIConnectionStatusDispatcher.register(::handleConnectionStatus)
+        val appInitCode = library.appInit(
+            bundle,
+            constants,
+            profilesDirectory.absolutePath,
+            cacheDir.absolutePath,
+            tunnel,
+            ABIEventDispatcher
+        )
+        if (appInitCode == 0) {
+            isAppInitialized = true
+            Log.e("Passepartout", ">>> Started app")
+        } else {
+            Log.e("Passepartout", "Unable to init app (code=$appInitCode)")
+            destroyApp()
+        }
 
         setContent {
             PassepartoutApp(
@@ -117,11 +115,7 @@ class MainActivity : ComponentActivity() {
         profileObservable.close()
         appEventChannel.close()
         if (isAppInitialized) {
-            library.appDeinit { _, _ ->
-                library.appRelease()
-            }
-        } else {
-            library.appRelease()
+            library.appDeinit { _, _ -> }
         }
         super.onDestroy()
     }
@@ -162,7 +156,7 @@ class MainActivity : ComponentActivity() {
         return if (enabled) {
             connectTunnel(profileId)
         } else {
-            tunnelStrategy.disconnect()
+            disconnectTunnel(profileId)
             true
         }
     }
@@ -177,8 +171,23 @@ class MainActivity : ComponentActivity() {
             Log.e("Passepartout", "Unable to start missing profile: $profileId")
             return false
         }
-        tunnelStrategy.connect(profile)
-        return true
+        return suspendCancellableCoroutine { continuation ->
+            library.appConnect (profile) { code, json ->
+                if (continuation.isActive) {
+                    continuation.resume(code == 0)
+                }
+            }
+        }
+    }
+
+    private suspend fun disconnectTunnel(profileId: String) {
+        suspendCancellableCoroutine { continuation ->
+            library.appDisconnect(profileId) { code, json ->
+                if (continuation.isActive) {
+                    continuation.resume(Unit)
+                }
+            }
+        }
     }
 
     private fun openProfileImporter() {
@@ -216,7 +225,7 @@ class MainActivity : ComponentActivity() {
     private val vpnPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        tunnelStrategy.onVpnPermissionResult(result.resultCode == RESULT_OK)
+        tunnel.onVpnPermissionResult(result.resultCode == RESULT_OK)
     }
 
     private companion object {
@@ -231,12 +240,12 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private fun readProfile(profileId: String): TaggedProfile? {
+    private fun readProfile(profileId: String): String? {
         val profileFile = File(profilesDirectory, "$OBJECTS_DIR/$profileId.json")
         if (!profileFile.isFile) {
             return null
         }
-        return globalJsonCoder.decodeFromString(profileFile.readText())
+        return profileFile.readText()
     }
 
     private fun displayName(uri: Uri): String? {
