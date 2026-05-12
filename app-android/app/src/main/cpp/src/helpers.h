@@ -47,7 +47,7 @@ JNIEnv *jni_attach_thread(bool *did_attach);
 
 #define JNI_ATTACH_OR_COMPLETE(env_name, completion, ctx) \
     bool env_name##_did_attach; \
-    JNIEnv *env_name = pp_jni_attach_thread(&env_name##_did_attach); \
+    JNIEnv *env_name = jni_attach_thread(&env_name##_did_attach); \
     if (!(env_name)) { \
         if (completion) completion(ctx, -1); \
         return; \
