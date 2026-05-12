@@ -1,1 +1,3 @@
-* OpenVPN: Fix potential infinite loops on disconnection
+* ABI: Centralize JSON coding and ISO8601 (#1807)
+* ABI: Initialize synchronously and add tunnel connect/disconnect (#1806)
+* CMake: Verify file lists in CI
