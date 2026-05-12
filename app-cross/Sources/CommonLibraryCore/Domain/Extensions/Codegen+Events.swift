@@ -37,7 +37,7 @@ extension ABI.IAPEvent {
         public let originalPurchase: ABI.OriginalPurchase?
         public let products: Set<ABI.AppProduct>
         public let isBeta: Bool
-        public func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             try container.encode(OpenAPIIAPEventNewReceipt(
                 originalPurchase: originalPurchase?.toProto,
@@ -63,7 +63,7 @@ extension ABI.ProfileEvent {
     public struct Save: ABI.EventProtocol {
         public let profile: Profile
         public let previous: Profile?
-        public func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             try container.encode(OpenAPIProfileEventSave(
                 profile: profile.asTaggedProfile,
@@ -90,7 +90,7 @@ extension ABI.TunnelEvent {
 extension ABI.VersionEvent {
     public struct New: ABI.EventProtocol {
         public let release: ABI.VersionRelease
-        public func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             try container.encode(OpenAPIVersionEventNew(
                 release: release.toProto
