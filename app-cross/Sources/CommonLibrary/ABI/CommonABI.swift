@@ -134,7 +134,7 @@ extension ABI {
 
         // Return the first (and only) associated value of the enum
         private static func payload(of event: Event) -> Encodable? {
-            let mirror = Mirror(reflecting: self)
+            let mirror = Mirror(reflecting: event)
             guard let arg = mirror.children.first else { return nil }
             let children = Mirror(reflecting: arg.value).children
             assert(children.count == 1)
