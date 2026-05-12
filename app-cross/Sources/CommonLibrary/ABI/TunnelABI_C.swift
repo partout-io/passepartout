@@ -56,6 +56,7 @@ public func __psp_tunnel_start(
             if globalABI != nil {
                 await globalABI?.stop()
                 globalABI = nil
+            } else {
                 bindings.free?(&bindings)
             }
             return PSPCompletionCodeFailure
