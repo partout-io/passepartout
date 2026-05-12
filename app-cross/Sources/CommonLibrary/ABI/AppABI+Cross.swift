@@ -35,7 +35,7 @@ extension AppABI {
         kvStore.preferences = preferences
 
         // Logging context
-        let ctx = pspLogRegister(
+        _ = pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: preferences,
