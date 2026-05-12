@@ -111,6 +111,30 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDeleteProfiles(
 }
 
 JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appConnect(
+        JNIEnv *env,
+        jobject thiz,
+        jstring profile,
+        jobject completion
+) {
+    const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
+    psp_app_connect(cProfile, PSP_JNI_CB(env, completion));
+    (*env)->ReleaseStringUTFChars(env, profile, cProfile);
+}
+
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDisconnect(
+        JNIEnv *env,
+        jobject thiz,
+        jstring profileId,
+        jobject completion
+) {
+    const char *cProfileId = (*env)->GetStringUTFChars(env, profileId, NULL);
+    psp_app_disconnect(cProfileId, PSP_JNI_CB(env, completion));
+    (*env)->ReleaseStringUTFChars(env, profileId, cProfileId);
+}
+
+JNIEXPORT jint JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,

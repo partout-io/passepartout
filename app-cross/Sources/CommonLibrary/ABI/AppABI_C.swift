@@ -145,6 +145,51 @@ public func __psp_app_delete_profiles(
     }
 }
 
+@c(psp_app_connect)
+public func __psp_app_connect(
+    profile: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let profile, let profileData = profile.asJSONData else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    let swiftProfile: Profile
+    do {
+        swiftProfile = try JSONDecoder().decode(TaggedProfile.self, from: profileData).asProfile()
+    } catch {
+        completion.callback?(completion.ctx, PSPCompletionCodeFailure, error.localizedDescription)
+        return
+    }
+    ABI.run(completion) { callback in
+        do {
+            try await abi.tunnel.connect(to: swiftProfile, force: true)
+            callback?(PSPCompletionCodeOK, nil)
+        } catch {
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+        }
+    }
+}
+
+@c(psp_app_disconnect)
+public func __psp_app_disconnect(
+    uuid: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let uuid, let id = Profile.ID(uuidString: String(cString: uuid)) else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    ABI.run(completion) { callback in
+        do {
+            try await abi.tunnel.disconnect(from: id)
+            callback?(PSPCompletionCodeOK, nil)
+        } catch {
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+        }
+    }
+}
+
 @c(psp_app_flush_log)
 public func __psp_app_flush_log() {
     pspLogFlush()

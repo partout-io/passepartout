@@ -37,6 +37,14 @@ class PassepartoutWrapper {
         ids: Array<String>,
         completion: ABICompletionCallback
     )
+    external fun appConnect(
+        profile: String,
+        completion: ABICompletionCallback
+    )
+    external fun appDisconnect(
+        profileId: String,
+        completion: ABICompletionCallback
+    )
     external fun tunnelStart(
         bundle: String,
         constants: String,
