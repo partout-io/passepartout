@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary_C
 import Partout
 
 @BusinessActor
@@ -36,6 +37,7 @@ public final class AppABI: Sendable {
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
     private let onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)?
+    nonisolated(unsafe) private let bindings: psp_app_bindings?
 
     // Internal state
     private var launchTask: Task<Void, Error>?
@@ -59,7 +61,8 @@ public final class AppABI: Sendable {
         tunnelManager: TunnelManager,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
+        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil,
+        bindings: psp_app_bindings?
     ) {
         self.appConfiguration = appConfiguration
         self.configManager = configManager
@@ -76,6 +79,7 @@ public final class AppABI: Sendable {
         self.apiManager = apiManager ?? APIManager()
         self.preferencesManager = preferencesManager ?? PreferencesManager()
 #endif
+        self.bindings = bindings
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
@@ -101,7 +105,11 @@ public final class AppABI: Sendable {
     }
 
     deinit {
+        pspLog(.abi, .debug, "Deinit AppABI")
         subscriptions.forEach { $0.cancel() }
+        if var bindings {
+            bindings.free?(&bindings)
+        }
     }
 }
 
@@ -549,7 +557,7 @@ private extension AppABI {
                 pspLog(.core, .info, "\tReconnect profile \(profile.id)")
                 try await tunnelManager.disconnect(from: profile.id)
                 do {
-                    try await tunnelManager.connect(with: profile)
+                    try await tunnelManager.connect(with: profile, force: false)
                 } catch ABI.AppError.interactiveLogin {
                     pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {

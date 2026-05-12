@@ -23,11 +23,10 @@ extension AppABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        let preferences = ABI.AppPreferenceValues(
+        let preferences = ABI.AppPreferenceValues.forInitialization(
             with: decoder,
             data: preferencesData,
-            newDeviceId: true,
-            deviceIdLength: constants.deviceIdLength
+            newDeviceIdLength: constants.deviceIdLength
         )
 
         let logFormatter = appConfiguration.newLogFormatter()
@@ -35,7 +34,7 @@ extension AppABI {
         kvStore.preferences = preferences
 
         // Logging context
-        let ctx = pspLogRegister(
+        _ = pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: preferences,
@@ -63,10 +62,9 @@ extension AppABI {
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
-        let tunnelStrategy = appConfiguration.newStandaloneTunnelStrategy()
-        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) { @Sendable in
-            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
-        }
+        let tunnel = appConfiguration.newStandaloneTunnel(ref: bindings.tunnel)
+        // FIXME: #1656, NativeTunnel lacks environment
+//        appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
         let tunnelManager = TunnelManager(tunnel: tunnel, interval: 1.0)
 
         // Dummy
@@ -88,7 +86,8 @@ extension AppABI {
             registry: registry,
             tunnelManager: tunnelManager,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            bindings: bindings
         )
 
         // Register for events
@@ -98,11 +97,10 @@ extension AppABI {
             context: eventContext,
             callback: { ctx, event in
                 guard let eventCallback else { return }
-                // Enrich event JSON with metadata for decoding
-                let wrapper = ABI.EventWrapper(event)
                 do {
-                    // Dispatch JSON event to cross-platform apps
-                    let json = try ABI.encodeWrapper(wrapper)
+                    // Make the event encodable with metadata for decoding
+                    let eventWrapper = ABI.EventWrapper(event)
+                    let json = try ABI.encodeCrossWrapper(eventWrapper)
                     json.withCString {
                         eventCallback(ctx, $0)
                     }

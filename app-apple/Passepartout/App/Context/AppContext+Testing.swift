@@ -87,7 +87,8 @@ extension AppContext {
             registry: registry,
             tunnelManager: tunnelManager,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            bindings: nil
         )
         return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
     }

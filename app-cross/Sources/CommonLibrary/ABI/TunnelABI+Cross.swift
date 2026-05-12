@@ -24,11 +24,10 @@ extension TunnelABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        var preferences = ABI.AppPreferenceValues(
+        var preferences = ABI.AppPreferenceValues.forInitialization(
             with: decoder,
             data: preferencesData,
-            newDeviceId: true,
-            deviceIdLength: constants.deviceIdLength
+            newDeviceIdLength: constants.deviceIdLength
         )
         // FIXME: ###, Cross, Hardcoded config flags
         preferences.configFlags = [.ovpnCrossV2, .wgCrossV2]
@@ -54,7 +53,7 @@ extension TunnelABI {
         )
 
         // Create platform-specific objects
-        let controller = try VirtualTunnelController(ctx, impl: bindings.controller)
+        let controller = try NativeTunnelController(ctx, ref: bindings.controller)
         let betterPathBlock: BetterPathBlock
 #if !PSP_CROSS
         betterPathBlock = NEBetterPathBlock(ctx).block
@@ -73,12 +72,13 @@ extension TunnelABI {
         let statusCallback = bindings.status_cb
         let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
             guard let statusCallback else { return }
-            let wrapper = ABI.OnConnectionStatus(
-                profileId: profileId.uuidString,
-                status: status
-            )
             do {
-                let json = try ABI.encodeWrapper(wrapper)
+                // Pack the status payload
+                let onStatus = ABI.OnConnectionStatus(
+                    profileId: profileId.uuidString,
+                    status: status
+                )
+                let json = try ABI.encodeCrossWrapper(onStatus)
                 json.withCString {
                     statusCallback(statusContext, $0)
                 }
@@ -111,7 +111,8 @@ extension TunnelABI {
             environment: environment,
             iap: nil,
             logFormatter: logFormatter,
-            originalProfile: profile
+            originalProfile: profile,
+            bindings: bindings
         )
     }
 }

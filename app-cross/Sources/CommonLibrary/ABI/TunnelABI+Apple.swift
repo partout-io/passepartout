@@ -133,7 +133,8 @@ extension TunnelABI {
             environment: environment,
             iap: iap,
             logFormatter: logFormatter,
-            originalProfile: originalProfile
+            originalProfile: originalProfile,
+            bindings: nil
         )
     }
 }

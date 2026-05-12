@@ -40,8 +40,9 @@ add_library(passepartout_shared_c STATIC ${PSP_C_SOURCES})
 target_link_libraries(passepartout_shared PUBLIC passepartout_shared_c)
 
 # Import the modulemap for the C ABI
-set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include)
-target_include_directories(passepartout_shared PUBLIC ${ABI_INCLUDE})
+target_include_directories(passepartout_shared PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include
+)
 
 # Depend on Partout
 add_dependencies(passepartout_shared partout)
@@ -75,7 +76,6 @@ add_custom_command(
     TARGET passepartout_shared
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-        -DABI_INCLUDE=${ABI_INCLUDE}
         -DOUTPUT_DIR=${OUTPUT_DIR}
         -DDIST_DIR=${DIST_DIR}
         -DSTRIP=${CMAKE_STRIP}

@@ -206,7 +206,7 @@ extension ProviderModule {
             }
         }
 
-        public func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             let rawMap: [String: Data] = map.reduce(into: [:]) {
                 $0[$1.key.id] = $1.value
             }

@@ -17,7 +17,7 @@ import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import io.partout.abi.ConnectionStatus
 import io.partout.abi.TaggedProfile
 import io.partout.jni.AndroidTunnelController
-import io.partout.jni.AndroidTunnelStrategy
+import io.partout.jni.AndroidTunnel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +31,7 @@ import java.io.Closeable
 
 class PassepartoutVPNService: VpnService() {
     private val library = PassepartoutWrapper()
-    private val vpnWrapper = AndroidTunnelController(this)
+    private val tunnelController = AndroidTunnelController(this)
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val commandMutex = Mutex()
     private var statusSubscription: Closeable? = null
@@ -40,11 +40,11 @@ class PassepartoutVPNService: VpnService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startServiceForeground()
-        if (intent?.action == AndroidTunnelStrategy.ACTION_STOP_VPN) {
+        if (intent?.action == AndroidTunnel.ACTION_STOP_VPN) {
             stopVpn()
             return START_NOT_STICKY;
         }
-        val profileJSON = intent?.getStringExtra(AndroidTunnelStrategy.EXTRA_PROFILE_JSON)
+        val profileJSON = intent?.getStringExtra(AndroidTunnel.EXTRA_PROFILE_JSON)
         if (profileJSON.isNullOrBlank()) {
             Log.e("Passepartout", "Missing profile in VPN start intent")
             stopServiceForeground()
@@ -145,18 +145,17 @@ class PassepartoutVPNService: VpnService() {
         profileJSON: String,
         cachePath: String
     ): ABIResult = withContext(Dispatchers.IO) {
-        val result = CompletableDeferred<ABIResult>()
-        library.tunnelStart(
-            bundle,
-            constants,
-            profileJSON,
-            cachePath,
-            ABIConnectionStatusDispatcher,
-            vpnWrapper
-        ) { code, json ->
-            result.complete(ABIResult(code, json))
-        }
-        result.await()
+        ABIResult(
+            library.tunnelStart(
+                bundle,
+                constants,
+                profileJSON,
+                cachePath,
+                tunnelController,
+                ABIConnectionStatusDispatcher
+            ),
+            null
+        )
     }
 
     private suspend fun awaitTunnelStop(): ABIResult = withContext(Dispatchers.IO) {
@@ -170,7 +169,6 @@ class PassepartoutVPNService: VpnService() {
     private fun releaseTunnelReferences() {
         statusSubscription?.close()
         statusSubscription = null
-        library.tunnelRelease()
     }
 
     private fun handleStatus(onStatusJSON: String) {

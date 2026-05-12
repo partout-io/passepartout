@@ -11,15 +11,18 @@ private var abi: AppABI?
 
 @c(psp_app_init)
 public func __psp_app_init(
-    args: UnsafePointer<psp_app_init_args>?,
-    completion: psp_completion
-) {
-    guard let args,
-          let appBundleData = args.pointee.bundle?.asJSONData,
+    args: UnsafePointer<psp_app_init_args>?
+) -> Int32 {
+    guard let args else {
+        return PSPCompletionCodeArgs
+    }
+    nonisolated(unsafe) var bindings = args.pointee.bindings
+    guard let appBundleData = args.pointee.bundle?.asJSONData,
           let appConstantsData = args.pointee.constants?.asJSONData,
           let cProfilesDir = args.pointee.profiles_dir,
           let cCacheDir = args.pointee.cache_dir else {
-        fatalError("NULL args or required fields")
+        bindings.free?(&bindings)
+        return PSPCompletionCodeArgs
     }
     let preferencesData = args.pointee.preferences?.asJSONData
     if args.pointee.preferences != nil {
@@ -27,8 +30,7 @@ public func __psp_app_init(
     }
     let profilesDir = String(cString: cProfilesDir)
     let cachesURL = URL(filePath: String(cString: cCacheDir))
-    nonisolated(unsafe) let bindings = args.pointee.bindings
-    ABI.run(completion) { callback in
+    return ABI.runBlockingInitialization {
         do {
             abi = try AppABI.forCrossPlatform(
                 bindings: bindings,
@@ -38,9 +40,10 @@ public func __psp_app_init(
                 profilesDir: profilesDir,
                 cachesURL: cachesURL
             )
-            callback?(PSPCompletionCodeOK, nil)
+            return PSPCompletionCodeOK
         } catch {
-            fatalError("Unable to start app: \(error)")
+            bindings.free?(&bindings)
+            return PSPCompletionCodeFailure
         }
     }
 }
@@ -135,9 +138,55 @@ public func __psp_app_delete_profiles(
         }
         ids.append(id)
     }
+    let fixedIds = ids
     ABI.run(completion) { callback in
-        await abi.profile.remove(ids)
+        await abi.profile.remove(fixedIds)
         callback?(PSPCompletionCodeOK, nil)
+    }
+}
+
+@c(psp_app_connect)
+public func __psp_app_connect(
+    profile: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let profile, let profileData = profile.asJSONData else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    let swiftProfile: Profile
+    do {
+        swiftProfile = try JSONDecoder().decode(TaggedProfile.self, from: profileData).asProfile()
+    } catch {
+        completion.callback?(completion.ctx, PSPCompletionCodeFailure, error.localizedDescription)
+        return
+    }
+    ABI.run(completion) { callback in
+        do {
+            try await abi.tunnel.connect(to: swiftProfile, force: true)
+            callback?(PSPCompletionCodeOK, nil)
+        } catch {
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+        }
+    }
+}
+
+@c(psp_app_disconnect)
+public func __psp_app_disconnect(
+    uuid: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let uuid, let id = Profile.ID(uuidString: String(cString: uuid)) else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    ABI.run(completion) { callback in
+        do {
+            try await abi.tunnel.disconnect(from: id)
+            callback?(PSPCompletionCodeOK, nil)
+        } catch {
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+        }
     }
 }
 
