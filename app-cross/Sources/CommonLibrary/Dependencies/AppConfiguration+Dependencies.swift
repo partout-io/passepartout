@@ -136,6 +136,10 @@ extension ABI.AppConfiguration {
         )
     }
 
+    public func newStandaloneTunnel(ref: UnsafeMutableRawPointer?) -> TunnelProtocol {
+        NativeTunnel(ref: ref)
+    }
+
     @BusinessActor
     public func newTunnelManager(
         tunnel: Tunnel,
@@ -437,11 +441,6 @@ extension ABI.AppConfiguration {
         SharedTunnelEnvironment(profileId: profileId)
     }
 
-    // FIXME: ###, Cross UI, Apple standalone tunnel strategy
-    public func newStandaloneTunnelStrategy() -> TunnelObservableStrategy {
-        FakeTunnelStrategy()
-    }
-
     public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
         guard bundle.distributionTarget == .developerID else {
             return nil
@@ -502,10 +501,6 @@ extension ABI.AppConfiguration {
 
     public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
         SharedTunnelEnvironment(profileId: profileId)
-    }
-
-    public func newStandaloneTunnelStrategy() -> TunnelObservableStrategy {
-        FakeTunnelStrategy()
     }
 }
 

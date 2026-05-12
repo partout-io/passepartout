@@ -11,15 +11,18 @@ private var globalABI: TunnelABIProtocol?
 
 @c(psp_tunnel_start)
 public func __psp_tunnel_start(
-    args: UnsafePointer<psp_tunnel_start_args>?,
-    completion: psp_completion
-) {
-    guard let args,
-          let appBundleData = args.pointee.bundle?.asJSONData,
+    args: UnsafePointer<psp_tunnel_start_args>?
+) -> Int32 {
+    guard let args else {
+        return PSPCompletionCodeArgs
+    }
+    nonisolated(unsafe) var bindings = args.pointee.bindings
+    guard let appBundleData = args.pointee.bundle?.asJSONData,
           let appConstantsData = args.pointee.constants?.asJSONData,
           let cProfileJSON = args.pointee.profile,
           let cCacheDir = args.pointee.cache_dir else {
-        fatalError("NULL args or required fields")
+        bindings.free?(&bindings)
+        return PSPCompletionCodeArgs
     }
     // Process input
     let preferencesData = args.pointee.preferences?.asJSONData
@@ -34,10 +37,8 @@ public func __psp_tunnel_start(
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
-    nonisolated(unsafe) let bindings = args.pointee.bindings
     // Start tunnel ABI
-    ABI.run(completion) { callback in
-        defer { pspUnlock() }
+    let result = ABI.runBlockingInitialization {
         do {
             await globalABI?.stop()
             globalABI = nil
@@ -50,15 +51,20 @@ public func __psp_tunnel_start(
                 cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            callback?(PSPCompletionCodeOK, nil)
+            return PSPCompletionCodeOK
         } catch {
-            await globalABI?.stop()
-            globalABI = nil
-            callback?(PSPCompletionCodeFailure, error.localizedDescription)
-            fatalError("Unable to start tunnel: \(error)")
+            if globalABI != nil {
+                await globalABI?.stop()
+                globalABI = nil
+                bindings.free?(&bindings)
+            }
+            return PSPCompletionCodeFailure
         }
     }
-    pspLock(isDaemon: isDaemon)
+    if result == PSPCompletionCodeOK {
+        pspLock(isDaemon: isDaemon)
+    }
+    return result
 }
 
 @c(psp_tunnel_stop)
@@ -70,22 +76,14 @@ public func __psp_tunnel_stop(completion: psp_completion) {
     }
 }
 
-private let semaphore = DispatchSemaphore(value: 0)
-
 private func pspLock(isDaemon: Bool) {
+    guard isDaemon else { return }
 #if canImport(Darwin)
-    if isDaemon { CFRunLoopRun() }
+    CFRunLoopRun()
 #else
-    // Wait for ABI to start
+    // Block main thread indefinitely to keep the process running
+    let semaphore = DispatchSemaphore(value: 0)
     semaphore.wait()
-    // Block main thread indefinitely if daemon
-    if isDaemon { semaphore.wait() }
-#endif
-}
-
-private func pspUnlock() {
-#if !canImport(Darwin)
-    semaphore.signal()
 #endif
 }
 

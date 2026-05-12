@@ -19,7 +19,7 @@ bool MyApp::OnInit()
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
 
-    psp_app_init_args args;
+    psp_app_init_args args = { 0 };
     char *bundle = NULL;
     char *constants = NULL;
     MyFrame* frame = 0;
@@ -50,7 +50,7 @@ bool MyApp::OnInit()
     args.cache_dir = cache_dir;
     args.bindings.event_ctx = this;
     args.bindings.event_cb = onABIEvent;
-    psp_app_init(&args, PSP_CB_NOP());
+    if (psp_app_init(&args) != PSPCompletionCodeOK) goto failure;
     free(bundle);
     free(constants);
 

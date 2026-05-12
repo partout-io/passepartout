@@ -8,16 +8,6 @@
 #include <stdlib.h>
 #include "passepartout.h"
 
-static
-void start_callback(void *ctx, int result, const char *error) {
-    (void)ctx;
-    if (error) {
-        printf("Result: %d, %s\n", result, error);
-    } else {
-        printf("Result: %d\n", result);
-    }
-}
-
 int main(int argc, char *argv[]) {
     char *bundle = NULL;
     char *constants = NULL;
@@ -65,12 +55,12 @@ int main(int argc, char *argv[]) {
     args.bindings.controller = NULL;
 
     /* Will block indefinitely. */
-    psp_tunnel_start(&args, PSP_CB(NULL, start_callback));
+    const int result = psp_tunnel_start(&args);
 
     free(bundle);
     free(constants);
     free(profile);
-    return 0;
+    return result;
 failure:
     if (bundle) free(bundle);
     if (constants) free(constants);

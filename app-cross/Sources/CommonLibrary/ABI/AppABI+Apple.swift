@@ -301,7 +301,8 @@ extension AppABI {
             tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            onEligibleFeaturesBlock: onEligibleFeaturesBlock
+            onEligibleFeaturesBlock: onEligibleFeaturesBlock,
+            bindings: nil
         )
     }
 }

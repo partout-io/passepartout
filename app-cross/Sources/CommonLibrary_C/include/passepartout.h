@@ -19,13 +19,13 @@ char *psp_readfile(const char *rel_path, const char *parent);
 typedef void (*psp_event_callback)(void *event_ctx, const char *event);
 
 /* Completion callback.
- * - Success: code == 0, data = JSON (optional)
- * - Error:   code != 0, data = String
+ * - Success: code == 0, string = JSON (optional)
+ * - Error:   code != 0, string = error message
  */
 #define PSPCompletionCodeOK         0
 #define PSPCompletionCodeArgs       -2
 #define PSPCompletionCodeFailure    -1
-typedef void (*psp_completion_cb)(void *ctx, int code, const char *data);
+typedef void (*psp_completion_cb)(void *ctx, int code, const char *string);
 typedef struct {
     void *ctx;
     psp_completion_cb callback;
@@ -39,15 +39,18 @@ psp_completion PSP_CB(void *ctx, psp_completion_cb callback) {
 }
 #define PSP_CB_NOP() PSP_CB(NULL, NULL)
 
-typedef struct {
+typedef struct __psp_app_bindings {
+    void *tunnel;
     void *event_ctx;
     psp_event_callback event_cb;
+    void (*free)(struct __psp_app_bindings *);
 } psp_app_bindings;
 
-typedef struct {
+typedef struct __psp_tunnel_bindings {
     void *controller;
     void *status_ctx;
     psp_event_callback status_cb;
+    void (*free)(struct __psp_tunnel_bindings *);
 } psp_tunnel_bindings;
 
 /* App initialization. */
@@ -61,7 +64,7 @@ typedef struct {
 } psp_app_init_args;
 
 /* App functions. */
-void psp_app_init(const psp_app_init_args *args, psp_completion completion);
+int psp_app_init(const psp_app_init_args *args);
 void psp_app_deinit(psp_completion completion);
 void psp_app_on_foreground(void);
 void psp_app_import_profile_path(const char *path, psp_completion completion);
@@ -83,7 +86,7 @@ typedef struct {
 } psp_tunnel_start_args;
 
 /* Daemon functions. */
-void psp_tunnel_start(const psp_tunnel_start_args *args, psp_completion completion);
+int psp_tunnel_start(const psp_tunnel_start_args *args);
 void psp_tunnel_stop(psp_completion completion);
 
 #endif
