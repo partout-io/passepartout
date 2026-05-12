@@ -15,16 +15,12 @@ extension AppABI {
         profilesDir: String,
         cachesURL: URL
     ) throws -> AppABI {
-        let decoder = JSONDecoder()
-
-        // Decode app configuration
-        let bundle = try decoder.decode(ABI.AppBundle.self, from: appBundleData)
-        let constants = try decoder.decode(ABI.AppConstants.self, from: appConstantsData)
+        let bundle = try ABI.decode(ABI.AppBundle.self, from: appBundleData)
+        let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
         let preferences = ABI.AppPreferenceValues.forInitialization(
-            with: decoder,
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )

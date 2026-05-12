@@ -47,7 +47,7 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
         let targetURL = isBeta ? betaURL : url
         pspLog(.core, .info, "Config (GitHub): fetching bundle from \(targetURL)")
         let data = try await fetcher(targetURL)
-        let json = try JSONDecoder().decode(ConfigBundle.self, from: data)
+        let json = try ABI.decode(ConfigBundle.self, from: data)
         lastUpdated = Date()
         return json
     }

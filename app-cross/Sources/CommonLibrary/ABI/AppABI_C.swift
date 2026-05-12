@@ -156,7 +156,7 @@ public func __psp_app_connect(
     }
     let swiftProfile: Profile
     do {
-        swiftProfile = try JSONDecoder().decode(TaggedProfile.self, from: profileData).asProfile()
+        swiftProfile = try ABI.decode(TaggedProfile.self, from: profileData).asProfile()
     } catch {
         completion.callback?(completion.ctx, PSPCompletionCodeFailure, error.localizedDescription)
         return

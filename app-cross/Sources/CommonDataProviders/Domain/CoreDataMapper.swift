@@ -10,20 +10,18 @@ struct CoreDataMapper {
     @discardableResult
     func cdProvider(from provider: Provider, cache: Data?) throws -> CDProviderV3 {
         let entity = CDProviderV3(context: context)
-        let encoder = JSONEncoder()
-
         entity.providerId = provider.id.rawValue
         entity.fullName = provider.description
         entity.cache = cache
         entity.supportedModuleTypes = provider.metadata.map(\.key.rawValue).joined(separator: ",")
-        entity.encodedMetadata = try encoder.encode(provider.metadata)
+        entity.encodedMetadata = try ABI.encode(provider.metadata)
         return entity
     }
 
     @discardableResult
     func cdServer(from server: ProviderServer) throws -> CDProviderServerV3 {
         let entity = CDProviderServerV3(context: context)
-        let encoder = JSONEncoder()
+        let encoder = ABI.self
 
         entity.serverId = server.serverId
         entity.hostname = server.hostname

@@ -165,6 +165,7 @@ Sources/CommonLibraryCore/Domain/StoreProductHint.swift
 Sources/CommonLibraryCore/Domain/StoreReceipt.swift
 Sources/CommonLibraryCore/Domain/StoreResult.swift
 Sources/CommonLibraryCore/Domain/VersionRelease.swift
+Sources/CommonLibraryCore/Extensions/ABI+JSON.swift
 Sources/CommonLibraryCore/Extensions/ChangelogEntry+Extensions.swift
 Sources/CommonLibraryCore/Extensions/CodingRegistry+Extensions.swift
 Sources/CommonLibraryCore/Extensions/KeyValueStore+AppPreference.swift

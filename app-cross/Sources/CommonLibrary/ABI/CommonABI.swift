@@ -105,9 +105,7 @@ extension ABI {
     static func encodeCrossWrapper<T>(_ wrapper: T) throws -> String where T: Encodable {
         let data: Data
         do {
-            let encoder = JSONEncoder()
-            encoder.dateEncodingStrategy = .iso8601
-            data = try encoder.encode(wrapper)
+            data = try ABI.encode(wrapper)
         } catch {
             throw ABIError.wrapping(reason: error)
         }
@@ -146,15 +144,11 @@ extension ABI {
 
 extension ABI.AppPreferenceValues {
     // Init ABI.AppPreferenceValues from JSON data and optionally generate a new Device ID
-    static func forInitialization(
-        with decoder: JSONDecoder,
-        data: Data?,
-        newDeviceIdLength: Int?
-    ) -> Self {
+    static func forInitialization(data: Data?, newDeviceIdLength: Int?) -> Self {
         var values = ABI.AppPreferenceValues()
         if let data {
             do {
-                values = try decoder.decode(Self.self, from: data)
+                values = try ABI.decode(Self.self, from: data)
             } catch {
                 pspLog(.core, .error, "Unable to decode preferences: \(error)")
             }

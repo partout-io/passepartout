@@ -36,7 +36,7 @@ struct KeyValueStoreTests {
         sut.preferences.configFlags = flags
         #expect(sut.preferences.configFlags == flags)
 
-        let flagsData = try JSONEncoder().encode(flags)
+        let flagsData = try ABI.encode(flags)
         #expect(sut.preferences.configFlagsData == flagsData)
     }
 }

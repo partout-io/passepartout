@@ -57,8 +57,8 @@ extension ABI.AppConfiguration {
                 switch $0.innerType {
                 case .Provider:
                     do {
-                        let data = try JSONEncoder().encode($0.json)
-                        return try JSONDecoder().decode(ProviderModule.self, from: data)
+                        let data = try ABI.encode($0.json)
+                        return try ABI.decode(ProviderModule.self, from: data)
                     } catch {
                         pspLog(.profiles, .error, "Unable to decode ProviderModule: \(error)")
                         return $0

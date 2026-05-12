@@ -39,8 +39,6 @@ public actor FileProfileRepository: ProfileRepository {
     private let objectsURL: URL
     private let tmpURL: URL
     private let indexURL: URL
-    private let encoder: JSONEncoder
-    private let decoder: JSONDecoder
 
     public init(directoryURL: URL) throws {
         profilesSubject = CurrentValueStream([])
@@ -49,20 +47,10 @@ public actor FileProfileRepository: ProfileRepository {
         tmpURL = directoryURL.appending(component: "tmp", directoryHint: .isDirectory)
         indexURL = directoryURL.appending(component: "index.json")
 
-        encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
         try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: objectsURL, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: tmpURL, withIntermediateDirectories: true)
-        try Self.ensureIndex(
-            indexURL: indexURL,
-            objectsURL: objectsURL,
-            encoder: encoder,
-            decoder: decoder
-        )
+        try Self.ensureIndex(indexURL: indexURL, objectsURL: objectsURL)
     }
 
     public nonisolated var profilesPublisher: AsyncStream<[Profile]> {
@@ -76,7 +64,7 @@ public actor FileProfileRepository: ProfileRepository {
     }
 
     public func saveProfile(_ profile: Profile) async throws {
-        let data = try encoder.encode(profile.asTaggedProfile)
+        let data = try ABI.encode(profile.asTaggedProfile)
         try writeAtomically(data, to: objectURL(for: profile.id))
         try persistIndex(for: try loadProfilesById())
         try publishProfiles()
@@ -107,31 +95,24 @@ public actor FileProfileRepository: ProfileRepository {
 }
 
 private extension FileProfileRepository {
-    static func ensureIndex(
-        indexURL: URL,
-        objectsURL: URL,
-        encoder: JSONEncoder,
-        decoder: JSONDecoder
-    ) throws {
+    static func ensureIndex(indexURL: URL, objectsURL: URL) throws {
         guard FileManager.default.fileExists(atPath: indexURL.filePath()) else {
             try persistIndex(
-                for: loadProfilesByIdFromObjects(objectsURL: objectsURL, decoder: decoder),
+                for: loadProfilesByIdFromObjects(objectsURL: objectsURL),
                 indexURL: indexURL,
                 tmpURL: objectsURL.deletingLastPathComponent().appending(component: "tmp", directoryHint: .isDirectory),
-                encoder: encoder,
                 sortProfiles: sortProfiles
             )
             return
         }
         do {
-            _ = try loadIndex(from: indexURL, decoder: decoder)
+            _ = try loadIndex(from: indexURL)
         } catch {
             pspLog(.profiles, .error, "Rebuilding malformed profile index: \(error)")
             try persistIndex(
-                for: loadProfilesByIdFromObjects(objectsURL: objectsURL, decoder: decoder),
+                for: loadProfilesByIdFromObjects(objectsURL: objectsURL),
                 indexURL: indexURL,
                 tmpURL: objectsURL.deletingLastPathComponent().appending(component: "tmp", directoryHint: .isDirectory),
-                encoder: encoder,
                 sortProfiles: sortProfiles
             )
         }
@@ -181,7 +162,7 @@ private extension FileProfileRepository {
     }
 
     func loadProfilesByIdFromObjects() throws -> [String: Profile] {
-        try Self.loadProfilesByIdFromObjects(objectsURL: objectsURL, decoder: decoder)
+        try Self.loadProfilesByIdFromObjects(objectsURL: objectsURL)
     }
 
     func orderedIds() throws -> [String] {
@@ -189,7 +170,7 @@ private extension FileProfileRepository {
     }
 
     private func loadIndex() throws -> IndexFile {
-        try Self.loadIndex(from: indexURL, decoder: decoder)
+        try Self.loadIndex(from: indexURL)
     }
 
     func persistIndex(for profilesById: [String: Profile]) throws {
@@ -197,7 +178,6 @@ private extension FileProfileRepository {
             for: profilesById,
             indexURL: indexURL,
             tmpURL: tmpURL,
-            encoder: encoder,
             sortProfiles: sortProfiles
         )
     }
@@ -233,16 +213,13 @@ private extension FileProfileRepository {
         try FileManager.default.moveItem(at: tempURL, to: destinationURL)
     }
 
-    static func loadProfilesByIdFromObjects(
-        objectsURL: URL,
-        decoder: JSONDecoder
-    ) throws -> [String: Profile] {
+    static func loadProfilesByIdFromObjects(objectsURL: URL) throws -> [String: Profile] {
         let fileURLs = try FileManager.default.contentsOfDirectory(at: objectsURL)
         var profilesById: [String: Profile] = [:]
         for fileURL in fileURLs where fileURL.pathExtension == "json" {
             let data = try Data(contentsOf: fileURL)
             do {
-                let tagged = try decoder.decode(TaggedProfile.self, from: data)
+                let tagged = try ABI.decode(TaggedProfile.self, from: data)
                 let profile = try tagged.asProfile()
                 profilesById[profile.id.uuidString] = profile
             } catch {
@@ -252,10 +229,10 @@ private extension FileProfileRepository {
         return profilesById
     }
 
-    private static func loadIndex(from indexURL: URL, decoder: JSONDecoder) throws -> IndexFile {
+    private static func loadIndex(from indexURL: URL) throws -> IndexFile {
         do {
             let data = try Data(contentsOf: indexURL)
-            return try decoder.decode(IndexFile.self, from: data)
+            return try ABI.decode(IndexFile.self, from: data)
         } catch let error as FileProfileRepositoryError {
             throw error
         } catch {
@@ -267,7 +244,6 @@ private extension FileProfileRepository {
         for profilesById: [String: Profile],
         indexURL: URL,
         tmpURL: URL,
-        encoder: JSONEncoder,
         sortProfiles: (Profile, Profile) -> Bool
     ) throws {
         let profiles = profilesById.values.sorted(by: sortProfiles)
@@ -282,7 +258,7 @@ private extension FileProfileRepository {
                 )
             }
         )
-        let data = try encoder.encode(index)
+        let data = try ABI.encode(index)
         try writeAtomically(data, to: indexURL, tmpURL: tmpURL)
     }
 
