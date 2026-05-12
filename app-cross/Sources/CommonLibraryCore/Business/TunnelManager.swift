@@ -10,7 +10,7 @@ public final class TunnelManager {
 
     public static nonisolated let appPreferences = "appPreferences"
 
-    private let tunnel: Tunnel
+    private let tunnel: TunnelProtocol
 
     private let extensionInstaller: ExtensionInstaller?
 
@@ -32,7 +32,7 @@ public final class TunnelManager {
 
     // TODO: #218, keep "last used profile" until .multiple
     public nonisolated init(
-        tunnel: Tunnel,
+        tunnel: TunnelProtocol,
         extensionInstaller: ExtensionInstaller? = nil,
         kvStore: KeyValueStore? = nil,
         processor: AppTunnelProcessor? = nil,

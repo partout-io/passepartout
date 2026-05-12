@@ -557,7 +557,7 @@ private extension AppABI {
                 pspLog(.core, .info, "\tReconnect profile \(profile.id)")
                 try await tunnelManager.disconnect(from: profile.id)
                 do {
-                    try await tunnelManager.connect(with: profile)
+                    try await tunnelManager.connect(with: profile, force: false)
                 } catch ABI.AppError.interactiveLogin {
                     pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {
