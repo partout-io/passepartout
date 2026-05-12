@@ -31,7 +31,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
             }
         }
         let data = try await fetcher(releaseURL)
-        let json = try JSONDecoder().decode(VersionJSON.self, from: data)
+        let json = try ABI.decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
             pspLog(.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")

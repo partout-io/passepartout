@@ -130,9 +130,9 @@ public final class TunnelABI: TunnelABIProtocol {
         guard let daemon else { return nil }
         pspLog(.core, .debug, "Handle tunnel message")
         do {
-            let input = try JSONDecoder().decode(Message.Input.self, from: messageData)
+            let input = try ABI.decode(Message.Input.self, from: messageData)
             let output = try await daemon.sendMessage(input)
-            let encodedOutput = try JSONEncoder().encode(output)
+            let encodedOutput = try ABI.encode(output)
             switch input {
             case .environment:
                 break

@@ -94,7 +94,7 @@ extension ABI.AppPreferenceValues {
         get {
             guard let configFlagsData else { return [] }
             do {
-                return try JSONDecoder().decode(Set<ABI.ConfigFlag>.self, from: configFlagsData)
+                return try ABI.decode(Set<ABI.ConfigFlag>.self, from: configFlagsData)
             } catch {
                 pspLog(.core, .error, "Unable to decode config flags: \(error)")
                 return []
@@ -102,7 +102,7 @@ extension ABI.AppPreferenceValues {
         }
         set {
             do {
-                configFlagsData = try JSONEncoder().encode(newValue)
+                configFlagsData = try ABI.encode(newValue)
             } catch {
                 pspLog(.core, .error, "Unable to encode config flags: \(error)")
             }
@@ -113,7 +113,7 @@ extension ABI.AppPreferenceValues {
         get {
             guard let experimentalData else { return Experimental() }
             do {
-                return try JSONDecoder().decode(Experimental.self, from: experimentalData)
+                return try ABI.decode(Experimental.self, from: experimentalData)
             } catch {
                 pspLog(.core, .error, "Unable to decode experimental: \(error)")
                 return Experimental()
@@ -121,7 +121,7 @@ extension ABI.AppPreferenceValues {
         }
         set {
             do {
-                experimentalData = try JSONEncoder().encode(newValue)
+                experimentalData = try ABI.encode(newValue)
             } catch {
                 pspLog(.core, .error, "Unable to encode experimental: \(error)")
             }

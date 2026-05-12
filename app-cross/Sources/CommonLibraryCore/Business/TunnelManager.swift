@@ -70,7 +70,7 @@ extension TunnelManager {
 #if !PSP_CROSS
         var options: [String: NSObject] = [Self.isManualKey: true as NSNumber]
         if let preferences = kvStore?.preferences {
-            let encodedPreferences = try JSONEncoder().encode(preferences)
+            let encodedPreferences = try ABI.encode(preferences)
             options[Self.appPreferences] = encodedPreferences as NSData
         }
 #else

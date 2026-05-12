@@ -15,8 +15,8 @@ struct AppPreferenceTests {
 
         let configFlagsData = try #require(sut.configFlagsData)
         let experimentalData = try #require(sut.experimentalData)
-        let configFlags = try JSONDecoder().decode(Set<ABI.ConfigFlag>.self, from: configFlagsData)
-        let experimental = try JSONDecoder().decode(ABI.AppPreferenceValues.Experimental.self, from: experimentalData)
+        let configFlags = try ABI.decode(Set<ABI.ConfigFlag>.self, from: configFlagsData)
+        let experimental = try ABI.decode(ABI.AppPreferenceValues.Experimental.self, from: experimentalData)
         #expect(configFlags == sut.configFlags)
         #expect(experimental == sut.experimental)
     }
@@ -50,7 +50,7 @@ struct AppPreferenceTests {
     @Test
     func givenExperimental_whenDecodeWithoutEnabledFlags_thenUsesEmptySet() throws {
         let data = #"{"ignoredConfigFlags":["bsdSockets"]}"#.data(using: .utf8)!
-        let sut = try JSONDecoder().decode(ABI.AppPreferenceValues.Experimental.self, from: data)
+        let sut = try ABI.decode(ABI.AppPreferenceValues.Experimental.self, from: data)
         #expect(sut.ignoredConfigFlags == [.bsdSockets])
         #expect(sut.enabledConfigFlags.isEmpty)
     }

@@ -13,7 +13,7 @@ struct DomainMapper {
         let metadata: [ModuleType: Provider.Metadata]
         if let encodedMetadata = entity.encodedMetadata {
             do {
-                metadata = try JSONDecoder().decode([ModuleType: Provider.Metadata].self, from: encodedMetadata)
+                metadata = try ABI.decode([ModuleType: Provider.Metadata].self, from: encodedMetadata)
             } catch {
                 return nil
             }
@@ -32,7 +32,7 @@ struct DomainMapper {
     }
 
     func cache(from entities: [CDProviderV3]) -> [ProviderID: ProviderCache] {
-        let decoder = JSONDecoder()
+        let decoder = ABI.self
         return entities.reduce(into: [:]) {
             guard let id = $1.providerId else {
                 return
@@ -73,7 +73,7 @@ struct DomainMapper {
             return nil
         }
 
-        let decoder = JSONDecoder()
+        let decoder = ABI.self
         let hostname = entity.hostname
         let ipAddresses = try entity.ipAddresses.map {
             Set(try decoder.decode([Data].self, from: $0))

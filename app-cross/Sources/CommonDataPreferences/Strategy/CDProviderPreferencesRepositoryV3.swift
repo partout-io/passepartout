@@ -44,7 +44,7 @@ private final class CDProviderPreferencesRepositoryV3: ProviderPreferencesReposi
             // migrate favorite server ids
             if let favoriteServerIds = entity.favoriteServerIds {
                 let mapper = CoreDataMapper(context: context)
-                let ids = try? JSONDecoder().decode(Set<String>.self, from: favoriteServerIds)
+                let ids = try? ABI.decode(Set<String>.self, from: favoriteServerIds)
                 var favoriteServers: Set<CDFavoriteServer> = []
                 ids?.forEach {
                     favoriteServers.insert(mapper.cdFavoriteServer(from: $0))
