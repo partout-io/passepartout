@@ -4,22 +4,21 @@
 
 import Partout
 
-public typealias Timestamp = UInt32
+public typealias Timestamp = Int64
 
-// seconds since the epoch
+// Milliseconds since the epoch
 extension Timestamp {
     public var date: Date {
-        Date(timeIntervalSince1970: TimeInterval(self))
+        Date(timeIntervalSince1970: TimeInterval(self) / 1000.0)
     }
 
-    // this can be easily done without Foundation
     public static func now() -> Self {
-        Timestamp(Date().timeIntervalSince1970)
+        Timestamp(Date().timeIntervalSince1970 * 1000.0)
     }
 }
 
 extension Date {
     public var timestamp: Timestamp {
-        Timestamp(timeIntervalSince1970)
+        Timestamp(timeIntervalSince1970 * 1000.0)
     }
 }
