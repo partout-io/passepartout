@@ -1,1 +1,1 @@
-* WireGuard: Fix regression in DNS64 networks
+* Android: Fix regression in DNS resolution
