@@ -136,7 +136,7 @@ extension ProviderModule {
         }
 
         public mutating func setOptions<O>(_ options: O, for moduleType: ModuleType) throws where O: ProviderOptions {
-            let encoded = try JSONEncoder().encode(options)
+            let encoded = try JSONEncoder.new().encode(options)
             if moduleOptions == nil {
                 moduleOptions = CodableOptions(map: [moduleType: encoded])
             } else {

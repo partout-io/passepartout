@@ -46,7 +46,7 @@ struct HideMeProviderTests: APITestSuite {
             #expect(infra.servers.count == input.serversCount)
 
             try infra.presets.forEach {
-                let template = try JSONDecoder().decode(OpenVPNProviderTemplate.self, from: $0.templateData)
+                let template = try JSONDecoder.new().decode(OpenVPNProviderTemplate.self, from: $0.templateData)
                 switch $0.presetId {
                 case "default":
                     #expect(template.configuration.cipher == .aes256cbc)

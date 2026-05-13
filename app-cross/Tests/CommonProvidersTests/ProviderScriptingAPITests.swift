@@ -48,7 +48,7 @@ struct ProviderScriptingAPITests {
 
         let object = try #require(sut.serialized()["cache"])
         let data = try JSONSerialization.data(withJSONObject: object)
-        let cache = try JSONDecoder().decode(ProviderCache.self, from: data)
+        let cache = try JSONDecoder.new().decode(ProviderCache.self, from: data)
 
         #expect(cache.lastUpdate == date)
         #expect(cache.tag == tag)

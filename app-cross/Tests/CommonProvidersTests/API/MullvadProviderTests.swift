@@ -34,7 +34,7 @@ struct MullvadProviderTests: APITestSuite {
             try infra.presets.forEach {
                 switch $0.moduleType {
                 case .OpenVPN:
-                    let template = try JSONDecoder().decode(OpenVPNProviderTemplate.self, from: $0.templateData)
+                    let template = try JSONDecoder.new().decode(OpenVPNProviderTemplate.self, from: $0.templateData)
                     switch $0.presetId {
                     case "default":
                         #expect(template.configuration.cipher == .aes256cbc)
@@ -52,7 +52,7 @@ struct MullvadProviderTests: APITestSuite {
                         break
                     }
                 case .WireGuard:
-                    let template = try JSONDecoder().decode(WireGuardProviderTemplate.self, from: $0.templateData)
+                    let template = try JSONDecoder.new().decode(WireGuardProviderTemplate.self, from: $0.templateData)
                     switch $0.presetId {
                     case "default":
                         #expect(template.ports == [51820])
