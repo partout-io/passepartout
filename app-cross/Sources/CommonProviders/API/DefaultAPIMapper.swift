@@ -28,7 +28,7 @@ public final class DefaultAPIMapper: APIMapper {
 
     public func index() async throws -> [Provider] {
         let data = try await data(for: .index)
-        let json = try JSONDecoder().decode(API.REST.Index.self, from: data)
+        let json = try JSONDecoder.shared().decode(API.REST.Index.self, from: data)
 
         return json
             .providers
@@ -132,7 +132,7 @@ extension ScriptingEngine {
                 } else if let value = $0 as? Bool {
                     return value.description
                 } else if let value = $0 as? Encodable {
-                    let encoded = try JSONEncoder().encode(value)
+                    let encoded = try JSONEncoder.shared().encode(value)
                     guard let json = String(data: encoded, encoding: .utf8) else {
                         throw PartoutError(.encoding)
                     }

@@ -20,9 +20,9 @@ public protocol ProviderScriptingAPI: Sendable {
 
     func jsonToBase64(object: Any) -> String?
 
-    func timestampFromISO(isoString: String) -> Int
+    func timestampFromISO(isoString: String) -> Int64
 
-    func timestampToISO(timestamp: Int) -> String
+    func timestampToISO(timestamp: Int64) -> String
 
     func ipV4ToBase64(ip: String) -> String?
 

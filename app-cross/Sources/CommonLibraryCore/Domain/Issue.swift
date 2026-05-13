@@ -14,7 +14,7 @@ extension ABI {
 
         public let purchasedProducts: Set<ABI.AppProduct>
 
-        public let providerLastUpdates: [ProviderID: UInt32]
+        public let providerLastUpdates: [ProviderID: Timestamp]
 
         public let appLog: Data?
 
@@ -28,7 +28,7 @@ extension ABI {
             comment: String,
             appLine: String?,
             purchasedProducts: Set<ABI.AppProduct>,
-            providerLastUpdates: [ProviderID: UInt32] = [:],
+            providerLastUpdates: [ProviderID: Timestamp] = [:],
             appLog: Data? = nil,
             tunnelLog: Data? = nil
         ) {
