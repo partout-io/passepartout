@@ -6,10 +6,10 @@ import Partout
 
 extension ABI {
     public static func encode<T>(_ value: T) throws -> Data where T: Encodable {
-        try JSONEncoder.new().encode(value)
+        try JSONEncoder.shared().encode(value)
     }
 
     public static func decode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable {
-        try JSONDecoder.new().decode(type, from: data)
+        try JSONDecoder.shared().decode(type, from: data)
     }
 }

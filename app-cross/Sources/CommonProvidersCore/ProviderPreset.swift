@@ -47,6 +47,6 @@ extension ProviderPreset {
 
 extension ProviderPreset {
     public func template<Template>(ofType type: Template.Type) throws -> Template where Template: Decodable {
-        try JSONDecoder.new().decode(type, from: templateData)
+        try JSONDecoder.shared().decode(type, from: templateData)
     }
 }
