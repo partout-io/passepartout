@@ -30,7 +30,7 @@ extension AppABI {
         kvStore.preferences = preferences
 
         // Logging context
-        _ = pspLogRegister(
+        let ctx = pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: preferences,
@@ -58,7 +58,7 @@ extension AppABI {
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
-        let tunnel = appConfiguration.newStandaloneTunnel(ref: bindings.tunnel)
+        let tunnel = appConfiguration.newStandaloneTunnel(ctx, ref: bindings.tunnel)
         // FIXME: #1656, NativeTunnel lacks environment
 //        appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
         let tunnelManager = TunnelManager(tunnel: tunnel, interval: 1.0)

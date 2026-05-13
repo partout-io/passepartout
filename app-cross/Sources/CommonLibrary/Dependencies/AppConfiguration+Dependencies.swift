@@ -136,8 +136,11 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newStandaloneTunnel(ref: UnsafeMutableRawPointer?) -> TunnelProtocol {
-        NativeTunnel(ref: ref)
+    public func newStandaloneTunnel(
+        _ ctx: PartoutLoggerContext,
+        ref: UnsafeMutableRawPointer?
+    ) -> TunnelProtocol {
+        NativeTunnel(ctx, ref: ref)
     }
 
     @BusinessActor
