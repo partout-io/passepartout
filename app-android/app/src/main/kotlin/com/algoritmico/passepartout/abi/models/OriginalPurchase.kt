@@ -24,7 +24,7 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param buildNumber 
- * @param purchaseDate ISO8601 timestamp string.
+ * @param purchaseDate 64-bit millis since UNIX epoch.
  */
 @Serializable
 
@@ -33,9 +33,9 @@ data class OriginalPurchase (
     @SerialName(value = "buildNumber")
     val buildNumber: kotlin.Int,
 
-    /* ISO8601 timestamp string. */
+    /* 64-bit millis since UNIX epoch. */
     @SerialName(value = "purchaseDate")
-    val purchaseDate: kotlin.String
+    val purchaseDate: kotlin.Long
 
 ) {
 

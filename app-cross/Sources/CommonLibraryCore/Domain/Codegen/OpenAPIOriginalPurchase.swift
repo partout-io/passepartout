@@ -10,10 +10,10 @@ import Partout
 public struct OpenAPIOriginalPurchase: Sendable, Codable, Hashable {
 
     public var buildNumber: Int
-    /** ISO8601 timestamp string. */
-    public var purchaseDate: String
+    /** 64-bit millis since UNIX epoch. */
+    public var purchaseDate: Int64
 
-    public init(buildNumber: Int, purchaseDate: String) {
+    public init(buildNumber: Int, purchaseDate: Int64) {
         self.buildNumber = buildNumber
         self.purchaseDate = purchaseDate
     }

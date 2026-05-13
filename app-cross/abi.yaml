@@ -754,8 +754,9 @@ components:
     TaggedProfile:
       type: object
     Timestamp:
-      description: ISO8601 timestamp string.
-      type: string
+      description: 64-bit millis since UNIX epoch.
+      type: integer
+      format: int64
     TunnelEventRefresh:
       type: object
       additionalProperties: false
