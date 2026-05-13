@@ -101,12 +101,15 @@ extension DefaultProviderScriptingAPI: ProviderScriptingAPI {
         }
     }
 
-    public func timestampFromISO(isoString: String) -> Int {
-        Int(ISO8601DateFormatter().date(from: isoString)?.timeIntervalSinceReferenceDate ?? 0)
+    public func timestampFromISO(isoString: String) -> Int64 {
+        guard let date = ISO8601DateFormatter().date(from: isoString) else { return 0 }
+        return Int64(date.timeIntervalSince1970 * 1000)
     }
 
-    public func timestampToISO(timestamp: Int) -> String {
-        ISO8601DateFormatter().string(from: Date(timeIntervalSinceReferenceDate: TimeInterval(timestamp)))
+    public func timestampToISO(timestamp: Int64) -> String {
+        let seconds = TimeInterval(timestamp / 1000)
+        let date = Date(timeIntervalSince1970: seconds)
+        return ISO8601DateFormatter().string(from: date)
     }
 
     public func ipV4ToBase64(ip: String) -> String? {
