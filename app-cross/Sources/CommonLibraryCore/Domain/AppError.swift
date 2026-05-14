@@ -19,6 +19,8 @@ extension ABI {
 
         case malformedModule(any ModuleBuilder, error: Error)
 
+        case missingProviderEntity
+
         case moduleRequiresConnection(any Module)
 
         case notFound
