@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import com.algoritmico.passepartout.abi.AppABIProfileProtocol
 import com.algoritmico.passepartout.abi.models.AppFeature
 import com.algoritmico.passepartout.abi.models.AppProfileHeader
 import com.algoritmico.passepartout.abi.models.Event
@@ -11,11 +12,8 @@ import com.algoritmico.passepartout.abi.models.ProfileEventChangeRemoteImporting
 import com.algoritmico.passepartout.abi.models.ProfileEventReady
 import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.models.ProfileSharingFlag
-import com.algoritmico.passepartout.abi.AppABIProfileProtocol
 import io.partout.abi.TaggedProfile
-import java.io.Closeable
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -30,8 +28,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import java.io.Closeable
 
-@OptIn(FlowPreview::class)
 class ProfileObservable(
     events: Flow<Event>,
     private val abi: AppABIProfileProtocol,
@@ -43,12 +41,12 @@ class ProfileObservable(
     )
 
     private var allHeaders: Map<String, AppProfileHeader> = emptyMap()
-    private val _state = MutableStateFlow(ProfileObservableState())
+    private val _state = MutableStateFlow(State())
     private val searchRequests = MutableStateFlow("")
     private val _events = MutableSharedFlow<Event>(extraBufferCapacity = EVENT_BUFFER_CAPACITY)
 
     val events: SharedFlow<Event> = _events.asSharedFlow()
-    val state: StateFlow<ProfileObservableState> = _state.asStateFlow()
+    val state: StateFlow<State> = _state.asStateFlow()
 
     init {
         events
@@ -76,15 +74,18 @@ class ProfileObservable(
                     it.copy(isReady = true)
                 }
             }
+
             is ProfileEventRefresh -> {
                 allHeaders = event.headers
                 reloadHeaders(search = state.value.search)
             }
+
             is ProfileEventChangeRemoteImporting -> {
                 _state.update {
                     it.copy(isRemoteImportingEnabled = event.isImporting)
                 }
             }
+
             else -> {
                 // Other app domains are intentionally ignored here.
             }
@@ -95,7 +96,7 @@ class ProfileObservable(
         return allHeaders[profileId]
     }
 
-    fun profile(profileId: String): TaggedProfile? {
+    suspend fun profile(profileId: String): TaggedProfile? {
         return abi.profile(profileId)
     }
 
@@ -148,29 +149,29 @@ class ProfileObservable(
         }
     }
 
+    data class State(
+        val filteredHeaders: List<AppProfileHeader> = emptyList(),
+        val isReady: Boolean = false,
+        val isRemoteImportingEnabled: Boolean = false,
+        val search: String = ""
+    ) {
+        val hasProfiles: Boolean
+            get() = filteredHeaders.isNotEmpty()
+
+        val isSearching: Boolean
+            get() = search.isNotEmpty()
+    }
+
     private companion object {
+        fun Map<String, AppProfileHeader>.filtered(search: String): List<AppProfileHeader> {
+            val normalizedSearch = search.lowercase()
+            return values
+                .filter { header ->
+                    normalizedSearch.isEmpty() || header.name.lowercase().contains(normalizedSearch)
+                }
+                .sortedBy { it.name.lowercase() }
+        }
+
         const val EVENT_BUFFER_CAPACITY = 64
     }
-}
-
-data class ProfileObservableState(
-    val filteredHeaders: List<AppProfileHeader> = emptyList(),
-    val isReady: Boolean = false,
-    val isRemoteImportingEnabled: Boolean = false,
-    val search: String = ""
-) {
-    val hasProfiles: Boolean
-        get() = filteredHeaders.isNotEmpty()
-
-    val isSearching: Boolean
-        get() = search.isNotEmpty()
-}
-
-private fun Map<String, AppProfileHeader>.filtered(search: String): List<AppProfileHeader> {
-    val normalizedSearch = search.lowercase()
-    return values
-        .filter { header ->
-            normalizedSearch.isEmpty() || header.name.lowercase().contains(normalizedSearch)
-        }
-        .sortedBy { it.name.lowercase() }
 }

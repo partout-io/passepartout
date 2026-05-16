@@ -66,20 +66,15 @@ extension TunnelABI {
         // Wrap onStatus callback
         nonisolated(unsafe) let statusContext = bindings.status_ctx
         let statusCallback = bindings.status_cb
-        let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
+        let onStatus: OnConnectionStatusCallback = { event in
             guard let statusCallback else { return }
             do {
-                // Pack the status payload
-                let onStatus = ABI.OnConnectionStatus(
-                    profileId: profileId.uuidString,
-                    status: status
-                )
-                let json = try ABI.encodeCrossWrapper(onStatus)
+                let json = try ABI.encodeJSON(event)
                 json.withCString {
                     statusCallback(statusContext, $0)
                 }
             } catch {
-                assertionFailure("Unable to encode status: \(status), \(error)")
+                assertionFailure("Unable to encode on status event: \(event), \(error)")
             }
         }
 

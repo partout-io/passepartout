@@ -4,32 +4,54 @@
 
 package com.algoritmico.passepartout.abi
 
-import com.algoritmico.passepartout.abi.helpers.awaitCompletion
+import com.algoritmico.passepartout.abi.helpers.ABIResult
+import com.algoritmico.passepartout.globalJsonCoder
 import io.partout.abi.TaggedProfile
 
 internal class AppABIProfile(
     private val library: PassepartoutWrapper
 ) : AppABIProfileProtocol {
     override suspend fun importText(text: String, filename: String) {
-        awaitCompletion { completion ->
+        ABIResult.await { completion ->
             library.appImportProfileText(text, filename, completion)
         }
     }
 
     override suspend fun remove(profileId: String) {
-        awaitCompletion { completion ->
+        ABIResult.await { completion ->
             library.appDeleteProfile(profileId, completion)
         }
     }
 
     override suspend fun remove(profileIds: Collection<String>) {
-        awaitCompletion { completion ->
+        ABIResult.await { completion ->
             library.appDeleteProfiles(profileIds.toTypedArray(), completion)
         }
     }
 
-    override fun profile(profileId: String): TaggedProfile? {
-        // FIXME: Implement through C/JNI App ABI.
-        return null
+    override suspend fun profile(profileId: String): TaggedProfile? {
+        val result = ABIResult.await { completion ->
+            library.appFetchProfile(profileId, completion)
+        }
+        return result.payload?.let { json ->
+            globalJsonCoder.decodeFromString(json)
+        }
+    }
+}
+
+internal class AppABITunnel(
+    private val library: PassepartoutWrapper
+) : AppABITunnelProtocol {
+    override suspend fun connect(profile: TaggedProfile) {
+        val profileJSON = globalJsonCoder.encodeToString(profile)
+        ABIResult.await { completion ->
+            library.appConnect(profileJSON, completion)
+        }
+    }
+
+    override suspend fun disconnect(profileId: String) {
+        ABIResult.await { completion ->
+            library.appDisconnect(profileId, completion)
+        }
     }
 }

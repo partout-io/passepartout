@@ -22,7 +22,7 @@
 
 # JNI entry points are exported with static Java_* symbols, so their Kotlin
 # owner and method names must remain stable after R8.
--keep class com.algoritmico.passepartout.abi.NativeLibraryWrapper {
+-keep class com.algoritmico.passepartout.abi.PassepartoutWrapper {
     native <methods>;
 }
 
@@ -35,12 +35,6 @@
 -keep class * implements com.algoritmico.passepartout.abi.helpers.ABIEventHandler {
     public void onEvent(java.lang.String);
 }
--keep interface com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusHandler {
-    public void onStatus(java.lang.String);
-}
--keep class * implements com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusHandler {
-    public void onStatus(java.lang.String);
-}
 -keep interface com.algoritmico.passepartout.abi.helpers.ABICompletionCallback {
     public void onComplete(int, java.lang.String);
 }
@@ -49,6 +43,9 @@
 }
 
 # The native tunnel backend receives this object and calls into it by name.
--keep class io.partout.jni.AndroidTunnelController {
-    public *;
+-keep class io.partout.jni.PartoutVpnServiceRuntime {
+    public void testWorking();
+    public int setTunnel(java.lang.String);
+    public void configureSockets(int[]);
+    public void onStatus(java.lang.String);
 }

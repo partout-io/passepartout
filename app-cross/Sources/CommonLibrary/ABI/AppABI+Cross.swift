@@ -59,6 +59,13 @@ extension AppABI {
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
         let tunnel = appConfiguration.newStandaloneTunnel(ctx, ref: bindings.tunnel)
+        Task {
+            do {
+                try await tunnel.prepare(purge: true)
+            } catch {
+                pspLog(.abi, .fault, "Unable to prepare NativeTunnel: \(error)")
+            }
+        }
         // FIXME: #1656, NativeTunnel lacks environment
 //        appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
         let tunnelManager = TunnelManager(tunnel: tunnel, interval: 1.0)
@@ -96,7 +103,7 @@ extension AppABI {
                 do {
                     // Make the event encodable with metadata for decoding
                     let eventWrapper = ABI.EventWrapper(event)
-                    let json = try ABI.encodeCrossWrapper(eventWrapper)
+                    let json = try ABI.encodeJSON(eventWrapper)
                     json.withCString {
                         eventCallback(ctx, $0)
                     }

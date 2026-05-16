@@ -8,23 +8,23 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun awaitCompletion(
-    block: (ABICompletionCallback) -> Unit
-) = withContext(Dispatchers.IO) {
-    val result = CompletableDeferred<ABIResult>()
-    block { code, json ->
-        result.complete(ABIResult(code, json))
-    }
-    result.await().getOrThrow()
-}
-
 data class ABIResult(
     val code: Int,
     val payload: String?
 ) {
-    fun getOrThrow() {
-        if (code != 0) {
-            throw ABIException(code, payload)
+    companion object {
+        suspend fun await(
+            block: (ABICompletionCallback) -> Unit
+        ): ABIResult = withContext(Dispatchers.IO) {
+            val future = CompletableDeferred<ABIResult>()
+            block { code, json ->
+                future.complete(ABIResult(code, json))
+            }
+            val result = future.await()
+            if (result.code != 0) {
+                throw ABIException(result.code, result.payload)
+            }
+            result
         }
     }
 }
