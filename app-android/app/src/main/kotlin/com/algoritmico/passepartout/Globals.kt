@@ -7,8 +7,10 @@ package com.algoritmico.passepartout
 import android.content.Context
 import kotlinx.serialization.json.Json
 
-val globalJsonCoder = Json {
-    ignoreUnknownKeys = true
+object Globals {
+    val json = Json {
+        ignoreUnknownKeys = true
+    }
 }
 
 fun Context.readAsset(name: String): String {

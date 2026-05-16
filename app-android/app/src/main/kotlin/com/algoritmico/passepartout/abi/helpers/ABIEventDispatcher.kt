@@ -7,8 +7,9 @@ package com.algoritmico.passepartout.abi.helpers
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.globalJsonCoder
+import com.algoritmico.passepartout.Globals.json
 import java.io.Closeable
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -36,7 +37,7 @@ object ABIEventDispatcher: ABIEventHandler {
     }
 
     private fun dispatchOnMain(json: String) {
-        val event: Event = globalJsonCoder.decodeFromString(json)
+        val event: Event = Globals.json.decodeFromString(json)
         listeners.forEach { listener ->
             runCatching {
                 listener(event)
