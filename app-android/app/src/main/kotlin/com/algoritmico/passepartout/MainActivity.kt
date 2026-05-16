@@ -13,40 +13,36 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.abi.AppABIProfile
+import com.algoritmico.passepartout.abi.AppABITunnel
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
-import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusDispatcher
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
-import com.algoritmico.passepartout.abi.models.AppProfileStatus
-import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.abi.models.OnConnectionStatus
-import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import com.algoritmico.passepartout.ui.ProfileObservable
-import io.partout.abi.ConnectionStatus
-import io.partout.jni.AndroidTunnel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.suspendCancellableCoroutine
+import com.algoritmico.passepartout.ui.TunnelObservable
+import io.partout.abi.TaggedProfile
+import io.partout.jni.PartoutTunnel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.Closeable
 import java.io.File
-import kotlin.coroutines.resume
 
 class MainActivity : ComponentActivity() {
     private val library = PassepartoutWrapper()
 
-    private val appEventChannel = Channel<Event>(Channel.UNLIMITED)
-    private val appEvents = appEventChannel.receiveAsFlow()
+    private val appEvents = MutableSharedFlow<Event>(
+        replay = APP_EVENT_REPLAY,
+        extraBufferCapacity = APP_EVENT_BUFFER_CAPACITY
+    )
 
     private lateinit var profilesDirectory: File
 
     private lateinit var profileObservable: ProfileObservable
 
-    private lateinit var tunnel: AndroidTunnel
+    private lateinit var tunnelObservable: TunnelObservable
+
+    private lateinit var tunnel: PartoutTunnel
 
     private var eventSubscription: Closeable? = null
-
-    private var statusSubscription: Closeable? = null
 
     private var isAppInitialized = false
 
@@ -66,16 +62,22 @@ class MainActivity : ComponentActivity() {
             abi = AppABIProfile(library),
             coroutineScope = lifecycleScope
         )
-        tunnel = AndroidTunnel(
-            context = this,
-            vpnServiceClass = PassepartoutVPNService::class.java,
+        tunnelObservable = TunnelObservable(
+            events = appEvents,
+            abi = AppABITunnel(library),
+            coroutineScope = lifecycleScope
+        )
+        tunnel = PartoutTunnel(
+            this,
+            PassepartoutVpnService::class.java,
+            PassepartoutVpnService.channel,
             requestVpnPermission = { permissionIntent ->
                 vpnPermissionLauncher.launch(permissionIntent)
-            }
+            },
+            lifecycleScope
         )
 
         eventSubscription = ABIEventDispatcher.register(::handleEvent)
-        statusSubscription = ABIConnectionStatusDispatcher.register(::handleConnectionStatus)
         val appInitCode = library.appInit(
             bundle,
             constants,
@@ -95,8 +97,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             PassepartoutApp(
                 profileObservable = profileObservable,
+                tunnelObservable = tunnelObservable,
                 onImportProfile = ::openProfileImporter,
-                onProfileToggle = ::onProfileToggle,
+                profileProvider = ::readProfile,
                 onProfilesDelete = ::onProfilesDelete
             )
         }
@@ -110,10 +113,8 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         eventSubscription?.close()
         eventSubscription = null
-        statusSubscription?.close()
-        statusSubscription = null
         profileObservable.close()
-        appEventChannel.close()
+        tunnelObservable.close()
         if (isAppInitialized) {
             library.appDeinit { _, _ -> }
         }
@@ -125,69 +126,13 @@ class MainActivity : ComponentActivity() {
         finishAndRemoveTask()
     }
 
-    private fun handleEvent(eventJSON: String) {
-        val event: Event = globalJsonCoder.decodeFromString(eventJSON)
+    private fun handleEvent(event: Event) {
         Log.i("Passepartout", ">>> MainActivity: $event")
-        appEventChannel.trySend(event)
-    }
-
-    private fun handleConnectionStatus(onStatusJSON: String) {
-        val onStatus = globalJsonCoder.decodeFromString<OnConnectionStatus>(onStatusJSON)
-        Log.i("Passepartout", ">>> MainActivity: $onStatus")
-
-        val isActive = PassepartoutVPNService.isActive(onStatus.profileId)
-        val status = onStatus.status.toAppProfileStatus()
-        val activeTunnels = if (isActive) {
-            mapOf(
-                onStatus.profileId to AppTunnelInfo(
-                    id = onStatus.profileId,
-                    isEnabled = true,
-                    status = status,
-                    onDemand = false
-                )
-            )
-        } else {
-            emptyMap()
-        }
-        appEventChannel.trySend(TunnelEventRefresh(activeTunnels))
-    }
-
-    private suspend fun onProfileToggle(profileId: String, enabled: Boolean): Boolean {
-        return if (enabled) {
-            connectTunnel(profileId)
-        } else {
-            disconnectTunnel(profileId)
-            true
-        }
+        appEvents.tryEmit(event)
     }
 
     private fun onProfilesDelete(profileIds: Array<String>): Unit {
         library.appDeleteProfiles(profileIds, { _, _ -> })
-    }
-
-    private suspend fun connectTunnel(profileId: String): Boolean {
-        val profile = readProfile(profileId)
-        if (profile == null) {
-            Log.e("Passepartout", "Unable to start missing profile: $profileId")
-            return false
-        }
-        return suspendCancellableCoroutine { continuation ->
-            library.appConnect (profile) { code, json ->
-                if (continuation.isActive) {
-                    continuation.resume(code == 0)
-                }
-            }
-        }
-    }
-
-    private suspend fun disconnectTunnel(profileId: String) {
-        suspendCancellableCoroutine { continuation ->
-            library.appDisconnect(profileId) { code, json ->
-                if (continuation.isActive) {
-                    continuation.resume(Unit)
-                }
-            }
-        }
     }
 
     private fun openProfileImporter() {
@@ -229,6 +174,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private companion object {
+        const val APP_EVENT_BUFFER_CAPACITY = 64
+
+        const val APP_EVENT_REPLAY = 64
+
         const val OBJECTS_DIR = "objects"
 
         val PROFILE_MIME_TYPES = arrayOf(
@@ -240,12 +189,17 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private fun readProfile(profileId: String): String? {
+    private fun readProfile(profileId: String): TaggedProfile? {
         val profileFile = File(profilesDirectory, "$OBJECTS_DIR/$profileId.json")
         if (!profileFile.isFile) {
             return null
         }
-        return profileFile.readText()
+        return try {
+            globalJsonCoder.decodeFromString<TaggedProfile>(profileFile.readText())
+        } catch (e: Exception) {
+            Log.e("Passepartout", "Unable to read profile: $profileId", e)
+            null
+        }
     }
 
     private fun displayName(uri: Uri): String? {
@@ -263,10 +217,4 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    private fun ConnectionStatus.toAppProfileStatus(): AppProfileStatus = when (this) {
-        ConnectionStatus.disconnected -> AppProfileStatus.disconnected
-        ConnectionStatus.connecting -> AppProfileStatus.connecting
-        ConnectionStatus.connected -> AppProfileStatus.connected
-        ConnectionStatus.disconnecting -> AppProfileStatus.disconnecting
-    }
 }

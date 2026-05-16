@@ -6,11 +6,10 @@ package com.algoritmico.passepartout.abi
 
 import android.util.Log
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
-import com.algoritmico.passepartout.abi.helpers.ABIConnectionStatusHandler
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
-import io.partout.abi.TaggedProfile
-import io.partout.jni.AndroidTunnel
-import io.partout.jni.AndroidTunnelController
+import io.partout.abi.TunnelSnapshot
+import io.partout.jni.PartoutTunnel
+import io.partout.jni.PartoutVpnServiceRuntime
 
 class PassepartoutWrapper {
     external fun partoutVersion(): String
@@ -19,7 +18,7 @@ class PassepartoutWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
-        tunnel: AndroidTunnel,
+        tunnel: PartoutTunnel,
         eventHandler: ABIEventHandler
     ): Int
     external fun appDeinit(completion: ABICompletionCallback)
@@ -37,6 +36,10 @@ class PassepartoutWrapper {
         ids: Array<String>,
         completion: ABICompletionCallback
     )
+    external fun appFetchProfile(
+        id: String,
+        completion: ABICompletionCallback
+    )
     external fun appConnect(
         profile: String,
         completion: ABICompletionCallback
@@ -50,8 +53,7 @@ class PassepartoutWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        controller: AndroidTunnelController,
-        statusHandler: ABIConnectionStatusHandler
+        runtime: PartoutVpnServiceRuntime
     ): Int
     external fun tunnelStop(
         completion: ABICompletionCallback

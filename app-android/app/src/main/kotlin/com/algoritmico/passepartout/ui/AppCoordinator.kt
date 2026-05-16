@@ -26,18 +26,14 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.abi.models.AppProfileStatus
+import io.partout.abi.TaggedProfile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppCoordinator(
     title: String,
     profileObservable: ProfileObservable,
-    selectedProfileId: String?,
-    isProfileEnabled: (String) -> Boolean,
-    profileStatus: (String) -> AppProfileStatus,
-    onProfileSelected: (String) -> Unit,
-    onProfileToggle: (String, Boolean) -> Unit,
+    tunnelObservable: TunnelObservable,
     onProfilesDelete: (Array<String>) -> Unit,
     onImportProfile: () -> Unit
 ) {
@@ -116,23 +112,11 @@ fun AppCoordinator(
                 .fillMaxSize()
                 .padding(innerPadding),
             profileObservable = profileObservable,
-            selectedProfileId = selectedProfileId,
+            tunnelObservable = tunnelObservable,
             contextualProfileIds = contextualProfileIds,
-            isProfileEnabled = isProfileEnabled,
-            profileStatus = profileStatus,
-            onProfileSelected = { profileId ->
-                if (isContextualMode) {
-                    toggleContextualProfile(profileId)
-                } else {
-                    onProfileSelected(profileId)
-                }
-            },
-            onProfileToggle = onProfileToggle,
-            onProfileContextualAction = { profileId ->
-                if (profileId !in contextualProfileIds) {
-                    contextualProfileIds = contextualProfileIds + profileId
-                }
-                onProfileSelected(profileId)
+            onContextualProfileSelected = ::toggleContextualProfile,
+            onContextualProfileAction = { profileId ->
+                contextualProfileIds = contextualProfileIds + profileId
             },
             onImportProfile = onImportProfile
         )

@@ -27,8 +27,14 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -37,22 +43,121 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.abi.models.AppProfileHeader
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
+import com.algoritmico.passepartout.abi.models.AppTunnelInfo
+import com.algoritmico.passepartout.abi.models.ProfileEventSave
+import io.partout.abi.TaggedProfile
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileContainerView(
     modifier: Modifier = Modifier,
     profileObservable: ProfileObservable,
-    selectedProfileId: String?,
+    tunnelObservable: TunnelObservable,
     contextualProfileIds: List<String>,
-    isProfileEnabled: (String) -> Boolean,
-    profileStatus: (String) -> AppProfileStatus,
-    onProfileSelected: (String) -> Unit,
-    onProfileToggle: (String, Boolean) -> Unit,
-    onProfileContextualAction: (String) -> Unit,
+    onContextualProfileSelected: (String) -> Unit,
+    onContextualProfileAction: (String) -> Unit,
     onImportProfile: () -> Unit
 ) {
-    val state by profileObservable.state.collectAsState()
-    val headers = state.filteredHeaders
+    val profileState by profileObservable.state.collectAsState()
+    val tunnelState by tunnelObservable.state.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val headers = profileState.filteredHeaders
+    val profileIds = headers.map { it.id }
+    val activeProfiles = tunnelState.activeProfiles
+    var selectedProfileId by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+    var requestedConnection by remember {
+        mutableStateOf<RequestedConnection?>(null)
+    }
+    var previousActiveProfiles by remember {
+        mutableStateOf<Map<String, AppTunnelInfo>>(emptyMap())
+    }
+
+    fun selectProfile(profileId: String) {
+        if (profileId in profileIds) {
+            selectedProfileId = profileId
+        }
+    }
+
+    fun isProfileEnabled(profileId: String): Boolean {
+        return activeProfiles[profileId]?.isEnabled ?: false
+    }
+
+    fun profileStatus(profileId: String): AppProfileStatus {
+        return activeProfiles[profileId]?.status
+            ?: requestedConnection?.statusFor(profileId)
+            ?: AppProfileStatus.disconnected
+    }
+
+    fun requestProfileToggle(profileId: String, enabled: Boolean) {
+        val request = RequestedConnection(profileId, enabled)
+        requestedConnection = request
+        selectProfile(profileId)
+        coroutineScope.launch {
+            val didStart = try {
+                toggleProfile(
+                    profileObservable,
+                    tunnelObservable,
+                    profileId,
+                    enabled
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                false
+            }
+            if (!didStart && requestedConnection == request) {
+                requestedConnection = null
+            }
+        }
+    }
+
+    LaunchedEffect(profileIds) {
+        if (selectedProfileId !in profileIds) {
+            selectedProfileId = profileIds.firstOrNull()
+        }
+    }
+
+    LaunchedEffect(profileObservable) {
+        profileObservable.events.collect { event ->
+            if (event is ProfileEventSave) {
+                selectedProfileId = event.profile.id
+            }
+        }
+    }
+
+    LaunchedEffect(activeProfiles) {
+        val hadActiveProfiles = previousActiveProfiles.isNotEmpty()
+        val request = requestedConnection
+        if (request != null) {
+            if (activeProfiles.containsKey(request.profileId)) {
+                requestedConnection = null
+            } else if (!request.enabled && activeProfiles.isEmpty()) {
+                requestedConnection = null
+            } else if (request.enabled && activeProfiles.isEmpty() && !hadActiveProfiles) {
+                requestedConnection = null
+            }
+        } else if (activeProfiles.isNotEmpty() && selectedProfileId !in activeProfiles.keys) {
+            selectedProfileId = activeProfiles.keys.first()
+        }
+        previousActiveProfiles = activeProfiles
+    }
+
+    val onProfileSelected: (String) -> Unit = { profileId ->
+        if (contextualProfileIds.isNotEmpty()) {
+            onContextualProfileSelected(profileId)
+        } else {
+            selectProfile(profileId)
+        }
+    }
+    val onProfileContextualAction: (String) -> Unit = { profileId ->
+        if (profileId !in contextualProfileIds) {
+            onContextualProfileAction(profileId)
+        }
+        selectProfile(profileId)
+    }
 
     if (headers.isEmpty()) {
         EmptyProfilesView(
@@ -71,10 +176,10 @@ fun ProfileContainerView(
             headers = headers,
             selectedHeader = selectedHeader,
             contextualProfileIds = contextualProfileIds,
-            isProfileEnabled = isProfileEnabled,
-            profileStatus = profileStatus,
+            isProfileEnabled = ::isProfileEnabled,
+            profileStatus = ::profileStatus,
             onProfileSelected = onProfileSelected,
-            onProfileToggle = onProfileToggle,
+            onProfileToggle = ::requestProfileToggle,
             onProfileContextualAction = onProfileContextualAction
         )
     } else {
@@ -83,10 +188,10 @@ fun ProfileContainerView(
             headers = headers,
             selectedProfileId = selectedHeader.id,
             contextualProfileIds = contextualProfileIds,
-            isProfileEnabled = isProfileEnabled,
-            profileStatus = profileStatus,
+            isProfileEnabled = ::isProfileEnabled,
+            profileStatus = ::profileStatus,
             onProfileSelected = onProfileSelected,
-            onProfileToggle = onProfileToggle,
+            onProfileToggle = ::requestProfileToggle,
             onProfileContextualAction = onProfileContextualAction
         )
     }
@@ -432,5 +537,37 @@ private fun AppProfileStatus.canToggle(): Boolean {
         AppProfileStatus.connecting,
         AppProfileStatus.disconnected,
         AppProfileStatus.connected -> true
+    }
+}
+
+private suspend fun toggleProfile(
+    profileObservable: ProfileObservable,
+    tunnelObservable: TunnelObservable,
+    profileId: String,
+    enabled: Boolean
+): Boolean {
+    if (!enabled) {
+        tunnelObservable.disconnect(profileId)
+        return true
+    }
+
+    val profile = profileObservable.profile(profileId) ?: return false
+    tunnelObservable.connect(profile)
+    return true
+}
+
+private data class RequestedConnection(
+    val profileId: String,
+    val enabled: Boolean
+) {
+    fun statusFor(candidateId: String): AppProfileStatus? {
+        if (candidateId != profileId) {
+            return null
+        }
+        return if (enabled) {
+            AppProfileStatus.connecting
+        } else {
+            AppProfileStatus.disconnecting
+        }
     }
 }

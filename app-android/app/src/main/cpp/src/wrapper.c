@@ -111,6 +111,18 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appDeleteProfiles(
 }
 
 JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchProfile(
+        JNIEnv *env,
+        jobject thiz,
+        jstring id,
+        jobject completion
+) {
+    const char *cID = (*env)->GetStringUTFChars(env, id, NULL);
+    psp_app_fetch_profile(cID, PSP_JNI_CB(env, completion));
+    (*env)->ReleaseStringUTFChars(env, id, cID);
+}
+
+JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appConnect(
         JNIEnv *env,
         jobject thiz,
@@ -142,8 +154,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         jstring constants,
         jstring profile,
         jstring cacheDir,
-        jobject controller,
-        jobject statusHandler
+        jobject runtime
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
@@ -151,8 +162,8 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
     psp_tunnel_bindings bindings = { 0 };
-    bindings.controller = (*env)->NewGlobalRef(env, controller);
-    bindings.status_ctx = abi_handler_create(env, statusHandler);
+    bindings.controller = (*env)->NewGlobalRef(env, runtime);
+    bindings.status_ctx = abi_handler_create(env, runtime);
     bindings.status_cb = abi_connection_status_handler_proxy;
     bindings.free = tunnel_bindings_free;
 
