@@ -16,6 +16,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             return V.emptyProducts
         case .emptyProfileName:
             return V.emptyProfileName
+        case .encoding(let reason):
+            return reason?.localizedDescription
         case .ineligibleProfile:
             return nil
         case .interactiveLogin:
