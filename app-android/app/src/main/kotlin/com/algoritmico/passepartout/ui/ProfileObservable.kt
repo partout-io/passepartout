@@ -31,8 +31,8 @@ import kotlinx.coroutines.flow.update
 import java.io.Closeable
 
 class ProfileObservable(
-    events: Flow<Event>,
     private val abi: AppABIProfileProtocol,
+    events: Flow<Event>,
     coroutineScope: CoroutineScope,
     searchDebounceMillis: Long = 200L
 ) : Closeable {
@@ -49,13 +49,13 @@ class ProfileObservable(
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
-        events
-            .onEach(::onUpdate)
-            .launchIn(scope)
-
         searchRequests
             .debounce(searchDebounceMillis)
             .onEach(::reloadHeaders)
+            .launchIn(scope)
+
+        events
+            .onEach(::onUpdate)
             .launchIn(scope)
     }
 

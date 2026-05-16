@@ -30,8 +30,8 @@ import kotlinx.coroutines.flow.update
 import java.io.Closeable
 
 class TunnelObservable(
-    events: Flow<Event>,
     private val abi: AppABITunnelProtocol,
+    events: Flow<Event>,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
