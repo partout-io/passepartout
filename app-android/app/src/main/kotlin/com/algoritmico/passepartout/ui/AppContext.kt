@@ -7,6 +7,7 @@ package com.algoritmico.passepartout.ui
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.AppABIProfile
 import com.algoritmico.passepartout.abi.AppABITunnel
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
@@ -62,8 +63,8 @@ class AppContext(
 
     init {
         val partoutVersion = library.partoutVersion()
-        Log.i("Passepartout", ">>> Partout $partoutVersion")
-        Log.e("Passepartout", ">>> Started app")
+        Log.i(Globals.logTag, ">>> Partout $partoutVersion")
+        Log.e(Globals.logTag, ">>> Started app")
 
         val bundle = applicationContext.readAsset(BUNDLE_FILENAME)
         val constants = applicationContext.readAsset(CONSTANTS_FILENAME)
@@ -95,7 +96,7 @@ class AppContext(
     }
 
     private fun handleEvent(event: Event) {
-        Log.i("Passepartout", ">>> AppContext: $event")
+        Log.i(Globals.logTag, ">>> AppContext: $event")
         appEvents.tryEmit(event)
     }
 

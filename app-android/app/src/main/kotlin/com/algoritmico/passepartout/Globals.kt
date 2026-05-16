@@ -11,6 +11,8 @@ object Globals {
     val json = Json {
         ignoreUnknownKeys = true
     }
+
+    const val logTag = "Passepartout"
 }
 
 fun Context.readAsset(name: String): String {

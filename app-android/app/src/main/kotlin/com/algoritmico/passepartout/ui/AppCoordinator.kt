@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.Globals
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +97,7 @@ fun AppCoordinator(
                                     runCatching {
                                         profileObservable.remove(profileIds)
                                     }.onFailure {
-                                        Log.e("Passepartout", "Unable to delete profiles", it)
+                                        Log.e(Globals.logTag, "Unable to delete profiles", it)
                                     }
                                 }
                             }

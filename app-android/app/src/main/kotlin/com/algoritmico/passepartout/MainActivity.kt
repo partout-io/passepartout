@@ -7,6 +7,7 @@ package com.algoritmico.passepartout
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -71,7 +72,7 @@ class MainActivity : ComponentActivity() {
         val profileText = try {
             contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
         } catch (e: Exception) {
-            Log.e("Passepartout", "Unable to read profile file: $uri", e)
+            Log.e(Globals.logTag, "Unable to read profile file: $uri", e)
             null
         } ?: return
 
@@ -82,7 +83,7 @@ class MainActivity : ComponentActivity() {
             }.onSuccess {
                 appContext.onApplicationActive()
             }.onFailure {
-                Log.e("Passepartout", "Import failure: $profileName", it)
+                Log.e(Globals.logTag, "Import failure: $profileName", it)
             }
         }
     }

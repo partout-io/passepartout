@@ -10,6 +10,7 @@ import android.net.VpnService
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.readAsset
 import io.partout.jni.PartoutVpnServiceRuntime
@@ -22,7 +23,7 @@ import kotlinx.coroutines.withContext
 class PassepartoutVpnService: VpnService() {
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
-            logTag = "Passepartout",
+            logTag = Globals.logTag,
             service = this,
             channel = channel,
             engine = VpnEngine(

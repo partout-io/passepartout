@@ -42,7 +42,7 @@ object ABIEventDispatcher: ABIEventHandler {
             runCatching {
                 listener(event)
             }.onFailure {
-                Log.e("Passepartout", "Unable to dispatch ABI callback", it)
+                Log.e(Globals.logTag, "Unable to dispatch ABI callback", it)
             }
         }
     }

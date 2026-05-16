@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout.abi
 
 import android.util.Log
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
 import io.partout.abi.TunnelSnapshot
@@ -65,7 +66,7 @@ class PassepartoutWrapper {
                 // Name of the NDK .so without "lib" prefix or ".so"
                 System.loadLibrary("passepartout_wrapper")
             } catch (e: Exception) {
-                Log.e("Passepartout", e.localizedMessage ?: "")
+                Log.e(Globals.logTag, e.localizedMessage ?: "")
             }
         }
     }
