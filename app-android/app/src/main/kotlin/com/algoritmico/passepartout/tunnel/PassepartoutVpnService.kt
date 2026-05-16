@@ -14,7 +14,6 @@ import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.readAsset
 import io.partout.jni.PartoutVpnServiceRuntime
-import io.partout.jni.PartoutVpnServiceRuntime.Channel
 import io.partout.jni.PartoutVpnServiceRuntime.Engine
 import io.partout.jni.PartoutVpnServiceRuntime.Result
 import kotlinx.coroutines.CompletableDeferred
@@ -22,15 +21,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class PassepartoutVpnService: VpnService() {
-    private val channel by lazy {
-        Channel(this)
-    }
-
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
             logTag = Globals.logTag,
             service = this,
-            channel = channel,
             engine = VpnEngine(
                 library = PassepartoutWrapper(),
                 bundleProvider = {
