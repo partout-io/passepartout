@@ -125,12 +125,12 @@ class PassepartoutVpnService: VpnService() {
     companion object {
         val channel = PartoutVpnServiceRuntime.Channel()
 
-        private const val NOTIFICATION_ID = 1
-
-        private const val NOTIFICATION_CHANNEL_ID = "vpn_service_channel"
-
         private const val BUNDLE_FILENAME = "bundle.json"
 
         private const val CONSTANTS_FILENAME = "constants.json"
+
+        private const val NOTIFICATION_ID = 1
+
+        private const val NOTIFICATION_CHANNEL_ID = "vpn_service_channel"
     }
 }
