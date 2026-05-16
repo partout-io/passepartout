@@ -69,7 +69,7 @@ extension TunnelABI {
         let onStatus: OnConnectionStatusCallback = { event in
             guard let statusCallback else { return }
             do {
-                let json = try ABI.encodeCrossWrapper(event)
+                let json = try ABI.encodeJSON(event)
                 json.withCString {
                     statusCallback(statusContext, $0)
                 }

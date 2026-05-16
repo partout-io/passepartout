@@ -13,6 +13,8 @@ extension ABI {
 
         case emptyProfileName
 
+        case encoding(reason: Error? = nil)
+
         case ineligibleProfile(Set<AppFeature>)
 
         case interactiveLogin

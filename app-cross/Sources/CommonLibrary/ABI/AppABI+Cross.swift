@@ -103,7 +103,7 @@ extension AppABI {
                 do {
                     // Make the event encodable with metadata for decoding
                     let eventWrapper = ABI.EventWrapper(event)
-                    let json = try ABI.encodeCrossWrapper(eventWrapper)
+                    let json = try ABI.encodeJSON(eventWrapper)
                     json.withCString {
                         eventCallback(ctx, $0)
                     }

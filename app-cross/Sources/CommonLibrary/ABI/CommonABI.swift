@@ -19,10 +19,6 @@ public nonisolated func __psp_log(message: UnsafePointer<CChar>?) {
 
 // MARK: - Helpers
 
-enum ABIError: Error {
-    case wrapping(reason: Error? = nil)
-}
-
 extension ABI {
     // Following psp_completion:
     //
@@ -99,20 +95,6 @@ extension ABI {
             }
             await block(runCallback)
         }
-    }
-
-    // Encode a cross-platform type using ISO8601 dates
-    static func encodeCrossWrapper<T>(_ wrapper: T) throws -> String where T: Encodable {
-        let data: Data
-        do {
-            data = try ABI.encode(wrapper)
-        } catch {
-            throw ABIError.wrapping(reason: error)
-        }
-        guard let json = String(data: data, encoding: .utf8) else {
-            throw ABIError.wrapping()
-        }
-        return json
     }
 }
 
