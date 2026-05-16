@@ -145,6 +145,30 @@ public func __psp_app_delete_profiles(
     }
 }
 
+@c(psp_app_fetch_profile)
+public func __psp_app_fetch_profile(
+    uuid: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let uuid, let id = UUID(uuidString: String(cString: uuid)) else {
+        completion.callback?(completion.ctx, PSPCompletionCodeArgs, nil)
+        return
+    }
+    ABI.run(completion) { callback in
+        guard let profile = abi.profile.profile(withId: id) else {
+            callback?(PSPCompletionCodeFailure, "Profile not found")
+            return
+        }
+        do {
+            let data = try ABI.encode(profile.asTaggedProfile)
+            let json = String(data: data, encoding: .utf8)
+            callback?(PSPCompletionCodeOK, json)
+        } catch {
+            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+        }
+    }
+}
+
 @c(psp_app_connect)
 public func __psp_app_connect(
     profile: UnsafePointer<CChar>?,
