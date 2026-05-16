@@ -12,125 +12,47 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.abi.AppABIProfile
-import com.algoritmico.passepartout.abi.AppABITunnel
-import com.algoritmico.passepartout.abi.PassepartoutWrapper
-import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
-import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.tunnel.PassepartoutVpnService
+import com.algoritmico.passepartout.ui.AppContext
 import com.algoritmico.passepartout.ui.PassepartoutApp
-import com.algoritmico.passepartout.ui.ProfileObservable
-import com.algoritmico.passepartout.ui.TunnelObservable
-import io.partout.jni.PartoutTunnel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import java.io.Closeable
-import java.io.File
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    private val library = PassepartoutWrapper()
-
-    private val appEvents = MutableSharedFlow<Event>(
-        replay = APP_EVENT_REPLAY,
-        extraBufferCapacity = APP_EVENT_BUFFER_CAPACITY
-    )
-
-    private lateinit var profilesDirectory: File
-
-    private lateinit var profileObservable: ProfileObservable
-
-    private lateinit var tunnelObservable: TunnelObservable
-
-    private lateinit var tunnel: PartoutTunnel
-
-    private var eventSubscription: Closeable? = null
-
-    private var isAppInitialized = false
+    private lateinit var appContext: AppContext
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val version = library.partoutVersion()
-        Log.i("Passepartout", ">>> $version")
-
-        val bundle = assets.open("bundle.json").bufferedReader().use { it.readText() }
-        val constants = assets.open("constants.json").bufferedReader().use { it.readText() }
-        profilesDirectory = File(noBackupFilesDir, "profiles-v1").apply {
-            mkdirs()
-        }
-        profileObservable = ProfileObservable(
-            events = appEvents,
-            abi = AppABIProfile(library),
-            coroutineScope = lifecycleScope
-        )
-        tunnelObservable = TunnelObservable(
-            events = appEvents,
-            abi = AppABITunnel(library),
-            coroutineScope = lifecycleScope
-        )
-        tunnel = PartoutTunnel(
+        appContext = AppContext(
             this,
-            PassepartoutVpnService::class.java,
+            lifecycleScope,
             PassepartoutVpnService.channel,
             requestVpnPermission = { permissionIntent ->
                 vpnPermissionLauncher.launch(permissionIntent)
-            },
-            lifecycleScope
+            }
         )
-
-        eventSubscription = ABIEventDispatcher.register(::handleEvent)
-        val appInitCode = library.appInit(
-            bundle,
-            constants,
-            profilesDirectory.absolutePath,
-            cacheDir.absolutePath,
-            tunnel,
-            ABIEventDispatcher
-        )
-        if (appInitCode == 0) {
-            isAppInitialized = true
-            Log.e("Passepartout", ">>> Started app")
-        } else {
-            Log.e("Passepartout", "Unable to init app (code=$appInitCode)")
-            destroyApp()
-        }
 
         setContent {
             PassepartoutApp(
-                profileObservable = profileObservable,
-                tunnelObservable = tunnelObservable,
-                onImportProfile = ::openProfileImporter,
-                onProfilesDelete = ::onProfilesDelete
+                appContext.profileObservable,
+                appContext.tunnelObservable,
+                onImportProfile = ::openProfileImporter
             )
         }
     }
 
     override fun onStart() {
         super.onStart()
-        library.appOnForeground()
+        if (::appContext.isInitialized) {
+            appContext.onApplicationActive()
+        }
     }
 
     override fun onDestroy() {
-        eventSubscription?.close()
-        eventSubscription = null
-        profileObservable.close()
-        tunnelObservable.close()
-        if (isAppInitialized) {
-            library.appDeinit { _, _ -> }
+        if (::appContext.isInitialized) {
+            appContext.close()
         }
         super.onDestroy()
-    }
-
-    private fun destroyApp() {
-        if (isFinishing || isDestroyed) return
-        finishAndRemoveTask()
-    }
-
-    private fun handleEvent(event: Event) {
-        Log.i("Passepartout", ">>> MainActivity: $event")
-        appEvents.tryEmit(event)
-    }
-
-    private fun onProfilesDelete(profileIds: Array<String>): Unit {
-        library.appDeleteProfiles(profileIds, { _, _ -> })
     }
 
     private fun openProfileImporter() {
@@ -141,50 +63,20 @@ class MainActivity : ComponentActivity() {
         val profileText = try {
             contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
         } catch (e: Exception) {
-            Log.e("Passepartout", "Unable to read profile file: $uri", e)
+            Log.e(Globals.logTag, "Unable to read profile file: $uri", e)
             null
         } ?: return
 
         val profileName = displayName(uri) ?: "Imported profile"
-        library.appImportProfileText(profileText, profileName) { code, json ->
-            runOnUiThread {
-                if (code == 0) {
-                    library.appOnForeground()
-                } else {
-                    Log.e("Passepartout", "Import failure (code=$code): $json")
-                }
+        lifecycleScope.launch {
+            runCatching {
+                appContext.profileObservable.importText(profileText, profileName)
+            }.onSuccess {
+                appContext.onApplicationActive()
+            }.onFailure {
+                Log.e(Globals.logTag, "Import failure: $profileName", it)
             }
         }
-    }
-
-    private val profileImportLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) {
-            importProfile(uri)
-        }
-    }
-
-    private val vpnPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        tunnel.onVpnPermissionResult(result.resultCode == RESULT_OK)
-    }
-
-    private companion object {
-        const val APP_EVENT_BUFFER_CAPACITY = 64
-
-        const val APP_EVENT_REPLAY = 64
-
-        const val OBJECTS_DIR = "objects"
-
-        val PROFILE_MIME_TYPES = arrayOf(
-            "application/x-openvpn-profile",
-            "application/x-wireguard-profile",
-            "application/octet-stream",
-            "text/*",
-            "*/*"
-        )
     }
 
     private fun displayName(uri: Uri): String? {
@@ -202,4 +94,29 @@ class MainActivity : ComponentActivity() {
             }
     }
 
+    private val vpnPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (::appContext.isInitialized) {
+            appContext.onVpnPermissionResult(result.resultCode == RESULT_OK)
+        }
+    }
+
+    private val profileImportLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            importProfile(uri)
+        }
+    }
+
+    private companion object {
+        val PROFILE_MIME_TYPES = arrayOf(
+            "application/x-openvpn-profile",
+            "application/x-wireguard-profile",
+            "application/octet-stream",
+            "text/*",
+            "*/*"
+        )
+    }
 }

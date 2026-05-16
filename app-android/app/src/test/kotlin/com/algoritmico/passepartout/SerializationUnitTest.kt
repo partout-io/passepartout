@@ -32,7 +32,7 @@ class SerializationUnitTest {
 
     @Test
     fun dnsProtocolType_isDeserialized() {
-        val dnsProtocols = globalJsonCoder.decodeFromString<List<DNSModuleProtocolType>>(dnsProtocolsJSON)
+        val dnsProtocols = Globals.json.decodeFromString<List<DNSModuleProtocolType>>(dnsProtocolsJSON)
         assertEquals(dnsProtocols.size, 3)
         assert(dnsProtocols[0] is DNSModuleProtocolTypecleartext)
         val https = dnsProtocols[1] as DNSModuleProtocolTypehttps
@@ -47,7 +47,7 @@ class SerializationUnitTest {
         val https = DNSModuleProtocolTypehttps(url = "https://www.google.com")
         val tls = DNSModuleProtocolTypetls(hostname = "google.com")
         val dnsProtocols = listOf(clear, https, tls)
-        val json = globalJsonCoder.encodeToJsonElement(dnsProtocols).toString().trimIndent()
+        val json = Globals.json.encodeToJsonElement(dnsProtocols).toString().trimIndent()
         println(json)
         println(dnsProtocolsJSON)
         assertEquals(json, dnsProtocolsJSON)
@@ -55,7 +55,7 @@ class SerializationUnitTest {
 
     @Test
     fun obfMethod_isDeserialized() {
-        val obfMethods = globalJsonCoder.decodeFromString<List<OpenVPNObfuscationMethod>>(obfMethodsJSON)
+        val obfMethods = Globals.json.decodeFromString<List<OpenVPNObfuscationMethod>>(obfMethodsJSON)
         assertEquals(obfMethods.size, 4)
         val xormask = obfMethods[0] as OpenVPNObfuscationMethodxormask
         assertTrue(xormask.mask.contentEquals(obfMaskBase64))
@@ -72,7 +72,7 @@ class SerializationUnitTest {
         val reverse = OpenVPNObfuscationMethodreverse()
         val obfuscate = OpenVPNObfuscationMethodobfuscate(mask = obfMaskBase64)
         val obfMethods = listOf(xormask, xorptrpos, reverse, obfuscate)
-        val json = globalJsonCoder.encodeToJsonElement(obfMethods).toString().trimIndent()
+        val json = Globals.json.encodeToJsonElement(obfMethods).toString().trimIndent()
         println(json)
         println(obfMethodsJSON)
         assertEquals(json, obfMethodsJSON)

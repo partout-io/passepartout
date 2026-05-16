@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout
+package com.algoritmico.passepartout.tunnel
 
 import android.app.Notification
 import android.content.Intent
@@ -10,7 +10,9 @@ import android.net.VpnService
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
+import com.algoritmico.passepartout.readAsset
 import io.partout.jni.PartoutVpnServiceRuntime
 import io.partout.jni.PartoutVpnServiceRuntime.Engine
 import io.partout.jni.PartoutVpnServiceRuntime.Result
@@ -21,16 +23,16 @@ import kotlinx.coroutines.withContext
 class PassepartoutVpnService: VpnService() {
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
-            logTag = "Passepartout",
+            logTag = Globals.logTag,
             service = this,
             channel = channel,
-            engine = PassepartoutVpnEngine(
+            engine = VpnEngine(
                 library = PassepartoutWrapper(),
                 bundleProvider = {
-                    readAsset("bundle.json")
+                    readAsset(BUNDLE_FILENAME)
                 },
                 constantsProvider = {
-                    readAsset("constants.json")
+                    readAsset(CONSTANTS_FILENAME)
                 },
                 cachePathProvider = {
                     cacheDir.absolutePath
@@ -66,7 +68,7 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private fun createNotification(): Notification {
-        val channelId = "vpn_service_channel"
+        val channelId = NOTIFICATION_CHANNEL_ID
 
         // Create a notification channel (required on Android 8.0+)
         val channel = NotificationChannelCompat.Builder(
@@ -89,44 +91,46 @@ class PassepartoutVpnService: VpnService() {
             .build()
     }
 
-    private suspend fun readAsset(name: String): String = withContext(Dispatchers.IO) {
-        assets.open(name).bufferedReader().use { it.readText() }
+    private class VpnEngine(
+        private val library: PassepartoutWrapper,
+        private val bundleProvider: suspend () -> String,
+        private val constantsProvider: suspend () -> String,
+        private val cachePathProvider: () -> String
+    ) : Engine {
+        override suspend fun start(
+            runtime: PartoutVpnServiceRuntime,
+            profileJSON: String
+        ): Result = withContext(Dispatchers.IO) {
+            Result(
+                library.tunnelStart(
+                    bundleProvider(),
+                    constantsProvider(),
+                    profileJSON,
+                    cachePathProvider(),
+                    runtime
+                ),
+                null
+            )
+        }
+
+        override suspend fun stop(): Result = withContext(Dispatchers.IO) {
+            val result = CompletableDeferred<Result>()
+            library.tunnelStop { code, json ->
+                result.complete(Result(code, json))
+            }
+            result.await()
+        }
     }
 
     companion object {
+        val channel = PartoutVpnServiceRuntime.Channel()
+
+        private const val BUNDLE_FILENAME = "bundle.json"
+
+        private const val CONSTANTS_FILENAME = "constants.json"
+
         private const val NOTIFICATION_ID = 1
 
-        val channel = PartoutVpnServiceRuntime.Channel()
-    }
-}
-
-private class PassepartoutVpnEngine(
-    private val library: PassepartoutWrapper,
-    private val bundleProvider: suspend () -> String,
-    private val constantsProvider: suspend () -> String,
-    private val cachePathProvider: () -> String
-) : Engine {
-    override suspend fun start(
-        runtime: PartoutVpnServiceRuntime,
-        profileJSON: String
-    ): Result = withContext(Dispatchers.IO) {
-        Result(
-            library.tunnelStart(
-                bundleProvider(),
-                constantsProvider(),
-                profileJSON,
-                cachePathProvider(),
-                runtime
-            ),
-            null
-        )
-    }
-
-    override suspend fun stop(): Result = withContext(Dispatchers.IO) {
-        val result = CompletableDeferred<Result>()
-        library.tunnelStop { code, json ->
-            result.complete(Result(code, json))
-        }
-        result.await()
+        private const val NOTIFICATION_CHANNEL_ID = "vpn_service_channel"
     }
 }

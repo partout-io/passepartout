@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.AppABIProfileProtocol
 import com.algoritmico.passepartout.abi.models.AppFeature
 import com.algoritmico.passepartout.abi.models.AppProfileHeader
@@ -31,8 +32,8 @@ import kotlinx.coroutines.flow.update
 import java.io.Closeable
 
 class ProfileObservable(
-    events: Flow<Event>,
     private val abi: AppABIProfileProtocol,
+    events: Flow<Event>,
     coroutineScope: CoroutineScope,
     searchDebounceMillis: Long = 200L
 ) : Closeable {
@@ -43,19 +44,19 @@ class ProfileObservable(
     private var allHeaders: Map<String, AppProfileHeader> = emptyMap()
     private val _state = MutableStateFlow(State())
     private val searchRequests = MutableStateFlow("")
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = EVENT_BUFFER_CAPACITY)
+    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY)
 
     val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
-        events
-            .onEach(::onUpdate)
-            .launchIn(scope)
-
         searchRequests
             .debounce(searchDebounceMillis)
             .onEach(::reloadHeaders)
+            .launchIn(scope)
+
+        events
+            .onEach(::onUpdate)
             .launchIn(scope)
     }
 
@@ -171,7 +172,5 @@ class ProfileObservable(
                 }
                 .sortedBy { it.name.lowercase() }
         }
-
-        const val EVENT_BUFFER_CAPACITY = 64
     }
 }

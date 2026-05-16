@@ -4,8 +4,8 @@
 
 package com.algoritmico.passepartout.abi
 
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABIResult
-import com.algoritmico.passepartout.globalJsonCoder
 import io.partout.abi.TaggedProfile
 
 internal class AppABIProfile(
@@ -34,7 +34,7 @@ internal class AppABIProfile(
             library.appFetchProfile(profileId, completion)
         }
         return result.payload?.let { json ->
-            globalJsonCoder.decodeFromString(json)
+            Globals.json.decodeFromString(json)
         }
     }
 }
@@ -43,7 +43,7 @@ internal class AppABITunnel(
     private val library: PassepartoutWrapper
 ) : AppABITunnelProtocol {
     override suspend fun connect(profile: TaggedProfile) {
-        val profileJSON = globalJsonCoder.encodeToString(profile)
+        val profileJSON = Globals.json.encodeToString(profile)
         ABIResult.await { completion ->
             library.appConnect(profileJSON, completion)
         }

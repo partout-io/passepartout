@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.AppABITunnelProtocol
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
@@ -11,8 +12,6 @@ import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
 import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
 import io.partout.abi.TaggedProfile
-import io.partout.abi.TunnelSnapshot
-import io.partout.jni.PartoutVpnServiceRuntime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -30,8 +29,8 @@ import kotlinx.coroutines.flow.update
 import java.io.Closeable
 
 class TunnelObservable(
-    events: Flow<Event>,
     private val abi: AppABITunnelProtocol,
+    events: Flow<Event>,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -39,7 +38,7 @@ class TunnelObservable(
     )
 
     private val _state = MutableStateFlow(State())
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = EVENT_BUFFER_CAPACITY)
+    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY)
 
     val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()
@@ -100,9 +99,5 @@ class TunnelObservable(
 
         val hasActiveProfiles: Boolean
             get() = activeProfiles.isNotEmpty()
-    }
-
-    private companion object {
-        const val EVENT_BUFFER_CAPACITY = 64
     }
 }
