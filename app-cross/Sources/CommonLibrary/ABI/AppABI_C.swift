@@ -156,7 +156,7 @@ public func __psp_app_fetch_profile(
     }
     ABI.run(completion) { callback in
         guard let profile = abi.profile.profile(withId: id) else {
-            callback?(PSPCompletionCodeFailure, "Profile not found")
+            callback?(PSPCompletionCodeFailure, "Profile not found: \(id)")
             return
         }
         do {
