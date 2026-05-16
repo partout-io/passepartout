@@ -20,7 +20,6 @@ import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import com.algoritmico.passepartout.ui.ProfileObservable
 import com.algoritmico.passepartout.ui.TunnelObservable
-import io.partout.abi.TaggedProfile
 import io.partout.jni.PartoutTunnel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.Closeable
@@ -99,7 +98,6 @@ class MainActivity : ComponentActivity() {
                 profileObservable = profileObservable,
                 tunnelObservable = tunnelObservable,
                 onImportProfile = ::openProfileImporter,
-                profileProvider = ::readProfile,
                 onProfilesDelete = ::onProfilesDelete
             )
         }
@@ -187,19 +185,6 @@ class MainActivity : ComponentActivity() {
             "text/*",
             "*/*"
         )
-    }
-
-    private fun readProfile(profileId: String): TaggedProfile? {
-        val profileFile = File(profilesDirectory, "$OBJECTS_DIR/$profileId.json")
-        if (!profileFile.isFile) {
-            return null
-        }
-        return try {
-            globalJsonCoder.decodeFromString<TaggedProfile>(profileFile.readText())
-        } catch (e: Exception) {
-            Log.e("Passepartout", "Unable to read profile: $profileId", e)
-            null
-        }
     }
 
     private fun displayName(uri: Uri): String? {

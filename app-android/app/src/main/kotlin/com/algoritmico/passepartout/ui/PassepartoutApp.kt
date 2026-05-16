@@ -12,14 +12,12 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.partout.abi.TaggedProfile
 
 @Composable
 fun PassepartoutApp(
     profileObservable: ProfileObservable,
     tunnelObservable: TunnelObservable,
     onImportProfile: () -> Unit,
-    profileProvider: (String) -> TaggedProfile?,
     onProfilesDelete: (Array<String>) -> Unit
 ) {
     val colorScheme = if (isSystemInDarkTheme()) {
