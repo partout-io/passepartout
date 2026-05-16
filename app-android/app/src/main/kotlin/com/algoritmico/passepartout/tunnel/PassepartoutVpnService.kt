@@ -25,7 +25,6 @@ class PassepartoutVpnService: VpnService() {
         PartoutVpnServiceRuntime(
             logTag = Globals.logTag,
             service = this,
-            channel = channel,
             engine = VpnEngine(
                 library = PassepartoutWrapper(),
                 bundleProvider = {
@@ -45,26 +44,18 @@ class PassepartoutVpnService: VpnService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startServiceForeground()
+        startForeground(NOTIFICATION_ID, createNotification())
         return runtime.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         runtime.onDestroy()
-        stopServiceForeground()
+        stopForeground(STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 
     override fun onRevoke() {
         runtime.onRevoke()
-    }
-
-    private fun startServiceForeground() {
-        startForeground(NOTIFICATION_ID, createNotification())
-    }
-
-    private fun stopServiceForeground() {
-        stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private fun createNotification(): Notification {
@@ -123,8 +114,6 @@ class PassepartoutVpnService: VpnService() {
     }
 
     companion object {
-        val channel = PartoutVpnServiceRuntime.Channel()
-
         private const val BUNDLE_FILENAME = "bundle.json"
 
         private const val CONSTANTS_FILENAME = "constants.json"
