@@ -45,8 +45,8 @@ class AppContext(
     private var eventSubscription: Closeable? = eventDispatcher.register(::handleEvent)
 
     private val appEvents = MutableSharedFlow<Event>(
-        replay = APP_EVENT_REPLAY,
-        extraBufferCapacity = APP_EVENT_BUFFER_CAPACITY
+        replay = Globals.EVENT_REPLAY,
+        extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
     )
 
     val profileObservable = ProfileObservable(
@@ -109,10 +109,6 @@ class AppContext(
     }
 
     companion object {
-        private const val APP_EVENT_BUFFER_CAPACITY = 64
-
-        private const val APP_EVENT_REPLAY = 64
-
         private const val BUNDLE_FILENAME = "bundle.json"
 
         private const val CONSTANTS_FILENAME = "constants.json"
