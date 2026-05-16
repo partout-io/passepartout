@@ -12,7 +12,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.tunnel.PassepartoutVpnService
 import com.algoritmico.passepartout.ui.AppContext
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import kotlinx.coroutines.launch
@@ -26,7 +25,6 @@ class MainActivity : ComponentActivity() {
         appContext = AppContext(
             this,
             lifecycleScope,
-            PassepartoutVpnService.channel,
             requestVpnPermission = { permissionIntent ->
                 vpnPermissionLauncher.launch(permissionIntent)
             }

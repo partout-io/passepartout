@@ -16,7 +16,6 @@ import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.readAsset
 import com.algoritmico.passepartout.tunnel.PassepartoutVpnService
 import io.partout.jni.PartoutTunnel
-import io.partout.jni.PartoutVpnServiceRuntime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.Closeable
@@ -25,7 +24,6 @@ import java.io.File
 class AppContext(
     context: Context,
     coroutineScope: CoroutineScope,
-    tunnelChannel: PartoutVpnServiceRuntime.Channel,
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
@@ -35,9 +33,7 @@ class AppContext(
     private val tunnel = PartoutTunnel(
         applicationContext,
         PassepartoutVpnService::class.java,
-        tunnelChannel,
-        requestVpnPermission,
-        coroutineScope
+        requestVpnPermission
     )
 
     private val eventDispatcher: ABIEventDispatcher = ABIEventDispatcher
@@ -105,6 +101,7 @@ class AppContext(
         eventSubscription = null
         profileObservable.close()
         tunnelObservable.close()
+        tunnel.close()
         library.appDeinit { _, _ -> }
     }
 
