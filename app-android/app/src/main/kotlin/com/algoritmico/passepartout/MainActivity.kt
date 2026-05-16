@@ -7,7 +7,6 @@ package com.algoritmico.passepartout
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,14 +55,6 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private val vpnPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (::appContext.isInitialized) {
-            appContext.onVpnPermissionResult(result.resultCode == RESULT_OK)
-        }
-    }
-
     private fun openProfileImporter() {
         profileImportLauncher.launch(PROFILE_MIME_TYPES)
     }
@@ -88,14 +79,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val profileImportLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) {
-            importProfile(uri)
-        }
-    }
-
     private fun displayName(uri: Uri): String? {
         return contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
             ?.use { cursor ->
@@ -109,6 +92,22 @@ class MainActivity : ComponentActivity() {
                     null
                 }
             }
+    }
+
+    private val vpnPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (::appContext.isInitialized) {
+            appContext.onVpnPermissionResult(result.resultCode == RESULT_OK)
+        }
+    }
+
+    private val profileImportLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            importProfile(uri)
+        }
     }
 
     private companion object {
