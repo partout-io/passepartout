@@ -183,8 +183,13 @@ extension AppABI {
         )
         let sysexManager = appConfiguration.newSystemExtensionManager()
 
-        // Provide hooks to control tunnel
-        let tunnelHooks = SwiftTunnelHooks(tunnel: tunnel)
+        // Provide hooks through observable
+        let tunnelObservable = TunnelObservable(
+            tunnel: tunnel,
+            kvStore: kvStore,
+            extensionInstaller: sysexManager,
+            logging: appConfiguration.newTunnelLogging(formatter: logFormatter)
+        )
 
         // MARK: Preferences (Core Data)
 
@@ -297,17 +302,11 @@ extension AppABI {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelHooks: tunnelHooks,
+            tunnelHooks: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock,
             bindings: nil
-        )
-        let tunnelObservable = TunnelObservable(
-            tunnel: tunnel,
-            kvStore: kvStore,
-            extensionInstaller: sysexManager,
-            logging: appConfiguration.newTunnelLogging(formatter: logFormatter)
         )
         return Result(abi: abi, tunnelObservable: tunnelObservable)
     }
