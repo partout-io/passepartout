@@ -47,7 +47,7 @@ extension AppContext {
         let tunnel = Tunnel(
             .global,
             strategy: FakeTunnelStrategy(),
-            updateInterval: 10.0,
+            updateInterval: 10000,
             willInstall: processor.willInstall
         ) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
