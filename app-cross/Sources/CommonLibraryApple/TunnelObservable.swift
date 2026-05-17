@@ -192,10 +192,7 @@ extension TunnelObservable {
         let tunnelSubscription = Task { [weak self] in
             for await snapshots in tunnelEvents {
                 guard let self else { return }
-                guard !Task.isCancelled else {
-                    pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
-                    break
-                }
+                guard !Task.isCancelled else { break }
                 // Copy locally for sync access
                 let newActiveProfiles = activeProfiles.with(
                     snapshots: snapshots,
@@ -210,6 +207,7 @@ extension TunnelObservable {
                     activeProfiles = newActiveProfiles
                 }
             }
+            pspLog(.core, .debug, "Tunnel snapshots subscription terminated")
         }
         subscriptions = [tunnelSubscription]
     }
