@@ -1,1 +1,1 @@
-* Android: Fix regression in DNS resolution
+* Bump action versions
