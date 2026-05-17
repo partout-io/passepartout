@@ -68,7 +68,7 @@ extension AppContext {
                 SharedTunnelEnvironment(profileId: nil)
             }
         )
-        let tunnelHooks = SwiftTunnelHooks(tunnel: tunnel)
+        let tunnelObservable = TunnelObservable(tunnel: tunnel)
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
         let webReceiverManager = WebReceiverManager()
@@ -86,7 +86,7 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelHooks: tunnelHooks,
+            tunnelHooks: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             bindings: nil
@@ -95,7 +95,7 @@ extension AppContext {
             abi: abi,
             appConfiguration: appConfiguration,
             kvStore: kvStore,
-            tunnelObservable: TunnelObservable(tunnel: tunnel)
+            tunnelObservable: tunnelObservable
         )
     }
 }

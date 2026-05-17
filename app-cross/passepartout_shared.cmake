@@ -41,8 +41,8 @@ Sources/CommonLibrary/Dependencies/AppRelease+BusinessChanges.swift
 Sources/CommonLibrary/Dependencies/AppRelease.swift
 Sources/CommonLibrary/Dependencies/DefaultAppProcessor.swift
 Sources/CommonLibrary/Dependencies/DefaultTunnelProcessor.swift
+Sources/CommonLibrary/Dependencies/NativeTunnelHooks.swift
 Sources/CommonLibrary/Dependencies/OpenVPNImplementationBuilder.swift
-Sources/CommonLibrary/Dependencies/TunnelHooks.swift
 Sources/CommonLibrary/Dependencies/WireGuardImplementationBuilder.swift
 Sources/CommonLibraryApple/Bundle+Extensions.swift
 Sources/CommonLibraryApple/CommonLibraryApple.swift
