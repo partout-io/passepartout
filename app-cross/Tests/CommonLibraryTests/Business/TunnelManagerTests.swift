@@ -9,8 +9,18 @@ import Testing
 struct TunnelManagerTests {
     private let ctx: PartoutLoggerContext = .global
 
-    private func newStrategy() -> TunnelObservableStrategy {
-        FakeTunnelStrategy(delay: 100)
+    private func newTunnel(_ env: TunnelEnvironment, processor: AppTunnelProcessor? = nil) async throws -> Tunnel {
+        let tunnel = Tunnel(
+            ctx,
+            strategy: FakeTunnelStrategy(delay: 100),
+            updateInterval: 0.1,
+            willInstall: processor?.willInstall(_:),
+            environmentFactory: { @Sendable _ in
+                env
+            }
+        )
+        try await tunnel.prepare(purge: false)
+        return tunnel
     }
 }
 
@@ -19,10 +29,7 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenDisconnectWithError_thenPublishesLastErrorCode() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
-            env
-        }
-        let sut = TunnelManager(tunnel: tunnel)
+        let sut = try await newTunnel(env)
 
         let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
@@ -30,20 +37,20 @@ extension TunnelManagerTests {
         env.setEnvironmentValue(.crypto, forKey: TunnelEnvironmentKeys.lastErrorCode)
 
         let exp = Expectation()
-        let stream = sut.observeObjects()
+        let stream = sut.snapshotsStream
         var didCall = false
         Task {
             for await _ in stream {
-                if !didCall, sut.lastErrorCode(ofProfileId: profile.id) != nil {
+                if !didCall, sut.snapshots[profile.id]?.environment?.lastErrorCode != nil {
                     didCall = true
                     await exp.fulfill()
                 }
             }
         }
 
-        try await tunnel.disconnect(from: profile.id)
+        try await sut.disconnect(from: profile.id)
         try await exp.fulfillment(timeout: 500)
-        let error = sut.lastErrorCode(ofProfileId: profile.id)
+        let error = sut.snapshots[profile.id]?.environment?.lastErrorCode
         switch error {
         case .crypto:
             break
@@ -55,44 +62,38 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenPublishesDataCount_thenIsAvailable() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
-            env
-        }
-        let sut = TunnelManager(tunnel: tunnel)
-        let stream = sut.observeObjects()
-        #expect(await stream.nextActiveProfiles() == [:])
+        let sut = try await newTunnel(env)
+        let stream = sut.snapshotsStream
+        #expect(await stream.nextElement() == [:])
 
         let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.connect(with: profile)
-        let active = await stream.nextActiveProfiles()
+        let active = try await #require(stream.nextElement())
 
         let expectedXfer = ABI.ProfileTransfer(received: 500, sent: 700)
         #expect(active.first?.key == profile.id)
         let dataCount = DataCount(UInt64(expectedXfer.received), UInt64(expectedXfer.sent))
         env.setEnvironmentValue(dataCount, forKey: TunnelEnvironmentKeys.dataCount)
         try await Task.sleep(for: .milliseconds(200)) // > 0.1s to fetch environments
-        let xfer = sut.transfer(ofProfileId: profile.id)
+        let xfer = active[profile.id]?.environment?.dataCount.abiTransfer
         #expect(xfer == expectedXfer)
     }
 
     @Test
     func givenTunnelAndProcessor_whenInstall_thenProcessesProfile() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
-            env
-        }
         let processor = MockTunnelProcessor()
-        let sut = TunnelManager(tunnel: tunnel, processor: processor)
-        let stream = sut.observeObjects()
-        #expect(await stream.nextActiveProfiles() == [:])
+        let sut = try await newTunnel(env, processor: processor)
+        let stream = sut.snapshotsStream
+        #expect(await stream.nextElement() == [:])
 
         let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        let active = await stream.nextActiveProfiles()
+        let active = try await #require(stream.nextElement())
 
         #expect(active.first?.key == profile.id)
 //        #expect(processor.titleCount == 1) // unused by FakeTunnelStrategy
@@ -102,19 +103,16 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenStatusChanges_thenConnectionStatusIsExpected() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
-            env
-        }
         let processor = MockTunnelProcessor()
-        let sut = TunnelManager(tunnel: tunnel, processor: processor)
-        let stream = sut.observeObjects()
-        #expect(await stream.nextActiveProfiles() == [:])
+        let sut = try await newTunnel(env, processor: processor)
+        let stream = sut.snapshotsStream
+        #expect(await stream.nextElement() == [:])
 
         let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
 
         try await sut.install(profile)
-        let pulled = await stream.nextActiveProfiles()
+        let pulled = try await #require(stream.nextElement())
 
         #expect(pulled.first?.key == profile.id)
 //        #expect(processor.titleCount == 1) // unused by FakeTunnelStrategy
@@ -192,13 +190,8 @@ extension TunnelManagerTests {
     }
 }
 
-private extension AsyncStream where Element == ABI.TunnelEvent {
-    func nextActiveProfiles() async -> [Profile.ID: ABI.AppTunnelInfo] {
-        for await event in self {
-            if case .refresh(let payload) = event {
-                return payload.active
-            }
-        }
-        return [:]
+private extension Tunnel {
+    func connect(with profile: Profile) async throws {
+        try await install(profile, connect: true)
     }
 }
