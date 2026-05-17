@@ -84,8 +84,7 @@ extension AppContext {
             abi: abi,
             appConfiguration: appConfiguration,
             kvStore: kvStore,
-            tunnel: tunnel,
-            sysexManager: nil
+            tunnelObservable: TunnelObservable(tunnel: tunnel)
         )
     }()
 }

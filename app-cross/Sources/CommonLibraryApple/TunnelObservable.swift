@@ -39,9 +39,9 @@ public final class TunnelObservable: TunnelHooksProtocol {
     // TODO: #218, keep "last used profile" until .multiple
     public init(
         tunnel: Tunnel,
-        kvStore: KeyValueStore?,
-        extensionInstaller: ExtensionInstaller?,
-        logging: Logging?
+        kvStore: KeyValueStore? = nil,
+        extensionInstaller: ExtensionInstaller? = nil,
+        logging: Logging? = nil
     ) {
         self.tunnel = tunnel
         self.kvStore = kvStore

@@ -13,13 +13,12 @@ import Partout
 extension AppABI {
     public struct Result {
         public let abi: AppABI
-        public let tunnel: Tunnel
+        public let tunnelObservable: TunnelObservable
     }
 
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore,
-        sysexManager: ExtensionInstaller?,
         assertModule: (ModuleType, ModuleRegistry) -> Void,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
@@ -182,6 +181,7 @@ extension AppABI {
                 appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             }
         )
+        let sysexManager = appConfiguration.newSystemExtensionManager()
 
         // Provide hooks to control tunnel
         let tunnelHooks = SwiftTunnelHooks(tunnel: tunnel)
@@ -303,7 +303,13 @@ extension AppABI {
             onEligibleFeaturesBlock: onEligibleFeaturesBlock,
             bindings: nil
         )
-        return Result(abi: abi, tunnel: tunnel)
+        let tunnelObservable = TunnelObservable(
+            tunnel: tunnel,
+            kvStore: kvStore,
+            extensionInstaller: sysexManager,
+            logging: appConfiguration.newTunnelLogging(formatter: logFormatter)
+        )
+        return Result(abi: abi, tunnelObservable: tunnelObservable)
     }
 }
 

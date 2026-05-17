@@ -22,11 +22,9 @@ extension AppContext {
         )
         // Create ABI returning Tunnel to build TunnelObservable
         let kvStore = appConfiguration.newKeyValueStore()
-        let sysexManager = appConfiguration.newSystemExtensionManager()
         let result = AppABI.forNetworkExtension(
             appConfiguration: appConfiguration,
             kvStore: kvStore,
-            sysexManager: sysexManager,
             assertModule: { moduleType, registry in
 #if !os(tvOS)
                 let builder = registry.newModule(ofType: moduleType)
@@ -43,8 +41,7 @@ extension AppContext {
             abi: result.abi,
             appConfiguration: appConfiguration,
             kvStore: kvStore,
-            tunnel: result.tunnel,
-            sysexManager: sysexManager
+            tunnelObservable: result.tunnelObservable
         )
     }
 }

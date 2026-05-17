@@ -33,7 +33,7 @@ public final class AppContext {
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
 
-    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore, tunnel: Tunnel, sysexManager: ExtensionInstaller?) {
+    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore, tunnelObservable: TunnelObservable) {
         self.abi = abi
         self.appConfiguration = appConfiguration
 
@@ -47,12 +47,7 @@ public final class AppContext {
         webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
 
         // Tunnel
-        tunnelObservable = TunnelObservable(
-            tunnel: tunnel,
-            kvStore: kvStore,
-            extensionInstaller: sysexManager,
-            logging: appConfiguration.newTunnelLogging(formatter: abi)
-        )
+        self.tunnelObservable = tunnelObservable
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
