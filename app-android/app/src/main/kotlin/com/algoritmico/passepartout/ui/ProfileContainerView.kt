@@ -46,7 +46,7 @@ import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.ProfileEventSave
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
-import io.partout.abi.TaggedProfile
+import io.partout.models.TaggedProfile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.util.Locale

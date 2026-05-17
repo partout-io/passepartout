@@ -368,7 +368,6 @@ components:
           ProfileEventSave: "#/components/schemas/ProfileEventSave"
           ProfileEventStartRemoteImport: "#/components/schemas/ProfileEventStartRemoteImport"
           ProfileEventStopRemoteImport: "#/components/schemas/ProfileEventStopRemoteImport"
-          TunnelEventRefresh: "#/components/schemas/TunnelEventRefresh"
           VersionEventNew: "#/components/schemas/VersionEventNew"
           WebReceiverEventNewUpload: "#/components/schemas/WebReceiverEventNewUpload"
           WebReceiverEventStart: "#/components/schemas/WebReceiverEventStart"
@@ -748,22 +747,6 @@ components:
       description: 64-bit millis since UNIX epoch.
       type: integer
       format: int64
-    TunnelEventRefresh:
-      type: object
-      additionalProperties: false
-      allOf:
-      - "$ref": "#/components/schemas/Event"
-      properties:
-        active:
-          type: object
-          additionalProperties:
-            "$ref": "#/components/schemas/AppTunnelInfo"
-        type:
-          const: TunnelEventRefresh
-          type: string
-      required:
-      - type
-      - active
     VersionEventNew:
       type: object
       additionalProperties: false

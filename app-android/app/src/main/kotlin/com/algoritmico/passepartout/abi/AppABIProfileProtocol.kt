@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.abi
 
-import io.partout.abi.TaggedProfile
+import io.partout.models.TaggedProfile
 
 interface AppABIProfileProtocol {
     suspend fun importText(text: String, filename: String)

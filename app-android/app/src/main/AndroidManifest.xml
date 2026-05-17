@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".tunnel.PassepartoutVpnService"
+            android:name=".vpn.PassepartoutVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:process=":vpn"
             android:exported="false"

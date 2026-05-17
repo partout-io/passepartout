@@ -4,33 +4,29 @@
 
 package com.algoritmico.passepartout.ui
 
-import com.algoritmico.passepartout.Globals
-import com.algoritmico.passepartout.abi.AppABITunnelProtocol
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
-import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
-import com.algoritmico.passepartout.abi.models.TunnelEventRefresh
-import io.partout.abi.TaggedProfile
+import io.partout.PartoutTunnel
+import io.partout.models.TaggedProfile
+import io.partout.models.TunnelSnapshot
+import io.partout.models.TunnelStatus
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import java.io.Closeable
 
 class TunnelObservable(
-    private val abi: AppABITunnelProtocol,
-    events: Flow<Event>,
+    private val tunnel: PartoutTunnel,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -38,53 +34,40 @@ class TunnelObservable(
     )
 
     private val _state = MutableStateFlow(State())
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY)
-
-    val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
-        events
+        tunnel.state
             .onEach(::onUpdate)
             .launchIn(scope)
     }
 
     suspend fun connect(profile: TaggedProfile) {
-        abi.connect(profile)
-    }
-
-    suspend fun disconnect(profileId: String) {
-        abi.disconnect(profileId)
-    }
-
-    fun onUpdate(event: Event) {
-        _events.tryEmit(event)
-        when (event) {
-            is TunnelEventRefresh -> {
-                _state.update {
-                    it.copy(activeProfiles = event.active)
+        withContext(Dispatchers.IO) {
+            tunnel.connect(profile) { status ->
+                if (status != PartoutTunnel.ERROR_NONE) {
+                    throw TunnelException
                 }
-            }
-            else -> {
-                // Other app domains are intentionally ignored here.
             }
         }
     }
 
-    fun activeProfile(): AppTunnelInfo? {
-        return state.value.activeProfile
+    suspend fun disconnect(profileId: String) {
+        withContext(Dispatchers.IO) {
+            tunnel.disconnect(profileId) { status ->
+                if (status != PartoutTunnel.ERROR_NONE) {
+                    throw TunnelException
+                }
+            }
+        }
     }
 
-    fun isActiveProfile(profileId: String): Boolean {
-        return state.value.activeProfiles.containsKey(profileId)
-    }
-
-    fun status(profileId: String): AppProfileStatus {
-        return state.value.activeProfiles[profileId]?.status ?: AppProfileStatus.disconnected
-    }
-
-    fun transfer(profileId: String): ProfileTransfer? {
-        return state.value.activeProfiles[profileId]?.transfer
+    private fun onUpdate(tunnelState: PartoutTunnel.State) {
+        _state.update {
+            it.copy(activeProfiles = tunnelState.snapshots.mapValues {
+                it.value.toAppTunnelInfo()
+            })
+        }
     }
 
     override fun close() {
@@ -93,11 +76,33 @@ class TunnelObservable(
 
     data class State(
         val activeProfiles: Map<String, AppTunnelInfo> = emptyMap()
-    ) {
-        val activeProfile: AppTunnelInfo?
-            get() = activeProfiles.values.firstOrNull()
+    )
 
-        val hasActiveProfiles: Boolean
-            get() = activeProfiles.isNotEmpty()
+    data object TunnelException: Throwable()
+
+    private fun TunnelSnapshot.toAppTunnelInfo(): AppTunnelInfo {
+        return AppTunnelInfo(
+            id = id,
+            isEnabled = isEnabled,
+            status = appStatus(),
+            onDemand = onDemand,
+            transfer = environment?.dataCount?.let {
+                ProfileTransfer(
+                    received = it.received,
+                    sent = it.sent
+                )
+            },
+            lastErrorCode = environment?.lastErrorCode
+        )
+    }
+
+    // On Android tunnel status == connection status
+    private fun TunnelSnapshot.appStatus(): AppProfileStatus {
+        return when (status) {
+            TunnelStatus.inactive -> AppProfileStatus.disconnected
+            TunnelStatus.activating -> AppProfileStatus.connecting
+            TunnelStatus.active -> AppProfileStatus.connected
+            TunnelStatus.deactivating -> AppProfileStatus.disconnecting
+        }
     }
 }

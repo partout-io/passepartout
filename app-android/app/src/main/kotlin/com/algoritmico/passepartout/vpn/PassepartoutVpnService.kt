@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.tunnel
+package com.algoritmico.passepartout.vpn
 
 import android.app.Notification
 import android.content.Intent
@@ -13,9 +13,9 @@ import androidx.core.app.NotificationManagerCompat
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.readAsset
-import io.partout.jni.PartoutVpnServiceRuntime
-import io.partout.jni.PartoutVpnServiceRuntime.Engine
-import io.partout.jni.PartoutVpnServiceRuntime.Result
+import io.partout.PartoutVpnServiceRuntime
+import io.partout.PartoutVpnServiceRuntime.Engine
+import io.partout.PartoutVpnServiceRuntime.Result
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

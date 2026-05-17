@@ -16,7 +16,7 @@
 package com.algoritmico.passepartout.abi.models
 
 import com.algoritmico.passepartout.abi.models.Event
-import io.partout.abi.TaggedProfile
+import io.partout.models.TaggedProfile
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
