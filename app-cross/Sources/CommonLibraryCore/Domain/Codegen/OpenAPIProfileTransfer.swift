@@ -9,10 +9,10 @@ import Partout
 
 public struct OpenAPIProfileTransfer: Sendable, Codable, Hashable {
 
-    public var received: Int = 0
-    public var sent: Int = 0
+    public var received: Int64 = 0
+    public var sent: Int64 = 0
 
-    public init(received: Int = 0, sent: Int = 0) {
+    public init(received: Int64 = 0, sent: Int64 = 0) {
         self.received = received
         self.sent = sent
     }

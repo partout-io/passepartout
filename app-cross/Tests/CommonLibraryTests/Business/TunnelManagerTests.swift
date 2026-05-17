@@ -70,7 +70,7 @@ extension TunnelManagerTests {
 
         let expectedXfer = ABI.ProfileTransfer(received: 500, sent: 700)
         #expect(active.first?.key == profile.id)
-        let dataCount = DataCount(UInt(expectedXfer.received), UInt(expectedXfer.sent))
+        let dataCount = DataCount(UInt64(expectedXfer.received), UInt64(expectedXfer.sent))
         env.setEnvironmentValue(dataCount, forKey: TunnelEnvironmentKeys.dataCount)
         try await Task.sleep(for: .milliseconds(200)) // > 0.1s to fetch environments
         let xfer = sut.transfer(ofProfileId: profile.id)

@@ -49,6 +49,6 @@ extension TunnelSnapshot {
 
 extension DataCount {
     var abiTransfer: ABI.ProfileTransfer {
-        ABI.ProfileTransfer(received: Int(received), sent: Int(sent))
+        ABI.ProfileTransfer(received: Int64(received), sent: Int64(sent))
     }
 }
