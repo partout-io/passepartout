@@ -176,7 +176,7 @@ extension AppABI {
         let tunnel = Tunnel(
             ctx,
             strategy: tunnelStrategy,
-            updateInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
+            refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
             willInstall: tunnelProcessor.willInstall,
             environmentFactory: { @Sendable in
                 appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
