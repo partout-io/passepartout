@@ -94,13 +94,6 @@ extension ABI.AppConfiguration {
 #endif
     }
 
-    @Sendable
-    public func newProfileTitle() -> @Sendable (Profile) -> String {
-        {
-            String(format: constants.tunnel.profileTitleFormat, $0.name)
-        }
-    }
-
     public func newRegistryForApp(
         configManager: ConfigManager,
         kvStore: KeyValueStore,
@@ -420,7 +413,9 @@ extension ABI.AppConfiguration {
             ctx,
             bundleIdentifier: bundle.bundleString(for: .tunnelId),
             coder: newNEProtocolCoder(ctx, coder: coder),
-            title: newProfileTitle()
+            title: {
+                String(format: constants.tunnel.profileTitleFormat, $0.name)
+            }
         )
     }
 
