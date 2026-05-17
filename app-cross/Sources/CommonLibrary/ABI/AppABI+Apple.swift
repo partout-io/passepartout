@@ -176,7 +176,9 @@ extension AppABI {
             ctx,
             strategy: tunnelStrategy,
             refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
-            willInstall: tunnelProcessor.willInstall,
+            willInstall: { [weak tunnelProcessor] in
+                try await tunnelProcessor?.willInstall($0) ?? $0
+            },
             environmentFactory: { @Sendable in
                 appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             }
