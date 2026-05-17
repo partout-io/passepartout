@@ -30,7 +30,7 @@ extension AppABI {
         kvStore.preferences = preferences
 
         // Logging context
-        let ctx = pspLogRegister(
+        _ = pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: preferences,
@@ -58,15 +58,9 @@ extension AppABI {
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
-        let tunnel = appConfiguration.newStandaloneTunnel(ctx, ref: bindings.tunnel)
-        Task {
-            do {
-                try await tunnel.prepare(purge: true)
-            } catch {
-                pspLog(.abi, .fault, "Unable to prepare NativeTunnel: \(error)")
-            }
-        }
-        let tunnelManager = TunnelManager(tunnel: tunnel)
+
+        // Control the tunnel from the ABI
+        let tunnelHooks = NativeTunnelHooks()
 
         // Dummy
         let iapManager = IAPManager()
@@ -85,7 +79,7 @@ extension AppABI {
             preferencesManager: nil,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
+            tunnelHooks: tunnelHooks,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             bindings: bindings

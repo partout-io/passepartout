@@ -73,20 +73,6 @@ extension ABI.ProfileEvent {
     }
 }
 
-extension ABI.TunnelEvent {
-    public struct Refresh: ABI.EventProtocol {
-        public let active: [Profile.ID: ABI.AppTunnelInfo]
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.singleValueContainer()
-            try container.encode(OpenAPITunnelEventRefresh(
-                active: active.reduce(into: [:]) {
-                    $0[$1.key.uuidString] = $1.value.toProto
-                }
-            ))
-        }
-    }
-}
-
 extension ABI.VersionEvent {
     public struct New: ABI.EventProtocol {
         public let release: ABI.VersionRelease

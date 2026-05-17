@@ -69,9 +69,8 @@ private struct ConnectionStatusDynamicText: View {
 
 private extension ConnectionStatusDynamicText {
     var statusDescription: String {
-        if let lastError = tunnel.lastError(for: profileId),
-           case .partout(let partoutError) = lastError {
-            return partoutError.code.localizedDescription(style: .tunnel)
+        if let lastErrorCode = tunnel.lastErrorCode(for: profileId) {
+            return lastErrorCode.localizedDescription(style: .tunnel)
         }
         let status = tunnel.status(for: profileId)
         switch status {

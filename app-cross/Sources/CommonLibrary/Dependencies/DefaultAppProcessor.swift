@@ -40,24 +40,16 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
 
     private let resolver: Resolver
 
-    private let title: @Sendable (Profile) -> String
-
     private let providerServerSorter: ProviderServerParameters.Sorter
 
     init(
         apiManager: APIManager?,
         resolver: Resolver,
-        title: @escaping @Sendable (Profile) -> String,
         providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
         self.apiManager = apiManager
         self.resolver = resolver
-        self.title = title
         self.providerServerSorter = providerServerSorter
-    }
-
-    nonisolated func title(for profile: Profile) -> String {
-        title(profile)
     }
 
     nonisolated func willInstall(_ profile: Profile) async throws -> Profile {

@@ -44,13 +44,15 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy(), updateInterval: 10.0) { @Sendable _ in
+        let tunnel = Tunnel(
+            .global,
+            strategy: FakeTunnelStrategy(),
+            updateInterval: 10.0,
+            willInstall: processor.willInstall
+        ) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
         }
-        let tunnelManager = TunnelManager(
-            tunnel: tunnel,
-            processor: processor
-        )
+        let tunnelHooks = SwiftTunnelHooks(tunnel: tunnel)
         let preferencesManager = PreferencesManager()
 
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)
@@ -73,12 +75,18 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
+            tunnelHooks: tunnelHooks,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             bindings: nil
         )
-        return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
+        return AppContext(
+            abi: abi,
+            appConfiguration: appConfiguration,
+            kvStore: kvStore,
+            tunnel: tunnel,
+            sysexManager: nil
+        )
     }()
 }
 

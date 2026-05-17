@@ -36,7 +36,7 @@ extension TunnelStatus {
 }
 
 extension TunnelSnapshot {
-    func abiInfo() -> ABI.AppTunnelInfo {
+    public func abiInfo() -> ABI.AppTunnelInfo {
         ABI.AppTunnelInfo(
             id: id,
             isEnabled: isEnabled,

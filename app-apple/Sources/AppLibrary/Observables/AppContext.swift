@@ -16,7 +16,6 @@ public final class AppContext {
     public let iapObservable: IAPObservable
     public let profileObservable: ProfileObservable
     public let registryObservable: RegistryObservable
-    public let tunnelObservable: TunnelObservable
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
 
@@ -26,12 +25,15 @@ public final class AppContext {
     @available(*, deprecated, message: "#1679")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
 
+    // Tunnel concerns
+    public let tunnelObservable: TunnelObservable
+
     // View concerns (app-specific)
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
 
-    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
+    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore, tunnel: Tunnel, sysexManager: ExtensionInstaller?) {
         self.abi = abi
         self.appConfiguration = appConfiguration
 
@@ -41,9 +43,16 @@ public final class AppContext {
         iapObservable = IAPObservable(abi: abi.iap)
         profileObservable = ProfileObservable(abi: abi.profile)
         registryObservable = RegistryObservable(abi: abi.registry)
-        tunnelObservable = TunnelObservable(abi: abi.tunnel, formatter: abi)
         versionObservable = VersionObservable(abi: abi.version)
         webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
+
+        // Tunnel
+        tunnelObservable = TunnelObservable(
+            tunnel: tunnel,
+            kvStore: kvStore,
+            extensionInstaller: sysexManager,
+            logging: appConfiguration.newTunnelLogging(formatter: abi)
+        )
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
@@ -54,6 +63,9 @@ public final class AppContext {
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
         let handler = ABI.EventHandler(context: opaqueEnvironment, callback: Self.abiCallback)
         abi.registerEvents(handler)
+
+        // Register for tunnel events
+        tunnelObservable.observeObjects()
     }
 }
 
@@ -80,8 +92,6 @@ private extension AppContext {
                 appContext.iapObservable.onUpdate(event)
             case .profile(let event):
                 appContext.profileObservable.onUpdate(event)
-            case .tunnel(let event):
-                appContext.tunnelObservable.onUpdate(event)
             case .version(let event):
                 appContext.versionObservable.onUpdate(event)
             case .webReceiver(let event):

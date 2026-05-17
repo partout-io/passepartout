@@ -70,8 +70,6 @@ void psp_app_import_profile_text(const char *text, const char *filename, psp_com
 void psp_app_delete_profile(const char *uuid, psp_completion completion);
 void psp_app_delete_profiles(const char **uuids, size_t num, psp_completion completion);
 void psp_app_fetch_profile(const char *uuid, psp_completion completion);
-void psp_app_connect(const char *profile, psp_completion completion);
-void psp_app_disconnect(const char *profile_id, psp_completion completion);
 void psp_app_flush_log(void);
 
 /* Daemon initialization. */

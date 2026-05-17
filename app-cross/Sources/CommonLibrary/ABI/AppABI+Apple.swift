@@ -11,16 +11,22 @@ import CoreData
 import Partout
 
 extension AppABI {
+    public struct Result {
+        public let abi: AppABI
+        public let tunnel: Tunnel
+    }
+
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore,
+        sysexManager: ExtensionInstaller?,
         assertModule: (ModuleType, ModuleRegistry) -> Void,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
         webStringsBundle: Bundle?,
         withUITesting: Bool,
         withFakeIAPs: Bool
-    ) -> AppABI {
+    ) -> Result {
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = pspLogRegister(
             for: .app,
@@ -132,7 +138,6 @@ extension AppABI {
         // MARK: Profiles and Tunnel (NE)
 
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
-        let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
@@ -150,14 +155,8 @@ extension AppABI {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let tunnelStrategy = NETunnelStrategy(
-            ctx,
-            bundleIdentifier: tunnelIdentifier,
-            coder: appConfiguration.newNEProtocolCoder(ctx, coder: registry)
-        )
-        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
-            tunnelProcessor?.title(for: $0) ?? $0.name
-        }
+        let tunnelStrategy = appConfiguration.newNETunnelStrategy(ctx, coder: registry)
+        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy)
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
@@ -174,16 +173,18 @@ extension AppABI {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let tunnel = appConfiguration.newTunnel(ctx, strategy: tunnelStrategy)
-        let sysexManager = appConfiguration.newSystemExtensionManager(
-            tunnelIdentifier: tunnelIdentifier
+        let tunnel = Tunnel(
+            ctx,
+            strategy: tunnelStrategy,
+            updateInterval: appConfiguration.constants.tunnel.refreshInterval,
+            willInstall: tunnelProcessor.willInstall,
+            environmentFactory: { @Sendable in
+                appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+            }
         )
-        let tunnelManager = appConfiguration.newTunnelManager(
-            tunnel: tunnel,
-            extensionInstaller: sysexManager,
-            kvStore: kvStore,
-            processor: tunnelProcessor
-        )
+
+        // Provide hooks to control tunnel
+        let tunnelHooks = SwiftTunnelHooks(tunnel: tunnel)
 
         // MARK: Preferences (Core Data)
 
@@ -284,7 +285,7 @@ extension AppABI {
             }
         }
 
-        return AppABI(
+        let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
@@ -296,12 +297,13 @@ extension AppABI {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
+            tunnelHooks: tunnelHooks,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock,
             bindings: nil
         )
+        return Result(abi: abi, tunnel: tunnel)
     }
 }
 

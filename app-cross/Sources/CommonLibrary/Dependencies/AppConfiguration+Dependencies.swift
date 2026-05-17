@@ -19,9 +19,6 @@ extension ABI.AppConfiguration {
         DefaultAppTunnelProcessor(
             apiManager: apiManager,
             resolver: resolver,
-            title: {
-                String(format: constants.tunnel.profileTitleFormat, $0.name)
-            },
             providerServerSorter: providerServerSorter
         )
     }
@@ -97,6 +94,13 @@ extension ABI.AppConfiguration {
 #endif
     }
 
+    @Sendable
+    public func newProfileTitle() -> @Sendable (Profile) -> String {
+        {
+            String(format: constants.tunnel.profileTitleFormat, $0.name)
+        }
+    }
+
     public func newRegistryForApp(
         configManager: ConfigManager,
         kvStore: KeyValueStore,
@@ -133,29 +137,6 @@ extension ABI.AppConfiguration {
             configBlock: {
                 preferences.enabledFlags()
             }
-        )
-    }
-
-    public func newStandaloneTunnel(
-        _ ctx: PartoutLoggerContext,
-        ref: UnsafeMutableRawPointer?
-    ) -> TunnelProtocol {
-        nonisolated(unsafe) let unsafeRef = ref
-        return NativeTunnel(ctx, ref: unsafeRef)
-    }
-
-    @BusinessActor
-    public func newTunnelManager(
-        tunnel: Tunnel,
-        extensionInstaller: ExtensionInstaller?,
-        kvStore: KeyValueStore,
-        processor: AppTunnelProcessor
-    ) -> TunnelManager {
-        TunnelManager(
-            tunnel: tunnel,
-            extensionInstaller: extensionInstaller,
-            kvStore: kvStore,
-            processor: processor
         )
     }
 
@@ -417,20 +398,30 @@ extension ABI.AppConfiguration {
     }
 
     public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NEProtocolCoder {
+        let tunnelIdentifier = bundle.bundleString(for: .tunnelId)
         if bundle.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: tunnelIdentifier,
                 coder: coder,
                 keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: tunnelIdentifier,
                 coder: coder
             )
         }
+    }
+
+    public func newNETunnelStrategy(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NETunnelStrategy {
+        NETunnelStrategy(
+            ctx,
+            bundleIdentifier: bundle.bundleString(for: .tunnelId),
+            coder: newNEProtocolCoder(ctx, coder: coder),
+            title: newProfileTitle()
+        )
     }
 
     public func newRequest(for url: URL, cached: Bool) async throws -> Data {
@@ -439,25 +430,14 @@ extension ABI.AppConfiguration {
         return try await URLSession.shared.data(for: request).0
     }
 
-    public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
+    public func newSystemExtensionManager() -> SystemExtensionManager? {
         guard bundle.distributionTarget == .developerID else {
             return nil
         }
         return SystemExtensionManager(
-            identifier: tunnelIdentifier,
+            identifier: bundle.bundleString(for: .tunnelId),
             version: bundle.versionNumber,
             build: bundle.buildNumber
-        )
-    }
-
-    public func newTunnel(_ ctx: PartoutLoggerContext, strategy: TunnelObservableStrategy) -> Tunnel {
-        Tunnel(
-            ctx,
-            strategy: strategy,
-            updateInterval: constants.tunnel.refreshInterval,
-            environmentFactory: { @Sendable in
-                newAppTunnelEnvironment(strategy: strategy, profileId: $0)
-            }
         )
     }
 
@@ -467,6 +447,14 @@ extension ABI.AppConfiguration {
             fatalError("No access to App Group: \(appGroup)")
         }
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
+    }
+
+    public func newTunnelLogging(formatter: LogFormatter) -> TunnelObservable.Logging {
+        TunnelObservable.Logging(
+            maxDebugLogLevel: constants.log.options.maxDebugLogLevel,
+            sinceLast: constants.log.sinceLast,
+            formatter: formatter
+        )
     }
 
 #if os(tvOS)
