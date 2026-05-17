@@ -13,7 +13,7 @@ import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.readAsset
-import com.algoritmico.passepartout.vpn.PassepartoutVpnService
+import com.algoritmico.passepartout.PassepartoutVpnService
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
