@@ -709,9 +709,11 @@ components:
       properties:
         received:
           type: integer
+          format: int64
           default: 0
         sent:
           type: integer
+          format: int64
           default: 0
       required:
       - received

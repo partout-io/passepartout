@@ -67,7 +67,7 @@ extension ABI {
             isEnabled: Bool,
             tunnelStatus: TunnelStatus,
             onDemand: Bool,
-            environment: TunnelEnvironmentReader?
+            environment: TunnelSnapshot.Environment?
         ) {
             self.id = id
             self.isEnabled = isEnabled
@@ -77,15 +77,11 @@ extension ABI {
             transfer = nil
             lastErrorCode = nil
 
-            transfer = environment?.environmentValue(
-                forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer
-            lastErrorCode = environment?.environmentValue(
-                forKey: TunnelEnvironmentKeys.lastErrorCode
-            )
+            transfer = environment?.dataCount.abiTransfer
+            lastErrorCode = environment?.lastErrorCode
         }
 
-        public func with(environment: TunnelEnvironmentReader) -> Self {
+        public func with(environment: TunnelSnapshot.Environment) -> Self {
             Self(
                 id: id,
                 isEnabled: isEnabled,

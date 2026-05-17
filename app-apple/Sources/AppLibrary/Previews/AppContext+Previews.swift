@@ -44,13 +44,12 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
+        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy(), updateInterval: 10.0) { @Sendable _ in
             SharedTunnelEnvironment(profileId: nil)
         }
         let tunnelManager = TunnelManager(
             tunnel: tunnel,
-            processor: processor,
-            interval: 10.0
+            processor: processor
         )
         let preferencesManager = PreferencesManager()
 

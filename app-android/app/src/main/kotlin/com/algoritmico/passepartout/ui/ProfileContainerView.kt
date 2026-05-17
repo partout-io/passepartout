@@ -45,9 +45,11 @@ import com.algoritmico.passepartout.abi.models.AppProfileHeader
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.ProfileEventSave
+import com.algoritmico.passepartout.abi.models.ProfileTransfer
 import io.partout.abi.TaggedProfile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun ProfileContainerView(
@@ -89,6 +91,10 @@ fun ProfileContainerView(
         return activeProfiles[profileId]?.status
             ?: requestedConnection?.statusFor(profileId)
             ?: AppProfileStatus.disconnected
+    }
+
+    fun profileTransfer(profileId: String): ProfileTransfer? {
+        return activeProfiles[profileId]?.transfer
     }
 
     fun requestProfileToggle(profileId: String, enabled: Boolean) {
@@ -178,6 +184,7 @@ fun ProfileContainerView(
             contextualProfileIds = contextualProfileIds,
             isProfileEnabled = ::isProfileEnabled,
             profileStatus = ::profileStatus,
+            profileTransfer = ::profileTransfer,
             onProfileSelected = onProfileSelected,
             onProfileToggle = ::requestProfileToggle,
             onProfileContextualAction = onProfileContextualAction
@@ -190,6 +197,7 @@ fun ProfileContainerView(
             contextualProfileIds = contextualProfileIds,
             isProfileEnabled = ::isProfileEnabled,
             profileStatus = ::profileStatus,
+            profileTransfer = ::profileTransfer,
             onProfileSelected = onProfileSelected,
             onProfileToggle = ::requestProfileToggle,
             onProfileContextualAction = onProfileContextualAction
@@ -205,6 +213,7 @@ private fun MobileProfilesView(
     contextualProfileIds: List<String>,
     isProfileEnabled: (String) -> Boolean,
     profileStatus: (String) -> AppProfileStatus,
+    profileTransfer: (String) -> ProfileTransfer?,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
@@ -228,6 +237,7 @@ private fun MobileProfilesView(
                 header = header,
                 isEnabled = isProfileEnabled(header.id),
                 status = profileStatus(header.id),
+                transfer = profileTransfer(header.id),
                 isSelected = if (contextualProfileIds.isNotEmpty()) {
                     header.id in contextualProfileIds
                 } else {
@@ -249,6 +259,7 @@ private fun TabletProfilesView(
     contextualProfileIds: List<String>,
     isProfileEnabled: (String) -> Boolean,
     profileStatus: (String) -> AppProfileStatus,
+    profileTransfer: (String) -> ProfileTransfer?,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
@@ -282,6 +293,7 @@ private fun TabletProfilesView(
                         header = header,
                         isEnabled = isProfileEnabled(header.id),
                         status = profileStatus(header.id),
+                        transfer = profileTransfer(header.id),
                         isSelected = if (contextualProfileIds.isNotEmpty()) {
                             header.id in contextualProfileIds
                         } else {
@@ -313,11 +325,17 @@ private fun ProfileRow(
     header: AppProfileHeader,
     isEnabled: Boolean,
     status: AppProfileStatus,
+    transfer: ProfileTransfer?,
     isSelected: Boolean,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
 ) {
+    val statusDescription = if (status == AppProfileStatus.connected && transfer != null) {
+        transfer.transferText()
+    } else {
+        status.statusText()
+    }
     val containerColor = if (isSelected) {
         MaterialTheme.colorScheme.secondaryContainer
     } else {
@@ -360,7 +378,7 @@ private fun ProfileRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = status.statusText(),
+                    text = statusDescription,
                     style = MaterialTheme.typography.bodySmall,
                     color = statusColor(status)
                 )
@@ -530,6 +548,30 @@ private fun AppProfileStatus.statusText(): String {
     }
 }
 
+private fun ProfileTransfer.transferText(): String {
+    return "↓${received.toLong().formatDataUnit()} ↑${sent.toLong().formatDataUnit()}"
+}
+
+private fun Long.formatDataUnit(): String {
+    val value = coerceAtLeast(0L)
+    if (value == 0L) {
+        return "0B"
+    }
+    if (value < KILOBYTE) {
+        return "${value}B"
+    }
+    return when {
+        value >= GIGABYTE / 10L -> value.formatDecimalDataUnit(GIGABYTE, "GB")
+        value >= MEGABYTE / 10L -> value.formatDecimalDataUnit(MEGABYTE, "MB")
+        else -> "${value / KILOBYTE}kB"
+    }
+}
+
+private fun Long.formatDecimalDataUnit(unitSize: Long, unit: String): String {
+    val count = toDouble() / unitSize.toDouble()
+    return String.format(Locale.US, "%.2f%s", count, unit)
+}
+
 private fun AppProfileStatus.canToggle(): Boolean {
     return when (this) {
         AppProfileStatus.disconnecting -> false
@@ -571,3 +613,7 @@ private data class RequestedConnection(
         }
     }
 }
+
+private const val KILOBYTE = 1024L
+private const val MEGABYTE = KILOBYTE * 1024L
+private const val GIGABYTE = MEGABYTE * 1024L

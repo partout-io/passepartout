@@ -18,8 +18,6 @@ public final class TunnelManager {
 
     private let processor: AppTunnelProcessor?
 
-    private let interval: TimeInterval
-
     private nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
 
     private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]? {
@@ -35,14 +33,12 @@ public final class TunnelManager {
         tunnel: TunnelProtocol,
         extensionInstaller: ExtensionInstaller? = nil,
         kvStore: KeyValueStore? = nil,
-        processor: AppTunnelProcessor? = nil,
-        interval: TimeInterval
+        processor: AppTunnelProcessor? = nil
     ) {
         self.tunnel = tunnel
         self.extensionInstaller = extensionInstaller
         self.kvStore = kvStore
         self.processor = processor
-        self.interval = interval
         didChange = PassthroughStream()
         latestInfo = nil
         subscriptions = []
@@ -174,12 +170,10 @@ extension TunnelManager {
                     break
                 }
                 // Copy locally for sync access
-                let latestEnvironments = await tunnel.allEnvironments()
-                let newInfo = latestInfo?.with(
+                let newInfo = (latestInfo ?? [:]).with(
                     snapshots: snapshots,
-                    lastUsedProfile: lastUsedProfile,
-                    environments: latestEnvironments
-                ) ?? [:]
+                    lastUsedProfile: lastUsedProfile
+                )
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = snapshots.first {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
@@ -190,24 +184,7 @@ extension TunnelManager {
                 }
             }
         }
-
-        let timerSubscription = Task { [weak self] in
-            while true {
-                guard let self else { return }
-                guard !Task.isCancelled else {
-                    pspLog(.core, .debug, "Cancelled TunnelManager.timerSubscription")
-                    break
-                }
-                let latestEnvironments = await tunnel.allEnvironments()
-                let newInfo = latestInfo?.updated(with: latestEnvironments) ?? [:]
-                if newInfo != latestInfo {
-                    latestInfo = newInfo
-                }
-                try? await Task.sleep(interval: interval)
-            }
-        }
-
-        subscriptions = [tunnelSubscription, timerSubscription]
+        subscriptions = [tunnelSubscription]
         return didChange.subscribe()
     }
 }
@@ -253,22 +230,14 @@ private extension TunnelManager {
 private extension Dictionary where Key == Profile.ID, Value == ABI.AppTunnelInfo {
     func with(
         snapshots: [Profile.ID: TunnelSnapshot],
-        lastUsedProfile: TunnelSnapshot?,
-        environments: [Profile.ID: TunnelEnvironmentReader],
+        lastUsedProfile: TunnelSnapshot?
     ) -> Self {
         var info = snapshots.mapValues {
-            $0.abiInfo(withEnvironment: environments[$0.id])
+            $0.abiInfo()
         }
         if info.isEmpty, let last = lastUsedProfile {
-            info = [last.id: last.abiInfo(withEnvironment: nil)]
+            info = [last.id: last.abiInfo()]
         }
         return info
-    }
-
-    func updated(with environments: [Profile.ID: TunnelEnvironmentReader]) -> Self {
-        mapValues {
-            guard let env = environments[$0.id] else { return $0 }
-            return $0.with(environment: env)
-        }
     }
 }

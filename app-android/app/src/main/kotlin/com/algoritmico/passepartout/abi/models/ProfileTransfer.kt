@@ -31,10 +31,10 @@ import kotlinx.serialization.Contextual
 data class ProfileTransfer (
 
     @SerialName(value = "received")
-    val received: kotlin.Int = 0,
+    val received: kotlin.Long = 0L,
 
     @SerialName(value = "sent")
-    val sent: kotlin.Int = 0
+    val sent: kotlin.Long = 0L
 
 ) {
 

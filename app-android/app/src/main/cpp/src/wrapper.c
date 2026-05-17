@@ -162,9 +162,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
     psp_tunnel_bindings bindings = { 0 };
-    bindings.controller = (*env)->NewGlobalRef(env, runtime);
-    bindings.status_ctx = abi_handler_create(env, runtime);
-    bindings.status_cb = abi_connection_status_handler_proxy;
+    bindings.runtime = (*env)->NewGlobalRef(env, runtime);
     bindings.free = tunnel_bindings_free;
 
     psp_tunnel_start_args args = { 0 };
@@ -210,13 +208,9 @@ void app_bindings_free(psp_app_bindings *b) {
 
 void tunnel_bindings_free(psp_tunnel_bindings *b) {
     JNI_ATTACH_OR_RETURN_VOID(env);
-    if (b->controller) {
-        (*env)->DeleteGlobalRef(env, b->controller);
-        b->controller = NULL;
-    }
-    if (b->status_ctx) {
-        abi_handler_free(env, b->status_ctx);
-        b->status_ctx = NULL;
+    if (b->runtime) {
+        (*env)->DeleteGlobalRef(env, b->runtime);
+        b->runtime = NULL;
     }
     JNI_DETACH(env);
 }

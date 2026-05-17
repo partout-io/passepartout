@@ -66,9 +66,7 @@ extension AppABI {
                 pspLog(.abi, .fault, "Unable to prepare NativeTunnel: \(error)")
             }
         }
-        // FIXME: #1656, NativeTunnel lacks environment
-//        appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
-        let tunnelManager = TunnelManager(tunnel: tunnel, interval: 1.0)
+        let tunnelManager = TunnelManager(tunnel: tunnel)
 
         // Dummy
         let iapManager = IAPManager()

@@ -65,8 +65,7 @@ extension AppContext {
         )
         let tunnelManager = TunnelManager(
             tunnel: tunnel,
-            processor: tunnelProcessor,
-            interval: appConfiguration.constants.tunnel.refreshInterval
+            processor: tunnelProcessor
         )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()

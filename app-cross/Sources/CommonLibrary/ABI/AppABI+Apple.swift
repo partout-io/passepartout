@@ -174,9 +174,7 @@ extension AppABI {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) { @Sendable in
-            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
-        }
+        let tunnel = appConfiguration.newTunnel(ctx, strategy: tunnelStrategy)
         let sysexManager = appConfiguration.newSystemExtensionManager(
             tunnelIdentifier: tunnelIdentifier
         )
