@@ -42,6 +42,7 @@ Sources/CommonLibrary/Dependencies/AppRelease.swift
 Sources/CommonLibrary/Dependencies/DefaultAppProcessor.swift
 Sources/CommonLibrary/Dependencies/DefaultTunnelProcessor.swift
 Sources/CommonLibrary/Dependencies/OpenVPNImplementationBuilder.swift
+Sources/CommonLibrary/Dependencies/TunnelHooks.swift
 Sources/CommonLibrary/Dependencies/WireGuardImplementationBuilder.swift
 Sources/CommonLibraryApple/Bundle+Extensions.swift
 Sources/CommonLibraryApple/CommonLibraryApple.swift
@@ -59,6 +60,7 @@ Sources/CommonLibraryApple/StoreKitReceiptReader.swift
 Sources/CommonLibraryApple/String+L10n.swift
 Sources/CommonLibraryApple/SystemExtensionManager.swift
 Sources/CommonLibraryApple/TestFlightChecker.swift
+Sources/CommonLibraryApple/TunnelObservable.swift
 Sources/CommonLibraryApple/URL+Extensions.swift
 Sources/CommonLibraryApple/URLSessionUploaderStrategy.swift
 Sources/CommonLibraryApple/UserDefaultsStore.swift
@@ -69,7 +71,6 @@ Sources/CommonLibraryCore/Business/IAPManager.swift
 Sources/CommonLibraryCore/Business/Logging.swift
 Sources/CommonLibraryCore/Business/PreferencesManager.swift
 Sources/CommonLibraryCore/Business/ProfileManager.swift
-Sources/CommonLibraryCore/Business/TunnelManager.swift
 Sources/CommonLibraryCore/Business/VersionChecker.swift
 Sources/CommonLibraryCore/Business/WebReceiverManager.swift
 Sources/CommonLibraryCore/Business/WebUploader.swift
@@ -132,7 +133,6 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileSharingFlag.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileTransfer.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProviderInfo.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPISemanticVersion.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPITunnelEventRefresh.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIVersionEventNew.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIVersionRelease.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIWebFileUpload.swift
@@ -208,6 +208,7 @@ Sources/CommonLibraryCore/Strategy/Processors.swift
 Sources/CommonLibraryCore/Strategy/ProfileRepository.swift
 Sources/CommonLibraryCore/Strategy/ProviderPreferencesRepository.swift
 Sources/CommonLibraryCore/Strategy/SharedReceiptReader.swift
+Sources/CommonLibraryCore/Strategy/TunnelHooksProtocol.swift
 Sources/CommonLibraryCore/Strategy/VersionCheckerStrategy.swift
 Sources/CommonLibraryCore/Strategy/WebReceiver.swift
 Sources/CommonLibraryCore/Strategy/WebUploaderStrategy.swift
