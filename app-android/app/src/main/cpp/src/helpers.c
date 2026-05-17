@@ -57,10 +57,6 @@ void abi_event_handler_proxy(void *ctx, const char *event_json) {
     abi_handler_proxy(ctx, "onEvent", event_json);
 }
 
-void abi_connection_status_handler_proxy(void *ctx, const char *status_json) {
-    abi_handler_proxy(ctx, "onStatus", status_json);
-}
-
 /* Completion (fire and release) */
 
 void abi_completion_proxy(void *ctx, int code, const char *json) {

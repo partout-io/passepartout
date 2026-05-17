@@ -17,7 +17,6 @@ void abi_handler_free(JNIEnv *env, abi_handler *handler);
 
 /* Global handlers (lifescope = application). */
 void abi_event_handler_proxy(void *ctx, const char *event_json);
-void abi_connection_status_handler_proxy(void *ctx, const char *status_json);
 
 /* Completion handlers (lifescope = function call, released on call). */
 void abi_completion_proxy(void *ctx, int code, const char *json);

@@ -35,7 +35,7 @@ extension TunnelABI {
             cachesURL: cachesURL
         )
         let profile = try registry.importedProfile(from: profileInput, passphrase: nil)
-        let environment = appConfiguration.newStandaloneTunnelEnvironment(profileId: profile.id)
+        let environment = SharedTunnelEnvironment(profileId: profile.id)
         let logFormatter = appConfiguration.newLogFormatter()
 
         // Logging context
@@ -49,7 +49,7 @@ extension TunnelABI {
         )
 
         // Create platform-specific objects
-        let controller = try NativeTunnelController(ctx, ref: bindings.controller)
+        let controller = try NativeTunnelController(ctx, ref: bindings.runtime)
         let betterPathBlock: BetterPathBlock
 #if !PSP_CROSS
         betterPathBlock = NEBetterPathBlock(ctx).block
@@ -62,21 +62,6 @@ extension TunnelABI {
         let factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
         // FIXME: #1656, C ABI, reachability observer
         let reachability = DummyReachabilityObserver()
-
-        // Wrap onStatus callback
-        nonisolated(unsafe) let statusContext = bindings.status_ctx
-        let statusCallback = bindings.status_cb
-        let onStatus: OnConnectionStatusCallback = { event in
-            guard let statusCallback else { return }
-            do {
-                let json = try ABI.encodeJSON(event)
-                json.withCString {
-                    statusCallback(statusContext, $0)
-                }
-            } catch {
-                assertionFailure("Unable to encode on status event: \(event), \(error)")
-            }
-        }
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(
@@ -91,8 +76,7 @@ extension TunnelABI {
             connectionFactory: registry,
             connectionParameters: connectionParameters,
             messageHandler: DefaultMessageHandler(ctx, environment: environment),
-            startsImmediately: false,
-            onStatus: onStatus
+            startsImmediately: false
         )
         let daemon = try SimpleConnectionDaemon(params: daemonParameters)
 

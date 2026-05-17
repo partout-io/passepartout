@@ -140,7 +140,8 @@ extension ABI.AppConfiguration {
         _ ctx: PartoutLoggerContext,
         ref: UnsafeMutableRawPointer?
     ) -> TunnelProtocol {
-        NativeTunnel(ctx, ref: ref)
+        nonisolated(unsafe) let unsafeRef = ref
+        return NativeTunnel(ctx, ref: unsafeRef)
     }
 
     @BusinessActor
@@ -154,8 +155,7 @@ extension ABI.AppConfiguration {
             tunnel: tunnel,
             extensionInstaller: extensionInstaller,
             kvStore: kvStore,
-            processor: processor,
-            interval: constants.tunnel.refreshInterval
+            processor: processor
         )
     }
 
@@ -439,11 +439,6 @@ extension ABI.AppConfiguration {
         return try await URLSession.shared.data(for: request).0
     }
 
-    // FIXME: ###, Cross UI, Apple standalone tunnel environment
-    public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        SharedTunnelEnvironment(profileId: profileId)
-    }
-
     public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
         guard bundle.distributionTarget == .developerID else {
             return nil
@@ -452,6 +447,17 @@ extension ABI.AppConfiguration {
             identifier: tunnelIdentifier,
             version: bundle.versionNumber,
             build: bundle.buildNumber
+        )
+    }
+
+    public func newTunnel(_ ctx: PartoutLoggerContext, strategy: TunnelObservableStrategy) -> Tunnel {
+        Tunnel(
+            ctx,
+            strategy: strategy,
+            updateInterval: constants.tunnel.refreshInterval,
+            environmentFactory: { @Sendable in
+                newAppTunnelEnvironment(strategy: strategy, profileId: $0)
+            }
         )
     }
 
@@ -486,10 +492,6 @@ extension ABI.AppConfiguration {
 
 // FIXME: #1656, C ABI, non-Apple strategies
 extension ABI.AppConfiguration {
-    public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        SharedTunnelEnvironment(profileId: profileId)
-    }
-
     public func newKeyValueStore() -> KeyValueStore {
         InMemoryStore()
     }
@@ -500,10 +502,6 @@ extension ABI.AppConfiguration {
 
     public func newRequest(for url: URL, cached: Bool) async throws -> Data {
         Data()
-    }
-
-    public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        SharedTunnelEnvironment(profileId: profileId)
     }
 }
 

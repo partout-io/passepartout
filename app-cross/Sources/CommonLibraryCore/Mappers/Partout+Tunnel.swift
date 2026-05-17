@@ -5,11 +5,11 @@
 import Partout
 
 extension TunnelStatus {
-    func considering(_ environment: TunnelEnvironmentReader?) -> TunnelStatus {
+    func considering(_ environment: TunnelSnapshot.Environment?) -> TunnelStatus {
         // If the tunnel is active and it relies on a
         // connection, map to the connection status
         if self == .active,
-           let connectionStatus = environment?.environmentValue(forKey: TunnelEnvironmentKeys.connectionStatus) {
+           let connectionStatus = environment?.connectionStatus {
             switch connectionStatus {
             case .connecting:
                 return .activating
@@ -36,7 +36,7 @@ extension TunnelStatus {
 }
 
 extension TunnelSnapshot {
-    func abiInfo(withEnvironment environment: TunnelEnvironmentReader?) -> ABI.AppTunnelInfo {
+    func abiInfo() -> ABI.AppTunnelInfo {
         ABI.AppTunnelInfo(
             id: id,
             isEnabled: isEnabled,

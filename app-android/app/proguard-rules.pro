@@ -47,5 +47,5 @@
     public void testWorking();
     public int setTunnel(java.lang.String);
     public void configureSockets(int[]);
-    public void onStatus(java.lang.String);
+    public void onSnapshots(java.lang.String);
 }

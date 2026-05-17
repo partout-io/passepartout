@@ -19,10 +19,10 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenDisconnectWithError_thenPublishesLastErrorCode() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
             env
         }
-        let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel)
 
         let module = IPModule.Builder().build()
         let profile = try Profile.Builder(modules: [module]).build()
@@ -55,10 +55,10 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenPublishesDataCount_thenIsAvailable() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
             env
         }
-        let sut = TunnelManager(tunnel: tunnel, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel)
         let stream = sut.observeObjects()
         #expect(await stream.nextActiveProfiles() == [:])
 
@@ -80,11 +80,11 @@ extension TunnelManagerTests {
     @Test
     func givenTunnelAndProcessor_whenInstall_thenProcessesProfile() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
             env
         }
         let processor = MockTunnelProcessor()
-        let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel, processor: processor)
         let stream = sut.observeObjects()
         #expect(await stream.nextActiveProfiles() == [:])
 
@@ -102,11 +102,11 @@ extension TunnelManagerTests {
     @Test
     func givenTunnel_whenStatusChanges_thenConnectionStatusIsExpected() async throws {
         let env = SharedTunnelEnvironment(profileId: nil)
-        let tunnel = Tunnel(ctx, strategy: newStrategy()) { @Sendable _ in
+        let tunnel = Tunnel(ctx, strategy: newStrategy(), updateInterval: 0.1) { @Sendable _ in
             env
         }
         let processor = MockTunnelProcessor()
-        let sut = TunnelManager(tunnel: tunnel, processor: processor, interval: 0.1)
+        let sut = TunnelManager(tunnel: tunnel, processor: processor)
         let stream = sut.observeObjects()
         #expect(await stream.nextActiveProfiles() == [:])
 
@@ -136,23 +136,21 @@ extension TunnelManagerTests {
             .disconnecting
         ]
 
-        let env = SharedTunnelEnvironment(profileId: nil)
-        let key = TunnelEnvironmentKeys.connectionStatus
-
-        // no connection status, tunnel status unaffected
+        // No connection status, tunnel status unaffected
         allTunnelStatuses.forEach {
-            #expect($0.considering(env) == $0)
+            #expect($0.considering(nil) == $0)
         }
 
-        // has connection status
+        // Has connection status
+        var env = TunnelSnapshot.Environment()
 
-        // affected if .active
+        // Affected if .active
         let tunnelActive: TunnelStatus = .active
-        env.setEnvironmentValue(.connected, forKey: key)
+        env = env.with(connectionStatus: .connected)
         #expect(tunnelActive.considering(env) == .active)
         allConnectionStatuses
             .forEach {
-                env.setEnvironmentValue($0, forKey: key)
+                env = env.with(connectionStatus: $0)
                 let statusWithEnv = tunnelActive.considering(env)
                 switch $0 {
                 case .connecting:
@@ -166,7 +164,7 @@ extension TunnelManagerTests {
                 }
             }
 
-        // unaffected otherwise
+        // Unaffected otherwise
         allTunnelStatuses
             .filter {
                 $0 != .active
@@ -178,9 +176,7 @@ extension TunnelManagerTests {
 
     @Test
     func givenTunnelInfo_whenEnvironmentConnectionStatusChanges_thenProfileStatusIsRecomputed() async throws {
-        let env = SharedTunnelEnvironment(profileId: nil)
-        env.setEnvironmentValue(.connecting, forKey: TunnelEnvironmentKeys.connectionStatus)
-
+        var env = TunnelSnapshot.Environment().with(connectionStatus: .connecting)
         let info = ABI.AppTunnelInfo(
             id: UniqueID(),
             isEnabled: true,
@@ -190,8 +186,7 @@ extension TunnelManagerTests {
         )
         #expect(info.status == .connecting)
 
-        env.setEnvironmentValue(.connected, forKey: TunnelEnvironmentKeys.connectionStatus)
-
+        env = env.with(connectionStatus: .connected)
         let updated = info.with(environment: env)
         #expect(updated.status == .connected)
     }
