@@ -184,11 +184,16 @@ extension AppABI {
         let sysexManager = appConfiguration.newSystemExtensionManager()
 
         // Provide hooks through observable
+        let logging = TunnelObservable.Logging(
+            maxDebugLogLevel: appConfiguration.constants.log.options.maxDebugLogLevel,
+            sinceLast: appConfiguration.constants.log.sinceLast,
+            formatter: logFormatter
+        )
         let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
             kvStore: kvStore,
             extensionInstaller: sysexManager,
-            logging: appConfiguration.newTunnelLogging(formatter: logFormatter)
+            logging: logging
         )
 
         // MARK: Preferences (Core Data)

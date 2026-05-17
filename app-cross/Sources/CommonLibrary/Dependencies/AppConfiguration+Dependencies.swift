@@ -444,14 +444,6 @@ extension ABI.AppConfiguration {
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
     }
 
-    public func newTunnelLogging(formatter: LogFormatter) -> TunnelObservable.Logging {
-        TunnelObservable.Logging(
-            maxDebugLogLevel: constants.log.options.maxDebugLogLevel,
-            sinceLast: constants.log.sinceLast,
-            formatter: formatter
-        )
-    }
-
 #if os(tvOS)
     public func newWebReceiverManager(
         htmlPath: String,
