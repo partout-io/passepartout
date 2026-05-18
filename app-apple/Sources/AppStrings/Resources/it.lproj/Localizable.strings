@@ -38,6 +38,7 @@
 "errors.app.passepartout.no_active_modules" = "Il profilo non ha moduli attivi.";
 "errors.app.passepartout.parsing" = "Impossibile analizzare il file.";
 "errors.app.passepartout.timeout" = "L'operazione ha superato il tempo limite.";
+"errors.app.passepartout.unsupported_compression" = "La compressione OpenVPN non è sicura e non è più supportata.";
 "errors.app.permission_denied" = "Permesso negato";
 "errors.app.tunnel" = "Impossibile eseguire l'operazione.";
 "errors.app.web_receiver" = "Impossibile avviare l'importazione. Assicurati che la tua TV sia correttamente connessa alla rete locale.";

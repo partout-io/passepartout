@@ -147,8 +147,8 @@ public enum Strings {
         public static let parsing = Strings.tr("Localizable", "errors.app.passepartout.parsing", fallback: "Unable to parse file.")
         /// The operation timed out.
         public static let timeout = Strings.tr("Localizable", "errors.app.passepartout.timeout", fallback: "The operation timed out.")
-        /// Compression is unsafe and therefore not supported.
-        public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.passepartout.unsupported_compression", fallback: "Compression is unsafe and therefore not supported.")
+        /// OpenVPN compression is unsafe and no longer supported.
+        public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.passepartout.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
       }
     }
     public enum Modules {
