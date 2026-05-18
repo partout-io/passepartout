@@ -48,10 +48,11 @@ extension AppContext {
             .global,
             strategy: FakeTunnelStrategy(),
             refreshInterval: 10000,
-            willInstall: processor.willInstall
-        ) { @Sendable _ in
-            SharedTunnelEnvironment(profileId: nil)
-        }
+            willInstall: processor.willInstall,
+            environmentFactory: { @Sendable _ in
+                SharedTunnelEnvironment(profileId: nil)
+            }
+        )
         let tunnelObservable = TunnelObservable(tunnel: tunnel)
         let preferencesManager = PreferencesManager()
 

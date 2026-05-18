@@ -52,9 +52,9 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         self.providerServerSorter = providerServerSorter
     }
 
-    nonisolated func willInstall(_ profile: Profile) async throws -> Profile {
+    nonisolated func willInstall(_ preProfile: Profile, connect: Bool) async throws -> Profile? {
         guard let apiManager else {
-            return profile
+            return nil
         }
 
         // Apply connection heuristic
