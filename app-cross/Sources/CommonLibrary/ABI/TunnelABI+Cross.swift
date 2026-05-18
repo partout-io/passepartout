@@ -25,7 +25,7 @@ extension TunnelABI {
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )
-        // FIXME: ###, Cross, Hardcoded config flags
+        // FIXME: #1656, Cross, Hardcoded config flags
         preferences.configFlags = [.ovpnCrossV2, .wgCrossV2]
 
         // Initialize objects from global configuration

@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Current directory. */
-    // FIXME: ###, Cross UI, hardcoded cache dir
+    // FIXME: #1656, Cross UI, hardcoded cache dir
     const char *cache_dir = ".";
 //    const char *cache_dir = mkdtemp("psp");
 

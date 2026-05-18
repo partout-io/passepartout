@@ -110,7 +110,7 @@ extension AppABI {
             iapHelper = appConfiguration.newInAppHelper()
             iapReceiptReader = SharedReceiptReader(
                 reader: appConfiguration.newInAppReceiptReader {
-                    // TODO: ###, StoreKit receipt caching
+                    // TODO: #1786, StoreKit receipt caching
                     .uncached
                 }
             )
