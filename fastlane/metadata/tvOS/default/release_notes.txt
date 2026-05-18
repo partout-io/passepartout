@@ -1,1 +1,1 @@
-* Internal tunnel redesign
+* OpenVPN: Improve copy about discontinued compression support (#1818)
