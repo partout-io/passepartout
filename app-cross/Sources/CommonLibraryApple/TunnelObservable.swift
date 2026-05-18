@@ -155,6 +155,10 @@ extension TunnelObservable {
 // MARK: - State
 
 extension TunnelObservable {
+    public var activeProfile: ABI.AppTunnelInfo? {
+        activeProfiles.first?.value
+    }
+
     public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
         activeProfiles.keys.contains(profileId)
     }
