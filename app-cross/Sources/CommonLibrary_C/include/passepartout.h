@@ -40,7 +40,6 @@ psp_completion PSP_CB(void *ctx, psp_completion_cb callback) {
 #define PSP_CB_NOP() PSP_CB(NULL, NULL)
 
 typedef struct __psp_app_bindings {
-    void *tunnel;
     void *event_ctx;
     psp_event_callback event_cb;
     void (*free)(struct __psp_app_bindings *);
