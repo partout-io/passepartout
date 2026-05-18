@@ -73,7 +73,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
                     profile.activeProviderModule?.entity.map {
                         pspLog(.core, .info, "\tOld server: \($0.server)")
                     }
-                    profile = try await preProfile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
+                    profile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
                     profile.activeProviderModule?.entity.map {
                         pspLog(.core, .info, "\tNew server: \($0.server)")
                     }
