@@ -448,7 +448,6 @@
 
 // MARK: Global (Partout errors)
 
-"errors.app.passepartout.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";
 "errors.app.passepartout.corrupt_provider_module" = "Unable to connect to provider server (reason=%@).";
 "errors.app.passepartout.default" = "Unable to complete operation (code=%@).";
 "errors.app.passepartout.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
@@ -456,6 +455,7 @@
 "errors.app.passepartout.invalid_fields" = "Invalid fields.";
 "errors.app.passepartout.missing_provider_entity" = "No server selected in provider.";
 "errors.app.passepartout.no_active_modules" = "The profile has no active modules.";
+"errors.app.passepartout.openvpn.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";
 "errors.app.passepartout.parsing" = "Unable to parse file.";
 "errors.app.passepartout.timeout" = "The operation timed out.";
 

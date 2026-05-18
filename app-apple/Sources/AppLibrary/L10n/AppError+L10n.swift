@@ -100,7 +100,7 @@ extension PartoutError: @retroactive LocalizedError {
             return V.noActiveModules
 
         case .OpenVPN.unsupportedCompression:
-            var desc = V.unsupportedCompression
+            var desc = V.Openvpn.unsupportedCompression
             if let option = userInfo as? String {
                 desc.append("\n\n\(option)")
             }
