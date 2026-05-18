@@ -500,7 +500,7 @@ private extension AppABI {
             return
         }
         guard tunnelHooks.isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
+            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
             return
         }
         let status = tunnelHooks.tunnelStatus(for: profile.id)
