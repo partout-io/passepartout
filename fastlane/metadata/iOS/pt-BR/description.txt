@@ -11,6 +11,8 @@ RECURSOS INCLUÍDOS:
 - Automação com Atalhos para operações simplificadas.
 - Exclusão de endpoints para controle preciso.
 
+O suporte a OpenVPN se concentra nas opções mais comuns; a compressão não é suportada porque não é segura.
+
 EXIGE UMA COMPRA NO APP:
 
 - Suporte para Apple TV.

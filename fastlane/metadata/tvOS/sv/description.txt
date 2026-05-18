@@ -16,6 +16,10 @@ Passepartout är utformat med transparens och respekt för din integritet:
 - Se exakt vilka servrar du ansluter till.  
 - Inga annonser, spårare eller onödiga bakgrundsaktiviteter – bara den VPN-anslutning du behöver.
 
+KOMPATIBILITET
+
+OpenVPN-stödet fokuserar på vanliga alternativ; komprimering stöds inte eftersom det inte är säkert.
+
 ÖPPEN KÄLLKOD OCH COMMUNITY-DRIVET
 
 Passepartout är ett projekt med öppen källkod som ständigt utvecklas med hjälp av communityn. Kolla in projektet på GitHub: https://github.com/partout-io

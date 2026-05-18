@@ -11,6 +11,8 @@ FUNCIONES INCLUIDAS:
 - Automatización con Atajos para operaciones simplificadas.
 - Exclusión de puntos finales para un control preciso.
 
+La compatibilidad con OpenVPN se centra en las opciones más comunes; la compresión no se admite porque no es segura.
+
 REQUIERE UNA COMPRA DENTRO DE LA APP:
 
 - Compatibilidad con Apple TV.

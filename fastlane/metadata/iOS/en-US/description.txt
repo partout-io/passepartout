@@ -11,6 +11,8 @@ INCLUDED FEATURES:
 - Shortcuts automation for streamlined operations.
 - Exclude endpoints for precise control.
 
+OpenVPN support focuses on common options; compression is not supported because it is not secure.
+
 REQUIRES AN IN-APP PURCHASE:
 
 - Support for Apple TV.
