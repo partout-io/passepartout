@@ -178,7 +178,6 @@ extension AppABI {
             ctx,
             strategy: tunnelStrategy,
             refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
-            willInstall: tunnelProcessor.willInstall,
             environmentFactory: { @Sendable in
                 appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             }
@@ -194,7 +193,8 @@ extension AppABI {
             tunnel: tunnel,
             kvStore: kvStore,
             extensionInstaller: sysexManager,
-            logging: logging
+            logging: logging,
+            willInstall: tunnelProcessor.willInstall
         )
 
         // MARK: Preferences (Core Data)

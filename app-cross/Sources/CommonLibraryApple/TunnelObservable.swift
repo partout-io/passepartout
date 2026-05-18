@@ -32,6 +32,8 @@ public final class TunnelObservable: TunnelHooksProtocol {
 
     private let logging: Logging?
 
+    private let willInstall: (@Sendable (Profile, Bool) async throws -> Profile?)?
+
     public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
 
     private var subscriptions: [Task<Void, Never>]
@@ -41,12 +43,14 @@ public final class TunnelObservable: TunnelHooksProtocol {
         tunnel: Tunnel,
         kvStore: KeyValueStore? = nil,
         extensionInstaller: ExtensionInstaller? = nil,
-        logging: Logging? = nil
+        logging: Logging? = nil,
+        willInstall: (@Sendable (Profile, Bool) async throws -> Profile?)? = nil
     ) {
         self.tunnel = tunnel
         self.kvStore = kvStore
         self.extensionInstaller = extensionInstaller
         self.logging = logging
+        self.willInstall = willInstall
         activeProfiles = [:]
         subscriptions = []
     }
@@ -65,15 +69,19 @@ extension TunnelObservable {
     }
 
     public func connect(to profile: Profile, force: Bool) async throws {
-        // Trigger user input if profile is interactive
-        guard !profile.isInteractive || force else {
-            throw ABI.AppError.interactiveLogin
-        }
         pspLog(.core, .notice, "Connect to profile \(profile.id)...")
         try await installAndConnect(true, with: profile, force: force)
     }
 
-    private func installAndConnect(_ connect: Bool, with profile: Profile, force: Bool) async throws {
+    private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
+        // Preprocess profile
+        let profile = try await willInstall?(preProfile, connect) ?? preProfile
+        // Trigger user input if profile is interactive
+        if connect {
+            guard !profile.isInteractive || force else {
+                throw ABI.AppError.interactiveLogin
+            }
+        }
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
         if let preferences = kvStore?.preferences {
             let encodedPreferences = try ABI.encode(preferences)

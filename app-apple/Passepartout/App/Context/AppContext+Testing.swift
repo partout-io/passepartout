@@ -64,12 +64,14 @@ extension AppContext {
         let tunnel = Tunnel(
             .global,
             strategy: FakeTunnelStrategy(),
-            willInstall: tunnelProcessor.willInstall,
             environmentFactory: { @Sendable _ in
                 SharedTunnelEnvironment(profileId: nil)
             }
         )
-        let tunnelObservable = TunnelObservable(tunnel: tunnel)
+        let tunnelObservable = TunnelObservable(
+            tunnel: tunnel,
+            willInstall: tunnelProcessor.willInstall
+        )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
         let webReceiverManager = WebReceiverManager()
