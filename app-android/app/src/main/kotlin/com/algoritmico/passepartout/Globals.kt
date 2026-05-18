@@ -13,6 +13,7 @@ object Globals {
     }
 
     const val logTag = "Passepartout"
+    const val serviceLogTag = "PassepartoutVpnService"
 
     const val EVENT_BUFFER_CAPACITY = 64
 

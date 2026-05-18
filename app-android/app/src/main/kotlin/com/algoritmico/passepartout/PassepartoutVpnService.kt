@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 class PassepartoutVpnService: VpnService() {
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
-            logTag = Globals.logTag,
+            logTag = Globals.serviceLogTag,
             service = this,
             engine = VpnEngine(
                 library = PassepartoutWrapper(),
