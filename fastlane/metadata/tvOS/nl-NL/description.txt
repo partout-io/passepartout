@@ -16,6 +16,10 @@ Passepartout is ontworpen met transparantie en privacy in gedachten:
 - Zie precies met welke servers je verbinding maakt.  
 - Geen advertenties, trackers of onnodige achtergrondactiviteiten – alleen de VPN-verbinding die je nodig hebt.
 
+COMPATIBILITEIT
+
+OpenVPN-ondersteuning richt zich op gangbare opties; compressie wordt niet ondersteund omdat die niet veilig is.
+
 OPEN SOURCE EN COMMUNITY-GEDREVEN
 
 Passepartout is open source en ontwikkelt zich voortdurend dankzij de hulp van de community. Bekijk het project op GitHub: https://github.com/partout-io

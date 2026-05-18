@@ -38,6 +38,7 @@
 "errors.app.passepartout.no_active_modules" = "Профіль не має активних модулів.";
 "errors.app.passepartout.parsing" = "Не вдалося розібрати файл.";
 "errors.app.passepartout.timeout" = "Час виконання операції вичерпано.";
+"errors.app.passepartout.openvpn.unsupported_compression" = "Стиснення OpenVPN небезпечне й більше не підтримується.";
 "errors.app.permission_denied" = "Доступ заборонено";
 "errors.app.tunnel" = "Не вдалося виконати операцію.";
 "errors.app.web_receiver" = "Неможливо розпочати імпорт. Переконайтеся, що ваш телевізор правильно підключений до локальної мережі.";

@@ -11,6 +11,8 @@ INBEGREPEN FUNCTIES:
 - Automatisering met Snelkoppelingen voor eenvoudige workflows.
 - Uitsluiten van eindpunten voor nauwkeurige controle.
 
+OpenVPN-ondersteuning richt zich op gangbare opties; compressie wordt niet ondersteund omdat die niet veilig is.
+
 VEREIST EEN IN-APPAANKOOP:
 
 - Ondersteuning voor Apple TV.

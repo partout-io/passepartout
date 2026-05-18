@@ -11,6 +11,8 @@ FONCTIONNALITÉS INCLUSES :
 - Automatisation avec Raccourcis pour des opérations simplifiées.
 - Exclusion de points de terminaison pour un contrôle précis.
 
+La compatibilité OpenVPN couvre les options les plus courantes ; la compression n'est pas prise en charge, car elle n'est pas sécurisée.
+
 NÉCESSITE UN ACHAT INTÉGRÉ :
 
 - Compatibilité avec Apple TV.

@@ -16,6 +16,10 @@ Passepartout está diseñado pensando en la transparencia y tu privacidad:
 - Ve exactamente a qué servidores te estás conectando.  
 - Sin anuncios, rastreadores ni actividades innecesarias en segundo plano, solo la conexión VPN que necesitas.
 
+COMPATIBILIDAD
+
+La compatibilidad con OpenVPN se centra en las opciones más comunes; la compresión no se admite porque no es segura.
+
 CÓDIGO ABIERTO Y BASADO EN LA COMUNIDAD
 
 Passepartout es de código abierto y evoluciona constantemente gracias a la ayuda de su comunidad. Consulta el proyecto en GitHub: https://github.com/partout-io

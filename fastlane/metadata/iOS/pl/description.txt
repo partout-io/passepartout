@@ -11,6 +11,8 @@ ZAWARTE FUNKCJE:
 - Automatyzacja za pomocą Skrótów dla uproszczonych operacji.
 - Wykluczanie punktów końcowych dla precyzyjnej kontroli.
 
+Obsługa OpenVPN obejmuje najczęściej używane opcje; kompresja nie jest obsługiwana, ponieważ nie jest bezpieczna.
+
 WYMAGA ZAKUPU W APLIKACJI:
 
 - Obsługa Apple TV.

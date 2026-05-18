@@ -11,6 +11,8 @@ ENTHALTENE FUNKTIONEN:
 - Automatisierung mit Kurzbefehlen für optimierte Abläufe.
 - Ausschluss von Endpunkten für präzise Kontrolle.
 
+Die OpenVPN-Unterstützung konzentriert sich auf gängige Optionen; Kompression wird nicht unterstützt, da sie nicht sicher ist.
+
 ERFORDERT EINEN IN-APP-KAUF:
 
 - Unterstützung für Apple TV.

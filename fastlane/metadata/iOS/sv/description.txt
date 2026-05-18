@@ -11,6 +11,8 @@ INGÅENDE FUNKTIONER:
 - Automatisering med Genvägar för smidiga arbetsflöden.
 - Exkludera ändpunkter för exakt kontroll.
 
+OpenVPN-stödet fokuserar på vanliga alternativ; komprimering stöds inte eftersom det inte är säkert.
+
 KRÄVER KÖP I APPEN:
 
 - Stöd för Apple TV.
