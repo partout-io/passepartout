@@ -24,13 +24,15 @@ public final class TunnelObservable: TunnelHooksProtocol {
         public static nonisolated let appPreferences = "appPreferences"
     }
 
+    public typealias WillInstallBlock = @Sendable (Profile, Bool, Bool) async throws -> Profile?
+
     private let tunnel: Tunnel
 
     private let kvStore: KeyValueStore?
 
-    private let extensionInstaller: ExtensionInstaller?
-
     private let logging: Logging?
+
+    private let willInstall: WillInstallBlock?
 
     public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
 
@@ -40,13 +42,13 @@ public final class TunnelObservable: TunnelHooksProtocol {
     public init(
         tunnel: Tunnel,
         kvStore: KeyValueStore? = nil,
-        extensionInstaller: ExtensionInstaller? = nil,
-        logging: Logging? = nil
+        logging: Logging? = nil,
+        willInstall: WillInstallBlock? = nil
     ) {
         self.tunnel = tunnel
         self.kvStore = kvStore
-        self.extensionInstaller = extensionInstaller
         self.logging = logging
+        self.willInstall = willInstall
         activeProfiles = [:]
         subscriptions = []
     }
@@ -69,50 +71,13 @@ extension TunnelObservable {
         try await installAndConnect(true, with: profile, force: force)
     }
 
-//    public func connect(to profileId: Profile.ID, force: Bool) async throws {
-//        guard let profile = profile(withId: profileId) else {
-//            throw ABI.AppError.notFound
-//        }
-//        try await connect(to: profile, force: force)
-//    }
-
-    private func installAndConnect(_ connect: Bool, with profile: Profile, force: Bool) async throws {
-        if connect && !force && profile.isInteractive {
-            throw ABI.AppError.interactiveLogin
-        }
-#if !PSP_CROSS
+    private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
+        let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
         if let preferences = kvStore?.preferences {
             let encodedPreferences = try ABI.encode(preferences)
             options[Options.appPreferences] = encodedPreferences as NSData
         }
-#else
-        // Cross sends no .isManualKey to startTunnel()
-        var options: Sendable?
-#endif
-
-#if os(macOS)
-        if let extensionInstaller {
-            if extensionInstaller.currentResult == .success {
-                pspLog(.core, .info, "Extensions: already installed")
-            } else {
-                pspLog(.core, .info, "Extensions: install...")
-                do {
-                    let result = try await extensionInstaller.install()
-                    switch result {
-                    case .success:
-                        break
-                    default:
-                        throw ABI.AppError.systemExtension(result)
-                    }
-                    pspLog(.core, .info, "Extensions: installation result is \(result)")
-                } catch {
-                    pspLog(.core, .error, "Extensions: installation error: \(error)")
-                }
-            }
-        }
-#endif
-
         try await tunnel.install(profile, connect: connect, options: options)
     }
 

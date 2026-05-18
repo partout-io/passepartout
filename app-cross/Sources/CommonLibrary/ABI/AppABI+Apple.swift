@@ -136,10 +136,12 @@ extension AppABI {
 
         // MARK: Profiles and Tunnel (NE)
 
+        let sysexManager = appConfiguration.newSystemExtensionManager()
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
+            extensionInstaller: sysexManager,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }
@@ -176,14 +178,10 @@ extension AppABI {
             ctx,
             strategy: tunnelStrategy,
             refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
-            willInstall: { [weak tunnelProcessor] in
-                try await tunnelProcessor?.willInstall($0) ?? $0
-            },
             environmentFactory: { @Sendable in
                 appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             }
         )
-        let sysexManager = appConfiguration.newSystemExtensionManager()
 
         // Provide hooks through observable
         let logging = TunnelObservable.Logging(
@@ -194,8 +192,8 @@ extension AppABI {
         let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
             kvStore: kvStore,
-            extensionInstaller: sysexManager,
-            logging: logging
+            logging: logging,
+            willInstall: tunnelProcessor.willInstall
         )
 
         // MARK: Preferences (Core Data)

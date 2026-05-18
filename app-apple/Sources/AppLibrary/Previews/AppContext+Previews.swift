@@ -48,11 +48,14 @@ extension AppContext {
             .global,
             strategy: FakeTunnelStrategy(),
             refreshInterval: 10000,
+            environmentFactory: { @Sendable _ in
+                SharedTunnelEnvironment(profileId: nil)
+            }
+        )
+        let tunnelObservable = TunnelObservable(
+            tunnel: tunnel,
             willInstall: processor.willInstall
-        ) { @Sendable _ in
-            SharedTunnelEnvironment(profileId: nil)
-        }
-        let tunnelObservable = TunnelObservable(tunnel: tunnel)
+        )
         let preferencesManager = PreferencesManager()
 
         let dummyReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1:9000")!)

@@ -14,11 +14,13 @@ extension ABI.AppConfiguration {
     public func newAppTunnelProcessor(
         apiManager: APIManager?,
         resolver: Resolver,
+        extensionInstaller: ExtensionInstaller?,
         providerServerSorter: @escaping ProviderServerParameters.Sorter
     ) -> AppTunnelProcessor {
         DefaultAppTunnelProcessor(
             apiManager: apiManager,
             resolver: resolver,
+            extensionInstaller: extensionInstaller,
             providerServerSorter: providerServerSorter
         )
     }
