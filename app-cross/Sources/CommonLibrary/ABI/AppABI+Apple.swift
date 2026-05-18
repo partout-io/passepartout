@@ -136,10 +136,12 @@ extension AppABI {
 
         // MARK: Profiles and Tunnel (NE)
 
+        let sysexManager = appConfiguration.newSystemExtensionManager()
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
+            extensionInstaller: sysexManager,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }
@@ -181,7 +183,6 @@ extension AppABI {
                 appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             }
         )
-        let sysexManager = appConfiguration.newSystemExtensionManager()
 
         // Provide hooks through observable
         let logging = TunnelObservable.Logging(

@@ -65,54 +65,20 @@ extension TunnelObservable {
     }
 
     public func connect(to profile: Profile, force: Bool) async throws {
+        // Trigger user input if profile is interactive
+        guard !profile.isInteractive || force else {
+            throw ABI.AppError.interactiveLogin
+        }
         pspLog(.core, .notice, "Connect to profile \(profile.id)...")
         try await installAndConnect(true, with: profile, force: force)
     }
 
-//    public func connect(to profileId: Profile.ID, force: Bool) async throws {
-//        guard let profile = profile(withId: profileId) else {
-//            throw ABI.AppError.notFound
-//        }
-//        try await connect(to: profile, force: force)
-//    }
-
     private func installAndConnect(_ connect: Bool, with profile: Profile, force: Bool) async throws {
-        if connect && !force && profile.isInteractive {
-            throw ABI.AppError.interactiveLogin
-        }
-#if !PSP_CROSS
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
         if let preferences = kvStore?.preferences {
             let encodedPreferences = try ABI.encode(preferences)
             options[Options.appPreferences] = encodedPreferences as NSData
         }
-#else
-        // Cross sends no .isManualKey to startTunnel()
-        var options: Sendable?
-#endif
-
-#if os(macOS)
-        if let extensionInstaller {
-            if extensionInstaller.currentResult == .success {
-                pspLog(.core, .info, "Extensions: already installed")
-            } else {
-                pspLog(.core, .info, "Extensions: install...")
-                do {
-                    let result = try await extensionInstaller.install()
-                    switch result {
-                    case .success:
-                        break
-                    default:
-                        throw ABI.AppError.systemExtension(result)
-                    }
-                    pspLog(.core, .info, "Extensions: installation result is \(result)")
-                } catch {
-                    pspLog(.core, .error, "Extensions: installation error: \(error)")
-                }
-            }
-        }
-#endif
-
         try await tunnel.install(profile, connect: connect, options: options)
     }
 

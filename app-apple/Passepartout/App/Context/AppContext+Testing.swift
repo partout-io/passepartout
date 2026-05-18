@@ -56,6 +56,7 @@ extension AppContext {
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
+            extensionInstaller: nil,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }

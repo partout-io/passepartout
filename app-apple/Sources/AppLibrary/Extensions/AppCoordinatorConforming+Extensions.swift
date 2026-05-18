@@ -21,6 +21,7 @@ extension AppCoordinatorConforming {
         } catch ABI.AppError.interactiveLogin {
             onInteractiveLogin(profile) { newProfile in
                 Task {
+                    // Force to not re-present the interactive login
                     await onConnect(newProfile, force: true, verify: verify)
                 }
             }
