@@ -99,6 +99,13 @@ extension PartoutError: @retroactive LocalizedError {
         case .noActiveModules:
             return V.noActiveModules
 
+        case .OpenVPN.unsupportedCompression:
+            var desc = V.unsupportedCompression
+            if let option = userInfo as? String {
+                desc.append("\n\n\(option)")
+            }
+            return desc
+
         case .parsing:
             let message = userInfo as? String ?? (reason as? LocalizedError)?.localizedDescription
 

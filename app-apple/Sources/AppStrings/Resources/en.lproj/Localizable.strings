@@ -448,6 +448,7 @@
 
 // MARK: Global (Partout errors)
 
+"errors.app.passepartout.unsupported_compression" = "Compression is unsafe and therefore not supported.";
 "errors.app.passepartout.corrupt_provider_module" = "Unable to connect to provider server (reason=%@).";
 "errors.app.passepartout.default" = "Unable to complete operation (code=%@).";
 "errors.app.passepartout.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
