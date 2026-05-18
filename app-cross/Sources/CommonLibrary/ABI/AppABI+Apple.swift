@@ -192,7 +192,6 @@ extension AppABI {
         let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
             kvStore: kvStore,
-            extensionInstaller: sysexManager,
             logging: logging,
             willInstall: tunnelProcessor.willInstall
         )

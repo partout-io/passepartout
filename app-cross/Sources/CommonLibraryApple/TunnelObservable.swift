@@ -30,8 +30,6 @@ public final class TunnelObservable: TunnelHooksProtocol {
 
     private let kvStore: KeyValueStore?
 
-    private let extensionInstaller: ExtensionInstaller?
-
     private let logging: Logging?
 
     private let willInstall: WillInstallBlock?
@@ -44,13 +42,11 @@ public final class TunnelObservable: TunnelHooksProtocol {
     public init(
         tunnel: Tunnel,
         kvStore: KeyValueStore? = nil,
-        extensionInstaller: ExtensionInstaller? = nil,
         logging: Logging? = nil,
         willInstall: WillInstallBlock? = nil
     ) {
         self.tunnel = tunnel
         self.kvStore = kvStore
-        self.extensionInstaller = extensionInstaller
         self.logging = logging
         self.willInstall = willInstall
         activeProfiles = [:]
