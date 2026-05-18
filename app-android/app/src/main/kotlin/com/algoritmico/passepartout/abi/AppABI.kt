@@ -6,7 +6,7 @@ package com.algoritmico.passepartout.abi
 
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABIResult
-import io.partout.abi.TaggedProfile
+import io.partout.models.TaggedProfile
 
 internal class AppABIProfile(
     private val library: PassepartoutWrapper
@@ -35,23 +35,6 @@ internal class AppABIProfile(
         }
         return result.payload?.let { json ->
             Globals.json.decodeFromString(json)
-        }
-    }
-}
-
-internal class AppABITunnel(
-    private val library: PassepartoutWrapper
-) : AppABITunnelProtocol {
-    override suspend fun connect(profile: TaggedProfile) {
-        val profileJSON = Globals.json.encodeToString(profile)
-        ABIResult.await { completion ->
-            library.appConnect(profileJSON, completion)
-        }
-    }
-
-    override suspend fun disconnect(profileId: String) {
-        ABIResult.await { completion ->
-            library.appDisconnect(profileId, completion)
         }
     }
 }

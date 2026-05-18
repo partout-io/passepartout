@@ -7,20 +7,14 @@ import Partout
 
 // Only @unchecked for the managersSubscription initialization
 public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
-    private let repository: NETunnelManagerRepository & Sendable
-
-    private let title: @Sendable (Profile) -> String
+    private let repository: NETunnelManagerRepository
 
     private let profilesSubject: CurrentValueStream<[Profile]>
 
     private var managersSubscription: Task<Void, Never>?
 
-    public init(
-        repository: NETunnelManagerRepository & Sendable,
-        title: @escaping @Sendable (Profile) -> String
-    ) {
+    public init(repository: NETunnelManagerRepository) {
         self.repository = repository
-        self.title = title
         profilesSubject = CurrentValueStream([])
 
         let stream = repository.managersStream
@@ -57,8 +51,7 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
         try await repository.save(
             profile,
             forConnecting: false,
-            options: nil as [String: Sendable]?,
-            title: title
+            options: nil as [String: Sendable]?
         )
     }
 

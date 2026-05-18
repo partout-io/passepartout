@@ -13,7 +13,7 @@ import com.algoritmico.passepartout.abi.models.ProfileEventChangeRemoteImporting
 import com.algoritmico.passepartout.abi.models.ProfileEventReady
 import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.models.ProfileSharingFlag
-import io.partout.abi.TaggedProfile
+import io.partout.models.TaggedProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob

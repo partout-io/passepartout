@@ -11,6 +11,11 @@ import CoreData
 import Partout
 
 extension AppABI {
+    public struct Result {
+        public let abi: AppABI
+        public let tunnelObservable: TunnelObservable
+    }
+
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
         kvStore: KeyValueStore,
@@ -20,7 +25,7 @@ extension AppABI {
         webStringsBundle: Bundle?,
         withUITesting: Bool,
         withFakeIAPs: Bool
-    ) -> AppABI {
+    ) -> Result {
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = pspLogRegister(
             for: .app,
@@ -105,7 +110,7 @@ extension AppABI {
             iapHelper = appConfiguration.newInAppHelper()
             iapReceiptReader = SharedReceiptReader(
                 reader: appConfiguration.newInAppReceiptReader {
-                    // TODO: ###, StoreKit receipt caching
+                    // TODO: #1786, StoreKit receipt caching
                     .uncached
                 }
             )
@@ -132,7 +137,6 @@ extension AppABI {
         // MARK: Profiles and Tunnel (NE)
 
         let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
-        let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
@@ -150,14 +154,8 @@ extension AppABI {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let tunnelStrategy = NETunnelStrategy(
-            ctx,
-            bundleIdentifier: tunnelIdentifier,
-            coder: appConfiguration.newNEProtocolCoder(ctx, coder: registry)
-        )
-        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
-            tunnelProcessor?.title(for: $0) ?? $0.name
-        }
+        let tunnelStrategy = appConfiguration.newNETunnelStrategy(ctx, coder: registry)
+        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy)
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
@@ -174,15 +172,30 @@ extension AppABI {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let tunnel = appConfiguration.newTunnel(ctx, strategy: tunnelStrategy)
-        let sysexManager = appConfiguration.newSystemExtensionManager(
-            tunnelIdentifier: tunnelIdentifier
+        let tunnel = Tunnel(
+            ctx,
+            strategy: tunnelStrategy,
+            refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
+            willInstall: { [weak tunnelProcessor] in
+                try await tunnelProcessor?.willInstall($0) ?? $0
+            },
+            environmentFactory: { @Sendable in
+                appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+            }
         )
-        let tunnelManager = appConfiguration.newTunnelManager(
+        let sysexManager = appConfiguration.newSystemExtensionManager()
+
+        // Provide hooks through observable
+        let logging = TunnelObservable.Logging(
+            maxDebugLogLevel: appConfiguration.constants.log.options.maxDebugLogLevel,
+            sinceLast: appConfiguration.constants.log.sinceLast,
+            formatter: logFormatter
+        )
+        let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
-            extensionInstaller: sysexManager,
             kvStore: kvStore,
-            processor: tunnelProcessor
+            extensionInstaller: sysexManager,
+            logging: logging
         )
 
         // MARK: Preferences (Core Data)
@@ -284,7 +297,7 @@ extension AppABI {
             }
         }
 
-        return AppABI(
+        let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
@@ -296,12 +309,13 @@ extension AppABI {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
+            tunnelHooks: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock,
             bindings: nil
         )
+        return Result(abi: abi, tunnelObservable: tunnelObservable)
     }
 }
 

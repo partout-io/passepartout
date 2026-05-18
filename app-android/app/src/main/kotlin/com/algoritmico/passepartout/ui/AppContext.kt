@@ -9,13 +9,12 @@ import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.AppABIProfile
-import com.algoritmico.passepartout.abi.AppABITunnel
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.readAsset
-import com.algoritmico.passepartout.tunnel.PassepartoutVpnService
-import io.partout.jni.PartoutTunnel
+import com.algoritmico.passepartout.PassepartoutVpnService
+import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.Closeable
@@ -52,8 +51,7 @@ class AppContext(
     )
 
     val tunnelObservable = TunnelObservable(
-        AppABITunnel(library),
-        appEvents,
+        tunnel,
         coroutineScope
     )
 

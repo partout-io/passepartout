@@ -8,9 +8,8 @@ import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
-import io.partout.abi.TunnelSnapshot
-import io.partout.jni.PartoutTunnel
-import io.partout.jni.PartoutVpnServiceRuntime
+import io.partout.PartoutTunnel
+import io.partout.PartoutVpnServiceRuntime
 
 class PassepartoutWrapper {
     external fun partoutVersion(): String
@@ -39,14 +38,6 @@ class PassepartoutWrapper {
     )
     external fun appFetchProfile(
         id: String,
-        completion: ABICompletionCallback
-    )
-    external fun appConnect(
-        profile: String,
-        completion: ABICompletionCallback
-    )
-    external fun appDisconnect(
-        profileId: String,
         completion: ABICompletionCallback
     )
     external fun tunnelStart(

@@ -1,14 +1,14 @@
 package com.algoritmico.passepartout
 
-import io.partout.abi.DNSModuleProtocolType
-import io.partout.abi.DNSModuleProtocolTypecleartext
-import io.partout.abi.DNSModuleProtocolTypehttps
-import io.partout.abi.DNSModuleProtocolTypetls
-import io.partout.abi.OpenVPNObfuscationMethod
-import io.partout.abi.OpenVPNObfuscationMethodobfuscate
-import io.partout.abi.OpenVPNObfuscationMethodreverse
-import io.partout.abi.OpenVPNObfuscationMethodxormask
-import io.partout.abi.OpenVPNObfuscationMethodxorptrpos
+import io.partout.models.DNSModuleProtocolType
+import io.partout.models.DNSModuleProtocolTypecleartext
+import io.partout.models.DNSModuleProtocolTypehttps
+import io.partout.models.DNSModuleProtocolTypetls
+import io.partout.models.OpenVPNObfuscationMethod
+import io.partout.models.OpenVPNObfuscationMethodobfuscate
+import io.partout.models.OpenVPNObfuscationMethodreverse
+import io.partout.models.OpenVPNObfuscationMethodxormask
+import io.partout.models.OpenVPNObfuscationMethodxorptrpos
 import kotlinx.serialization.json.encodeToJsonElement
 import org.junit.Assert.*
 import org.junit.Test

@@ -43,7 +43,7 @@
 }
 
 # The native tunnel backend receives this object and calls into it by name.
--keep class io.partout.jni.PartoutVpnServiceRuntime {
+-keep class io.partout.PartoutVpnServiceRuntime {
     public void testWorking();
     public int setTunnel(java.lang.String);
     public void configureSockets(int[]);

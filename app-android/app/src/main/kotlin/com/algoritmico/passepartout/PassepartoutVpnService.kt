@@ -1,8 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Davide De Rosa
-//
-// SPDX-License-Identifier: GPL-3.0
-
-package com.algoritmico.passepartout.tunnel
+package com.algoritmico.passepartout
 
 import android.app.Notification
 import android.content.Intent
@@ -10,12 +6,8 @@ import android.net.VpnService
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
-import com.algoritmico.passepartout.readAsset
-import io.partout.jni.PartoutVpnServiceRuntime
-import io.partout.jni.PartoutVpnServiceRuntime.Engine
-import io.partout.jni.PartoutVpnServiceRuntime.Result
+import io.partout.PartoutVpnServiceRuntime
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -87,12 +79,12 @@ class PassepartoutVpnService: VpnService() {
         private val bundleProvider: suspend () -> String,
         private val constantsProvider: suspend () -> String,
         private val cachePathProvider: () -> String
-    ) : Engine {
+    ) : PartoutVpnServiceRuntime.Engine {
         override suspend fun start(
             runtime: PartoutVpnServiceRuntime,
             profileJSON: String
-        ): Result = withContext(Dispatchers.IO) {
-            Result(
+        ): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
+            PartoutVpnServiceRuntime.Result(
                 library.tunnelStart(
                     bundleProvider(),
                     constantsProvider(),
@@ -104,10 +96,10 @@ class PassepartoutVpnService: VpnService() {
             )
         }
 
-        override suspend fun stop(): Result = withContext(Dispatchers.IO) {
-            val result = CompletableDeferred<Result>()
+        override suspend fun stop(): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
+            val result = CompletableDeferred<PartoutVpnServiceRuntime.Result>()
             library.tunnelStop { code, json ->
-                result.complete(Result(code, json))
+                result.complete(PartoutVpnServiceRuntime.Result(code, json))
             }
             result.await()
         }

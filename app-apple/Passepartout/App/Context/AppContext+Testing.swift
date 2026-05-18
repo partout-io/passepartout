@@ -53,9 +53,6 @@ extension AppContext {
             processor: profileProcessor
         )
         profileManager.enableRemoteImporting(true)
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
-            SharedTunnelEnvironment(profileId: nil)
-        }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
@@ -63,10 +60,15 @@ extension AppContext {
                 $0.sort(using: $1.sortingComparators)
             }
         )
-        let tunnelManager = TunnelManager(
-            tunnel: tunnel,
-            processor: tunnelProcessor
+        let tunnel = Tunnel(
+            .global,
+            strategy: FakeTunnelStrategy(),
+            willInstall: tunnelProcessor.willInstall,
+            environmentFactory: { @Sendable _ in
+                SharedTunnelEnvironment(profileId: nil)
+            }
         )
+        let tunnelObservable = TunnelObservable(tunnel: tunnel)
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
         let webReceiverManager = WebReceiverManager()
@@ -84,11 +86,16 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
+            tunnelHooks: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             bindings: nil
         )
-        return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
+        return AppContext(
+            abi: abi,
+            appConfiguration: appConfiguration,
+            kvStore: kvStore,
+            tunnelObservable: tunnelObservable
+        )
     }
 }

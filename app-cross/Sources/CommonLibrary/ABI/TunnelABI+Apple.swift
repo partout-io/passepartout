@@ -109,7 +109,7 @@ extension TunnelABI {
             inAppHelper: appConfiguration.newInAppHelper(),
             receiptReader: SharedReceiptReader(
                 reader: appConfiguration.newInAppReceiptReader {
-                    // TODO: ###, StoreKit receipt caching
+                    // TODO: #1786, StoreKit receipt caching
                     .uncached
                 },
             ),

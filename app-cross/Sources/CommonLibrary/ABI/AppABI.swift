@@ -12,7 +12,6 @@ public final class AppABI: Sendable {
     public nonisolated let iap: AppABIIAPProtocol
     public nonisolated let profile: AppABIProfileProtocol
     public nonisolated let registry: AppABIRegistryProtocol
-    public nonisolated let tunnel: AppABITunnelProtocol
     public nonisolated let version: AppABIVersionProtocol
     public nonisolated let webReceiver: AppABIWebReceiverProtocol
 #if !PSP_CROSS
@@ -32,7 +31,7 @@ public final class AppABI: Sendable {
     private let iapManager: IAPManager
     private let logFormatter: LogFormatter
     private let profileManager: ProfileManager
-    private let tunnelManager: TunnelManager
+    private let tunnelHooks: TunnelHooksProtocol
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
@@ -58,7 +57,7 @@ public final class AppABI: Sendable {
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
-        tunnelManager: TunnelManager,
+        tunnelHooks: TunnelHooksProtocol,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
         onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil,
@@ -71,7 +70,7 @@ public final class AppABI: Sendable {
         self.kvStore = kvStore
         self.logFormatter = logFormatter
         self.profileManager = profileManager
-        self.tunnelManager = tunnelManager
+        self.tunnelHooks = tunnelHooks
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
@@ -96,10 +95,6 @@ public final class AppABI: Sendable {
             registry: partoutRegistry
         )
         registry = AppABIRegistry(registry: partoutRegistry)
-        tunnel = AppABITunnel(
-            tunnelManager: tunnelManager,
-            logParameters: appConfiguration.constants.log
-        )
         version = AppABIVersion(versionChecker: versionChecker)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
     }
@@ -118,7 +113,6 @@ extension AppABI {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
-        let tunnelEvents = tunnelManager.observeObjects()
         let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
 
@@ -145,12 +139,6 @@ extension AppABI {
             for await event in profileEvents {
                 guard let self else { return }
                 dispatch(.profile(event), handler)
-            }
-        })
-        subscriptions.append(Task { [weak self] in
-            for await event in tunnelEvents {
-                guard let self else { return }
-                dispatch(.tunnel(event), handler)
             }
         })
         subscriptions.append(Task { [weak self] in
@@ -325,37 +313,6 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
 
     func resolvedModule(_ module: ProviderModule, in profile: Profile?) throws -> Module {
         try registry.resolvedModule(module, in: profile)
-    }
-}
-
-private struct AppABITunnel: AppABITunnelProtocol {
-    let tunnelManager: TunnelManager
-    let logParameters: ABI.AppConstants.Log
-
-    func connect(to profile: Profile, force: Bool) async throws {
-        try await tunnelManager.connect(with: profile, force: force)
-    }
-
-//    func reconnect(to profileId: ABI.Identifier) async throws {
-//        try await tunnel.
-//    }
-
-    func disconnect(from profileId: Profile.ID) async throws {
-        try await tunnelManager.disconnect(from: profileId)
-    }
-
-    func currentLog() async -> [ABI.LogLine] {
-        await tunnelManager.currentLog(parameters: logParameters)
-    }
-
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) async -> Any? {
-        switch key {
-        case .openVPNServerConfiguration:
-            await tunnelManager.value(
-                forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
-                ofProfileId: profileId
-            )
-        }
     }
 }
 
@@ -542,11 +499,11 @@ private extension AppABI {
             pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
-        guard tunnelManager.isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
+        guard tunnelHooks.isActiveProfile(withId: profile.id) else {
+            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
             return
         }
-        let status = tunnelManager.tunnelStatus(ofProfileId: profile.id)
+        let status = tunnelHooks.tunnelStatus(for: profile.id)
         guard [.active, .activating].contains(status) else {
             pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
             return
@@ -555,9 +512,9 @@ private extension AppABI {
         pendingTask = Task {
             do {
                 pspLog(.core, .info, "\tReconnect profile \(profile.id)")
-                try await tunnelManager.disconnect(from: profile.id)
+                try await tunnelHooks.disconnect(from: profile.id)
                 do {
-                    try await tunnelManager.connect(with: profile, force: false)
+                    try await tunnelHooks.connect(to: profile)
                 } catch ABI.AppError.interactiveLogin {
                     pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {

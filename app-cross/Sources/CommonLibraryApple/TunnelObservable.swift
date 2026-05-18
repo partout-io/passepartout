@@ -4,70 +4,87 @@
 
 @preconcurrency import Partout
 
-@BusinessActor
-public final class TunnelManager {
-    public static nonisolated let isManualKey = "isManual"
+@MainActor @Observable
+public final class TunnelObservable: TunnelHooksProtocol {
+    public struct Logging {
+        public let maxDebugLogLevel: DebugLog.Level
+        public let sinceLast: Double
+        public let formatter: LogFormatter
 
-    public static nonisolated let appPreferences = "appPreferences"
+        public init(maxDebugLogLevel: DebugLog.Level, sinceLast: Double, formatter: LogFormatter) {
+            self.maxDebugLogLevel = maxDebugLogLevel
+            self.sinceLast = sinceLast
+            self.formatter = formatter
+        }
+    }
 
-    private let tunnel: TunnelProtocol
+    public enum Options {
+        public static nonisolated let isManualKey = "isManual"
 
-    private let extensionInstaller: ExtensionInstaller?
+        public static nonisolated let appPreferences = "appPreferences"
+    }
+
+    private let tunnel: Tunnel
 
     private let kvStore: KeyValueStore?
 
-    private let processor: AppTunnelProcessor?
+    private let extensionInstaller: ExtensionInstaller?
 
-    private nonisolated let didChange: PassthroughStream<ABI.TunnelEvent>
+    private let logging: Logging?
 
-    private var latestInfo: [Profile.ID: ABI.AppTunnelInfo]? {
-        didSet {
-            didChange.send(.refresh(.init(active: latestInfo ?? [:])))
-        }
-    }
+    public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
 
     private var subscriptions: [Task<Void, Never>]
 
     // TODO: #218, keep "last used profile" until .multiple
-    public nonisolated init(
-        tunnel: TunnelProtocol,
-        extensionInstaller: ExtensionInstaller? = nil,
+    public init(
+        tunnel: Tunnel,
         kvStore: KeyValueStore? = nil,
-        processor: AppTunnelProcessor? = nil
+        extensionInstaller: ExtensionInstaller? = nil,
+        logging: Logging? = nil
     ) {
         self.tunnel = tunnel
-        self.extensionInstaller = extensionInstaller
         self.kvStore = kvStore
-        self.processor = processor
-        didChange = PassthroughStream()
-        latestInfo = nil
+        self.extensionInstaller = extensionInstaller
+        self.logging = logging
+        activeProfiles = [:]
         subscriptions = []
     }
 }
 
 // MARK: - Actions
 
-extension TunnelManager {
+extension TunnelObservable {
     public func install(_ profile: Profile) async throws {
         pspLog(.core, .notice, "Install profile \(profile.id)...")
         try await installAndConnect(false, with: profile, force: false)
     }
 
-    public func connect(with profile: Profile, force: Bool = false) async throws {
+    public func connect(to profile: Profile) async throws {
+        try await connect(to: profile, force: false)
+    }
+
+    public func connect(to profile: Profile, force: Bool) async throws {
         pspLog(.core, .notice, "Connect to profile \(profile.id)...")
         try await installAndConnect(true, with: profile, force: force)
     }
 
+//    public func connect(to profileId: Profile.ID, force: Bool) async throws {
+//        guard let profile = profile(withId: profileId) else {
+//            throw ABI.AppError.notFound
+//        }
+//        try await connect(to: profile, force: force)
+//    }
+
     private func installAndConnect(_ connect: Bool, with profile: Profile, force: Bool) async throws {
-        let newProfile = try await processedProfile(profile)
-        if connect && !force && newProfile.isInteractive {
+        if connect && !force && profile.isInteractive {
             throw ABI.AppError.interactiveLogin
         }
 #if !PSP_CROSS
-        var options: [String: NSObject] = [Self.isManualKey: true as NSNumber]
+        var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
         if let preferences = kvStore?.preferences {
             let encodedPreferences = try ABI.encode(preferences)
-            options[Self.appPreferences] = encodedPreferences as NSData
+            options[Options.appPreferences] = encodedPreferences as NSData
         }
 #else
         // Cross sends no .isManualKey to startTunnel()
@@ -96,12 +113,7 @@ extension TunnelManager {
         }
 #endif
 
-        try await tunnel.install(
-            newProfile,
-            connect: connect,
-            options: options,
-            title: processedTitle
-        )
+        try await tunnel.install(profile, connect: connect, options: options)
     }
 
     public func disconnect(from profileId: Profile.ID) async throws {
@@ -109,15 +121,26 @@ extension TunnelManager {
         try await tunnel.disconnect(from: profileId)
     }
 
-    public func currentLog(parameters: ABI.AppConstants.Log) async -> [ABI.LogLine] {
-        var maxLevel = parameters.options.maxDebugLogLevel
+    public func currentLog() async -> [String] {
+        guard let logging else { return [] }
+        return await currentLog(logging: logging).map {
+            logging.formatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
+        }
+    }
+
+    private func currentLog(logging: Logging) async -> [ABI.LogLine] {
+        var maxLevel = logging.maxDebugLogLevel
         if kvStore?.preferences.extensiveLogging == true {
             maxLevel = .debug
         }
+        // TODO: #218, handle multiple profiles
+        guard let firstProfileId = tunnel.snapshots.first?.key else {
+            return []
+        }
         let output = try? await tunnel.sendMessage(.debugLog(
-            sinceLast: parameters.sinceLast,
+            sinceLast: logging.sinceLast,
             maxLevel: maxLevel
-        ))
+        ), to: firstProfileId)
         switch output {
         case .debugLog(let log):
             return log.lines.map {
@@ -131,46 +154,47 @@ extension TunnelManager {
 
 // MARK: - State
 
-extension TunnelManager {
+extension TunnelObservable {
     public func isActiveProfile(withId profileId: Profile.ID) -> Bool {
-        latestInfo?.keys.contains(profileId) ?? false
+        activeProfiles.keys.contains(profileId)
     }
 
-    public func status(ofProfileId profileId: Profile.ID) -> ABI.AppProfileStatus {
-        latestInfo?[profileId]?.status ?? .disconnected
+    public func status(for profileId: Profile.ID) -> ABI.AppProfileStatus {
+        activeProfiles[profileId]?.status ?? .disconnected
     }
 
-    public func tunnelStatus(ofProfileId profileId: Profile.ID) -> TunnelStatus {
-        latestInfo?[profileId]?.tunnelStatus ?? .inactive
+    public func tunnelStatus(for profileId: Profile.ID) -> TunnelStatus {
+        activeProfiles[profileId]?.tunnelStatus ?? .inactive
     }
 
-    public func transfer(ofProfileId profileId: Profile.ID) -> ABI.ProfileTransfer? {
-        latestInfo?[profileId]?.transfer
+    public func transfer(for profileId: Profile.ID) -> ABI.ProfileTransfer? {
+        activeProfiles[profileId]?.transfer
     }
 
-    public func lastErrorCode(ofProfileId profileId: Profile.ID) -> PartoutError.Code? {
-        latestInfo?[profileId]?.lastErrorCode
+    public func lastErrorCode(for profileId: Profile.ID) -> PartoutError.Code? {
+        activeProfiles[profileId]?.lastErrorCode
     }
 
-    public func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
+    public func openVPNServerConfiguration(for profileId: Profile.ID) async -> OpenVPN.Configuration? {
+        await value(forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration, ofProfileId: profileId)
+    }
+
+    private func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
         await tunnel.environment(for: profileId)?.environmentValue(forKey: key)
     }
 }
 
 // MARK: - Observation
 
-extension TunnelManager {
-    public func observeObjects() -> AsyncStream<ABI.TunnelEvent> {
+extension TunnelObservable {
+    public func observeObjects() {
         let tunnelEvents = tunnel.snapshotsStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
             for await snapshots in tunnelEvents {
                 guard let self else { return }
-                guard !Task.isCancelled else {
-                    pspLog(.core, .debug, "Cancelled TunnelManager.tunnelSubscription")
-                    break
-                }
+                guard !Task.isCancelled else { break }
                 // Copy locally for sync access
-                let newInfo = (latestInfo ?? [:]).with(
+                let newActiveProfiles = activeProfiles.with(
                     snapshots: snapshots,
                     lastUsedProfile: lastUsedProfile
                 )
@@ -179,39 +203,19 @@ extension TunnelManager {
                     kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
                 }
                 // Publish compound info
-                if newInfo != latestInfo {
-                    latestInfo = newInfo
+                if newActiveProfiles != activeProfiles {
+                    activeProfiles = newActiveProfiles
                 }
             }
+            pspLog(.core, .debug, "Tunnel snapshots subscription terminated")
         }
         subscriptions = [tunnelSubscription]
-        return didChange.subscribe()
-    }
-}
-
-// MARK: - Processing
-
-private extension TunnelManager {
-    var processedTitle: @Sendable (Profile) -> String {
-        if let processor {
-            return {
-                processor.title(for: $0)
-            }
-        }
-        return \.name
-    }
-
-    func processedProfile(_ profile: Profile) async throws -> Profile {
-        if let processor {
-            return try await processor.willInstall(profile)
-        }
-        return profile
     }
 }
 
 // MARK: - Internal state
 
-private extension TunnelManager {
+private extension TunnelObservable {
     // TODO: #218, keep "last used profile" until .multiple
     var lastUsedProfile: TunnelSnapshot? {
         guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),

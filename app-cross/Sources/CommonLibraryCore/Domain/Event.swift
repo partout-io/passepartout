@@ -9,7 +9,6 @@ extension ABI {
         case config(ConfigEvent)
         case iap(IAPEvent)
         case profile(ProfileEvent)
-        case tunnel(TunnelEvent)
         case version(VersionEvent)
         case webReceiver(WebReceiverEvent)
     }
@@ -46,10 +45,6 @@ extension ABI {
         case startRemoteImport(StartRemoteImport = .init())
         case stopRemoteImport(StopRemoteImport = .init())
         case changeRemoteImporting(ChangeRemoteImporting)
-    }
-
-    public enum TunnelEvent: Sendable {
-        case refresh(Refresh)
     }
 
     public enum VersionEvent: Sendable {

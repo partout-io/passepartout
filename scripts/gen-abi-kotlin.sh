@@ -5,7 +5,7 @@ cd $cwd/..
 
 set -e
 partout_infile=app-cross/partout/scripts/openapi.yaml
-partout_package=io.partout.abi
+partout_package=io.partout.models
 abi_infile=app-cross/abi.yaml
 abi_package=com.algoritmico.passepartout.abi.models
 models_dir=`realpath app-android/app`
@@ -37,5 +37,5 @@ shared_flags=(
     --additional-properties=packageName=$abi_package \
     --additional-properties=modelPackage=$abi_package \
     --schema-mappings ConnectionStatus=ConnectionStatus,TaggedProfile=TaggedProfile \
-    --import-mappings ConnectionStatus=io.partout.abi.ConnectionStatus,TaggedProfile=io.partout.abi.TaggedProfile \
+    --import-mappings ConnectionStatus=io.partout.abi.ConnectionStatus,TaggedProfile=io.partout.models.TaggedProfile \
     "${shared_flags[@]}"

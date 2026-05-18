@@ -28,10 +28,6 @@ extension MockAppProcessor: ProfileProcessor {
 }
 
 extension MockAppProcessor: AppTunnelProcessor {
-    func title(for profile: Profile) -> String {
-        "Passepartout.Mock: \(profile.name)"
-    }
-
     func willInstall(_ profile: Profile) throws -> Profile {
         profile
     }
