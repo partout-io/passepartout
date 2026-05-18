@@ -1,5 +1,5 @@
 MARKETING_VERSION = 3.8.6
-CURRENT_PROJECT_VERSION = 4063
+CURRENT_PROJECT_VERSION = 4064
 
 // Tweak these based on app and team
 CFG_APP_ID = com.algoritmico.ios.Passepartout
