@@ -50,7 +50,6 @@ jobs:
     name: Upload to App Store Connect
     runs-on: macos-26
     needs: validate_codebase
-    continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
