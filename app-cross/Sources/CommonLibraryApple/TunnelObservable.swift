@@ -24,6 +24,8 @@ public final class TunnelObservable: TunnelHooksProtocol {
         public static nonisolated let appPreferences = "appPreferences"
     }
 
+    public typealias WillInstallBlock = @Sendable (Profile, Bool, Bool) async throws -> Profile?
+
     private let tunnel: Tunnel
 
     private let kvStore: KeyValueStore?
@@ -32,7 +34,7 @@ public final class TunnelObservable: TunnelHooksProtocol {
 
     private let logging: Logging?
 
-    private let willInstall: (@Sendable (Profile, Bool) async throws -> Profile?)?
+    private let willInstall: WillInstallBlock?
 
     public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
 
@@ -44,7 +46,7 @@ public final class TunnelObservable: TunnelHooksProtocol {
         kvStore: KeyValueStore? = nil,
         extensionInstaller: ExtensionInstaller? = nil,
         logging: Logging? = nil,
-        willInstall: (@Sendable (Profile, Bool) async throws -> Profile?)? = nil
+        willInstall: WillInstallBlock? = nil
     ) {
         self.tunnel = tunnel
         self.kvStore = kvStore
@@ -74,14 +76,7 @@ extension TunnelObservable {
     }
 
     private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
-        // Preprocess profile
-        let profile = try await willInstall?(preProfile, connect) ?? preProfile
-        // Trigger user input if profile is interactive
-        if connect {
-            guard !profile.isInteractive || force else {
-                throw ABI.AppError.interactiveLogin
-            }
-        }
+        let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
         if let preferences = kvStore?.preferences {
             let encodedPreferences = try ABI.encode(preferences)

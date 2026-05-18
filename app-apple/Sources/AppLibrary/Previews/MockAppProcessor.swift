@@ -28,7 +28,7 @@ extension MockAppProcessor: ProfileProcessor {
 }
 
 extension MockAppProcessor: AppTunnelProcessor {
-    func willInstall(_ profile: Profile, connect: Bool) throws -> Profile? {
+    func willInstall(_ preProfile: Profile, connect: Bool, force: Bool) throws -> Profile? {
         nil
     }
 }

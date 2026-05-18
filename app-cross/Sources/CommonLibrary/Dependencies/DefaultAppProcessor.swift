@@ -56,7 +56,11 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         self.providerServerSorter = providerServerSorter
     }
 
-    nonisolated func willInstall(_ preProfile: Profile, connect: Bool) async throws -> Profile? {
+    nonisolated func willInstall(
+        _ preProfile: Profile,
+        connect: Bool,
+        force: Bool
+    ) async throws -> Profile? {
         var profile = preProfile
 
         // Install extension before proceeding
@@ -106,6 +110,13 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
             } catch {
                 pspLog(.core, .error, "Unable to inject provider modules: \(error)")
                 throw error
+            }
+        }
+
+        // Trigger user input if profile is interactive
+        if connect {
+            guard !profile.isInteractive || force else {
+                throw ABI.AppError.interactiveLogin
             }
         }
 
