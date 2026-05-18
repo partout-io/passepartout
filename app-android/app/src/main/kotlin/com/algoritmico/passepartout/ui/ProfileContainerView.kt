@@ -97,6 +97,10 @@ fun ProfileContainerView(
         return activeProfiles[profileId]?.transfer
     }
 
+    fun profileLastErrorCode(profileId: String): String? {
+        return activeProfiles[profileId]?.lastErrorCode
+    }
+
     fun requestProfileToggle(profileId: String, enabled: Boolean) {
         val request = RequestedConnection(profileId, enabled)
         requestedConnection = request
@@ -185,6 +189,7 @@ fun ProfileContainerView(
             isProfileEnabled = ::isProfileEnabled,
             profileStatus = ::profileStatus,
             profileTransfer = ::profileTransfer,
+            profileLastErrorCode = ::profileLastErrorCode,
             onProfileSelected = onProfileSelected,
             onProfileToggle = ::requestProfileToggle,
             onProfileContextualAction = onProfileContextualAction
@@ -198,6 +203,7 @@ fun ProfileContainerView(
             isProfileEnabled = ::isProfileEnabled,
             profileStatus = ::profileStatus,
             profileTransfer = ::profileTransfer,
+            profileLastErrorCode = ::profileLastErrorCode,
             onProfileSelected = onProfileSelected,
             onProfileToggle = ::requestProfileToggle,
             onProfileContextualAction = onProfileContextualAction
@@ -214,6 +220,7 @@ private fun MobileProfilesView(
     isProfileEnabled: (String) -> Boolean,
     profileStatus: (String) -> AppProfileStatus,
     profileTransfer: (String) -> ProfileTransfer?,
+    profileLastErrorCode: (String) -> String?,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
@@ -238,6 +245,7 @@ private fun MobileProfilesView(
                 isEnabled = isProfileEnabled(header.id),
                 status = profileStatus(header.id),
                 transfer = profileTransfer(header.id),
+                lastErrorCode = profileLastErrorCode(header.id),
                 isSelected = if (contextualProfileIds.isNotEmpty()) {
                     header.id in contextualProfileIds
                 } else {
@@ -260,6 +268,7 @@ private fun TabletProfilesView(
     isProfileEnabled: (String) -> Boolean,
     profileStatus: (String) -> AppProfileStatus,
     profileTransfer: (String) -> ProfileTransfer?,
+    profileLastErrorCode: (String) -> String?,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
@@ -294,6 +303,7 @@ private fun TabletProfilesView(
                         isEnabled = isProfileEnabled(header.id),
                         status = profileStatus(header.id),
                         transfer = profileTransfer(header.id),
+                        lastErrorCode = profileLastErrorCode(header.id),
                         isSelected = if (contextualProfileIds.isNotEmpty()) {
                             header.id in contextualProfileIds
                         } else {
@@ -326,15 +336,21 @@ private fun ProfileRow(
     isEnabled: Boolean,
     status: AppProfileStatus,
     transfer: ProfileTransfer?,
+    lastErrorCode: String?,
     isSelected: Boolean,
     onProfileSelected: (String) -> Unit,
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
 ) {
-    val statusDescription = if (status == AppProfileStatus.connected && transfer != null) {
+    val statusDescription = lastErrorCode ?: if (status == AppProfileStatus.connected && transfer != null) {
         transfer.transferText()
     } else {
         status.statusText()
+    }
+    val statusDescriptionColor = if (lastErrorCode != null) {
+        MaterialTheme.colorScheme.error
+    } else {
+        statusColor(status)
     }
     val containerColor = if (isSelected) {
         MaterialTheme.colorScheme.secondaryContainer
@@ -380,7 +396,7 @@ private fun ProfileRow(
                 Text(
                     text = statusDescription,
                     style = MaterialTheme.typography.bodySmall,
-                    color = statusColor(status)
+                    color = statusDescriptionColor
                 )
             }
 
