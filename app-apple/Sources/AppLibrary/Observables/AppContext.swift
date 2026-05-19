@@ -92,6 +92,8 @@ private extension AppContext {
             case .webReceiver(let event):
                 appContext.webReceiverObservable.onUpdate(event)
             }
+            // Report all events to TunnelObservable
+            appContext.tunnelObservable.onUpdate(mainEvent)
         }
     }
 }
