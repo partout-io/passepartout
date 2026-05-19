@@ -451,12 +451,12 @@ private extension AppABI {
     }
 
     func onForeground() async throws {
-
         // onForeground() is redundant after launch
         let didLaunch = try await waitForTasks()
         guard !didLaunch else {
             return
         }
+        assert(pendingTask == nil)
 
         pspLog(.core, .notice, "Application did enter foreground")
         pendingTask = Task {
@@ -474,6 +474,7 @@ private extension AppABI {
 
     func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
         try await waitForTasks()
+        assert(pendingTask == nil)
 
         pspLog(.core, .notice, "Application did update eligible features")
         pendingTask = Task {
@@ -485,6 +486,7 @@ private extension AppABI {
 
     func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
         try await waitForTasks()
+        assert(pendingTask == nil)
 
         pspLog(.core, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
