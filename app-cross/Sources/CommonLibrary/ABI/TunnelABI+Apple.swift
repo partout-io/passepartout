@@ -100,7 +100,8 @@ extension TunnelABI {
             connectionFactory: registry,
             connectionParameters: connectionParameters,
             messageHandler: messageHandler,
-            startsImmediately: true
+            startsImmediately: true,
+            cancelsUnrecoverable: false // Prevents on-demand reconnection
         )
         let daemon = try SimpleConnectionDaemon(params: params)
 
