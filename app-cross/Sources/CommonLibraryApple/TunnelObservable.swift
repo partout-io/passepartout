@@ -38,6 +38,8 @@ public final class TunnelObservable {
 
     private var subscriptions: [Task<Void, Never>]
 
+    private var pendingTasks: [Profile.ID: PendingTask]
+
     // TODO: #218, keep "last used profile" until .multiple
     public init(
         tunnel: Tunnel,
@@ -51,7 +53,9 @@ public final class TunnelObservable {
         self.willInstall = willInstall
         activeProfiles = [:]
         subscriptions = []
+        pendingTasks = [:]
     }
+
 }
 
 // MARK: - Actions
@@ -151,37 +155,13 @@ extension TunnelObservable {
     private func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
         await tunnel.environment(for: profileId)?.environmentValue(forKey: key)
     }
+}
 
-    public func onUpdate(_ event: ABI.Event) {
-        guard case .mixed(let mixedEvent) = event else { return }
-        guard case .shouldReconnect(let reconnectEvent) = mixedEvent else { return }
-        let profile = reconnectEvent.profile
+private final class PendingTask {
+    var task: Task<Void, Never>?
 
-        guard isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
-            return
-        }
-        let status = tunnelStatus(for: profile.id)
-        guard [.active, .activating].contains(status) else {
-            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
-            return
-        }
-
-        Task {
-            do {
-                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
-                try await disconnect(from: profile.id)
-                do {
-                    try await connect(to: profile)
-                } catch ABI.AppError.interactiveLogin {
-                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
-                } catch {
-                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
-                }
-            } catch {
-                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
-            }
-        }
+    func cancel() {
+        task?.cancel()
     }
 }
 
@@ -211,6 +191,52 @@ extension TunnelObservable {
             pspLog(.core, .debug, "Tunnel snapshots subscription terminated")
         }
         subscriptions = [tunnelSubscription]
+    }
+
+    public func onUpdate(_ event: ABI.Event) {
+        guard case .mixed(let mixedEvent) = event else { return }
+        guard case .shouldReconnect(let reconnectEvent) = mixedEvent else { return }
+        let profile = reconnectEvent.profile
+
+        guard isActiveProfile(withId: profile.id) else {
+            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
+            return
+        }
+        let status = tunnelStatus(for: profile.id)
+        guard [.active, .activating].contains(status) else {
+            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            return
+        }
+
+        pendingTasks[profile.id]?.cancel()
+        let pendingTask = PendingTask()
+        pendingTasks[profile.id] = pendingTask
+        pendingTask.task = Task { [weak self, weak pendingTask] in
+            guard let self else { return }
+            defer {
+                if pendingTasks[profile.id] === pendingTask {
+                    pendingTasks[profile.id] = nil
+                }
+            }
+            do {
+                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
+                try await disconnect(from: profile.id)
+                guard !Task.isCancelled else { return }
+                do {
+                    try await connect(to: profile)
+                } catch ABI.AppError.interactiveLogin {
+                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                } catch is CancellationError {
+                    return
+                } catch {
+                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+            }
+        }
     }
 }
 
