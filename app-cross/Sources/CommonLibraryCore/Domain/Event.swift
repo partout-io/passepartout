@@ -8,6 +8,7 @@ extension ABI {
     public enum Event: Sendable {
         case config(ConfigEvent)
         case iap(IAPEvent)
+        case mixed(MixedEvent)
         case profile(ProfileEvent)
         case version(VersionEvent)
         case webReceiver(WebReceiverEvent)
@@ -35,6 +36,10 @@ extension ABI {
         case loadReceipt(LoadReceipt)
         case newReceipt(NewReceipt)
         case eligibleFeatures(EligibleFeatures)
+    }
+
+    public enum MixedEvent: Sendable {
+        case shouldReconnect(ShouldReconnect)
     }
 
     public enum ProfileEvent: Equatable, Sendable {

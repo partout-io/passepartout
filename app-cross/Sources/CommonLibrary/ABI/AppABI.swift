@@ -31,7 +31,6 @@ public final class AppABI: Sendable {
     private let iapManager: IAPManager
     private let logFormatter: LogFormatter
     private let profileManager: ProfileManager
-    private let tunnelHooks: TunnelHooksProtocol
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
@@ -57,7 +56,6 @@ public final class AppABI: Sendable {
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
-        tunnelHooks: TunnelHooksProtocol,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
         onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil,
@@ -70,7 +68,6 @@ public final class AppABI: Sendable {
         self.kvStore = kvStore
         self.logFormatter = logFormatter
         self.profileManager = profileManager
-        self.tunnelHooks = tunnelHooks
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
@@ -173,7 +170,7 @@ extension AppABI {
     }
 
     func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
-        guard let handler else { return }
+        guard let handler = handler ?? self.handler else { return }
         handler.callback(handler.context, event)
     }
 }
@@ -454,12 +451,12 @@ private extension AppABI {
     }
 
     func onForeground() async throws {
-
         // onForeground() is redundant after launch
         let didLaunch = try await waitForTasks()
         guard !didLaunch else {
             return
         }
+        assert(pendingTask == nil)
 
         pspLog(.core, .notice, "Application did enter foreground")
         pendingTask = Task {
@@ -477,6 +474,7 @@ private extension AppABI {
 
     func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
         try await waitForTasks()
+        assert(pendingTask == nil)
 
         pspLog(.core, .notice, "Application did update eligible features")
         pendingTask = Task {
@@ -488,6 +486,7 @@ private extension AppABI {
 
     func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
         try await waitForTasks()
+        assert(pendingTask == nil)
 
         pspLog(.core, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
@@ -499,33 +498,9 @@ private extension AppABI {
             pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
-        guard tunnelHooks.isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
-            return
-        }
-        let status = tunnelHooks.tunnelStatus(for: profile.id)
-        guard [.active, .activating].contains(status) else {
-            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
-            return
-        }
 
-        pendingTask = Task {
-            do {
-                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
-                try await tunnelHooks.disconnect(from: profile.id)
-                do {
-                    try await tunnelHooks.connect(to: profile)
-                } catch ABI.AppError.interactiveLogin {
-                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
-                } catch {
-                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
-                }
-            } catch {
-                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
-            }
-        }
-        await pendingTask?.value
-        pendingTask = nil
+        // Suggest tunnel reconnection (may or may not happen)
+        dispatch(.mixed(.shouldReconnect(.init(profile: profile))), nil)
     }
 
     func onWebUpload(_ upload: ABI.WebFileUpload) async throws {

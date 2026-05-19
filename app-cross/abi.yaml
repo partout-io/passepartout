@@ -361,6 +361,7 @@ components:
           IAPEventLoadReceipt: "#/components/schemas/IAPEventLoadReceipt"
           IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
+          MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
@@ -577,6 +578,20 @@ components:
       - 3
       - 4
       description: DebugLog.Level (0=fault, 1=error, 2=notice, 3=info, 4=debug)
+    MixedEventShouldReconnect:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: MixedEventShouldReconnect
+          type: string
+        profile:
+          "$ref": "#/components/schemas/TaggedProfile"
+      required:
+      - type
+      - profile
     ModuleType:
       type: string
       x-enum-varnames:

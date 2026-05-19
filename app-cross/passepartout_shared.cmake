@@ -41,7 +41,6 @@ Sources/CommonLibrary/Dependencies/AppRelease+BusinessChanges.swift
 Sources/CommonLibrary/Dependencies/AppRelease.swift
 Sources/CommonLibrary/Dependencies/DefaultAppProcessor.swift
 Sources/CommonLibrary/Dependencies/DefaultTunnelProcessor.swift
-Sources/CommonLibrary/Dependencies/NativeTunnelHooks.swift
 Sources/CommonLibrary/Dependencies/OpenVPNImplementationBuilder.swift
 Sources/CommonLibrary/Dependencies/WireGuardImplementationBuilder.swift
 Sources/CommonLibraryApple/Bundle+Extensions.swift
@@ -120,6 +119,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventNewReceipt.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptions.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptionsMaxLevel.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldReconnect.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIModuleType.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIOriginalPurchase.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventChangeRemoteImporting.swift
@@ -208,7 +208,6 @@ Sources/CommonLibraryCore/Strategy/Processors.swift
 Sources/CommonLibraryCore/Strategy/ProfileRepository.swift
 Sources/CommonLibraryCore/Strategy/ProviderPreferencesRepository.swift
 Sources/CommonLibraryCore/Strategy/SharedReceiptReader.swift
-Sources/CommonLibraryCore/Strategy/TunnelHooksProtocol.swift
 Sources/CommonLibraryCore/Strategy/VersionCheckerStrategy.swift
 Sources/CommonLibraryCore/Strategy/WebReceiver.swift
 Sources/CommonLibraryCore/Strategy/WebUploaderStrategy.swift

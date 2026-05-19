@@ -89,7 +89,6 @@ extension AppContext {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelHooks: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             bindings: nil
