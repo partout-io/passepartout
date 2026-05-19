@@ -170,7 +170,7 @@ extension AppABI {
     }
 
     func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
-        guard let handler else { return }
+        guard let handler = handler ?? self.handler else { return }
         handler.callback(handler.context, event)
     }
 }
