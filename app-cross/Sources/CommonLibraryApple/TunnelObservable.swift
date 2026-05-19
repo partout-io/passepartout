@@ -151,6 +151,38 @@ extension TunnelObservable {
     private func value<T>(forKey key: TunnelEnvironmentKey<T>, ofProfileId profileId: Profile.ID) async -> T? where T: Decodable {
         await tunnel.environment(for: profileId)?.environmentValue(forKey: key)
     }
+
+    public func onUpdate(_ event: ABI.Event) {
+        guard case .profile(let profileEvent) = event else { return }
+        guard case .shouldReconnect(let reconnectEvent) = profileEvent else { return }
+        let profile = reconnectEvent.profile
+
+        guard isActiveProfile(withId: profile.id) else {
+            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
+            return
+        }
+        let status = tunnelStatus(for: profile.id)
+        guard [.active, .activating].contains(status) else {
+            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            return
+        }
+
+        Task {
+            do {
+                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
+                try await disconnect(from: profile.id)
+                do {
+                    try await connect(to: profile.asProfile())
+                } catch ABI.AppError.interactiveLogin {
+                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                } catch {
+                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                }
+            } catch {
+                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+            }
+        }
+    }
 }
 
 // MARK: - Observation

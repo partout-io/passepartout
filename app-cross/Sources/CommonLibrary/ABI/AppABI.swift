@@ -496,33 +496,9 @@ private extension AppABI {
             pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
-        guard tunnelHooks.isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
-            return
-        }
-        let status = tunnelHooks.tunnelStatus(for: profile.id)
-        guard [.active, .activating].contains(status) else {
-            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
-            return
-        }
 
-        pendingTask = Task {
-            do {
-                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
-                try await tunnelHooks.disconnect(from: profile.id)
-                do {
-                    try await tunnelHooks.connect(to: profile)
-                } catch ABI.AppError.interactiveLogin {
-                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
-                } catch {
-                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
-                }
-            } catch {
-                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
-            }
-        }
-        await pendingTask?.value
-        pendingTask = nil
+        // Suggest tunnel reconnection (may or may not happen)
+        dispatch(.profile(.shouldReconnect(.init(profile: profile.asTaggedProfile))), nil)
     }
 
     func onWebUpload(_ upload: ABI.WebFileUpload) async throws {
