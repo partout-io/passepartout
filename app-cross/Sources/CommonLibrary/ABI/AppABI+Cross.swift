@@ -59,9 +59,6 @@ extension AppABI {
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
 
-        // FIXME: #1816, Control the tunnel from the ABI
-        let tunnelHooks = NativeTunnelHooks()
-
         // Dummy
         let iapManager = IAPManager()
         let versionChecker = VersionChecker()
@@ -79,7 +76,6 @@ extension AppABI {
             preferencesManager: nil,
             profileManager: profileManager,
             registry: registry,
-            tunnelHooks: tunnelHooks,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             bindings: bindings

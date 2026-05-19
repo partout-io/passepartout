@@ -31,7 +31,6 @@ public final class AppABI: Sendable {
     private let iapManager: IAPManager
     private let logFormatter: LogFormatter
     private let profileManager: ProfileManager
-    private let tunnelHooks: TunnelHooksProtocol
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
@@ -57,7 +56,6 @@ public final class AppABI: Sendable {
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
-        tunnelHooks: TunnelHooksProtocol,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
         onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil,
@@ -70,7 +68,6 @@ public final class AppABI: Sendable {
         self.kvStore = kvStore
         self.logFormatter = logFormatter
         self.profileManager = profileManager
-        self.tunnelHooks = tunnelHooks
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock

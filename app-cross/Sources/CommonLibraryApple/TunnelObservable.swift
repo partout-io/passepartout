@@ -5,7 +5,7 @@
 @preconcurrency import Partout
 
 @MainActor @Observable
-public final class TunnelObservable: TunnelHooksProtocol {
+public final class TunnelObservable {
     public struct Logging {
         public let maxDebugLogLevel: DebugLog.Level
         public let sinceLast: Double

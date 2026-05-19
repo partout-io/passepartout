@@ -307,7 +307,6 @@ extension AppABI {
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelHooks: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock,
