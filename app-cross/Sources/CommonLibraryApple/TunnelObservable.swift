@@ -190,10 +190,6 @@ extension TunnelObservable {
         guard case .shouldReconnect(let reconnectEvent) = mixedEvent else { return }
         let profile = reconnectEvent.profile
 
-        guard isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not active, do nothing")
-            return
-        }
         let status = tunnelStatus(for: profile.id)
         guard [.active, .activating].contains(status) else {
             pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
