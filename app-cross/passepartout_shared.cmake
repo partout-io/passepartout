@@ -119,6 +119,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventNewReceipt.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptions.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptionsMaxLevel.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldReconnect.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIModuleType.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIOriginalPurchase.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventChangeRemoteImporting.swift
@@ -126,7 +127,6 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventLocalProfiles.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventReady.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventRefresh.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventSave.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventShouldReconnect.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventStartRemoteImport.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventStopRemoteImport.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileSharingFlag.swift

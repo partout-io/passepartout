@@ -157,14 +157,6 @@ extension TunnelObservable {
     }
 }
 
-private final class PendingTask {
-    var task: Task<Void, Never>?
-
-    func cancel() {
-        task?.cancel()
-    }
-}
-
 // MARK: - Observation
 
 extension TunnelObservable {
@@ -237,6 +229,14 @@ extension TunnelObservable {
                 pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
             }
         }
+    }
+}
+
+private final class PendingTask {
+    var task: Task<Void, Never>?
+
+    func cancel() {
+        task?.cancel()
     }
 }
 
