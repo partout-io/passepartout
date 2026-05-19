@@ -159,6 +159,9 @@ extension PartoutError.Code: StyledLocalizableEntity {
             case .OpenVPN.noRouting:
                 return V.routing
 
+            case .OpenVPN.recoverableAuthentication:
+                return Strings.Entities.TunnelStatus.activating
+
             case .OpenVPN.serverShutdown:
                 return V.shutdown
 
