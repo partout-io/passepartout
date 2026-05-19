@@ -3,6 +3,7 @@ package com.algoritmico.passepartout
 import android.app.Notification
 import android.content.Intent
 import android.net.VpnService
+import android.os.IBinder
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -48,6 +49,13 @@ class PassepartoutVpnService: VpnService() {
 
     override fun onRevoke() {
         runtime.onRevoke()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        if (intent?.action == SERVICE_INTERFACE) {
+            return super.onBind(intent)
+        }
+        return runtime.onBind(intent)
     }
 
     private fun createNotification(): Notification {

@@ -30,6 +30,7 @@ class AppContext(
     private val library = PassepartoutWrapper()
 
     private val tunnel = PartoutTunnel(
+        Globals.logTag,
         applicationContext,
         PassepartoutVpnService::class.java,
         requestVpnPermission
