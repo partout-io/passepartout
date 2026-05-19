@@ -29,8 +29,8 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-@SerialName(value = "ProfileEventShouldReconnect")
-data class ProfileEventShouldReconnect (
+@SerialName(value = "MixedEventShouldReconnect")
+data class MixedEventShouldReconnect (
 
     @Contextual @SerialName(value = "profile")
     val profile: TaggedProfile

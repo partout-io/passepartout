@@ -8,6 +8,7 @@ extension ABI {
     public enum Event: Sendable {
         case config(ConfigEvent)
         case iap(IAPEvent)
+        case mixed(MixedEvent)
         case profile(ProfileEvent)
         case version(VersionEvent)
         case webReceiver(WebReceiverEvent)
@@ -37,6 +38,10 @@ extension ABI {
         case eligibleFeatures(EligibleFeatures)
     }
 
+    public enum MixedEvent: Sendable {
+        case shouldReconnect(ShouldReconnect)
+    }
+
     public enum ProfileEvent: Equatable, Sendable {
         case ready(Ready = .init())
         case localProfiles(LocalProfiles = .init())
@@ -45,7 +50,6 @@ extension ABI {
         case startRemoteImport(StartRemoteImport = .init())
         case stopRemoteImport(StopRemoteImport = .init())
         case changeRemoteImporting(ChangeRemoteImporting)
-        case shouldReconnect(ShouldReconnect)
     }
 
     public enum VersionEvent: Sendable {

@@ -153,8 +153,8 @@ extension TunnelObservable {
     }
 
     public func onUpdate(_ event: ABI.Event) {
-        guard case .profile(let profileEvent) = event else { return }
-        guard case .shouldReconnect(let reconnectEvent) = profileEvent else { return }
+        guard case .mixed(let mixedEvent) = event else { return }
+        guard case .shouldReconnect(let reconnectEvent) = mixedEvent else { return }
         let profile = reconnectEvent.profile
 
         guard isActiveProfile(withId: profile.id) else {
@@ -172,7 +172,7 @@ extension TunnelObservable {
                 pspLog(.core, .info, "\tReconnect profile \(profile.id)")
                 try await disconnect(from: profile.id)
                 do {
-                    try await connect(to: profile.asProfile())
+                    try await connect(to: profile)
                 } catch ABI.AppError.interactiveLogin {
                     pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch {

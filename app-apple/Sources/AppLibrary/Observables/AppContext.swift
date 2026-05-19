@@ -85,6 +85,8 @@ private extension AppContext {
                 appContext.configObservable.onUpdate(event)
             case .iap(let event):
                 appContext.iapObservable.onUpdate(event)
+            case .mixed:
+                break
             case .profile(let event):
                 appContext.profileObservable.onUpdate(event)
             case .version(let event):

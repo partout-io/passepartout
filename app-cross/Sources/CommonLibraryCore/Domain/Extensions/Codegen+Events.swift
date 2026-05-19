@@ -48,6 +48,21 @@ extension ABI.IAPEvent {
     }
 }
 
+extension ABI.MixedEvent {
+    public struct ShouldReconnect: ABI.EventProtocol {
+        public let profile: Profile
+        public init(profile: Profile) {
+            self.profile = profile
+        }
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(OpenAPIMixedEventShouldReconnect(
+                profile: profile.asTaggedProfile
+            ))
+        }
+    }
+}
+
 extension ABI.ProfileEvent {
     public struct Refresh: ABI.EventProtocol {
         public let headers: [Profile.ID: ABI.AppProfileHeader]

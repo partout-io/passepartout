@@ -500,7 +500,7 @@ private extension AppABI {
         }
 
         // Suggest tunnel reconnection (may or may not happen)
-        dispatch(.profile(.shouldReconnect(.init(profile: profile.asTaggedProfile))), nil)
+        dispatch(.mixed(.shouldReconnect(.init(profile: profile))), nil)
     }
 
     func onWebUpload(_ upload: ABI.WebFileUpload) async throws {
