@@ -45,6 +45,7 @@ extension ABI {
         case startRemoteImport(StartRemoteImport = .init())
         case stopRemoteImport(StopRemoteImport = .init())
         case changeRemoteImporting(ChangeRemoteImporting)
+        case shouldReconnect(ShouldReconnect)
     }
 
     public enum VersionEvent: Sendable {

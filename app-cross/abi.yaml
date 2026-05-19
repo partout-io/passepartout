@@ -366,6 +366,7 @@ components:
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
           ProfileEventRefresh: "#/components/schemas/ProfileEventRefresh"
           ProfileEventSave: "#/components/schemas/ProfileEventSave"
+          ProfileEventShouldReconnect: "#/components/schemas/ProfileEventShouldReconnect"
           ProfileEventStartRemoteImport: "#/components/schemas/ProfileEventStartRemoteImport"
           ProfileEventStopRemoteImport: "#/components/schemas/ProfileEventStopRemoteImport"
           VersionEventNew: "#/components/schemas/VersionEventNew"
@@ -668,6 +669,20 @@ components:
         profile:
           "$ref": "#/components/schemas/TaggedProfile"
         previous:
+          "$ref": "#/components/schemas/TaggedProfile"
+      required:
+      - type
+      - profile
+    ProfileEventShouldReconnect:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventShouldReconnect
+          type: string
+        profile:
           "$ref": "#/components/schemas/TaggedProfile"
       required:
       - type

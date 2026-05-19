@@ -41,6 +41,7 @@ extension ABI.ProfileEvent {
     public typealias StartRemoteImport = OpenAPIProfileEventStartRemoteImport
     public typealias StopRemoteImport = OpenAPIProfileEventStopRemoteImport
     public typealias ChangeRemoteImporting = OpenAPIProfileEventChangeRemoteImporting
+    public typealias ShouldReconnect = OpenAPIProfileEventShouldReconnect
 }
 
 extension ABI.WebReceiverEvent {
