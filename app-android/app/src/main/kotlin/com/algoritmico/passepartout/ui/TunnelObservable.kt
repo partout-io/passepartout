@@ -15,7 +15,6 @@ import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -26,8 +25,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class TunnelObservable(
     private val logTag: String,
@@ -53,21 +54,27 @@ class TunnelObservable(
     }
 
     suspend fun connect(profile: TaggedProfile) {
-        withContext(Dispatchers.IO) {
-            tunnel.connect(profile) { status ->
+        suspendCancellableCoroutine { continuation ->
+            tunnel.connect(profile) callback@ { status ->
+                if (!continuation.isActive) { return@callback }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    throw TunnelException
+                    continuation.resumeWithException(TunnelException)
+                    return@callback
                 }
+                continuation.resume(Unit)
             }
         }
     }
 
     suspend fun disconnect(profileId: String) {
-        withContext(Dispatchers.IO) {
-            tunnel.disconnect(profileId) { status ->
+        suspendCancellableCoroutine { continuation ->
+            tunnel.disconnect(profileId) callback@ { status ->
+                if (!continuation.isActive) { return@callback }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    throw TunnelException
+                    continuation.resumeWithException(TunnelException)
+                    return@callback
                 }
+                continuation.resume(Unit)
             }
         }
     }
