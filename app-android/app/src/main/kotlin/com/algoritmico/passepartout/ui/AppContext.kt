@@ -8,12 +8,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.Globals
+import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.abi.AppABIProfile
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.readAsset
-import com.algoritmico.passepartout.PassepartoutVpnService
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,9 +46,9 @@ class AppContext(
         Log.i(Globals.logTag, ">>> Partout $partoutVersion")
         Log.e(Globals.logTag, ">>> Started app")
 
-        val bundle = applicationContext.readAsset(BUNDLE_FILENAME)
-        val constants = applicationContext.readAsset(CONSTANTS_FILENAME)
-        val profilesDirectory = File(applicationContext.noBackupFilesDir, PROFILES_DIRECTORY)
+        val bundle = applicationContext.readAsset(Globals.BUNDLE_FILENAME)
+        val constants = applicationContext.readAsset(Globals.CONSTANTS_FILENAME)
+        val profilesDirectory = File(applicationContext.noBackupFilesDir, Globals.PROFILES_DIRECTORY)
             .apply {
                 mkdirs()
             }
@@ -100,13 +100,5 @@ class AppContext(
         profileObservable.close()
         tunnelObservable.close()
         library.appDeinit { _, _ -> }
-    }
-
-    companion object {
-        private const val BUNDLE_FILENAME = "bundle.json"
-
-        private const val CONSTANTS_FILENAME = "constants.json"
-
-        private const val PROFILES_DIRECTORY = "profiles-v1"
     }
 }

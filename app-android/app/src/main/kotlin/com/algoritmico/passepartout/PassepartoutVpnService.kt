@@ -1,39 +1,75 @@
 package com.algoritmico.passepartout
 
-import android.app.Notification
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
-import androidx.core.app.NotificationChannelCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import android.util.AtomicFile
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import io.partout.PartoutVpnServiceRuntime
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class PassepartoutVpnService: VpnService() {
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
             logTag = Globals.serviceLogTag,
             service = this,
-            engine = VpnEngine(
-                library = PassepartoutWrapper(),
-                bundleProvider = {
-                    readAsset(BUNDLE_FILENAME)
-                },
-                constantsProvider = {
-                    readAsset(CONSTANTS_FILENAME)
-                },
-                cachePathProvider = {
-                    cacheDir.absolutePath
-                }
-            ),
-            stopService = {
-                stopSelf()
-            }
+            engine = engine
         )
+    }
+
+    private val engine = object : PartoutVpnServiceRuntime.Engine {
+        private val library = PassepartoutWrapper()
+        private val lastProfileFile: File
+            get() = File(noBackupFilesDir, Globals.PROFILE_LAST_PATH)
+
+        override suspend fun start(
+            runtime: PartoutVpnServiceRuntime,
+            profileJSON: String
+        ): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
+            PartoutVpnServiceRuntime.Result(
+                library.tunnelStart(
+                    readAsset(Globals.BUNDLE_FILENAME),
+                    readAsset(Globals.CONSTANTS_FILENAME),
+                    profileJSON,
+                    cacheDir.absolutePath,
+                    runtime
+                ),
+                null
+            )
+        }
+
+        override suspend fun stop(): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
+            val result = CompletableDeferred<PartoutVpnServiceRuntime.Result>()
+            library.tunnelStop { code, json ->
+                result.complete(PartoutVpnServiceRuntime.Result(code, json))
+            }
+            result.await()
+        }
+
+        override suspend fun readLastProfile(): String {
+            return withContext(Dispatchers.IO) {
+                AtomicFile(lastProfileFile).openRead().bufferedReader(Charsets.UTF_8).use {
+                    it.readText()
+                }
+            }
+        }
+
+        override suspend fun writeLastProfile(json: String) {
+            withContext(Dispatchers.IO) {
+                val file = AtomicFile(lastProfileFile)
+                val stream = file.startWrite()
+                try {
+                    stream.write(json.toByteArray(Charsets.UTF_8))
+                    file.finishWrite(stream)
+                } catch (e: Exception) {
+                    file.failWrite(stream)
+                    throw e
+                }
+            }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -55,70 +91,5 @@ class PassepartoutVpnService: VpnService() {
             return super.onBind(intent)
         }
         return runtime.onBind(intent)
-    }
-
-    private fun createNotification(): Notification {
-        val channelId = NOTIFICATION_CHANNEL_ID
-
-        // Create a notification channel (required on Android 8.0+)
-        val channel = NotificationChannelCompat.Builder(
-            channelId,
-            NotificationManagerCompat.IMPORTANCE_LOW // low importance to avoid sound
-        )
-            .setName("Passepartout VPN")
-            .setDescription("Notification for the VPN foreground service")
-            .build()
-
-        NotificationManagerCompat
-            .from(this)
-            .createNotificationChannel(channel)
-
-        // Build the notification
-        return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Passepartout Active")
-            .setContentText("VPN is running")
-            .setOngoing(true)
-            .build()
-    }
-
-    private class VpnEngine(
-        private val library: PassepartoutWrapper,
-        private val bundleProvider: suspend () -> String,
-        private val constantsProvider: suspend () -> String,
-        private val cachePathProvider: () -> String
-    ) : PartoutVpnServiceRuntime.Engine {
-        override suspend fun start(
-            runtime: PartoutVpnServiceRuntime,
-            profileJSON: String
-        ): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
-            PartoutVpnServiceRuntime.Result(
-                library.tunnelStart(
-                    bundleProvider(),
-                    constantsProvider(),
-                    profileJSON,
-                    cachePathProvider(),
-                    runtime
-                ),
-                null
-            )
-        }
-
-        override suspend fun stop(): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
-            val result = CompletableDeferred<PartoutVpnServiceRuntime.Result>()
-            library.tunnelStop { code, json ->
-                result.complete(PartoutVpnServiceRuntime.Result(code, json))
-            }
-            result.await()
-        }
-    }
-
-    companion object {
-        private const val BUNDLE_FILENAME = "bundle.json"
-
-        private const val CONSTANTS_FILENAME = "constants.json"
-
-        private const val NOTIFICATION_ID = 1
-
-        private const val NOTIFICATION_CHANNEL_ID = "vpn_service_channel"
     }
 }
