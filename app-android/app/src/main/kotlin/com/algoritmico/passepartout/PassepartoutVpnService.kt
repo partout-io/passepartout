@@ -3,6 +3,7 @@ package com.algoritmico.passepartout
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
+import android.util.AtomicFile
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import io.partout.PartoutVpnServiceRuntime
 import kotlinx.coroutines.CompletableDeferred
@@ -21,7 +22,8 @@ class PassepartoutVpnService: VpnService() {
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
         private val library = PassepartoutWrapper()
-        private val lastProfilePath = File(noBackupFilesDir, Globals.PROFILE_LAST_PATH)
+        private val lastProfileFile: File
+            get() = File(noBackupFilesDir, Globals.PROFILE_LAST_PATH)
 
         override suspend fun start(
             runtime: PartoutVpnServiceRuntime,
@@ -49,13 +51,23 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun readLastProfile(): String {
             return withContext(Dispatchers.IO) {
-                lastProfilePath.readText()
+                AtomicFile(lastProfileFile).openRead().bufferedReader(Charsets.UTF_8).use {
+                    it.readText()
+                }
             }
         }
 
         override suspend fun writeLastProfile(json: String) {
             withContext(Dispatchers.IO) {
-                lastProfilePath.writeText(json)
+                val file = AtomicFile(lastProfileFile)
+                val stream = file.startWrite()
+                try {
+                    stream.write(json.toByteArray(Charsets.UTF_8))
+                    file.finishWrite(stream)
+                } catch (e: Exception) {
+                    file.failWrite(stream)
+                    throw e
+                }
             }
         }
     }
