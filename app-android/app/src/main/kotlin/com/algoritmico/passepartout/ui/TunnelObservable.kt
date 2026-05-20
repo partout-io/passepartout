@@ -114,8 +114,8 @@ class TunnelObservable(
     }
 
     override fun close() {
-        tunnel.close()
         scope.cancel()
+        tunnel.close()
     }
 
     data class State(
