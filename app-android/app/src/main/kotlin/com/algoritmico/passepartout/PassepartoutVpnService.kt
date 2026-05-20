@@ -25,10 +25,7 @@ class PassepartoutVpnService: VpnService() {
                 cachePathProvider = {
                     cacheDir.absolutePath
                 }
-            ),
-            stopService = {
-                stopSelf()
-            }
+            )
         )
     }
 
