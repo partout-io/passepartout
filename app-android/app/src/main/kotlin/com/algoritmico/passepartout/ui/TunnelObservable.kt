@@ -97,10 +97,14 @@ class TunnelObservable(
                 // Iterate through active tunnel
                 state.value.activeProfiles.forEach {
                     val info = it.value
-                    // Ensure that profile was not deleted
-                    if (info.id in event.headers) { return@forEach }
-                    // If deleted profile was active, disconnect it
-                    if (!info.status.isActive) { return@forEach }
+                    // Ignore profiles that were not deleted
+                    if (info.id in event.headers) {
+                        return@forEach
+                    }
+                    // Ignore deletion of inactive profiles
+                    if (!info.status.isActive) {
+                        return@forEach
+                    }
                     Log.i(logTag, "Disconnect from removed profile ${info.id}")
                     tunnel.disconnect(info.id) { _ -> }
                 }
