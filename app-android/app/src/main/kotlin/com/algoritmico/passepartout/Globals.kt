@@ -19,6 +19,7 @@ object Globals {
     const val BUNDLE_FILENAME = "bundle.json"
     const val CONSTANTS_FILENAME = "constants.json"
     const val PROFILES_DIRECTORY = "profiles-v1"
+    const val PROFILE_LAST_PATH = "tunnel_profile.json"
 
     const val EVENT_BUFFER_CAPACITY = 64
     const val EVENT_REPLAY = 64
