@@ -74,6 +74,7 @@ class AppContext(
             Globals.logTag,
             applicationContext,
             PassepartoutVpnService::class.java,
+            isForeground = false,
             requestVpnPermission
         )
         tunnelObservable = TunnelObservable(

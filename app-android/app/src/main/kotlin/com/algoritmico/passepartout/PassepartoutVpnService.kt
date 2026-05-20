@@ -37,7 +37,6 @@ class PassepartoutVpnService: VpnService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, createNotification())
         return runtime.onStartCommand(intent, flags, startId)
     }
 
