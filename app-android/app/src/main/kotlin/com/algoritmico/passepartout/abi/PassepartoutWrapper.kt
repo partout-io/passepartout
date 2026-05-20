@@ -8,7 +8,6 @@ import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
-import io.partout.PartoutTunnel
 import io.partout.PartoutVpnServiceRuntime
 
 class PassepartoutWrapper {
@@ -18,7 +17,6 @@ class PassepartoutWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
-        tunnel: PartoutTunnel,
         eventHandler: ABIEventHandler
     ): Int
     external fun appDeinit(completion: ABICompletionCallback)

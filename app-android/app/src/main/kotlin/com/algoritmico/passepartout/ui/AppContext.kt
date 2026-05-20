@@ -29,12 +29,6 @@ class AppContext(
 
     private val library = PassepartoutWrapper()
 
-    private val tunnel = PartoutTunnel(
-        applicationContext,
-        PassepartoutVpnService::class.java,
-        requestVpnPermission
-    )
-
     private val eventDispatcher: ABIEventDispatcher = ABIEventDispatcher
 
     private var eventSubscription: Closeable? = eventDispatcher.register(::handleEvent)
@@ -44,16 +38,8 @@ class AppContext(
         extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
     )
 
-    val profileObservable = ProfileObservable(
-        AppABIProfile(library),
-        appEvents,
-        coroutineScope
-    )
-
-    val tunnelObservable = TunnelObservable(
-        tunnel,
-        coroutineScope
-    )
+    val profileObservable: ProfileObservable
+    val tunnelObservable: TunnelObservable
 
     init {
         val partoutVersion = library.partoutVersion()
@@ -72,21 +58,34 @@ class AppContext(
             constants,
             profilesDirectory.absolutePath,
             cacheDirectory.absolutePath,
-            tunnel,
             eventDispatcher
         )
         if (code != 0) {
             close()
             throw RuntimeException("Unable to init app (code=$code)")
         }
+
+        profileObservable = ProfileObservable(
+            AppABIProfile(library),
+            appEvents,
+            coroutineScope
+        )
+        val tunnel = PartoutTunnel(
+            Globals.logTag,
+            applicationContext,
+            PassepartoutVpnService::class.java,
+            requestVpnPermission
+        )
+        tunnelObservable = TunnelObservable(
+            Globals.logTag,
+            tunnel,
+            appEvents,
+            coroutineScope
+        )
     }
 
     fun onApplicationActive() {
         library.appOnForeground()
-    }
-
-    fun onVpnPermissionResult(isGranted: Boolean) {
-        tunnel.onVpnPermissionResult(isGranted)
     }
 
     private fun handleEvent(event: Event) {
@@ -99,7 +98,6 @@ class AppContext(
         eventSubscription = null
         profileObservable.close()
         tunnelObservable.close()
-        tunnel.close()
         library.appDeinit { _, _ -> }
     }
 

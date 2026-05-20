@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (::appContext.isInitialized) {
-            appContext.onVpnPermissionResult(result.resultCode == RESULT_OK)
+            appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
         }
     }
 
