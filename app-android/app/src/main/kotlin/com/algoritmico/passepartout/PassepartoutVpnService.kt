@@ -1,12 +1,8 @@
 package com.algoritmico.passepartout
 
-import android.app.Notification
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
-import androidx.core.app.NotificationChannelCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import io.partout.PartoutVpnServiceRuntime
 import kotlinx.coroutines.CompletableDeferred
@@ -57,30 +53,6 @@ class PassepartoutVpnService: VpnService() {
         return runtime.onBind(intent)
     }
 
-    private fun createNotification(): Notification {
-        val channelId = NOTIFICATION_CHANNEL_ID
-
-        // Create a notification channel (required on Android 8.0+)
-        val channel = NotificationChannelCompat.Builder(
-            channelId,
-            NotificationManagerCompat.IMPORTANCE_LOW // low importance to avoid sound
-        )
-            .setName("Passepartout VPN")
-            .setDescription("Notification for the VPN foreground service")
-            .build()
-
-        NotificationManagerCompat
-            .from(this)
-            .createNotificationChannel(channel)
-
-        // Build the notification
-        return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Passepartout Active")
-            .setContentText("VPN is running")
-            .setOngoing(true)
-            .build()
-    }
-
     private class VpnEngine(
         private val library: PassepartoutWrapper,
         private val bundleProvider: suspend () -> String,
@@ -116,9 +88,5 @@ class PassepartoutVpnService: VpnService() {
         private const val BUNDLE_FILENAME = "bundle.json"
 
         private const val CONSTANTS_FILENAME = "constants.json"
-
-        private const val NOTIFICATION_ID = 1
-
-        private const val NOTIFICATION_CHANNEL_ID = "vpn_service_channel"
     }
 }
