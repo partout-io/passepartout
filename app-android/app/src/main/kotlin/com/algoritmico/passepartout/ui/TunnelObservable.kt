@@ -4,29 +4,36 @@
 
 package com.algoritmico.passepartout.ui
 
+import android.util.Log
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
+import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
 import io.partout.PartoutTunnel
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class TunnelObservable(
+    private val logTag: String,
     private val tunnel: PartoutTunnel,
+    events: Flow<Event>,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -38,31 +45,45 @@ class TunnelObservable(
 
     init {
         tunnel.state
+            .onEach(::onTunnelState)
+            .launchIn(scope)
+
+        events
             .onEach(::onUpdate)
             .launchIn(scope)
     }
 
     suspend fun connect(profile: TaggedProfile) {
-        withContext(Dispatchers.IO) {
-            tunnel.connect(profile) { status ->
+        suspendCancellableCoroutine { continuation ->
+            tunnel.connect(profile) callback@ { status ->
+                if (!continuation.isActive) { return@callback }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    throw TunnelException
+                    continuation.resumeWithException(TunnelException)
+                    return@callback
                 }
+                continuation.resume(Unit)
             }
         }
     }
 
     suspend fun disconnect(profileId: String) {
-        withContext(Dispatchers.IO) {
-            tunnel.disconnect(profileId) { status ->
+        suspendCancellableCoroutine { continuation ->
+            tunnel.disconnect(profileId) callback@ { status ->
+                if (!continuation.isActive) { return@callback }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    throw TunnelException
+                    continuation.resumeWithException(TunnelException)
+                    return@callback
                 }
+                continuation.resume(Unit)
             }
         }
     }
 
-    private fun onUpdate(tunnelState: PartoutTunnel.State) {
+    fun onVpnPermissionResult(isGranted: Boolean) {
+        tunnel.onVpnPermissionResult(isGranted)
+    }
+
+    private fun onTunnelState(tunnelState: PartoutTunnel.State) {
         _state.update {
             it.copy(activeProfiles = tunnelState.snapshots.mapValues {
                 it.value.toAppTunnelInfo()
@@ -70,8 +91,31 @@ class TunnelObservable(
         }
     }
 
+    private fun onUpdate(event: Event) {
+        when (event) {
+            is ProfileEventRefresh -> {
+                // Iterate through active tunnel
+                state.value.activeProfiles.forEach {
+                    val info = it.value
+                    // Ignore profiles that were not deleted
+                    if (info.id in event.headers) {
+                        return@forEach
+                    }
+                    // Ignore deletion of inactive profiles
+                    if (!info.status.isActive) {
+                        return@forEach
+                    }
+                    Log.i(logTag, "Disconnect from removed profile ${info.id}")
+                    tunnel.disconnect(info.id) { _ -> }
+                }
+            }
+            else -> {}
+        }
+    }
+
     override fun close() {
         scope.cancel()
+        tunnel.close()
     }
 
     data class State(
@@ -79,6 +123,9 @@ class TunnelObservable(
     )
 
     data object TunnelException: Throwable()
+
+    private val AppProfileStatus.isActive: Boolean
+        get() = this == AppProfileStatus.connecting || this == AppProfileStatus.connected
 
     private fun TunnelSnapshot.toAppTunnelInfo(): AppTunnelInfo {
         return AppTunnelInfo(

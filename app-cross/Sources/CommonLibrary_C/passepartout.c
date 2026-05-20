@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "passepartout.h"
 
 static char *psp_strdup(const char *value) {
 #ifdef _WIN32

@@ -4,6 +4,22 @@ add_library(passepartout_shared SHARED "")
 # Include file lists
 include("passepartout_shared.cmake")
 
+set(PSP_ABI_INPUTS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include/passepartout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include/module.modulemap
+)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${PSP_ABI_INPUTS})
+set(PSP_ABI_INPUTS_HASH "")
+foreach(input IN LISTS PSP_ABI_INPUTS)
+    file(SHA256 ${input} input_hash)
+    string(APPEND PSP_ABI_INPUTS_HASH "${input_hash}\n")
+endforeach()
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/passepartout_shared.swift.in
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/passepartout_shared.swift
+    @ONLY
+)
+
 target_compile_options(passepartout_shared PRIVATE
     -DUSE_CMAKE
 )
@@ -33,14 +49,17 @@ endif()
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
-target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
+target_sources(passepartout_shared PRIVATE
+    ${PSP_SOURCES}
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/passepartout_shared.swift
+)
 
 # Link the C ABI code
 add_library(passepartout_shared_c STATIC ${PSP_C_SOURCES})
 target_link_libraries(passepartout_shared PUBLIC passepartout_shared_c)
 
 # Import the modulemap for the C ABI
-target_include_directories(passepartout_shared PUBLIC
+target_include_directories(passepartout_shared_c PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include
 )
 

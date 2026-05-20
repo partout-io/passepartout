@@ -32,7 +32,6 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         jstring constants,
         jstring profilesDir,
         jstring cacheDir,
-        jobject tunnel,
         jobject eventHandler
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
@@ -41,7 +40,6 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
     psp_app_bindings bindings = { 0 };
-    bindings.tunnel = (*env)->NewGlobalRef(env, tunnel);
     bindings.event_ctx = abi_handler_create(env, eventHandler);
     bindings.event_cb = abi_event_handler_proxy;
     bindings.free = app_bindings_free;
@@ -171,10 +169,6 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStop(
 
 void app_bindings_free(psp_app_bindings *b) {
     JNI_ATTACH_OR_RETURN_VOID(env);
-    if (b->tunnel) {
-        (*env)->DeleteGlobalRef(env, b->tunnel);
-        b->tunnel = NULL;
-    }
     if (b->event_ctx) {
         abi_handler_free(env, b->event_ctx);
         b->event_ctx = NULL;
