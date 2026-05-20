@@ -88,12 +88,14 @@ class TunnelObservable(
         when (event) {
             is ProfileEventRefresh -> {
                 // Iterate through active tunnel
-                state.value.activeProfiles.keys.forEach {
-                    // If profile was deleted, disconnect it
-                    if (!event.headers.keys.contains(it)) {
-                        Log.i(logTag, "Disconnect from removed profile ${it}")
-                        tunnel.disconnect(it) { _ -> }
-                    }
+                state.value.activeProfiles.forEach {
+                    val info = it.value
+                    // Ensure that profile was not deleted
+                    if (info.id in event.headers) { return@forEach }
+                    // If deleted profile was active, disconnect it
+                    if (!info.status.isActive) { return@forEach }
+                    Log.i(logTag, "Disconnect from removed profile ${info.id}")
+                    tunnel.disconnect(info.id) { _ -> }
                 }
             }
             else -> {}
@@ -110,6 +112,9 @@ class TunnelObservable(
     )
 
     data object TunnelException: Throwable()
+
+    private val AppProfileStatus.isActive: Boolean
+        get() = this == AppProfileStatus.connecting || this == AppProfileStatus.connected
 
     private fun TunnelSnapshot.toAppTunnelInfo(): AppTunnelInfo {
         return AppTunnelInfo(
