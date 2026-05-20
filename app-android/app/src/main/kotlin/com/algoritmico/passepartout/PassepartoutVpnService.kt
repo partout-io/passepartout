@@ -17,10 +17,10 @@ class PassepartoutVpnService: VpnService() {
             engine = VpnEngine(
                 library = PassepartoutWrapper(),
                 bundleProvider = {
-                    readAsset(BUNDLE_FILENAME)
+                    readAsset(Globals.BUNDLE_FILENAME)
                 },
                 constantsProvider = {
-                    readAsset(CONSTANTS_FILENAME)
+                    readAsset(Globals.CONSTANTS_FILENAME)
                 },
                 cachePathProvider = {
                     cacheDir.absolutePath
@@ -82,11 +82,5 @@ class PassepartoutVpnService: VpnService() {
             }
             result.await()
         }
-    }
-
-    companion object {
-        private const val BUNDLE_FILENAME = "bundle.json"
-
-        private const val CONSTANTS_FILENAME = "constants.json"
     }
 }

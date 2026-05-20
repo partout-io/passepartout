@@ -15,8 +15,12 @@ object Globals {
     const val logTag = "Passepartout"
     const val serviceLogTag = "PassepartoutVpnService"
 
-    const val EVENT_BUFFER_CAPACITY = 64
+    // FIXME: Build bundle dynamically
+    const val BUNDLE_FILENAME = "bundle.json"
+    const val CONSTANTS_FILENAME = "constants.json"
+    const val PROFILES_DIRECTORY = "profiles-v1"
 
+    const val EVENT_BUFFER_CAPACITY = 64
     const val EVENT_REPLAY = 64
 }
 
