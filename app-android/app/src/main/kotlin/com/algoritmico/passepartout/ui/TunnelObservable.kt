@@ -4,8 +4,11 @@
 
 package com.algoritmico.passepartout.ui
 
+import android.util.Log
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
+import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
 import io.partout.PartoutTunnel
 import io.partout.models.TaggedProfile
@@ -16,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +30,9 @@ import kotlinx.coroutines.withContext
 import java.io.Closeable
 
 class TunnelObservable(
+    private val logTag: String,
     private val tunnel: PartoutTunnel,
+    events: Flow<Event>,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -38,6 +44,10 @@ class TunnelObservable(
 
     init {
         tunnel.state
+            .onEach(::onTunnelState)
+            .launchIn(scope)
+
+        events
             .onEach(::onUpdate)
             .launchIn(scope)
     }
@@ -62,7 +72,11 @@ class TunnelObservable(
         }
     }
 
-    private fun onUpdate(tunnelState: PartoutTunnel.State) {
+    fun onVpnPermissionResult(isGranted: Boolean) {
+        tunnel.onVpnPermissionResult(isGranted)
+    }
+
+    private fun onTunnelState(tunnelState: PartoutTunnel.State) {
         _state.update {
             it.copy(activeProfiles = tunnelState.snapshots.mapValues {
                 it.value.toAppTunnelInfo()
@@ -70,7 +84,24 @@ class TunnelObservable(
         }
     }
 
+    private fun onUpdate(event: Event) {
+        when (event) {
+            is ProfileEventRefresh -> {
+                // Iterate through active tunnel
+                state.value.activeProfiles.keys.forEach {
+                    // If profile was deleted, disconnect it
+                    if (!event.headers.keys.contains(it)) {
+                        Log.i(logTag, "Disconnect from removed profile ${it}")
+                        tunnel.disconnect(it) { _ -> }
+                    }
+                }
+            }
+            else -> {}
+        }
+    }
+
     override fun close() {
+        tunnel.close()
         scope.cancel()
     }
 
