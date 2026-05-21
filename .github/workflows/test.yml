@@ -12,6 +12,7 @@ on:
       - "**/*.md"
       - "**/*.sh"
       - "fastlane/**"
+      - "**/*.kt" # For now
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
