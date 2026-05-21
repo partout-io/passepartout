@@ -6,7 +6,7 @@ cd $cwd/..
 set -e
 partout_infile=app-cross/partout/scripts/openapi.yaml
 partout_package=io.partout.models
-abi_infile=app-cross/abi.yaml
+abi_infile=app-cross/openapi.yaml
 abi_package=com.algoritmico.passepartout.abi.models
 models_dir=`realpath app-android/app`
 

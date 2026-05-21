@@ -4,7 +4,7 @@ source $cwd/env.sh
 cd $cwd/..
 
 set -e
-infile=app-cross/abi.yaml
+infile=app-cross/openapi.yaml
 models_dir=app-cross/Sources/CommonLibraryCore/Domain
 models_tmp=$models_dir/tmp
 models_out=$models_tmp/Sources/OpenAPIClient/Models
