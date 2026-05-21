@@ -49,7 +49,7 @@ extension TunnelABI {
         )
 
         // Create platform-specific objects
-        let controller = try NativeTunnelController(ctx, ref: bindings.runtime)
+        let controller = try NativeTunnelController(ctx, ref: bindings.controller)
         let betterPathBlock: BetterPathBlock
 #if !PSP_CROSS
         betterPathBlock = NEBetterPathBlock(ctx).block

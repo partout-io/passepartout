@@ -128,7 +128,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         jstring constants,
         jstring profile,
         jstring cacheDir,
-        jobject runtime
+        jobject controller
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
@@ -136,7 +136,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
     psp_tunnel_bindings bindings = { 0 };
-    bindings.runtime = (*env)->NewGlobalRef(env, runtime);
+    bindings.controller = (*env)->NewGlobalRef(env, controller);
     bindings.free = tunnel_bindings_free;
 
     psp_tunnel_start_args args = { 0 };
@@ -178,9 +178,9 @@ void app_bindings_free(psp_app_bindings *b) {
 
 void tunnel_bindings_free(psp_tunnel_bindings *b) {
     JNI_ATTACH_OR_RETURN_VOID(env);
-    if (b->runtime) {
-        (*env)->DeleteGlobalRef(env, b->runtime);
-        b->runtime = NULL;
+    if (b->controller) {
+        (*env)->DeleteGlobalRef(env, b->controller);
+        b->controller = NULL;
     }
     JNI_DETACH(env);
 }

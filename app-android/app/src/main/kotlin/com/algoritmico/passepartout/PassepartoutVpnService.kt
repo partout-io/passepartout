@@ -5,7 +5,9 @@ import android.net.VpnService
 import android.os.IBinder
 import android.util.AtomicFile
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
+import com.algoritmico.passepartout.abi.helpers.ABIException
 import io.partout.PartoutVpnServiceRuntime
+import io.partout.vpn.JNITunnelController
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,25 +30,37 @@ class PassepartoutVpnService: VpnService() {
         override suspend fun start(
             runtime: PartoutVpnServiceRuntime,
             profileJSON: String
-        ): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
-            PartoutVpnServiceRuntime.Result(
-                library.tunnelStart(
-                    readAsset(Globals.BUNDLE_FILENAME),
-                    readAsset(Globals.CONSTANTS_FILENAME),
-                    profileJSON,
-                    cacheDir.absolutePath,
-                    runtime
-                ),
-                null
+        ) = withContext(Dispatchers.IO) {
+            // This is strongly retained by Partout
+            val controller = JNITunnelController(
+                logTag = Globals.jniLogTag,
+                service = runtime.service,
+                sendSnapshot = { runtime.sendSnapshot(it) },
+                disconnect = { runtime.disconnect() }
             )
+            val code = library.tunnelStart(
+                readAsset(Globals.BUNDLE_FILENAME),
+                readAsset(Globals.CONSTANTS_FILENAME),
+                profileJSON,
+                cacheDir.absolutePath,
+                controller
+            )
+            if (code != 0) {
+                throw ABIException(code, null)
+            }
         }
 
-        override suspend fun stop(): PartoutVpnServiceRuntime.Result = withContext(Dispatchers.IO) {
-            val result = CompletableDeferred<PartoutVpnServiceRuntime.Result>()
+        override suspend fun stop() = withContext(Dispatchers.IO) {
+            val result = CompletableDeferred<Int>()
             library.tunnelStop { code, json ->
-                result.complete(PartoutVpnServiceRuntime.Result(code, json))
+                if (code != 0) {
+                    result.completeExceptionally(ABIException(code, null))
+                    return@tunnelStop
+                }
+                result.complete(code)
             }
             result.await()
+            return@withContext
         }
 
         override suspend fun readLastProfile(): String {

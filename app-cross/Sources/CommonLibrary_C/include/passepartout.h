@@ -46,7 +46,7 @@ typedef struct __psp_app_bindings {
 } psp_app_bindings;
 
 typedef struct __psp_tunnel_bindings {
-    void *runtime;
+    void *controller;
     void (*free)(struct __psp_tunnel_bindings *);
 } psp_tunnel_bindings;
 

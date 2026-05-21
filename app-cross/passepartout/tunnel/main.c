@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     args.profile = profile;
     args.is_interactive = true;
     args.is_daemon = true;
-    args.bindings.runtime = NULL;
+    args.bindings.controller = NULL;
 
     /* Will block indefinitely. */
     const int result = psp_tunnel_start(&args);
