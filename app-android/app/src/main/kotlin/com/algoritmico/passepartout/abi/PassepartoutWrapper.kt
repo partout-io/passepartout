@@ -8,7 +8,7 @@ import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
-import io.partout.PartoutVpnServiceRuntime
+import io.partout.vpn.JNITunnelController
 
 class PassepartoutWrapper {
     external fun partoutVersion(): String
@@ -43,7 +43,7 @@ class PassepartoutWrapper {
         constants: String,
         profile: String,
         cacheDir: String,
-        runtime: PartoutVpnServiceRuntime
+        controller: JNITunnelController
     ): Int
     external fun tunnelStop(
         completion: ABICompletionCallback
