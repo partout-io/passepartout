@@ -1,1 +1,1 @@
-* OpenVPN: Improve copy about discontinued compression support (#1818)
+* Core: Fix .bsdSockets implementation in Partout
