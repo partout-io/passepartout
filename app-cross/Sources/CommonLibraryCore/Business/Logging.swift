@@ -212,6 +212,7 @@ private extension PartoutLogger.Builder {
 #if canImport(Darwin)
             setDestination(OSLogDestination($0), for: [$0])
 #else
+            // FIXME: #1656, Hardcoded tag
             setDestination(SimpleLogDestination(tag: "Passepartout"), for: [$0])
 #endif
         }

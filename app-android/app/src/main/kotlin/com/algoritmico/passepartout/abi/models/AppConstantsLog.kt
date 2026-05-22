@@ -25,6 +25,7 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
+ * @param tag 
  * @param formatter 
  * @param sinceLast 
  * @param options 
@@ -32,6 +33,9 @@ import kotlinx.serialization.Contextual
 @Serializable
 
 data class AppConstantsLog (
+
+    @SerialName(value = "tag")
+    val tag: kotlin.String,
 
     @SerialName(value = "formatter")
     val formatter: AppConstantsLogFormatter,
