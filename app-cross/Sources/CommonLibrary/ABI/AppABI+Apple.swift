@@ -31,9 +31,7 @@ extension AppABI {
             for: .app,
             with: appConfiguration,
             preferences: kvStore.preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // MARK: Config (GitHub)

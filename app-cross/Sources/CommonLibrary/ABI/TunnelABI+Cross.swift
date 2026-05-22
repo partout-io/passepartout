@@ -43,9 +43,7 @@ extension TunnelABI {
             for: .tunnelProfile(profile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // Create platform-specific objects
@@ -90,7 +88,6 @@ extension TunnelABI {
             daemon: daemon,
             environment: environment,
             iap: nil,
-            logFormatter: logFormatter,
             originalProfile: profile,
             bindings: bindings
         )

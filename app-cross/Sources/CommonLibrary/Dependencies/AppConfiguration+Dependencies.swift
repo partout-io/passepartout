@@ -385,7 +385,7 @@ extension ABI.AppConfiguration {
         UserDefaultsStore(.standard)
     }
 
-    public func newLogFormatter() -> LogFormatter {
+    public func newLogFormatter() -> LogFormatter? {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
             messageFormat: constants.log.formatter.message
@@ -473,8 +473,8 @@ extension ABI.AppConfiguration {
         InMemoryStore()
     }
 
-    public func newLogFormatter() -> LogFormatter {
-        DummyLogFormatter()
+    public func newLogFormatter() -> LogFormatter? {
+        nil
     }
 
     public func newRequest(for url: URL, cached: Bool) async throws -> Data {

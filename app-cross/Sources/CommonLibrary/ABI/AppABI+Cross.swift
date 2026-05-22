@@ -34,9 +34,7 @@ extension AppABI {
             for: .app,
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // Initialize objects from global configuration
