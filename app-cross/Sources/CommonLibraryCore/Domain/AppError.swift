@@ -39,7 +39,7 @@ extension ABI {
 
         case unknown
 
-        case urlRequestFailed
+        case urlRequestFailed(reason: Error?)
 
         case urlRequestUnavailable
 

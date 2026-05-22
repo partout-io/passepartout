@@ -41,11 +41,13 @@ Sources/CommonLibrary/Dependencies/AppRelease+BusinessChanges.swift
 Sources/CommonLibrary/Dependencies/AppRelease.swift
 Sources/CommonLibrary/Dependencies/DefaultAppProcessor.swift
 Sources/CommonLibrary/Dependencies/DefaultTunnelProcessor.swift
+Sources/CommonLibrary/Dependencies/NativeURLFetcher.swift
 Sources/CommonLibrary/Dependencies/OpenVPNImplementationBuilder.swift
 Sources/CommonLibrary/Dependencies/WireGuardImplementationBuilder.swift
 Sources/CommonLibraryApple/Bundle+Extensions.swift
 Sources/CommonLibraryApple/CommonLibraryApple.swift
 Sources/CommonLibraryApple/FoundationLogFormatter.swift
+Sources/CommonLibraryApple/FoundationURLFetcher.swift
 Sources/CommonLibraryApple/HTMLTemplate.swift
 Sources/CommonLibraryApple/JSON+L10n.swift
 Sources/CommonLibraryApple/LocalNetworkPermissionService.swift
@@ -208,6 +210,7 @@ Sources/CommonLibraryCore/Strategy/Processors.swift
 Sources/CommonLibraryCore/Strategy/ProfileRepository.swift
 Sources/CommonLibraryCore/Strategy/ProviderPreferencesRepository.swift
 Sources/CommonLibraryCore/Strategy/SharedReceiptReader.swift
+Sources/CommonLibraryCore/Strategy/URLFetcher.swift
 Sources/CommonLibraryCore/Strategy/VersionCheckerStrategy.swift
 Sources/CommonLibraryCore/Strategy/WebReceiver.swift
 Sources/CommonLibraryCore/Strategy/WebUploaderStrategy.swift
