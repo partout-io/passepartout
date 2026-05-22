@@ -190,7 +190,7 @@ private extension PartoutLogger.Builder {
             .App.web
         ]
         list.append(.providers)
-        setDefaultDestination(for: list)
+        setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
         if preferences.extensiveLogging {
@@ -207,13 +207,12 @@ private extension PartoutLogger.Builder {
         }
     }
 
-    mutating func setDefaultDestination(for categories: [LoggerCategory]) {
+    mutating func setDefaultDestination(for categories: [LoggerCategory], tag: String) {
         categories.forEach {
 #if canImport(Darwin)
             setDestination(OSLogDestination($0), for: [$0])
 #else
-            // FIXME: #1656, Hardcoded tag
-            setDestination(SimpleLogDestination(tag: "Passepartout"), for: [$0])
+            setDestination(SimpleLogDestination(tag: tag), for: [$0])
 #endif
         }
     }
