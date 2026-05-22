@@ -53,7 +53,7 @@ class TunnelObservable(
             .launchIn(scope)
     }
 
-    suspend fun connect(profile: TaggedProfile) {
+    suspend fun connect(profile: TaggedProfile) =
         suspendCancellableCoroutine { continuation ->
             tunnel.connect(profile) callback@ { status ->
                 if (!continuation.isActive) { return@callback }
@@ -64,12 +64,13 @@ class TunnelObservable(
                 continuation.resume(Unit)
             }
         }
-    }
 
-    suspend fun disconnect(profileId: String) {
+    suspend fun disconnect(profileId: String) =
         suspendCancellableCoroutine { continuation ->
             tunnel.disconnect(profileId) callback@ { status ->
-                if (!continuation.isActive) { return@callback }
+                if (!continuation.isActive) {
+                    return@callback
+                }
                 if (status != PartoutTunnel.ERROR_NONE) {
                     continuation.resumeWithException(TunnelException)
                     return@callback
@@ -77,6 +78,11 @@ class TunnelObservable(
                 continuation.resume(Unit)
             }
         }
+
+    suspend fun getEnvironmentValue(name: String): String? {
+        val json = tunnel.requestEnvironmentValue(name)
+        Log.i(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
+        return json
     }
 
     fun onVpnPermissionResult(isGranted: Boolean) {

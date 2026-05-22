@@ -17,6 +17,7 @@ class PassepartoutVpnService: VpnService() {
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
             logTag = Globals.serviceLogTag,
+            jniLogTag = Globals.jniLogTag,
             service = this,
             engine = engine
         )
@@ -28,16 +29,10 @@ class PassepartoutVpnService: VpnService() {
             get() = File(noBackupFilesDir, Globals.PROFILE_LAST_PATH)
 
         override suspend fun start(
-            runtime: PartoutVpnServiceRuntime,
+            controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            // This is strongly retained by Partout
-            val controller = JNITunnelController(
-                logTag = Globals.jniLogTag,
-                service = runtime.service,
-                sendSnapshot = { runtime.sendSnapshot(it) },
-                disconnect = { runtime.disconnect() }
-            )
+            // This call retains the controller strongly
             val code = library.tunnelStart(
                 readAsset(Globals.BUNDLE_FILENAME),
                 readAsset(Globals.CONSTANTS_FILENAME),
