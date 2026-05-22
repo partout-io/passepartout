@@ -46,16 +46,15 @@ class PassepartoutVpnService: VpnService() {
         }
 
         override suspend fun stop() = withContext(Dispatchers.IO) {
-            val result = CompletableDeferred<Int>()
-            library.tunnelStop { code, json ->
+            val result = CompletableDeferred<Unit>()
+            library.tunnelStop { code, _ ->
                 if (code != 0) {
                     result.completeExceptionally(ABIException(code, null))
                     return@tunnelStop
                 }
-                result.complete(code)
+                result.complete(Unit)
             }
             result.await()
-            return@withContext
         }
 
         override suspend fun readLastProfile(): String {
