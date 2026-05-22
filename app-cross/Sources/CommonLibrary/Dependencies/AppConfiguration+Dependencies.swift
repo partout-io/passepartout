@@ -467,8 +467,8 @@ extension ABI.AppConfiguration {
 
 // MARK: - Non-Apple
 
-// FIXME: #1656, C ABI, non-Apple strategies
 extension ABI.AppConfiguration {
+    // FIXME: #1827, Cross, KeyValueStore
     public func newKeyValueStore() -> KeyValueStore {
         InMemoryStore()
     }
@@ -477,6 +477,7 @@ extension ABI.AppConfiguration {
         nil
     }
 
+    // FIXME: #1827, Cross, URLRequest
     public func newRequest(for url: URL, cached: Bool) async throws -> Data {
         Data()
     }

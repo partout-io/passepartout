@@ -25,7 +25,7 @@ extension TunnelABI {
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )
-        // FIXME: #1656, Cross, Hardcoded config flags
+        // FIXME: #1827, Cross, Hardcoded config flags
         preferences.configFlags = [.ovpnCrossV2, .wgCrossV2]
 
         // Initialize objects from global configuration
@@ -57,12 +57,12 @@ extension TunnelABI {
         betterPathBlock = NEBetterPathBlock(ctx).block
 #else
         betterPathBlock = {
-            // FIXME: #1656, C ABI, better path block
+            // FIXME: #1827, Cross, Better path block
             PassthroughStream()
         }
 #endif
         let factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
-        // FIXME: #1656, C ABI, reachability observer
+        // FIXME: #1827, Cross, Reachability observer
         let reachability = DummyReachabilityObserver()
 
         let connectionOptions = ConnectionParameters.Options()

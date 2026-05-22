@@ -27,7 +27,7 @@ bool MyApp::OnInit()
     /* Paths to JSON input. */
     const char *bundle_path = "bundle.json";
     const char *constants_path = "constants.json";
-    // FIXME: #1656, Cross UI, hardcoded profiles dir and cache dir
+    // FIXME: #209/notes, Cross UI, hardcoded profiles dir and cache dir
     const char *profiles_dir = ".";
     const char *cache_dir = ".";
 #ifdef USE_SWIFTPM
