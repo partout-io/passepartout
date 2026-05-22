@@ -9,9 +9,10 @@ public protocol LogFormatter: AnyObject, Sendable {
 }
 
 extension LogFormatter {
+    // WARNING: Holds a strong reference to LogFormatter
     public var localMapper: @Sendable (DebugLog.Line) -> String {
-        { [weak self] in
-            self?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+        {
+            self.formattedLog(timestamp: $0.timestamp, message: $0.message)
         }
     }
 }
