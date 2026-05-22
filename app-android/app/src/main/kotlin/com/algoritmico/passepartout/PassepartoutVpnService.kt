@@ -86,7 +86,6 @@ class PassepartoutVpnService: VpnService() {
 
     override fun onDestroy() {
         runtime.onDestroy()
-        stopForeground(STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 
