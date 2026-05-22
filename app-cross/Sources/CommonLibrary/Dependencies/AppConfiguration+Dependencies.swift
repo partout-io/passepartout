@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if PSP_ABI
+import CommonLibrary_C
+#endif
 import Partout
 
 // MARK: Shared
@@ -421,9 +424,14 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
+    public func newRequest(
+        for url: URL,
+        cached: Bool,
+        bindings: psp_app_bindings?
+    ) async throws -> Data {
         var request = URLRequest(url: url)
         request.cachePolicy = cached ? .useProtocolCachePolicy : .reloadIgnoringCacheData
+        request.timeoutInterval = constants.api.timeoutInterval
         return try await URLSession.shared.data(for: request).0
     }
 
@@ -477,9 +485,36 @@ extension ABI.AppConfiguration {
         nil
     }
 
-    // FIXME: #1827, Cross, URLRequest
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
-        Data()
+    public func newRequest(
+        for url: URL,
+        cached: Bool,
+        bindings: psp_app_bindings?
+    ) async throws -> Data {
+        guard let bindings, let requestCallback = bindings.request_cb else {
+            throw ABI.AppError.urlRequestUnavailable
+        }
+        return try url.absoluteString.withCString { cURL in
+            var bytes: UnsafeMutablePointer<UInt8>?
+            var count = 0
+            let code = requestCallback(
+                bindings.request_ctx,
+                cURL,
+                cached,
+                constants.api.timeoutInterval,
+                &bytes,
+                &count
+            )
+            defer {
+                psp_free(bytes)
+            }
+            guard code == PSPCompletionCodeOK else {
+                throw ABI.AppError.urlRequestFailed
+            }
+            guard let bytes else {
+                return Data()
+            }
+            return Data(bytes: bytes, count: count)
+        }
     }
 }
 

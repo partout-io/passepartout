@@ -8,15 +8,23 @@
 #define __PASSEPARTOUT_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 /* Common functions. */
 const char *psp_partout_version(void);
 void psp_log(const char *msg);
 char *psp_readfile(const char *rel_path, const char *parent);
+void psp_free(void *ptr);
 
 /* Events callback. */
 typedef void (*psp_event_callback)(void *event_ctx, const char *event);
+typedef int (*psp_request_callback)(void *request_ctx,
+                                    const char *url,
+                                    bool cached,
+                                    double timeout_sec,
+                                    uint8_t **data,
+                                    size_t *len);
 
 /* Completion callback.
  * - Success: code == 0, string = JSON (optional)
@@ -42,6 +50,8 @@ psp_completion PSP_CB(void *ctx, psp_completion_cb callback) {
 typedef struct __psp_app_bindings {
     void *event_ctx;
     psp_event_callback event_cb;
+    void *request_ctx;
+    psp_request_callback request_cb;
     void (*free)(struct __psp_app_bindings *);
 } psp_app_bindings;
 

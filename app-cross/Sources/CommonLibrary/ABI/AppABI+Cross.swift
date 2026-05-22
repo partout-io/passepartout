@@ -38,13 +38,18 @@ extension AppABI {
         )
 
         // Initialize objects from global configuration
+        nonisolated(unsafe) let unsafeBindings = bindings
         let configManager = appConfiguration.newConfigManager(
             withTestBundle: false,
             isBeta: {
                 false
             },
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: false)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: false,
+                    bindings: unsafeBindings
+                )
             }
         )
         let registry = appConfiguration.newRegistryForApp(

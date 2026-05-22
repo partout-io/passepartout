@@ -50,6 +50,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             return nil
         case .unknown:
             return nil
+        case .urlRequestUnavailable, .urlRequestFailed:
+            return nil
         case .verificationReceiptIsLoading, .verificationRequiredFeatures:
             // Handled manually
             return nil

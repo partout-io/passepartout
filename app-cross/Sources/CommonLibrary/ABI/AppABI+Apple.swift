@@ -48,7 +48,11 @@ extension AppABI {
                 await betaChecker.isBeta()
             },
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: false)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: false,
+                    bindings: nil
+                )
             }
         )
 
@@ -213,7 +217,11 @@ extension AppABI {
                 }
             }(),
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: true)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: true,
+                    bindings: nil
+                )
             }
         )
 
