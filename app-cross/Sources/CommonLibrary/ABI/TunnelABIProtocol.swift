@@ -9,6 +9,6 @@ import Partout
 public protocol TunnelABIProtocol: AppABILoggerProtocol, Sendable {
     func start(isInteractive: Bool) async throws
     func stop() async
-    func sendMessage(_ message: Message.Input) async -> Message.Output?
+    func sendMessage(_ messageData: Data) async -> Data?
     nonisolated func cancel(_ error: Error?)
 }

@@ -126,20 +126,22 @@ public final class TunnelABI: TunnelABIProtocol {
         self.daemon = nil
     }
 
-    public func sendMessage(_ input: Message.Input) async -> Message.Output? {
+    public func sendMessage(_ messageData: Data) async -> Data? {
         guard let daemon else { return nil }
         pspLog(.core, .debug, "Handle tunnel message")
         do {
+            let input = try ABI.decode(Message.Input.self, from: messageData)
             let output = try await daemon.sendMessage(input)
+            let encodedOutput = try ABI.encode(output)
             switch input {
             case .environment:
                 break
             default:
-                pspLog(.core, .info, "Message handled and response encoded")
+                pspLog(.core, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
             }
-            return output
+            return encodedOutput
         } catch {
-            pspLog(.core, .error, "Unable to decode message: \(input)")
+            pspLog(.core, .error, "Unable to decode message: \(messageData)")
             return nil
         }
     }
