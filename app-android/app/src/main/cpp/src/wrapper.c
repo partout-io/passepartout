@@ -12,6 +12,7 @@
 #define PSP_JNI_CB(e, c) PSP_CB(abi_handler_create(e, c), abi_completion_proxy)
 static void app_bindings_free(psp_app_bindings *b);
 static void tunnel_bindings_free(psp_tunnel_bindings *b);
+static int abi_request_handler_proxy(void *ctx, const char *url, bool cached, double timeout_sec, uint8_t **data, size_t *len);
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
@@ -42,6 +43,8 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
     psp_app_bindings bindings = { 0 };
     bindings.event_ctx = abi_handler_create(env, eventHandler);
     bindings.event_cb = abi_event_handler_proxy;
+    bindings.request_ctx = (*env)->NewGlobalRef(env, thiz);
+    bindings.request_cb = abi_request_handler_proxy;
     bindings.free = app_bindings_free;
 
     psp_app_init_args args = { 0 };
@@ -173,6 +176,10 @@ void app_bindings_free(psp_app_bindings *b) {
         abi_handler_free(env, b->event_ctx);
         b->event_ctx = NULL;
     }
+    if (b->request_ctx) {
+        (*env)->DeleteGlobalRef(env, b->request_ctx);
+        b->request_ctx = NULL;
+    }
     JNI_DETACH(env);
 }
 
@@ -183,4 +190,75 @@ void tunnel_bindings_free(psp_tunnel_bindings *b) {
         b->controller = NULL;
     }
     JNI_DETACH(env);
+}
+
+static int abi_request_handler_proxy(
+        void *ctx,
+        const char *url,
+        bool cached,
+        double timeout_sec,
+        uint8_t **data,
+        size_t *len
+) {
+    if (!ctx || !url || !data || !len) {
+        return PSPCompletionCodeArgs;
+    }
+    *data = NULL;
+    *len = 0;
+
+    JNI_ATTACH_OR_RETURN(env, PSPCompletionCodeFailure);
+
+    int result = PSPCompletionCodeFailure;
+    jobject wrapper = (jobject)ctx;
+    jclass cls = (*env)->GetObjectClass(env, wrapper);
+    if (!cls) goto cleanup;
+    jmethodID methodID = (*env)->GetMethodID(env, cls, "fetch", "(Ljava/lang/String;ZD)[B");
+    if (!methodID) goto cleanup;
+    jstring jURL = (*env)->NewStringUTF(env, url);
+    if (!jURL) goto cleanup;
+
+    jbyteArray payload = (jbyteArray)(*env)->CallObjectMethod(
+            env,
+            wrapper,
+            methodID,
+            jURL,
+            cached ? JNI_TRUE : JNI_FALSE,
+            timeout_sec
+    );
+    (*env)->DeleteLocalRef(env, jURL);
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+        goto cleanup;
+    }
+    if (!payload) goto cleanup;
+
+    const jsize payload_len = (*env)->GetArrayLength(env, payload);
+    uint8_t *payload_data = payload_len > 0 ? malloc((size_t)payload_len) : NULL;
+    if (payload_len > 0 && !payload_data) {
+        (*env)->DeleteLocalRef(env, payload);
+        goto cleanup;
+    }
+    if (payload_len > 0) {
+        (*env)->GetByteArrayRegion(env, payload, 0, payload_len, (jbyte *)payload_data);
+    }
+    (*env)->DeleteLocalRef(env, payload);
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+        free(payload_data);
+        goto cleanup;
+    }
+
+    *data = payload_data;
+    *len = (size_t)payload_len;
+    result = PSPCompletionCodeOK;
+
+cleanup:
+    if (cls) {
+        (*env)->DeleteLocalRef(env, cls);
+    }
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+    }
+    JNI_DETACH(env);
+    return result;
 }
