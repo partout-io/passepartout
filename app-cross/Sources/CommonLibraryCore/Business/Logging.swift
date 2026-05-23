@@ -64,7 +64,7 @@ public func pspLogRegister(
     for target: LoggingTarget,
     with appConfiguration: ABI.AppConfiguration,
     preferences: ABI.AppPreferenceValues,
-    mapper: @escaping @Sendable (DebugLog.Line) -> String
+    localMapper: (@Sendable (DebugLog.Line) -> String)?
 ) -> PartoutLoggerContext {
     switch target {
     case .app:
@@ -74,7 +74,7 @@ public func pspLogRegister(
                 to: appConfiguration.bundle.urlForAppLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
-                mapper: mapper
+                localMapper: localMapper
             )
             PartoutLogger.register(logger)
             logger.logPreamble(
@@ -88,7 +88,7 @@ public func pspLogRegister(
             to: appConfiguration.bundle.urlForTunnelLog,
             preferences: preferences,
             parameters: appConfiguration.constants.log,
-            mapper: mapper
+            localMapper: localMapper
         )
         PartoutLogger.register(logger)
         logger.logPreamble(
@@ -103,7 +103,7 @@ public func pspLogRegister(
                 to: appConfiguration.bundle.urlForTunnelLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
-                mapper: mapper
+                localMapper: localMapper
             )
             PartoutLogger.register(logger)
         }
@@ -118,14 +118,14 @@ private extension PartoutLogger {
         to url: URL,
         preferences: ABI.AppPreferenceValues,
         parameters: ABI.AppConstants.Log,
-        mapper: @escaping @Sendable (DebugLog.Line) -> String
+        localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: url,
             preferences: preferences,
             parameters: parameters,
-            mapper: mapper
+            localMapper: localMapper
         )
         return builder.build()
     }
@@ -134,14 +134,14 @@ private extension PartoutLogger {
         to url: URL,
         preferences: ABI.AppPreferenceValues,
         parameters: ABI.AppConstants.Log,
-        mapper: @escaping @Sendable (DebugLog.Line) -> String
+        localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
             to: url,
             preferences: preferences,
             parameters: parameters,
-            mapper: mapper
+            localMapper: localMapper
         )
         builder.willPrint = {
             let prefix = "[\($0.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
@@ -175,7 +175,7 @@ private extension PartoutLogger.Builder {
         to url: URL,
         preferences: ABI.AppPreferenceValues,
         parameters: ABI.AppConstants.Log,
-        mapper: @escaping @Sendable (DebugLog.Line) -> String
+        localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
         assertsMissingLoggingCategory = true
         var list: [LoggerCategory] = [
@@ -190,29 +190,31 @@ private extension PartoutLogger.Builder {
             .App.web
         ]
         list.append(.providers)
-        setDefaultDestination(for: list)
+        setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
         if preferences.extensiveLogging {
             newOptions.maxLevel = .debug
         }
-        setLocalLogger(
-            url: url,
-            options: newOptions.fromProto,
-            mapper: mapper
-        )
+        if let localMapper {
+            setLocalLogger(
+                url: url,
+                options: newOptions.fromProto,
+                mapper: localMapper
+            )
+        }
         if preferences.logsPrivateData {
             logsAddresses = true
             logsModules = true
         }
     }
 
-    mutating func setDefaultDestination(for categories: [LoggerCategory]) {
+    mutating func setDefaultDestination(for categories: [LoggerCategory], tag: String) {
         categories.forEach {
 #if canImport(Darwin)
             setDestination(OSLogDestination($0), for: [$0])
 #else
-            setDestination(SimpleLogDestination(tag: "Passepartout"), for: [$0])
+            setDestination(SimpleLogDestination(tag: tag), for: [$0])
 #endif
         }
     }

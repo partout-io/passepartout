@@ -9,9 +9,9 @@ public final class TunnelObservable {
     public struct Logging {
         public let maxDebugLogLevel: DebugLog.Level
         public let sinceLast: Double
-        public let formatter: LogFormatter
+        public let formatter: LogFormatter?
 
-        public init(maxDebugLogLevel: DebugLog.Level, sinceLast: Double, formatter: LogFormatter) {
+        public init(maxDebugLogLevel: DebugLog.Level, sinceLast: Double, formatter: LogFormatter?) {
             self.maxDebugLogLevel = maxDebugLogLevel
             self.sinceLast = sinceLast
             self.formatter = formatter
@@ -93,7 +93,7 @@ extension TunnelObservable {
     public func currentLog() async -> [String] {
         guard let logging else { return [] }
         return await currentLog(logging: logging).map {
-            logging.formatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
+            logging.formatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
         }
     }
 

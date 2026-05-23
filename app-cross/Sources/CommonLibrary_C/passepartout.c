@@ -75,3 +75,7 @@ failure:
     if (abs_path) free(abs_path);
     return NULL;
 }
+
+void psp_free(void *ptr) {
+    free(ptr);
+}

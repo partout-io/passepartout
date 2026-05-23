@@ -43,9 +43,7 @@ extension TunnelABI {
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // Decode preferences and config flags
@@ -133,7 +131,6 @@ extension TunnelABI {
             daemon: daemon,
             environment: environment,
             iap: iap,
-            logFormatter: logFormatter,
             originalProfile: originalProfile,
             bindings: nil
         )

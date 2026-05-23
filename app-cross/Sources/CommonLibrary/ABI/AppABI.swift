@@ -29,7 +29,7 @@ public final class AppABI: Sendable {
     private let configManager: ConfigManager
     private let extensionInstaller: ExtensionInstaller?
     private let iapManager: IAPManager
-    private let logFormatter: LogFormatter
+    private let logFormatter: LogFormatter?
     private let profileManager: ProfileManager
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
@@ -52,7 +52,7 @@ public final class AppABI: Sendable {
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
         kvStore: KeyValueStore,
-        logFormatter: LogFormatter,
+        logFormatter: LogFormatter?,
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
@@ -345,7 +345,7 @@ extension AppABI: AppABILoggerProtocol, LogFormatter {
     }
 
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
-        logFormatter.formattedLog(timestamp: timestamp, message: message)
+        logFormatter?.formattedLog(timestamp: timestamp, message: message) ?? message
     }
 }
 

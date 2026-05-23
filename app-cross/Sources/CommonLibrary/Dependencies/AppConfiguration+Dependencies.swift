@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#if PSP_ABI
+import CommonLibrary_C
+#endif
 import Partout
 
 // MARK: Shared
@@ -385,7 +388,7 @@ extension ABI.AppConfiguration {
         UserDefaultsStore(.standard)
     }
 
-    public func newLogFormatter() -> LogFormatter {
+    public func newLogFormatter() -> LogFormatter? {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
             messageFormat: constants.log.formatter.message
@@ -421,10 +424,13 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.cachePolicy = cached ? .useProtocolCachePolicy : .reloadIgnoringCacheData
-        return try await URLSession.shared.data(for: request).0
+    public func newRequest(
+        for url: URL,
+        cached: Bool,
+        bindings: psp_app_bindings?
+    ) async throws -> Data {
+        try await FoundationURLFetcher(timeout: constants.api.timeoutInterval)
+            .data(for: url, cached: cached)
     }
 
     public func newSystemExtensionManager() -> SystemExtensionManager? {
@@ -467,18 +473,30 @@ extension ABI.AppConfiguration {
 
 // MARK: - Non-Apple
 
-// FIXME: #1656, C ABI, non-Apple strategies
 extension ABI.AppConfiguration {
+    // FIXME: #1827, Cross, KeyValueStore
     public func newKeyValueStore() -> KeyValueStore {
         InMemoryStore()
     }
 
-    public func newLogFormatter() -> LogFormatter {
-        DummyLogFormatter()
+    public func newLogFormatter() -> LogFormatter? {
+        nil
     }
 
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
-        Data()
+    public func newRequest(
+        for url: URL,
+        cached: Bool,
+        bindings: psp_app_bindings?
+    ) async throws -> Data {
+        guard let bindings, let requestCallback = bindings.request_cb else {
+            throw ABI.AppError.urlRequestUnavailable
+        }
+        return try await NativeURLFetcher(
+            ctx: bindings.request_ctx,
+            callback: bindings.request_cb,
+            timeout: constants.api.timeoutInterval
+        )
+        .data(for: url, cached: cached)
     }
 }
 

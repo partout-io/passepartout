@@ -4,7 +4,6 @@
 
 import Partout
 
-// FIXME: #1656, Cross UI, use FoundationEssentials variant with .formatted()
 public final class FoundationLogFormatter: LogFormatter {
     private let formatter: DateFormatter
     private let messageFormat: String

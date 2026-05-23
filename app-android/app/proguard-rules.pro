@@ -41,7 +41,9 @@
 -keep class * implements com.algoritmico.passepartout.abi.helpers.ABICompletionCallback {
     public void onComplete(int, java.lang.String);
 }
-
+-keep class com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
+    public byte[] fetch(java.lang.String, boolean, double);
+}
 # The native tunnel backend receives this object and calls into it by name.
 -keep class io.partout.PartoutVpnServiceRuntime {
     public void testWorking();

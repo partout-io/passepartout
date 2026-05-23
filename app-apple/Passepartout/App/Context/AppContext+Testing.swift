@@ -25,7 +25,7 @@ extension AppContext {
             for: .app,
             with: appConfiguration,
             preferences: .init(),
-            mapper: \.message
+            localMapper: \.message
         )
 
         let apiManager = APIManager(

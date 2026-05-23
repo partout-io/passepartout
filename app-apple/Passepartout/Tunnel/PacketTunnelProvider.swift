@@ -30,9 +30,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelGlobal,
             with: appConfiguration,
             preferences: ABI.AppPreferenceValues(),
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // The app may propagate its local preferences on manual start

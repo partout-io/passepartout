@@ -21,12 +21,10 @@ extension TunnelABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        var preferences = ABI.AppPreferenceValues.forInitialization(
+        let preferences = ABI.AppPreferenceValues.forInitialization(
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )
-        // FIXME: #1656, Cross, Hardcoded config flags
-        preferences.configFlags = [.ovpnCrossV2, .wgCrossV2]
 
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile
@@ -43,9 +41,7 @@ extension TunnelABI {
             for: .tunnelProfile(profile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // Create platform-specific objects
@@ -59,12 +55,12 @@ extension TunnelABI {
         betterPathBlock = NEBetterPathBlock(ctx).block
 #else
         betterPathBlock = {
-            // FIXME: #1656, C ABI, better path block
+            // FIXME: #1827, Cross, Better path block
             PassthroughStream()
         }
 #endif
         let factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
-        // FIXME: #1656, C ABI, reachability observer
+        // FIXME: #1827, Cross, Reachability observer
         let reachability = DummyReachabilityObserver()
 
         let connectionOptions = ConnectionParameters.Options()
@@ -90,7 +86,6 @@ extension TunnelABI {
             daemon: daemon,
             environment: environment,
             iap: nil,
-            logFormatter: logFormatter,
             originalProfile: profile,
             bindings: bindings
         )

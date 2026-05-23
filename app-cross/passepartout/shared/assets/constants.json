@@ -66,6 +66,7 @@
         "passcodeLength": 6
     },
     "log": {
+        "tag": "PassepartoutABI",
         "sinceLast": 86400.0,
         "options": {
             "maxLevel": 3,

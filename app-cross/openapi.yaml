@@ -200,6 +200,8 @@ components:
         log:
           type: object
           properties:
+            tag:
+              type: string
             formatter:
               type: object
               properties:
@@ -215,6 +217,7 @@ components:
             options:
               "$ref": "#/components/schemas/LocalLoggerOptions"
           required:
+          - tag
           - formatter
           - sinceLast
           - options

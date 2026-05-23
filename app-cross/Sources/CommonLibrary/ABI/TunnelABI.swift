@@ -28,7 +28,6 @@ public final class TunnelABI: TunnelABIProtocol {
     private var daemon: ConnectionDaemon?
     private let environment: TunnelEnvironment
     private let iap: IAP?
-    private let logFormatter: LogFormatter
     private let originalProfile: Profile
     nonisolated(unsafe) private let bindings: psp_tunnel_bindings?
 
@@ -38,14 +37,12 @@ public final class TunnelABI: TunnelABIProtocol {
         daemon: ConnectionDaemon,
         environment: TunnelEnvironment,
         iap: IAP?,
-        logFormatter: LogFormatter,
         originalProfile: Profile,
         bindings: psp_tunnel_bindings?
     ) {
         self.daemon = daemon
         self.environment = environment
         self.iap = iap
-        self.logFormatter = logFormatter
         self.originalProfile = originalProfile
         self.bindings = bindings
 

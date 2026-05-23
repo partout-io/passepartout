@@ -34,19 +34,22 @@ extension AppABI {
             for: .app,
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localMapper: logFormatter?.localMapper
         )
 
         // Initialize objects from global configuration
+        nonisolated(unsafe) let unsafeBindings = bindings
         let configManager = appConfiguration.newConfigManager(
             withTestBundle: false,
             isBeta: {
                 false
             },
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: false)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: false,
+                    bindings: unsafeBindings
+                )
             }
         )
         let registry = appConfiguration.newRegistryForApp(

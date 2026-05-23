@@ -39,6 +39,10 @@ extension ABI {
 
         case unknown
 
+        case urlRequestFailed(reason: Error?)
+
+        case urlRequestUnavailable
+
         case verificationReceiptIsLoading
 
         case verificationRequiredFeatures(Set<AppFeature>)

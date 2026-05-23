@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.abi.AppABIProfile
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
+import com.algoritmico.passepartout.abi.helpers.ABIURLFetcher
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.readAsset
 import io.partout.PartoutTunnel
@@ -58,6 +59,7 @@ class AppContext(
             constants,
             profilesDirectory.absolutePath,
             cacheDirectory.absolutePath,
+            ABIURLFetcher,
             eventDispatcher
         )
         if (code != 0) {
