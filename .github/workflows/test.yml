@@ -12,7 +12,7 @@ on:
       - "**/*.md"
       - "**/*.sh"
       - "fastlane/**"
-      - "**/*.kt" # For now
+      - "app-android" # For now
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
