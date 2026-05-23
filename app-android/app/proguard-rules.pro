@@ -41,10 +41,7 @@
 -keep class * implements com.algoritmico.passepartout.abi.helpers.ABICompletionCallback {
     public void onComplete(int, java.lang.String);
 }
--keep interface com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
-    public byte[] fetch(java.lang.String, boolean, double);
-}
--keep class * implements com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
+-keep class com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
     public byte[] fetch(java.lang.String, boolean, double);
 }
 # The native tunnel backend receives this object and calls into it by name.
