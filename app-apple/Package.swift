@@ -1,7 +1,9 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+
+// The "*Wrapper" targets only exist for testing
 
 let package = Package(
     name: "app-apple",
@@ -22,11 +24,11 @@ let package = Package(
         ),
         .library(
             name: "AppLibraryMain",
-            targets: ["AppLibraryMainWrapper"]
+            targets: ["AppLibraryMain"]
         ),
         .library(
             name: "AppLibraryTV",
-            targets: ["AppLibraryTVWrapper"]
+            targets: ["AppLibraryTV"]
         ),
         .library(
             name: "TunnelLibrary",
