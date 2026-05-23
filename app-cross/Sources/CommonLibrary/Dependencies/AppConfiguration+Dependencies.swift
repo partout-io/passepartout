@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if PSP_ABI
 import CommonLibrary_C
-#endif
 import Partout
 
 // MARK: Shared
@@ -488,7 +486,7 @@ extension ABI.AppConfiguration {
         cached: Bool,
         bindings: psp_app_bindings?
     ) async throws -> Data {
-        guard let bindings, let requestCallback = bindings.request_cb else {
+        guard let bindings else {
             throw ABI.AppError.urlRequestUnavailable
         }
         return try await NativeURLFetcher(
