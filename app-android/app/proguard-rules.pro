@@ -24,7 +24,6 @@
 # owner and method names must remain stable after R8.
 -keep class com.algoritmico.passepartout.abi.PassepartoutWrapper {
     native <methods>;
-    public byte[] fetch(java.lang.String, boolean);
 }
 
 # The native core calls these handlers by method name through GetMethodID.
@@ -41,6 +40,12 @@
 }
 -keep class * implements com.algoritmico.passepartout.abi.helpers.ABICompletionCallback {
     public void onComplete(int, java.lang.String);
+}
+-keep interface com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
+    public byte[] fetch(java.lang.String, boolean, double);
+}
+-keep class * implements com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
+    public byte[] fetch(java.lang.String, boolean, double);
 }
 # The native tunnel backend receives this object and calls into it by name.
 -keep class io.partout.PartoutVpnServiceRuntime {

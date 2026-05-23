@@ -8,10 +8,8 @@ import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABICompletionCallback
 import com.algoritmico.passepartout.abi.helpers.ABIEventHandler
+import com.algoritmico.passepartout.abi.helpers.ABIURLFetcher
 import io.partout.vpn.JNITunnelController
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 
 class PassepartoutWrapper {
     external fun partoutVersion(): String
@@ -20,6 +18,7 @@ class PassepartoutWrapper {
         constants: String,
         profilesDir: String,
         cacheDir: String,
+        urlFetcher: ABIURLFetcher,
         eventHandler: ABIEventHandler
     ): Int
     external fun appDeinit(completion: ABICompletionCallback)
@@ -51,23 +50,6 @@ class PassepartoutWrapper {
     external fun tunnelStop(
         completion: ABICompletionCallback
     )
-
-    fun fetch(url: String, cached: Boolean, timeout: Double): ByteArray {
-        val connection = URL(url).openConnection() as HttpURLConnection
-        return try {
-            connection.requestMethod = "GET"
-            connection.useCaches = cached
-            connection.connectTimeout = timeout.toInt() * 1000
-            connection.readTimeout = timeout.toInt() * 1000
-            val status = connection.responseCode
-            if (status !in 200..299) {
-                throw IOException("HTTP $status")
-            }
-            connection.inputStream.use { it.readBytes() }
-        } finally {
-            connection.disconnect()
-        }
-    }
 
     companion object {
         init {

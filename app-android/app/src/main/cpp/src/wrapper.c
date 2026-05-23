@@ -33,6 +33,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         jstring constants,
         jstring profilesDir,
         jstring cacheDir,
+        jobject urlFetcher,
         jobject eventHandler
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
@@ -43,7 +44,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
     psp_app_bindings bindings = { 0 };
     bindings.event_ctx = abi_handler_create(env, eventHandler);
     bindings.event_cb = abi_event_handler_proxy;
-    bindings.request_ctx = (*env)->NewGlobalRef(env, thiz);
+    bindings.request_ctx = abi_handler_create(env, urlFetcher);
     bindings.request_cb = abi_request_handler_proxy;
     bindings.free = app_bindings_free;
 
@@ -177,7 +178,7 @@ void app_bindings_free(psp_app_bindings *b) {
         b->event_ctx = NULL;
     }
     if (b->request_ctx) {
-        (*env)->DeleteGlobalRef(env, b->request_ctx);
+        abi_handler_free(env, b->request_ctx);
         b->request_ctx = NULL;
     }
     JNI_DETACH(env);
@@ -209,8 +210,8 @@ static int abi_request_handler_proxy(
     JNI_ATTACH_OR_RETURN(env, PSPCompletionCodeFailure);
 
     int result = PSPCompletionCodeFailure;
-    jobject wrapper = (jobject)ctx;
-    jclass cls = (*env)->GetObjectClass(env, wrapper);
+    abi_handler *handler = (abi_handler *)ctx;
+    jclass cls = (*env)->GetObjectClass(env, handler->ref);
     if (!cls) goto cleanup;
     jmethodID methodID = (*env)->GetMethodID(env, cls, "fetch", "(Ljava/lang/String;ZD)[B");
     if (!methodID) goto cleanup;
@@ -219,7 +220,7 @@ static int abi_request_handler_proxy(
 
     jbyteArray payload = (jbyteArray)(*env)->CallObjectMethod(
             env,
-            wrapper,
+            handler->ref,
             methodID,
             jURL,
             cached ? JNI_TRUE : JNI_FALSE,
