@@ -37,7 +37,9 @@ extension AppPreferencesStore {
     }
 
     public func apply(_ patch: ABI.AppPreferencesPatch) {
-        p.apply(patch)
+        update {
+            $0.apply(patch)
+        }
     }
 }
 

@@ -103,13 +103,13 @@ extension ABI.AppConfiguration {
         configManager: ConfigManager,
         cachesURL: URL
     ) -> CodingRegistry {
-        assert(deviceId == preferences.p.deviceId)
+        assert(deviceId == preferences[\.deviceId])
         return newRegistry(
             deviceId: deviceId,
             cachesURL: cachesURL,
             configBlock: { [weak configManager, weak preferences] in
                 guard let configManager, let preferences else { return [] }
-                return preferences.p.enabledFlags(of: configManager.activeFlags)
+                return preferences.enabledFlags(of: configManager.activeFlags)
             }
         )
     }
@@ -118,13 +118,13 @@ extension ABI.AppConfiguration {
         preferences: AppPreferencesStore,
         cachesURL: URL
     ) -> CodingRegistry {
-        assert(preferences.p.deviceId != nil, "No Device ID found in preferences")
-        pspLog(.core, .info, "Device ID: \(preferences.p.deviceId ?? "not set")")
+        assert(preferences[\.deviceId] != nil, "No Device ID found in preferences")
+        pspLog(.core, .info, "Device ID: \(preferences[\.deviceId] ?? "not set")")
         return newRegistry(
-            deviceId: preferences.p.deviceId ?? "MissingDeviceID",
+            deviceId: preferences[\.deviceId] ?? "MissingDeviceID",
             cachesURL: cachesURL,
             configBlock: {
-                preferences.p.enabledFlags()
+                preferences.enabledFlags()
             }
         )
     }

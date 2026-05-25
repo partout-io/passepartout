@@ -79,7 +79,7 @@ public final class AppABI: Sendable {
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !preferences.p.skipsPurchases
+        iapManager.isEnabled = supportsIAP && !preferences[\.skipsPurchases]
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
@@ -189,7 +189,7 @@ extension AppABI {
 
 extension AppABI {
     public func patchPreferences(_ patch: ABI.AppPreferencesPatch) {
-        preferences.p.apply(patch)
+        preferences.apply(patch)
     }
 }
 
@@ -375,15 +375,17 @@ extension AppABI {
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            // Propagate active config flags to tunnel via preferences
-            preferences.p.configFlags = Array(configManager.activeFlags)
+            preferences.update {
+                // Propagate active config flags to tunnel via preferences
+                $0.configFlags = Array(configManager.activeFlags)
 
-            // Imply some hidden preferences from config flags
-            preferences.p.newProfileEncoding = configManager.isActive(.newProfileEncoding)
+                // Imply some hidden preferences from config flags
+                $0.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
-            // Constrain .relaxedVerification preference to .allows and
-            // .forces combinations in ConfigManager. At most, it's left as is
-            preferences.p.constrainRelaxedVerification(to: configManager)
+                // Constrain .relaxedVerification preference to .allows and
+                // .forces combinations in ConfigManager. At most, it's left as is
+                $0.constrainRelaxedVerification(to: configManager)
+            }
         }
     }
 }
@@ -417,7 +419,9 @@ private extension AppABI {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
-                    preferences.p.skipsPurchases = !payload.isEnabled
+                    preferences.update {
+                        $0.skipsPurchases = !payload.isEnabled
+                    }
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
@@ -580,7 +584,7 @@ private extension AppABI {
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard preferences.p.relaxedVerification else {
+        guard preferences[\.relaxedVerification] else {
             return true
         }
         // Receipt never loaded, force load

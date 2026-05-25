@@ -168,22 +168,47 @@ private extension ABI.AppPreferences {
 // MARK: - Shareable store
 
 public final class AppPreferencesStore: @unchecked Sendable {
-    public var p: ABI.AppPreferencesProtocol
+    private var backend: ABI.AppPreferencesProtocol
 
-    public init(_ p: ABI.AppPreferencesProtocol = .default()) {
-        self.p = p
+    public init(_ backend: ABI.AppPreferencesProtocol = .default()) {
+        self.backend = backend
+    }
+
+    public func serialized() -> ABI.AppPreferences {
+        backend.serialized()
+    }
+
+    public subscript<V>(_ keyPath: KeyPath<ABI.AppPreferencesProtocol, V>) -> V {
+        backend[keyPath: keyPath]
+    }
+
+    public func update(_ body: (inout any ABI.AppPreferencesProtocol) -> Void) {
+        //        let old = p.serialized()
+        body(&backend)
+        //        let new = p.serialized()
+        //        emitChanges(from: old, to: new)
     }
 
     // Read or generate Device ID if needed
     public func configureDeviceId(length: Int) -> String {
-        if let deviceId = p.deviceId {
+        if let deviceId = self[\.deviceId] {
             pspLog(.core, .info, "Device ID: \(deviceId)")
             return deviceId
         }
         let newId = String.random(count: length)
-        p.deviceId = newId
+        update {
+            $0.deviceId = newId
+        }
         pspLog(.core, .info, "Device ID (new): \(newId)")
         return newId
+    }
+
+    public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        backend.isFlagEnabled(flag)
+    }
+
+    public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
+        backend.enabledFlags(of: flags)
     }
 }
 

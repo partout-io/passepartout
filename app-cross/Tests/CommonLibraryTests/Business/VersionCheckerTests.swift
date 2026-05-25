@@ -23,7 +23,7 @@ struct VersionCheckerTests {
         let latest = try #require(sut.latestRelease)
         #expect(latest.url == downloadURL)
         #expect(latest == sut.latestRelease)
-        #expect(preferences.p.lastCheckedVersion == "4.10.20")
+        #expect(preferences[\.lastCheckedVersion] == "4.10.20")
     }
 
     @Test
@@ -54,11 +54,11 @@ struct VersionCheckerTests {
         )
         #expect(sut.latestRelease == nil)
 
-        var lastChecked = preferences.p.lastCheckedVersionDate
+        var lastChecked = preferences[\.lastCheckedVersionDate]
         #expect(lastChecked == nil)
 
         _ = await sut.checkLatestRelease()
-        lastChecked = preferences.p.lastCheckedVersionDate
+        lastChecked = preferences[\.lastCheckedVersionDate]
         _ = try #require(lastChecked)
         #expect(!strategy.didHitRateLimit)
 
