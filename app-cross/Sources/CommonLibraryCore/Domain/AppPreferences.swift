@@ -80,6 +80,14 @@ extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
     }
 }
 
+extension ABI.ExperimentalPreferences {
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        ignoredConfigFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .ignoredConfigFlags) ?? []
+        enabledConfigFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .enabledConfigFlags) ?? []
+    }
+}
+
 extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
     public static func `default`() -> ABI.AppPreferences {
         ABI.AppPreferences(
