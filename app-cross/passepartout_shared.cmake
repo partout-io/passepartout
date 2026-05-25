@@ -81,7 +81,6 @@ Sources/CommonLibraryCore/Domain/ABI.swift
 Sources/CommonLibraryCore/Domain/AppError.swift
 Sources/CommonLibraryCore/Domain/AppLog.swift
 Sources/CommonLibraryCore/Domain/AppPreferences.swift
-Sources/CommonLibraryCore/Domain/AppPreferencesPatch.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Donations.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Features.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Providers.swift
@@ -175,6 +174,7 @@ Sources/CommonLibraryCore/Domain/StoreReceipt.swift
 Sources/CommonLibraryCore/Domain/StoreResult.swift
 Sources/CommonLibraryCore/Domain/VersionRelease.swift
 Sources/CommonLibraryCore/Extensions/ABI+JSON.swift
+Sources/CommonLibraryCore/Extensions/AppPreferences+CRUD.swift
 Sources/CommonLibraryCore/Extensions/AppPreferences+ConfigManager.swift
 Sources/CommonLibraryCore/Extensions/ChangelogEntry+Extensions.swift
 Sources/CommonLibraryCore/Extensions/CodingRegistry+Extensions.swift

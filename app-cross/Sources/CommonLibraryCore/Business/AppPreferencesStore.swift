@@ -3,27 +3,23 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public final class AppPreferencesStore: @unchecked Sendable {
+    public typealias UpdateBlock = (ABI.AppPreferencesPatch) -> Void
+
     private var backend: ABI.AppPreferencesProtocol
+    private let onUpdate: UpdateBlock?
 
-    public init(_ backend: ABI.AppPreferencesProtocol = .default()) {
+    public init(
+        _ backend: ABI.AppPreferencesProtocol = .default(),
+        onUpdate: UpdateBlock? = nil
+    ) {
         self.backend = backend
+        self.onUpdate = onUpdate
     }
+}
 
-    public func serialized() -> ABI.AppPreferences {
-        backend.serialized()
-    }
+// MARK: - CRUD
 
-    public subscript<V>(_ keyPath: KeyPath<ABI.AppPreferencesProtocol, V>) -> V {
-        backend[keyPath: keyPath]
-    }
-
-    public func update(_ body: (inout any ABI.AppPreferencesProtocol) -> Void) {
-        let old = serialized()
-        body(&backend)
-        let new = serialized()
-        let patch = emitChanges(from: old, to: new)
-    }
-
+extension AppPreferencesStore {
     // Read or generate Device ID if needed
     public func configureDeviceId(length: Int) -> String {
         if let deviceId = self[\.deviceId] {
@@ -38,6 +34,22 @@ public final class AppPreferencesStore: @unchecked Sendable {
         return newId
     }
 
+    public subscript<V>(_ keyPath: KeyPath<ABI.AppPreferencesProtocol, V>) -> V {
+        backend[keyPath: keyPath]
+    }
+
+    public func update(_ body: (inout any ABI.AppPreferencesProtocol) -> Void) {
+        guard let onUpdate else {
+            body(&backend)
+            return
+        }
+        let old = serialized()
+        body(&backend)
+        let new = serialized()
+        let patch = ABI.AppPreferencesPatch(from: old, to: new)
+        onUpdate(patch)
+    }
+
     public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
         backend.isFlagEnabled(flag)
     }
@@ -47,19 +59,16 @@ public final class AppPreferencesStore: @unchecked Sendable {
     }
 }
 
-private extension AppPreferencesStore {
-    func emitChanges(from old: ABI.AppPreferences, to new: ABI.AppPreferences) -> ABI.AppPreferencesPatch {
-        var values = ABI.AppPreferencesPatchValues()
-        var hasValues = false
-        var fieldsToUnset: [ABI.AppPreferenceKey] = []
+// MARK: - Serialization
 
-        ABI.AppPreferenceKey.allCases.forEach {
-            hasValues = values.setChange(from: old, to: new, for: $0, fieldsToUnset: &fieldsToUnset) || hasValues
+extension AppPreferencesStore {
+    public func serialized() -> ABI.AppPreferences {
+        backend.serialized()
+    }
+
+    public func apply(_ patch: ABI.AppPreferencesPatch) {
+        update {
+            $0.apply(patch)
         }
-
-        return ABI.AppPreferencesPatch(
-            values: hasValues ? values : nil,
-            fieldsToUnset: fieldsToUnset.isEmpty ? nil : fieldsToUnset
-        )
     }
 }

@@ -44,48 +44,46 @@ struct AppPreferencesTests {
     @Test
     func givenPreferencesStore_whenUpdateChangesValues_thenReturnsPatchValues() {
         let profileId = Profile.ID(uuidString: "00000000-0000-0000-0000-000000000002")!
-        let sut = AppPreferencesStore()
+        let sut = AppPreferencesStore() { patch in
+            #expect(patch.values?.deviceId == "DeviceID")
+            #expect(patch.values?.dnsFallsBack == false)
+            #expect(patch.values?.lastUsedProfileId == profileId)
+            #expect(patch.fieldsToUnset == nil)
+        }
 
-        let patch = sut.update {
+        sut.update {
             $0.deviceId = "DeviceID"
             $0.dnsFallsBack = false
             $0.lastUsedProfileId = profileId
         }
-
-        #expect(patch.values?.deviceId == "DeviceID")
-        #expect(patch.values?.dnsFallsBack == false)
-        #expect(patch.values?.lastUsedProfileId == profileId)
-        #expect(patch.fieldsToUnset == nil)
     }
 
     @Test
     func givenPreferencesStore_whenUpdateDoesNotChangeValues_thenReturnsEmptyPatch() {
-        let sut = AppPreferencesStore(Self.preferences())
-
-        let patch = sut.update { _ in }
-
-        #expect(patch.values == nil)
-        #expect(patch.fieldsToUnset == nil)
+        let sut = AppPreferencesStore(Self.preferences()) { patch in
+            #expect(patch.values == nil)
+            #expect(patch.fieldsToUnset == nil)
+        }
+        sut.update { _ in }
     }
 
     @Test
     func givenPreferencesStore_whenUpdateClearsOptionalValues_thenReturnsFieldsToUnset() {
-        let sut = AppPreferencesStore(Self.preferences())
-
-        let patch = sut.update {
+        let sut = AppPreferencesStore(Self.preferences()) { patch in
+            #expect(patch.values == nil)
+            #expect(Set(patch.fieldsToUnset ?? []) == [
+                .deviceId,
+                .lastCheckedVersion,
+                .lastCheckedVersionDate,
+                .lastUsedProfileId
+            ])
+        }
+        sut.update {
             $0.deviceId = nil
             $0.lastCheckedVersion = nil
             $0.lastCheckedVersionDate = nil
             $0.lastUsedProfileId = nil
         }
-
-        #expect(patch.values == nil)
-        #expect(Set(patch.fieldsToUnset ?? []) == [
-            .deviceId,
-            .lastCheckedVersion,
-            .lastCheckedVersionDate,
-            .lastUsedProfileId
-        ])
     }
 
     @Test
