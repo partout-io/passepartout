@@ -33,7 +33,13 @@ public final class AppContext {
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
 
-    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, preferences: AppPreferencesStore, tunnelObservable: TunnelObservable) {
+    public init(
+        abi: AppABI,
+        appConfiguration: ABI.AppConfiguration,
+        preferences: AppPreferencesStore,
+        defaults: UserDefaults,
+        tunnelObservable: TunnelObservable
+    ) {
         self.abi = abi
         self.appConfiguration = appConfiguration
 
@@ -51,7 +57,7 @@ public final class AppContext {
 
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
-        userPreferences = UserPreferencesObservable(abi: preferences, ui: .standard)
+        userPreferences = UserPreferencesObservable(abi: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
 
         // Register for ABI events

@@ -17,6 +17,7 @@ extension AppContext {
             withLegacyEncoding: { false }
         )
         let preferences = AppPreferencesStore()
+        let defaults = UserDefaults()
         let appEncoder = AppEncoder(coder: registry)
         let configManager = ConfigManager()
         let apiManager = APIManager(
@@ -86,6 +87,7 @@ extension AppContext {
             abi: abi,
             appConfiguration: appConfiguration,
             preferences: preferences,
+            defaults: defaults,
             tunnelObservable: tunnelObservable
         )
     }()

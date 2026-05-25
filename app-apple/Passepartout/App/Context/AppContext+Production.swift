@@ -21,10 +21,13 @@ extension AppContext {
             buildTarget: .app
         )
         // Create ABI returning Tunnel to build TunnelObservable
-        let preferences = appConfiguration.newPreferences()
+        let defaults: UserDefaults = .standard
+        let preferences = AppPreferencesStore(
+            UserDefaultsAppPreferences(defaults: defaults)
+        )
         let result = AppABI.forNetworkExtension(
             appConfiguration: appConfiguration,
-            preferences: AppPreferencesStore(preferences),
+            preferences: preferences,
             assertModule: { moduleType, registry in
 #if !os(tvOS)
                 let builder = registry.newModule(ofType: moduleType)
@@ -40,7 +43,8 @@ extension AppContext {
         return AppContext(
             abi: result.abi,
             appConfiguration: appConfiguration,
-            kvStore: kvStore,
+            preferences: preferences,
+            defaults: defaults,
             tunnelObservable: result.tunnelObservable
         )
     }

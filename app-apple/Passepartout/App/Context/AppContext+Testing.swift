@@ -17,8 +17,9 @@ extension AppContext {
             cachesURL: FileManager.default.temporaryDirectory,
             configBlock: { [] }
         )
-        let kvStore = InMemoryStore()
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
+        let preferences = AppPreferencesStore()
+        let defaults = UserDefaults()
+        let appEncoder = AppEncoder(coder: registry)
 
         let logFormatter = DummyLogFormatter()
         pspLogRegister(
@@ -84,8 +85,8 @@ extension AppContext {
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
@@ -96,7 +97,8 @@ extension AppContext {
         return AppContext(
             abi: abi,
             appConfiguration: appConfiguration,
-            kvStore: kvStore,
+            preferences: preferences,
+            defaults: defaults,
             tunnelObservable: tunnelObservable
         )
     }

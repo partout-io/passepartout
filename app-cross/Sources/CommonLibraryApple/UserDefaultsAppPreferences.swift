@@ -130,6 +130,15 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
             defaults.set(newValue, forAppPreference: .skipsPurchases)
         }
     }
+
+    public func copy(_ other: ABI.AppPreferencesProtocol) {
+        // FIXME: ###
+    }
+
+    public func serialized() -> ABI.AppPreferences {
+        // FIXME: ###
+        .default()
+    }
 }
 
 private extension UserDefaults {
