@@ -57,14 +57,10 @@ extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
 
     public var lastCheckedVersionDate: Date? {
         get {
-            lastCheckedVersionTimestamp.flatMap {
-                Date(timeIntervalSince1970: Double($0) / 1000.0)
-            }
+            lastCheckedVersionTimestamp?.date
         }
         set {
-            lastCheckedVersionTimestamp = newValue.flatMap {
-                Timestamp($0.timeIntervalSince1970 * 1000.0)
-            }
+            lastCheckedVersionTimestamp = newValue?.timestamp
         }
     }
 
