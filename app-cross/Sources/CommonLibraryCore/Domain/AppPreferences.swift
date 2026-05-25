@@ -22,22 +22,25 @@ extension ABI {
 }
 
 extension ABI.AppPreferencesProtocol {
-    public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
-        var result = configFlags.contains(flag)
-        result = result || experimental.enabledConfigFlags.contains(flag)
-        result = result && !experimental.ignoredConfigFlags.contains(flag)
-        return result
-    }
-
-    public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
-        var result = flags ?? Set(configFlags)
-        result.formUnion(experimental.enabledConfigFlags)
-        result.subtract(experimental.ignoredConfigFlags)
-        return result
+    public func serialized() -> ABI.AppPreferences {
+        ABI.AppPreferences(
+            configFlags: configFlags,
+            deviceId: deviceId,
+            dnsFallsBack: dnsFallsBack,
+            experimental: experimental,
+            extensiveLogging: extensiveLogging,
+            lastCheckedVersionTimestamp: lastCheckedVersionDate?.timestamp,
+            lastCheckedVersion: lastCheckedVersion,
+            lastUsedProfileUUID: lastUsedProfileId?.uuidString,
+            logsPrivateData: logsPrivateData,
+            newProfileEncoding: newProfileEncoding,
+            relaxedVerification: relaxedVerification,
+            skipsPurchases: skipsPurchases
+        )
     }
 }
 
-extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
+extension ABI.AppPreferences {
     public init(from decoder: any Decoder) throws {
         let def = Self.default()
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -54,26 +57,6 @@ extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
         relaxedVerification = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.relaxedVerification) ?? def.relaxedVerification
         skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.skipsPurchases) ?? def.skipsPurchases
     }
-
-    public var lastCheckedVersionDate: Date? {
-        get {
-            lastCheckedVersionTimestamp?.date
-        }
-        set {
-            lastCheckedVersionTimestamp = newValue?.timestamp
-        }
-    }
-
-    public var lastUsedProfileId: Profile.ID? {
-        get {
-            lastUsedProfileUUID.flatMap {
-                Profile.ID(uuidString: $0)
-            }
-        }
-        set {
-            lastUsedProfileUUID = newValue?.uuidString
-        }
-    }
 }
 
 extension ABI.ExperimentalPreferences {
@@ -81,26 +64,6 @@ extension ABI.ExperimentalPreferences {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         ignoredConfigFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .ignoredConfigFlags) ?? []
         enabledConfigFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .enabledConfigFlags) ?? []
-    }
-
-    public mutating func ignore(_ flag: ABI.ConfigFlag) {
-        guard !ignoredConfigFlags.contains(flag) else { return }
-        ignoredConfigFlags.append(flag)
-    }
-
-    public mutating func unignore(_ flag: ABI.ConfigFlag) {
-        guard ignoredConfigFlags.contains(flag) else { return }
-        ignoredConfigFlags.removeAll { $0 == flag }
-    }
-
-    public mutating func enable(_ flag: ABI.ConfigFlag) {
-        guard !enabledConfigFlags.contains(flag) else { return }
-        enabledConfigFlags.append(flag)
-    }
-
-    public mutating func disable(_ flag: ABI.ConfigFlag) {
-        guard enabledConfigFlags.contains(flag) else { return }
-        enabledConfigFlags.removeAll { $0 == flag }
     }
 }
 
@@ -123,6 +86,8 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
     }
 }
 
+// MARK: - Shareable store
+
 public final class AppPreferencesStore: @unchecked Sendable {
     public var p: ABI.AppPreferencesProtocol
 
@@ -139,5 +104,67 @@ public final class AppPreferencesStore: @unchecked Sendable {
         p.deviceId = newId
         pspLog(.core, .info, "Device ID (new): \(newId)")
         return newId
+    }
+}
+
+// MARK: - Extensions
+
+extension ABI.AppPreferencesProtocol {
+    public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        var result = configFlags.contains(flag)
+        result = result || experimental.enabledConfigFlags.contains(flag)
+        result = result && !experimental.ignoredConfigFlags.contains(flag)
+        return result
+    }
+
+    public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
+        var result = flags ?? Set(configFlags)
+        result.formUnion(experimental.enabledConfigFlags)
+        result.subtract(experimental.ignoredConfigFlags)
+        return result
+    }
+}
+
+extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
+    public var lastCheckedVersionDate: Date? {
+        get {
+            lastCheckedVersionTimestamp?.date
+        }
+        set {
+            lastCheckedVersionTimestamp = newValue?.timestamp
+        }
+    }
+
+    public var lastUsedProfileId: Profile.ID? {
+        get {
+            lastUsedProfileUUID.flatMap {
+                Profile.ID(uuidString: $0)
+            }
+        }
+        set {
+            lastUsedProfileUUID = newValue?.uuidString
+        }
+    }
+}
+
+extension ABI.ExperimentalPreferences {
+    public mutating func ignore(_ flag: ABI.ConfigFlag) {
+        guard !ignoredConfigFlags.contains(flag) else { return }
+        ignoredConfigFlags.append(flag)
+    }
+
+    public mutating func unignore(_ flag: ABI.ConfigFlag) {
+        guard ignoredConfigFlags.contains(flag) else { return }
+        ignoredConfigFlags.removeAll { $0 == flag }
+    }
+
+    public mutating func enable(_ flag: ABI.ConfigFlag) {
+        guard !enabledConfigFlags.contains(flag) else { return }
+        enabledConfigFlags.append(flag)
+    }
+
+    public mutating func disable(_ flag: ABI.ConfigFlag) {
+        guard enabledConfigFlags.contains(flag) else { return }
+        enabledConfigFlags.removeAll { $0 == flag }
     }
 }

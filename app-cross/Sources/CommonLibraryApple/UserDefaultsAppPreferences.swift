@@ -145,23 +145,6 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
         relaxedVerification = other.relaxedVerification
         skipsPurchases = other.skipsPurchases
     }
-
-    public func serialized() -> ABI.AppPreferences {
-        ABI.AppPreferences(
-            configFlags: configFlags,
-            deviceId: deviceId,
-            dnsFallsBack: dnsFallsBack,
-            experimental: experimental,
-            extensiveLogging: extensiveLogging,
-            lastCheckedVersionTimestamp: lastCheckedVersionDate?.timestamp,
-            lastCheckedVersion: lastCheckedVersion,
-            lastUsedProfileUUID: lastUsedProfileId?.uuidString,
-            logsPrivateData: logsPrivateData,
-            newProfileEncoding: newProfileEncoding,
-            relaxedVerification: relaxedVerification,
-            skipsPurchases: skipsPurchases
-        )
-    }
 }
 
 private extension UserDefaults {
