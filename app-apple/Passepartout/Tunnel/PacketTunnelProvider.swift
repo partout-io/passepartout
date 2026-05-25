@@ -29,19 +29,18 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         _ = pspLogRegister(
             for: .tunnelGlobal,
             with: appConfiguration,
-            preferences: ABI.AppPreferenceValues(),
+            preferences: AppPreferencesStore(),
             localMapper: logFormatter?.localMapper
         )
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[TunnelObservable.Options.isManualKey] == true as NSNumber
-        let startPreferences: ABI.AppPreferenceValues? = {
+        let startPreferences: ABI.AppPreferences? = {
             guard let encodedPreferences = options?[TunnelObservable.Options.appPreferences] as? Data else {
                 return nil
             }
             do {
-                return try JSONDecoder()
-                    .decode(ABI.AppPreferenceValues.self, from: encodedPreferences)
+                return try ABI.decode(ABI.AppPreferences.self, from: encodedPreferences)
             } catch {
                 pspLog(.core, .error, "Unable to decode startTunnel() preferences")
                 return nil
@@ -49,17 +48,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }()
 
         // Update or fetch existing preferences
-        let preferences = {
-            let kvStore = appConfiguration.newKeyValueStore()
+        let preferences = AppPreferencesStore({
+            let persistedPreferences = UserDefaultsAppPreferences(defaults: .standard)
             if let startPreferences {
-                kvStore.preferences = startPreferences
-                pspLog(.core, .debug, "PTP: kvStore.preferences: \(kvStore.preferences)")
+                persistedPreferences.copy(startPreferences)
+                pspLog(.core, .debug, "PTP: persistedPreferences: \(persistedPreferences)")
                 pspLog(.core, .debug, "PTP: startPreferences: \(startPreferences)")
-                assert(kvStore.preferences == startPreferences)
+                assert(persistedPreferences.serialized() == startPreferences)
                 return startPreferences
             }
-            return kvStore.preferences
-        }()
+            return persistedPreferences
+        }())
 
         // Defer to ABI
         Task { @MainActor in

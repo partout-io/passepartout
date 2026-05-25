@@ -19,12 +19,7 @@ extension TunnelABI {
         let bundle = try ABI.decode(ABI.AppBundle.self, from: appBundleData)
         let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
-
-        // Parse preferences
-        let preferences = ABI.AppPreferenceValues.forInitialization(
-            data: preferencesData,
-            newDeviceIdLength: constants.deviceIdLength
-        )
+        let preferences = AppPreferencesStore.fromData(preferencesData)
 
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile

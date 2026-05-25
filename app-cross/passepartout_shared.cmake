@@ -64,7 +64,7 @@ Sources/CommonLibraryApple/TestFlightChecker.swift
 Sources/CommonLibraryApple/TunnelObservable.swift
 Sources/CommonLibraryApple/URL+Extensions.swift
 Sources/CommonLibraryApple/URLSessionUploaderStrategy.swift
-Sources/CommonLibraryApple/UserDefaultsStore.swift
+Sources/CommonLibraryApple/UserDefaultsAppPreferences.swift
 Sources/CommonLibraryCore/Business/AppEncoder.swift
 Sources/CommonLibraryCore/Business/BusinessActor.swift
 Sources/CommonLibraryCore/Business/ConfigManager.swift
@@ -79,7 +79,7 @@ Sources/CommonLibraryCore/CommonLibraryCore.swift
 Sources/CommonLibraryCore/Domain/ABI.swift
 Sources/CommonLibraryCore/Domain/AppError.swift
 Sources/CommonLibraryCore/Domain/AppLog.swift
-Sources/CommonLibraryCore/Domain/AppPreference.swift
+Sources/CommonLibraryCore/Domain/AppPreferences.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Donations.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Features.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Providers.swift
@@ -104,6 +104,8 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnelVerificationPa
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebReceiver.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebsites.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppFeature.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferenceKey.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferences.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileHeader.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppTunnelInfo.swift
@@ -115,6 +117,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPICreditsLicensesInner.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPICreditsNoticesInner.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIDistributionTarget.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIEvent.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIExperimentalPreferences.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventEligibleFeatures.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventLoadReceipt.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventNewReceipt.swift
@@ -167,10 +170,9 @@ Sources/CommonLibraryCore/Domain/StoreReceipt.swift
 Sources/CommonLibraryCore/Domain/StoreResult.swift
 Sources/CommonLibraryCore/Domain/VersionRelease.swift
 Sources/CommonLibraryCore/Extensions/ABI+JSON.swift
+Sources/CommonLibraryCore/Extensions/AppPreferences+ConfigManager.swift
 Sources/CommonLibraryCore/Extensions/ChangelogEntry+Extensions.swift
 Sources/CommonLibraryCore/Extensions/CodingRegistry+Extensions.swift
-Sources/CommonLibraryCore/Extensions/KeyValueStore+AppPreference.swift
-Sources/CommonLibraryCore/Extensions/KeyValueStore+ConfigManager.swift
 Sources/CommonLibraryCore/Extensions/Module+Extensions.swift
 Sources/CommonLibraryCore/Extensions/ModuleType+Known.swift
 Sources/CommonLibraryCore/Extensions/Profile+SingleModule.swift
@@ -201,8 +203,6 @@ Sources/CommonLibraryCore/Strategy/GitHubReleaseStrategy.swift
 Sources/CommonLibraryCore/Strategy/InAppHelper.swift
 Sources/CommonLibraryCore/Strategy/InAppReceiptReader.swift
 Sources/CommonLibraryCore/Strategy/InMemoryProfileRepository.swift
-Sources/CommonLibraryCore/Strategy/InMemoryStore.swift
-Sources/CommonLibraryCore/Strategy/KeyValueStore.swift
 Sources/CommonLibraryCore/Strategy/LogFormatter.swift
 Sources/CommonLibraryCore/Strategy/ModulePreferencesRepository.swift
 Sources/CommonLibraryCore/Strategy/MultipartForm.swift

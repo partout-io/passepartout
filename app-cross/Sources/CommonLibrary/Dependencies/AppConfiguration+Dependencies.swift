@@ -98,40 +98,33 @@ extension ABI.AppConfiguration {
     }
 
     public func newRegistryForApp(
+        deviceId: String,
+        preferences: AppPreferencesStore,
         configManager: ConfigManager,
-        kvStore: KeyValueStore,
         cachesURL: URL
     ) -> CodingRegistry {
-        newRegistry(
-            deviceId: {
-                if let existingId = kvStore.string(forAppPreference: .deviceId) {
-                    pspLog(.core, .info, "Device ID: \(existingId)")
-                    return existingId
-                }
-                let newId = String.random(count: constants.deviceIdLength)
-                kvStore.set(newId, forAppPreference: .deviceId)
-                pspLog(.core, .info, "Device ID (new): \(newId)")
-                return newId
-            }(),
+        assert(deviceId == preferences.p.deviceId)
+        return newRegistry(
+            deviceId: deviceId,
             cachesURL: cachesURL,
-            configBlock: { [weak configManager, weak kvStore] in
-                guard let configManager, let kvStore else { return [] }
-                return kvStore.preferences.enabledFlags(of: configManager.activeFlags)
+            configBlock: { [weak configManager, weak preferences] in
+                guard let configManager, let preferences else { return [] }
+                return preferences.p.enabledFlags(of: configManager.activeFlags)
             }
         )
     }
 
     public func newRegistryForTunnel(
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         cachesURL: URL
     ) -> CodingRegistry {
-        assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        assert(preferences.p.deviceId != nil, "No Device ID found in preferences")
+        pspLog(.core, .info, "Device ID: \(preferences.p.deviceId ?? "not set")")
         return newRegistry(
-            deviceId: preferences.deviceId ?? "MissingDeviceID",
+            deviceId: preferences.p.deviceId ?? "MissingDeviceID",
             cachesURL: cachesURL,
             configBlock: {
-                preferences.enabledFlags()
+                preferences.p.enabledFlags()
             }
         )
     }
@@ -141,7 +134,7 @@ extension ABI.AppConfiguration {
     }
 
     public func newVersionChecker(
-        kvStore: KeyValueStore,
+        preferences: AppPreferencesStore,
         downloadURL: URL,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {
@@ -151,7 +144,7 @@ extension ABI.AppConfiguration {
             fetcher: fetcher
         )
         return VersionChecker(
-            kvStore: kvStore,
+            preferences: preferences,
             strategy: versionStrategy,
             currentVersion: bundle.versionNumber,
             downloadURL: downloadURL
@@ -382,10 +375,6 @@ extension ABI.AppConfiguration {
         StoreKitReceiptReader(modeBlock: modeBlock)
     }
 
-    public func newKeyValueStore() -> KeyValueStore {
-        UserDefaultsStore(.standard)
-    }
-
     public func newLogFormatter() -> LogFormatter? {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
@@ -472,11 +461,6 @@ extension ABI.AppConfiguration {
 // MARK: - Non-Apple
 
 extension ABI.AppConfiguration {
-    // FIXME: #1827, Cross, KeyValueStore
-    public func newKeyValueStore() -> KeyValueStore {
-        InMemoryStore()
-    }
-
     public func newLogFormatter() -> LogFormatter? {
         nil
     }

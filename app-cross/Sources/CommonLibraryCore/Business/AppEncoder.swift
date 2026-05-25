@@ -6,11 +6,9 @@ import Partout
 
 public final class AppEncoder: Sendable {
     private let coder: ProfileCoder
-    private let kvStore: KeyValueStore
 
-    public init(coder: ProfileCoder, kvStore: KeyValueStore) {
+    public init(coder: ProfileCoder) {
         self.coder = coder
-        self.kvStore = kvStore
     }
 
     public func defaultFilename(for profileName: String) -> String {

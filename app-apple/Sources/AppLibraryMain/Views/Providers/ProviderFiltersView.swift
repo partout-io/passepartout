@@ -101,8 +101,9 @@ private extension ProviderFiltersView {
         ProviderFiltersView(
             module: ProviderID.mullvad.asPreviewModule,
             model: .init(userPreferences: UserPreferencesObservable(
-                kvStore: InMemoryStore())
-            ),
+                abi: AppPreferencesStore(),
+                ui: UserDefaults()
+            )),
             heuristic: .constant(nil)
         )
     }

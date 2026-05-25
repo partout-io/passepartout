@@ -28,7 +28,7 @@ public final class TunnelObservable {
 
     private let tunnel: Tunnel
 
-    private let kvStore: KeyValueStore?
+    private let preferences: AppPreferencesStore?
 
     private let logging: Logging?
 
@@ -43,12 +43,12 @@ public final class TunnelObservable {
     // TODO: #218, keep "last used profile" until .multiple
     public init(
         tunnel: Tunnel,
-        kvStore: KeyValueStore? = nil,
+        preferences: AppPreferencesStore? = nil,
         logging: Logging? = nil,
         willInstall: WillInstallBlock? = nil
     ) {
         self.tunnel = tunnel
-        self.kvStore = kvStore
+        self.preferences = preferences
         self.logging = logging
         self.willInstall = willInstall
         activeProfiles = [:]
@@ -78,8 +78,8 @@ extension TunnelObservable {
     private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
         let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
-        if let preferences = kvStore?.preferences {
-            let encodedPreferences = try ABI.encode(preferences)
+        if let preferences {
+            let encodedPreferences = try ABI.encode(preferences.p.serialized())
             options[Options.appPreferences] = encodedPreferences as NSData
         }
         try await tunnel.install(profile, connect: connect, options: options)
@@ -99,7 +99,7 @@ extension TunnelObservable {
 
     private func currentLog(logging: Logging) async -> [ABI.LogLine] {
         var maxLevel = logging.maxDebugLogLevel
-        if kvStore?.preferences.extensiveLogging == true {
+        if preferences?.p.extensiveLogging == true {
             maxLevel = .debug
         }
         // TODO: #218, handle multiple profiles
@@ -173,7 +173,7 @@ extension TunnelObservable {
                 )
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = snapshots.first {
-                    kvStore?.set(first.key.uuidString, forAppPreference: .lastUsedProfileId)
+                    preferences?.p.lastUsedProfileId = first.key
                 }
                 // Publish compound info
                 if newActiveProfiles != activeProfiles {
@@ -241,12 +241,11 @@ private final class PendingTask {
 private extension TunnelObservable {
     // TODO: #218, keep "last used profile" until .multiple
     var lastUsedProfile: TunnelSnapshot? {
-        guard let uuidString = kvStore?.string(forAppPreference: .lastUsedProfileId),
-              let uuid = UniqueID(uuidString: uuidString) else {
+        guard let id = preferences?.p.lastUsedProfileId else {
             return nil
         }
         return TunnelSnapshot(
-            id: uuid,
+            id: id,
             isEnabled: false,
             status: .inactive,
             onDemand: false

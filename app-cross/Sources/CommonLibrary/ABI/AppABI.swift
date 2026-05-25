@@ -24,7 +24,7 @@ public final class AppABI: Sendable {
 
     // Constants and storage
     private let appConfiguration: ABI.AppConfiguration
-    private let kvStore: KeyValueStore
+    private let preferences: AppPreferencesStore
     // Managers wrapped in ABI
     private let configManager: ConfigManager
     private let extensionInstaller: ExtensionInstaller?
@@ -51,8 +51,8 @@ public final class AppABI: Sendable {
         configManager: ConfigManager,
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
-        kvStore: KeyValueStore,
         logFormatter: LogFormatter?,
+        preferences: AppPreferencesStore,
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
@@ -65,8 +65,8 @@ public final class AppABI: Sendable {
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
-        self.kvStore = kvStore
         self.logFormatter = logFormatter
+        self.preferences = preferences
         self.profileManager = profileManager
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
@@ -79,12 +79,11 @@ public final class AppABI: Sendable {
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
+        iapManager.isEnabled = supportsIAP && !preferences.p.skipsPurchases
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
-            kvStore: kvStore,
             supportsIAP: supportsIAP
         )
         profile = AppABIProfile(
@@ -116,7 +115,18 @@ extension AppABI {
         // Set new handler
         handler = newHandler
 
-        // Post initial state AFTER events registration (in case it was missed)
+        // Post initial state AFTER events registration, because *Observable
+        // classes fully rely on the onUpdate() method for their state, including
+        // the initial state. Early initializations would be otherwise missed by
+        // the UI, e.g.:
+        //
+        // - ProfileObservable.isRemoteImportingEnabled = false on init. iCloud
+        // sync appears disabled if the initial ProfileManager update is missed.
+        //
+        // - IAPObservable.isEnabled = true on init. If "Skips purchases" is ON,
+        // then IAPManager starts disabled, but the UI shows that in-app
+        // purchases are enabled if the initial IAPManager update is missed.
+        //
         iapManager.postInitialState()
         profileManager.postInitialState()
 
@@ -195,12 +205,10 @@ private struct AppABIEncoder: AppABIEncoderProtocol {
 
 private struct AppABIIAP: AppABIIAPProtocol {
     let iapManager: IAPManager
-    let kvStore: KeyValueStore
     let supportsIAP: Bool
 
     func enable(_ isEnabled: Bool) {
         iapManager.isEnabled = supportsIAP && isEnabled
-        kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
     }
 
     func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
@@ -362,14 +370,14 @@ extension AppABI {
             await versionChecker.checkLatestRelease()
 
             // Propagate active config flags to tunnel via preferences
-            kvStore.preferences.configFlags = configManager.activeFlags
+            preferences.p.configFlags = Array(configManager.activeFlags)
 
             // Imply some hidden preferences from config flags
-            kvStore.preferences.newProfileEncoding = configManager.isActive(.newProfileEncoding)
+            preferences.p.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
             // Constrain .relaxedVerification preference to .allows and
             // .forces combinations in ConfigManager. At most, it's left as is
-            kvStore.constrainRelaxedVerification(to: configManager)
+            preferences.p.constrainRelaxedVerification(to: configManager)
         }
     }
 }
@@ -403,7 +411,7 @@ private extension AppABI {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
-                    kvStore.set(!payload.isEnabled, forAppPreference: .skipsPurchases)
+                    preferences.p.skipsPurchases = !payload.isEnabled
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
@@ -566,7 +574,7 @@ private extension AppABI {
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard kvStore.bool(forAppPreference: .relaxedVerification) else {
+        guard preferences.p.relaxedVerification else {
             return true
         }
         // Receipt never loaded, force load

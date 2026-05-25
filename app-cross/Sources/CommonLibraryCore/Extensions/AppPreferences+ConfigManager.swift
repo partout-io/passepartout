@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-extension KeyValueStore {
+extension ABI.AppPreferencesProtocol {
     @BusinessActor
-    public func constrainRelaxedVerification(to configManager: ConfigManager) {
+    public mutating func constrainRelaxedVerification(to configManager: ConfigManager) {
         guard configManager.isActive(.allowsRelaxedVerification) else {
-            set(false, forAppPreference: .relaxedVerification)
+            relaxedVerification = false
             return
         }
         if configManager.isActive(.forcesRelaxedVerification) {
-            set(true, forAppPreference: .relaxedVerification)
+            relaxedVerification = true
         }
     }
 }

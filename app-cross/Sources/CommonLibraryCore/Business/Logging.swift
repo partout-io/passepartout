@@ -63,7 +63,7 @@ private var isDefaultLoggerRegistered = false
 public func pspLogRegister(
     for target: LoggingTarget,
     with appConfiguration: ABI.AppConfiguration,
-    preferences: ABI.AppPreferenceValues,
+    preferences: AppPreferencesStore,
     localMapper: (@Sendable (DebugLog.Line) -> String)?
 ) -> PartoutLoggerContext {
     switch target {
@@ -116,7 +116,7 @@ public func pspLogRegister(
 private extension PartoutLogger {
     static func logger(
         to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
@@ -132,7 +132,7 @@ private extension PartoutLogger {
 
     static func tunnelLogger(
         to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
@@ -173,7 +173,7 @@ private extension PartoutLogger {
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
         to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
@@ -193,7 +193,7 @@ private extension PartoutLogger.Builder {
         setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
-        if preferences.extensiveLogging {
+        if preferences.p.extensiveLogging {
             newOptions.maxLevel = .debug
         }
         if let localMapper {
@@ -203,7 +203,7 @@ private extension PartoutLogger.Builder {
                 mapper: localMapper
             )
         }
-        if preferences.logsPrivateData {
+        if preferences.p.logsPrivateData {
             logsAddresses = true
             logsModules = true
         }
