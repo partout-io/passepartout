@@ -16,7 +16,7 @@ struct PreferencesAdvancedView: View {
     private var appConfiguration
 
     @Binding
-    var experimental: ABI.AppPreferenceValues.Experimental
+    var experimental: ABI.ExperimentalPreferences
 
     var body: some View {
         Form {
@@ -118,16 +118,16 @@ private extension PreferencesAdvancedView {
     }
 }
 
-private extension ABI.AppPreferenceValues.Experimental {
+private extension ABI.ExperimentalPreferences {
     func isAllowed(_ flag: ABI.ConfigFlag) -> Bool {
         !ignoredConfigFlags.contains(flag)
     }
 
     mutating func setAllowed(_ flag: ABI.ConfigFlag, isAllowed: Bool) {
         if isAllowed {
-            ignoredConfigFlags.remove(flag)
+            unignore(flag)
         } else {
-            ignoredConfigFlags.insert(flag)
+            ignore(flag)
         }
     }
 
@@ -142,14 +142,14 @@ private extension ABI.AppPreferenceValues.Experimental {
     }
 
     mutating func setPreference(_ preference: ConfigFlagPreference, for flag: ABI.ConfigFlag) {
-        ignoredConfigFlags.remove(flag)
-        enabledConfigFlags.remove(flag)
+        unignore(flag)
+        disable(flag)
 
         switch preference {
         case .enable:
-            enabledConfigFlags.insert(flag)
+            enable(flag)
         case .disable:
-            ignoredConfigFlags.insert(flag)
+            ignore(flag)
         case .remote:
             break
         }

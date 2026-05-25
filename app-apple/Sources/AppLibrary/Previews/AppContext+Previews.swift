@@ -16,8 +16,8 @@ extension AppContext {
             registry: Registry(withKnown: true),
             withLegacyEncoding: { false }
         )
-        let kvStore = InMemoryStore()
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
+        let preferences = AppPreferencesStore()
+        let appEncoder = AppEncoder(coder: registry)
         let configManager = ConfigManager()
         let apiManager = APIManager(
             from: API.bundled,
@@ -73,8 +73,8 @@ extension AppContext {
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
@@ -85,7 +85,7 @@ extension AppContext {
         return AppContext(
             abi: abi,
             appConfiguration: appConfiguration,
-            kvStore: kvStore,
+            preferences: preferences,
             tunnelObservable: tunnelObservable
         )
     }()

@@ -21,10 +21,10 @@ extension AppContext {
             buildTarget: .app
         )
         // Create ABI returning Tunnel to build TunnelObservable
-        let kvStore = appConfiguration.newKeyValueStore()
+        let preferences = appConfiguration.newPreferences()
         let result = AppABI.forNetworkExtension(
             appConfiguration: appConfiguration,
-            kvStore: kvStore,
+            preferences: AppPreferencesStore(preferences),
             assertModule: { moduleType, registry in
 #if !os(tvOS)
                 let builder = registry.newModule(ofType: moduleType)
