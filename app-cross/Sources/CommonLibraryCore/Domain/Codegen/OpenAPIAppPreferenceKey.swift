@@ -11,7 +11,6 @@ public enum OpenAPIAppPreferenceKey: String, Sendable, Codable, CaseIterable {
     case deviceId = "deviceId"
     case configFlags = "configFlags"
     case dnsFallsBack = "dnsFallsBack"
-    case dnsFallbackServers = "dnsFallbackServers"
     case experimental = "experimental"
     case extensiveLogging = "extensiveLogging"
     case lastCheckedVersion = "lastCheckedVersion"

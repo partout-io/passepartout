@@ -80,6 +80,7 @@ Sources/CommonLibraryCore/Domain/ABI.swift
 Sources/CommonLibraryCore/Domain/AppError.swift
 Sources/CommonLibraryCore/Domain/AppLog.swift
 Sources/CommonLibraryCore/Domain/AppPreferences.swift
+Sources/CommonLibraryCore/Domain/AppPreferencesPatch.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Donations.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Features.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Providers.swift
@@ -106,6 +107,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebsites.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppFeature.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferenceKey.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferences.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferencesPatch.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileHeader.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppTunnelInfo.swift
