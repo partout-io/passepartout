@@ -38,6 +38,7 @@ extension TunnelABI {
             preferences: preferences,
             localMapper: logFormatter?.localMapper
         )
+        pspLog(.abi, .debug, "Tunnel preferences: \(preferences)")
 
         // Create platform-specific objects
         let controller = try NativeTunnelController(

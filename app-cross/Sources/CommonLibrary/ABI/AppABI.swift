@@ -79,7 +79,7 @@ public final class AppABI: Sendable {
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !preferences.p.skipsPurchases
+        iapManager.isEnabled = supportsIAP && !preferences[\.skipsPurchases]
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
@@ -93,6 +93,10 @@ public final class AppABI: Sendable {
         registry = AppABIRegistry(registry: partoutRegistry)
         version = AppABIVersion(versionChecker: versionChecker)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
+
+        preferences.onUpdate = { [weak self] in
+            self?.onUpdatePreferences($0)
+        }
     }
 
     deinit {
@@ -127,6 +131,7 @@ extension AppABI {
         // then IAPManager starts disabled, but the UI shows that in-app
         // purchases are enabled if the initial IAPManager update is missed.
         //
+        onUpdatePreferences(preferences.serialized())
         iapManager.postInitialState()
         profileManager.postInitialState()
 
@@ -186,6 +191,22 @@ extension AppABI {
 }
 
 // MARK: - Actions
+
+extension AppABI {
+    // Consumer -> ABI
+    public func setPreferences(_ new: ABI.AppPreferences) {
+        preferences.update(notify: false) {
+            $0 = new
+        }
+    }
+
+    // ABI -> Consumer
+    private func onUpdatePreferences(_ updated: ABI.AppPreferences) {
+        dispatch(.mixed(.updatedPreferences(.init(
+            preferences: updated
+        ))), nil)
+    }
+}
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
@@ -369,15 +390,17 @@ extension AppABI {
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            // Propagate active config flags to tunnel via preferences
-            preferences.p.configFlags = Array(configManager.activeFlags)
+            preferences.update {
+                // Propagate active config flags to tunnel via preferences
+                $0.configFlags = Array(configManager.activeFlags)
 
-            // Imply some hidden preferences from config flags
-            preferences.p.newProfileEncoding = configManager.isActive(.newProfileEncoding)
+                // Imply some hidden preferences from config flags
+                $0.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
-            // Constrain .relaxedVerification preference to .allows and
-            // .forces combinations in ConfigManager. At most, it's left as is
-            preferences.p.constrainRelaxedVerification(to: configManager)
+                // Constrain .relaxedVerification preference to .allows and
+                // .forces combinations in ConfigManager. At most, it's left as is
+                $0.constrainRelaxedVerification(to: configManager)
+            }
         }
     }
 }
@@ -411,7 +434,9 @@ private extension AppABI {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
-                    preferences.p.skipsPurchases = !payload.isEnabled
+                    preferences.update {
+                        $0.skipsPurchases = !payload.isEnabled
+                    }
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
@@ -574,7 +599,7 @@ private extension AppABI {
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard preferences.p.relaxedVerification else {
+        guard preferences[\.relaxedVerification] else {
             return true
         }
         // Receipt never loaded, force load

@@ -79,7 +79,7 @@ extension TunnelObservable {
         let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
         if let preferences {
-            let encodedPreferences = try ABI.encode(preferences.p.serialized())
+            let encodedPreferences = try ABI.encode(preferences.serialized())
             options[Options.appPreferences] = encodedPreferences as NSData
         }
         try await tunnel.install(profile, connect: connect, options: options)
@@ -99,7 +99,7 @@ extension TunnelObservable {
 
     private func currentLog(logging: Logging) async -> [ABI.LogLine] {
         var maxLevel = logging.maxDebugLogLevel
-        if preferences?.p.extensiveLogging == true {
+        if preferences?[\.extensiveLogging] == true {
             maxLevel = .debug
         }
         // TODO: #218, handle multiple profiles
@@ -173,7 +173,9 @@ extension TunnelObservable {
                 )
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = snapshots.first {
-                    preferences?.p.lastUsedProfileId = first.key
+                    preferences?.update {
+                        $0.lastUsedProfileId = first.key
+                    }
                 }
                 // Publish compound info
                 if newActiveProfiles != activeProfiles {
@@ -241,7 +243,7 @@ private final class PendingTask {
 private extension TunnelObservable {
     // TODO: #218, keep "last used profile" until .multiple
     var lastUsedProfile: TunnelSnapshot? {
-        guard let id = preferences?.p.lastUsedProfileId else {
+        guard let id = preferences?[\.lastUsedProfileId] else {
             return nil
         }
         return TunnelSnapshot(

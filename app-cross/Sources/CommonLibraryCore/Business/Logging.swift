@@ -193,7 +193,7 @@ private extension PartoutLogger.Builder {
         setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
-        if preferences.p.extensiveLogging {
+        if preferences[\.extensiveLogging] {
             newOptions.maxLevel = .debug
         }
         if let localMapper {
@@ -203,7 +203,7 @@ private extension PartoutLogger.Builder {
                 mapper: localMapper
             )
         }
-        if preferences.p.logsPrivateData {
+        if preferences[\.logsPrivateData] {
             logsAddresses = true
             logsModules = true
         }

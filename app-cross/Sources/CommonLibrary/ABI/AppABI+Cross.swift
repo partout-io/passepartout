@@ -31,6 +31,7 @@ extension AppABI {
             preferences: preferences,
             localMapper: logFormatter?.localMapper
         )
+        pspLog(.abi, .debug, "App preferences: \(preferences)")
 
         // Initialize objects from global configuration
         nonisolated(unsafe) let unsafeBindings = bindings

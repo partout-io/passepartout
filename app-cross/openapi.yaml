@@ -277,11 +277,10 @@ components:
       - deviceId
       - configFlags
       - dnsFallsBack
-      - dnsFallbackServers
       - experimental
       - extensiveLogging
-      - lastCheckedVersionDate
       - lastCheckedVersion
+      - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
       - newProfileEncoding
@@ -291,11 +290,10 @@ components:
       - deviceId
       - configFlags
       - dnsFallsBack
-      - dnsFallbackServers
       - experimental
       - extensiveLogging
-      - lastCheckedVersionDate
       - lastCheckedVersion
+      - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
       - newProfileEncoding
@@ -434,6 +432,7 @@ components:
           IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
           MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
+          MixedEventUpdatedPreferences: "#/components/schemas/MixedEventUpdatedPreferences"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
@@ -679,6 +678,20 @@ components:
       required:
       - type
       - profile
+    MixedEventUpdatedPreferences:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: MixedEventUpdatedPreferences
+          type: string
+        preferences:
+          "$ref": "#/components/schemas/AppPreferences"
+      required:
+      - type
+      - preferences
     ModuleType:
       type: string
       x-enum-varnames:

@@ -20,13 +20,13 @@ public final class UserPreferencesObservable {
             UIPreference.pinsActiveProfile.key: true
         ])
 
-        dnsFallsBack = abi.p.dnsFallsBack
-        experimental = abi.p.experimental
-        extensiveLogging = abi.p.extensiveLogging
+        dnsFallsBack = abi[\.dnsFallsBack]
+        experimental = abi[\.experimental]
+        extensiveLogging = abi[\.extensiveLogging]
         keepsInMenu = ui.bool(forUIPreference: .keepsInMenu)
         lastInfrastructureRefresh = ui.object(forUIPreference: .lastInfrastructureRefresh) as? [String: TimeInterval]
         locksInBackground = ui.bool(forUIPreference: .locksInBackground)
-        logsPrivateData = abi.p.logsPrivateData
+        logsPrivateData = abi[\.logsPrivateData]
         onboardingStep = ui.string(forUIPreference: .onboardingStep).flatMap {
             OnboardingStep(rawValue: $0)
         }
@@ -35,7 +35,7 @@ public final class UserPreferencesObservable {
         profilesLayout = ui.string(forUIPreference: .profilesLayout).flatMap {
             ProfilesLayout(rawValue: $0)
         } ?? .list
-        relaxedVerification = abi.p.relaxedVerification
+        relaxedVerification = abi[\.relaxedVerification]
         systemAppearance = ui.string(forUIPreference: .systemAppearance).flatMap {
             SystemAppearance(rawValue: $0)
         }
@@ -45,19 +45,25 @@ public final class UserPreferencesObservable {
 
     public var dnsFallsBack: Bool {
         didSet {
-            abi.p.dnsFallsBack = dnsFallsBack
+            abi.update {
+                $0.dnsFallsBack = dnsFallsBack
+            }
         }
     }
 
     public var experimental: ABI.ExperimentalPreferences {
         didSet {
-            abi.p.experimental = experimental
+            abi.update {
+                $0.experimental = experimental
+            }
         }
     }
 
     public var extensiveLogging: Bool {
         didSet {
-            abi.p.extensiveLogging = extensiveLogging
+            abi.update {
+                $0.extensiveLogging = extensiveLogging
+            }
         }
     }
 
@@ -81,7 +87,9 @@ public final class UserPreferencesObservable {
 
     public var logsPrivateData: Bool {
         didSet {
-            abi.p.logsPrivateData = logsPrivateData
+            abi.update {
+                $0.logsPrivateData = logsPrivateData
+            }
         }
     }
 
@@ -111,7 +119,9 @@ public final class UserPreferencesObservable {
 
     public var relaxedVerification: Bool {
         didSet {
-            abi.p.relaxedVerification = relaxedVerification
+            abi.update {
+                $0.relaxedVerification = relaxedVerification
+            }
         }
     }
 
