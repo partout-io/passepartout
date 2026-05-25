@@ -98,3 +98,11 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
         )
     }
 }
+
+public final class AppPreferencesStore: @unchecked Sendable {
+    public var p: ABI.AppPreferencesProtocol
+
+    public init(p: ABI.AppPreferencesProtocol) {
+        self.p = p
+    }
+}
