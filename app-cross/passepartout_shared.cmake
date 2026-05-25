@@ -157,7 +157,6 @@ Sources/CommonLibraryCore/Domain/Extensions/Codegen+DistributionTarget.swift
 Sources/CommonLibraryCore/Domain/Extensions/Codegen+Events.swift
 Sources/CommonLibraryCore/Domain/Extensions/Codegen+SemanticVersion.swift
 Sources/CommonLibraryCore/Domain/Extensions/Mappers.swift
-Sources/CommonLibraryCore/Domain/InMemoryAppPreferences.swift
 Sources/CommonLibraryCore/Domain/Internal/ConfigBundle.swift
 Sources/CommonLibraryCore/Domain/Internal/ProfileAttributes+ModulePreferences.swift
 Sources/CommonLibraryCore/Domain/Internal/ProfileAttributes.swift
