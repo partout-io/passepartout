@@ -37,36 +37,41 @@ extension ABI.AppPreferencesProtocol {
     }
 }
 
-extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
-    public static let `default` = ABI.InMemoryAppPreferences(
-        configFlags: [],
-        deviceId: nil,
-        dnsFallsBack: true,
-        experimental: ABI.ExperimentalPreferences(
-            ignoredConfigFlags: [],
-            enabledConfigFlags: []
-        ),
-        extensiveLogging: false,
-        logsPrivateData: false,
-        newProfileEncoding: false,
-        relaxedVerification: false,
-        skipsPurchases: false
-    )
+extension ABI.AppPreferencesProtocol where Self == ABI.InMemoryAppPreferences {
+    public static func `default`() -> ABI.InMemoryAppPreferences {
+        ABI.InMemoryAppPreferences(
+            configFlags: [],
+            deviceId: nil,
+            dnsFallsBack: true,
+            experimental: ABI.ExperimentalPreferences(
+                ignoredConfigFlags: [],
+                enabledConfigFlags: []
+            ),
+            extensiveLogging: false,
+            logsPrivateData: false,
+            newProfileEncoding: false,
+            relaxedVerification: false,
+            skipsPurchases: false
+        )
+    }
+}
 
+extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
     public init(from decoder: any Decoder) throws {
+        let def = Self.default()
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        configFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .configFlags) ?? Self.default.configFlags
+        configFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .configFlags) ?? def.configFlags
         deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
-        dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.dnsFallsBack) ?? Self.default.dnsFallsBack
-        experimental = try container.decodeIfPresent(ABI.ExperimentalPreferences.self, forKey: .experimental) ?? Self.default.experimental
-        extensiveLogging = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.extensiveLogging) ?? Self.default.extensiveLogging
+        dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.dnsFallsBack) ?? def.dnsFallsBack
+        experimental = try container.decodeIfPresent(ABI.ExperimentalPreferences.self, forKey: .experimental) ?? def.experimental
+        extensiveLogging = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.extensiveLogging) ?? def.extensiveLogging
         lastCheckedVersionTimestamp = try container.decodeIfPresent(Timestamp.self, forKey: .lastCheckedVersionTimestamp)
         lastCheckedVersion = try container.decodeIfPresent(String.self, forKey: .lastCheckedVersion)
         lastUsedProfileUUID = try container.decodeIfPresent(String.self, forKey: .lastUsedProfileUUID)
-        logsPrivateData = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.logsPrivateData) ?? Self.default.logsPrivateData
-        newProfileEncoding = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newProfileEncoding) ?? Self.default.newProfileEncoding
-        relaxedVerification = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.relaxedVerification) ?? Self.default.relaxedVerification
-        skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.skipsPurchases) ?? Self.default.skipsPurchases
+        logsPrivateData = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.logsPrivateData) ?? def.logsPrivateData
+        newProfileEncoding = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newProfileEncoding) ?? def.newProfileEncoding
+        relaxedVerification = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.relaxedVerification) ?? def.relaxedVerification
+        skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.skipsPurchases) ?? def.skipsPurchases
     }
 
     public var lastCheckedVersionDate: Date? {
