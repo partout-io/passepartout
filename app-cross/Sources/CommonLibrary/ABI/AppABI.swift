@@ -195,7 +195,7 @@ extension AppABI {
 extension AppABI {
     // Consumer -> ABI
     public func setPreferences(_ new: ABI.AppPreferences) {
-        preferences.update(silent: true) {
+        preferences.update(notify: false) {
             $0 = new
         }
     }

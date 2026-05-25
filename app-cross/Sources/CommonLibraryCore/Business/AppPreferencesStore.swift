@@ -39,11 +39,11 @@ extension AppPreferencesStore {
     }
 
     public func update(
-        silent: Bool = false,
+        notify: Bool = true,
         _ body: (inout any ABI.AppPreferencesProtocol) -> Void
     ) {
         body(&backend)
-        if !silent {
+        if notify {
             onUpdate?(backend.serialized())
         }
     }
