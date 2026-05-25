@@ -472,6 +472,7 @@ components:
           IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
           MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
+          MixedEventUpdatedPreferences: "#/components/schemas/MixedEventUpdatedPreferences"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
@@ -717,6 +718,20 @@ components:
       required:
       - type
       - profile
+    MixedEventUpdatedPreferences:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: MixedEventUpdatedPreferences
+          type: string
+        patch:
+          "$ref": "#/components/schemas/AppPreferencesPatch"
+      required:
+      - type
+      - patch
     ModuleType:
       type: string
       x-enum-varnames:
