@@ -13,15 +13,15 @@ public struct OpenAPIMixedEventUpdatedPreferences: Sendable, Codable, Hashable {
         case mixedEventUpdatedPreferences = "MixedEventUpdatedPreferences"
     }
     public let type: OpenAPIType = .mixedEventUpdatedPreferences
-    public var patch: OpenAPIAppPreferencesPatch
+    public var preferences: OpenAPIAppPreferences
 
-    public init(patch: OpenAPIAppPreferencesPatch) {
-        self.patch = patch
+    public init(preferences: OpenAPIAppPreferences) {
+        self.preferences = preferences
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
-        case patch
+        case preferences
     }
 
     // Encodable protocol methods
@@ -29,7 +29,7 @@ public struct OpenAPIMixedEventUpdatedPreferences: Sendable, Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
-        try container.encode(patch, forKey: .patch)
+        try container.encode(preferences, forKey: .preferences)
     }
 }
 

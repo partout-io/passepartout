@@ -338,46 +338,6 @@ components:
       - newProfileEncoding
       - relaxedVerification
       - skipsPurchases
-    AppPreferencesPatch:
-      type: object
-      additionalProperties: false
-      properties:
-        values:
-          "$ref": "#/components/schemas/AppPreferencesPatchValues"
-        fieldsToUnset:
-          type: array
-          items:
-            "$ref": "#/components/schemas/AppPreferenceKey"
-    AppPreferencesPatchValues:
-      type: object
-      additionalProperties: false
-      properties:
-        configFlags:
-          type: array
-          items:
-            "$ref": "#/components/schemas/ConfigFlag"
-        deviceId:
-          type: string
-        dnsFallsBack:
-          type: boolean
-        experimental:
-          "$ref": "#/components/schemas/ExperimentalPreferences"
-        extensiveLogging:
-          type: boolean
-        lastCheckedVersionTimestamp:
-          "$ref": "#/components/schemas/Timestamp"
-        lastCheckedVersion:
-          type: string
-        lastUsedProfileUUID:
-          type: string
-        logsPrivateData:
-          type: boolean
-        newProfileEncoding:
-          type: boolean
-        relaxedVerification:
-          type: boolean
-        skipsPurchases:
-          type: boolean
     AppProfileHeader:
       type: object
       additionalProperties: false
@@ -727,11 +687,11 @@ components:
         type:
           const: MixedEventUpdatedPreferences
           type: string
-        patch:
-          "$ref": "#/components/schemas/AppPreferencesPatch"
+        preferences:
+          "$ref": "#/components/schemas/AppPreferences"
       required:
       - type
-      - patch
+      - preferences
     ModuleType:
       type: string
       x-enum-varnames:

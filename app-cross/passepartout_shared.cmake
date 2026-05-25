@@ -107,8 +107,6 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebsites.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppFeature.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferenceKey.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferences.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferencesPatch.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferencesPatchValues.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileHeader.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppTunnelInfo.swift

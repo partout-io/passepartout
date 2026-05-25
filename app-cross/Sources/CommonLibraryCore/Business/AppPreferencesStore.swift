@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public final class AppPreferencesStore: @unchecked Sendable {
-    public typealias UpdateBlock = (ABI.AppPreferencesPatch) -> Void
+    public typealias UpdateBlock = (ABI.AppPreferences) -> Void
 
     private var backend: ABI.AppPreferencesProtocol
     public var onUpdate: UpdateBlock?
@@ -38,17 +38,18 @@ extension AppPreferencesStore {
         backend[keyPath: keyPath]
     }
 
-    public func update(_ body: (inout any ABI.AppPreferencesProtocol) -> Void) {
-        guard let onUpdate else {
-            body(&backend)
-            return
-        }
-        let old = serialized()
+    public func update(
+        silent: Bool = false,
+        _ body: (inout any ABI.AppPreferencesProtocol) -> Void
+    ) {
         body(&backend)
-        let new = serialized()
-        let patch = ABI.AppPreferencesPatch(from: old, to: new)
-        guard !patch.isEmpty else { return }
-        onUpdate(patch)
+        if !silent {
+            onUpdate?(backend.serialized())
+        }
+    }
+
+    public func serialized() -> ABI.AppPreferences {
+        backend.serialized()
     }
 
     public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
@@ -57,19 +58,5 @@ extension AppPreferencesStore {
 
     public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
         backend.enabledFlags(of: flags)
-    }
-}
-
-// MARK: - Serialization
-
-extension AppPreferencesStore {
-    public func serialized() -> ABI.AppPreferences {
-        backend.serialized()
-    }
-
-    public func apply(_ patch: ABI.AppPreferencesPatch) {
-        update {
-            $0.apply(patch)
-        }
     }
 }

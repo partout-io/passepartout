@@ -15,7 +15,7 @@
 
 package com.algoritmico.passepartout.abi.models
 
-import com.algoritmico.passepartout.abi.models.AppPreferencesPatch
+import com.algoritmico.passepartout.abi.models.AppPreferences
 import com.algoritmico.passepartout.abi.models.Event
 
 import kotlinx.serialization.Serializable
@@ -25,15 +25,15 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param patch 
+ * @param preferences 
  */
 @Serializable
 
 @SerialName(value = "MixedEventUpdatedPreferences")
 data class MixedEventUpdatedPreferences (
 
-    @SerialName(value = "patch")
-    val patch: AppPreferencesPatch
+    @SerialName(value = "preferences")
+    val preferences: AppPreferences
 
 ) : Event() {
 

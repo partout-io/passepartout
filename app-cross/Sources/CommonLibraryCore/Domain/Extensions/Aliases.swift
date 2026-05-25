@@ -9,8 +9,6 @@ extension ABI {
     public typealias AppFeature = OpenAPIAppFeature
     public typealias AppPreferenceKey = OpenAPIAppPreferenceKey
     public typealias AppPreferences = OpenAPIAppPreferences
-    public typealias AppPreferencesPatch = OpenAPIAppPreferencesPatch
-    public typealias AppPreferencesPatchValues = OpenAPIAppPreferencesPatchValues
     public typealias AppProfileStatus = OpenAPIAppProfileStatus
     public typealias AppUserLevel = OpenAPIAppUserLevel
     public typealias ConfigFlag = OpenAPIConfigFlag
