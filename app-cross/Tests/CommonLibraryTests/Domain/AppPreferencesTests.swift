@@ -6,7 +6,7 @@ import Foundation
 import Partout
 import Testing
 
-struct AppPreferenceTests {
+struct AppPreferencesTests {
     @Test
     func givenPreferencesProtocol_whenSerialized_thenPreservesValues() {
         let expected = Self.preferences()
@@ -82,7 +82,7 @@ struct AppPreferenceTests {
     }
 }
 
-private extension AppPreferenceTests {
+private extension AppPreferencesTests {
     static func preferences() -> ABI.AppPreferences {
         var preferences: ABI.AppPreferences = .default()
         preferences.configFlags = [.bsdSockets, .newProfileEncoding]
