@@ -280,8 +280,8 @@ components:
       - dnsFallbackServers
       - experimental
       - extensiveLogging
-      - lastCheckedVersionDate
       - lastCheckedVersion
+      - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
       - newProfileEncoding
@@ -294,8 +294,8 @@ components:
       - dnsFallbackServers
       - experimental
       - extensiveLogging
-      - lastCheckedVersionDate
       - lastCheckedVersion
+      - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
       - newProfileEncoding
