@@ -125,10 +125,6 @@ extension ABI {
 }
 
 extension AppPreferencesStore {
-//    static func fromUserDefaults(_ defaults: UserDefaults) -> AppPreferencesStore {
-//
-//    }
-
     static func fromData(_ data: Data?) -> AppPreferencesStore {
         let values: ABI.AppPreferences
         if let data {
