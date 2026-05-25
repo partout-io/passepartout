@@ -54,41 +54,61 @@ extension ABI.AppPreferencesProtocol {
     }
 
     public mutating func apply(_ values: ABI.AppPreferencesPatchValues) {
-        if let configFlags = values.configFlags {
-            self.configFlags = configFlags
+        ABI.AppPreferenceKey.allCases.forEach {
+            apply(values, for: $0)
         }
-        if let deviceId = values.deviceId {
-            self.deviceId = deviceId
-        }
-        if let dnsFallsBack = values.dnsFallsBack {
-            self.dnsFallsBack = dnsFallsBack
-        }
-        if let experimental = values.experimental {
-            self.experimental = experimental
-        }
-        if let extensiveLogging = values.extensiveLogging {
-            self.extensiveLogging = extensiveLogging
-        }
-        if let lastCheckedVersionDate = values.lastCheckedVersionDate {
-            self.lastCheckedVersionDate = lastCheckedVersionDate
-        }
-        if let lastCheckedVersion = values.lastCheckedVersion {
-            self.lastCheckedVersion = lastCheckedVersion
-        }
-        if let lastUsedProfileId = values.lastUsedProfileId {
-            self.lastUsedProfileId = lastUsedProfileId
-        }
-        if let logsPrivateData = values.logsPrivateData {
-            self.logsPrivateData = logsPrivateData
-        }
-        if let newProfileEncoding = values.newProfileEncoding {
-            self.newProfileEncoding = newProfileEncoding
-        }
-        if let relaxedVerification = values.relaxedVerification {
-            self.relaxedVerification = relaxedVerification
-        }
-        if let skipsPurchases = values.skipsPurchases {
-            self.skipsPurchases = skipsPurchases
+    }
+
+    private mutating func apply(_ values: ABI.AppPreferencesPatchValues, for key: ABI.AppPreferenceKey) {
+        switch key {
+        case .configFlags:
+            if let value = values.configFlags {
+                configFlags = value
+            }
+        case .deviceId:
+            if let value = values.deviceId {
+                deviceId = value
+            }
+        case .dnsFallsBack:
+            if let value = values.dnsFallsBack {
+                dnsFallsBack = value
+            }
+        case .experimental:
+            if let value = values.experimental {
+                experimental = value
+            }
+        case .extensiveLogging:
+            if let value = values.extensiveLogging {
+                extensiveLogging = value
+            }
+        case .lastCheckedVersion:
+            if let value = values.lastCheckedVersion {
+                lastCheckedVersion = value
+            }
+        case .lastCheckedVersionDate:
+            if let value = values.lastCheckedVersionDate {
+                lastCheckedVersionDate = value
+            }
+        case .lastUsedProfileId:
+            if let value = values.lastUsedProfileId {
+                lastUsedProfileId = value
+            }
+        case .logsPrivateData:
+            if let value = values.logsPrivateData {
+                logsPrivateData = value
+            }
+        case .newProfileEncoding:
+            if let value = values.newProfileEncoding {
+                newProfileEncoding = value
+            }
+        case .relaxedVerification:
+            if let value = values.relaxedVerification {
+                relaxedVerification = value
+            }
+        case .skipsPurchases:
+            if let value = values.skipsPurchases {
+                skipsPurchases = value
+            }
         }
     }
 
