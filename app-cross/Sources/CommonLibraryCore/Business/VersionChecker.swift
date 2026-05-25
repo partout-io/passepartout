@@ -6,7 +6,7 @@ import Partout
 
 @BusinessActor
 public final class VersionChecker {
-    private var preferences: ABI.AppPreferencesProtocol
+    private let preferences: AppPreferencesStore
 
     private let strategy: VersionCheckerStrategy
 
@@ -19,7 +19,7 @@ public final class VersionChecker {
     public nonisolated let didChange: PassthroughStream<ABI.VersionEvent>
 
     public nonisolated init(
-        preferences: ABI.AppPreferencesProtocol,
+        preferences: AppPreferencesStore,
         strategy: VersionCheckerStrategy,
         currentVersion: String,
         downloadURL: URL
@@ -35,7 +35,7 @@ public final class VersionChecker {
     }
 
     public var latestRelease: ABI.VersionRelease? {
-        guard let latestVersionDescription = preferences.lastCheckedVersion,
+        guard let latestVersionDescription = preferences.p.lastCheckedVersion,
               let latestVersion = ABI.SemanticVersion(latestVersionDescription) else {
             return nil
         }
@@ -52,12 +52,12 @@ public final class VersionChecker {
         }
         let now = Date()
         do {
-            let lastCheckedDate = preferences.lastCheckedVersionDate ?? .distantPast
+            let lastCheckedDate = preferences.p.lastCheckedVersionDate ?? .distantPast
 
             pspLog(.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
-            preferences.lastCheckedVersionDate = now
-            preferences.lastCheckedVersion = fetchedLatestVersion.description
+            preferences.p.lastCheckedVersionDate = now
+            preferences.p.lastCheckedVersion = fetchedLatestVersion.description
             pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
 
             guard let latestRelease else {
@@ -70,7 +70,7 @@ public final class VersionChecker {
             pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // Save the check date regardless because the service call succeeded
-            preferences.lastCheckedVersionDate = now
+            preferences.p.lastCheckedVersionDate = now
 
             pspLog(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
@@ -91,7 +91,7 @@ extension VersionChecker {
         currentVersion: String = "255.255.255" // An update is never available
     ) {
         self.init(
-            preferences: .default(),
+            preferences: AppPreferencesStore(),
             strategy: DummyStrategy(),
             currentVersion: currentVersion,
             downloadURL: downloadURL

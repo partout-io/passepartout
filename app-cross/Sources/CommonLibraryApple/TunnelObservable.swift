@@ -28,7 +28,7 @@ public final class TunnelObservable {
 
     private let tunnel: Tunnel
 
-    private var preferences: ABI.AppPreferencesProtocol?
+    private let preferences: AppPreferencesStore?
 
     private let logging: Logging?
 
@@ -43,7 +43,7 @@ public final class TunnelObservable {
     // TODO: #218, keep "last used profile" until .multiple
     public init(
         tunnel: Tunnel,
-        preferences: ABI.AppPreferencesProtocol? = nil,
+        preferences: AppPreferencesStore? = nil,
         logging: Logging? = nil,
         willInstall: WillInstallBlock? = nil
     ) {
@@ -99,7 +99,7 @@ extension TunnelObservable {
 
     private func currentLog(logging: Logging) async -> [ABI.LogLine] {
         var maxLevel = logging.maxDebugLogLevel
-        if preferences?.extensiveLogging == true {
+        if preferences?.p.extensiveLogging == true {
             maxLevel = .debug
         }
         // TODO: #218, handle multiple profiles
@@ -173,7 +173,7 @@ extension TunnelObservable {
                 )
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = snapshots.first {
-                    preferences?.lastUsedProfileId = first.key
+                    preferences?.p.lastUsedProfileId = first.key
                 }
                 // Publish compound info
                 if newActiveProfiles != activeProfiles {
@@ -241,7 +241,7 @@ private final class PendingTask {
 private extension TunnelObservable {
     // TODO: #218, keep "last used profile" until .multiple
     var lastUsedProfile: TunnelSnapshot? {
-        guard let id = preferences?.lastUsedProfileId else {
+        guard let id = preferences?.p.lastUsedProfileId else {
             return nil
         }
         return TunnelSnapshot(

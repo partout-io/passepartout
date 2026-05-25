@@ -99,7 +99,7 @@ extension ABI.AppConfiguration {
 
     public func newRegistryForApp(
         deviceId: String,
-        preferences: ABI.AppPreferencesProtocol,
+        preferences: AppPreferencesStore,
         configManager: ConfigManager,
         cachesURL: URL
     ) -> CodingRegistry {
@@ -108,22 +108,22 @@ extension ABI.AppConfiguration {
             cachesURL: cachesURL,
             configBlock: { [weak configManager] in
                 guard let configManager else { return [] }
-                return preferences.enabledFlags(of: configManager.activeFlags)
+                return preferences.p.enabledFlags(of: configManager.activeFlags)
             }
         )
     }
 
     public func newRegistryForTunnel(
-        preferences: ABI.AppPreferencesProtocol,
+        preferences: AppPreferencesStore,
         cachesURL: URL
     ) -> CodingRegistry {
-        assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        assert(preferences.p.deviceId != nil, "No Device ID found in preferences")
+        pspLog(.core, .info, "Device ID: \(preferences.p.deviceId ?? "not set")")
         return newRegistry(
-            deviceId: preferences.deviceId ?? "MissingDeviceID",
+            deviceId: preferences.p.deviceId ?? "MissingDeviceID",
             cachesURL: cachesURL,
             configBlock: {
-                preferences.enabledFlags()
+                preferences.p.enabledFlags()
             }
         )
     }
@@ -133,7 +133,7 @@ extension ABI.AppConfiguration {
     }
 
     public func newVersionChecker(
-        preferences: ABI.AppPreferencesProtocol,
+        preferences: AppPreferencesStore,
         downloadURL: URL,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {

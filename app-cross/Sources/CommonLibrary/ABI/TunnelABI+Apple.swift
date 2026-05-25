@@ -9,7 +9,7 @@ import Partout
 extension TunnelABI {
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
-        preferences: ABI.AppPreferencesProtocol,
+        preferences: AppPreferencesStore,
         startPreferences: ABI.AppPreferencesProtocol?,
         // TODO: #218, cachesURL must be per-profile
         cachesURL: URL,
@@ -53,10 +53,10 @@ extension TunnelABI {
         } else {
             pspLog(ctx.profileId, .core, .info, "\tExisting preferences: \(preferences)")
         }
-        let configFlags = preferences.configFlags
+        let configFlags = preferences.p.configFlags
         pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
-        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
-        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences.experimental.enabledConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.p.experimental.ignoredConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences.p.experimental.enabledConfigFlags)")
 
         // Create TunnelController for connnection management
         let neTunnelController = NETunnelController(
@@ -64,7 +64,7 @@ extension TunnelABI {
             profile: processedProfile,
             options: {
                 var options = NETunnelController.Options()
-                if preferences.dnsFallsBack {
+                if preferences.p.dnsFallsBack {
                     options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
                 }
                 return options
@@ -73,13 +73,13 @@ extension TunnelABI {
 
         // Create daemon
         let factory: NetworkInterfaceFactory
-        if preferences.isFlagEnabled(.bsdSockets) {
+        if preferences.p.isFlagEnabled(.bsdSockets) {
             let betterPathBlock = NEBetterPathBlock(ctx).block
             factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
         } else {
             // MUST enable .withReadPackets for OpenVPN V2 to work!
             var options = NEInterfaceFactory.Options()
-            options.withReadPackets = preferences.isFlagEnabled(.ovpnCrossV2)
+            options.withReadPackets = preferences.p.isFlagEnabled(.ovpnCrossV2)
             factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
         }
         let reachability = NEObservablePath(ctx)
@@ -115,10 +115,10 @@ extension TunnelABI {
             betaChecker: appConfiguration.newBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
-        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences.skipsPurchases
+        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences.p.skipsPurchases
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
-        let usesRelaxedVerification = preferences.relaxedVerification
+        let usesRelaxedVerification = preferences.p.relaxedVerification
         // Assemble
         let iap = TunnelABI.IAP(
             manager: iapManager,

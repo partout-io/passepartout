@@ -18,7 +18,7 @@ extension AppABI {
 
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
-        preferences: ABI.AppPreferencesProtocol,
+        preferences: AppPreferencesStore,
         assertModule: (ModuleType, ModuleRegistry) -> Void,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
@@ -26,8 +26,8 @@ extension AppABI {
         withUITesting: Bool,
         withFakeIAPs: Bool
     ) -> Result {
-        assert(preferences.deviceId != nil, "Missing Device ID")
-        let deviceId = preferences.deviceId ?? "BogusDeviceID"
+        assert(preferences.p.deviceId != nil, "Missing Device ID")
+        let deviceId = preferences.p.deviceId ?? "BogusDeviceID"
 
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = pspLogRegister(

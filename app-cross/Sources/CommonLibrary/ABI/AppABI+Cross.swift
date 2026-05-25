@@ -20,12 +20,12 @@ extension AppABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        let preferences = ABI.AppPreferences.forInitialization(
+        let preferences = AppPreferencesStore(p: ABI.AppPreferences.forInitialization(
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
-        )
-        assert(preferences.deviceId != nil, "Missing Device ID")
-        let deviceId = preferences.deviceId ?? "BogusDeviceID"
+        ))
+        assert(preferences.p.deviceId != nil, "Missing Device ID")
+        let deviceId = preferences.p.deviceId ?? "BogusDeviceID"
 
         // Logging context
         let logFormatter = appConfiguration.newLogFormatter()
