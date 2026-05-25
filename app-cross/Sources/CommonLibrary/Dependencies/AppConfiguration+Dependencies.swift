@@ -107,8 +107,8 @@ extension ABI.AppConfiguration {
         return newRegistry(
             deviceId: deviceId,
             cachesURL: cachesURL,
-            configBlock: { [weak configManager] in
-                guard let configManager else { return [] }
+            configBlock: { [weak configManager, weak preferences] in
+                guard let configManager, let preferences else { return [] }
                 return preferences.p.enabledFlags(of: configManager.activeFlags)
             }
         )
