@@ -115,7 +115,18 @@ extension AppABI {
         // Set new handler
         handler = newHandler
 
-        // Post initial state AFTER events registration (in case it was missed)
+        // Post initial state AFTER events registration, because *Observable
+        // classes fully rely on the onUpdate() method for their state, including
+        // the initial state. Early initializations would be otherwise missed by
+        // the UI, e.g.:
+        //
+        // - ProfileObservable.isRemoteImportingEnabled = false on init. iCloud
+        // sync appears disabled if the initial ProfileManager update is missed.
+        //
+        // - IAPObservable.isEnabled = true on init. If "Skips purchases" is ON,
+        // then IAPManager starts disabled, but the UI shows that in-app
+        // purchases are enabled if the initial IAPManager update is missed.
+        //
         iapManager.postInitialState()
         profileManager.postInitialState()
 
