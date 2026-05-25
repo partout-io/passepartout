@@ -324,6 +324,10 @@ extension ABI.AppPreferencesPatch {
             fieldsToUnset: fieldsToUnset.isEmpty ? nil : fieldsToUnset
         )
     }
+
+    public var isEmpty: Bool {
+        values == nil && fieldsToUnset == nil
+    }
 }
 
 private extension ABI.AppPreferencesPatchValues {

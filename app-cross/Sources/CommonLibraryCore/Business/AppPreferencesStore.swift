@@ -6,7 +6,7 @@ public final class AppPreferencesStore: @unchecked Sendable {
     public typealias UpdateBlock = (ABI.AppPreferencesPatch) -> Void
 
     private var backend: ABI.AppPreferencesProtocol
-    private let onUpdate: UpdateBlock?
+    public var onUpdate: UpdateBlock?
 
     public init(
         _ backend: ABI.AppPreferencesProtocol = .default(),
@@ -47,6 +47,7 @@ extension AppPreferencesStore {
         body(&backend)
         let new = serialized()
         let patch = ABI.AppPreferencesPatch(from: old, to: new)
+        guard !patch.isEmpty else { return }
         onUpdate(patch)
     }
 

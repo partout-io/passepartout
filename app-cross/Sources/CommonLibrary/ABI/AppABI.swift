@@ -93,6 +93,10 @@ public final class AppABI: Sendable {
         registry = AppABIRegistry(registry: partoutRegistry)
         version = AppABIVersion(versionChecker: versionChecker)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
+
+        preferences.onUpdate = { [weak self] in
+            self?.onUpdatePreferences($0)
+        }
     }
 
     deinit {
@@ -188,8 +192,14 @@ extension AppABI {
 // MARK: - Actions
 
 extension AppABI {
+    // Consumer -> ABI
     public func patchPreferences(_ patch: ABI.AppPreferencesPatch) {
         preferences.apply(patch)
+    }
+
+    // ABI -> Consumer
+    private func onUpdatePreferences(_ patch: ABI.AppPreferencesPatch) {
+        dispatch(.mixed(.updatedPreferences(.init(patch: patch))), nil)
     }
 }
 
