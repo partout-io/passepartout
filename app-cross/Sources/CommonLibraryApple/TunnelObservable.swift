@@ -78,7 +78,7 @@ extension TunnelObservable {
     private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
         let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
         var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
-        if let preferences = preferences as? Encodable {
+        if let preferences {
             let encodedPreferences = try ABI.encode(preferences)
             options[Options.appPreferences] = encodedPreferences as NSData
         }
