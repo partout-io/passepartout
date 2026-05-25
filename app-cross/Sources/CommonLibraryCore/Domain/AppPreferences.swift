@@ -110,7 +110,18 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
 public final class AppPreferencesStore: @unchecked Sendable {
     public var p: ABI.AppPreferencesProtocol
 
-    public init(p: ABI.AppPreferencesProtocol = .default()) {
+    public init(_ p: ABI.AppPreferencesProtocol = .default()) {
         self.p = p
+    }
+
+    public func configureDeviceId(length: Int) -> String {
+        if let deviceId = p.deviceId {
+            pspLog(.core, .info, "Device ID: \(deviceId)")
+            return deviceId
+        }
+        let newId = String.random(count: length)
+        p.deviceId = newId
+        pspLog(.core, .info, "Device ID (new): \(newId)")
+        return newId
     }
 }

@@ -18,14 +18,12 @@ extension AppABI {
         let bundle = try ABI.decode(ABI.AppBundle.self, from: appBundleData)
         let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
+        let preferences = AppPreferencesStore.fromData(preferencesData)
 
-        // Parse preferences
-        let preferences = AppPreferencesStore(p: ABI.AppPreferences.forInitialization(
-            data: preferencesData,
-            newDeviceIdLength: constants.deviceIdLength
-        ))
-        assert(preferences.p.deviceId != nil, "Missing Device ID")
-        let deviceId = preferences.p.deviceId ?? "BogusDeviceID"
+        // Read or generate Device ID if needed
+        let deviceId = preferences.configureDeviceId(
+            length: appConfiguration.constants.deviceIdLength
+        )
 
         // Logging context
         let logFormatter = appConfiguration.newLogFormatter()

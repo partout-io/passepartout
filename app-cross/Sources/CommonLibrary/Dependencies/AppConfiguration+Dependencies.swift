@@ -410,12 +410,6 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newPreferences() -> ABI.AppPreferencesProtocol {
-//        UserDefaultsStore(.standard)
-        // FIXME: ###
-        fatalError()
-    }
-
     public func newRequest(
         for url: URL,
         cached: Bool,
@@ -470,12 +464,6 @@ extension ABI.AppConfiguration {
         nil
     }
 
-    public func newPreferences() -> ABI.AppPreferencesProtocol {
-        let prefs: ABI.InMemoryAppPreferences = .default()
-        prefs.configureDeviceId(count: constants.deviceIdLength)
-        return prefs
-    }
-
     public func newRequest(
         for url: URL,
         cached: Bool,
@@ -494,15 +482,3 @@ extension ABI.AppConfiguration {
 }
 
 #endif
-
-private extension ABI.AppPreferencesProtocol {
-    mutating func configureDeviceId(count: Int) {
-        if let existingId = deviceId {
-            pspLog(.core, .info, "Device ID: \(existingId)")
-            return
-        }
-        let newId = String.random(count: count)
-        deviceId = newId
-        pspLog(.core, .info, "Device ID (new): \(newId)")
-    }
-}
