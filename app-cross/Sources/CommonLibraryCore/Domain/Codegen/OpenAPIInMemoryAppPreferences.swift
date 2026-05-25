@@ -10,7 +10,7 @@ import Partout
 public struct OpenAPIInMemoryAppPreferences: Sendable, Codable, Hashable {
 
     public var configFlags: [OpenAPIConfigFlag]
-    public var deviceId: String
+    public var deviceId: String?
     public var dnsFallsBack: Bool
     public var experimental: OpenAPIExperimentalPreferences
     public var extensiveLogging: Bool
@@ -23,7 +23,7 @@ public struct OpenAPIInMemoryAppPreferences: Sendable, Codable, Hashable {
     public var relaxedVerification: Bool
     public var skipsPurchases: Bool
 
-    public init(configFlags: [OpenAPIConfigFlag], deviceId: String, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, newProfileEncoding: Bool, relaxedVerification: Bool, skipsPurchases: Bool) {
+    public init(configFlags: [OpenAPIConfigFlag], deviceId: String? = nil, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, newProfileEncoding: Bool, relaxedVerification: Bool, skipsPurchases: Bool) {
         self.configFlags = configFlags
         self.deviceId = deviceId
         self.dnsFallsBack = dnsFallsBack
@@ -58,7 +58,7 @@ public struct OpenAPIInMemoryAppPreferences: Sendable, Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(configFlags, forKey: .configFlags)
-        try container.encode(deviceId, forKey: .deviceId)
+        try container.encodeIfPresent(deviceId, forKey: .deviceId)
         try container.encode(dnsFallsBack, forKey: .dnsFallsBack)
         try container.encode(experimental, forKey: .experimental)
         try container.encode(extensiveLogging, forKey: .extensiveLogging)

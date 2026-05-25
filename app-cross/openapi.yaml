@@ -624,7 +624,6 @@ components:
           type: boolean
       required:
       - configFlags
-      - deviceId
       - dnsFallsBack
       - experimental
       - extensiveLogging

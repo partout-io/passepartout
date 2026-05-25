@@ -7,7 +7,7 @@ import Partout
 extension ABI {
     public protocol AppPreferencesProtocol {
         var configFlags: [ConfigFlag] { get set }
-        var deviceId: String { get set }
+        var deviceId: String? { get set }
         var dnsFallsBack: Bool { get set }
         var experimental: ExperimentalPreferences { get set }
         var extensiveLogging: Bool { get set }
@@ -40,7 +40,7 @@ extension ABI.AppPreferencesProtocol {
 extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
     public static let `default` = ABI.InMemoryAppPreferences(
         configFlags: [],
-        deviceId: "",
+        deviceId: nil,
         dnsFallsBack: true,
         experimental: ABI.ExperimentalPreferences(
             ignoredConfigFlags: [],
@@ -56,7 +56,7 @@ extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         configFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .configFlags) ?? Self.default.configFlags
-        deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId) ?? Self.default.deviceId
+        deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
         dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.dnsFallsBack) ?? Self.default.dnsFallsBack
         experimental = try container.decodeIfPresent(ABI.ExperimentalPreferences.self, forKey: .experimental) ?? Self.default.experimental
         extensiveLogging = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.extensiveLogging) ?? Self.default.extensiveLogging
