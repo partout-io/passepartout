@@ -86,6 +86,26 @@ extension ABI.ExperimentalPreferences {
         ignoredConfigFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .ignoredConfigFlags) ?? []
         enabledConfigFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .enabledConfigFlags) ?? []
     }
+
+    public mutating func ignore(_ flag: ABI.ConfigFlag) {
+        guard !ignoredConfigFlags.contains(flag) else { return }
+        ignoredConfigFlags.append(flag)
+    }
+
+    public mutating func unignore(_ flag: ABI.ConfigFlag) {
+        guard ignoredConfigFlags.contains(flag) else { return }
+        ignoredConfigFlags.removeAll { $0 == flag }
+    }
+
+    public mutating func enable(_ flag: ABI.ConfigFlag) {
+        guard !enabledConfigFlags.contains(flag) else { return }
+        enabledConfigFlags.append(flag)
+    }
+
+    public mutating func disable(_ flag: ABI.ConfigFlag) {
+        guard enabledConfigFlags.contains(flag) else { return }
+        enabledConfigFlags.removeAll { $0 == flag }
+    }
 }
 
 extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
