@@ -4,7 +4,40 @@
 
 import Partout
 
-extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
+extension ABI {
+    public protocol AppPreferencesProtocol: Sendable {
+        var configFlags: [ConfigFlag] { get set }
+        var deviceId: String? { get set }
+        var dnsFallsBack: Bool { get set }
+        var experimental: ExperimentalPreferences { get set }
+        var extensiveLogging: Bool { get set }
+        var lastCheckedVersionDate: Date? { get set }
+        var lastCheckedVersion: String? { get set }
+        var lastUsedProfileId: Profile.ID? { get set }
+        var logsPrivateData: Bool { get set }
+        var newProfileEncoding: Bool { get set }
+        var relaxedVerification: Bool { get set }
+        var skipsPurchases: Bool { get set }
+    }
+}
+
+extension ABI.AppPreferencesProtocol {
+    public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        var result = configFlags.contains(flag)
+        result = result || experimental.enabledConfigFlags.contains(flag)
+        result = result && !experimental.ignoredConfigFlags.contains(flag)
+        return result
+    }
+
+    public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
+        var result = flags ?? Set(configFlags)
+        result.formUnion(experimental.enabledConfigFlags)
+        result.subtract(experimental.ignoredConfigFlags)
+        return result
+    }
+}
+
+extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
     public init(from decoder: any Decoder) throws {
         let def = Self.default()
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -47,9 +80,9 @@ extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
     }
 }
 
-extension ABI.AppPreferencesProtocol where Self == ABI.InMemoryAppPreferences {
-    public static func `default`() -> ABI.InMemoryAppPreferences {
-        ABI.InMemoryAppPreferences(
+extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
+    public static func `default`() -> ABI.AppPreferences {
+        ABI.AppPreferences(
             configFlags: [],
             deviceId: nil,
             dnsFallsBack: true,

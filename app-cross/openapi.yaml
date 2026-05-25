@@ -271,7 +271,7 @@ components:
       - providers
       - routing
       - sharing
-    AppPreference:
+    AppPreferenceKey:
       type: string
       x-enum-varnames:
       - deviceId
@@ -297,6 +297,45 @@ components:
       - lastCheckedVersionDate
       - lastCheckedVersion
       - lastUsedProfileId
+      - logsPrivateData
+      - newProfileEncoding
+      - relaxedVerification
+      - skipsPurchases
+    AppPreferences:
+      type: object
+      additionalProperties: false
+      properties:
+        configFlags:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ConfigFlag"
+        deviceId:
+          type: string
+        dnsFallsBack:
+          type: boolean
+        experimental:
+          "$ref": "#/components/schemas/ExperimentalPreferences"
+        extensiveLogging:
+          type: boolean
+        lastCheckedVersionTimestamp:
+          "$ref": "#/components/schemas/Timestamp"
+        lastCheckedVersion:
+          type: string
+        lastUsedProfileUUID:
+          type: string
+        logsPrivateData:
+          type: boolean
+        newProfileEncoding:
+          type: boolean
+        relaxedVerification:
+          type: boolean
+        skipsPurchases:
+          type: boolean
+      required:
+      - configFlags
+      - dnsFallsBack
+      - experimental
+      - extensiveLogging
       - logsPrivateData
       - newProfileEncoding
       - relaxedVerification
@@ -592,45 +631,6 @@ components:
       required:
       - type
       - isEnabled
-    InMemoryAppPreferences:
-      type: object
-      additionalProperties: false
-      properties:
-        configFlags:
-          type: array
-          items:
-            "$ref": "#/components/schemas/ConfigFlag"
-        deviceId:
-          type: string
-        dnsFallsBack:
-          type: boolean
-        experimental:
-          "$ref": "#/components/schemas/ExperimentalPreferences"
-        extensiveLogging:
-          type: boolean
-        lastCheckedVersionTimestamp:
-          "$ref": "#/components/schemas/Timestamp"
-        lastCheckedVersion:
-          type: string
-        lastUsedProfileUUID:
-          type: string
-        logsPrivateData:
-          type: boolean
-        newProfileEncoding:
-          type: boolean
-        relaxedVerification:
-          type: boolean
-        skipsPurchases:
-          type: boolean
-      required:
-      - configFlags
-      - dnsFallsBack
-      - experimental
-      - extensiveLogging
-      - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
-      - skipsPurchases
     LocalLoggerOptions:
       type: object
       properties:

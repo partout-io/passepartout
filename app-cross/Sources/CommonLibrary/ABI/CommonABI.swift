@@ -124,8 +124,8 @@ extension ABI {
     }
 }
 
-extension ABI.InMemoryAppPreferences {
-    // Init ABI.AppPreferenceValues from JSON data and optionally generate a new Device ID
+extension ABI.AppPreferences {
+    // Init from JSON data and optionally generate a new Device ID
     static func forInitialization(data: Data?, newDeviceIdLength: Int?) -> Self {
         var values: Self
         if let data {

@@ -6,7 +6,7 @@ import Partout
 
 public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unchecked Sendable {
     private let defaults: UserDefaults
-    private let fallback: ABI.InMemoryAppPreferences
+    private let fallback: ABI.AppPreferencesProtocol
 
     public init(defaults: UserDefaults) {
         self.defaults = defaults
@@ -133,7 +133,7 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
 }
 
 private extension UserDefaults {
-    func bool(forAppPreference preference: ABI.AppPreference, fallback: Bool) -> Bool {
+    func bool(forAppPreference preference: ABI.AppPreferenceKey, fallback: Bool) -> Bool {
         let key = preference.key
         guard object(forKey: key) != nil else {
             return fallback
@@ -141,19 +141,19 @@ private extension UserDefaults {
         return bool(forKey: key)
     }
 
-    func date(forAppPreference preference: ABI.AppPreference) -> Date? {
+    func date(forAppPreference preference: ABI.AppPreferenceKey) -> Date? {
         object(forKey: preference.key) as? Date
     }
 
-    func string(forAppPreference preference: ABI.AppPreference) -> String? {
+    func string(forAppPreference preference: ABI.AppPreferenceKey) -> String? {
         string(forKey: preference.key)
     }
 
-    func set(_ value: Bool, forAppPreference preference: ABI.AppPreference) {
+    func set(_ value: Bool, forAppPreference preference: ABI.AppPreferenceKey) {
         set(value, forKey: preference.key)
     }
 
-    func set(_ value: String?, forAppPreference preference: ABI.AppPreference) {
+    func set(_ value: String?, forAppPreference preference: ABI.AppPreferenceKey) {
         let key = preference.key
         guard let value else {
             removeObject(forKey: key)
@@ -162,7 +162,7 @@ private extension UserDefaults {
         set(value, forKey: key)
     }
 
-    func set(_ value: Date?, forAppPreference preference: ABI.AppPreference) {
+    func set(_ value: Date?, forAppPreference preference: ABI.AppPreferenceKey) {
         let key = preference.key
         guard let value else {
             removeObject(forKey: key)
@@ -173,7 +173,7 @@ private extension UserDefaults {
 
     func codableValue<T>(
         _ type: T.Type,
-        forAppPreference preference: ABI.AppPreference,
+        forAppPreference preference: ABI.AppPreferenceKey,
         fallback: T
     ) -> T where T: Decodable {
         let key = preference.key
@@ -188,7 +188,7 @@ private extension UserDefaults {
         }
     }
 
-    func setCodableValue<T>(_ value: T, forAppPreference preference: ABI.AppPreference) where T: Encodable {
+    func setCodableValue<T>(_ value: T, forAppPreference preference: ABI.AppPreferenceKey) where T: Encodable {
         let key = preference.key
         do {
             let data = try ABI.encode(value)
@@ -199,7 +199,7 @@ private extension UserDefaults {
     }
 }
 
-private extension ABI.AppPreference {
+private extension ABI.AppPreferenceKey {
     var key: String {
         "App.\(rawValue)"
     }

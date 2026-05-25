@@ -20,7 +20,7 @@ extension AppABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        let preferences = ABI.InMemoryAppPreferences.forInitialization(
+        let preferences = ABI.AppPreferences.forInitialization(
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )
