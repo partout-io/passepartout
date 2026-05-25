@@ -103,7 +103,8 @@ extension ABI.AppConfiguration {
         configManager: ConfigManager,
         cachesURL: URL
     ) -> CodingRegistry {
-        newRegistry(
+        assert(deviceId == preferences.p.deviceId)
+        return newRegistry(
             deviceId: deviceId,
             cachesURL: cachesURL,
             configBlock: { [weak configManager] in
