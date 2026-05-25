@@ -21,7 +21,7 @@ public final class AppPreferencesStore: @unchecked Sendable {
         let old = serialized()
         body(&backend)
         let new = serialized()
-//        let patch = emitChanges(from: old, to: new)
+        let patch = emitChanges(from: old, to: new)
     }
 
     // Read or generate Device ID if needed
@@ -44,5 +44,22 @@ public final class AppPreferencesStore: @unchecked Sendable {
 
     public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
         backend.enabledFlags(of: flags)
+    }
+}
+
+private extension AppPreferencesStore {
+    func emitChanges(from old: ABI.AppPreferences, to new: ABI.AppPreferences) -> ABI.AppPreferencesPatch {
+        var values = ABI.AppPreferencesPatchValues()
+        var hasValues = false
+        var fieldsToUnset: [ABI.AppPreferenceKey] = []
+
+        ABI.AppPreferenceKey.allCases.forEach {
+            hasValues = values.setChange(from: old, to: new, for: $0, fieldsToUnset: &fieldsToUnset) || hasValues
+        }
+
+        return ABI.AppPreferencesPatch(
+            values: hasValues ? values : nil,
+            fieldsToUnset: fieldsToUnset.isEmpty ? nil : fieldsToUnset
+        )
     }
 }
