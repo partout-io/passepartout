@@ -11,9 +11,9 @@ struct VersionCheckerTests {
 
     @Test
     func detectUpdate() async throws {
-        let kv = InMemoryStore()
+        let preferences = AppPreferencesStore()
         let sut = VersionChecker(
-            kvStore: kv,
+            preferences: preferences,
             strategy: MockStrategy(),
             currentVersion: "1.2.3",
             downloadURL: downloadURL
@@ -23,14 +23,14 @@ struct VersionCheckerTests {
         let latest = try #require(sut.latestRelease)
         #expect(latest.url == downloadURL)
         #expect(latest == sut.latestRelease)
-        #expect(kv.string(forAppPreference: .lastCheckedVersion) == "4.10.20")
+        #expect(preferences.p.lastCheckedVersion == "4.10.20")
     }
 
     @Test
     func ignoreUpdateIfUpToDate() async throws {
-        let kv = InMemoryStore()
+        let preferences = AppPreferencesStore()
         let sut = VersionChecker(
-            kvStore: kv,
+            preferences: preferences,
             strategy: MockStrategy(),
             currentVersion: "5.0.0",
             downloadURL: downloadURL
@@ -44,22 +44,22 @@ struct VersionCheckerTests {
 
     @Test
     func triggerRateLimitOnMultipleChecks() async throws {
-        let kv = InMemoryStore()
+        let preferences = AppPreferencesStore()
         let strategy = MockStrategy()
         let sut = VersionChecker(
-            kvStore: kv,
+            preferences: preferences,
             strategy: strategy,
             currentVersion: "5.0.0",
             downloadURL: downloadURL
         )
         #expect(sut.latestRelease == nil)
 
-        var lastChecked = kv.double(forAppPreference: .lastCheckedVersionDate)
-        #expect(lastChecked == 0.0)
+        var lastChecked = preferences.p.lastCheckedVersionDate
+        #expect(lastChecked == nil)
 
         _ = await sut.checkLatestRelease()
-        lastChecked = kv.double(forAppPreference: .lastCheckedVersionDate)
-        #expect(lastChecked > 0.0)
+        lastChecked = preferences.p.lastCheckedVersionDate
+        _ = try #require(lastChecked)
         #expect(!strategy.didHitRateLimit)
 
         _ = await sut.checkLatestRelease()
