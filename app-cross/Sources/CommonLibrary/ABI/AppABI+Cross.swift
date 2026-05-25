@@ -19,8 +19,6 @@ extension AppABI {
         let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
         let preferences = AppPreferencesStore.fromData(preferencesData)
-
-        // Read or generate Device ID if needed
         let deviceId = preferences.configureDeviceId(
             length: appConfiguration.constants.deviceIdLength
         )

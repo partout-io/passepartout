@@ -95,6 +95,7 @@ public final class AppPreferencesStore: @unchecked Sendable {
         self.p = p
     }
 
+    // Read or generate Device ID if needed
     public func configureDeviceId(length: Int) -> String {
         if let deviceId = p.deviceId {
             pspLog(.core, .info, "Device ID: \(deviceId)")

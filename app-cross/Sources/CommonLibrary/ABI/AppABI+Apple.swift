@@ -26,8 +26,9 @@ extension AppABI {
         withUITesting: Bool,
         withFakeIAPs: Bool
     ) -> Result {
-        assert(preferences.p.deviceId != nil, "Missing Device ID")
-        let deviceId = preferences.p.deviceId ?? "BogusDeviceID"
+        let deviceId = preferences.configureDeviceId(
+            length: appConfiguration.constants.deviceIdLength
+        )
 
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = pspLogRegister(
