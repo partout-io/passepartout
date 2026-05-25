@@ -63,7 +63,7 @@ private var isDefaultLoggerRegistered = false
 public func pspLogRegister(
     for target: LoggingTarget,
     with appConfiguration: ABI.AppConfiguration,
-    preferences: ABI.AppPreferenceValues,
+    preferences: ABI.AppPreferencesProtocol,
     localMapper: (@Sendable (DebugLog.Line) -> String)?
 ) -> PartoutLoggerContext {
     switch target {
@@ -116,7 +116,7 @@ public func pspLogRegister(
 private extension PartoutLogger {
     static func logger(
         to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: ABI.AppPreferencesProtocol,
         parameters: ABI.AppConstants.Log,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
@@ -132,7 +132,7 @@ private extension PartoutLogger {
 
     static func tunnelLogger(
         to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: ABI.AppPreferencesProtocol,
         parameters: ABI.AppConstants.Log,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
@@ -173,7 +173,7 @@ private extension PartoutLogger {
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
         to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: ABI.AppPreferencesProtocol,
         parameters: ABI.AppConstants.Log,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {

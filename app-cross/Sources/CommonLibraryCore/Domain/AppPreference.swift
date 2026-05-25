@@ -98,13 +98,3 @@ extension ABI.InMemoryAppPreferences: ABI.AppPreferencesProtocol {
         }
     }
 }
-
-// FIXME: ###, Delete these
-extension ABI {
-    public typealias AppPreferenceValues = InMemoryAppPreferences
-}
-extension ABI.AppPreference {
-    public var key: String {
-        "App.\(rawValue)"
-    }
-}
