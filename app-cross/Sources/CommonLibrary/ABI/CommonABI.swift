@@ -124,18 +124,20 @@ extension ABI {
     }
 }
 
-extension ABI.AppPreferenceValues {
+extension ABI.InMemoryAppPreferences {
     // Init ABI.AppPreferenceValues from JSON data and optionally generate a new Device ID
     static func forInitialization(data: Data?, newDeviceIdLength: Int?) -> Self {
-        var values = ABI.AppPreferenceValues()
+        var values: Self
         if let data {
             do {
                 values = try ABI.decode(Self.self, from: data)
             } catch {
                 pspLog(.core, .error, "Unable to decode preferences: \(error)")
+                values = .default()
             }
         } else {
             pspLog(.core, .info, "No preferences provided")
+            values = .default()
         }
         if let newDeviceIdLength, values.deviceId == nil {
             values.deviceId = String.random(count: newDeviceIdLength)

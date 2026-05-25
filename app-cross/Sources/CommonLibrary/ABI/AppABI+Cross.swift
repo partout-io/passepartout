@@ -20,16 +20,15 @@ extension AppABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        let preferences = ABI.AppPreferenceValues.forInitialization(
+        let preferences = ABI.InMemoryAppPreferences.forInitialization(
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )
-
-        let logFormatter = appConfiguration.newLogFormatter()
-        let kvStore = appConfiguration.newKeyValueStore()
-        kvStore.preferences = preferences
+        assert(preferences.deviceId != nil, "Missing Device ID")
+        let deviceId = preferences.deviceId ?? "BogusDeviceID"
 
         // Logging context
+        let logFormatter = appConfiguration.newLogFormatter()
         _ = pspLogRegister(
             for: .app,
             with: appConfiguration,
@@ -53,12 +52,13 @@ extension AppABI {
             }
         )
         let registry = appConfiguration.newRegistryForApp(
+            deviceId: deviceId,
+            preferences: preferences,
             configManager: configManager,
-            kvStore: kvStore,
             cachesURL: cachesURL
         )
 
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
+        let appEncoder = AppEncoder(coder: registry)
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
 
@@ -74,8 +74,8 @@ extension AppABI {
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: nil,
             profileManager: profileManager,
             registry: registry,

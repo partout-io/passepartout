@@ -9,8 +9,8 @@ import Partout
 extension TunnelABI {
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
-        preferences: ABI.AppPreferenceValues,
-        startPreferences: ABI.AppPreferenceValues?,
+        preferences: ABI.AppPreferencesProtocol,
+        startPreferences: ABI.AppPreferencesProtocol?,
         // TODO: #218, cachesURL must be per-profile
         cachesURL: URL,
         neProvider: NEPacketTunnelProvider

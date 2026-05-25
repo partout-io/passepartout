@@ -21,7 +21,7 @@ extension TunnelABI {
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
 
         // Parse preferences
-        let preferences = ABI.AppPreferenceValues.forInitialization(
+        let preferences = ABI.InMemoryAppPreferences.forInitialization(
             data: preferencesData,
             newDeviceIdLength: constants.deviceIdLength
         )

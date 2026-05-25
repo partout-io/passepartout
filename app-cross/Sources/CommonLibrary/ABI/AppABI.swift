@@ -24,7 +24,7 @@ public final class AppABI: Sendable {
 
     // Constants and storage
     private let appConfiguration: ABI.AppConfiguration
-    private let kvStore: KeyValueStore
+    private var preferences: ABI.AppPreferencesProtocol
     // Managers wrapped in ABI
     private let configManager: ConfigManager
     private let extensionInstaller: ExtensionInstaller?
@@ -51,8 +51,8 @@ public final class AppABI: Sendable {
         configManager: ConfigManager,
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
-        kvStore: KeyValueStore,
         logFormatter: LogFormatter?,
+        preferences: ABI.AppPreferencesProtocol,
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
@@ -65,8 +65,8 @@ public final class AppABI: Sendable {
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
-        self.kvStore = kvStore
         self.logFormatter = logFormatter
+        self.preferences = preferences
         self.profileManager = profileManager
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
@@ -79,12 +79,11 @@ public final class AppABI: Sendable {
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
+        iapManager.isEnabled = supportsIAP && !preferences.skipsPurchases
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
-            kvStore: kvStore,
             supportsIAP: supportsIAP
         )
         profile = AppABIProfile(
@@ -195,12 +194,10 @@ private struct AppABIEncoder: AppABIEncoderProtocol {
 
 private struct AppABIIAP: AppABIIAPProtocol {
     let iapManager: IAPManager
-    let kvStore: KeyValueStore
     let supportsIAP: Bool
 
     func enable(_ isEnabled: Bool) {
         iapManager.isEnabled = supportsIAP && isEnabled
-        kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
     }
 
     func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
@@ -362,14 +359,14 @@ extension AppABI {
             await versionChecker.checkLatestRelease()
 
             // Propagate active config flags to tunnel via preferences
-            kvStore.preferences.configFlags = configManager.activeFlags
+            preferences.configFlags = Array(configManager.activeFlags)
 
             // Imply some hidden preferences from config flags
-            kvStore.preferences.newProfileEncoding = configManager.isActive(.newProfileEncoding)
+            preferences.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
             // Constrain .relaxedVerification preference to .allows and
             // .forces combinations in ConfigManager. At most, it's left as is
-            kvStore.constrainRelaxedVerification(to: configManager)
+            preferences.constrainRelaxedVerification(to: configManager)
         }
     }
 }
@@ -403,7 +400,7 @@ private extension AppABI {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
-                    kvStore.set(!payload.isEnabled, forAppPreference: .skipsPurchases)
+                    preferences.skipsPurchases = !payload.isEnabled
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
@@ -566,7 +563,7 @@ private extension AppABI {
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard kvStore.bool(forAppPreference: .relaxedVerification) else {
+        guard preferences.relaxedVerification else {
             return true
         }
         // Receipt never loaded, force load

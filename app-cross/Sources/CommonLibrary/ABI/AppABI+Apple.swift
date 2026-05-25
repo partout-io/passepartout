@@ -18,7 +18,7 @@ extension AppABI {
 
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
-        kvStore: KeyValueStore,
+        preferences: ABI.AppPreferencesProtocol,
         assertModule: (ModuleType, ModuleRegistry) -> Void,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
@@ -26,11 +26,14 @@ extension AppABI {
         withUITesting: Bool,
         withFakeIAPs: Bool
     ) -> Result {
+        assert(preferences.deviceId != nil, "Missing Device ID")
+        let deviceId = preferences.deviceId ?? "BogusDeviceID"
+
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = pspLogRegister(
             for: .app,
             with: appConfiguration,
-            preferences: kvStore.preferences,
+            preferences: preferences,
             localMapper: logFormatter?.localMapper
         )
 
@@ -60,8 +63,9 @@ extension AppABI {
 
         let cachesURL = FileManager.default.temporaryDirectory
         let registry = appConfiguration.newRegistryForApp(
+            deviceId: deviceId,
+            preferences: preferences,
             configManager: configManager,
-            kvStore: kvStore,
             cachesURL: cachesURL
         )
 
@@ -139,7 +143,7 @@ extension AppABI {
         // MARK: Profiles and Tunnel (NE)
 
         let sysexManager = appConfiguration.newSystemExtensionManager()
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
+        let appEncoder = AppEncoder(coder: registry)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
@@ -193,7 +197,7 @@ extension AppABI {
         )
         let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
-            kvStore: kvStore,
+            preferences: preferences,
             logging: logging,
             willInstall: tunnelProcessor.willInstall
         )
@@ -205,7 +209,7 @@ extension AppABI {
         // MARK: Version (GitHub)
 
         let versionChecker = appConfiguration.newVersionChecker(
-            kvStore: kvStore,
+            preferences: preferences,
             downloadURL: {
                 switch appConfiguration.bundle.distributionTarget {
                 case .appStore:
@@ -308,8 +312,8 @@ extension AppABI {
             configManager: configManager,
             extensionInstaller: sysexManager,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
