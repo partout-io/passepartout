@@ -131,6 +131,7 @@ extension AppABI {
         // then IAPManager starts disabled, but the UI shows that in-app
         // purchases are enabled if the initial IAPManager update is missed.
         //
+        onUpdatePreferences(nil)
         iapManager.postInitialState()
         profileManager.postInitialState()
 
@@ -198,7 +199,13 @@ extension AppABI {
     }
 
     // ABI -> Consumer
-    private func onUpdatePreferences(_ patch: ABI.AppPreferencesPatch) {
+    private func onUpdatePreferences(_ patch: ABI.AppPreferencesPatch?) {
+        // Initial values to emit
+        let patch = patch ?? ABI.AppPreferencesPatch(
+            values: ABI.AppPreferencesPatchValues(
+                deviceId: preferences[\.deviceId]
+            )
+        )
         dispatch(.mixed(.updatedPreferences(.init(patch: patch))), nil)
     }
 }
