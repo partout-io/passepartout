@@ -24,4 +24,15 @@ extension ABI {
     public static func decode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable {
         try JSONDecoder.shared().decode(type, from: data)
     }
+
+    public static func decodeJSON<T>(_ type: T.Type, from json: String) throws -> T where T: Decodable {
+        do {
+            guard let data = json.data(using: .utf8) else {
+                throw ABI.AppError.encoding()
+            }
+            return try decode(type, from: data)
+        } catch {
+            throw ABI.AppError.encoding(reason: error)
+        }
+    }
 }

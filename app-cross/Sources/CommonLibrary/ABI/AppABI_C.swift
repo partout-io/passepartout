@@ -169,6 +169,22 @@ public func __psp_app_fetch_profile(
     }
 }
 
+@c(psp_app_preferences_set)
+public func __psp_app_preferences_set(patch: UnsafePointer<CChar>?) {
+    guard let abi, let patch else {
+        return
+    }
+    let swiftPatch = String(cString: patch)
+    ABI.run {
+        do {
+            let patch = try ABI.decodeJSON(ABI.AppPreferencesPatch.self, from: swiftPatch)
+            abi.patchPreferences(patch)
+        } catch {
+            pspLog(.abi, .error, "Unable to update preferences: \(error)")
+        }
+    }
+}
+
 @c(psp_app_flush_log)
 public func __psp_app_flush_log() {
     pspLogFlush()

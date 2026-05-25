@@ -187,6 +187,12 @@ extension AppABI {
 
 // MARK: - Actions
 
+extension AppABI {
+    public func patchPreferences(_ patch: ABI.AppPreferencesPatch) {
+        preferences.p.apply(patch)
+    }
+}
+
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
 
