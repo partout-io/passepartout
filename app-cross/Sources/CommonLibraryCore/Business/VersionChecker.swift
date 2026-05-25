@@ -59,13 +59,6 @@ public final class VersionChecker {
             preferences.p.lastCheckedVersionDate = now
             preferences.p.lastCheckedVersion = fetchedLatestVersion.description
             pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
-
-            guard let latestRelease else {
-                pspLog(.core, .debug, "Version: current is latest version")
-                return
-            }
-            pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
-            didChange.send(.new(.init(release: latestRelease)))
         } catch ABI.AppError.rateLimit {
             pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
@@ -76,6 +69,12 @@ public final class VersionChecker {
         } catch {
             pspLog(.core, .error, "Unable to check version: \(error)")
         }
+        guard let latestRelease else {
+            pspLog(.core, .debug, "Version: current is latest version")
+            return
+        }
+        pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
+        didChange.send(.new(.init(release: latestRelease)))
     }
 }
 
