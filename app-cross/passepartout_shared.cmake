@@ -66,6 +66,7 @@ Sources/CommonLibraryApple/URL+Extensions.swift
 Sources/CommonLibraryApple/URLSessionUploaderStrategy.swift
 Sources/CommonLibraryApple/UserDefaultsAppPreferences.swift
 Sources/CommonLibraryCore/Business/AppEncoder.swift
+Sources/CommonLibraryCore/Business/AppPreferencesStore.swift
 Sources/CommonLibraryCore/Business/BusinessActor.swift
 Sources/CommonLibraryCore/Business/ConfigManager.swift
 Sources/CommonLibraryCore/Business/IAPManager.swift
@@ -108,6 +109,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppFeature.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferenceKey.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferences.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferencesPatch.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferencesPatchValues.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileHeader.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppTunnelInfo.swift
@@ -127,6 +129,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptions.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptionsMaxLevel.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldReconnect.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventUpdatedPreferences.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIModuleType.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIOriginalPurchase.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventChangeRemoteImporting.swift
