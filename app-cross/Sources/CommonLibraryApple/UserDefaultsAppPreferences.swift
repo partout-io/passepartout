@@ -132,12 +132,35 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
     }
 
     public func copy(_ other: ABI.AppPreferencesProtocol) {
-        // FIXME: ###
+        configFlags = other.configFlags
+        deviceId = other.deviceId
+        dnsFallsBack = other.dnsFallsBack
+        experimental = other.experimental
+        extensiveLogging = other.extensiveLogging
+        lastCheckedVersionDate = other.lastCheckedVersionDate
+        lastCheckedVersion = other.lastCheckedVersion
+        lastUsedProfileId = other.lastUsedProfileId
+        logsPrivateData = other.logsPrivateData
+        newProfileEncoding = other.newProfileEncoding
+        relaxedVerification = other.relaxedVerification
+        skipsPurchases = other.skipsPurchases
     }
 
     public func serialized() -> ABI.AppPreferences {
-        // FIXME: ###
-        .default()
+        ABI.AppPreferences(
+            configFlags: configFlags,
+            deviceId: deviceId,
+            dnsFallsBack: dnsFallsBack,
+            experimental: experimental,
+            extensiveLogging: extensiveLogging,
+            lastCheckedVersionTimestamp: lastCheckedVersionDate?.timestamp,
+            lastCheckedVersion: lastCheckedVersion,
+            lastUsedProfileUUID: lastUsedProfileId?.uuidString,
+            logsPrivateData: logsPrivateData,
+            newProfileEncoding: newProfileEncoding,
+            relaxedVerification: relaxedVerification,
+            skipsPurchases: skipsPurchases
+        )
     }
 }
 
