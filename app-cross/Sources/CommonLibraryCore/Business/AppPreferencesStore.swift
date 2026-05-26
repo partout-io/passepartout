@@ -3,17 +3,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public final class AppPreferencesStore: @unchecked Sendable {
-    public typealias UpdateBlock = (ABI.AppPreferences, Set<ABI.NonUserFacingAppPreferenceKey>) -> Void
+    public typealias RequestBlock = (ABI.AppPreferences, Set<ABI.NonUserFacingAppPreferenceKey>) -> Void
 
     private var backend: ABI.AppPreferencesProtocol
-    public var onUpdate: UpdateBlock?
+    public var onRequest: RequestBlock?
 
     public init(
         _ backend: ABI.AppPreferencesProtocol = .default(),
-        onUpdate: UpdateBlock? = nil
+        onRequest: RequestBlock? = nil
     ) {
         self.backend = backend
-        self.onUpdate = onUpdate
+        self.onRequest = onRequest
     }
 }
 
@@ -27,7 +27,7 @@ extension AppPreferencesStore {
             return deviceId
         }
         let newId = String.random(count: length)
-        update(modifying: [.deviceId]) {
+        request(changesTo: [.deviceId]) {
             $0.deviceId = newId
         }
         pspLog(.core, .info, "Device ID (new): \(newId)")
@@ -38,22 +38,22 @@ extension AppPreferencesStore {
         backend[keyPath: keyPath]
     }
 
-    public func update(
-        modifying fields: Set<ABI.NonUserFacingAppPreferenceKey>,
-        _ body: (inout ABI.AppPreferencesProtocol) -> Void
-    ) {
-        if let onUpdate {
-            var copy: ABI.AppPreferencesProtocol = backend.serialized()
-            body(&copy)
-            onUpdate(copy.serialized(), fields)
-            return
-        }
-        body(&backend)
-    }
-
     public func overwrite(
         _ body: (inout any ABI.AppPreferencesProtocol) -> Void
     ) {
+        body(&backend)
+    }
+
+    public func request(
+        changesTo fields: Set<ABI.NonUserFacingAppPreferenceKey>,
+        _ body: (inout ABI.AppPreferencesProtocol) -> Void
+    ) {
+        if let onRequest {
+            var copy: ABI.AppPreferencesProtocol = backend.serialized()
+            body(&copy)
+            onRequest(copy.serialized(), fields)
+            return
+        }
         body(&backend)
     }
 

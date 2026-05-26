@@ -97,7 +97,7 @@ public final class AppABI: Sendable {
 #if PSP_CROSS
         // Do not commit preferences in-place, emit update event
         // and let the observer perform the actual update
-        preferences.onUpdate = { [weak self] in
+        preferences.onRequest = { [weak self] in
             self?.emitUpdatedPreferencesEvent($0, fields: $1)
         }
 #endif
@@ -399,7 +399,7 @@ extension AppABI {
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            preferences.update(modifying: [
+            preferences.request(changesTo: [
                 .configFlags, .newProfileEncoding, .relaxedVerification
             ]) {
                 // Propagate active config flags to tunnel via preferences
