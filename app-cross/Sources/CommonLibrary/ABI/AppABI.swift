@@ -95,8 +95,8 @@ public final class AppABI: Sendable {
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
 
 #if PSP_CROSS
-        // Do not commit preferences in-place, emit update event
-        // and let the observer perform the actual update
+        // Do not commit the local preferences, emit update event
+        // and let the consumer perform the actual commit
         preferences.onRequest = { [weak self] in
             self?.emitShouldUpdatePreferencesEvent($0, fields: $1)
         }
@@ -197,7 +197,7 @@ extension AppABI {
 // MARK: - Actions
 
 extension AppABI {
-    // Consumer -> ABI
+    // Consumer updates library
     public func setPreferences(_ new: ABI.AppPreferences) {
         pspLog(.abi, .debug, "Commit preferences: \(new)")
         preferences.overwrite {
@@ -205,7 +205,7 @@ extension AppABI {
         }
     }
 
-    // ABI -> Consumer
+    // Library requests update to consumer
     private func emitShouldUpdatePreferencesEvent(
         _ updated: ABI.AppPreferences,
         fields: Set<ABI.NonUserFacingAppPreferenceKey>
