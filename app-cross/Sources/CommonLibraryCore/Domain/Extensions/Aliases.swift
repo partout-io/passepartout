@@ -39,7 +39,7 @@ extension ABI.IAPEvent {
 }
 
 extension ABI.MixedEvent {
-    public typealias UpdatedPreferences = OpenAPIMixedEventUpdatedPreferences
+    public typealias ShouldUpdatePreferences = OpenAPIMixedEventShouldUpdatePreferences
 }
 
 extension ABI.ProfileEvent {

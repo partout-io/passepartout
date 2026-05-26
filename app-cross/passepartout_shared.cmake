@@ -126,7 +126,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptions.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptionsMaxLevel.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldReconnect.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventUpdatedPreferences.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldUpdatePreferences.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIModuleType.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIOriginalPurchase.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventChangeRemoteImporting.swift

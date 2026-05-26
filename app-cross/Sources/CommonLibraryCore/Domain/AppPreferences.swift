@@ -11,13 +11,31 @@ extension ABI {
         var dnsFallsBack: Bool { get set }
         var experimental: ExperimentalPreferences { get set }
         var extensiveLogging: Bool { get set }
-        var lastCheckedVersionDate: Date? { get set }
         var lastCheckedVersion: String? { get set }
+        var lastCheckedVersionDate: Date? { get set }
         var lastUsedProfileId: Profile.ID? { get set }
         var logsPrivateData: Bool { get set }
         var newProfileEncoding: Bool { get set }
         var relaxedVerification: Bool { get set }
         var skipsPurchases: Bool { get set }
+    }
+
+    // These keys are internal storage and should not be modified
+    // by the consumer app to avoid modification conflicts
+    public struct NonUserFacingAppPreferenceKey: Hashable, Sendable {
+        public let innerKey: AppPreferenceKey
+
+        private init(_ innerKey: AppPreferenceKey) {
+            self.innerKey = innerKey
+        }
+
+        public static let configFlags = Self(.configFlags)
+        public static let deviceId = Self(.deviceId)
+        public static let lastCheckedVersion = Self(.lastCheckedVersion)
+        public static let lastCheckedVersionDate = Self(.lastCheckedVersionDate)
+        public static let lastUsedProfileId = Self(.lastUsedProfileId)
+        public static let newProfileEncoding = Self(.newProfileEncoding)
+        public static let relaxedVerification = Self(.relaxedVerification)
     }
 }
 
