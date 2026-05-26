@@ -133,6 +133,21 @@ public final class UserPreferencesObservable {
     }
 }
 
+// MARK: - Observation
+
+extension UserPreferencesObservable {
+    public func onUpdate(_ event: ABI.Event) {
+        switch event {
+        case .iap(.status(let status)):
+            abi.overwrite {
+                $0.skipsPurchases = !status.isEnabled
+            }
+        default:
+            break
+        }
+    }
+}
+
 // MARK: - Appearance
 
 extension UserPreferencesObservable {
