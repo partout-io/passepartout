@@ -31,8 +31,8 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-@SerialName(value = "MixedEventUpdatedPreferences")
-data class MixedEventUpdatedPreferences (
+@SerialName(value = "MixedEventShouldUpdatePreferences")
+data class MixedEventShouldUpdatePreferences (
 
     @SerialName(value = "preferences")
     val preferences: AppPreferences,
