@@ -2,13 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.PassepartoutVpnService
+import com.algoritmico.passepartout.abi.AppABIKeyStore
 import com.algoritmico.passepartout.abi.AppABIProfile
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
@@ -27,11 +28,8 @@ class AppContext(
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
-
     private val library = PassepartoutWrapper()
-
     private val eventDispatcher: ABIEventDispatcher = ABIEventDispatcher
-
     private var eventSubscription: Closeable? = eventDispatcher.register(::handleEvent)
 
     private val appEvents = MutableSharedFlow<Event>(
@@ -41,11 +39,23 @@ class AppContext(
 
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
+    val userPreferencesObservable: UserPreferencesObservable
 
     init {
         val partoutVersion = library.partoutVersion()
         Log.i(Globals.logTag, ">>> Partout $partoutVersion")
         Log.e(Globals.logTag, ">>> Started app")
+
+        userPreferencesObservable = UserPreferencesObservable(
+            Globals.logTag,
+            AppABIKeyStore(library),
+            appEvents,
+            coroutineScope,
+            context,
+            Globals.preferencesStoreName
+        )
+        val preferences = userPreferencesObservable.preferencesJSON()
+        Log.i(Globals.logTag, ">>> Preferences: $preferences")
 
         val bundle = applicationContext.readAsset(Globals.BUNDLE_FILENAME)
         val constants = applicationContext.readAsset(Globals.CONSTANTS_FILENAME)
@@ -57,6 +67,7 @@ class AppContext(
         val code = library.appInit(
             bundle,
             constants,
+            preferences,
             profilesDirectory.absolutePath,
             cacheDirectory.absolutePath,
             ABIURLFetcher,
@@ -68,6 +79,7 @@ class AppContext(
         }
 
         profileObservable = ProfileObservable(
+            Globals.logTag,
             AppABIProfile(library),
             appEvents,
             coroutineScope
@@ -83,6 +95,7 @@ class AppContext(
             Globals.logTag,
             tunnel,
             appEvents,
+            userPreferencesObservable.preferences,
             coroutineScope
         )
     }

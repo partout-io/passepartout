@@ -12,11 +12,15 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.algoritmico.passepartout.observables.ProfileObservable
+import com.algoritmico.passepartout.observables.TunnelObservable
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
 
 @Composable
 fun PassepartoutApp(
     profileObservable: ProfileObservable,
     tunnelObservable: TunnelObservable,
+    userPreferencesObservable: UserPreferencesObservable,
     onImportProfile: () -> Unit
 ) {
     val colorScheme = if (isSystemInDarkTheme()) {
@@ -34,6 +38,7 @@ fun PassepartoutApp(
                 title = "Passepartout",
                 profileObservable = profileObservable,
                 tunnelObservable = tunnelObservable,
+                userPreferencesObservable = userPreferencesObservable,
                 onImportProfile = onImportProfile
             )
         }

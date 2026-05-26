@@ -53,6 +53,77 @@ void abi_handler_proxy(void *ctx, const char *method_id, const char *json) {
     JNI_DETACH(env);
 }
 
+int abi_request_handler_proxy(
+    void *ctx,
+    const char *url,
+    bool cached,
+    double timeout_sec,
+    uint8_t **data,
+    size_t *len
+) {
+    if (!ctx || !url || !data || !len) {
+        return -1;
+    }
+    *data = NULL;
+    *len = 0;
+
+    JNI_ATTACH_OR_RETURN(env, -1);
+
+    int result = 0;
+    abi_handler *handler = (abi_handler *)ctx;
+    jclass cls = (*env)->GetObjectClass(env, handler->ref);
+    if (!cls) goto cleanup;
+    jmethodID methodID = (*env)->GetMethodID(env, cls, "fetch", "(Ljava/lang/String;ZD)[B");
+    if (!methodID) goto cleanup;
+    jstring jURL = (*env)->NewStringUTF(env, url);
+    if (!jURL) goto cleanup;
+
+    jbyteArray payload = (jbyteArray)(*env)->CallObjectMethod(
+            env,
+            handler->ref,
+            methodID,
+            jURL,
+            cached ? JNI_TRUE : JNI_FALSE,
+            timeout_sec
+    );
+    (*env)->DeleteLocalRef(env, jURL);
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+        goto cleanup;
+    }
+    if (!payload) goto cleanup;
+
+    const jsize payload_len = (*env)->GetArrayLength(env, payload);
+    uint8_t *payload_data = payload_len > 0 ? malloc((size_t)payload_len) : NULL;
+    if (payload_len > 0 && !payload_data) {
+        (*env)->DeleteLocalRef(env, payload);
+        goto cleanup;
+    }
+    if (payload_len > 0) {
+        (*env)->GetByteArrayRegion(env, payload, 0, payload_len, (jbyte *)payload_data);
+    }
+    (*env)->DeleteLocalRef(env, payload);
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+        free(payload_data);
+        goto cleanup;
+    }
+
+    *data = payload_data;
+    *len = (size_t)payload_len;
+    result = 0;
+
+    cleanup:
+    if (cls) {
+        (*env)->DeleteLocalRef(env, cls);
+    }
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+    }
+    JNI_DETACH(env);
+    return result;
+}
+
 void abi_event_handler_proxy(void *ctx, const char *event_json) {
     abi_handler_proxy(ctx, "onEvent", event_json);
 }

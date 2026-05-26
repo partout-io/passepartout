@@ -12,7 +12,6 @@
 #define PSP_JNI_CB(e, c) PSP_CB(abi_handler_create(e, c), abi_completion_proxy)
 static void app_bindings_free(psp_app_bindings *b);
 static void tunnel_bindings_free(psp_tunnel_bindings *b);
-static int abi_request_handler_proxy(void *ctx, const char *url, bool cached, double timeout_sec, uint8_t **data, size_t *len);
 
 JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
@@ -31,6 +30,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         jobject thiz,
         jstring bundle,
         jstring constants,
+        jstring preferences,
         jstring profilesDir,
         jstring cacheDir,
         jobject urlFetcher,
@@ -38,6 +38,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
+    const char *cPreferences = preferences ? (*env)->GetStringUTFChars(env, preferences, NULL) : NULL;
     const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
@@ -51,7 +52,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
-    args.preferences = "{\"logsPrivateData\": true}";
+    args.preferences = cPreferences;
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
     args.bindings = bindings;
@@ -59,6 +60,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
+    if (cPreferences) (*env)->ReleaseStringUTFChars(env, preferences, cPreferences);
     (*env)->ReleaseStringUTFChars(env, profilesDir, cProfilesDir);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
     return result;
@@ -124,18 +126,31 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchProfile(
     (*env)->ReleaseStringUTFChars(env, id, cID);
 }
 
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appPreferencesSet(
+        JNIEnv *env,
+        jobject thiz,
+        jstring preferences
+) {
+    const char *cPreferences = (*env)->GetStringUTFChars(env, preferences, NULL);
+    psp_app_preferences_set(cPreferences);
+    (*env)->ReleaseStringUTFChars(env, preferences, cPreferences);
+}
+
 JNIEXPORT jint JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
         jstring constants,
+        jstring preferences,
         jstring profile,
         jstring cacheDir,
         jobject controller
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
+    const char *cPreferences = preferences ? (*env)->GetStringUTFChars(env, preferences, NULL) : NULL;
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
@@ -146,7 +161,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
-    args.preferences = "{\"logsPrivateData\": true}";
+    args.preferences = cPreferences;
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_interactive = true;
@@ -157,6 +172,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
+    if (cPreferences) (*env)->ReleaseStringUTFChars(env, preferences, cPreferences);
     (*env)->ReleaseStringUTFChars(env, profile, cProfile);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
     return result;
@@ -191,75 +207,4 @@ void tunnel_bindings_free(psp_tunnel_bindings *b) {
         b->controller = NULL;
     }
     JNI_DETACH(env);
-}
-
-static int abi_request_handler_proxy(
-        void *ctx,
-        const char *url,
-        bool cached,
-        double timeout_sec,
-        uint8_t **data,
-        size_t *len
-) {
-    if (!ctx || !url || !data || !len) {
-        return PSPCompletionCodeArgs;
-    }
-    *data = NULL;
-    *len = 0;
-
-    JNI_ATTACH_OR_RETURN(env, PSPCompletionCodeFailure);
-
-    int result = PSPCompletionCodeFailure;
-    abi_handler *handler = (abi_handler *)ctx;
-    jclass cls = (*env)->GetObjectClass(env, handler->ref);
-    if (!cls) goto cleanup;
-    jmethodID methodID = (*env)->GetMethodID(env, cls, "fetch", "(Ljava/lang/String;ZD)[B");
-    if (!methodID) goto cleanup;
-    jstring jURL = (*env)->NewStringUTF(env, url);
-    if (!jURL) goto cleanup;
-
-    jbyteArray payload = (jbyteArray)(*env)->CallObjectMethod(
-            env,
-            handler->ref,
-            methodID,
-            jURL,
-            cached ? JNI_TRUE : JNI_FALSE,
-            timeout_sec
-    );
-    (*env)->DeleteLocalRef(env, jURL);
-    if ((*env)->ExceptionCheck(env)) {
-        (*env)->ExceptionClear(env);
-        goto cleanup;
-    }
-    if (!payload) goto cleanup;
-
-    const jsize payload_len = (*env)->GetArrayLength(env, payload);
-    uint8_t *payload_data = payload_len > 0 ? malloc((size_t)payload_len) : NULL;
-    if (payload_len > 0 && !payload_data) {
-        (*env)->DeleteLocalRef(env, payload);
-        goto cleanup;
-    }
-    if (payload_len > 0) {
-        (*env)->GetByteArrayRegion(env, payload, 0, payload_len, (jbyte *)payload_data);
-    }
-    (*env)->DeleteLocalRef(env, payload);
-    if ((*env)->ExceptionCheck(env)) {
-        (*env)->ExceptionClear(env);
-        free(payload_data);
-        goto cleanup;
-    }
-
-    *data = payload_data;
-    *len = (size_t)payload_len;
-    result = PSPCompletionCodeOK;
-
-cleanup:
-    if (cls) {
-        (*env)->DeleteLocalRef(env, cls);
-    }
-    if ((*env)->ExceptionCheck(env)) {
-        (*env)->ExceptionClear(env);
-    }
-    JNI_DETACH(env);
-    return result;
 }

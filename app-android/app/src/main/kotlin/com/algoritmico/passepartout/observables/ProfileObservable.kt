@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.observables
 
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.AppABIProfileProtocol
@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import java.io.Closeable
 
 class ProfileObservable(
+    private val logTag: String,
     private val abi: AppABIProfileProtocol,
     events: Flow<Event>,
     coroutineScope: CoroutineScope,
