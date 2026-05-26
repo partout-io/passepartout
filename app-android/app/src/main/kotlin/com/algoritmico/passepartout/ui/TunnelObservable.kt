@@ -98,24 +98,20 @@ class TunnelObservable(
     }
 
     private fun onUpdate(event: Event) {
-        when (event) {
-            is ProfileEventRefresh -> {
-                // Iterate through active tunnel
-                state.value.activeProfiles.forEach {
-                    val info = it.value
-                    // Ignore profiles that were not deleted
-                    if (info.id in event.headers) {
-                        return@forEach
-                    }
-                    // Ignore deletion of inactive profiles
-                    if (!info.status.isActive) {
-                        return@forEach
-                    }
-                    Log.i(logTag, "Disconnect from removed profile ${info.id}")
-                    tunnel.disconnect(info.id) { _ -> }
-                }
+        if (event !is ProfileEventRefresh) { return }
+        // Iterate through active tunnel
+        state.value.activeProfiles.forEach {
+            val info = it.value
+            // Ignore profiles that were not deleted
+            if (info.id in event.headers) {
+                return@forEach
             }
-            else -> {}
+            // Ignore deletion of inactive profiles
+            if (!info.status.isActive) {
+                return@forEach
+            }
+            Log.i(logTag, "Disconnect from removed profile ${info.id}")
+            tunnel.disconnect(info.id) { _ -> }
         }
     }
 
