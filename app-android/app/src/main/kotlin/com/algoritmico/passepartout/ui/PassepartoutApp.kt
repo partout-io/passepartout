@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 fun PassepartoutApp(
     profileObservable: ProfileObservable,
     tunnelObservable: TunnelObservable,
+    userPreferencesObservable: UserPreferencesObservable,
     onImportProfile: () -> Unit
 ) {
     val colorScheme = if (isSystemInDarkTheme()) {
@@ -34,6 +35,7 @@ fun PassepartoutApp(
                 title = "Passepartout",
                 profileObservable = profileObservable,
                 tunnelObservable = tunnelObservable,
+                userPreferencesObservable = userPreferencesObservable,
                 onImportProfile = onImportProfile
             )
         }
