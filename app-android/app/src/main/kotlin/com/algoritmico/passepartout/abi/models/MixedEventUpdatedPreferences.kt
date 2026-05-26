@@ -15,6 +15,7 @@
 
 package com.algoritmico.passepartout.abi.models
 
+import com.algoritmico.passepartout.abi.models.AppPreferenceKey
 import com.algoritmico.passepartout.abi.models.AppPreferences
 import com.algoritmico.passepartout.abi.models.Event
 
@@ -26,6 +27,7 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param preferences 
+ * @param fields 
  */
 @Serializable
 
@@ -33,7 +35,10 @@ import kotlinx.serialization.Contextual
 data class MixedEventUpdatedPreferences (
 
     @SerialName(value = "preferences")
-    val preferences: AppPreferences
+    val preferences: AppPreferences,
+
+    @SerialName(value = "fields")
+    val fields: kotlin.collections.List<@Contextual AppPreferenceKey>
 
 ) : Event() {
 

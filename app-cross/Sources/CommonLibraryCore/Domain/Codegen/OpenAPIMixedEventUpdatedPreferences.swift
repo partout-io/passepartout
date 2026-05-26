@@ -14,14 +14,17 @@ public struct OpenAPIMixedEventUpdatedPreferences: Sendable, Codable, Hashable {
     }
     public let type: OpenAPIType = .mixedEventUpdatedPreferences
     public var preferences: OpenAPIAppPreferences
+    public var fields: [OpenAPIAppPreferenceKey]
 
-    public init(preferences: OpenAPIAppPreferences) {
+    public init(preferences: OpenAPIAppPreferences, fields: [OpenAPIAppPreferenceKey]) {
         self.preferences = preferences
+        self.fields = fields
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
         case preferences
+        case fields
     }
 
     // Encodable protocol methods
@@ -30,6 +33,7 @@ public struct OpenAPIMixedEventUpdatedPreferences: Sendable, Codable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
         try container.encode(preferences, forKey: .preferences)
+        try container.encode(fields, forKey: .fields)
     }
 }
 

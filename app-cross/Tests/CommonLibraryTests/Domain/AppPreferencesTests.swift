@@ -8,7 +8,7 @@ import Testing
 
 struct AppPreferencesTests {
     @Test
-    func givenPreferencesProtocol_whenSerialized_thenPreservesValues() {
+    func givenAppPreferencesProtocol_whenSerialized_thenPreservesValues() {
         let expected = Self.preferences()
         let sut: any ABI.AppPreferencesProtocol = expected
 
@@ -16,7 +16,7 @@ struct AppPreferencesTests {
     }
 
     @Test
-    func givenUserDefaultsPreferences_whenCopy_thenPreservesValues() throws {
+    func givenUserDefaultsAppPreferences_whenCopy_thenPreservesValues() throws {
         let expected = Self.preferences()
         let suiteName = "AppPreferenceTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suiteName))

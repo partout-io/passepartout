@@ -689,9 +689,14 @@ components:
           type: string
         preferences:
           "$ref": "#/components/schemas/AppPreferences"
+        fields:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AppPreferenceKey"
       required:
       - type
       - preferences
+      - fields
     ModuleType:
       type: string
       x-enum-varnames:

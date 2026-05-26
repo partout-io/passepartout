@@ -56,7 +56,7 @@ public final class VersionChecker {
 
             pspLog(.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
-            preferences.update {
+            preferences.update(modifying: [.lastCheckedVersion, .lastCheckedVersionDate]) {
                 $0.lastCheckedVersionDate = now
                 $0.lastCheckedVersion = fetchedLatestVersion.description
             }
@@ -65,7 +65,7 @@ public final class VersionChecker {
             pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // Save the check date regardless because the service call succeeded
-            preferences.update {
+            preferences.update(modifying: [.lastCheckedVersionDate]) {
                 $0.lastCheckedVersionDate = now
             }
             pspLog(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")

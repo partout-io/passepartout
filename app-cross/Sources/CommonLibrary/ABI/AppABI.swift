@@ -94,9 +94,13 @@ public final class AppABI: Sendable {
         version = AppABIVersion(versionChecker: versionChecker)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
 
+#if PSP_CROSS
+        // Do not commit preferences in-place, emit update event
+        // and let the observer perform the actual update
         preferences.onUpdate = { [weak self] in
-            self?.onUpdatePreferences($0)
+            self?.emitUpdatedPreferencesEvent($0, fields: $1)
         }
+#endif
     }
 
     deinit {
@@ -131,7 +135,7 @@ extension AppABI {
         // then IAPManager starts disabled, but the UI shows that in-app
         // purchases are enabled if the initial IAPManager update is missed.
         //
-        onUpdatePreferences(preferences.serialized())
+        emitUpdatedPreferencesEvent(preferences.serialized(), fields: [.deviceId])
         iapManager.postInitialState()
         profileManager.postInitialState()
 
@@ -195,15 +199,20 @@ extension AppABI {
 extension AppABI {
     // Consumer -> ABI
     public func setPreferences(_ new: ABI.AppPreferences) {
-        preferences.update(notify: false) {
+        pspLog(.abi, .debug, "Commit preferences: \(new)")
+        preferences.overwrite {
             $0 = new
         }
     }
 
     // ABI -> Consumer
-    private func onUpdatePreferences(_ updated: ABI.AppPreferences) {
+    private func emitUpdatedPreferencesEvent(
+        _ updated: ABI.AppPreferences,
+        fields: Set<ABI.NonUserFacingAppPreferenceKey>
+    ) {
         dispatch(.mixed(.updatedPreferences(.init(
-            preferences: updated
+            preferences: updated,
+            fields: fields.map(\.innerKey)
         ))), nil)
     }
 }
@@ -390,7 +399,9 @@ extension AppABI {
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            preferences.update {
+            preferences.update(modifying: [
+                .configFlags, .newProfileEncoding, .relaxedVerification
+            ]) {
                 // Propagate active config flags to tunnel via preferences
                 $0.configFlags = Array(configManager.activeFlags)
 
@@ -434,9 +445,6 @@ private extension AppABI {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
-                    preferences.update {
-                        $0.skipsPurchases = !payload.isEnabled
-                    }
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):

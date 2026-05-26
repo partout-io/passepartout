@@ -45,7 +45,7 @@ public final class UserPreferencesObservable {
 
     public var dnsFallsBack: Bool {
         didSet {
-            abi.update {
+            abi.overwrite {
                 $0.dnsFallsBack = dnsFallsBack
             }
         }
@@ -53,7 +53,7 @@ public final class UserPreferencesObservable {
 
     public var experimental: ABI.ExperimentalPreferences {
         didSet {
-            abi.update {
+            abi.overwrite {
                 $0.experimental = experimental
             }
         }
@@ -61,7 +61,7 @@ public final class UserPreferencesObservable {
 
     public var extensiveLogging: Bool {
         didSet {
-            abi.update {
+            abi.overwrite {
                 $0.extensiveLogging = extensiveLogging
             }
         }
@@ -87,7 +87,7 @@ public final class UserPreferencesObservable {
 
     public var logsPrivateData: Bool {
         didSet {
-            abi.update {
+            abi.overwrite {
                 $0.logsPrivateData = logsPrivateData
             }
         }
@@ -119,7 +119,7 @@ public final class UserPreferencesObservable {
 
     public var relaxedVerification: Bool {
         didSet {
-            abi.update {
+            abi.overwrite {
                 $0.relaxedVerification = relaxedVerification
             }
         }
