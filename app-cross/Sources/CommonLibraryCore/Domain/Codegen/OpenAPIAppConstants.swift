@@ -16,12 +16,12 @@ public struct OpenAPIAppConstants: Sendable, Codable, Hashable {
     public var emails: OpenAPIAppConstantsEmails
     public var formats: OpenAPIAppConstantsFormats
     public var tunnel: OpenAPIAppConstantsTunnel
-    public var api: OpenAPIAppConstantsApi
+    public var url: OpenAPIAppConstantsUrl
     public var iap: OpenAPIAppConstantsIap
     public var webReceiver: OpenAPIAppConstantsWebReceiver
     public var log: OpenAPIAppConstantsLog
 
-    public init(deviceIdLength: Int, containers: OpenAPIAppConstantsContainers, websites: OpenAPIAppConstantsWebsites, github: OpenAPIAppConstantsGithub, emails: OpenAPIAppConstantsEmails, formats: OpenAPIAppConstantsFormats, tunnel: OpenAPIAppConstantsTunnel, api: OpenAPIAppConstantsApi, iap: OpenAPIAppConstantsIap, webReceiver: OpenAPIAppConstantsWebReceiver, log: OpenAPIAppConstantsLog) {
+    public init(deviceIdLength: Int, containers: OpenAPIAppConstantsContainers, websites: OpenAPIAppConstantsWebsites, github: OpenAPIAppConstantsGithub, emails: OpenAPIAppConstantsEmails, formats: OpenAPIAppConstantsFormats, tunnel: OpenAPIAppConstantsTunnel, url: OpenAPIAppConstantsUrl, iap: OpenAPIAppConstantsIap, webReceiver: OpenAPIAppConstantsWebReceiver, log: OpenAPIAppConstantsLog) {
         self.deviceIdLength = deviceIdLength
         self.containers = containers
         self.websites = websites
@@ -29,7 +29,7 @@ public struct OpenAPIAppConstants: Sendable, Codable, Hashable {
         self.emails = emails
         self.formats = formats
         self.tunnel = tunnel
-        self.api = api
+        self.url = url
         self.iap = iap
         self.webReceiver = webReceiver
         self.log = log
@@ -43,7 +43,7 @@ public struct OpenAPIAppConstants: Sendable, Codable, Hashable {
         case emails
         case formats
         case tunnel
-        case api
+        case url
         case iap
         case webReceiver
         case log
@@ -60,7 +60,7 @@ public struct OpenAPIAppConstants: Sendable, Codable, Hashable {
         try container.encode(emails, forKey: .emails)
         try container.encode(formats, forKey: .formats)
         try container.encode(tunnel, forKey: .tunnel)
-        try container.encode(api, forKey: .api)
+        try container.encode(url, forKey: .url)
         try container.encode(iap, forKey: .iap)
         try container.encode(webReceiver, forKey: .webReceiver)
         try container.encode(log, forKey: .log)

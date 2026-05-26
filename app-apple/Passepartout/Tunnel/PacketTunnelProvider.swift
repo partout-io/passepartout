@@ -30,6 +30,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             for: .tunnelGlobal,
             with: appConfiguration,
             preferences: AppPreferencesStore(),
+            localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter?.localMapper
         )
 

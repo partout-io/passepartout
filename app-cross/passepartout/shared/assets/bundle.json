@@ -3,9 +3,5 @@
     "displayName": "Passepartout",
     "versionNumber": "3.7.0",
     "buildNumber": 3993,
-    "bundleStrings": {},
-    "appLogPath": "app.log",
-    "tunnelLogPath": "tunnel.log",
-    "appLogsURL": ".",
-    "tunnelLogsURL": "."
+    "bundleStrings": {}
 }

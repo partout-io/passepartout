@@ -36,6 +36,7 @@ extension TunnelABI {
             for: .tunnelProfile(profile.id),
             with: appConfiguration,
             preferences: preferences,
+            localURL: nil,
             localMapper: logFormatter?.localMapper
         )
         pspLog(.abi, .debug, "Tunnel preferences: \(preferences.serialized())")

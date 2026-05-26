@@ -50,7 +50,7 @@ extension ABI.Issue {
                 .data(using: .utf8)
         }
         // Latest persisted tunnel log
-        else if let latestTunnelEntry = pspLogEntriesAvailable(at: metadata.appConfiguration.bundle.urlForTunnelLog)
+        else if let latestTunnelEntry = pspLogEntriesAvailable(at: metadata.appConfiguration.urlForTunnelLog)
             .max(by: { $0.date < $1.date }) {
             tunnelLog = try? Data(contentsOf: latestTunnelEntry.url)
         }

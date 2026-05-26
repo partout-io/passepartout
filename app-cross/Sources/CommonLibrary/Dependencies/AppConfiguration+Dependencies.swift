@@ -8,6 +8,14 @@ import Partout
 // MARK: Shared
 
 extension ABI.AppConfiguration {
+    public var appLogPath: String {
+        constants.log.filenames?.app ?? "app.log"
+    }
+
+    public var tunnelLogPath: String {
+        constants.log.filenames?.tunnel ?? "tunnel.log"
+    }
+
     public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
         DefaultProfileProcessor(iapManager: iapManager)
     }
@@ -140,7 +148,7 @@ extension ABI.AppConfiguration {
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
             releaseURL: constants.github.latestReleaseURL,
-            rateLimit: constants.api.versionRateLimit,
+            rateLimit: constants.url.versionRateLimit,
             fetcher: fetcher
         )
         return VersionChecker(
@@ -190,10 +198,7 @@ extension ABI.AppBundle {
     public init(
         distributionTarget: ABI.DistributionTarget,
         buildTarget: BuildTarget,
-        bundle: BundleConfiguration,
-        logTag: String,
-        appLogPath: String,
-        tunnelLogPath: String
+        bundle: BundleConfiguration
     ) {
         let displayName = bundle.displayName
         let versionNumber = bundle.versionNumber
@@ -210,84 +215,76 @@ extension ABI.AppBundle {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
-        let log = SimpleLogDestination(tag: logTag)
-
-        let appGroupURL = {
-            let groupId = bundle.string(for: .groupId)
-            guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
-                log.append(.error, "Unable to access App Group container")
-                return FileManager.default.temporaryDirectory
-            }
-            return url
-        }()
-
-        let appLogsURL = appGroupURL.forCaches
-        let tunnelLogsURL = {
-            let baseURL: URL
-            if distributionTarget.supportsAppGroups {
-                baseURL = appGroupURL.forCaches
-            } else {
-                let fm: FileManager = .default
-                baseURL = fm.temporaryDirectory
-                do {
-                    try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
-                } catch {
-                    log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
-                }
-            }
-            return baseURL
-        }()
-
-        let reviewURL: URL?
-        if requiredBundleKeys.contains(.appStoreId) {
-            reviewURL = {
-                let appStoreId = bundle.string(for: .appStoreId)
-                guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
-                    fatalError("Unable to build urlForReview")
-                }
-                return url
-            }()
-        } else {
-            reviewURL = nil
-        }
-
         self.init(
             distributionTarget: distributionTarget,
             displayName: displayName,
             versionNumber: versionNumber,
             buildNumber: buildNumber,
             customUserLevel: customUserLevel,
-            bundleStrings: bundleStrings,
-            appLogPath: appLogPath,
-            tunnelLogPath: tunnelLogPath,
-            appLogsURL: appLogsURL,
-            tunnelLogsURL: tunnelLogsURL,
-            reviewURL: reviewURL
+            bundleStrings: bundleStrings
         )
     }
 
     public func bundleString(for key: ABI.AppBundle.BundleKey) -> String {
-        guard let value = bundleStrings[key.rawValue] else {
+        guard let value = bundleStrings?[key.rawValue] else {
             fatalError("Missing bundle value in JSON for: \(key.rawValue)")
         }
         return value
     }
 }
 
-private extension BundleConfiguration {
-    func string(for key: ABI.AppBundle.BundleKey) -> String {
-        guard let value: String = value(forKey: key.rawValue) else {
-            fatalError("Missing main bundle key: \(key.rawValue)")
+extension ABI.AppConfiguration {
+    public var urlForAppLog: URL {
+        bundle.appLogsURL.appending(path: appLogPath)
+    }
+
+    public var urlForTunnelLog: URL {
+        bundle.tunnelLogsURL.appending(path: tunnelLogPath)
+    }
+
+    public var urlForReview: URL? {
+        let requiredKeys = ABI.AppBundle.BundleKey.requiredKeys(for: .app)
+        guard requiredKeys.contains(.appStoreId) else {
+            return nil
         }
-        return value
+        let appStoreId = bundle.bundleString(for: .appStoreId)
+        guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
+            fatalError("Unable to build urlForReview")
+        }
+        return url
+    }
+}
+
+private extension ABI.AppBundle {
+    static let log = SimpleLogDestination(tag: nil)
+
+    var appGroupURL: URL {
+        let groupId = bundleString(for: .groupId)
+        guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
+            Self.log.append(.error, "Unable to access App Group container")
+            return FileManager.default.temporaryDirectory
+        }
+        return url
     }
 
-    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
-        value(forKey: key.rawValue)
+    var appLogsURL: URL {
+        appGroupURL.forCaches
     }
 
-    func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {
-        value(forKey: key.rawValue)
+    var tunnelLogsURL: URL {
+        let baseURL: URL
+        if distributionTarget.supportsAppGroups {
+            baseURL = appGroupURL.forCaches
+        } else {
+            let fm: FileManager = .default
+            baseURL = fm.temporaryDirectory
+            do {
+                try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
+            } catch {
+                Self.log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
+            }
+        }
+        return baseURL
     }
 }
 
@@ -340,6 +337,23 @@ private extension URL {
 }
 
 #endif
+
+private extension BundleConfiguration {
+    func string(for key: ABI.AppBundle.BundleKey) -> String {
+        guard let value: String = value(forKey: key.rawValue) else {
+            fatalError("Missing main bundle key: \(key.rawValue)")
+        }
+        return value
+    }
+
+    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
+        value(forKey: key.rawValue)
+    }
+
+    func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {
+        value(forKey: key.rawValue)
+    }
+}
 
 // MARK: Dependencies
 
@@ -416,7 +430,7 @@ extension ABI.AppConfiguration {
         cached: Bool,
         bindings: psp_app_bindings?
     ) async throws -> Data {
-        try await FoundationURLFetcher(timeout: constants.api.timeoutInterval)
+        try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
             .data(for: url, cached: cached)
     }
 

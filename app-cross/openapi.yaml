@@ -17,31 +17,11 @@ components:
           type: object
           additionalProperties:
             type: string
-        appLogPath:
-          type: string
-        tunnelLogPath:
-          type: string
-        appLogsURL:
-          type: string
-          format: uri
-        tunnelLogsURL:
-          type: string
-          format: uri
-        reviewURL:
-          type:
-          - string
-          - 'null'
-          format: uri
       required:
       - distributionTarget
       - displayName
       - versionNumber
       - buildNumber
-      - bundleStrings
-      - appLogPath
-      - tunnelLogPath
-      - appLogsURL
-      - tunnelLogsURL
     AppConfiguration:
       type: object
       properties:
@@ -164,7 +144,7 @@ components:
           - refreshInterval
           - dnsFallbackServers
           - verification
-        api:
+        url:
           type: object
           properties:
             timeoutInterval:
@@ -216,6 +196,16 @@ components:
               type: number
             options:
               "$ref": "#/components/schemas/LocalLoggerOptions"
+            filenames:
+              type: object
+              properties:
+                app:
+                  type: string
+                tunnel:
+                  type: string
+              required:
+              - app
+              - tunnel
           required:
           - tag
           - formatter
@@ -229,7 +219,7 @@ components:
       - emails
       - formats
       - tunnel
-      - api
+      - url
       - iap
       - webReceiver
       - log

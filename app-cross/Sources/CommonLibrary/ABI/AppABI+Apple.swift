@@ -35,6 +35,7 @@ extension AppABI {
             for: .app,
             with: appConfiguration,
             preferences: preferences,
+            localURL: appConfiguration.urlForAppLog,
             localMapper: logFormatter?.localMapper
         )
 

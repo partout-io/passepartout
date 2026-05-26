@@ -29,6 +29,7 @@ extension AppABI {
             for: .app,
             with: appConfiguration,
             preferences: preferences,
+            localURL: nil,
             localMapper: logFormatter?.localMapper
         )
         pspLog(.abi, .debug, "App preferences: \(preferences.serialized())")
