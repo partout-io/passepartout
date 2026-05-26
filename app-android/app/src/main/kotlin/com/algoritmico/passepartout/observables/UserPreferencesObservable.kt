@@ -99,22 +99,6 @@ class UserPreferencesObservable(
         abi.set(snapshot)
     }
 
-    companion object {
-        val CONFIG_FLAGS = stringSetPreferencesKey(AppPreferenceKey.configFlags.name)
-        val DEVICE_ID = stringPreferencesKey(AppPreferenceKey.deviceId.name)
-        val DNS_FALLS_BACK = booleanPreferencesKey(AppPreferenceKey.dnsFallsBack.name)
-        val EXPERIMENTAL = stringPreferencesKey(AppPreferenceKey.experimental.name)
-        val EXTENSIVE_LOGGING = booleanPreferencesKey(AppPreferenceKey.extensiveLogging.name)
-        val LAST_CHECKED_VERSION = stringPreferencesKey(AppPreferenceKey.lastCheckedVersion.name)
-        val LAST_CHECKED_VERSION_DATE =
-            longPreferencesKey(AppPreferenceKey.lastCheckedVersionDate.name)
-        val LAST_USED_PROFILE_ID = stringPreferencesKey(AppPreferenceKey.lastUsedProfileId.name)
-        val LOGS_PRIVATE_DATA = booleanPreferencesKey(AppPreferenceKey.logsPrivateData.name)
-        val NEW_PROFILE_ENCODING = booleanPreferencesKey(AppPreferenceKey.newProfileEncoding.name)
-        val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
-        val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
-    }
-
     fun Flow<Preferences>.loadPreferences(): AppPreferences {
         return runBlocking {
             first().toAppPreferences()
@@ -128,8 +112,10 @@ class UserPreferencesObservable(
                 ?.mapNotNull { ConfigFlag.decode(it) }
                 ?.toMutableList()
                 ?: default.configFlags,
-            dnsFallsBack = this[DNS_FALLS_BACK] ?: default.dnsFallsBack,
-            experimental = this[EXPERIMENTAL]?.decodePreference()
+            dnsFallsBack = this[DNS_FALLS_BACK]
+                ?: default.dnsFallsBack,
+            experimental = this[EXPERIMENTAL]
+                ?.decodePreference()
                 ?: default.experimental,
             extensiveLogging = this[EXTENSIVE_LOGGING]
                 ?: default.extensiveLogging,
@@ -155,45 +141,37 @@ class UserPreferencesObservable(
                     DEVICE_ID,
                     new.deviceId
                 )
-
-                AppPreferenceKey.configFlags -> this[CONFIG_FLAGS] =
-                    new.configFlags.map { flag -> flag.value }.toSet()
-
-                AppPreferenceKey.dnsFallsBack -> this[DNS_FALLS_BACK] =
-                    new.dnsFallsBack
-
-                AppPreferenceKey.experimental -> this[EXPERIMENTAL] =
-                    Globals.json.encodeToString(new.experimental)
-
-                AppPreferenceKey.extensiveLogging -> this[EXTENSIVE_LOGGING] =
-                    new.extensiveLogging
-
-                AppPreferenceKey.lastCheckedVersion -> setOrRemove(
-                    LAST_CHECKED_VERSION,
-                    new.lastCheckedVersion
-                )
-
-                AppPreferenceKey.lastCheckedVersionDate -> setOrRemove(
-                    LAST_CHECKED_VERSION_DATE,
-                    new.lastCheckedVersionTimestamp
-                )
-
-                AppPreferenceKey.lastUsedProfileId -> setOrRemove(
-                    LAST_USED_PROFILE_ID,
-                    new.lastUsedProfileUUID
-                )
-
-                AppPreferenceKey.logsPrivateData -> this[LOGS_PRIVATE_DATA] =
-                    new.logsPrivateData
-
-                AppPreferenceKey.newProfileEncoding -> this[NEW_PROFILE_ENCODING] =
-                    new.newProfileEncoding
-
-                AppPreferenceKey.relaxedVerification -> this[RELAXED_VERIFICATION] =
-                    new.relaxedVerification
-
-                AppPreferenceKey.skipsPurchases -> this[SKIPS_PURCHASES] =
-                    new.skipsPurchases
+                AppPreferenceKey.configFlags ->
+                    this[CONFIG_FLAGS] = new.configFlags.map { it.value }.toSet()
+                AppPreferenceKey.dnsFallsBack ->
+                    this[DNS_FALLS_BACK] = new.dnsFallsBack
+                AppPreferenceKey.experimental ->
+                    this[EXPERIMENTAL] = Globals.json.encodeToString(new.experimental)
+                AppPreferenceKey.extensiveLogging ->
+                    this[EXTENSIVE_LOGGING] = new.extensiveLogging
+                AppPreferenceKey.lastCheckedVersion ->
+                    setOrRemove(
+                        LAST_CHECKED_VERSION,
+                        new.lastCheckedVersion
+                    )
+                AppPreferenceKey.lastCheckedVersionDate ->
+                    setOrRemove(
+                        LAST_CHECKED_VERSION_DATE,
+                        new.lastCheckedVersionTimestamp
+                    )
+                AppPreferenceKey.lastUsedProfileId ->
+                    setOrRemove(
+                        LAST_USED_PROFILE_ID,
+                        new.lastUsedProfileUUID
+                    )
+                AppPreferenceKey.logsPrivateData ->
+                    this[LOGS_PRIVATE_DATA] = new.logsPrivateData
+                AppPreferenceKey.newProfileEncoding ->
+                    this[NEW_PROFILE_ENCODING] = new.newProfileEncoding
+                AppPreferenceKey.relaxedVerification ->
+                    this[RELAXED_VERIFICATION] = new.relaxedVerification
+                AppPreferenceKey.skipsPurchases ->
+                    this[SKIPS_PURCHASES] = new.skipsPurchases
             }
         }
     }
@@ -210,5 +188,21 @@ class UserPreferencesObservable(
         return runCatching {
             Globals.json.decodeFromString<T>(this)
         }.getOrNull()
+    }
+
+    companion object {
+        val CONFIG_FLAGS = stringSetPreferencesKey(AppPreferenceKey.configFlags.name)
+        val DEVICE_ID = stringPreferencesKey(AppPreferenceKey.deviceId.name)
+        val DNS_FALLS_BACK = booleanPreferencesKey(AppPreferenceKey.dnsFallsBack.name)
+        val EXPERIMENTAL = stringPreferencesKey(AppPreferenceKey.experimental.name)
+        val EXTENSIVE_LOGGING = booleanPreferencesKey(AppPreferenceKey.extensiveLogging.name)
+        val LAST_CHECKED_VERSION = stringPreferencesKey(AppPreferenceKey.lastCheckedVersion.name)
+        val LAST_CHECKED_VERSION_DATE =
+            longPreferencesKey(AppPreferenceKey.lastCheckedVersionDate.name)
+        val LAST_USED_PROFILE_ID = stringPreferencesKey(AppPreferenceKey.lastUsedProfileId.name)
+        val LOGS_PRIVATE_DATA = booleanPreferencesKey(AppPreferenceKey.logsPrivateData.name)
+        val NEW_PROFILE_ENCODING = booleanPreferencesKey(AppPreferenceKey.newProfileEncoding.name)
+        val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
+        val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
     }
 }
