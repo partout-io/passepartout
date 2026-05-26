@@ -165,7 +165,7 @@ private extension DiagnosticsView {
     }
 
     func defaultTunnelLogs() async -> [ABI.LogEntry] {
-        let url = appConfiguration.bundle.urlForTunnelLog
+        let url = appConfiguration.urlForTunnelLog
         return await Task.detached {
             pspLogEntriesAvailable(at: url)
         }.value
@@ -187,7 +187,7 @@ private extension DiagnosticsView {
     }
 
     func removeTunnelLogs() {
-        pspLogEntriesPurge(at: appConfiguration.bundle.urlForTunnelLog)
+        pspLogEntriesPurge(at: appConfiguration.urlForTunnelLog)
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

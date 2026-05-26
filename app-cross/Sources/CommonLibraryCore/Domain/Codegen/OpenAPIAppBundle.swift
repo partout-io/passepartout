@@ -14,24 +14,16 @@ public struct OpenAPIAppBundle: Sendable, Codable, Hashable {
     public var versionNumber: String
     public var buildNumber: Int
     public var customUserLevel: OpenAPIAppUserLevel?
-    public var bundleStrings: [String: String]
-    public var appLogPath: String
-    public var tunnelLogPath: String
-    public var appLogsURL: URL
-    public var tunnelLogsURL: URL
+    public var bundleStrings: [String: String]?
     public var reviewURL: URL?
 
-    public init(distributionTarget: OpenAPIDistributionTarget, displayName: String, versionNumber: String, buildNumber: Int, customUserLevel: OpenAPIAppUserLevel? = nil, bundleStrings: [String: String], appLogPath: String, tunnelLogPath: String, appLogsURL: URL, tunnelLogsURL: URL, reviewURL: URL? = nil) {
+    public init(distributionTarget: OpenAPIDistributionTarget, displayName: String, versionNumber: String, buildNumber: Int, customUserLevel: OpenAPIAppUserLevel? = nil, bundleStrings: [String: String]? = nil, reviewURL: URL? = nil) {
         self.distributionTarget = distributionTarget
         self.displayName = displayName
         self.versionNumber = versionNumber
         self.buildNumber = buildNumber
         self.customUserLevel = customUserLevel
         self.bundleStrings = bundleStrings
-        self.appLogPath = appLogPath
-        self.tunnelLogPath = tunnelLogPath
-        self.appLogsURL = appLogsURL
-        self.tunnelLogsURL = tunnelLogsURL
         self.reviewURL = reviewURL
     }
 
@@ -42,10 +34,6 @@ public struct OpenAPIAppBundle: Sendable, Codable, Hashable {
         case buildNumber
         case customUserLevel
         case bundleStrings
-        case appLogPath
-        case tunnelLogPath
-        case appLogsURL
-        case tunnelLogsURL
         case reviewURL
     }
 
@@ -58,11 +46,7 @@ public struct OpenAPIAppBundle: Sendable, Codable, Hashable {
         try container.encode(versionNumber, forKey: .versionNumber)
         try container.encode(buildNumber, forKey: .buildNumber)
         try container.encodeIfPresent(customUserLevel, forKey: .customUserLevel)
-        try container.encode(bundleStrings, forKey: .bundleStrings)
-        try container.encode(appLogPath, forKey: .appLogPath)
-        try container.encode(tunnelLogPath, forKey: .tunnelLogPath)
-        try container.encode(appLogsURL, forKey: .appLogsURL)
-        try container.encode(tunnelLogsURL, forKey: .tunnelLogsURL)
+        try container.encodeIfPresent(bundleStrings, forKey: .bundleStrings)
         try container.encodeIfPresent(reviewURL, forKey: .reviewURL)
     }
 }

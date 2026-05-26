@@ -43,6 +43,7 @@ extension TunnelABI {
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
             preferences: preferences,
+            localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter?.localMapper
         )
 

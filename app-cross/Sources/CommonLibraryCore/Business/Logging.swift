@@ -64,6 +64,7 @@ public func pspLogRegister(
     for target: LoggingTarget,
     with appConfiguration: ABI.AppConfiguration,
     preferences: AppPreferencesStore,
+    localURL: URL?,
     localMapper: (@Sendable (DebugLog.Line) -> String)?
 ) -> PartoutLoggerContext {
     switch target {
@@ -71,9 +72,9 @@ public func pspLogRegister(
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
             let logger = PartoutLogger.logger(
-                to: appConfiguration.bundle.urlForAppLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
+                localURL: localURL,
                 localMapper: localMapper
             )
             PartoutLogger.register(logger)
@@ -85,9 +86,9 @@ public func pspLogRegister(
         return .global
     case .tunnelGlobal:
         let logger = PartoutLogger.tunnelLogger(
-            to: appConfiguration.bundle.urlForTunnelLog,
             preferences: preferences,
             parameters: appConfiguration.constants.log,
+            localURL: localURL,
             localMapper: localMapper
         )
         PartoutLogger.register(logger)
@@ -100,9 +101,9 @@ public func pspLogRegister(
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
             let logger = PartoutLogger.tunnelLogger(
-                to: appConfiguration.bundle.urlForTunnelLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
+                localURL: localURL,
                 localMapper: localMapper
             )
             PartoutLogger.register(logger)
@@ -115,32 +116,32 @@ public func pspLogRegister(
 
 private extension PartoutLogger {
     static func logger(
-        to url: URL,
         preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
+        localURL: URL?,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
-            to: url,
             preferences: preferences,
             parameters: parameters,
+            localURL: localURL,
             localMapper: localMapper
         )
         return builder.build()
     }
 
     static func tunnelLogger(
-        to url: URL,
         preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
+        localURL: URL?,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
-            to: url,
             preferences: preferences,
             parameters: parameters,
+            localURL: localURL,
             localMapper: localMapper
         )
         builder.willPrint = {
@@ -172,9 +173,9 @@ private extension PartoutLogger {
 
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
-        to url: URL,
         preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
+        localURL: URL?,
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
         assertsMissingLoggingCategory = true
@@ -196,9 +197,9 @@ private extension PartoutLogger.Builder {
         if preferences[\.extensiveLogging] {
             newOptions.maxLevel = .debug
         }
-        if let localMapper {
+        if let localURL, let localMapper {
             setLocalLogger(
-                url: url,
+                url: localURL,
                 options: newOptions.fromProto,
                 mapper: localMapper
             )

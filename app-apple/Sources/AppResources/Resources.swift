@@ -22,10 +22,7 @@ public enum Resources {
         let bundle = ABI.AppBundle(
             distributionTarget: distributionTarget,
             buildTarget: buildTarget,
-            bundle: bundleConfiguration,
-            logTag: "Passepartout",
-            appLogPath: "app.log",
-            tunnelLogPath: "tunnel.log"
+            bundle: bundleConfiguration
         )
         return ABI.AppConfiguration(bundle: bundle, constants: constants)
     }

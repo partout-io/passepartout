@@ -26,6 +26,7 @@ extension AppContext {
             for: .app,
             with: appConfiguration,
             preferences: .init(),
+            localURL: nil,
             localMapper: \.message
         )
 
