@@ -5,6 +5,11 @@
 package com.algoritmico.passepartout
 
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Build
+import com.algoritmico.passepartout.abi.models.AppBundle
+import com.algoritmico.passepartout.abi.models.DistributionTarget
 import kotlinx.serialization.json.Json
 
 object Globals {
@@ -17,8 +22,6 @@ object Globals {
     const val jniLogTag = "JNITunnelController"
     const val preferencesStoreName = "preferences"
 
-    // FIXME: Build bundle dynamically
-    const val BUNDLE_FILENAME = "bundle.json"
     const val CONSTANTS_FILENAME = "constants.json"
     const val PROFILES_DIRECTORY = "profiles-v1"
 
@@ -27,6 +30,39 @@ object Globals {
 
     const val EVENT_BUFFER_CAPACITY = 64
     const val EVENT_REPLAY = 64
+}
+
+fun Context.appBundle(): AppBundle {
+    // Manifest "application android:label" points to strings.xml "app_name"
+    val appName = applicationInfo.loadLabel(packageManager).toString()
+    // These come from "build.gradle.kts"
+    val appInfo = packageInfo()
+    val versionNumber = appInfo.versionName.orEmpty()
+    val buildNumber = appInfo.longVersionCode
+        .coerceAtMost(Int.MAX_VALUE.toLong())
+        .toInt()
+
+    return AppBundle(
+        distributionTarget = DistributionTarget.appStore,
+        displayName = appName,
+        versionNumber = versionNumber,
+        buildNumber = buildNumber,
+        bundleStrings = emptyMap()
+    )
+}
+
+fun Context.appBundleJSON(): String = Globals.json.encodeToString(appBundle())
+
+private fun Context.packageInfo(): PackageInfo {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.getPackageInfo(
+            packageName,
+            PackageManager.PackageInfoFlags.of(0)
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        packageManager.getPackageInfo(packageName, 0)
+    }
 }
 
 fun Context.readAsset(name: String): String {

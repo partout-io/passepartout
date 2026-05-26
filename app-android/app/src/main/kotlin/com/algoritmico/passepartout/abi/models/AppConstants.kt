@@ -15,7 +15,6 @@
 
 package com.algoritmico.passepartout.abi.models
 
-import com.algoritmico.passepartout.abi.models.AppConstantsApi
 import com.algoritmico.passepartout.abi.models.AppConstantsContainers
 import com.algoritmico.passepartout.abi.models.AppConstantsEmails
 import com.algoritmico.passepartout.abi.models.AppConstantsFormats
@@ -23,6 +22,7 @@ import com.algoritmico.passepartout.abi.models.AppConstantsGithub
 import com.algoritmico.passepartout.abi.models.AppConstantsIap
 import com.algoritmico.passepartout.abi.models.AppConstantsLog
 import com.algoritmico.passepartout.abi.models.AppConstantsTunnel
+import com.algoritmico.passepartout.abi.models.AppConstantsUrl
 import com.algoritmico.passepartout.abi.models.AppConstantsWebReceiver
 import com.algoritmico.passepartout.abi.models.AppConstantsWebsites
 
@@ -40,7 +40,7 @@ import kotlinx.serialization.Contextual
  * @param emails 
  * @param formats 
  * @param tunnel 
- * @param api 
+ * @param url 
  * @param iap 
  * @param webReceiver 
  * @param log 
@@ -70,8 +70,8 @@ data class AppConstants (
     @SerialName(value = "tunnel")
     val tunnel: AppConstantsTunnel,
 
-    @SerialName(value = "api")
-    val api: AppConstantsApi,
+    @SerialName(value = "url")
+    val url: AppConstantsUrl,
 
     @SerialName(value = "iap")
     val iap: AppConstantsIap,

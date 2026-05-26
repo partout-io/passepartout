@@ -490,7 +490,7 @@ extension ABI.AppConfiguration {
         return try await NativeURLFetcher(
             ctx: bindings.request_ctx,
             callback: bindings.request_cb,
-            timeout: constants.api.timeoutInterval
+            timeout: constants.url.timeoutInterval
         )
         .data(for: url, cached: cached)
     }
