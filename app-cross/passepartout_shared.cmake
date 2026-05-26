@@ -97,6 +97,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsFormats.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsGithub.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsIap.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsLog.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsLogFilenames.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsLogFormatter.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnel.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnelVerification.swift
