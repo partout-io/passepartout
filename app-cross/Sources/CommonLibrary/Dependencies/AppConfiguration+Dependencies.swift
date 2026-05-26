@@ -140,7 +140,7 @@ extension ABI.AppConfiguration {
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
             releaseURL: constants.github.latestReleaseURL,
-            rateLimit: constants.api.versionRateLimit,
+            rateLimit: constants.url.versionRateLimit,
             fetcher: fetcher
         )
         return VersionChecker(
@@ -436,7 +436,7 @@ extension ABI.AppConfiguration {
         cached: Bool,
         bindings: psp_app_bindings?
     ) async throws -> Data {
-        try await FoundationURLFetcher(timeout: constants.api.timeoutInterval)
+        try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
             .data(for: url, cached: cached)
     }
 

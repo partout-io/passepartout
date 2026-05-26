@@ -149,7 +149,7 @@ components:
           - refreshInterval
           - dnsFallbackServers
           - verification
-        api:
+        url:
           type: object
           properties:
             timeoutInterval:
@@ -214,7 +214,7 @@ components:
       - emails
       - formats
       - tunnel
-      - api
+      - url
       - iap
       - webReceiver
       - log
