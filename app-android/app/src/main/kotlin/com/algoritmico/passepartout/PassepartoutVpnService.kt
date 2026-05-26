@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
 import android.util.AtomicFile
+import android.util.Log
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIException
 import io.partout.PartoutVpnServiceRuntime
@@ -24,6 +25,7 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
+        private val logTag = Globals.serviceLogTag
         private val library = PassepartoutWrapper()
         private val lastPreferencesFile: File
             get() = File(noBackupFilesDir, Globals.TUNNEL_PREFERENCES_LAST_PATH)
@@ -35,7 +37,16 @@ class PassepartoutVpnService: VpnService() {
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            val preferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
+            // Try preferences from intent, otherwise load last persisted
+            val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
+            val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
+                Log.i(logTag, "Load last preferences")
+                readLastPreferences()
+            } else {
+                Log.i(logTag, "Load and persist start preferences")
+                writeLastPreferences(intentPreferencesJSON)
+                intentPreferencesJSON
+            }
 
             // This call retains the controller strongly
             val code = library.tunnelStart(
@@ -49,6 +60,18 @@ class PassepartoutVpnService: VpnService() {
             if (code != 0) {
                 throw ABIException(code, null)
             }
+        }
+
+        private fun readLastPreferences(): String? {
+            return runCatching {
+                readLastFile(lastPreferencesFile)
+            }.onFailure {
+                Log.w(Globals.serviceLogTag, "Unable to read last tunnel preferences", it)
+            }.getOrNull()
+        }
+
+        private fun writeLastPreferences(json: String) {
+            writeLastFile(lastPreferencesFile, json)
         }
 
         override suspend fun stop() = withContext(Dispatchers.IO) {
@@ -65,23 +88,31 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun readLastProfile(): String {
             return withContext(Dispatchers.IO) {
-                AtomicFile(lastProfileFile).openRead().bufferedReader(Charsets.UTF_8).use {
-                    it.readText()
-                }
+                readLastFile(lastProfileFile)
             }
         }
 
         override suspend fun writeLastProfile(json: String) {
             withContext(Dispatchers.IO) {
-                val file = AtomicFile(lastProfileFile)
-                val stream = file.startWrite()
-                try {
-                    stream.write(json.toByteArray(Charsets.UTF_8))
-                    file.finishWrite(stream)
-                } catch (e: Exception) {
-                    file.failWrite(stream)
-                    throw e
-                }
+                writeLastFile(lastProfileFile, json)
+            }
+        }
+
+        private fun readLastFile(file: File): String {
+            return AtomicFile(file).openRead().bufferedReader(Charsets.UTF_8).use {
+                it.readText()
+            }
+        }
+
+        private fun writeLastFile(file: File, json: String) {
+            val atomicFile = AtomicFile(file)
+            val stream = atomicFile.startWrite()
+            try {
+                stream.write(json.toByteArray(Charsets.UTF_8))
+                atomicFile.finishWrite(stream)
+            } catch (e: Exception) {
+                atomicFile.failWrite(stream)
+                throw e
             }
         }
     }
