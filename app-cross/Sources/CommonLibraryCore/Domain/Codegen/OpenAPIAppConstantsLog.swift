@@ -13,12 +13,14 @@ public struct OpenAPIAppConstantsLog: Sendable, Codable, Hashable {
     public var formatter: OpenAPIAppConstantsLogFormatter
     public var sinceLast: Double
     public var options: OpenAPILocalLoggerOptions
+    public var filenames: OpenAPIAppConstantsLogFilenames?
 
-    public init(tag: String, formatter: OpenAPIAppConstantsLogFormatter, sinceLast: Double, options: OpenAPILocalLoggerOptions) {
+    public init(tag: String, formatter: OpenAPIAppConstantsLogFormatter, sinceLast: Double, options: OpenAPILocalLoggerOptions, filenames: OpenAPIAppConstantsLogFilenames? = nil) {
         self.tag = tag
         self.formatter = formatter
         self.sinceLast = sinceLast
         self.options = options
+        self.filenames = filenames
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -26,6 +28,7 @@ public struct OpenAPIAppConstantsLog: Sendable, Codable, Hashable {
         case formatter
         case sinceLast
         case options
+        case filenames
     }
 
     // Encodable protocol methods
@@ -36,6 +39,7 @@ public struct OpenAPIAppConstantsLog: Sendable, Codable, Hashable {
         try container.encode(formatter, forKey: .formatter)
         try container.encode(sinceLast, forKey: .sinceLast)
         try container.encode(options, forKey: .options)
+        try container.encodeIfPresent(filenames, forKey: .filenames)
     }
 }
 

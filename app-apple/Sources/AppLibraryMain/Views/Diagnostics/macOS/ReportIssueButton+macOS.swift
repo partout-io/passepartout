@@ -54,11 +54,11 @@ private extension ABI.Issue {
         var list: [Any] = []
         list.append(body)
         if let appLog,
-           let url = appLog.toTemporaryURL(withFilename: cfg.bundle.appLogPath) {
+           let url = appLog.toTemporaryURL(withFilename: cfg.appLogPath) {
             list.append(url)
         }
         if let tunnelLog,
-           let url = tunnelLog.toTemporaryURL(withFilename: cfg.bundle.tunnelLogPath) {
+           let url = tunnelLog.toTemporaryURL(withFilename: cfg.tunnelLogPath) {
             list.append(url)
         }
         return list

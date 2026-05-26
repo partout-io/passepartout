@@ -196,6 +196,16 @@ components:
               type: number
             options:
               "$ref": "#/components/schemas/LocalLoggerOptions"
+            filenames:
+              type: object
+              properties:
+                app:
+                  type: string
+                tunnel:
+                  type: string
+              required:
+              - app
+              - tunnel
           required:
           - tag
           - formatter

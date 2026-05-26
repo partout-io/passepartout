@@ -77,6 +77,10 @@
         "formatter": {
             "timestamp": "HH:mm:ss",
             "message": "%@ - %@"
+        },
+        "filenames": {
+            "app": "app.log",
+            "tunnel": "tunnel.log"
         }
     }
 }

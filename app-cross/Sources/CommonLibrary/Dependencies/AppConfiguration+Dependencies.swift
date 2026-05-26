@@ -8,6 +8,14 @@ import Partout
 // MARK: Shared
 
 extension ABI.AppConfiguration {
+    public var appLogPath: String {
+        constants.log.filenames?.app ?? "app.log"
+    }
+
+    public var tunnelLogPath: String {
+        constants.log.filenames?.tunnel ?? "tunnel.log"
+    }
+
     public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
         DefaultProfileProcessor(iapManager: iapManager)
     }
@@ -227,11 +235,11 @@ extension ABI.AppBundle {
 
 extension ABI.AppConfiguration {
     public var urlForAppLog: URL {
-        bundle.appLogsURL.appending(path: bundle.appLogPath)
+        bundle.appLogsURL.appending(path: appLogPath)
     }
 
     public var urlForTunnelLog: URL {
-        bundle.tunnelLogsURL.appending(path: bundle.tunnelLogPath)
+        bundle.tunnelLogsURL.appending(path: tunnelLogPath)
     }
 
     public var urlForReview: URL? {
@@ -244,17 +252,6 @@ extension ABI.AppConfiguration {
             fatalError("Unable to build urlForReview")
         }
         return url
-    }
-}
-
-// FIXME: ###, Pick from .constants
-extension ABI.AppBundle {
-    public var appLogPath: String {
-        "app.log"
-    }
-
-    public var tunnelLogPath: String {
-        "tunnel.log"
     }
 }
 
