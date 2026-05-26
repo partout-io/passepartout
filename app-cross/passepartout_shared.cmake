@@ -126,7 +126,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIIAPEventStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptions.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPILocalLoggerOptionsMaxLevel.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldReconnect.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventUpdatedPreferences.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIMixedEventShouldUpdatePreferences.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIModuleType.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIOriginalPurchase.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIProfileEventChangeRemoteImporting.swift
@@ -172,12 +172,12 @@ Sources/CommonLibraryCore/Domain/StoreReceipt.swift
 Sources/CommonLibraryCore/Domain/StoreResult.swift
 Sources/CommonLibraryCore/Domain/VersionRelease.swift
 Sources/CommonLibraryCore/Extensions/ABI+JSON.swift
+Sources/CommonLibraryCore/Extensions/AppPreferences+ConfigManager.swift
+Sources/CommonLibraryCore/Extensions/AppPreferences+Encoding.swift
 Sources/CommonLibraryCore/Extensions/ChangelogEntry+Extensions.swift
 Sources/CommonLibraryCore/Extensions/CodingRegistry+Extensions.swift
 Sources/CommonLibraryCore/Extensions/Module+Extensions.swift
 Sources/CommonLibraryCore/Extensions/ModuleType+Known.swift
-Sources/CommonLibraryCore/Extensions/Preferences+ConfigManager.swift
-Sources/CommonLibraryCore/Extensions/Preferences+Encoding.swift
 Sources/CommonLibraryCore/Extensions/Profile+SingleModule.swift
 Sources/CommonLibraryCore/IAP/AppFeature+Suggestions.swift
 Sources/CommonLibraryCore/IAP/AppFeatureProviding+Levels.swift
