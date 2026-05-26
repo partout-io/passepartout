@@ -180,9 +180,9 @@ class UserPreferencesObservable(
     private fun <T> MutablePreferences.setOrRemove(key: Preferences.Key<T>, value: T?) {
         if (value == null) {
             remove(key)
-        } else {
-            this[key] = value
+            return
         }
+        this[key] = value
     }
 
     private inline fun <reified T> String.decodePreference(): T? {
