@@ -1,1 +1,1 @@
-* Core: Fix .bsdSockets implementation in Partout
+* Core: Fix version banner not always appearing (#1833)
