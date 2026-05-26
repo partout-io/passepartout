@@ -37,6 +37,9 @@ class PassepartoutVpnService: VpnService() {
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
+            val bundle = appBundleJSON()
+            Log.e(logTag, ">>> Bundle: $bundle")
+
             // Try preferences from intent, otherwise load last persisted
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
             val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
@@ -50,7 +53,7 @@ class PassepartoutVpnService: VpnService() {
 
             // This call retains the controller strongly
             val code = library.tunnelStart(
-                readAsset(Globals.BUNDLE_FILENAME),
+                bundle,
                 readAsset(Globals.CONSTANTS_FILENAME),
                 preferencesJSON,
                 profileJSON,

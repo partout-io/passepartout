@@ -29,12 +29,8 @@ import kotlinx.serialization.Contextual
  * @param displayName 
  * @param versionNumber 
  * @param buildNumber 
- * @param bundleStrings 
- * @param appLogPath 
- * @param tunnelLogPath 
- * @param appLogsURL 
- * @param tunnelLogsURL 
  * @param customUserLevel 
+ * @param bundleStrings 
  * @param reviewURL 
  */
 @Serializable
@@ -53,23 +49,11 @@ data class AppBundle (
     @SerialName(value = "buildNumber")
     val buildNumber: kotlin.Int,
 
-    @SerialName(value = "bundleStrings")
-    val bundleStrings: kotlin.collections.Map<kotlin.String, kotlin.String>,
-
-    @SerialName(value = "appLogPath")
-    val appLogPath: kotlin.String,
-
-    @SerialName(value = "tunnelLogPath")
-    val tunnelLogPath: kotlin.String,
-
-    @SerialName(value = "appLogsURL")
-    val appLogsURL: kotlin.String,
-
-    @SerialName(value = "tunnelLogsURL")
-    val tunnelLogsURL: kotlin.String,
-
     @Contextual @SerialName(value = "customUserLevel")
     val customUserLevel: AppUserLevel? = null,
+
+    @SerialName(value = "bundleStrings")
+    val bundleStrings: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 
     @SerialName(value = "reviewURL")
     val reviewURL: kotlin.String? = null

@@ -29,7 +29,7 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-data class AppConstantsApi (
+data class AppConstantsUrl (
 
     @SerialName(value = "timeoutInterval")
     val timeoutInterval: kotlin.Double,

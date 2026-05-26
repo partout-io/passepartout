@@ -15,6 +15,8 @@ import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.helpers.ABIURLFetcher
 import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.appBundle
+import com.algoritmico.passepartout.appBundleJSON
 import com.algoritmico.passepartout.readAsset
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
@@ -57,7 +59,9 @@ class AppContext(
         val preferences = userPreferencesObservable.preferencesJSON()
         Log.i(Globals.logTag, ">>> Preferences: $preferences")
 
-        val bundle = applicationContext.readAsset(Globals.BUNDLE_FILENAME)
+        val bundle = applicationContext.appBundleJSON()
+        Log.e(Globals.logTag, ">>> Bundle: $bundle")
+
         val constants = applicationContext.readAsset(Globals.CONSTANTS_FILENAME)
         val profilesDirectory = File(applicationContext.noBackupFilesDir, Globals.PROFILES_DIRECTORY)
             .apply {
