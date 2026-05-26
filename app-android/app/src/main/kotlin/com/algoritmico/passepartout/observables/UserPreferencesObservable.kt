@@ -49,7 +49,7 @@ class UserPreferencesObservable(
     )
 
     private val Context.store: DataStore<Preferences> by preferencesDataStore(filename)
-    val flow: Flow<Preferences>
+    private val flow: Flow<Preferences>
         get() {
             return context.store.data
         }
