@@ -46,6 +46,8 @@ import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.ProfileEventSave
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
+import com.algoritmico.passepartout.observables.ProfileObservable
+import com.algoritmico.passepartout.observables.TunnelObservable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.util.Locale

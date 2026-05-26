@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent

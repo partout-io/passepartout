@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
