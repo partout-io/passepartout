@@ -99,7 +99,7 @@ class TunnelObservable(
 
     private fun onUpdate(event: Event) {
         if (event !is ProfileEventRefresh) { return }
-        // Iterate through active tunnel
+        // Iterate through active tunnels
         state.value.activeProfiles.forEach {
             val info = it.value
             // Ignore profiles that were not deleted
