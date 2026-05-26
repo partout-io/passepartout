@@ -6,9 +6,10 @@ package com.algoritmico.passepartout.abi
 
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABIResult
+import com.algoritmico.passepartout.abi.models.AppPreferences
 import io.partout.models.TaggedProfile
 
-internal class AppABIProfile(
+class AppABIProfile(
     private val library: PassepartoutWrapper
 ) : AppABIProfileProtocol {
     override suspend fun importText(text: String, filename: String) {
@@ -36,5 +37,14 @@ internal class AppABIProfile(
         return result.payload?.let { json ->
             Globals.json.decodeFromString(json)
         }
+    }
+}
+
+class AppABIKeyStore(
+    private val library: PassepartoutWrapper
+) : AppABIKeyStoreProtocol {
+    override fun set(preferences: AppPreferences) {
+        val json = Globals.json.encodeToString(preferences)
+        library.appPreferencesSet(json)
     }
 }

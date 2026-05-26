@@ -36,6 +36,7 @@ class PassepartoutVpnService: VpnService() {
             val code = library.tunnelStart(
                 readAsset(Globals.BUNDLE_FILENAME),
                 readAsset(Globals.CONSTANTS_FILENAME),
+                null, // FIXME: Load tunnel preferences
                 profileJSON,
                 cacheDir.absolutePath,
                 controller

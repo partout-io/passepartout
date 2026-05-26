@@ -16,6 +16,7 @@ class PassepartoutWrapper {
     external fun appInit(
         bundle: String,
         constants: String,
+        preferences: String?,
         profilesDir: String,
         cacheDir: String,
         urlFetcher: ABIURLFetcher,
@@ -40,9 +41,13 @@ class PassepartoutWrapper {
         id: String,
         completion: ABICompletionCallback
     )
+    external fun appPreferencesSet(
+        preferences: String
+    )
     external fun tunnelStart(
         bundle: String,
         constants: String,
+        preferences: String?,
         profile: String,
         cacheDir: String,
         controller: JNITunnelController

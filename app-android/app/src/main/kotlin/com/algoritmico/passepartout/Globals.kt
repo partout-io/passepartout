@@ -15,6 +15,7 @@ object Globals {
     const val logTag = "Passepartout"
     const val serviceLogTag = "PassepartoutVpnService"
     const val jniLogTag = "JNITunnelController"
+    const val preferencesStoreName = "preferences"
 
     // FIXME: Build bundle dynamically
     const val BUNDLE_FILENAME = "bundle.json"

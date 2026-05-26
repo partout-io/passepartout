@@ -30,6 +30,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
         jobject thiz,
         jstring bundle,
         jstring constants,
+        jstring preferences,
         jstring profilesDir,
         jstring cacheDir,
         jobject urlFetcher,
@@ -37,6 +38,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
+    const char *cPreferences = preferences ? (*env)->GetStringUTFChars(env, preferences, NULL) : NULL;
     const char *cProfilesDir = (*env)->GetStringUTFChars(env, profilesDir, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
@@ -50,7 +52,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
     psp_app_init_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
-    args.preferences = "{\"logsPrivateData\": true}";
+    args.preferences = cPreferences;
     args.profiles_dir = cProfilesDir;
     args.cache_dir = cCacheDir;
     args.bindings = bindings;
@@ -58,6 +60,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appInit(
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
+    if (cPreferences) (*env)->ReleaseStringUTFChars(env, preferences, cPreferences);
     (*env)->ReleaseStringUTFChars(env, profilesDir, cProfilesDir);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
     return result;
@@ -123,18 +126,31 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchProfile(
     (*env)->ReleaseStringUTFChars(env, id, cID);
 }
 
+JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appPreferencesSet(
+        JNIEnv *env,
+        jobject thiz,
+        jstring preferences
+) {
+    const char *cPreferences = (*env)->GetStringUTFChars(env, preferences, NULL);
+    psp_app_preferences_set(cPreferences);
+    (*env)->ReleaseStringUTFChars(env, preferences, cPreferences);
+}
+
 JNIEXPORT jint JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
         JNIEnv *env,
         jobject thiz,
         jstring bundle,
         jstring constants,
+        jstring preferences,
         jstring profile,
         jstring cacheDir,
         jobject controller
 ) {
     const char *cBundle = (*env)->GetStringUTFChars(env, bundle, NULL);
     const char *cConstants = (*env)->GetStringUTFChars(env, constants, NULL);
+    const char *cPreferences = preferences ? (*env)->GetStringUTFChars(env, preferences, NULL) : NULL;
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
@@ -145,7 +161,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
     psp_tunnel_start_args args = { 0 };
     args.bundle = cBundle;
     args.constants = cConstants;
-    args.preferences = "{\"logsPrivateData\": true}";
+    args.preferences = cPreferences;
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_interactive = true;
@@ -156,6 +172,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_tunnelStart(
 
     (*env)->ReleaseStringUTFChars(env, bundle, cBundle);
     (*env)->ReleaseStringUTFChars(env, constants, cConstants);
+    if (cPreferences) (*env)->ReleaseStringUTFChars(env, preferences, cPreferences);
     (*env)->ReleaseStringUTFChars(env, profile, cProfile);
     (*env)->ReleaseStringUTFChars(env, cacheDir, cCacheDir);
     return result;

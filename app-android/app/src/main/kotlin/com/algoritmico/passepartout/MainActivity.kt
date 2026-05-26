@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
             PassepartoutApp(
                 appContext.profileObservable,
                 appContext.tunnelObservable,
+                appContext.userPreferencesObservable,
                 onImportProfile = ::openProfileImporter
             )
         }
