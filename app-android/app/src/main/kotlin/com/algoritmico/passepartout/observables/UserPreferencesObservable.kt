@@ -137,10 +137,11 @@ class UserPreferencesObservable(
     private fun MutablePreferences.update(new: AppPreferences, fields: List<AppPreferenceKey>) {
         fields.forEach {
             when (it) {
-                AppPreferenceKey.deviceId -> setOrRemove(
-                    DEVICE_ID,
-                    new.deviceId
-                )
+                AppPreferenceKey.deviceId ->
+                    setOrRemove(
+                        DEVICE_ID,
+                        new.deviceId
+                    )
                 AppPreferenceKey.configFlags ->
                     this[CONFIG_FLAGS] = new.configFlags.map { it.value }.toSet()
                 AppPreferenceKey.dnsFallsBack ->
