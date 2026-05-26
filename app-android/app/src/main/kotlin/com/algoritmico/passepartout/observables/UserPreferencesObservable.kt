@@ -55,9 +55,12 @@ class UserPreferencesObservable(
         }
 
     private val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
-    private var snapshot = flow.loadPreferences()
+    private var snapshot: AppPreferences
 
     init {
+        snapshot = runBlocking {
+            preferences.first()
+        }
         events
             .onEach(::onUpdate)
             .launchIn(scope)
@@ -97,12 +100,6 @@ class UserPreferencesObservable(
     private fun savePreferences() {
         Log.d(logTag, "Saving new preferences: $snapshot")
         abi.set(snapshot)
-    }
-
-    fun Flow<Preferences>.loadPreferences(): AppPreferences {
-        return runBlocking {
-            first().toAppPreferences()
-        }
     }
 
     private fun Preferences.toAppPreferences(): AppPreferences {
