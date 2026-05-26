@@ -207,28 +207,13 @@ extension ABI.AppBundle {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
-        // FIXME: ###, This is Apple, should pick template from constants
-        let reviewURL: URL?
-        if requiredBundleKeys.contains(.appStoreId) {
-            reviewURL = {
-                let appStoreId = bundle.string(for: .appStoreId)
-                guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
-                    fatalError("Unable to build urlForReview")
-                }
-                return url
-            }()
-        } else {
-            reviewURL = nil
-        }
-
         self.init(
             distributionTarget: distributionTarget,
             displayName: displayName,
             versionNumber: versionNumber,
             buildNumber: buildNumber,
             customUserLevel: customUserLevel,
-            bundleStrings: bundleStrings,
-            reviewURL: reviewURL
+            bundleStrings: bundleStrings
         )
     }
 
@@ -247,6 +232,18 @@ extension ABI.AppConfiguration {
 
     public var urlForTunnelLog: URL {
         bundle.tunnelLogsURL.appending(path: bundle.tunnelLogPath)
+    }
+
+    public var urlForReview: URL? {
+        let requiredKeys = ABI.AppBundle.BundleKey.requiredKeys(for: .app)
+        guard requiredKeys.contains(.appStoreId) else {
+            return nil
+        }
+        let appStoreId = bundle.bundleString(for: .appStoreId)
+        guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
+            fatalError("Unable to build urlForReview")
+        }
+        return url
     }
 }
 

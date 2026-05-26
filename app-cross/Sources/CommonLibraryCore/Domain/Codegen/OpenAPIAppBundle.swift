@@ -15,16 +15,14 @@ public struct OpenAPIAppBundle: Sendable, Codable, Hashable {
     public var buildNumber: Int
     public var customUserLevel: OpenAPIAppUserLevel?
     public var bundleStrings: [String: String]?
-    public var reviewURL: URL?
 
-    public init(distributionTarget: OpenAPIDistributionTarget, displayName: String, versionNumber: String, buildNumber: Int, customUserLevel: OpenAPIAppUserLevel? = nil, bundleStrings: [String: String]? = nil, reviewURL: URL? = nil) {
+    public init(distributionTarget: OpenAPIDistributionTarget, displayName: String, versionNumber: String, buildNumber: Int, customUserLevel: OpenAPIAppUserLevel? = nil, bundleStrings: [String: String]? = nil) {
         self.distributionTarget = distributionTarget
         self.displayName = displayName
         self.versionNumber = versionNumber
         self.buildNumber = buildNumber
         self.customUserLevel = customUserLevel
         self.bundleStrings = bundleStrings
-        self.reviewURL = reviewURL
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -34,7 +32,6 @@ public struct OpenAPIAppBundle: Sendable, Codable, Hashable {
         case buildNumber
         case customUserLevel
         case bundleStrings
-        case reviewURL
     }
 
     // Encodable protocol methods
@@ -47,7 +44,6 @@ public struct OpenAPIAppBundle: Sendable, Codable, Hashable {
         try container.encode(buildNumber, forKey: .buildNumber)
         try container.encodeIfPresent(customUserLevel, forKey: .customUserLevel)
         try container.encodeIfPresent(bundleStrings, forKey: .bundleStrings)
-        try container.encodeIfPresent(reviewURL, forKey: .reviewURL)
     }
 }
 

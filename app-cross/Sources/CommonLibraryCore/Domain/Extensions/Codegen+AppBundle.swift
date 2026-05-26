@@ -14,7 +14,6 @@ extension ABI.AppBundle {
         buildNumber = 12345
         bundleStrings = [:]
         customUserLevel = nil
-        reviewURL = nil
     }
 
     public var versionString: String {

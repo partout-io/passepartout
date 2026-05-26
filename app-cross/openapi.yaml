@@ -17,11 +17,6 @@ components:
           type: object
           additionalProperties:
             type: string
-        reviewURL:
-          type:
-          - string
-          - 'null'
-          format: uri
       required:
       - distributionTarget
       - displayName
