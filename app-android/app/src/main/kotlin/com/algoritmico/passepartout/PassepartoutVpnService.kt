@@ -25,8 +25,10 @@ class PassepartoutVpnService: VpnService() {
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
         private val library = PassepartoutWrapper()
+        private val lastPreferencesFile: File
+            get() = File(noBackupFilesDir, Globals.TUNNEL_PREFERENCES_LAST_PATH)
         private val lastProfileFile: File
-            get() = File(noBackupFilesDir, Globals.PROFILE_LAST_PATH)
+            get() = File(noBackupFilesDir, Globals.TUNNEL_PROFILE_LAST_PATH)
 
         override suspend fun start(
             intent: Intent?,
