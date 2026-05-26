@@ -432,7 +432,7 @@ components:
           IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
           MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
-          MixedEventUpdatedPreferences: "#/components/schemas/MixedEventUpdatedPreferences"
+          MixedEventShouldUpdatePreferences: "#/components/schemas/MixedEventShouldUpdatePreferences"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
@@ -678,14 +678,14 @@ components:
       required:
       - type
       - profile
-    MixedEventUpdatedPreferences:
+    MixedEventShouldUpdatePreferences:
       type: object
       additionalProperties: false
       allOf:
       - "$ref": "#/components/schemas/Event"
       properties:
         type:
-          const: MixedEventUpdatedPreferences
+          const: MixedEventShouldUpdatePreferences
           type: string
         preferences:
           "$ref": "#/components/schemas/AppPreferences"

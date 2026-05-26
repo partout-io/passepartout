@@ -98,7 +98,7 @@ public final class AppABI: Sendable {
         // Do not commit preferences in-place, emit update event
         // and let the observer perform the actual update
         preferences.onRequest = { [weak self] in
-            self?.emitUpdatedPreferencesEvent($0, fields: $1)
+            self?.emitShouldUpdatePreferencesEvent($0, fields: $1)
         }
 #endif
     }
@@ -135,7 +135,7 @@ extension AppABI {
         // then IAPManager starts disabled, but the UI shows that in-app
         // purchases are enabled if the initial IAPManager update is missed.
         //
-        emitUpdatedPreferencesEvent(preferences.serialized(), fields: [.deviceId])
+        emitShouldUpdatePreferencesEvent(preferences.serialized(), fields: [.deviceId])
         iapManager.postInitialState()
         profileManager.postInitialState()
 
@@ -206,11 +206,11 @@ extension AppABI {
     }
 
     // ABI -> Consumer
-    private func emitUpdatedPreferencesEvent(
+    private func emitShouldUpdatePreferencesEvent(
         _ updated: ABI.AppPreferences,
         fields: Set<ABI.NonUserFacingAppPreferenceKey>
     ) {
-        dispatch(.mixed(.updatedPreferences(.init(
+        dispatch(.mixed(.shouldUpdatePreferences(.init(
             preferences: updated,
             fields: fields.map(\.innerKey)
         ))), nil)

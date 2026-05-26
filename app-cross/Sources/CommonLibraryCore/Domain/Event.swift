@@ -40,7 +40,7 @@ extension ABI {
 
     public enum MixedEvent: Sendable {
         case shouldReconnect(ShouldReconnect)
-        case updatedPreferences(UpdatedPreferences)
+        case shouldUpdatePreferences(ShouldUpdatePreferences)
     }
 
     public enum ProfileEvent: Equatable, Sendable {
