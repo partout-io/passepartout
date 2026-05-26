@@ -90,7 +90,6 @@ Sources/CommonLibraryCore/Domain/ChangelogEntry.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppBundle.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConfiguration.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstants.swift
-Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsApi.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsContainers.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsEmails.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsEmailsRecipients.swift
@@ -102,6 +101,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsLogFormatter.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnel.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnelVerification.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnelVerificationParameters.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsUrl.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebReceiver.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebsites.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppFeature.swift
