@@ -4,7 +4,11 @@
 
 package com.algoritmico.passepartout.observables
 
+import android.content.Intent
 import android.util.Log
+import com.algoritmico.passepartout.Globals
+import com.algoritmico.passepartout.PassepartoutVpnService
+import com.algoritmico.passepartout.abi.models.AppPreferences
 import com.algoritmico.passepartout.abi.models.AppProfileStatus
 import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.Event
@@ -22,9 +26,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
 import kotlin.coroutines.resume
@@ -34,6 +40,7 @@ class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
     events: Flow<Event>,
+    preferences: Flow<AppPreferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -55,7 +62,7 @@ class TunnelObservable(
 
     suspend fun connect(profile: TaggedProfile) =
         suspendCancellableCoroutine { continuation ->
-            tunnel.connect(profile) callback@ { status ->
+            tunnel.connect(profile, onConnectIntent) callback@ { status ->
                 if (!continuation.isActive) { return@callback }
                 if (status != PartoutTunnel.ERROR_NONE) {
                     continuation.resumeWithException(TunnelException)
@@ -64,6 +71,14 @@ class TunnelObservable(
                 continuation.resume(Unit)
             }
         }
+
+    private val onConnectIntent: (Intent) -> Unit = { intent ->
+        val json = runBlocking {
+            val prefs = preferences.first()
+            Globals.json.encodeToString(prefs)
+        }
+        intent.putExtra(PassepartoutVpnService.EXTRA_TUNNEL_PREFERENCES, json)
+    }
 
     suspend fun disconnect(profileId: String) =
         suspendCancellableCoroutine { continuation ->

@@ -95,6 +95,7 @@ class AppContext(
             Globals.logTag,
             tunnel,
             appEvents,
+            userPreferencesObservable.preferences,
             coroutineScope
         )
     }

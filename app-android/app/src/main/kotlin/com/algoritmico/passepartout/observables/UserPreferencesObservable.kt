@@ -54,7 +54,7 @@ class UserPreferencesObservable(
             return context.store.data
         }
 
-    private val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
+    val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
     private var snapshot: AppPreferences
 
     init {

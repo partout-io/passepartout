@@ -29,14 +29,17 @@ class PassepartoutVpnService: VpnService() {
             get() = File(noBackupFilesDir, Globals.PROFILE_LAST_PATH)
 
         override suspend fun start(
+            intent: Intent?,
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
+            val preferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
+
             // This call retains the controller strongly
             val code = library.tunnelStart(
                 readAsset(Globals.BUNDLE_FILENAME),
                 readAsset(Globals.CONSTANTS_FILENAME),
-                null, // FIXME: Load tunnel preferences
+                preferencesJSON,
                 profileJSON,
                 cacheDir.absolutePath,
                 controller
@@ -99,5 +102,9 @@ class PassepartoutVpnService: VpnService() {
             return super.onBind(intent)
         }
         return runtime.onBind(intent)
+    }
+
+    companion object {
+        const val EXTRA_TUNNEL_PREFERENCES = "com.algoritmico.passepartout.extra.TUNNEL_PREFERENCES"
     }
 }
