@@ -63,12 +63,6 @@ class UserPreferencesObservable(
             .launchIn(scope)
     }
 
-    fun preferencesJSON(): String? {
-        return runCatching {
-            return Globals.json.encodeToString(snapshot)
-        }.getOrNull()
-    }
-
     override fun close() {
         scope.cancel()
     }
@@ -82,6 +76,12 @@ class UserPreferencesObservable(
             snapshot = snapshot.copy(dnsFallsBack = newValue)
         }
         savePreferences()
+    }
+
+    fun preferencesJSON(): String? {
+        return runCatching {
+            return Globals.json.encodeToString(snapshot)
+        }.getOrNull()
     }
 
     private suspend fun onUpdate(event: Event) {
@@ -105,7 +105,7 @@ class UserPreferencesObservable(
         }
     }
 
-    fun Preferences.toAppPreferences(): AppPreferences {
+    private fun Preferences.toAppPreferences(): AppPreferences {
         val default = AppPreferences.default
         return AppPreferences(
             configFlags = this[CONFIG_FLAGS]
@@ -190,7 +190,7 @@ class UserPreferencesObservable(
         }.getOrNull()
     }
 
-    companion object {
+    private companion object {
         val CONFIG_FLAGS = stringSetPreferencesKey(AppPreferenceKey.configFlags.name)
         val DEVICE_ID = stringPreferencesKey(AppPreferenceKey.deviceId.name)
         val DNS_FALLS_BACK = booleanPreferencesKey(AppPreferenceKey.dnsFallsBack.name)
