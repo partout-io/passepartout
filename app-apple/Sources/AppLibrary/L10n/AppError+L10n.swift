@@ -24,6 +24,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             return nil
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
+        case .missingProviderEntity:
+            return V.missingProviderEntity
         case .moduleRequiresConnection(let module):
             return V.moduleRequiresConnection(
                 module.moduleType.localizedDescription,
@@ -94,9 +96,6 @@ extension PartoutError: @retroactive LocalizedError {
             }
             let stringKey = "errors.modules.\(userInfo.key)"
             return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
-
-        case .Providers.missingEntity:
-            return V.missingProviderEntity
 
         case .noActiveModules:
             return V.noActiveModules

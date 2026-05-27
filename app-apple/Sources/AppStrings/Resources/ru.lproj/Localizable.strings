@@ -34,7 +34,7 @@
 "errors.app.passepartout.incompatible_modules" = "Некоторые активные модули несовместимы, попробуйте активировать только один.";
 "errors.app.passepartout.incomplete_module" = "Пожалуйста, завершите настройку модуля %@.";
 "errors.app.passepartout.invalid_fields" = "Некорректные поля.";
-"errors.app.passepartout.missing_provider_entity" = "На провайдере не выбран сервер.";
+"errors.app.missing_provider_entity" = "На провайдере не выбран сервер.";
 "errors.app.passepartout.no_active_modules" = "В профиле нет активных модулей.";
 "errors.app.passepartout.parsing" = "Не удалось разобрать.";
 "errors.app.passepartout.timeout" = "Время операции истекло.";

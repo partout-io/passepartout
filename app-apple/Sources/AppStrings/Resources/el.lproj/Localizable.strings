@@ -34,7 +34,7 @@
 "errors.app.passepartout.incompatible_modules" = "Μερικές ενεργές μονάδες είναι ασύμβατες, δοκιμάστε να ενεργοποιήσετε μόνο μία.";
 "errors.app.passepartout.incomplete_module" = "Ολοκληρώστε τη ρύθμιση του %@ module.";
 "errors.app.passepartout.invalid_fields" = "Μη έγκυρα πεδία.";
-"errors.app.passepartout.missing_provider_entity" = "Δεν επιλέχθηκε διακομιστής στον πάροχο.";
+"errors.app.missing_provider_entity" = "Δεν επιλέχθηκε διακομιστής στον πάροχο.";
 "errors.app.passepartout.no_active_modules" = "Το προφίλ δεν έχει ενεργές μονάδες.";
 "errors.app.passepartout.parsing" = "Δεν ήταν δυνατή η ανάλυση.";
 "errors.app.passepartout.timeout" = "Η λειτουργία έληξε λόγω χρονικού ορίου.";

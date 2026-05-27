@@ -34,7 +34,7 @@
 "errors.app.passepartout.incompatible_modules" = "Certains modules actifs sont incompatibles, essayez d'en activer un seul.";
 "errors.app.passepartout.incomplete_module" = "Veuillez terminer la configuration du module %@.";
 "errors.app.passepartout.invalid_fields" = "Champs invalides.";
-"errors.app.passepartout.missing_provider_entity" = "Aucun serveur sélectionné chez le fournisseur.";
+"errors.app.missing_provider_entity" = "Aucun serveur sélectionné chez le fournisseur.";
 "errors.app.passepartout.no_active_modules" = "Le profil n'a pas de modules actifs.";
 "errors.app.passepartout.parsing" = "Impossible d'analyser.";
 "errors.app.passepartout.timeout" = "L'opération a expiré.";

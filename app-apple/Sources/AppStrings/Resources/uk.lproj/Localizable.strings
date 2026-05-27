@@ -34,7 +34,7 @@
 "errors.app.passepartout.incompatible_modules" = "Деякі активні модулі несумісні, спробуйте активувати лише один.";
 "errors.app.passepartout.incomplete_module" = "Будь ласка, завершіть налаштування модуля %@.";
 "errors.app.passepartout.invalid_fields" = "Некоректні поля.";
-"errors.app.passepartout.missing_provider_entity" = "Не вибрано сервер у постачальника.";
+"errors.app.missing_provider_entity" = "Не вибрано сервер у постачальника.";
 "errors.app.passepartout.no_active_modules" = "Профіль не має активних модулів.";
 "errors.app.passepartout.parsing" = "Не вдалося розібрати.";
 "errors.app.passepartout.timeout" = "Час виконання операції вичерпано.";
