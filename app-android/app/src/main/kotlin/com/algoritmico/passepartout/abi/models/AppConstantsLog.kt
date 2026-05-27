@@ -15,6 +15,7 @@
 
 package com.algoritmico.passepartout.abi.models
 
+import com.algoritmico.passepartout.abi.models.AppConstantsLogFilenames
 import com.algoritmico.passepartout.abi.models.AppConstantsLogFormatter
 import com.algoritmico.passepartout.abi.models.LocalLoggerOptions
 
@@ -29,6 +30,7 @@ import kotlinx.serialization.Contextual
  * @param formatter 
  * @param sinceLast 
  * @param options 
+ * @param filenames 
  */
 @Serializable
 
@@ -44,7 +46,10 @@ data class AppConstantsLog (
     val sinceLast: kotlin.Double,
 
     @SerialName(value = "options")
-    val options: LocalLoggerOptions
+    val options: LocalLoggerOptions,
+
+    @SerialName(value = "filenames")
+    val filenames: AppConstantsLogFilenames? = null
 
 ) {
 
