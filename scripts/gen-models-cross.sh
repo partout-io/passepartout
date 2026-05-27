@@ -7,6 +7,7 @@ set -e
 openapi=`realpath app-cross/openapi.yaml`
 models_dir=`realpath app-android/app`
 package_name=com.algoritmico.passepartout.abi.models
+extra_imports="ConnectionStatus,TaggedProfile"
 
 # Clean up
 rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/abi/models
@@ -24,7 +25,8 @@ for language in "kotlin"; do
         $openapi \
         $language \
         $models_dir \
-        $package_name
+        $package_name \
+        $extra_imports
 done
 
 # Exit package
