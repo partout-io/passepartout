@@ -46,7 +46,7 @@ extension ABI.AppError: @retroactive LocalizedError {
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
         case .timeout:
-            return Strings.Errors.App.Passepartout.timeout
+            return Strings.Errors.App.Partout.timeout
         case .unexpectedResponse:
             // Handled manually
             return nil
@@ -76,7 +76,7 @@ extension ABI.AppError: @retroactive LocalizedError {
 
 extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
-        let V = Strings.Errors.App.Passepartout.self
+        let V = Strings.Errors.App.Partout.self
         switch code {
         case .Providers.corruptModule:
             return V.corruptProviderModule(reason?.localizedDescription ?? "")

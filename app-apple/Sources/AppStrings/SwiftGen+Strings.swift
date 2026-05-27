@@ -124,36 +124,36 @@ public enum Strings {
       public static let tunnel = Strings.tr("Localizable", "errors.app.tunnel", fallback: "Unable to execute operation.")
       /// Unable to start the import. Make sure that your TV is properly connected to the local network.
       public static let webReceiver = Strings.tr("Localizable", "errors.app.web_receiver", fallback: "Unable to start the import. Make sure that your TV is properly connected to the local network.")
-      public enum Passepartout {
+      public enum Partout {
         /// Unable to connect to provider server (reason=%@).
         public static func corruptProviderModule(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.passepartout.corrupt_provider_module", String(describing: p1), fallback: "Unable to connect to provider server (reason=%@).")
+          return Strings.tr("Localizable", "errors.app.partout.corrupt_provider_module", String(describing: p1), fallback: "Unable to connect to provider server (reason=%@).")
         }
         /// Unable to complete operation (code=%@).
         public static func `default`(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.passepartout.default", String(describing: p1), fallback: "Unable to complete operation (code=%@).")
+          return Strings.tr("Localizable", "errors.app.partout.default", String(describing: p1), fallback: "Unable to complete operation (code=%@).")
         }
         /// Some active modules are incompatible, try to only activate one of them.
-        public static let incompatibleModules = Strings.tr("Localizable", "errors.app.passepartout.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
+        public static let incompatibleModules = Strings.tr("Localizable", "errors.app.partout.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
         /// Please finish the configuration of the %@ module.
         public static func incompleteModule(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.passepartout.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
+          return Strings.tr("Localizable", "errors.app.partout.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
         }
         /// Invalid fields.
-        public static let invalidFields = Strings.tr("Localizable", "errors.app.passepartout.invalid_fields", fallback: "Invalid fields.")
+        public static let invalidFields = Strings.tr("Localizable", "errors.app.partout.invalid_fields", fallback: "Invalid fields.")
         /// The profile has no active modules.
-        public static let noActiveModules = Strings.tr("Localizable", "errors.app.passepartout.no_active_modules", fallback: "The profile has no active modules.")
+        public static let noActiveModules = Strings.tr("Localizable", "errors.app.partout.no_active_modules", fallback: "The profile has no active modules.")
         /// Unable to parse.
-        public static let parsing = Strings.tr("Localizable", "errors.app.passepartout.parsing", fallback: "Unable to parse.")
+        public static let parsing = Strings.tr("Localizable", "errors.app.partout.parsing", fallback: "Unable to parse.")
         /// The operation timed out.
-        public static let timeout = Strings.tr("Localizable", "errors.app.passepartout.timeout", fallback: "The operation timed out.")
+        public static let timeout = Strings.tr("Localizable", "errors.app.partout.timeout", fallback: "The operation timed out.")
         public enum Openvpn {
           /// OpenVPN compression is unsafe and no longer supported.
-          public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.passepartout.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
+          public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.partout.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
         }
         public enum Wireguard {
           /// No peers defined.
-          public static let emptyPeers = Strings.tr("Localizable", "errors.app.passepartout.wireguard.empty_peers", fallback: "No peers defined.")
+          public static let emptyPeers = Strings.tr("Localizable", "errors.app.partout.wireguard.empty_peers", fallback: "No peers defined.")
         }
       }
     }
