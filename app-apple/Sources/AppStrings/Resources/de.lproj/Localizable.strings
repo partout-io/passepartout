@@ -36,7 +36,7 @@
 "errors.app.passepartout.invalid_fields" = "Ungültige Felder.";
 "errors.app.passepartout.missing_provider_entity" = "Kein Server beim Anbieter ausgewählt.";
 "errors.app.passepartout.no_active_modules" = "Das Profil hat keine aktiven Module.";
-"errors.app.passepartout.parsing" = "Datei konnte nicht analysiert werden.";
+"errors.app.passepartout.parsing" = "Konnte nicht analysiert werden.";
 "errors.app.passepartout.timeout" = "Die Operation hat das Zeitlimit überschritten.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "OpenVPN-Kompression ist unsicher und wird nicht mehr unterstützt.";
 "errors.app.passepartout.wireguard.empty_peers" = "Keine Peers definiert.";

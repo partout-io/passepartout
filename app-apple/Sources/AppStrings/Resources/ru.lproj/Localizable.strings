@@ -36,7 +36,7 @@
 "errors.app.passepartout.invalid_fields" = "Некорректные поля.";
 "errors.app.passepartout.missing_provider_entity" = "На провайдере не выбран сервер.";
 "errors.app.passepartout.no_active_modules" = "В профиле нет активных модулей.";
-"errors.app.passepartout.parsing" = "Не удалось разобрать файл.";
+"errors.app.passepartout.parsing" = "Не удалось разобрать.";
 "errors.app.passepartout.timeout" = "Время операции истекло.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "Сжатие OpenVPN небезопасно и больше не поддерживается.";
 "errors.app.passepartout.wireguard.empty_peers" = "Узлы не определены.";

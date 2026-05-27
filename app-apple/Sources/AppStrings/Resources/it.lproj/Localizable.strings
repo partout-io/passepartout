@@ -36,7 +36,7 @@
 "errors.app.passepartout.invalid_fields" = "Campi non validi.";
 "errors.app.passepartout.missing_provider_entity" = "Nessun server selezionato nel provider.";
 "errors.app.passepartout.no_active_modules" = "Il profilo non ha moduli attivi.";
-"errors.app.passepartout.parsing" = "Impossibile analizzare il file.";
+"errors.app.passepartout.parsing" = "Impossibile analizzare.";
 "errors.app.passepartout.timeout" = "L'operazione ha superato il tempo limite.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "La compressione OpenVPN non è sicura e non è più supportata.";
 "errors.app.passepartout.wireguard.empty_peers" = "Nessun peer definito.";
