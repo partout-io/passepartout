@@ -31,7 +31,6 @@ import kotlinx.serialization.Contextual
  * @param buildNumber 
  * @param customUserLevel 
  * @param bundleStrings 
- * @param reviewURL 
  */
 @Serializable
 
@@ -53,10 +52,7 @@ data class AppBundle (
     val customUserLevel: AppUserLevel? = null,
 
     @SerialName(value = "bundleStrings")
-    val bundleStrings: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
-
-    @SerialName(value = "reviewURL")
-    val reviewURL: kotlin.String? = null
+    val bundleStrings: kotlin.collections.Map<kotlin.String, kotlin.String>? = null
 
 ) {
 
