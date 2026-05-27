@@ -32,7 +32,9 @@ public struct ModuleShareGroup: View {
     }
 
     public var body: some View {
-        Button(Strings.Global.Actions.export, action: export)
+        Button(action: export) {
+            ThemeImageLabel(Strings.Global.Actions.export, .export)
+        }
         if isEligible {
             ModuleShareButton(file: file)
         }

@@ -24,6 +24,7 @@ public struct ModuleSendMenu: View {
     public var body: some View {
         ProfileSelectorMenu(
             Strings.Views.Ui.ModuleSend.title,
+            image: .copy,
             withNewTitle: newProfileName,
             excluding: profileId,
             onSelect: sendModule(to:)
