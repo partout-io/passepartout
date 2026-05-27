@@ -5,6 +5,9 @@ set -e
 build_dir=.cmake
 bin_dir=bin
 
+root_dir="$(dirname "$0")"/..
+pushd $root_dir
+
 positional_args=()
 cmake_opts=()
 while [[ $# -gt 0 ]]; do
@@ -56,4 +59,6 @@ else
     pushd $build_dir
 fi
 cmake --build .
+popd
+
 popd
