@@ -39,6 +39,7 @@
 "errors.app.passepartout.parsing" = "No se pudo analizar el archivo.";
 "errors.app.passepartout.timeout" = "La operación agotó el tiempo de espera.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "La compresión de OpenVPN no es segura y ya no se admite.";
+"errors.app.passepartout.wireguard.empty_peers" = "No se han definido pares.";
 "errors.app.permission_denied" = "Permiso denegado";
 "errors.app.tunnel" = "No se pudo ejecutar la operación.";
 "errors.app.web_receiver" = "No se puede iniciar la importación. Asegúrate de que tu TV esté correctamente conectada a la red local.";

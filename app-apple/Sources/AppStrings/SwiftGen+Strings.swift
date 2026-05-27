@@ -151,6 +151,10 @@ public enum Strings {
           /// OpenVPN compression is unsafe and no longer supported.
           public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.passepartout.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
         }
+        public enum Wireguard {
+          /// No peers defined.
+          public static let emptyPeers = Strings.tr("Localizable", "errors.app.passepartout.wireguard.empty_peers", fallback: "No peers defined.")
+        }
       }
     }
     public enum Modules {

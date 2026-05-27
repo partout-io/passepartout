@@ -39,6 +39,7 @@
 "errors.app.passepartout.parsing" = "无法解析文件。";
 "errors.app.passepartout.timeout" = "操作超时。";
 "errors.app.passepartout.openvpn.unsupported_compression" = "OpenVPN 压缩不安全，已不再受支持。";
+"errors.app.passepartout.wireguard.empty_peers" = "未定义对等端。";
 "errors.app.permission_denied" = "权限被拒绝";
 "errors.app.tunnel" = "无法执行操作。";
 "errors.app.web_receiver" = "无法启动导入。请确保您的电视已正确连接到本地网络。";

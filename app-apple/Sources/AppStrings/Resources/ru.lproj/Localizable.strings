@@ -39,6 +39,7 @@
 "errors.app.passepartout.parsing" = "Не удалось разобрать файл.";
 "errors.app.passepartout.timeout" = "Время операции истекло.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "Сжатие OpenVPN небезопасно и больше не поддерживается.";
+"errors.app.passepartout.wireguard.empty_peers" = "Узлы не определены.";
 "errors.app.permission_denied" = "Доступ запрещен";
 "errors.app.tunnel" = "Не удалось выполнить операцию.";
 "errors.app.web_receiver" = "Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.";

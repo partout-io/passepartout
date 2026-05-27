@@ -39,6 +39,7 @@
 "errors.app.passepartout.parsing" = "Impossible d'analyser le fichier.";
 "errors.app.passepartout.timeout" = "L'opération a expiré.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "La compression OpenVPN n'est pas sûre et n'est plus prise en charge.";
+"errors.app.passepartout.wireguard.empty_peers" = "Aucun pair défini.";
 "errors.app.permission_denied" = "Permission refusée";
 "errors.app.tunnel" = "Impossible d'exécuter l'opération.";
 "errors.app.web_receiver" = "Impossible de démarrer l'importation. Assurez-vous que votre téléviseur est correctement connecté au réseau local.";

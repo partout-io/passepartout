@@ -458,6 +458,7 @@
 "errors.app.passepartout.openvpn.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";
 "errors.app.passepartout.parsing" = "Unable to parse file.";
 "errors.app.passepartout.timeout" = "The operation timed out.";
+"errors.app.passepartout.wireguard.empty_peers" = "No peers defined.";
 
 "errors.tunnel.auth" = "Auth failed";
 "errors.tunnel.compression" = "Compression unsupported";
