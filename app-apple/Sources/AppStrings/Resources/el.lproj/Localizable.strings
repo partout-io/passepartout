@@ -36,9 +36,10 @@
 "errors.app.passepartout.invalid_fields" = "Μη έγκυρα πεδία.";
 "errors.app.passepartout.missing_provider_entity" = "Δεν επιλέχθηκε διακομιστής στον πάροχο.";
 "errors.app.passepartout.no_active_modules" = "Το προφίλ δεν έχει ενεργές μονάδες.";
-"errors.app.passepartout.parsing" = "Δεν ήταν δυνατή η ανάλυση αρχείου.";
+"errors.app.passepartout.parsing" = "Δεν ήταν δυνατή η ανάλυση.";
 "errors.app.passepartout.timeout" = "Η λειτουργία έληξε λόγω χρονικού ορίου.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "Η συμπίεση OpenVPN δεν είναι ασφαλής και δεν υποστηρίζεται πλέον.";
+"errors.app.passepartout.wireguard.empty_peers" = "Δεν έχουν οριστεί ομότιμοι.";
 "errors.app.permission_denied" = "Άρνηση άδειας";
 "errors.app.tunnel" = "Δεν ήταν δυνατή η εκτέλεση της ενέργειας.";
 "errors.app.web_receiver" = "Δεν είναι δυνατή η εκκίνηση της εισαγωγής. Βεβαιωθείτε ότι η τηλεόρασή σας είναι σωστά συνδεδεμένη στο τοπικό δίκτυο.";

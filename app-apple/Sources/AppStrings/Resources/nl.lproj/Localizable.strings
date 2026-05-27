@@ -36,9 +36,10 @@
 "errors.app.passepartout.invalid_fields" = "Ongeldige velden.";
 "errors.app.passepartout.missing_provider_entity" = "Geen server geselecteerd bij provider.";
 "errors.app.passepartout.no_active_modules" = "Het profiel heeft geen actieve modules.";
-"errors.app.passepartout.parsing" = "Kan bestand niet parseren.";
+"errors.app.passepartout.parsing" = "Kan niet parseren.";
 "errors.app.passepartout.timeout" = "De bewerking is verlopen.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "OpenVPN-compressie is onveilig en wordt niet meer ondersteund.";
+"errors.app.passepartout.wireguard.empty_peers" = "Geen peers gedefinieerd.";
 "errors.app.permission_denied" = "Toegang geweigerd";
 "errors.app.tunnel" = "Actie kan niet worden uitgevoerd.";
 "errors.app.web_receiver" = "Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.";

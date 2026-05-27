@@ -36,9 +36,10 @@
 "errors.app.passepartout.invalid_fields" = "Campos inválidos.";
 "errors.app.passepartout.missing_provider_entity" = "Nenhum servidor selecionado no provedor.";
 "errors.app.passepartout.no_active_modules" = "O perfil não possui módulos ativos.";
-"errors.app.passepartout.parsing" = "Não foi possível analisar o arquivo.";
+"errors.app.passepartout.parsing" = "Não foi possível analisar.";
 "errors.app.passepartout.timeout" = "A operação expirou.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "A compressão OpenVPN não é segura e não é mais suportada.";
+"errors.app.passepartout.wireguard.empty_peers" = "Nenhum peer definido.";
 "errors.app.permission_denied" = "Permissão negada";
 "errors.app.tunnel" = "Não foi possível executar a operação.";
 "errors.app.web_receiver" = "Não é possível iniciar a importação. Certifique-se de que sua TV esteja devidamente conectada à rede local.";

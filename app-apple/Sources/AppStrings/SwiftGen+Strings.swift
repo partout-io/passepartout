@@ -143,13 +143,17 @@ public enum Strings {
         public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.passepartout.missing_provider_entity", fallback: "No server selected in provider.")
         /// The profile has no active modules.
         public static let noActiveModules = Strings.tr("Localizable", "errors.app.passepartout.no_active_modules", fallback: "The profile has no active modules.")
-        /// Unable to parse file.
-        public static let parsing = Strings.tr("Localizable", "errors.app.passepartout.parsing", fallback: "Unable to parse file.")
+        /// Unable to parse.
+        public static let parsing = Strings.tr("Localizable", "errors.app.passepartout.parsing", fallback: "Unable to parse.")
         /// The operation timed out.
         public static let timeout = Strings.tr("Localizable", "errors.app.passepartout.timeout", fallback: "The operation timed out.")
         public enum Openvpn {
           /// OpenVPN compression is unsafe and no longer supported.
           public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.passepartout.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
+        }
+        public enum Wireguard {
+          /// No peers defined.
+          public static let emptyPeers = Strings.tr("Localizable", "errors.app.passepartout.wireguard.empty_peers", fallback: "No peers defined.")
         }
       }
     }

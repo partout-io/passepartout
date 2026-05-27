@@ -36,9 +36,10 @@
 "errors.app.passepartout.invalid_fields" = "Ogiltiga fält.";
 "errors.app.passepartout.missing_provider_entity" = "Ingen server vald hos leverantören.";
 "errors.app.passepartout.no_active_modules" = "Profilen har inga aktiva moduler.";
-"errors.app.passepartout.parsing" = "Kan inte tolka filen.";
+"errors.app.passepartout.parsing" = "Kan inte tolka.";
 "errors.app.passepartout.timeout" = "Åtgärden tog för lång tid.";
 "errors.app.passepartout.openvpn.unsupported_compression" = "OpenVPN-komprimering är osäker och stöds inte längre.";
+"errors.app.passepartout.wireguard.empty_peers" = "Inga peers definierade.";
 "errors.app.permission_denied" = "Åtkomst nekad";
 "errors.app.tunnel" = "Kunde inte utföra åtgärden.";
 "errors.app.web_receiver" = "Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.";

@@ -118,6 +118,9 @@ extension PartoutError: @retroactive LocalizedError {
         case .timeout:
             return V.timeout
 
+        case .WireGuard.emptyPeers:
+            return V.Wireguard.emptyPeers
+
         case .unhandled:
             return reason?.localizedDescription
 
