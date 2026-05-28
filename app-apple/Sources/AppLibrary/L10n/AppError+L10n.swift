@@ -35,6 +35,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             )
         case .notFound:
             return nil
+        case .other(let error):
+            return error.localizedDescription
         case .partout(let error):
             return error.localizedDescription
         case .permissionDenied:
@@ -49,8 +51,6 @@ extension ABI.AppError: @retroactive LocalizedError {
             return Strings.Errors.App.Partout.timeout
         case .unexpectedResponse:
             // Handled manually
-            return nil
-        case .unknown:
             return nil
         case .urlRequestUnavailable, .urlRequestFailed:
             return nil

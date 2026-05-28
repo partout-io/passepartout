@@ -31,6 +31,8 @@ extension ABI {
 
         case notFound
 
+        case other(Error)
+
         case partout(PartoutError)
 
         case permissionDenied
@@ -44,8 +46,6 @@ extension ABI {
         case timeout
 
         case unexpectedResponse
-
-        case unknown
 
         case urlRequestFailed(reason: Error?)
 
@@ -62,8 +62,10 @@ extension ABI {
         public init(_ error: Error) {
             if let spError = error as? AppError {
                 self = spError
+            } else if let partoutError = error as? PartoutError {
+                self = .partout(partoutError)
             } else {
-                self = .partout(PartoutError(error))
+                self = .other(error)
             }
         }
     }
