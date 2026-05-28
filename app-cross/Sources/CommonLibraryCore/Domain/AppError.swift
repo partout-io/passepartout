@@ -15,6 +15,8 @@ extension ABI {
 
         case encoding(reason: Error? = nil)
 
+        case importError
+
         case ineligibleProfile(Set<AppFeature>)
 
         case interactiveLogin
