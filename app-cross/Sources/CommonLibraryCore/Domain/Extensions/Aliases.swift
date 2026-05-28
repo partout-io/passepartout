@@ -6,6 +6,7 @@ extension ABI {
     public typealias AppBundle = OpenAPIAppBundle
     public typealias AppConfiguration = OpenAPIAppConfiguration
     public typealias AppConstants = OpenAPIAppConstants
+    public typealias AppErrorCode = OpenAPIAppErrorCode
     public typealias AppFeature = OpenAPIAppFeature
     public typealias AppPreferenceKey = OpenAPIAppPreferenceKey
     public typealias AppPreferences = OpenAPIAppPreferences

@@ -23,8 +23,12 @@ extension ABI {
     // Following psp_completion:
     //
     // Code == 0 -> Success, String = JSON payload
-    // Code != 0 -> Failure, String = Error message
-    typealias RunCallback = @Sendable (_ code: Int32, _ string: String?) -> Void
+    // Code != 0 -> Failure, Optional Error
+    typealias RunCallback = @Sendable (
+        _ code: Int32,
+        _ payload: String?,
+        _ error: Error?
+    ) -> Void
 
     // Run ABI initialization synchronously.
     //
@@ -87,14 +91,102 @@ extension ABI {
         Task { @Sendable @BusinessActor in
             let runCallback: RunCallback?
             if let cb = completion.callback {
-                runCallback = { code, json in
-                    cb(completion.ctx, code, json)
+                runCallback = { code, result, error in
+                    let payload: String?
+                    if let error {
+                        payload = try? ABI.encodeJSON(AppError(error))
+                    } else {
+                        payload = result
+                    }
+                    cb(completion.ctx, code, payload)
                 }
             } else {
                 runCallback = nil
             }
             await block(runCallback)
         }
+    }
+}
+
+extension ABI.AppError: Encodable {
+    private enum CodingKeys: CodingKey {
+        case code
+        case description
+    }
+
+    public var code: ABI.AppErrorCode {
+        switch self {
+        case .corruptProviderModule:
+            return .corruptProviderModule
+        case .couldNotLaunch:
+            return .couldNotLaunch
+        case .emptyProducts:
+            return .emptyProducts
+        case .emptyProfileName:
+            return .emptyProfileName
+        case .encoding:
+            return .encoding
+        case .importError:
+            return .importError
+        case .incompatibleModules:
+            return .incompatibleModules
+        case .incompleteModule:
+            return .incompleteModule
+        case .ineligibleProfile:
+            return .ineligibleProfile
+        case .interactiveLogin:
+            return .interactiveLogin
+        case .invalidField:
+            return .invalidField
+        case .malformedModule:
+            return .malformedModule
+        case .missingProviderEntity:
+            return .missingProviderEntity
+        case .moduleRequiresConnection:
+            return .moduleRequiresConnection
+        case .noActiveModules:
+            return .noActiveModules
+        case .notFound:
+            return .notFound
+        case .openVPNPassphraseRequired:
+            return .openVPNPassphraseRequired
+        case .openVPNUnsupportedCompression:
+            return .openVPNUnsupportedCompression
+        case .other:
+            return .other
+        case .partout:
+            return .partout
+        case .permissionDenied:
+            return .permissionDenied
+        case .rateLimit:
+            return .rateLimit
+        case .systemExtension:
+            return .systemExtension
+        case .timeout:
+            return .timeout
+        case .unexpectedResponse:
+            return .unexpectedResponse
+        case .urlRequestFailed:
+            return .urlRequestFailed
+        case .urlRequestUnavailable:
+            return .urlRequestUnavailable
+        case .verificationReceiptIsLoading:
+            return .verificationReceiptIsLoading
+        case .verificationRequiredFeatures:
+            return .verificationRequiredFeatures
+        case .webReceiver:
+            return .webReceiver
+        case .webUploader:
+            return .webUploader
+        case .wireGuardEmptyPeers:
+            return .wireGuardEmptyPeers
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(code, forKey: .code)
+        try container.encode(localizedDescription, forKey: .description)
     }
 }
 

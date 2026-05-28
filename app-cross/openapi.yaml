@@ -241,6 +241,74 @@ components:
       - interval
       - attempts
       - retryInterval
+    AppErrorCode:
+      type: string
+      x-enum-varnames:
+      - corruptProviderModule
+      - couldNotLaunch
+      - emptyProducts
+      - emptyProfileName
+      - encoding
+      - importError
+      - incompatibleModules
+      - incompleteModule
+      - ineligibleProfile
+      - interactiveLogin
+      - invalidField
+      - malformedModule
+      - missingProviderEntity
+      - moduleRequiresConnection
+      - noActiveModules
+      - notFound
+      - openVPNPassphraseRequired
+      - openVPNUnsupportedCompression
+      - other
+      - partout
+      - permissionDenied
+      - rateLimit
+      - systemExtension
+      - timeout
+      - unexpectedResponse
+      - urlRequestFailed
+      - urlRequestUnavailable
+      - verificationReceiptIsLoading
+      - verificationRequiredFeatures
+      - webReceiver
+      - webUploader
+      - wireGuardEmptyPeers
+      enum:
+      - corruptProviderModule
+      - couldNotLaunch
+      - emptyProducts
+      - emptyProfileName
+      - encoding
+      - importError
+      - incompatibleModules
+      - incompleteModule
+      - ineligibleProfile
+      - interactiveLogin
+      - invalidField
+      - malformedModule
+      - missingProviderEntity
+      - moduleRequiresConnection
+      - noActiveModules
+      - notFound
+      - openVPNPassphraseRequired
+      - openVPNUnsupportedCompression
+      - other
+      - partout
+      - permissionDenied
+      - rateLimit
+      - systemExtension
+      - timeout
+      - unexpectedResponse
+      - urlRequestFailed
+      - urlRequestUnavailable
+      - verificationReceiptIsLoading
+      - verificationRequiredFeatures
+      - webReceiver
+      - webUploader
+      - wireGuardEmptyPeers
     AppFeature:
       type: string
       x-enum-varnames:
