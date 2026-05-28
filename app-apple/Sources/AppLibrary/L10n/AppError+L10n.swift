@@ -63,7 +63,7 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .other(let error):
             return error?.localizedDescription
         case .partout(let error):
-            return error.localizedDescription
+            return Strings.Errors.App.Partout.default(error.code.rawValue)
         case .permissionDenied:
             return V.permissionDenied
         case .rateLimit:
@@ -96,14 +96,6 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .wireGuardEmptyPeers:
             return V.Partout.Wireguard.emptyPeers
         }
-    }
-}
-
-// MARK: - App side
-
-extension PartoutError: @retroactive LocalizedError {
-    public var errorDescription: String? {
-        Strings.Errors.App.Partout.default(code.rawValue)
     }
 }
 
