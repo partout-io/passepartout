@@ -1,4 +1,1 @@
-* WireGuard: Fix potential regression on device wake-up
-* WireGuard: Fix ugly message when no peers defined (#1841)
-* Profile: Add missing icons in module menu (#1840)
-* Core: Fix new version banner not always appearing (#1833)
+* Core: Wrap Partout errors for cleaner error handling (#1696)
