@@ -14,7 +14,9 @@ extension ABI.AppError: @retroactive LocalizedError {
         let V = Strings.Errors.App.self
         switch self {
         case .corruptProviderModule(let reason):
-            return V.corruptProviderModule(reason?.localizedDescription ?? "?")
+            return V.corruptProviderModule(
+                reason?.appLocalizedDescription ?? "?"
+            )
         case .couldNotLaunch(let reason):
             return reason.localizedDescription
         case .emptyProducts:
@@ -43,7 +45,7 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .malformedModule(let module, let error):
             return V.malformedModule(
                 module.moduleType.localizedDescription,
-                Self(error).localizedDescription
+                error.appLocalizedDescription
             )
         case .missingProviderEntity:
             return V.missingProviderEntity
@@ -103,6 +105,19 @@ extension ABI.AppError: @retroactive LocalizedError {
             }
         case .wireGuardEmptyPeers:
             return V.Wireguard.emptyPeers
+        }
+    }
+}
+
+private extension Error {
+    var appLocalizedDescription: String {
+        switch self {
+        case let error as ABI.AppError:
+            return error.localizedDescription
+        case let error as PartoutError:
+            return ABI.AppError(error).localizedDescription
+        default:
+            return localizedDescription
         }
     }
 }
