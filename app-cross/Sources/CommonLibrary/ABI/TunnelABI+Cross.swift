@@ -47,25 +47,20 @@ extension TunnelABI {
             ref: bindings.controller,
             environment: environment
         )
-        let betterPathBlock: BetterPathBlock
+        let betterPathFactory: BetterPathStreamFactory
 #if !PSP_CROSS
-        betterPathBlock = NEBetterPathBlock(ctx).block
+        betterPathFactory = NEBetterPathStreamFactory(ctx)
 #else
-        betterPathBlock = {
-            // FIXME: #1827, Cross, Better path block
-            PassthroughStream()
-        }
+        betterPathFactory = controller.betterPathFactory
 #endif
-        let factory = BSDSocketFactory(ctx, betterPathBlock: betterPathBlock)
-        // FIXME: #1827, Cross, Reachability observer
-        let reachability = DummyReachabilityObserver()
+        let factory = BSDSocketFactory(ctx, betterPathFactory: betterPathFactory)
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(
             profile: profile,
             controller: controller,
             factory: factory,
-            reachability: reachability,
+            reachability: controller,
             environment: environment,
             options: connectionOptions
         )
