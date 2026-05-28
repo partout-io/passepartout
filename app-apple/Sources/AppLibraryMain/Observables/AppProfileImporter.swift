@@ -32,11 +32,14 @@ final class AppProfileImporter {
                     withPassphrase: nil,
                     block: block
                 )
-            } catch {
-                if (error as? PartoutError)?.code == .OpenVPN.passphraseRequired {
+            } catch let error as PartoutError {
+                if error.code == .OpenVPN.passphraseRequired {
                     withPassphrase.append(url)
                     continue
                 }
+                pspLog(.core, .fault, "Unable to import URL: \(error)")
+                throw error
+            } catch {
                 pspLog(.core, .fault, "Unable to import URL: \(error)")
                 throw error
             }
