@@ -33,12 +33,15 @@ final class AppProfileImporter {
                     block: block
                 )
             } catch {
-                if (error as? PartoutError)?.code == .OpenVPN.passphraseRequired {
+                let appError = ABI.AppError(error)
+                switch appError {
+                case .openVPNPassphraseRequired:
                     withPassphrase.append(url)
                     continue
+                default:
+                    pspLog(.core, .fault, "Unable to import URL: \(error)")
+                    throw appError
                 }
-                pspLog(.core, .fault, "Unable to import URL: \(error)")
-                throw error
             }
         }
 

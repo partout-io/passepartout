@@ -43,7 +43,8 @@ private extension ModuleSendMenu {
                 var destination: Profile.Builder
                 if let header {
                     guard let existingDestination = profileObservable.profile(withId: header.id) else {
-                        throw PartoutError(.notFound)
+                        assertionFailure("Destination profile not found: \(header.id)")
+                        throw ABI.AppError.notFound
                     }
                     destination = existingDestination.builder()
                 } else {
