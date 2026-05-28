@@ -105,6 +105,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsTunnelVerificationPa
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsUrl.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebReceiver.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstantsWebsites.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppErrorCode.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppFeature.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferenceKey.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppPreferences.swift
