@@ -35,6 +35,8 @@ extension ABI {
 
         case permissionDenied
 
+        case profileNotFound
+
         case rateLimit
 
         case systemExtension(ExtensionInstallerResult)
