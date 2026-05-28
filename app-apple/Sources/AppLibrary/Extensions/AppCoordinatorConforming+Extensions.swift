@@ -12,23 +12,27 @@ extension AppCoordinatorConforming {
                 try iapObservable.verify(profile, extra: nil)
             }
             try await tunnel.connect(to: profile, force: force)
-        } catch ABI.AppError.ineligibleProfile(let requiredFeatures) {
-            onPurchaseRequired(for: profile, features: requiredFeatures) {
-                Task {
-                    await onConnect(profile, force: force, verify: false)
-                }
-            }
-        } catch ABI.AppError.interactiveLogin {
-            onInteractiveLogin(profile) { newProfile in
-                Task {
-                    // Force to not re-present the interactive login
-                    await onConnect(newProfile, force: true, verify: verify)
-                }
-            }
-        } catch ABI.AppError.missingProviderEntity {
-            onProviderEntityRequired(profile, force: force)
         } catch {
-            onError(error, profile: profile)
+            let appError = ABI.AppError(error)
+            switch appError {
+            case .ineligibleProfile(let requiredFeatures):
+                onPurchaseRequired(for: profile, features: requiredFeatures) {
+                    Task {
+                        await onConnect(profile, force: force, verify: false)
+                    }
+                }
+            case .interactiveLogin:
+                onInteractiveLogin(profile) { newProfile in
+                    Task {
+                        // Force to not re-present the interactive login
+                        await onConnect(newProfile, force: true, verify: verify)
+                    }
+                }
+            case .missingProviderEntity:
+                onProviderEntityRequired(profile, force: force)
+            default:
+                onError(appError, profile: profile)
+            }
         }
     }
 

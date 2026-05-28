@@ -451,8 +451,8 @@
 
 "errors.app.partout.corrupt_provider_module" = "Unable to connect to provider server (reason=%@).";
 "errors.app.partout.default" = "Unable to complete operation (code=%@).";
-"errors.app.partout.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
-"errors.app.partout.incomplete_module" = "Please finish the configuration of the %@ module.";
+"errors.app.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
+"errors.app.incomplete_module" = "Please finish the configuration of the %@ module.";
 "errors.app.partout.invalid_fields" = "Invalid fields.";
 "errors.app.partout.no_active_modules" = "The profile has no active modules.";
 "errors.app.partout.openvpn.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";

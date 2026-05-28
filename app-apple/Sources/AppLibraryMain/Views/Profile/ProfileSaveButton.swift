@@ -21,22 +21,10 @@ struct ProfileSaveButton: View {
                     errorModuleIds = []
                 } catch {
                     switch ABI.AppError(error) {
-                    case .partout(let ppError):
-                        switch ppError.code {
-                        case .incompatibleModules:
-                            guard let modules = ppError.userInfo as? [Module] else {
-                                errorModuleIds = []
-                                return
-                            }
-                            errorModuleIds = Set(modules.map(\.id))
-
-                        default:
-                            errorModuleIds = []
-                        }
-
+                    case .incompatibleModules(let modules):
+                        errorModuleIds = Set(modules.map(\.id))
                     case .malformedModule(let module, _):
                         errorModuleIds = [module.id]
-
                     default:
                         errorModuleIds = []
                     }

@@ -108,6 +108,12 @@ public enum Strings {
       public static let emptyProfileName = Strings.tr("Localizable", "errors.app.empty_profile_name", fallback: "Profile name is empty.")
       /// Unable to import profiles.
       public static let `import` = Strings.tr("Localizable", "errors.app.import", fallback: "Unable to import profiles.")
+      /// Some active modules are incompatible, try to only activate one of them.
+      public static let incompatibleModules = Strings.tr("Localizable", "errors.app.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
+      /// Please finish the configuration of the %@ module.
+      public static func incompleteModule(_ p1: Any) -> String {
+        return Strings.tr("Localizable", "errors.app.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
+      }
       /// Module %@ is malformed. %@
       public static func malformedModule(_ p1: Any, _ p2: Any) -> String {
         return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@")
@@ -132,12 +138,6 @@ public enum Strings {
         /// Unable to complete operation (code=%@).
         public static func `default`(_ p1: Any) -> String {
           return Strings.tr("Localizable", "errors.app.partout.default", String(describing: p1), fallback: "Unable to complete operation (code=%@).")
-        }
-        /// Some active modules are incompatible, try to only activate one of them.
-        public static let incompatibleModules = Strings.tr("Localizable", "errors.app.partout.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
-        /// Please finish the configuration of the %@ module.
-        public static func incompleteModule(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.partout.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
         }
         /// Invalid fields.
         public static let invalidFields = Strings.tr("Localizable", "errors.app.partout.invalid_fields", fallback: "Invalid fields.")

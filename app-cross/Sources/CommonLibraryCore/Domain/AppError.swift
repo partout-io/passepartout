@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-// FIXME: #1696, Wrap PartoutError
 import Partout
 
 extension ABI {
@@ -16,6 +15,10 @@ extension ABI {
         case encoding(reason: Error? = nil)
 
         case importError
+
+        case incompatibleModules([Module])
+
+        case incompleteModule(ModuleBuilder)
 
         case ineligibleProfile(Set<AppFeature>)
 
@@ -31,13 +34,13 @@ extension ABI {
 
         case notFound
 
+        case openVPNPassphraseRequired
+
         case other(Error)
 
         case partout(PartoutError)
 
         case permissionDenied
-
-        case profileNotFound
 
         case rateLimit
 
@@ -63,7 +66,27 @@ extension ABI {
             if let spError = error as? AppError {
                 self = spError
             } else if let partoutError = error as? PartoutError {
-                self = .partout(partoutError)
+                // Specialize some codes
+                switch partoutError.code {
+                case .incompatibleModules:
+                    let modules = partoutError.userInfo as? [Module] ?? []
+                    self = .incompatibleModules(modules)
+                case .incompleteModule:
+                    guard let builder = partoutError.userInfo as? any ModuleBuilder else {
+                        assertionFailure("Missing ModuleBuilder from .incompleteModule userInfo")
+                        self = .partout(partoutError)
+                        return
+                    }
+                    self = .incompleteModule(builder)
+                case .OpenVPN.passphraseRequired:
+                    self = .openVPNPassphraseRequired
+                case .Providers.missingEntity:
+                    self = .missingProviderEntity
+                case .unknownImportedModule:
+                    self = .importError
+                default:
+                    self = .partout(partoutError)
+                }
             } else {
                 self = .other(error)
             }

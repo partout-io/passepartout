@@ -18,6 +18,12 @@ extension ABI.AppError: @retroactive LocalizedError {
             return V.emptyProfileName
         case .encoding(let reason):
             return reason?.localizedDescription
+        case .importError:
+            return V.Partout.parsing
+        case .incompatibleModules:
+            return V.incompatibleModules
+        case .incompleteModule(let builder):
+            return V.incompleteModule(builder.moduleType.localizedDescription)
         case .ineligibleProfile:
             return nil
         case .interactiveLogin:
@@ -33,7 +39,13 @@ extension ABI.AppError: @retroactive LocalizedError {
                     .map(\.localizedDescription)
                     .joined(separator: ", ")
             )
+        case .noActiveModules:
+            return V.Partout.noActiveModules
         case .notFound:
+            // Typically asserts
+            return nil
+        case .openVPNPassphraseRequired:
+            // Handled manually
             return nil
         case .other(let error):
             return error.localizedDescription
@@ -80,15 +92,6 @@ extension PartoutError: @retroactive LocalizedError {
         switch code {
         case .Providers.corruptModule:
             return V.corruptProviderModule(reason?.localizedDescription ?? "")
-
-        case .incompatibleModules:
-            return V.incompatibleModules
-
-        case .incompleteModule:
-            guard let builder = userInfo as? any ModuleBuilder else {
-                break
-            }
-            return V.incompleteModule(builder.moduleType.localizedDescription)
 
         case .invalidField:
             guard let userInfo = userInfo as? PartoutError.ModuleField else {
@@ -144,34 +147,24 @@ extension PartoutError.Code: StyledLocalizableEntity {
             switch self {
             case .App.ineligibleProfile:
                 return V.ineligible
-
             case .authentication:
                 return V.auth
-
             case .crypto:
                 return V.encryption
-
             case .dnsFailure:
                 return V.dns
-
             case .timeout:
                 return Strings.Global.Nouns.timeout
-
             case .OpenVPN.compressionMismatch:
                 return V.compression
-
             case .OpenVPN.noRouting:
                 return V.routing
-
             case .OpenVPN.recoverableAuthentication:
                 return Strings.Entities.TunnelStatus.activating
-
             case .OpenVPN.serverShutdown:
                 return V.shutdown
-
             case .OpenVPN.tlsFailure:
                 return V.tls
-
             default:
                 return V.generic
             }

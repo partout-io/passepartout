@@ -52,14 +52,9 @@ private extension WireGuardView.ImportModifier {
             let parsed: Module
             do {
                 parsed = try impl.importerBlock().module(fromURL: url, object: nil)
-            } catch let error as PartoutError {
+            } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
-                switch error.code {
-                case .unknownImportedModule:
-                    throw ABI.AppError.importError
-                default:
-                    throw error
-                }
+                throw ABI.AppError(error)
             }
             guard let module = parsed as? WireGuardModule else {
                 throw ABI.AppError.importError

@@ -82,16 +82,7 @@ extension TunnelObservable {
             let encodedPreferences = try ABI.encode(preferences.serialized())
             options[Options.appPreferences] = encodedPreferences as NSData
         }
-        do {
-            try await tunnel.install(profile, connect: connect, options: options)
-        } catch let error as PartoutError {
-            switch error.code {
-            case .Providers.missingEntity:
-                throw ABI.AppError.missingProviderEntity
-            default:
-                throw error
-            }
-        }
+        try await tunnel.install(profile, connect: connect, options: options)
     }
 
     public func disconnect(from profileId: Profile.ID) async throws {
