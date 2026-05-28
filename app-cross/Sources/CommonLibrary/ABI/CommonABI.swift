@@ -110,11 +110,82 @@ extension ABI {
 
 extension ABI.AppError: Encodable {
     private enum CodingKeys: CodingKey {
+        case code
         case description
+    }
+
+    public var code: ABI.AppErrorCode {
+        switch self {
+        case .corruptProviderModule(reason: _):
+            return .corruptProviderModule
+        case .couldNotLaunch(reason: _):
+            return .couldNotLaunch
+        case .emptyProducts:
+            return .emptyProducts
+        case .emptyProfileName:
+            return .emptyProfileName
+        case .encoding(reason: _):
+            return .encoding
+        case .importError(message: _):
+            return .importError
+        case .incompatibleModules(_):
+            return .incompatibleModules
+        case .incompleteModule(_):
+            return .incompleteModule
+        case .ineligibleProfile(_):
+            return .ineligibleProfile
+        case .interactiveLogin:
+            return .interactiveLogin
+        case .invalidField(stringKey: _):
+            return .invalidField
+        case .malformedModule(_, reason: _):
+            return .malformedModule
+        case .missingProviderEntity:
+            return .missingProviderEntity
+        case .moduleRequiresConnection(_):
+            return .moduleRequiresConnection
+        case .noActiveModules:
+            return .noActiveModules
+        case .notFound:
+            return .notFound
+        case .openVPNPassphraseRequired:
+            return .openVPNPassphraseRequired
+        case .openVPNUnsupportedCompression(option: _):
+            return .openVPNUnsupportedCompression
+        case .other(_):
+            return .other
+        case .partout(_):
+            return .partout
+        case .permissionDenied:
+            return .permissionDenied
+        case .rateLimit:
+            return .rateLimit
+        case .systemExtension(_):
+            return .systemExtension
+        case .timeout:
+            return .timeout
+        case .unexpectedResponse:
+            return .unexpectedResponse
+        case .urlRequestFailed(reason: _):
+            return .urlRequestFailed
+        case .urlRequestUnavailable:
+            return .urlRequestUnavailable
+        case .verificationReceiptIsLoading:
+            return .verificationReceiptIsLoading
+        case .verificationRequiredFeatures(_):
+            return .verificationRequiredFeatures
+        case .webReceiver(_):
+            return .webReceiver
+        case .webUploader(_, _):
+            return .webUploader
+        case .wireGuardEmptyPeers:
+            return .wireGuardEmptyPeers
+        }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(code, forKey: .code)
         try container.encode(localizedDescription, forKey: .description)
     }
 }
