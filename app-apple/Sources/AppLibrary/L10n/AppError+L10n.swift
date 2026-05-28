@@ -14,7 +14,7 @@ extension ABI.AppError: @retroactive LocalizedError {
         let V = Strings.Errors.App.self
         switch self {
         case .corruptProviderModule(let reason):
-            return V.Partout.corruptProviderModule(reason?.localizedDescription ?? "?")
+            return V.corruptProviderModule(reason?.localizedDescription ?? "?")
         case .couldNotLaunch(let reason):
             return reason.localizedDescription
         case .emptyProducts:
@@ -24,7 +24,7 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .encoding(let reason):
             return reason?.localizedDescription
         case .importError(let message):
-            return [V.Partout.parsing, message]
+            return [V.parsing, message]
                 .compactMap { $0 }
                 .joined(separator: " ")
         case .incompatibleModules:
@@ -52,7 +52,7 @@ extension ABI.AppError: @retroactive LocalizedError {
                     .joined(separator: ", ")
             )
         case .noActiveModules:
-            return V.Partout.noActiveModules
+            return V.noActiveModules
         case .notFound:
             // Typically asserts
             return nil
@@ -60,13 +60,13 @@ extension ABI.AppError: @retroactive LocalizedError {
             // Handled manually
             return nil
         case .openVPNUnsupportedCompression(let option):
-            return [V.Partout.Openvpn.unsupportedCompression, option]
+            return [V.Openvpn.unsupportedCompression, option]
                 .compactMap { $0 }
                 .joined(separator: "\n\n")
         case .other(let error):
             return error?.localizedDescription
         case .partout(let error):
-            return Strings.Errors.App.Partout.default(error.code.rawValue)
+            return V.partout(error.code.rawValue)
         case .permissionDenied:
             return V.permissionDenied
         case .rateLimit:
@@ -76,7 +76,7 @@ extension ABI.AppError: @retroactive LocalizedError {
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
         case .timeout:
-            return V.Partout.timeout
+            return V.timeout
         case .unexpectedResponse:
             // Handled manually
             return nil
@@ -97,7 +97,7 @@ extension ABI.AppError: @retroactive LocalizedError {
                 return error?.localizedDescription
             }
         case .wireGuardEmptyPeers:
-            return V.Partout.Wireguard.emptyPeers
+            return V.Wireguard.emptyPeers
         }
     }
 }
