@@ -53,7 +53,7 @@ public func __psp_app_deinit(completion: psp_completion) {
     ABI.run(completion) { callback in
         abi?.unregisterEvents()
         abi = nil
-        callback?(PSPCompletionCodeOK, nil)
+        callback?(PSPCompletionCodeOK, nil, nil)
     }
 }
 
@@ -77,9 +77,9 @@ public func __psp_app_import_profile_path(
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importFile(swiftPath, passphrase: nil)
-            callback?(PSPCompletionCodeOK, nil)
+            callback?(PSPCompletionCodeOK, nil, nil)
         } catch {
-            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, nil, error)
         }
     }
 }
@@ -99,9 +99,9 @@ public func __psp_app_import_profile_text(
     ABI.run(completion) { callback in
         do {
             try await abi.profile.importText(swiftText, filename: swiftFilename, passphrase: nil)
-            callback?(PSPCompletionCodeOK, nil)
+            callback?(PSPCompletionCodeOK, nil, nil)
         } catch {
-            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, nil, error)
         }
     }
 }
@@ -117,7 +117,7 @@ public func __psp_app_delete_profile(
     }
     ABI.run(completion) { callback in
         await abi.profile.remove(id)
-        callback?(PSPCompletionCodeOK, nil)
+        callback?(PSPCompletionCodeOK, nil, nil)
     }
 }
 
@@ -141,7 +141,7 @@ public func __psp_app_delete_profiles(
     let fixedIds = ids
     ABI.run(completion) { callback in
         await abi.profile.remove(fixedIds)
-        callback?(PSPCompletionCodeOK, nil)
+        callback?(PSPCompletionCodeOK, nil, nil)
     }
 }
 
@@ -156,15 +156,15 @@ public func __psp_app_fetch_profile(
     }
     ABI.run(completion) { callback in
         guard let profile = abi.profile.profile(withId: id) else {
-            callback?(PSPCompletionCodeFailure, "Profile not found: \(id)")
+            callback?(PSPCompletionCodeFailure, nil, ABI.AppError.notFound)
             return
         }
         do {
             let data = try ABI.encode(profile.asTaggedProfile)
             let json = String(data: data, encoding: .utf8)
-            callback?(PSPCompletionCodeOK, json)
+            callback?(PSPCompletionCodeOK, json, nil)
         } catch {
-            callback?(PSPCompletionCodeFailure, error.localizedDescription)
+            callback?(PSPCompletionCodeFailure, nil, error)
         }
     }
 }

@@ -23,8 +23,12 @@ extension ABI {
     // Following psp_completion:
     //
     // Code == 0 -> Success, String = JSON payload
-    // Code != 0 -> Failure, String = Error message
-    typealias RunCallback = @Sendable (_ code: Int32, _ string: String?) -> Void
+    // Code != 0 -> Failure, Optional Error
+    typealias RunCallback = @Sendable (
+        _ code: Int32,
+        _ payload: String?,
+        _ error: Error?
+    ) -> Void
 
     // Run ABI initialization synchronously.
     //
@@ -87,8 +91,15 @@ extension ABI {
         Task { @Sendable @BusinessActor in
             let runCallback: RunCallback?
             if let cb = completion.callback {
-                runCallback = { code, json in
-                    cb(completion.ctx, code, json)
+                runCallback = { code, result, error in
+                    let payload: String?
+                    if let error {
+                        // FIXME: ###, Encode AppError as JSON
+                        payload = AppError(error).localizedDescription
+                    } else {
+                        payload = result
+                    }
+                    cb(completion.ctx, code, payload)
                 }
             } else {
                 runCallback = nil
