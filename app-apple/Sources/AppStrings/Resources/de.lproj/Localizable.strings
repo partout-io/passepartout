@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Dunkel";
 "entities.ui.system_appearance.light" = "Hell";
 "entities.ui.system_appearance.system" = "System";
-"errors.app.default" = "Operation konnte nicht abgeschlossen werden.";
+"errors.app.other" = "Operation konnte nicht abgeschlossen werden.";
 "errors.app.duplicate" = "Profil '%@' konnte nicht dupliziert werden.";
 "errors.app.empty_products" = "Produkte konnten nicht abgerufen werden, bitte versuche es später erneut.";
 "errors.app.empty_profile_name" = "Profilname ist leer.";

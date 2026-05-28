@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Escuro";
 "entities.ui.system_appearance.light" = "Claro";
 "entities.ui.system_appearance.system" = "Sistema";
-"errors.app.default" = "Não foi possível concluir a operação.";
+"errors.app.other" = "Não foi possível concluir a operação.";
 "errors.app.duplicate" = "Não foi possível duplicar o perfil '%@'.";
 "errors.app.empty_products" = "Não foi possível buscar os produtos, tente novamente mais tarde.";
 "errors.app.empty_profile_name" = "O nome do perfil está vazio.";

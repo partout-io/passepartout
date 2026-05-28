@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Σκούρο";
 "entities.ui.system_appearance.light" = "Φωτεινό";
 "entities.ui.system_appearance.system" = "Σύστημα";
-"errors.app.default" = "Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας.";
+"errors.app.other" = "Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας.";
 "errors.app.duplicate" = "Δεν ήταν δυνατή η αντιγραφή του προφίλ '%@'.";
 "errors.app.empty_products" = "Δεν ήταν δυνατή η ανάκτηση προϊόντων, παρακαλώ δοκιμάστε αργότερα.";
 "errors.app.empty_profile_name" = "Το όνομα του προφίλ είναι κενό.";

@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Тёмная";
 "entities.ui.system_appearance.light" = "Светлая";
 "entities.ui.system_appearance.system" = "Система";
-"errors.app.default" = "Не удалось выполнить операцию.";
+"errors.app.other" = "Не удалось выполнить операцию.";
 "errors.app.duplicate" = "Не удалось дублировать профиль '%@'.";
 "errors.app.empty_products" = "Не удалось получить продукты, повторите позже.";
 "errors.app.empty_profile_name" = "Имя профиля пустое.";

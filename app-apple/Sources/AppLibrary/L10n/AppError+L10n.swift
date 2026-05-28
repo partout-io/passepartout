@@ -64,7 +64,9 @@ extension ABI.AppError: @retroactive LocalizedError {
                 .compactMap { $0 }
                 .joined(separator: "\n\n")
         case .other(let error):
-            return error?.localizedDescription
+            return [V.other, error?.localizedDescription]
+                .compactMap { $0 }
+                .joined(separator: " ")
         case .partout(let error):
             return V.partout(error.code.rawValue)
         case .permissionDenied:

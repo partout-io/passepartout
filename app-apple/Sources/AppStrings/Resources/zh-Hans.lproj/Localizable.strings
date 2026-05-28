@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "深色";
 "entities.ui.system_appearance.light" = "浅色";
 "entities.ui.system_appearance.system" = "系统";
-"errors.app.default" = "无法完成操作。";
+"errors.app.other" = "无法完成操作。";
 "errors.app.duplicate" = "无法复制配置文件 \"%@\"。";
 "errors.app.empty_products" = "无法获取产品，请稍后重试。";
 "errors.app.empty_profile_name" = "配置文件名称为空。";

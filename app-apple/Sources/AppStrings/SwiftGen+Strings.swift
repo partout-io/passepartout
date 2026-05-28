@@ -100,8 +100,6 @@ public enum Strings {
       public static func corruptProviderModule(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.app.corrupt_provider_module", String(describing: p1), fallback: "Unable to connect to provider server (reason=%@).")
       }
-      /// Unable to complete operation.
-      public static let `default` = Strings.tr("Localizable", "errors.app.default", fallback: "Unable to complete operation.")
       /// Unable to duplicate profile '%@'.
       public static func duplicate(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.app.duplicate", String(describing: p1), fallback: "Unable to duplicate profile '%@'.")
@@ -132,6 +130,8 @@ public enum Strings {
       }
       /// The profile has no active modules.
       public static let noActiveModules = Strings.tr("Localizable", "errors.app.no_active_modules", fallback: "The profile has no active modules.")
+      /// Unable to complete operation.
+      public static let other = Strings.tr("Localizable", "errors.app.other", fallback: "Unable to complete operation.")
       /// Unable to parse.
       public static let parsing = Strings.tr("Localizable", "errors.app.parsing", fallback: "Unable to parse.")
       /// Unable to complete operation (code=%@).

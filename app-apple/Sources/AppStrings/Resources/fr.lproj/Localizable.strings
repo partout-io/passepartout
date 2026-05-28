@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Sombre";
 "entities.ui.system_appearance.light" = "Clair";
 "entities.ui.system_appearance.system" = "Système";
-"errors.app.default" = "Impossible de terminer l'opération.";
+"errors.app.other" = "Impossible de terminer l'opération.";
 "errors.app.duplicate" = "Impossible de dupliquer le profil '%@'.";
 "errors.app.empty_products" = "Impossible d'obtenir les produits, réessayez plus tard.";
 "errors.app.empty_profile_name" = "Le nom du profil est vide.";

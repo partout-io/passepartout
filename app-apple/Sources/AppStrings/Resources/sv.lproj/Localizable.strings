@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Mörk";
 "entities.ui.system_appearance.light" = "Ljus";
 "entities.ui.system_appearance.system" = "System";
-"errors.app.default" = "Kan inte slutföra åtgärden.";
+"errors.app.other" = "Kan inte slutföra åtgärden.";
 "errors.app.duplicate" = "Kan inte duplicera profil '%@'.";
 "errors.app.empty_products" = "Kan inte hämta produkter, försök igen senare.";
 "errors.app.empty_profile_name" = "Profilnamnet är tomt.";

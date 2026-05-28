@@ -22,7 +22,7 @@
 "entities.ui.system_appearance.dark" = "Donker";
 "entities.ui.system_appearance.light" = "Licht";
 "entities.ui.system_appearance.system" = "Systeem";
-"errors.app.default" = "Kan bewerking niet voltooien.";
+"errors.app.other" = "Kan bewerking niet voltooien.";
 "errors.app.duplicate" = "Kan profiel '%@' niet dupliceren.";
 "errors.app.empty_products" = "Kan producten niet ophalen, probeer het later opnieuw.";
 "errors.app.empty_profile_name" = "Profielnaam is leeg.";

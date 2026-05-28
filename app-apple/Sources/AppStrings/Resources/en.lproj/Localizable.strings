@@ -436,7 +436,6 @@
 // MARK: Global (Errors)
 
 "errors.app.corrupt_provider_module" = "Unable to connect to provider server (reason=%@).";
-"errors.app.default" = "Unable to complete operation.";
 "errors.app.duplicate" = "Unable to duplicate profile '%@'.";
 "errors.app.empty_products" = "Unable to fetch products, please retry later.";
 "errors.app.empty_profile_name" = "Profile name is empty.";
@@ -449,6 +448,7 @@
 "errors.app.module_requires_connection" = "The %@ module requires an active connection among the following types: %@";
 "errors.app.no_active_modules" = "The profile has no active modules.";
 "errors.app.openvpn.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";
+"errors.app.other" = "Unable to complete operation.";
 "errors.app.parsing" = "Unable to parse.";
 "errors.app.partout" = "Unable to complete operation (code=%@).";
 "errors.app.permission_denied" = "Permission denied";
