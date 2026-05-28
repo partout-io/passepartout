@@ -94,8 +94,7 @@ extension ABI {
                 runCallback = { code, result, error in
                     let payload: String?
                     if let error {
-                        // FIXME: ###, Encode AppError as JSON
-                        payload = AppError(error).localizedDescription
+                        payload = try? ABI.encodeJSON(AppError(error))
                     } else {
                         payload = result
                     }
@@ -106,6 +105,17 @@ extension ABI {
             }
             await block(runCallback)
         }
+    }
+}
+
+extension ABI.AppError: Encodable {
+    private enum CodingKeys: CodingKey {
+        case description
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(localizedDescription, forKey: .description)
     }
 }
 
