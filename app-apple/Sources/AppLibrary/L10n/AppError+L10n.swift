@@ -6,6 +6,9 @@ import AppStrings
 import CommonLibrary
 import Foundation
 
+// MARK: ErrorHandler
+
+// Typically displayed in ErrorHandler
 extension ABI.AppError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
@@ -99,11 +102,11 @@ extension ABI.AppError: @retroactive LocalizedError {
     }
 }
 
-// MARK: - Tunnel side
+// MARK: - Tunnel errors
 
 extension PartoutError.Code: StyledLocalizableEntity {
     public enum Style {
-        case tunnel
+        case tunnel // Displayed in ConnectionStatusText
     }
 
     public func localizedDescription(style: Style) -> String {
