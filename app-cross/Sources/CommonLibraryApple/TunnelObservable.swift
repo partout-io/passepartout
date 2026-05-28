@@ -84,12 +84,12 @@ extension TunnelObservable {
         }
         do {
             try await tunnel.install(profile, connect: connect, options: options)
-        } catch let ppError as PartoutError {
-            switch ppError.code {
+        } catch let error as PartoutError {
+            switch error.code {
             case .Providers.missingEntity:
                 throw ABI.AppError.missingProviderEntity
             default:
-                throw ppError
+                throw error
             }
         }
     }
