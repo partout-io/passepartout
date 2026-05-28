@@ -6,6 +6,8 @@ import Partout
 
 extension ABI {
     public enum AppError: Error {
+        case corruptProviderModule(reason: Error?)
+
         case couldNotLaunch(reason: Error)
 
         case emptyProducts
@@ -14,7 +16,7 @@ extension ABI {
 
         case encoding(reason: Error? = nil)
 
-        case importError
+        case importError(message: String? = nil)
 
         case incompatibleModules([Module])
 
@@ -23,6 +25,8 @@ extension ABI {
         case ineligibleProfile(Set<AppFeature>)
 
         case interactiveLogin
+
+        case invalidField(stringKey: String?)
 
         case malformedModule(any ModuleBuilder, error: Error)
 
@@ -36,7 +40,9 @@ extension ABI {
 
         case openVPNPassphraseRequired
 
-        case other(Error)
+        case openVPNUnsupportedCompression(option: String?)
+
+        case other(Error?)
 
         case partout(PartoutError)
 
@@ -62,6 +68,8 @@ extension ABI {
 
         case webUploader(Int?, Error?)
 
+        case wireGuardEmptyPeers
+
         public init(_ error: Error) {
             if let spError = error as? AppError {
                 self = spError
@@ -78,12 +86,37 @@ extension ABI {
                         return
                     }
                     self = .incompleteModule(builder)
+                case .invalidField:
+                    guard let field = partoutError.userInfo as? PartoutError.ModuleField else {
+                        self = .invalidField(stringKey: nil)
+                        return
+                    }
+                    let stringKey = "errors.modules.\(field.key)"
+                    self = .invalidField(stringKey: stringKey)
+                case .noActiveModules:
+                    self = .noActiveModules
                 case .OpenVPN.passphraseRequired:
                     self = .openVPNPassphraseRequired
+                case .OpenVPN.unsupportedCompression:
+                    let option = partoutError.userInfo as? String
+                    self = .openVPNUnsupportedCompression(option: option)
+                case .parsing:
+                    let message = partoutError.userInfo as? String ??
+                        (partoutError.reason as? LocalizedError)?.localizedDescription
+                    self = .importError(message: message)
+                case .Providers.corruptModule:
+                    let reason = partoutError.reason
+                    self = .corruptProviderModule(reason: reason)
                 case .Providers.missingEntity:
                     self = .missingProviderEntity
+                case .timeout:
+                    self = .timeout
+                case .unhandled:
+                    self = .other(partoutError.reason)
                 case .unknownImportedModule:
-                    self = .importError
+                    self = .importError()
+                case .WireGuard.emptyPeers:
+                    self = .wireGuardEmptyPeers
                 default:
                     self = .partout(partoutError)
                 }

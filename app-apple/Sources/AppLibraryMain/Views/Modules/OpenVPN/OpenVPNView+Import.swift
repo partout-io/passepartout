@@ -93,7 +93,7 @@ private extension OpenVPNView.ImportModifier {
                 }
             }
             guard let module = parsed as? OpenVPNModule else {
-                throw ABI.AppError.importError
+                throw ABI.AppError.importError()
             }
             draft.module.configurationBuilder = module.configuration?.builder()
             draft.module.credentials = module.credentials

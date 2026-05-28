@@ -10,6 +10,8 @@ extension ABI.AppError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
         switch self {
+        case .corruptProviderModule(let reason):
+            return V.Partout.corruptProviderModule(reason?.localizedDescription ?? "?")
         case .couldNotLaunch(let reason):
             return reason.localizedDescription
         case .emptyProducts:
@@ -18,8 +20,10 @@ extension ABI.AppError: @retroactive LocalizedError {
             return V.emptyProfileName
         case .encoding(let reason):
             return reason?.localizedDescription
-        case .importError:
-            return V.Partout.parsing
+        case .importError(let message):
+            return [V.Partout.parsing, message]
+                .compactMap { $0 }
+                .joined(separator: " ")
         case .incompatibleModules:
             return V.incompatibleModules
         case .incompleteModule(let builder):
@@ -28,6 +32,11 @@ extension ABI.AppError: @retroactive LocalizedError {
             return nil
         case .interactiveLogin:
             return nil
+        case .invalidField(let stringKey):
+            guard let stringKey else {
+                return Strings.Errors.Modules.generic
+            }
+            return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
         case .malformedModule(let module, let error):
             return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
         case .missingProviderEntity:
@@ -47,8 +56,12 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .openVPNPassphraseRequired:
             // Handled manually
             return nil
+        case .openVPNUnsupportedCompression(let option):
+            return [V.Partout.Openvpn.unsupportedCompression, option]
+                .compactMap { $0 }
+                .joined(separator: "\n\n")
         case .other(let error):
-            return error.localizedDescription
+            return error?.localizedDescription
         case .partout(let error):
             return error.localizedDescription
         case .permissionDenied:
@@ -60,7 +73,7 @@ extension ABI.AppError: @retroactive LocalizedError {
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
         case .timeout:
-            return Strings.Errors.App.Partout.timeout
+            return V.Partout.timeout
         case .unexpectedResponse:
             // Handled manually
             return nil
@@ -70,7 +83,7 @@ extension ABI.AppError: @retroactive LocalizedError {
             // Handled manually
             return nil
         case .webReceiver:
-            return Strings.Errors.App.webReceiver
+            return V.webReceiver
         case .webUploader(let status, let error):
             switch status {
             case 403:
@@ -80,6 +93,8 @@ extension ABI.AppError: @retroactive LocalizedError {
             default:
                 return error?.localizedDescription
             }
+        case .wireGuardEmptyPeers:
+            return V.Partout.Wireguard.emptyPeers
         }
     }
 }
@@ -88,48 +103,7 @@ extension ABI.AppError: @retroactive LocalizedError {
 
 extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
-        let V = Strings.Errors.App.Partout.self
-        switch code {
-        case .Providers.corruptModule:
-            return V.corruptProviderModule(reason?.localizedDescription ?? "")
-
-        case .invalidField:
-            guard let userInfo = userInfo as? PartoutError.ModuleField else {
-                return Strings.Errors.Modules.generic
-            }
-            let stringKey = "errors.modules.\(userInfo.key)"
-            return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
-
-        case .noActiveModules:
-            return V.noActiveModules
-
-        case .OpenVPN.unsupportedCompression:
-            var desc = V.Openvpn.unsupportedCompression
-            if let option = userInfo as? String {
-                desc.append("\n\n\(option)")
-            }
-            return desc
-
-        case .parsing:
-            let message = userInfo as? String ?? (reason as? LocalizedError)?.localizedDescription
-
-            return [V.parsing, message]
-                .compactMap { $0 }
-                .joined(separator: " ")
-
-        case .timeout:
-            return V.timeout
-
-        case .WireGuard.emptyPeers:
-            return V.Wireguard.emptyPeers
-
-        case .unhandled:
-            return reason?.localizedDescription
-
-        default:
-            break
-        }
-        return V.default(code.rawValue)
+        Strings.Errors.App.Partout.default(code.rawValue)
     }
 }
 
