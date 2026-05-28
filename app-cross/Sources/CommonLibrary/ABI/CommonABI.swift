@@ -116,33 +116,33 @@ extension ABI.AppError: Encodable {
 
     public var code: ABI.AppErrorCode {
         switch self {
-        case .corruptProviderModule(reason: _):
+        case .corruptProviderModule:
             return .corruptProviderModule
-        case .couldNotLaunch(reason: _):
+        case .couldNotLaunch:
             return .couldNotLaunch
         case .emptyProducts:
             return .emptyProducts
         case .emptyProfileName:
             return .emptyProfileName
-        case .encoding(reason: _):
+        case .encoding:
             return .encoding
-        case .importError(message: _):
+        case .importError:
             return .importError
-        case .incompatibleModules(_):
+        case .incompatibleModules:
             return .incompatibleModules
-        case .incompleteModule(_):
+        case .incompleteModule:
             return .incompleteModule
-        case .ineligibleProfile(_):
+        case .ineligibleProfile:
             return .ineligibleProfile
         case .interactiveLogin:
             return .interactiveLogin
-        case .invalidField(stringKey: _):
+        case .invalidField:
             return .invalidField
-        case .malformedModule(_, reason: _):
+        case .malformedModule:
             return .malformedModule
         case .missingProviderEntity:
             return .missingProviderEntity
-        case .moduleRequiresConnection(_):
+        case .moduleRequiresConnection:
             return .moduleRequiresConnection
         case .noActiveModules:
             return .noActiveModules
@@ -150,33 +150,33 @@ extension ABI.AppError: Encodable {
             return .notFound
         case .openVPNPassphraseRequired:
             return .openVPNPassphraseRequired
-        case .openVPNUnsupportedCompression(option: _):
+        case .openVPNUnsupportedCompression:
             return .openVPNUnsupportedCompression
-        case .other(_):
+        case .other:
             return .other
-        case .partout(_):
+        case .partout:
             return .partout
         case .permissionDenied:
             return .permissionDenied
         case .rateLimit:
             return .rateLimit
-        case .systemExtension(_):
+        case .systemExtension:
             return .systemExtension
         case .timeout:
             return .timeout
         case .unexpectedResponse:
             return .unexpectedResponse
-        case .urlRequestFailed(reason: _):
+        case .urlRequestFailed:
             return .urlRequestFailed
         case .urlRequestUnavailable:
             return .urlRequestUnavailable
         case .verificationReceiptIsLoading:
             return .verificationReceiptIsLoading
-        case .verificationRequiredFeatures(_):
+        case .verificationRequiredFeatures:
             return .verificationRequiredFeatures
-        case .webReceiver(_):
+        case .webReceiver:
             return .webReceiver
-        case .webUploader(_, _):
+        case .webUploader:
             return .webUploader
         case .wireGuardEmptyPeers:
             return .wireGuardEmptyPeers
