@@ -20,7 +20,7 @@ extension ABI {
 
         case incompatibleModules([Module])
 
-        case incompleteModule(ModuleBuilder)
+        case incompleteModule(any ModuleBuilder)
 
         case ineligibleProfile(Set<AppFeature>)
 
