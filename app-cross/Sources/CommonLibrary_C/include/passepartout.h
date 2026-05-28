@@ -27,13 +27,14 @@ typedef int (*psp_request_callback)(void *request_ctx,
                                     size_t *len);
 
 /* Completion callback.
- * - Success: code == 0, string = JSON (optional)
- * - Error:   code != 0, string = error message
+ * - Success: code == 0, string = result
+ * - Error:   code != 0, string = error
+ * Both 'result' and 'error' are optional JSON payloads.
  */
 #define PSPCompletionCodeOK         0
 #define PSPCompletionCodeArgs       -2
 #define PSPCompletionCodeFailure    -1
-typedef void (*psp_completion_cb)(void *ctx, int code, const char *string);
+typedef void (*psp_completion_cb)(void *ctx, int code, const char *json);
 typedef struct {
     void *ctx;
     psp_completion_cb callback;
