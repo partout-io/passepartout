@@ -26,9 +26,7 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .encoding(let reason):
             return reason?.localizedDescription
         case .importError(let message):
-            return [V.parsing, message]
-                .compactMap { $0 }
-                .joined(separator: " ")
+            return V.parsing.appending(message, separator: " ")
         case .incompatibleModules:
             return V.incompatibleModules
         case .incompleteModule(let builder):
@@ -65,13 +63,9 @@ extension ABI.AppError: @retroactive LocalizedError {
             // Handled manually
             return nil
         case .openVPNUnsupportedCompression(let option):
-            return [V.Openvpn.unsupportedCompression, option]
-                .compactMap { $0 }
-                .joined(separator: "\n\n")
+            return V.Openvpn.unsupportedCompression.appending(option, separator: "\n\n")
         case .other(let error):
-            return [V.other, error?.localizedDescription]
-                .compactMap { $0 }
-                .joined(separator: " ")
+            return V.other.appending(error?.localizedDescription, separator: " ")
         case .partout(let error):
             return V.partout(error.code.rawValue)
         case .permissionDenied:
@@ -106,6 +100,14 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .wireGuardEmptyPeers:
             return V.Wireguard.emptyPeers
         }
+    }
+}
+
+private extension String {
+    func appending(_ optional: String?, separator: String) -> String {
+        [self, optional]
+            .compactMap { $0 }
+            .joined(separator: separator)
     }
 }
 
