@@ -188,9 +188,9 @@ extension ProfileEditor {
     }
 
     public func build(with registryObservable: RegistryObservable?, updating: Bool) throws -> Profile {
-        // Add this check in the app, the library does not enforce it
+        // Add this check in the app, the library only enforces it in Tunnel
         guard !editableProfile.activeModulesIds.isEmpty else {
-            throw PartoutError(.noActiveModules)
+            throw ABI.AppError.noActiveModules
         }
 
         // Validate builders if implementation supports it

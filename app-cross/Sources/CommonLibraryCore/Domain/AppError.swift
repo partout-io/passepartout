@@ -27,6 +27,8 @@ extension ABI {
 
         case moduleRequiresConnection(any Module)
 
+        case noActiveModules
+
         case notFound
 
         case partout(PartoutError)
