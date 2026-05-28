@@ -28,7 +28,7 @@ extension ABI {
 
         case invalidField(stringKey: String?)
 
-        case malformedModule(any ModuleBuilder, error: Error)
+        case malformedModule(any ModuleBuilder, reason: Error)
 
         case missingProviderEntity
 

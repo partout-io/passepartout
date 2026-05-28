@@ -198,7 +198,7 @@ extension ProfileEditor {
             do {
                 try registryObservable?.validate($0)
             } catch {
-                throw ABI.AppError.malformedModule($0, error: error)
+                throw ABI.AppError.malformedModule($0, reason: error)
             }
         }
 
