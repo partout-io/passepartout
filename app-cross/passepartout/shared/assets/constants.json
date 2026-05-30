@@ -52,7 +52,7 @@
             }
         }
     },
-    "api": {
+    "url": {
         "timeoutInterval": 5.0,
         "versionRateLimit": 86400.0,
         "refreshInfrastructureRateLimit": 86400.0
@@ -77,6 +77,10 @@
         "formatter": {
             "timestamp": "HH:mm:ss",
             "message": "%@ - %@"
+        },
+        "filenames": {
+            "app": "app.log",
+            "tunnel": "tunnel.log"
         }
     }
 }
