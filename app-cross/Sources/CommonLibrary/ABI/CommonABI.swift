@@ -183,10 +183,19 @@ extension ABI.AppError: Encodable {
         }
     }
 
+    public var localizedDescription: String? {
+        switch self {
+        case .importError(let message):
+            return message
+        default:
+            return nil
+        }
+    }
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(code, forKey: .code)
-        try container.encode(localizedDescription, forKey: .description)
+        try container.encodeIfPresent(localizedDescription, forKey: .description)
     }
 }
 
