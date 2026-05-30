@@ -50,5 +50,6 @@
     public int setTunnel(java.lang.String);
     public void configureSockets(int[]);
     public void onSnapshot(java.lang.String);
+    public void clearTunnel();
     public void cancelTunnel(java.lang.String);
 }

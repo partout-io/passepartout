@@ -62,7 +62,7 @@ class PassepartoutWrapper {
                 // Name of the NDK .so without "lib" prefix or ".so"
                 System.loadLibrary("passepartout_wrapper")
             } catch (e: Exception) {
-                Log.e(Globals.logTag, e.localizedMessage ?: "")
+                Log.e(Globals.TAG_APP, e.localizedMessage ?: "")
             }
         }
     }

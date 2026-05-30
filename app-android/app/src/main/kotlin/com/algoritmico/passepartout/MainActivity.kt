@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         val profileText = try {
             contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
         } catch (e: Exception) {
-            Log.e(Globals.logTag, "Unable to read profile file: $uri", e)
+            Log.e(Globals.TAG_APP, "Unable to read profile file: $uri", e)
             null
         } ?: return
 
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
             }.onSuccess {
                 appContext.onApplicationActive()
             }.onFailure {
-                Log.e(Globals.logTag, "Import failure: $profileName", it)
+                Log.e(Globals.TAG_APP, "Import failure: $profileName", it)
             }
         }
     }
