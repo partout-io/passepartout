@@ -40,14 +40,15 @@ int main(int argc, char *argv[]) {
     }
 
     /* Current directory. */
-    // FIXME: #209/notes, Cross UI, hardcoded cache dir
+    // FIXME: #209/notes, Cross UI, hardcoded values
     const char *cache_dir = ".";
 //    const char *cache_dir = mkdtemp("psp");
+    const char *preferences = "{\"deviceId\":\"abcdef\",\"configFlags\":[\"ovpnCrossV2\", \"wgCrossV2\"]}";
 
     psp_tunnel_start_args args = { 0 };
     args.bundle = bundle;
     args.constants = constants;
-    args.preferences = NULL;
+    args.preferences = preferences;
     args.cache_dir = cache_dir;
     args.profile = profile;
     args.is_interactive = true;
