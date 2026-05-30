@@ -53,7 +53,11 @@ extension TunnelABI {
 #else
         betterPathFactory = controller.betterPathFactory
 #endif
-        let factory = BSDSocketFactory(ctx, betterPathFactory: betterPathFactory)
+        let factory = BSDSocketFactory(
+            ctx,
+            betterPathFactory: betterPathFactory,
+            configurator: controller.socketConfigurator()
+        )
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(
