@@ -101,8 +101,18 @@ extension ABI {
                     let option = partoutError.userInfo as? String
                     self = .openVPNUnsupportedCompression(option: option)
                 case .parsing:
-                    let message = partoutError.userInfo as? String ??
-                        (partoutError.reason as? LocalizedError)?.localizedDescription
+                    let message: String?
+                    if let info = partoutError.userInfo as? String {
+                        message = info
+                    } else if let reason = partoutError.reason {
+                        if let localizedReason = reason as? LocalizedError {
+                            message = localizedReason.localizedDescription
+                        } else {
+                            message = String(describing: reason)
+                        }
+                    } else {
+                        message = nil
+                    }
                     self = .importError(message: message)
                 case .Providers.corruptModule:
                     let reason = partoutError.reason
