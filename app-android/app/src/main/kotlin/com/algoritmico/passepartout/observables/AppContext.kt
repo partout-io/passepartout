@@ -15,7 +15,6 @@ import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.helpers.ABIURLFetcher
 import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.appBundle
 import com.algoritmico.passepartout.appBundleJSON
 import com.algoritmico.passepartout.readAsset
 import io.partout.PartoutTunnel
@@ -45,22 +44,22 @@ class AppContext(
 
     init {
         val partoutVersion = library.partoutVersion()
-        Log.i(Globals.logTag, ">>> Partout $partoutVersion")
-        Log.e(Globals.logTag, ">>> Started app")
+        Log.i(Globals.TAG_APP, ">>> Partout $partoutVersion")
+        Log.e(Globals.TAG_APP, ">>> Started app")
 
         userPreferencesObservable = UserPreferencesObservable(
-            Globals.logTag,
+            Globals.TAG_APP,
             AppABIKeyStore(library),
             appEvents,
             coroutineScope,
             context,
-            Globals.preferencesStoreName
+            Globals.PREFERENCES_STORE_NAME
         )
         val preferences = userPreferencesObservable.preferencesJSON()
-        Log.i(Globals.logTag, ">>> Preferences: $preferences")
+        Log.i(Globals.TAG_APP, ">>> Preferences: $preferences")
 
         val bundle = applicationContext.appBundleJSON()
-        Log.e(Globals.logTag, ">>> Bundle: $bundle")
+        Log.e(Globals.TAG_APP, ">>> Bundle: $bundle")
 
         val constants = applicationContext.readAsset(Globals.CONSTANTS_FILENAME)
         val profilesDirectory = File(applicationContext.noBackupFilesDir, Globals.PROFILES_DIRECTORY)
@@ -83,20 +82,20 @@ class AppContext(
         }
 
         profileObservable = ProfileObservable(
-            Globals.logTag,
+            Globals.TAG_APP,
             AppABIProfile(library),
             appEvents,
             coroutineScope
         )
         val tunnel = PartoutTunnel(
-            Globals.logTag,
+            Globals.TAG_APP,
             applicationContext,
             PassepartoutVpnService::class.java,
-            isForeground = false,
+            isForeground = Globals.TUNNEL_IS_FOREGROUND,
             requestVpnPermission
         )
         tunnelObservable = TunnelObservable(
-            Globals.logTag,
+            Globals.TAG_APP,
             tunnel,
             appEvents,
             userPreferencesObservable.preferences,
@@ -109,7 +108,7 @@ class AppContext(
     }
 
     private fun handleEvent(event: Event) {
-        Log.i(Globals.logTag, ">>> AppContext: $event")
+        Log.i(Globals.TAG_APP, ">>> AppContext: $event")
         appEvents.tryEmit(event)
     }
 

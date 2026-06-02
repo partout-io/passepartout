@@ -88,7 +88,7 @@ fun AppCoordinator(
                 runCatching {
                     profileObservable.remove(profileIds)
                 }.onFailure {
-                    Log.e(Globals.logTag, "Unable to delete profiles", it)
+                    Log.e(Globals.TAG_APP, "Unable to delete profiles", it)
                 }
             }
         },

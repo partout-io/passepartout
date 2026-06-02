@@ -17,14 +17,15 @@ object Globals {
         ignoreUnknownKeys = true
     }
 
-    const val logTag = "Passepartout"
-    const val serviceLogTag = "PassepartoutVpnService"
-    const val jniLogTag = "JNITunnelController"
-    const val preferencesStoreName = "preferences"
+    const val TAG_APP = "Passepartout"
+    const val TAG_SERVICE = "PassepartoutVpnService"
+    const val TAG_JNI = "PassepartoutJNI"
 
     const val CONSTANTS_FILENAME = "constants.json"
     const val PROFILES_DIRECTORY = "profiles-v1"
+    const val PREFERENCES_STORE_NAME = "preferences"
 
+    const val TUNNEL_IS_FOREGROUND = true
     const val TUNNEL_PROFILE_LAST_PATH = "tunnel_profile.json"
     const val TUNNEL_PREFERENCES_LAST_PATH = "tunnel_preferences.json"
 

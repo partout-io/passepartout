@@ -9,7 +9,6 @@ import android.os.Looper
 import android.util.Log
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.Globals.json
 import java.io.Closeable
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -42,7 +41,7 @@ object ABIEventDispatcher: ABIEventHandler {
             runCatching {
                 listener(event)
             }.onFailure {
-                Log.e(Globals.logTag, "Unable to dispatch ABI callback", it)
+                Log.e(Globals.TAG_APP, "Unable to dispatch ABI callback", it)
             }
         }
     }
