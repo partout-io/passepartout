@@ -7,6 +7,9 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.abi.AppABIKeyStore
@@ -52,8 +55,7 @@ class AppContext(
             AppABIKeyStore(library),
             appEvents,
             coroutineScope,
-            context,
-            Globals.PREFERENCES_STORE_NAME
+            applicationContext.userPreferencesStore
         )
         val preferences = userPreferencesObservable.preferencesJSON()
         Log.i(Globals.TAG_APP, ">>> Preferences: $preferences")
@@ -115,8 +117,13 @@ class AppContext(
     override fun close() {
         eventSubscription?.close()
         eventSubscription = null
+        userPreferencesObservable.close()
         profileObservable.close()
         tunnelObservable.close()
         library.appDeinit { _, _ -> }
     }
 }
+
+private val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
+    Globals.PREFERENCES_STORE_NAME
+)

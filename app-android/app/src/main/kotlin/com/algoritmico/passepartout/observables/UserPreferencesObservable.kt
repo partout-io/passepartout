@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
@@ -14,7 +13,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.AppABIKeyStoreProtocol
 import com.algoritmico.passepartout.abi.default
@@ -41,17 +39,15 @@ class UserPreferencesObservable(
     private val abi: AppABIKeyStoreProtocol,
     events: Flow<Event>,
     coroutineScope: CoroutineScope,
-    private val context: Context,
-    filename: String
+    private val store: DataStore<Preferences>
 ) : Closeable {
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
 
-    private val Context.store: DataStore<Preferences> by preferencesDataStore(filename)
     private val flow: Flow<Preferences>
         get() {
-            return context.store.data
+            return store.data
         }
 
     val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
@@ -73,7 +69,7 @@ class UserPreferencesObservable(
     val dnsFallback: Flow<Boolean> = preferences.map { it.dnsFallsBack }
 
     suspend fun toggleDnsFallback() {
-        context.store.edit {
+        store.edit {
             val newValue = !(it[DNS_FALLS_BACK] ?: AppPreferences.default.dnsFallsBack)
             it[DNS_FALLS_BACK] = newValue
             snapshot = snapshot.copy(dnsFallsBack = newValue)
@@ -90,7 +86,7 @@ class UserPreferencesObservable(
     private suspend fun onUpdate(event: Event) {
         if (event !is MixedEventShouldUpdatePreferences) return
         Log.d(logTag, "Updating fields from library: ${event.fields}")
-        context.store.edit {
+        store.edit {
             it.update(event.preferences, event.fields)
         }
         snapshot = snapshot.update(event.preferences, event.fields)
