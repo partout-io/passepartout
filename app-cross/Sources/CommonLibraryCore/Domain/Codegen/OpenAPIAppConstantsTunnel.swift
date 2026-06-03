@@ -12,12 +12,14 @@ public struct OpenAPIAppConstantsTunnel: Sendable, Codable, Hashable {
     public var profileTitleFormat: String
     public var refreshInterval: Double
     public var dnsFallbackServers: [String]
+    public var minDataCountDelta: Int64?
     public var verification: OpenAPIAppConstantsTunnelVerification
 
-    public init(profileTitleFormat: String, refreshInterval: Double, dnsFallbackServers: [String], verification: OpenAPIAppConstantsTunnelVerification) {
+    public init(profileTitleFormat: String, refreshInterval: Double, dnsFallbackServers: [String], minDataCountDelta: Int64? = nil, verification: OpenAPIAppConstantsTunnelVerification) {
         self.profileTitleFormat = profileTitleFormat
         self.refreshInterval = refreshInterval
         self.dnsFallbackServers = dnsFallbackServers
+        self.minDataCountDelta = minDataCountDelta
         self.verification = verification
     }
 
@@ -25,6 +27,7 @@ public struct OpenAPIAppConstantsTunnel: Sendable, Codable, Hashable {
         case profileTitleFormat
         case refreshInterval
         case dnsFallbackServers
+        case minDataCountDelta
         case verification
     }
 
@@ -35,6 +38,7 @@ public struct OpenAPIAppConstantsTunnel: Sendable, Codable, Hashable {
         try container.encode(profileTitleFormat, forKey: .profileTitleFormat)
         try container.encode(refreshInterval, forKey: .refreshInterval)
         try container.encode(dnsFallbackServers, forKey: .dnsFallbackServers)
+        try container.encodeIfPresent(minDataCountDelta, forKey: .minDataCountDelta)
         try container.encode(verification, forKey: .verification)
     }
 }

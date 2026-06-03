@@ -129,6 +129,9 @@ components:
               type: array
               items:
                 type: string
+            minDataCountDelta:
+              type: integer
+              format: int64
             verification:
               type: object
               properties:

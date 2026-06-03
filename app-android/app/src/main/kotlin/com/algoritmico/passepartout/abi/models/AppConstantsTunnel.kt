@@ -28,6 +28,7 @@ import kotlinx.serialization.Contextual
  * @param refreshInterval 
  * @param dnsFallbackServers 
  * @param verification 
+ * @param minDataCountDelta 
  */
 @Serializable
 
@@ -43,7 +44,10 @@ data class AppConstantsTunnel (
     val dnsFallbackServers: kotlin.collections.List<kotlin.String>,
 
     @SerialName(value = "verification")
-    val verification: AppConstantsTunnelVerification
+    val verification: AppConstantsTunnelVerification,
+
+    @SerialName(value = "minDataCountDelta")
+    val minDataCountDelta: kotlin.Long? = null
 
 ) {
 

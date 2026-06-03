@@ -73,7 +73,8 @@ extension TunnelABI {
             connectionParameters: connectionParameters,
             messageHandler: DefaultMessageHandler(ctx, environment: environment),
             startsImmediately: false,
-            cancelsUnrecoverable: true
+            cancelsUnrecoverable: true,
+            minDataCountDelta: constants.tunnel.minDataCountDelta.map(\.magnitude)
         )
         let daemon = try SimpleConnectionDaemon(params: daemonParameters)
 

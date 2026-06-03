@@ -36,6 +36,7 @@
             "1.1.1.1",
             "1.0.0.1"
         ],
+        "minDataCountDelta": 1024,
         "verification": {
             "production": {
                 "defaultDelay": 240.0,
