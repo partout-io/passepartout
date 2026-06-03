@@ -1,1 +1,1 @@
-* Core: Wrap Partout errors for cleaner error handling (#1696)
+* Wrap errors for cleaner error handling (#1696)
