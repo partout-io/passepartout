@@ -540,7 +540,6 @@ components:
       - bsdSockets
       - forcesRelaxedVerification
       - newProfileEncoding
-      - ovpnCrossV2
       - wgCrossV2
       - unknown
       enum:
@@ -549,7 +548,6 @@ components:
       - bsdSockets
       - forcesRelaxedVerification
       - newProfileEncoding
-      - ovpnCrossV2
       - wgCrossV2
       - unknown
     ConnectionStatus:
