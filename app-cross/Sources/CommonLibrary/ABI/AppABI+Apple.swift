@@ -307,10 +307,18 @@ extension AppABI {
             }
         }
 
+        // MARK: File-based configuration
+
+        let configFileApplier = makeConfigFileApplier(
+            preferences: preferences,
+            profileManager: profileManager
+        )
+
         let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
+            configFileApplier: configFileApplier,
             configManager: configManager,
             extensionInstaller: sysexManager,
             iapManager: iapManager,
@@ -326,6 +334,37 @@ extension AppABI {
         )
         return Result(abi: abi, tunnelObservable: tunnelObservable)
     }
+}
+
+private func makeConfigFileApplier(
+    preferences: AppPreferencesStore,
+    profileManager: ProfileManager
+) -> ConfigFileApplier? {
+    let configFilePath = ConfigFileApplier.defaultConfigPath()
+    guard FileManager.default.fileExists(atPath: configFilePath),
+          let provider = try? ConfigProviderFactory.provider(forFileAtPath: configFilePath) else {
+        return nil
+    }
+    return ConfigFileApplier(
+        filePath: configFilePath,
+        provider: provider,
+        applyPreferences: { prefs in
+            preferences.overwrite {
+                $0.dnsFallsBack = prefs.dnsFallsBack
+                $0.extensiveLogging = prefs.extensiveLogging
+                $0.experimental = prefs.experimental
+                $0.logsPrivateData = prefs.logsPrivateData
+                $0.relaxedVerification = prefs.relaxedVerification
+                $0.skipsPurchases = prefs.skipsPurchases
+                if let id = prefs.lastUsedProfileId {
+                    $0.lastUsedProfileId = id
+                }
+            }
+        },
+        saveProfile: { profile in
+            try await profileManager.save(profile, isLocal: true, remotelyShared: nil)
+        }
+    )
 }
 
 private extension ABI.AppConfiguration {
