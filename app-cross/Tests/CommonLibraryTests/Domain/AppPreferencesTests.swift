@@ -63,21 +63,21 @@ struct AppPreferencesTests {
     func givenExperimental_whenEnableFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
         sut.configFlags = [.bsdSockets]
-        sut.experimental.enabledConfigFlags = [.ovpnCrossV2]
+        sut.experimental.enabledConfigFlags = [.wgCrossV2]
 
         #expect(sut.isFlagEnabled(.bsdSockets))
-        #expect(sut.isFlagEnabled(.ovpnCrossV2))
-        #expect(sut.enabledFlags() == [.bsdSockets, .ovpnCrossV2])
+        #expect(sut.isFlagEnabled(.wgCrossV2))
+        #expect(sut.enabledFlags() == [.bsdSockets, .wgCrossV2])
     }
 
     @Test
     func givenExperimental_whenEnableAndIgnoreSameFlag_thenIgnoreWins() {
         var sut: ABI.AppPreferences = .default()
         sut.configFlags = [.bsdSockets]
-        sut.experimental.ignoredConfigFlags = [.ovpnCrossV2]
-        sut.experimental.enabledConfigFlags = [.ovpnCrossV2]
+        sut.experimental.ignoredConfigFlags = [.wgCrossV2]
+        sut.experimental.enabledConfigFlags = [.wgCrossV2]
 
-        #expect(!sut.isFlagEnabled(.ovpnCrossV2))
+        #expect(!sut.isFlagEnabled(.wgCrossV2))
         #expect(sut.enabledFlags() == [.bsdSockets])
     }
 }
@@ -89,7 +89,7 @@ private extension AppPreferencesTests {
         preferences.deviceId = "DeviceID"
         preferences.dnsFallsBack = false
         preferences.experimental.ignoredConfigFlags = [.appNotWorking]
-        preferences.experimental.enabledConfigFlags = [.ovpnCrossV2]
+        preferences.experimental.enabledConfigFlags = [.wgCrossV2]
         preferences.extensiveLogging = true
         preferences.lastCheckedVersionDate = Date(timeIntervalSince1970: 1_746_626_400.123)
         preferences.lastCheckedVersion = "4.10.20"

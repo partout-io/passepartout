@@ -77,9 +77,7 @@ extension TunnelABI {
         if preferences.isFlagEnabled(.bsdSockets) {
             factory = BSDSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
         } else {
-            // MUST enable .withReadPackets for OpenVPN V2 to work!
-            var options = NEInterfaceFactory.Options()
-            options.withReadPackets = preferences.isFlagEnabled(.ovpnCrossV2)
+            let options = NEInterfaceFactory.Options()
             factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
         }
         let reachability = NEObservablePath(ctx)

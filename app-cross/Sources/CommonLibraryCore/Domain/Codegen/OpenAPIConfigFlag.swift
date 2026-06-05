@@ -13,7 +13,6 @@ public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case bsdSockets = "bsdSockets"
     case forcesRelaxedVerification = "forcesRelaxedVerification"
     case newProfileEncoding = "newProfileEncoding"
-    case ovpnCrossV2 = "ovpnCrossV2"
     case wgCrossV2 = "wgCrossV2"
     case unknown = "unknown"
 }

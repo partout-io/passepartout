@@ -40,7 +40,6 @@ private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .bsdSockets,
         .newProfileEncoding,
-        .ovpnCrossV2,
         .wgCrossV2
     ]
 
