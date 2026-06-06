@@ -38,8 +38,8 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .bsdSockets,
         .newProfileEncoding,
+        .ovpnV3,
         .wgCrossV2
     ]
 
