@@ -1,6 +1,1 @@
-* WireGuard: Fix regression in DNS64
-* WireGuard: Retry DNS on failure
-* WireGuard: Fix serialized empty PreSharedKey
-* WireGuard: Mask failed DNS endpoints in logs
-* WireGuard: Reconfigure sockets after bump in V2
-* Core: Fix issues with DNS resolver
+* OpenVPN: Add new implementation behind .ovpnV3 (#1852)
