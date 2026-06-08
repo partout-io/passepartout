@@ -10,9 +10,9 @@ import Partout
 public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case allowsRelaxedVerification = "allowsRelaxedVerification"
     case appNotWorking = "appNotWorking"
-    case bsdSockets = "bsdSockets"
     case forcesRelaxedVerification = "forcesRelaxedVerification"
     case newProfileEncoding = "newProfileEncoding"
+    case ovpnV3 = "ovpnV3"
     case wgCrossV2 = "wgCrossV2"
     case unknown = "unknown"
 }

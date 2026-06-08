@@ -44,48 +44,48 @@ struct AppPreferencesTests {
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.bsdSockets, .newProfileEncoding]
-        sut.experimental.ignoredConfigFlags = [.appNotWorking, .bsdSockets]
+        sut.configFlags = [.ovpnV3, .newProfileEncoding]
+        sut.experimental.ignoredConfigFlags = [.appNotWorking, .ovpnV3]
         #expect(sut.isFlagEnabled(.newProfileEncoding))
-        #expect(!sut.isFlagEnabled(.bsdSockets))
+        #expect(!sut.isFlagEnabled(.ovpnV3))
         #expect(!sut.isFlagEnabled(.appNotWorking))
     }
 
     @Test
     func givenExperimental_whenDecodeWithoutEnabledFlags_thenUsesEmptySet() throws {
-        let data = #"{"ignoredConfigFlags":["bsdSockets"]}"#.data(using: .utf8)!
+        let data = #"{"ignoredConfigFlags":["ovpnV3"]}"#.data(using: .utf8)!
         let sut = try ABI.decode(ABI.ExperimentalPreferences.self, from: data)
-        #expect(sut.ignoredConfigFlags == [.bsdSockets])
+        #expect(sut.ignoredConfigFlags == [.ovpnV3])
         #expect(sut.enabledConfigFlags.isEmpty)
     }
 
     @Test
     func givenExperimental_whenEnableFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.bsdSockets]
+        sut.configFlags = [.ovpnV3]
         sut.experimental.enabledConfigFlags = [.wgCrossV2]
 
-        #expect(sut.isFlagEnabled(.bsdSockets))
+        #expect(sut.isFlagEnabled(.ovpnV3))
         #expect(sut.isFlagEnabled(.wgCrossV2))
-        #expect(sut.enabledFlags() == [.bsdSockets, .wgCrossV2])
+        #expect(sut.enabledFlags() == [.ovpnV3, .wgCrossV2])
     }
 
     @Test
     func givenExperimental_whenEnableAndIgnoreSameFlag_thenIgnoreWins() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.bsdSockets]
+        sut.configFlags = [.ovpnV3]
         sut.experimental.ignoredConfigFlags = [.wgCrossV2]
         sut.experimental.enabledConfigFlags = [.wgCrossV2]
 
         #expect(!sut.isFlagEnabled(.wgCrossV2))
-        #expect(sut.enabledFlags() == [.bsdSockets])
+        #expect(sut.enabledFlags() == [.ovpnV3])
     }
 }
 
 private extension AppPreferencesTests {
     static func preferences() -> ABI.AppPreferences {
         var preferences: ABI.AppPreferences = .default()
-        preferences.configFlags = [.bsdSockets, .newProfileEncoding]
+        preferences.configFlags = [.ovpnV3, .newProfileEncoding]
         preferences.deviceId = "DeviceID"
         preferences.dnsFallsBack = false
         preferences.experimental.ignoredConfigFlags = [.appNotWorking]

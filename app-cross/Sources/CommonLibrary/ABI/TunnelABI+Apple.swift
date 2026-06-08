@@ -74,8 +74,8 @@ extension TunnelABI {
 
         // Create daemon
         let factory: NetworkInterfaceFactory
-        if preferences.isFlagEnabled(.bsdSockets) {
-            factory = BSDSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
+        if preferences.isFlagEnabled(.ovpnV3) {
+            factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
         } else {
             let options = NEInterfaceFactory.Options()
             factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)

@@ -537,17 +537,17 @@ components:
       x-enum-varnames:
       - allowsRelaxedVerification
       - appNotWorking
-      - bsdSockets
       - forcesRelaxedVerification
       - newProfileEncoding
+      - ovpnV3
       - wgCrossV2
       - unknown
       enum:
       - allowsRelaxedVerification
       - appNotWorking
-      - bsdSockets
       - forcesRelaxedVerification
       - newProfileEncoding
+      - ovpnV3
       - wgCrossV2
       - unknown
     ConnectionStatus:
