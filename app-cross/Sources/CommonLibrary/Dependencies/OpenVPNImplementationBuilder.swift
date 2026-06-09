@@ -41,12 +41,8 @@ private extension OpenVPNImplementationBuilder {
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
         let flags = configBlock()
-#if PSP_CROSS
-        let isCross = true
-#else
-        let isCross = false
-#endif
-        if isCross || flags.contains(.ovpnV3) {
+#if !PSP_CROSS && !USE_CMAKE
+        if flags.contains(.ovpnV3) {
             return try _OpenVPNConnectionV3(
                 ctx,
                 parameters: parameters,
@@ -63,5 +59,14 @@ private extension OpenVPNImplementationBuilder {
                 options: options
             )
         }
+#else
+        return try _OpenVPNConnectionV3(
+            ctx,
+            parameters: parameters,
+            module: module,
+            cachesURL: cachesURL,
+            options: options
+        )
+#endif
     }
 }
