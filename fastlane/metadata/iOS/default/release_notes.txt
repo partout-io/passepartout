@@ -1,1 +1,1 @@
-* OpenVPN: Add new implementation behind .ovpnV3 (#1852)
+* Update Partout with cross-platform event loop (#1853)
