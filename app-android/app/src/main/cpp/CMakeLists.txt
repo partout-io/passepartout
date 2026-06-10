@@ -16,7 +16,7 @@ set(ENV_ANDROID
 # Build app-cross dependency with given environment
 include(ExternalProject)
 set(JNI_LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI})
-set(LIBPASSEPARTOUT_DIST ${JNI_LIBS_DIR})
+set(LIBPASSEPARTOUT_DIST ${CMAKE_CURRENT_SOURCE_DIR}/dist)
 set(LIBPASSEPARTOUT_INCLUDE ${PROJECT_ROOT}/app-cross/Sources/CommonLibrary_C/include)
 set(LIBPASSEPARTOUT_SOS
     ${LIBPASSEPARTOUT_DIST}/libcrypto.so
@@ -39,7 +39,11 @@ ExternalProject_Add(libpassepartout
         -B <BINARY_DIR>
     BUILD_COMMAND ${CMAKE_COMMAND} -E env ${ENV_ANDROID}
         ${CMAKE_COMMAND} --build <BINARY_DIR>
-    INSTALL_COMMAND ""
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E make_directory ${JNI_LIBS_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${LIBPASSEPARTOUT_SOS}
+            ${LIBPASSEPARTOUT_CXX_SHARED_SO}
+            ${JNI_LIBS_DIR}
     BUILD_ALWAYS TRUE
     BUILD_BYPRODUCTS
         ${LIBPASSEPARTOUT_SOS}
@@ -71,13 +75,4 @@ foreach(SO_FILE IN LISTS LIBPASSEPARTOUT_SOS)
 endforeach()
 target_link_libraries(passepartout_wrapper PRIVATE
     ${LIBPASSEPARTOUT_IMPORTED_LIBS}
-)
-
-# Distribute the NDK C++ runtime as a JNI lib.
-add_custom_command(
-    TARGET passepartout_wrapper
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${JNI_LIBS_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBPASSEPARTOUT_CXX_SHARED_SO} ${JNI_LIBS_DIR}
-    COMMENT "Copying C++ runtime to jniLibs"
 )

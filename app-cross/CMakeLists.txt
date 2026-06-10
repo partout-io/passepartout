@@ -102,7 +102,5 @@ add_custom_command(
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )
 
-# Optionally build end-user applications
-if(BUILD_APP)
-    add_subdirectory(passepartout)
-endif()
+# Build end-user applications
+add_subdirectory(passepartout)

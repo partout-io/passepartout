@@ -1,18 +1,23 @@
 if(WIN32)
     set(OPENSSL_FOLDER bin)
+    file(GLOB LIBPASSEPARTOUT
+        "${OUTPUT_DIR}/passepartout.dll"
+        "${OUTPUT_DIR}/passepartout.lib"
+        "${OUTPUT_DIR}/passepartout.pdb"
+    )
 else()
     set(OPENSSL_FOLDER lib)
+    file(GLOB LIBPASSEPARTOUT "${OUTPUT_DIR}/libpassepartout*")
 endif()
 
 # Bundle compiled binaries
-file(GLOB LIBPASSEPARTOUT "${OUTPUT_DIR}/*passepartout*")
 file(GLOB LIBSSL "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libssl*")
 file(GLOB LIBCRYPTO "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libcrypto*")
 file(GLOB LIBWGGO "${OUTPUT_DIR}/wg-go/lib/*wg-go*")
-file(COPY ${LIBPASSEPARTOUT} DESTINATION ${DIST_DIR})
-file(COPY ${LIBSSL} DESTINATION ${DIST_DIR})
-file(COPY ${LIBCRYPTO} DESTINATION ${DIST_DIR})
-file(COPY ${LIBWGGO} DESTINATION ${DIST_DIR})
+file(MAKE_DIRECTORY "${DIST_DIR}")
+foreach(lib IN LISTS LIBPASSEPARTOUT LIBSSL LIBCRYPTO LIBWGGO)
+    file(COPY "${lib}" DESTINATION "${DIST_DIR}")
+endforeach()
 
 # Clean up static libs and metadata
 file(GLOB CLEANUP
@@ -50,12 +55,13 @@ if(WIN32)
 endif()
 
 foreach(lib ${PREBUILT_LIBS})
-    file(COPY ${lib} DESTINATION ${DIST_DIR})
+    file(COPY "${lib}" DESTINATION "${DIST_DIR}")
 endforeach()
 foreach(lib ${SWIFT_LIBS})
-    file(COPY "$ENV{SWIFT_RUNTIME}/${lib}" DESTINATION ${DIST_DIR})
+    file(COPY "$ENV{SWIFT_RUNTIME}/${lib}" DESTINATION "${DIST_DIR}")
 endforeach()
 
-if(STRIP AND NOT WIN32)
-    execute_process(COMMAND ${STRIP} ${DIST_DIR}/libpassepartout.${LIBEXT})
+set(LIBPASSEPARTOUT_BINARY "${DIST_DIR}/libpassepartout.${LIBEXT}")
+if(STRIP AND NOT WIN32 AND EXISTS "${LIBPASSEPARTOUT_BINARY}")
+    execute_process(COMMAND "${STRIP}" "${LIBPASSEPARTOUT_BINARY}")
 endif()

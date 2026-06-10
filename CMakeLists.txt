@@ -14,7 +14,7 @@ if(NOT DEFINED OUTPUT_DIR)
     set(OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/${PLATFORM_NAME}-${ARCH_NAME}")
 endif()
 if(NOT DEFINED DIST_DIR)
-    set(DIST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/dist")
+    set(DIST_DIR "${OUTPUT_DIR}/dist")
 endif()
 
 # Options
