@@ -54,8 +54,12 @@ if(BUILD_APP)
     add_custom_command(
         TARGET passepartout
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:passepartout> ${APP_DIR}
-        COMMAND ${STRIP} ${APP_DIR}/passepartout
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:passepartout>"
+            "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
+        COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
+        VERBATIM
     )
 endif()
 
@@ -89,6 +93,10 @@ endif()
 add_custom_command(
     TARGET passepartout-tunnel
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:passepartout-tunnel> ${APP_DIR}
-    COMMAND ${STRIP} ${APP_DIR}/passepartout-tunnel
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:passepartout-tunnel>"
+        "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
+    COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
+    VERBATIM
 )
