@@ -45,8 +45,7 @@ extension TunnelABI {
         let controller = try NativeTunnelController(
             ctx,
             ref: bindings.controller,
-            environment: environment,
-            encodeInfo: NativeTunnelController.encodeInfoAsJSON
+            environment: environment
         )
         let betterPathFactory: BetterPathStreamFactory
 #if !PSP_CROSS
