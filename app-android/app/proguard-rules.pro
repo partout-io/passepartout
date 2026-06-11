@@ -44,12 +44,15 @@
 -keep class com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
     public byte[] fetch(java.lang.String, boolean, double);
 }
-# The native tunnel backend receives this object and calls into it by name.
--keep class io.partout.PartoutVpnServiceRuntime {
-    public void testWorking();
+# JNI entry points are exported with static Java_* symbols, and the native
+# tunnel backend also receives this controller object and calls into it by name
+# through GetMethodID. Keep the class and both sides of that method contract.
+-keep class io.partout.vpn.JNITunnelController {
+    native <methods>;
+    public long setDelegate(long);
     public int setTunnel(java.lang.String);
     public void configureSockets(int[]);
     public void onSnapshot(java.lang.String);
-    public void clearTunnel(java.lang.Boolean);
+    public void clearTunnel(boolean);
     public void cancelTunnel(java.lang.String);
 }
