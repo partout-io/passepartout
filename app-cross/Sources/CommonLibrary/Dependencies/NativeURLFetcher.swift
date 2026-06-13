@@ -17,7 +17,34 @@ final class NativeURLFetcher: URLFetcher {
     }
 
     func data(for url: URL, cached: Bool) async throws -> Data {
-        try url.absoluteString.withCString { cURL in
+        let request = Request(
+            urlString: url.absoluteString,
+            cached: cached,
+            ctx: ctx,
+            callback: callback,
+            timeout: timeout
+        )
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    continuation.resume(returning: try request.perform())
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+}
+
+private struct Request: @unchecked Sendable {
+    let urlString: String
+    let cached: Bool
+    let ctx: UnsafeMutableRawPointer
+    let callback: psp_request_callback
+    let timeout: TimeInterval
+
+    func perform() throws -> Data {
+        try urlString.withCString { cURL in
             var bytes: UnsafeMutablePointer<UInt8>?
             var count = 0
             let code = callback(
