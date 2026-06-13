@@ -42,22 +42,19 @@ extension TunnelABI {
         pspLog(.abi, .debug, "Tunnel preferences: \(preferences.serialized())")
 
         // Create platform-specific objects
-        let controller = try NativeTunnelController(
-            ctx,
-            ref: bindings.controller,
-            environment: environment
-        )
-        let betterPathFactory: BetterPathStreamFactory
+        let betterPathFactory: BetterPathStreamFactory?
 #if !PSP_CROSS
         betterPathFactory = NEBetterPathStreamFactory(ctx)
 #else
-        betterPathFactory = controller.betterPathFactory
+        betterPathFactory = nil // Delegated from C
 #endif
-        let factory = NativeSocketFactory(
+        let controller = try NativeTunnelController(
             ctx,
-            betterPathFactory: betterPathFactory,
-            configurator: controller.socketConfigurator()
+            ref: bindings.controller,
+            environment: environment,
+            betterPathFactory: betterPathFactory
         )
+        let factory = controller.newSocketFactory()
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(
