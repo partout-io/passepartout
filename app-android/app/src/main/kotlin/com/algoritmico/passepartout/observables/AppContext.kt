@@ -14,11 +14,14 @@ import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.abi.AppABIKeyStore
 import com.algoritmico.passepartout.abi.AppABIProfile
+import com.algoritmico.passepartout.abi.AppABIVersion
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
 import com.algoritmico.passepartout.abi.helpers.ABIURLFetcher
+import com.algoritmico.passepartout.abi.models.AppConstants
+import com.algoritmico.passepartout.abi.models.AppConfiguration
 import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.appBundleJSON
+import com.algoritmico.passepartout.appBundle
 import com.algoritmico.passepartout.readAsset
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +47,10 @@ class AppContext(
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
     val userPreferencesObservable: UserPreferencesObservable
+    val configObservable: ConfigObservable
+    val iapObservable: IAPObservable
+    val versionObservable: VersionObservable
+    val appConfiguration: AppConfiguration
 
     init {
         val partoutVersion = library.partoutVersion()
@@ -60,17 +67,32 @@ class AppContext(
         val preferences = userPreferencesObservable.preferencesJSON()
         Log.i(Globals.TAG_APP, ">>> Preferences: $preferences")
 
-        val bundle = applicationContext.appBundleJSON()
-        Log.e(Globals.TAG_APP, ">>> Bundle: $bundle")
+        val bundle = applicationContext.appBundle()
+        val bundleJSON = Globals.json.encodeToString(bundle)
+        Log.e(Globals.TAG_APP, ">>> Bundle: $bundleJSON")
 
         val constants = applicationContext.readAsset(Globals.CONSTANTS_FILENAME)
+        appConfiguration = AppConfiguration(
+            bundle = bundle,
+            constants = Globals.json.decodeFromString<AppConstants>(constants)
+        )
+        versionObservable = VersionObservable(
+            AppABIVersion(library),
+            appEvents,
+            coroutineScope
+        )
+        configObservable = ConfigObservable(
+            appEvents,
+            coroutineScope
+        )
+        iapObservable = IAPObservable(applicationContext)
         val profilesDirectory = File(applicationContext.noBackupFilesDir, Globals.PROFILES_DIRECTORY)
             .apply {
                 mkdirs()
             }
         val cacheDirectory = applicationContext.cacheDir
         val code = library.appInit(
-            bundle,
+            bundleJSON,
             constants,
             preferences,
             profilesDirectory.absolutePath,
@@ -118,6 +140,9 @@ class AppContext(
         eventSubscription?.close()
         eventSubscription = null
         userPreferencesObservable.close()
+        configObservable.close()
+        iapObservable.close()
+        versionObservable.close()
         profileObservable.close()
         tunnelObservable.close()
         library.appDeinit { _, _ -> }

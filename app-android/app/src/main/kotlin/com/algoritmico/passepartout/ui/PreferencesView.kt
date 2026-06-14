@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun PreferencesView(
     modifier: Modifier = Modifier,
-    userPreferencesObservable: UserPreferencesObservable
+    userPreferencesObservable: UserPreferencesObservable,
+    onAdvanced: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     Column(
@@ -36,6 +37,11 @@ fun PreferencesView(
                 userPreferencesObservable.toggleDnsFallback()
             }
         }
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+        SettingsLinkRow(
+            title = "Advanced",
+            onClick = onAdvanced
+        )
         HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
     }
 }

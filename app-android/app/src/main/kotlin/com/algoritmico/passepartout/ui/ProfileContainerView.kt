@@ -4,14 +4,20 @@
 
 package com.algoritmico.passepartout.ui
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,8 +25,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Switch
@@ -38,7 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.abi.models.AppProfileHeader
@@ -48,6 +55,7 @@ import com.algoritmico.passepartout.abi.models.ProfileEventSave
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
+import io.partout.models.TaggedProfile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -65,6 +73,7 @@ fun ProfileContainerView(
     val profileState by profileObservable.state.collectAsState()
     val tunnelState by tunnelObservable.state.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val headers = profileState.filteredHeaders
     val profileIds = headers.map { it.id }
     val activeProfiles = tunnelState.activeProfiles
@@ -73,6 +82,9 @@ fun ProfileContainerView(
     }
     var requestedConnection by remember {
         mutableStateOf<RequestedConnection?>(null)
+    }
+    var interactiveProfile by remember {
+        mutableStateOf<TaggedProfile?>(null)
     }
     var previousActiveProfiles by remember {
         mutableStateOf<Map<String, AppTunnelInfo>>(emptyMap())
@@ -116,8 +128,36 @@ fun ProfileContainerView(
                 )
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: TunnelObservable.InteractiveException) {
+                interactiveProfile = e.profile
+                false
             } catch (_: Exception) {
                 false
+            }
+            if (!didStart && requestedConnection == request) {
+                requestedConnection = null
+            }
+        }
+    }
+
+    fun requestProfileConnection(profile: TaggedProfile, force: Boolean = false) {
+        val request = RequestedConnection(profile.id, enabled = true)
+        requestedConnection = request
+        selectProfile(profile.id)
+        coroutineScope.launch {
+            val didStart = try {
+                tunnelObservable.connect(profile, force = force)
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: TunnelObservable.InteractiveException) {
+                interactiveProfile = e.profile
+                false
+            } catch (_: Exception) {
+                false
+            }
+            if (didStart) {
+                interactiveProfile = null
             }
             if (!didStart && requestedConnection == request) {
                 requestedConnection = null
@@ -156,6 +196,12 @@ fun ProfileContainerView(
         previousActiveProfiles = activeProfiles
     }
 
+    LaunchedEffect(tunnelState.isVpnPermissionDenied) {
+        if (tunnelState.isVpnPermissionDenied) {
+            requestedConnection = null
+        }
+    }
+
     val onProfileSelected: (String) -> Unit = { profileId ->
         if (contextualProfileIds.isNotEmpty()) {
             onContextualProfileSelected(profileId)
@@ -170,46 +216,83 @@ fun ProfileContainerView(
         selectProfile(profileId)
     }
 
-    if (headers.isEmpty()) {
-        EmptyProfilesView(
-            modifier = modifier,
-            onImportProfile = onImportProfile
+    if (tunnelState.isVpnPermissionDenied) {
+        VpnPermissionDeniedAlert(
+            onDismiss = {
+                tunnelObservable.clearVpnPermissionDenied()
+            },
+            onOpenSettings = {
+                tunnelObservable.clearVpnPermissionDenied()
+                openVpnSettings(context)
+            }
         )
+    }
+
+    interactiveProfile?.let { profile ->
+        InteractiveOpenVPNView(
+            profile = profile,
+            onDismiss = {
+                interactiveProfile = null
+            },
+            onConnect = {
+                interactiveProfile = null
+                requestProfileConnection(it, force = true)
+            }
+        )
+    }
+
+    if (headers.isEmpty()) {
+        if (profileState.isReady) {
+            EmptyProfilesView(
+                modifier = modifier,
+                onImportProfile = onImportProfile
+            )
+        } else {
+            LoadingProfilesView(modifier = modifier)
+        }
         return
     }
 
     val selectedHeader = headers.firstOrNull { it.id == selectedProfileId } ?: headers.first()
-    val isTablet = LocalConfiguration.current.screenWidthDp >= 840
+    MobileProfilesView(
+        modifier = modifier,
+        headers = headers,
+        selectedProfileId = selectedHeader.id,
+        contextualProfileIds = contextualProfileIds,
+        isProfileEnabled = ::isProfileEnabled,
+        profileStatus = ::profileStatus,
+        profileTransfer = ::profileTransfer,
+        profileLastErrorCode = ::profileLastErrorCode,
+        onProfileSelected = onProfileSelected,
+        onProfileToggle = ::requestProfileToggle,
+        onProfileContextualAction = onProfileContextualAction
+    )
+}
 
-    if (isTablet) {
-        TabletProfilesView(
-            modifier = modifier,
-            headers = headers,
-            selectedHeader = selectedHeader,
-            contextualProfileIds = contextualProfileIds,
-            isProfileEnabled = ::isProfileEnabled,
-            profileStatus = ::profileStatus,
-            profileTransfer = ::profileTransfer,
-            profileLastErrorCode = ::profileLastErrorCode,
-            onProfileSelected = onProfileSelected,
-            onProfileToggle = ::requestProfileToggle,
-            onProfileContextualAction = onProfileContextualAction
-        )
-    } else {
-        MobileProfilesView(
-            modifier = modifier,
-            headers = headers,
-            selectedProfileId = selectedHeader.id,
-            contextualProfileIds = contextualProfileIds,
-            isProfileEnabled = ::isProfileEnabled,
-            profileStatus = ::profileStatus,
-            profileTransfer = ::profileTransfer,
-            profileLastErrorCode = ::profileLastErrorCode,
-            onProfileSelected = onProfileSelected,
-            onProfileToggle = ::requestProfileToggle,
-            onProfileContextualAction = onProfileContextualAction
-        )
-    }
+@Composable
+private fun VpnPermissionDeniedAlert(
+    onDismiss: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("VPN permission required")
+        },
+        text = {
+            Text("Passepartout needs VPN permission to start a connection.")
+        },
+        confirmButton = {
+            TextButton(onClick = onOpenSettings) {
+                Text("Open VPN settings")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
 }
 
 @Composable
@@ -233,7 +316,7 @@ private fun MobileProfilesView(
     ) {
         item {
             Text(
-                text = "Profiles",
+                text = "My Profiles",
                 style = MaterialTheme.typography.titleLarge
             )
         }
@@ -247,86 +330,12 @@ private fun MobileProfilesView(
                 status = profileStatus(header.id),
                 transfer = profileTransfer(header.id),
                 lastErrorCode = profileLastErrorCode(header.id),
-                isSelected = if (contextualProfileIds.isNotEmpty()) {
-                    header.id in contextualProfileIds
-                } else {
-                    header.id == selectedProfileId
-                },
+                isSelected = contextualProfileIds.isNotEmpty() && header.id in contextualProfileIds,
                 onProfileSelected = onProfileSelected,
                 onProfileToggle = onProfileToggle,
                 onProfileContextualAction = onProfileContextualAction
             )
         }
-    }
-}
-
-@Composable
-private fun TabletProfilesView(
-    modifier: Modifier,
-    headers: List<AppProfileHeader>,
-    selectedHeader: AppProfileHeader,
-    contextualProfileIds: List<String>,
-    isProfileEnabled: (String) -> Boolean,
-    profileStatus: (String) -> AppProfileStatus,
-    profileTransfer: (String) -> ProfileTransfer?,
-    profileLastErrorCode: (String) -> String?,
-    onProfileSelected: (String) -> Unit,
-    onProfileToggle: (String, Boolean) -> Unit,
-    onProfileContextualAction: (String) -> Unit
-) {
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        ElevatedCard(
-            modifier = Modifier
-                .weight(0.42f)
-                .fillMaxHeight()
-        ) {
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                item {
-                    Text(
-                        text = "Profiles",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-                items(
-                    items = headers,
-                    key = { it.id }
-                ) { header ->
-                    ProfileRow(
-                        header = header,
-                        isEnabled = isProfileEnabled(header.id),
-                        status = profileStatus(header.id),
-                        transfer = profileTransfer(header.id),
-                        lastErrorCode = profileLastErrorCode(header.id),
-                        isSelected = if (contextualProfileIds.isNotEmpty()) {
-                            header.id in contextualProfileIds
-                        } else {
-                            header.id == selectedHeader.id
-                        },
-                        onProfileSelected = onProfileSelected,
-                        onProfileToggle = onProfileToggle,
-                        onProfileContextualAction = onProfileContextualAction
-                    )
-                }
-            }
-        }
-
-        ProfileDetailCard(
-            modifier = Modifier
-                .weight(0.58f)
-                .fillMaxHeight(),
-            header = selectedHeader,
-            isEnabled = isProfileEnabled(selectedHeader.id),
-            status = profileStatus(selectedHeader.id),
-            onProfileToggle = onProfileToggle
-        )
     }
 }
 
@@ -343,16 +352,18 @@ private fun ProfileRow(
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
 ) {
-    val statusDescription = lastErrorCode ?: if (status == AppProfileStatus.connected && transfer != null) {
-        transfer.transferText()
-    } else {
-        status.statusText()
-    }
+    val showsTransfer = lastErrorCode == null && status == AppProfileStatus.connected && transfer != null
+    val statusDescription = lastErrorCode ?: status.statusText()
+    val transferDescription = transfer?.transferText()
     val statusDescriptionColor = if (lastErrorCode != null) {
-        MaterialTheme.colorScheme.error
+        ProfileStatusErrorColor
     } else {
         statusColor(status)
     }
+    val animatedStatusDescriptionColor by animateColorAsState(
+        targetValue = statusDescriptionColor,
+        label = "Profile status color"
+    )
     val containerColor = if (isSelected) {
         MaterialTheme.colorScheme.secondaryContainer
     } else {
@@ -377,7 +388,7 @@ private fun ProfileRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -387,18 +398,23 @@ private fun ProfileRow(
                 Text(
                     text = header.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = header.moduleSummary(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = statusDescription,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = statusDescriptionColor
-                )
+                Crossfade(
+                    targetState = showsTransfer,
+                    label = "Profile transfer visibility"
+                ) { isShowingTransfer ->
+                    Text(
+                        text = if (isShowingTransfer) {
+                            transferDescription ?: statusDescription
+                        } else {
+                            statusDescription
+                        },
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Light,
+                        color = animatedStatusDescriptionColor
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -416,99 +432,14 @@ private fun ProfileRow(
 }
 
 @Composable
-private fun ProfileDetailCard(
-    modifier: Modifier,
-    header: AppProfileHeader,
-    isEnabled: Boolean,
-    status: AppProfileStatus,
-    onProfileToggle: (String, Boolean) -> Unit
+private fun LoadingProfilesView(
+    modifier: Modifier
 ) {
-    ElevatedCard(
-        modifier = modifier
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = header.name,
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Text(
-                    text = status.statusText(),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = statusColor(status)
-                )
-            }
-
-            DetailLine(
-                title = "Primary module",
-                value = header.moduleSummary()
-            )
-            DetailLine(
-                title = "Fingerprint",
-                value = header.fingerprint
-            )
-            DetailLine(
-                title = "Profile ID",
-                value = header.id
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = "Connection",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "Turn this profile on or off.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                Switch(
-                    checked = isEnabled,
-                    enabled = status.canToggle(),
-                    onCheckedChange = { isEnabled ->
-                        onProfileToggle(header.id, isEnabled)
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DetailLine(
-    title: String,
-    value: String
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge
-        )
+        CircularProgressIndicator()
     }
 }
 
@@ -543,25 +474,19 @@ private fun EmptyProfilesView(
 
 @Composable
 private fun statusColor(status: AppProfileStatus): Color = when (status) {
-    AppProfileStatus.connected -> MaterialTheme.colorScheme.primary
+    AppProfileStatus.connected -> ProfileStatusActiveColor
     AppProfileStatus.connecting,
-    AppProfileStatus.disconnecting -> MaterialTheme.colorScheme.secondary
+    AppProfileStatus.disconnecting -> ProfileStatusPendingColor
 
-    AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant
-}
-
-private fun AppProfileHeader.moduleSummary(): String {
-    return primaryModuleType?.value
-        ?: moduleTypes.firstOrNull()?.value
-        ?: "Profile"
+    AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
 }
 
 private fun AppProfileStatus.statusText(): String {
     return when (this) {
-        AppProfileStatus.disconnected -> "Disconnected"
-        AppProfileStatus.connecting -> "Connecting"
-        AppProfileStatus.connected -> "Connected"
-        AppProfileStatus.disconnecting -> "Disconnecting"
+        AppProfileStatus.disconnected -> "Inactive"
+        AppProfileStatus.connecting -> "Activating"
+        AppProfileStatus.connected -> "Active"
+        AppProfileStatus.disconnecting -> "Deactivating"
     }
 }
 
@@ -596,6 +521,23 @@ private fun AppProfileStatus.canToggle(): Boolean {
         AppProfileStatus.connecting,
         AppProfileStatus.disconnected,
         AppProfileStatus.connected -> true
+    }
+}
+
+private fun openVpnSettings(context: Context) {
+    val vpnSettingsIntent = Intent(Settings.ACTION_VPN_SETTINGS)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val appSettingsIntent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", context.packageName, null)
+    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    runCatching {
+        context.startActivity(vpnSettingsIntent)
+    }.onFailure {
+        runCatching {
+            context.startActivity(appSettingsIntent)
+        }
     }
 }
 
@@ -634,3 +576,7 @@ private data class RequestedConnection(
 private const val KILOBYTE = 1024L
 private const val MEGABYTE = KILOBYTE * 1024L
 private const val GIGABYTE = MEGABYTE * 1024L
+
+private val ProfileStatusActiveColor = Color(0xFF00AA00)
+private val ProfileStatusPendingColor = Color(0xFFFF9800)
+private val ProfileStatusErrorColor = Color(0xFFD32F2F)

@@ -11,13 +11,24 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.observables.AppContext
 import com.algoritmico.passepartout.ui.PassepartoutApp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CodingErrorAction
+import java.nio.charset.StandardCharsets
 
 class MainActivity : ComponentActivity() {
     private lateinit var appContext: AppContext
+    private var isProfileImporterOpen = false
+    private var importFailureMessage by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +46,14 @@ class MainActivity : ComponentActivity() {
                 appContext.profileObservable,
                 appContext.tunnelObservable,
                 appContext.userPreferencesObservable,
+                appContext.configObservable,
+                appContext.iapObservable,
+                appContext.versionObservable,
+                appContext.appConfiguration,
+                importFailureMessage = importFailureMessage,
+                onDismissImportFailure = {
+                    importFailureMessage = null
+                },
                 onImportProfile = ::openProfileImporter
             )
         }
@@ -42,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (::appContext.isInitialized) {
+        if (::appContext.isInitialized && !isProfileImporterOpen) {
             appContext.onApplicationActive()
         }
     }
@@ -55,42 +74,73 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openProfileImporter() {
-        profileImportLauncher.launch(PROFILE_MIME_TYPES)
+        isProfileImporterOpen = true
+        try {
+            profileImportLauncher.launch(PROFILE_MIME_TYPES)
+        } catch (e: Exception) {
+            isProfileImporterOpen = false
+            throw e
+        }
     }
 
     private fun importProfile(uri: Uri) {
-        val profileText = try {
-            contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-        } catch (e: Exception) {
-            Log.e(Globals.TAG_APP, "Unable to read profile file: $uri", e)
-            null
-        } ?: return
-
-        val profileName = displayName(uri) ?: "Imported profile"
         lifecycleScope.launch {
+            val profileName = displayName(uri) ?: "Imported profile"
+            val profileText = when (val result = readProfileText(uri)) {
+                ProfileTextReadResult.Binary -> {
+                    importFailureMessage = "$profileName appears to be a binary file."
+                    return@launch
+                }
+
+                ProfileTextReadResult.Failure -> {
+                    importFailureMessage = "Unable to read $profileName."
+                    return@launch
+                }
+
+                is ProfileTextReadResult.Text -> result.value
+            }
             runCatching {
                 appContext.profileObservable.importText(profileText, profileName)
             }.onSuccess {
                 appContext.onApplicationActive()
             }.onFailure {
                 Log.e(Globals.TAG_APP, "Import failure: $profileName", it)
+                importFailureMessage = "Unable to import $profileName."
             }
         }
     }
 
-    private fun displayName(uri: Uri): String? {
-        return contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-            ?.use { cursor ->
-                if (!cursor.moveToFirst()) {
-                    return@use null
+    private suspend fun readProfileText(uri: Uri): ProfileTextReadResult = withContext(Dispatchers.IO) {
+        try {
+            val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                ?: return@withContext ProfileTextReadResult.Failure
+            bytes.decodeProfileTextOrNull()
+                ?.let(ProfileTextReadResult::Text)
+                ?: ProfileTextReadResult.Binary
+        } catch (e: Exception) {
+            Log.e(Globals.TAG_APP, "Unable to read profile file: $uri", e)
+            ProfileTextReadResult.Failure
+        }
+    }
+
+    private suspend fun displayName(uri: Uri): String? = withContext(Dispatchers.IO) {
+        try {
+            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+                ?.use { cursor ->
+                    if (!cursor.moveToFirst()) {
+                        return@use null
+                    }
+                    val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (displayNameIndex >= 0) {
+                        cursor.getString(displayNameIndex)
+                    } else {
+                        null
+                    }
                 }
-                val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (displayNameIndex >= 0) {
-                    cursor.getString(displayNameIndex)
-                } else {
-                    null
-                }
-            }
+        } catch (e: Exception) {
+            Log.e(Globals.TAG_APP, "Unable to resolve profile file name: $uri", e)
+            null
+        }
     }
 
     private val vpnPermissionLauncher = registerForActivityResult(
@@ -104,8 +154,11 @@ class MainActivity : ComponentActivity() {
     private val profileImportLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
+        isProfileImporterOpen = false
         if (uri != null) {
             importProfile(uri)
+        } else if (::appContext.isInitialized) {
+            appContext.onApplicationActive()
         }
     }
 
@@ -119,3 +172,50 @@ class MainActivity : ComponentActivity() {
         )
     }
 }
+
+private sealed class ProfileTextReadResult {
+    data class Text(val value: String) : ProfileTextReadResult()
+    data object Binary : ProfileTextReadResult()
+    data object Failure : ProfileTextReadResult()
+}
+
+private fun ByteArray.decodeProfileTextOrNull(): String? {
+    if (hasBinaryControlBytes()) {
+        return null
+    }
+    val decoder = StandardCharsets.UTF_8
+        .newDecoder()
+        .onMalformedInput(CodingErrorAction.REPORT)
+        .onUnmappableCharacter(CodingErrorAction.REPORT)
+    return try {
+        decoder.decode(ByteBuffer.wrap(this)).toString()
+    } catch (_: CharacterCodingException) {
+        null
+    }
+}
+
+private fun ByteArray.hasBinaryControlBytes(): Boolean {
+    if (isEmpty()) {
+        return false
+    }
+    var controlCount = 0
+    for (byte in this) {
+        val value = byte.toInt() and 0xFF
+        if (value == 0) {
+            return true
+        }
+        if (value < ASCII_SPACE && value !in TEXT_CONTROL_BYTES) {
+            controlCount += 1
+        }
+    }
+    return controlCount > 0 && controlCount * 100 > size
+}
+
+private val TEXT_CONTROL_BYTES = setOf(
+    '\t'.code,
+    '\n'.code,
+    '\r'.code,
+    '\u000C'.code
+)
+
+private const val ASCII_SPACE = 0x20

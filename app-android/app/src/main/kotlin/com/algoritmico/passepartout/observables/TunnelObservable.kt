@@ -14,10 +14,12 @@ import com.algoritmico.passepartout.abi.models.AppTunnelInfo
 import com.algoritmico.passepartout.abi.models.Event
 import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
 import com.algoritmico.passepartout.abi.models.ProfileTransfer
+import com.algoritmico.passepartout.extensions.isInteractive
 import io.partout.PartoutTunnel
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -49,6 +51,7 @@ class TunnelObservable(
 
     private val _state = MutableStateFlow(State())
     val state: StateFlow<State> = _state.asStateFlow()
+    private var pendingConnectContinuation: CancellableContinuation<Unit>? = null
 
     init {
         tunnel.state
@@ -60,10 +63,22 @@ class TunnelObservable(
             .launchIn(scope)
     }
 
-    suspend fun connect(profile: TaggedProfile) =
+    suspend fun connect(profile: TaggedProfile, force: Boolean = false) {
+        if (!force && profile.isInteractive) {
+            throw InteractiveException(profile)
+        }
         suspendCancellableCoroutine { continuation ->
+            pendingConnectContinuation = continuation
+            continuation.invokeOnCancellation {
+                if (pendingConnectContinuation == continuation) {
+                    pendingConnectContinuation = null
+                }
+            }
             tunnel.connect(profile, onConnectIntent) callback@ { status ->
                 if (!continuation.isActive) { return@callback }
+                if (pendingConnectContinuation == continuation) {
+                    pendingConnectContinuation = null
+                }
                 if (status != PartoutTunnel.ERROR_NONE) {
                     continuation.resumeWithException(TunnelException)
                     return@callback
@@ -71,6 +86,7 @@ class TunnelObservable(
                 continuation.resume(Unit)
             }
         }
+    }
 
     private val onConnectIntent: (Intent) -> Unit = { intent ->
         val json = runBlocking {
@@ -101,7 +117,26 @@ class TunnelObservable(
     }
 
     fun onVpnPermissionResult(isGranted: Boolean) {
-        tunnel.onVpnPermissionResult(isGranted)
+        if (isGranted) {
+            tunnel.onVpnPermissionResult(true)
+            return
+        }
+
+        _state.update {
+            it.copy(isVpnPermissionDenied = true)
+        }
+        pendingConnectContinuation?.let { continuation ->
+            pendingConnectContinuation = null
+            if (continuation.isActive) {
+                continuation.resumeWithException(VpnPermissionDeniedException())
+            }
+        }
+    }
+
+    fun clearVpnPermissionDenied() {
+        _state.update {
+            it.copy(isVpnPermissionDenied = false)
+        }
     }
 
     private fun onTunnelState(tunnelState: PartoutTunnel.State) {
@@ -136,10 +171,13 @@ class TunnelObservable(
     }
 
     data class State(
-        val activeProfiles: Map<String, AppTunnelInfo> = emptyMap()
+        val activeProfiles: Map<String, AppTunnelInfo> = emptyMap(),
+        val isVpnPermissionDenied: Boolean = false
     )
 
-    data object TunnelException: Throwable()
+    data object TunnelException: Exception()
+    class InteractiveException(val profile: TaggedProfile): Exception()
+    private class VpnPermissionDeniedException: Exception()
 
     private val AppProfileStatus.isActive: Boolean
         get() = this == AppProfileStatus.connecting || this == AppProfileStatus.connected

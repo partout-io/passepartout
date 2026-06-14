@@ -7,6 +7,7 @@ package com.algoritmico.passepartout.abi
 import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.abi.helpers.ABIResult
 import com.algoritmico.passepartout.abi.models.AppPreferences
+import com.algoritmico.passepartout.abi.models.ChangelogEntry
 import io.partout.models.TaggedProfile
 
 class AppABIProfile(
@@ -46,5 +47,18 @@ class AppABIKeyStore(
     override fun set(preferences: AppPreferences) {
         val json = Globals.json.encodeToString(preferences)
         library.appPreferencesSet(json)
+    }
+}
+
+class AppABIVersion(
+    private val library: PassepartoutWrapper
+) : AppABIVersionProtocol {
+    override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
+        val result = ABIResult.await { completion ->
+            library.appChangelog(version, completion)
+        }
+        return result.payload?.let { json ->
+            Globals.json.decodeFromString(json)
+        } ?: emptyList()
     }
 }
