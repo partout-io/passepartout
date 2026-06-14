@@ -42,6 +42,7 @@ public func __psp_app_init(
             )
             return PSPCompletionCodeOK
         } catch {
+            pspLog(.abi, .fault, "Unable to start app ABI: \(error)")
             bindings.free?(&bindings)
             return PSPCompletionCodeFailure
         }
@@ -160,8 +161,27 @@ public func __psp_app_fetch_profile(
             return
         }
         do {
-            let data = try ABI.encode(profile.asTaggedProfile)
-            let json = String(data: data, encoding: .utf8)
+            let json = try ABI.encodeJSON(profile.asTaggedProfile)
+            callback?(PSPCompletionCodeOK, json, nil)
+        } catch {
+            callback?(PSPCompletionCodeFailure, nil, error)
+        }
+    }
+}
+
+@c(psp_app_fetch_changelog)
+public func __psp_app_fetch_changelog(
+    version: UnsafePointer<CChar>?,
+    completion: psp_completion
+) {
+    guard let abi, let version else {
+        return
+    }
+    let swiftVersion = String(cString: version)
+    ABI.run(completion) { callback in
+        do {
+            let entries = try await abi.version.fetchChangelog(of: swiftVersion)
+            let json = try ABI.encodeJSON(entries)
             callback?(PSPCompletionCodeOK, json, nil)
         } catch {
             callback?(PSPCompletionCodeFailure, nil, error)

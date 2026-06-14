@@ -20,6 +20,16 @@ extension TunnelABI {
         let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
         let preferences = AppPreferencesStore.fromData(preferencesData)
+        let logFormatter = appConfiguration.newLogFormatter()
+
+        // Logging context
+        _ = pspLogRegister(
+            for: .tunnelGlobal,
+            with: appConfiguration,
+            preferences: preferences,
+            localURL: nil,
+            localMapper: logFormatter?.localMapper
+        )
 
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile
@@ -29,7 +39,6 @@ extension TunnelABI {
         )
         let profile = try registry.importedProfile(from: profileInput, passphrase: nil)
         let environment = SharedTunnelEnvironment(profileId: profile.id)
-        let logFormatter = appConfiguration.newLogFormatter()
 
         // Logging context
         let ctx = pspLogRegister(

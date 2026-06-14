@@ -232,11 +232,11 @@ extension AppPreferencesStore {
             do {
                 values = try ABI.decode(ABI.AppPreferences.self, from: data)
             } catch {
-                pspLog(.core, .error, "Unable to decode preferences: \(error)")
+                pspLog(.abi, .error, "Unable to decode preferences: \(error)")
                 values = .default()
             }
         } else {
-            pspLog(.core, .info, "No preferences provided")
+            pspLog(.abi, .info, "No preferences provided")
             values = .default()
         }
         return AppPreferencesStore(values)

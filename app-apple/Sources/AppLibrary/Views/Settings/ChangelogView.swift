@@ -8,6 +8,8 @@ import CommonLibrary
 import SwiftUI
 
 public struct ChangelogView: View {
+    @Environment(VersionObservable.self)
+    private var versionObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -55,19 +57,7 @@ private extension ChangelogView {
 
     func loadChangelog() async {
         do {
-            pspLog(.core, .info, "CHANGELOG: Load for version \(versionNumber)")
-            let url = appConfiguration.constants.github.urlForChangelog(ofVersion: versionNumber)
-            pspLog(.core, .info, "CHANGELOG: Fetching \(url)")
-            let result = try await URLSession.shared.data(from: url)
-            guard let text = String(data: result.0, encoding: .utf8) else {
-                throw ABI.AppError.notFound
-            }
-            entries = text
-                .split(separator: "\n")
-                .enumerated()
-                .compactMap {
-                    ABI.ChangelogEntry($0.offset, line: String($0.element))
-                }
+            entries = try await versionObservable.fetchChangelog(of: versionNumber)
         } catch {
             pspLog(.core, .error, "CHANGELOG: Unable to load: \(error)")
         }

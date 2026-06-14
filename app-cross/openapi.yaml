@@ -513,6 +513,19 @@ components:
       required:
       - type
       type: object
+    ChangelogEntry:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        comment:
+          type: string
+        issue:
+          type: integer
+      required:
+      - id
+      - comment
     ConfigEventRefresh:
       type: object
       additionalProperties: false

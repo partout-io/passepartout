@@ -12,6 +12,7 @@ extension ABI {
     public typealias AppPreferences = OpenAPIAppPreferences
     public typealias AppProfileStatus = OpenAPIAppProfileStatus
     public typealias AppUserLevel = OpenAPIAppUserLevel
+    public typealias ChangelogEntry = OpenAPIChangelogEntry
     public typealias ConfigFlag = OpenAPIConfigFlag
     public typealias Credits = OpenAPICredits
     public typealias DistributionTarget = OpenAPIDistributionTarget

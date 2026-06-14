@@ -50,7 +50,7 @@ public protocol AppABIRegistryProtocol: Sendable {
 
 @BusinessActor
 public protocol AppABIVersionProtocol: Sendable {
-    func checkLatestRelease() async
+    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry]
 }
 
 @BusinessActor

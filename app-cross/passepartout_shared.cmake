@@ -86,7 +86,6 @@ Sources/CommonLibraryCore/Domain/AppProduct+Features.swift
 Sources/CommonLibraryCore/Domain/AppProduct+Providers.swift
 Sources/CommonLibraryCore/Domain/AppProduct.swift
 Sources/CommonLibraryCore/Domain/AppProfile.swift
-Sources/CommonLibraryCore/Domain/ChangelogEntry.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppBundle.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConfiguration.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppConstants.swift
@@ -113,6 +112,7 @@ Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileHeader.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppProfileStatus.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppTunnelInfo.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIAppUserLevel.swift
+Sources/CommonLibraryCore/Domain/Codegen/OpenAPIChangelogEntry.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIConfigEventRefresh.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPIConfigFlag.swift
 Sources/CommonLibraryCore/Domain/Codegen/OpenAPICredits.swift

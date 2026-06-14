@@ -91,7 +91,7 @@ public final class AppABI: Sendable {
             registry: partoutRegistry
         )
         registry = AppABIRegistry(registry: partoutRegistry)
-        version = AppABIVersion(versionChecker: versionChecker)
+        version = AppABIVersion(appConfiguration: appConfiguration, bindings: bindings)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
 
 #if PSP_CROSS
@@ -352,10 +352,33 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
 }
 
 private struct AppABIVersion: AppABIVersionProtocol {
-    let versionChecker: VersionChecker
+    let appConfiguration: ABI.AppConfiguration
+    nonisolated(unsafe)let bindings: psp_app_bindings?
 
-    func checkLatestRelease() async {
-        await versionChecker.checkLatestRelease()
+    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        pspLog(.core, .info, "CHANGELOG: Load for version \(version)")
+        let url = appConfiguration.constants.github.urlForChangelog(ofVersion: version)
+        pspLog(.abi, .info, "CHANGELOG: Fetching \(url)")
+        do {
+            let data = try await appConfiguration.newRequest(
+                for: url,
+                cached: false,
+                bindings: bindings
+            )
+            guard let text = String(data: data, encoding: .utf8) else {
+                throw ABI.AppError.notFound
+            }
+            pspLog(.abi, .info, "CHANGELOG: Fetched \(data.count) bytes")
+            return text
+                .split(separator: "\n")
+                .enumerated()
+                .compactMap {
+                    ABI.ChangelogEntry($0.offset, line: String($0.element))
+                }
+        } catch {
+            pspLog(.abi, .error, "CHANGELOG: Unable to fetch: \(error)")
+            throw error
+        }
     }
 }
 
@@ -371,7 +394,7 @@ private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
     }
 }
 
-// MARK: - Logging
+// MARK: - Generic
 
 extension AppABI: AppABILoggerProtocol, LogFormatter {
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
@@ -419,7 +442,7 @@ extension AppABI {
 // Invoked on internal events
 private extension AppABI {
     func onLaunch() async throws {
-        pspLog(.core, .notice, "Application did launch")
+        pspLog(.abi, .notice, "Application did launch")
 
         pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
@@ -483,10 +506,10 @@ private extension AppABI {
         })
 #if !PSP_CROSS
         do {
-            pspLog(.core, .info, "\tFetch providers index...")
+            pspLog(.abi, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
-            pspLog(.core, .error, "\tUnable to fetch providers index: \(error)")
+            pspLog(.abi, .error, "\tUnable to fetch providers index: \(error)")
         }
 #endif
     }
@@ -499,7 +522,7 @@ private extension AppABI {
         }
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did enter foreground")
+        pspLog(.abi, .notice, "Application did enter foreground")
         pendingTask = Task {
             await reloadExtensions()
 
@@ -517,7 +540,7 @@ private extension AppABI {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did update eligible features")
+        pspLog(.abi, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -529,14 +552,14 @@ private extension AppABI {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did save profile (\(profile.id))")
+        pspLog(.abi, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            pspLog(.abi, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            pspLog(.abi, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
 
@@ -596,12 +619,12 @@ private extension AppABI {
 
     func reloadExtensions() async {
         guard let extensionInstaller else { return }
-        pspLog(.core, .info, "Extensions: load current status...")
+        pspLog(.abi, .info, "Extensions: load current status...")
         do {
             let result = try await extensionInstaller.load()
-            pspLog(.core, .info, "Extensions: load result is \(result)")
+            pspLog(.abi, .info, "Extensions: load result is \(result)")
         } catch {
-            pspLog(.core, .error, "Extensions: load error: \(error)")
+            pspLog(.abi, .error, "Extensions: load error: \(error)")
         }
     }
 

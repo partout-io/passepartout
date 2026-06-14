@@ -53,6 +53,7 @@ public func __psp_tunnel_start(
             try await globalABI?.start(isInteractive: isInteractive)
             return PSPCompletionCodeOK
         } catch {
+            pspLog(.abi, .fault, "Unable to start tunnel ABI: \(error)")
             if globalABI != nil {
                 await globalABI?.stop()
                 globalABI = nil

@@ -261,7 +261,7 @@ extension AppABI {
                 profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
                 let isCloudKitEnabled = withUITesting || appConfiguration.isCloudKitEnabled
-                pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
+                pspLog(.abi, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
                 let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
@@ -280,7 +280,7 @@ extension AppABI {
                 }
             }
 
-            pspLog(.core, .info, "\tRefresh modules preferences repository...")
+            pspLog(.abi, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
                 do {
                     return try CommonData.cdModulePreferencesRepositoryV3(
@@ -288,12 +288,12 @@ extension AppABI {
                         moduleId: $0
                     )
                 } catch {
-                    pspLog(.core, .error, "Unable to load preferences for module \($0): \(error)")
+                    pspLog(.abi, .error, "Unable to load preferences for module \($0): \(error)")
                     throw error
                 }
             }
 
-            pspLog(.core, .info, "\tRefresh providers preferences repository...")
+            pspLog(.abi, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
                 do {
                     return try CommonData.cdProviderPreferencesRepositoryV3(
@@ -301,7 +301,7 @@ extension AppABI {
                         providerId: $0
                     )
                 } catch {
-                    pspLog(.core, .error, "Unable to load preferences for provider \($0): \(error)")
+                    pspLog(.abi, .error, "Unable to load preferences for provider \($0): \(error)")
                     throw error
                 }
             }
