@@ -1,6 +1,7 @@
 package com.algoritmico.passepartout
 
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.net.VpnService
@@ -14,6 +15,7 @@ import androidx.core.app.ServiceCompat
 import com.algoritmico.passepartout.abi.PassepartoutWrapper
 import com.algoritmico.passepartout.abi.helpers.ABIException
 import io.partout.PartoutVpnServiceRuntime
+import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.vpn.JNITunnelController
 import kotlinx.coroutines.CompletableDeferred
@@ -22,6 +24,14 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class PassepartoutVpnService: VpnService() {
+    @Volatile
+    private var currentProfileName: String? = null
+
+    @Volatile
+    private var shouldKeepStoppedNotification = false
+
+    private val notificationTransfer = NotificationTransferFormatter()
+
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
             logTag = Globals.TAG_SERVICE,
@@ -46,6 +56,7 @@ class PassepartoutVpnService: VpnService() {
         ) = withContext(Dispatchers.IO) {
             val bundle = appBundleJSON()
             Log.e(logTag, ">>> Bundle: $bundle")
+            updateCurrentProfileName(profileJSON)
 
             // Try preferences from intent, otherwise load last persisted
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
@@ -100,6 +111,10 @@ class PassepartoutVpnService: VpnService() {
             updateNotification(snapshot)
         }
 
+        override fun onServiceStopped() {
+            postStoppedNotification()
+        }
+
         private fun readLastPreferences(): String? {
             return runCatching {
                 readLastFile(lastPreferencesFile)
@@ -132,18 +147,29 @@ class PassepartoutVpnService: VpnService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == PartoutVpnServiceRuntime.ACTION_STOP_VPN) {
+            return runtime.onStartCommand(intent, flags, startId)
+        }
+        shouldKeepStoppedNotification = false
+        intent?.getStringExtra(PartoutVpnServiceRuntime.EXTRA_PROFILE_JSON)?.let {
+            notificationTransfer.reset()
+            updateCurrentProfileName(it)
+        }
         ServiceCompat.startForeground(
             this,
             VPN_NOTIFICATION_ID,
-            createNotification(),
+            createNotification(snapshot = null),
             ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
         )
         return runtime.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        if (!shouldKeepStoppedNotification) {
+            dismissNotification()
+        }
         runtime.onDestroy()
+        resetNotificationState()
         super.onDestroy()
     }
 
@@ -158,7 +184,10 @@ class PassepartoutVpnService: VpnService() {
         return runtime.onBind(intent)
     }
 
-    private fun createNotification(): Notification {
+    private fun createNotification(
+        snapshot: TunnelSnapshot?,
+        isServiceStopped: Boolean = false
+    ): Notification {
         val channelId = VPN_CHANNEL_ID
 
         // Create a notification channel (required on Android 8.0+)
@@ -168,36 +197,133 @@ class PassepartoutVpnService: VpnService() {
         )
             .setName("Passepartout VPN")
             .setDescription("Notification for the VPN foreground service")
+            .setShowBadge(false)
             .build()
 
         NotificationManagerCompat
             .from(this)
             .createNotificationChannel(channel)
 
-        // Build the notification
-        return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Passepartout")
-            .setContentText("VPN is running")
-            .setOngoing(true)
-            .build()
+        val title = currentProfileName ?: getString(R.string.app_name)
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_notification_vpn)
+            .setContentTitle(title)
+            .setSubText(if (isServiceStopped) "stopped" else snapshot?.status?.toString())
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOnlyAlertOnce(true)
+            .setOngoing(!isServiceStopped)
+            .setAutoCancel(false)
+            .addAction(
+                R.drawable.ic_notification_vpn,
+                if (isServiceStopped) "Connect" else "Disconnect",
+                if (isServiceStopped) connectPendingIntent() else disconnectPendingIntent()
+            )
+
+        val content = snapshot?.let(notificationTransfer::activeText)
+        if (content != null) {
+            builder
+                .setContentText(content)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(content))
+        }
+
+        return builder.build()
     }
 
     private fun updateNotification(snapshot: TunnelSnapshot) {
         Log.e(Globals.TAG_SERVICE, "updateNotification()")
-        val notification = NotificationCompat.Builder(this, VPN_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Passepartout")
-            .setContentText("Status is ${snapshot.status}")
-            .setOngoing(true)
-            .build()
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (!notificationManager.areNotificationsEnabled()) {
+            Log.w(Globals.TAG_SERVICE, "Skip VPN notification update, notifications are disabled")
+            return
+        }
+        val notification = createNotification(snapshot)
+        runCatching {
+            notificationManager.notify(VPN_NOTIFICATION_ID, notification)
+        }.onFailure {
+            if (it is SecurityException) {
+                Log.w(Globals.TAG_SERVICE, "Unable to update VPN notification", it)
+            } else {
+                throw it
+            }
+        }
+    }
+
+    private fun postStoppedNotification() {
+        shouldKeepStoppedNotification = true
+        notificationTransfer.reset()
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
+
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (!notificationManager.areNotificationsEnabled()) {
+            Log.w(Globals.TAG_SERVICE, "Skip stopped VPN notification, notifications are disabled")
+            return
+        }
+        val notification = createNotification(
+            snapshot = null,
+            isServiceStopped = true
+        )
+        runCatching {
+            notificationManager.notify(VPN_NOTIFICATION_ID, notification)
+        }.onFailure {
+            if (it is SecurityException) {
+                Log.w(Globals.TAG_SERVICE, "Unable to show stopped VPN notification", it)
+            } else {
+                throw it
+            }
+        }
+    }
+
+    private fun connectPendingIntent(): PendingIntent {
+        val intent = Intent(this, PassepartoutVpnService::class.java)
+        return PendingIntent.getService(
+            this,
+            VPN_CONNECT_REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    private fun disconnectPendingIntent(): PendingIntent {
+        val intent = Intent(this, PassepartoutVpnService::class.java).apply {
+            action = PartoutVpnServiceRuntime.ACTION_STOP_VPN
+        }
+        return PendingIntent.getService(
+            this,
+            VPN_DISCONNECT_REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    private fun dismissNotification() {
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         NotificationManagerCompat
             .from(this)
-            .notify(VPN_NOTIFICATION_ID, notification)
+            .cancel(VPN_NOTIFICATION_ID)
+    }
+
+    private fun resetNotificationState() {
+        currentProfileName = null
+        notificationTransfer.reset()
+    }
+
+    private fun updateCurrentProfileName(profileJSON: String) {
+        runCatching {
+            Globals.json.decodeFromString<TaggedProfile>(profileJSON).name
+        }.onSuccess {
+            currentProfileName = it
+        }.onFailure {
+            Log.w(Globals.TAG_SERVICE, "Unable to decode VPN profile name", it)
+        }
     }
 
     companion object {
         const val EXTRA_TUNNEL_PREFERENCES = "com.algoritmico.passepartout.extra.TUNNEL_PREFERENCES"
-        const val VPN_CHANNEL_ID = "vpn_service_channel"
+        const val VPN_CHANNEL_ID = "vpn_service_channel_1"
         const val VPN_NOTIFICATION_ID = 1
+        private const val VPN_CONNECT_REQUEST_CODE = 1000
+        private const val VPN_DISCONNECT_REQUEST_CODE = 1001
     }
 }

@@ -127,6 +127,17 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchProfile(
 }
 
 JNIEXPORT void JNICALL
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchChangelog(
+        JNIEnv *env, jobject thiz,
+        jstring version,
+        jobject completion
+) {
+    const char *cVersion = (*env)->GetStringUTFChars(env, version, NULL);
+    psp_app_fetch_changelog(cVersion, PSP_JNI_CB(env, completion));
+    (*env)->ReleaseStringUTFChars(env, version, cVersion);
+}
+
+JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appPreferencesSet(
         JNIEnv *env,
         jobject thiz,

@@ -20,6 +20,7 @@ import com.algoritmico.passepartout.abi.models.AppPreferenceKey
 import com.algoritmico.passepartout.abi.models.AppPreferences
 import com.algoritmico.passepartout.abi.models.ConfigFlag
 import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.abi.models.ExperimentalPreferences
 import com.algoritmico.passepartout.abi.models.MixedEventShouldUpdatePreferences
 import com.algoritmico.passepartout.abi.update
 import kotlinx.coroutines.CoroutineScope
@@ -73,6 +74,19 @@ class UserPreferencesObservable(
             val newValue = !(it[DNS_FALLS_BACK] ?: AppPreferences.default.dnsFallsBack)
             it[DNS_FALLS_BACK] = newValue
             snapshot = snapshot.copy(dnsFallsBack = newValue)
+        }
+        savePreferences()
+    }
+
+    suspend fun updateExperimentalPreferences(
+        transform: (ExperimentalPreferences) -> ExperimentalPreferences
+    ) {
+        store.edit {
+            val current = it[EXPERIMENTAL]?.decodePreference<ExperimentalPreferences>()
+                ?: snapshot.experimental
+            val newValue = transform(current)
+            it[EXPERIMENTAL] = Globals.json.encodeToString(newValue)
+            snapshot = snapshot.copy(experimental = newValue)
         }
         savePreferences()
     }

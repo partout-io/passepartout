@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="launcher_icon_foreground_canvas_size">108dp</dimen>
+    <dimen name="launcher_icon_foreground_size">60dp</dimen>
+    <dimen name="launch_screen_icon_canvas_size">288dp</dimen>
+    <dimen name="theme_logo_size">160dp</dimen>
+</resources>

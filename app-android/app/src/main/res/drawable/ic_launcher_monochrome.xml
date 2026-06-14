@@ -5,7 +5,7 @@
         android:height="@dimen/launcher_icon_foreground_canvas_size"
         android:width="@dimen/launcher_icon_foreground_canvas_size" />
     <item
-        android:drawable="@drawable/app_logo"
+        android:drawable="@drawable/ic_launcher_monochrome_mark"
         android:gravity="center"
         android:height="@dimen/launcher_icon_foreground_size"
         android:width="@dimen/launcher_icon_foreground_size" />

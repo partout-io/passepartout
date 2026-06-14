@@ -1,3 +1,5 @@
 <resources>
-    <style name="Base.Theme.Passepartout" parent="@android:style/Theme.Material.NoActionBar" />
+    <style name="Base.Theme.Passepartout" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+    </style>
 </resources>
