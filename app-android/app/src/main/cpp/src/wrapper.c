@@ -127,7 +127,7 @@ Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchProfile(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appChangelog(
+Java_com_algoritmico_passepartout_abi_PassepartoutWrapper_appFetchChangelog(
         JNIEnv *env, jobject thiz,
         jstring version,
         jobject completion

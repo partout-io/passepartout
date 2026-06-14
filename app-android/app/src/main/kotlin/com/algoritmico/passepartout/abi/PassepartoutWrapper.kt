@@ -41,7 +41,7 @@ class PassepartoutWrapper {
         id: String,
         completion: ABICompletionCallback
     )
-    external fun appChangelog(
+    external fun appFetchChangelog(
         version: String,
         completion: ABICompletionCallback
     )

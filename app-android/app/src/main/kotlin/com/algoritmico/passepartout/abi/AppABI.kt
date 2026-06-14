@@ -55,7 +55,7 @@ class AppABIVersion(
 ) : AppABIVersionProtocol {
     override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         val result = ABIResult.await { completion ->
-            library.appChangelog(version, completion)
+            library.appFetchChangelog(version, completion)
         }
         return result.payload?.let { json ->
             Globals.json.decodeFromString(json)
