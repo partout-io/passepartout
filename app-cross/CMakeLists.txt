@@ -1,106 +1,102 @@
-# Configure as shared library
-add_library(passepartout_shared SHARED "")
+set(CMAKE_C_FLAGS "-Wall -W -pedantic")
+set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
 # Include file lists
-include("passepartout_shared.cmake")
+include("passepartout.cmake")
+set(APP_DIR ${DIST_DIR})
 
-set(PSP_ABI_INPUTS
-    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include/passepartout.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include/module.modulemap
-)
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${PSP_ABI_INPUTS})
-set(PSP_ABI_INPUTS_HASH "")
-foreach(input IN LISTS PSP_ABI_INPUTS)
-    file(SHA256 ${input} input_hash)
-    string(APPEND PSP_ABI_INPUTS_HASH "${input_hash}\n")
-endforeach()
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/passepartout_shared.swift.in
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/passepartout_shared.swift
-    @ONLY
-)
+# Strip executables except on Windows
+if(WIN32)
+    set(STRIP rem)
+else()
+    set(STRIP ${CMAKE_STRIP})
+endif()
 
-target_compile_options(passepartout_shared PRIVATE
-    -DUSE_CMAKE
-)
-set_target_properties(passepartout_shared PROPERTIES
+# Define app target
+if(BUILD_APP)
+    add_executable(passepartout "")
+    set_target_properties(passepartout PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+        ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    )
+    target_sources(passepartout PRIVATE ${APP_SOURCES})
+    target_include_directories(passepartout PRIVATE
+        ${OUTPUT_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/include
+    )
+    target_link_libraries(passepartout PRIVATE passepartout_shared)
+
+    # wxWidgets only required to build app executable
+    include("wx.cmake")
+
+    if(APPLE)
+        # Mangle macOS @rpath
+        set_target_properties(passepartout PROPERTIES
+            MACOSX_RPATH ON
+            BUILD_WITH_INSTALL_RPATH TRUE
+            INSTALL_RPATH "@loader_path"
+            INSTALL_NAME_DIR "@rpath"
+        )
+    elseif(LINUX)
+        # Mangle Linux RPATH
+        set_target_properties(passepartout PROPERTIES
+            BUILD_RPATH "\$ORIGIN"
+            INSTALL_RPATH "\$ORIGIN"
+            SKIP_BUILD_RPATH OFF
+        )
+    elseif(WIN32)
+        # Build WinMain app
+        set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
+    endif()
+
+    # Distribute
+    add_custom_command(
+        TARGET passepartout
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:passepartout>"
+            "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
+        COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
+        VERBATIM
+    )
+endif()
+
+# Define tunnel target
+add_executable(passepartout-tunnel "")
+set_target_properties(passepartout-tunnel PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
-    OUTPUT_NAME passepartout
-    Swift_COMPILATION_MODE incremental
 )
-
-# Build Partout dependency
-set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
-set(PP_BUILD_LIBRARY ON)
-set(PP_BUILD_USE_OPENSSL ON)
-set(PP_BUILD_USE_OPENVPN ON)
-set(PP_BUILD_USE_WIREGUARD ON)
-add_subdirectory(partout)
-
-# Set exclusions and symbols for non-Apple builds
-set(PSP_EXCLUSIONS CommonData.*)
-target_compile_options(passepartout_shared PRIVATE -DPSP_ABI)
-if(NOT APPLE)
-    target_compile_options(passepartout_shared PRIVATE -DPSP_CROSS)
-    list(APPEND PSP_EXCLUSIONS CommonLibraryApple.*)
-endif()
-foreach(pattern ${PSP_EXCLUSIONS})
-    list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
-endforeach()
-target_sources(passepartout_shared PRIVATE
-    ${PSP_SOURCES}
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/passepartout_shared.swift
+target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
+target_include_directories(passepartout-tunnel PRIVATE
+    ${OUTPUT_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
 )
-
-# Link the C ABI code
-add_library(passepartout_shared_c STATIC ${PSP_C_SOURCES})
-target_link_libraries(passepartout_shared PUBLIC passepartout_shared_c)
-
-# Import the modulemap for the C ABI
-target_include_directories(passepartout_shared_c PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include
-)
-
-# Depend on Partout
-add_dependencies(passepartout_shared partout)
-target_include_directories(passepartout_shared PRIVATE ${OUTPUT_DIR}/partout)
-target_link_libraries(passepartout_shared PRIVATE
-    partout
-    $<TARGET_OBJECTS:partout_c>
-)
-# if(LINUX OR ANDROID)
-#    target_link_options(passepartout_shared PRIVATE "LINKER:-z,defs")
-# endif()
-
-# Configure Linux RPATH stuff
-if(LINUX)
-    set_target_properties(passepartout_shared PROPERTIES
+target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
+if(APPLE)
+    set_target_properties(passepartout-tunnel PROPERTIES
+        MACOSX_RPATH ON
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@loader_path"
+        INSTALL_NAME_DIR "@rpath"
+    )
+elseif(LINUX)
+    set_target_properties(passepartout-tunnel PROPERTIES
         BUILD_RPATH "\$ORIGIN"
         INSTALL_RPATH "\$ORIGIN"
         SKIP_BUILD_RPATH OFF
     )
 endif()
-
-# Distribute with dependencies
-if(WIN32)
-    set(LIBEXT lib)
-elseif(APPLE)
-    set(LIBEXT dylib)
-else()
-    set(LIBEXT so)
-endif()
 add_custom_command(
-    TARGET passepartout_shared
+    TARGET passepartout-tunnel
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND}
-        -DOUTPUT_DIR=${OUTPUT_DIR}
-        -DDIST_DIR=${DIST_DIR}
-        -DSTRIP=${CMAKE_STRIP}
-        -DLIBEXT=${LIBEXT}
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:passepartout-tunnel>"
+        "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
+    COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
+    VERBATIM
 )
-
-# Build end-user applications
-add_subdirectory(passepartout)
