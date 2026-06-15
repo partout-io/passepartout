@@ -117,13 +117,17 @@ elseif(APPLE)
 else()
     set(LIBEXT so)
 endif()
-add_custom_command(
-    TARGET passepartout-tunnel
-    POST_BUILD
+add_custom_target(partout-post ALL
     COMMAND ${CMAKE_COMMAND}
-        -DOUTPUT_DIR=${OUTPUT_DIR}
-        -DDIST_DIR=${DIST_DIR}
-        -DSTRIP=${CMAKE_STRIP}
-        -DLIBEXT=${LIBEXT}
+        "-DOUTPUT_DIR=${OUTPUT_DIR}"
+        "-DDIST_DIR=${DIST_DIR}"
+        "-DSTRIP=${CMAKE_STRIP}"
+        "-DLIBEXT=${LIBEXT}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
+    VERBATIM
 )
+add_dependencies(partout-post partout)
+add_dependencies(passepartout-tunnel partout-post)
+if(BUILD_APP)
+    add_dependencies(passepartout partout-post)
+endif()
