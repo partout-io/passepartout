@@ -2,6 +2,11 @@ set(CMAKE_C_FLAGS "-Wall -W -pedantic")
 set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
 # Depend on Partout
+set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
+set(PP_BUILD_LIBRARY ON)
+set(PP_BUILD_USE_OPENSSL ON)
+set(PP_BUILD_USE_OPENVPN ON)
+set(PP_BUILD_USE_WIREGUARD ON)
 add_subdirectory(../partout partout)
 
 # Include file lists
