@@ -18,12 +18,11 @@ bool MyApp::OnInit()
     // Per-monitor DPI awareness (v2)
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
-
-    char *bundle = NULL;
-    char *constants = NULL;
     MyFrame* frame = 0;
 
-    /* Paths to JSON input. */
+    /*
+    char *bundle = NULL;
+    char *constants = NULL;
     const char *bundle_path = "bundle.json";
     const char *constants_path = "constants.json";
     // FIXME: #209/notes, Cross UI, hardcoded profiles dir and cache dir
@@ -34,34 +33,35 @@ bool MyApp::OnInit()
 #else
     const char *parent = NULL;
 #endif
-//    if ((bundle = partout_readfile(bundle_path, parent)) == NULL) {
-//        fprintf(stderr, "Unable to open bundle: %s\n", bundle_path);
-//        goto failure;
-//    }
-//    if ((constants = partout_readfile(constants_path, parent)) == NULL) {
-//        fprintf(stderr, "Unable to open constants: %s\n", constants_path);
-//        goto failure;
-//    }
-//    args.bundle = bundle;
-//    args.constants = constants;
-//    args.preferences = NULL;
-//    args.profiles_dir = profiles_dir;
-//    args.cache_dir = cache_dir;
-//    args.bindings.event_ctx = this;
-//    args.bindings.event_cb = onABIEvent;
-//    if (psp_app_init(&args) != PSPCompletionCodeOK) goto failure;
+    if ((bundle = partout_readfile(bundle_path, parent)) == NULL) {
+        fprintf(stderr, "Unable to open bundle: %s\n", bundle_path);
+        goto failure;
+    }
+    if ((constants = partout_readfile(constants_path, parent)) == NULL) {
+        fprintf(stderr, "Unable to open constants: %s\n", constants_path);
+        goto failure;
+    }
+    args.bundle = bundle;
+    args.constants = constants;
+    args.preferences = NULL;
+    args.profiles_dir = profiles_dir;
+    args.cache_dir = cache_dir;
+    args.bindings.event_ctx = this;
+    args.bindings.event_cb = onABIEvent;
+    if (psp_app_init(&args) != PSPCompletionCodeOK) goto failure;
     free(bundle);
     free(constants);
+    */
 
     Bind(wxEVT_ACTIVATE_APP, &MyApp::OnActivateApp, this);
 
     frame = new MyFrame();
     frame->Show(true);
     return true;
-failure:
-    if (bundle) free(bundle);
-    if (constants) free(constants);
-    return false;
+// failure:
+//     if (bundle) free(bundle);
+//     if (constants) free(constants);
+//     return false;
 }
 
 void MyApp::OnActivateApp(wxActivateEvent &) {
