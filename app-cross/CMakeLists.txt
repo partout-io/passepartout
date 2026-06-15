@@ -108,3 +108,22 @@ add_custom_command(
     COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
     VERBATIM
 )
+
+# Distribute Partout with dependencies
+if(WIN32)
+    set(LIBEXT lib)
+elseif(APPLE)
+    set(LIBEXT dylib)
+else()
+    set(LIBEXT so)
+endif()
+add_custom_command(
+    TARGET passepartout-tunnel
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+        -DOUTPUT_DIR=${OUTPUT_DIR}
+        -DDIST_DIR=${DIST_DIR}
+        -DSTRIP=${CMAKE_STRIP}
+        -DLIBEXT=${LIBEXT}
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
+)

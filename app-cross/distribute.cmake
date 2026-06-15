@@ -1,13 +1,13 @@
 if(WIN32)
     set(OPENSSL_FOLDER bin)
-    file(GLOB LIBPASSEPARTOUT
-        "${OUTPUT_DIR}/passepartout.dll"
-        "${OUTPUT_DIR}/passepartout.lib"
-        "${OUTPUT_DIR}/passepartout.pdb"
+    file(GLOB LIBPARTOUT
+        "${OUTPUT_DIR}/partout/partout.dll"
+        "${OUTPUT_DIR}/partout/partout.lib"
+        "${OUTPUT_DIR}/partout/partout.pdb"
     )
 else()
     set(OPENSSL_FOLDER lib)
-    file(GLOB LIBPASSEPARTOUT "${OUTPUT_DIR}/libpassepartout*")
+    file(GLOB LIBPARTOUT "${OUTPUT_DIR}/partout/libpartout*")
 endif()
 
 # Bundle compiled binaries
@@ -15,7 +15,7 @@ file(GLOB LIBSSL "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libssl*")
 file(GLOB LIBCRYPTO "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libcrypto*")
 file(GLOB LIBWGGO "${OUTPUT_DIR}/wg-go/lib/*wg-go*")
 file(MAKE_DIRECTORY "${DIST_DIR}")
-foreach(lib IN LISTS LIBPASSEPARTOUT LIBSSL LIBCRYPTO LIBWGGO)
+foreach(lib IN LISTS LIBPARTOUT LIBSSL LIBCRYPTO LIBWGGO)
     file(COPY "${lib}" DESTINATION "${DIST_DIR}")
 endforeach()
 
@@ -61,7 +61,7 @@ foreach(lib ${SWIFT_LIBS})
     file(COPY "$ENV{SWIFT_RUNTIME}/${lib}" DESTINATION "${DIST_DIR}")
 endforeach()
 
-set(LIBPASSEPARTOUT_BINARY "${DIST_DIR}/libpassepartout.${LIBEXT}")
-if(STRIP AND NOT WIN32 AND EXISTS "${LIBPASSEPARTOUT_BINARY}")
-    execute_process(COMMAND "${STRIP}" "${LIBPASSEPARTOUT_BINARY}")
+set(LIBPARTOUT_BINARY "${DIST_DIR}/libpartout.${LIBEXT}")
+if(STRIP AND NOT WIN32 AND EXISTS "${LIBPARTOUT_BINARY}")
+    execute_process(COMMAND "${STRIP}" "${LIBPARTOUT_BINARY}")
 endif()
