@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     char *constants = NULL;
     char *profile = NULL;
 
-    printf("Passepartout Tunnel (Partout: %s)\n", partout_version());
+    printf("Passepartout Tunnel (%s)\n", partout_version());
 //    if (argc <= 3) {
 //        fprintf(stderr, "Missing path to bundle, constants, profile\n");
 //        return -1;
