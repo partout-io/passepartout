@@ -58,7 +58,7 @@ jobs:
             exit 1
           fi
       - run: |
-          ci/run-cross-tests.sh
+          ci/run-shared-tests.sh
       - run: |
           ci/run-apple-tests.sh
   run_api_tests:
