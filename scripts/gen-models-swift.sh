@@ -4,8 +4,8 @@ source $cwd/env.sh
 cd $cwd/..
 
 set -e
-infile=app-cross/openapi.yaml
-models_dir=app-cross/Sources/CommonLibraryCore/Domain
+infile=scripts/openapi.yaml
+models_dir=`realpath app-shared/Sources/CommonLibraryCore/Domain`
 models_tmp=$models_dir/tmp
 models_out=$models_tmp/Sources/OpenAPIClient/Models
 models_gen=$models_dir/Codegen
