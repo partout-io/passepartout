@@ -37,7 +37,7 @@ set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
-add_subdirectory(partout)
+add_subdirectory(../partout partout)
 
 # Set exclusions and symbols for non-Apple builds
 set(PSP_EXCLUSIONS CommonData.*)
@@ -101,6 +101,3 @@ add_custom_command(
         -DLIBEXT=${LIBEXT}
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )
-
-# Build end-user applications
-add_subdirectory(passepartout)

@@ -1,6 +1,9 @@
 set(CMAKE_C_FLAGS "-Wall -W -pedantic")
 set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
 
+# Depend on Partout
+add_subdirectory(../partout partout)
+
 # Include file lists
 include("passepartout.cmake")
 set(APP_DIR ${DIST_DIR})
@@ -25,7 +28,7 @@ if(BUILD_APP)
         ${OUTPUT_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/app/include
     )
-    target_link_libraries(passepartout PRIVATE passepartout_shared)
+    target_link_libraries(passepartout PRIVATE partout)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
@@ -75,7 +78,7 @@ target_include_directories(passepartout-tunnel PRIVATE
     ${OUTPUT_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
 )
-target_link_libraries(passepartout-tunnel PRIVATE passepartout_shared)
+target_link_libraries(passepartout-tunnel PRIVATE partout)
 if(APPLE)
     set_target_properties(passepartout-tunnel PROPERTIES
         MACOSX_RPATH ON
