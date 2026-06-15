@@ -1,14 +1,11 @@
 if(WIN32)
     set(OPENSSL_FOLDER bin)
-    file(GLOB LIBPARTOUT
-        "${OUTPUT_DIR}/partout/partout.dll"
-        "${OUTPUT_DIR}/partout/partout.lib"
-        "${OUTPUT_DIR}/partout/partout.pdb"
-    )
 else()
     set(OPENSSL_FOLDER lib)
-    file(GLOB LIBPARTOUT "${OUTPUT_DIR}/partout/libpartout*")
 endif()
+file(GLOB LIBPARTOUT
+    "${OUTPUT_DIR}/partout/libpartout*"
+)
 
 # Bundle compiled binaries
 file(GLOB LIBSSL "${OUTPUT_DIR}/openssl/${OPENSSL_FOLDER}/libssl*")
