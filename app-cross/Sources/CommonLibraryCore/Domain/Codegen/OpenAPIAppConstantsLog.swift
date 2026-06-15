@@ -9,29 +9,37 @@ import Partout
 
 public struct OpenAPIAppConstantsLog: Sendable, Codable, Hashable {
 
+    public var tag: String
     public var formatter: OpenAPIAppConstantsLogFormatter
     public var sinceLast: Double
     public var options: OpenAPILocalLoggerOptions
+    public var filenames: OpenAPIAppConstantsLogFilenames?
 
-    public init(formatter: OpenAPIAppConstantsLogFormatter, sinceLast: Double, options: OpenAPILocalLoggerOptions) {
+    public init(tag: String, formatter: OpenAPIAppConstantsLogFormatter, sinceLast: Double, options: OpenAPILocalLoggerOptions, filenames: OpenAPIAppConstantsLogFilenames? = nil) {
+        self.tag = tag
         self.formatter = formatter
         self.sinceLast = sinceLast
         self.options = options
+        self.filenames = filenames
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case tag
         case formatter
         case sinceLast
         case options
+        case filenames
     }
 
     // Encodable protocol methods
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(tag, forKey: .tag)
         try container.encode(formatter, forKey: .formatter)
         try container.encode(sinceLast, forKey: .sinceLast)
         try container.encode(options, forKey: .options)
+        try container.encodeIfPresent(filenames, forKey: .filenames)
     }
 }
 

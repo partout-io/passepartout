@@ -9,8 +9,8 @@ import Partout
 extension TunnelABI {
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
-        preferences: ABI.AppPreferenceValues,
-        startPreferences: ABI.AppPreferenceValues?,
+        preferences: AppPreferencesStore,
+        startPreferences: ABI.AppPreferencesProtocol?,
         // TODO: #218, cachesURL must be per-profile
         cachesURL: URL,
         neProvider: NEPacketTunnelProvider
@@ -43,9 +43,8 @@ extension TunnelABI {
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localURL: appConfiguration.urlForTunnelLog,
+            localMapper: logFormatter?.localMapper
         )
 
         // Decode preferences and config flags
@@ -55,9 +54,10 @@ extension TunnelABI {
         } else {
             pspLog(ctx.profileId, .core, .info, "\tExisting preferences: \(preferences)")
         }
-        let configFlags = preferences.configFlags
+        let configFlags = preferences[\.configFlags]
         pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
-        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences.experimental.ignoredConfigFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences[\.experimental.ignoredConfigFlags])")
+        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences[\.experimental.enabledConfigFlags])")
 
         // Create TunnelController for connnection management
         let neTunnelController = NETunnelController(
@@ -65,20 +65,21 @@ extension TunnelABI {
             profile: processedProfile,
             options: {
                 var options = NETunnelController.Options()
-                if preferences.dnsFallsBack {
+                if preferences[\.dnsFallsBack] {
                     options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
                 }
                 return options
             }()
         )
 
-        // Pick socket and crypto strategy from preferences
-        var factoryOptions = NEInterfaceFactory.Options()
-        factoryOptions.usesNEUDP = preferences.isFlagEnabled(.neSocketUDP)
-        factoryOptions.usesNETCP = preferences.isFlagEnabled(.neSocketTCP)
-
         // Create daemon
-        let factory = NEInterfaceFactory(ctx, provider: neProvider, options: factoryOptions)
+        let factory: NetworkInterfaceFactory
+        if preferences.isFlagEnabled(.ovpnV3) {
+            factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
+        } else {
+            let options = NEInterfaceFactory.Options()
+            factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
+        }
         let reachability = NEObservablePath(ctx)
         let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
         let connectionOptions = ConnectionParameters.Options()
@@ -95,23 +96,27 @@ extension TunnelABI {
             connectionFactory: registry,
             connectionParameters: connectionParameters,
             messageHandler: messageHandler,
-            startsImmediately: true
+            startsImmediately: true,
+            cancelsUnrecoverable: false // Prevents on-demand reconnection
         )
         let daemon = try SimpleConnectionDaemon(params: params)
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.newAppProductHelper(),
+            inAppHelper: appConfiguration.newInAppHelper(),
             receiptReader: SharedReceiptReader(
-                reader: StoreKitReceiptReader(),
+                reader: appConfiguration.newInAppReceiptReader {
+                    // TODO: #1786, StoreKit receipt caching
+                    .uncached
+                },
             ),
             betaChecker: appConfiguration.newBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
-        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences.skipsPurchases
+        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
-        let usesRelaxedVerification = preferences.relaxedVerification
+        let usesRelaxedVerification = preferences[\.relaxedVerification]
         // Assemble
         let iap = TunnelABI.IAP(
             manager: iapManager,
@@ -124,8 +129,8 @@ extension TunnelABI {
             daemon: daemon,
             environment: environment,
             iap: iap,
-            logFormatter: logFormatter,
-            originalProfile: originalProfile
+            originalProfile: originalProfile,
+            bindings: nil
         )
     }
 }

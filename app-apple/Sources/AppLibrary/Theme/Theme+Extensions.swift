@@ -42,7 +42,7 @@ extension TunnelObservable {
 
     public func statusColor(ofProfileId profileId: Profile.ID, _ theme: Theme) -> Color {
         let info = activeProfiles[profileId]
-        if lastError(for: profileId) != nil {
+        guard lastErrorCode(for: profileId) == nil else {
             return theme.errorColor
         }
         switch info?.status {

@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.Passepartout" parent="Base.Theme.Passepartout">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSplashScreenBackground">@color/launch_screen_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/launch_screen_icon</item>
+    </style>
+</resources>

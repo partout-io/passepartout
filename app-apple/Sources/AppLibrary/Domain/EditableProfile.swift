@@ -41,7 +41,7 @@ public struct EditableProfile: MutableProfileType {
             do {
                 return try $0.build()
             } catch {
-                throw ABI.AppError.malformedModule($0, error: error)
+                throw ABI.AppError.malformedModule($0, reason: error)
             }
         }
         builder.activeModulesIds = activeModulesIds

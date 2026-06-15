@@ -8,17 +8,58 @@
 #define __PASSEPARTOUT_H
 
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 /* Common functions. */
 const char *psp_partout_version(void);
+void psp_log(const char *msg);
 char *psp_readfile(const char *rel_path, const char *parent);
+void psp_free(void *ptr);
 
 /* Events callback. */
 typedef void (*psp_event_callback)(void *event_ctx, const char *event);
+typedef int (*psp_request_callback)(void *request_ctx,
+                                    const char *url,
+                                    bool cached,
+                                    double timeout_sec,
+                                    uint8_t **data,
+                                    size_t *len);
 
-/* Completion callbacks. */
-/* Success: code == 0. */
-typedef void (*psp_abi_completion)(void *ctx, int code, const char *error_message);
+/* Completion callback.
+ * - Success: code == 0, string = result
+ * - Error:   code != 0, string = error
+ * Both 'result' and 'error' are optional JSON payloads.
+ */
+#define PSPCompletionCodeOK         0
+#define PSPCompletionCodeArgs       -2
+#define PSPCompletionCodeFailure    -1
+typedef void (*psp_completion_cb)(void *ctx, int code, const char *json);
+typedef struct {
+    void *ctx;
+    psp_completion_cb callback;
+} psp_completion;
+
+/* Macros for completion blocks. */
+static inline
+psp_completion PSP_CB(void *ctx, psp_completion_cb callback) {
+    psp_completion completion = { ctx, callback };
+    return completion;
+}
+#define PSP_CB_NOP() PSP_CB(NULL, NULL)
+
+typedef struct __psp_app_bindings {
+    void *event_ctx;
+    psp_event_callback event_cb;
+    void *request_ctx;
+    psp_request_callback request_cb;
+    void (*free)(struct __psp_app_bindings *);
+} psp_app_bindings;
+
+typedef struct __psp_tunnel_bindings {
+    void *controller;
+    void (*free)(struct __psp_tunnel_bindings *);
+} psp_tunnel_bindings;
 
 /* App initialization. */
 typedef struct {
@@ -27,15 +68,20 @@ typedef struct {
     const char *preferences;
     const char *profiles_dir;
     const char *cache_dir;
-    void *event_ctx;
-    psp_event_callback event_cb;
+    psp_app_bindings bindings;
 } psp_app_init_args;
 
 /* App functions. */
-void psp_app_init(const psp_app_init_args *args);
+int psp_app_init(const psp_app_init_args *args);
+void psp_app_deinit(psp_completion completion);
 void psp_app_on_foreground(void);
-void psp_app_import_profile_path(const char *path, void *ctx, psp_abi_completion completion);
-void psp_app_import_profile_text(const char *text, const char *filename, void *ctx, psp_abi_completion completion);
+void psp_app_import_profile_path(const char *path, psp_completion completion);
+void psp_app_import_profile_text(const char *text, const char *filename, psp_completion completion);
+void psp_app_delete_profile(const char *uuid, psp_completion completion);
+void psp_app_delete_profiles(const char **uuids, size_t num, psp_completion completion);
+void psp_app_fetch_profile(const char *uuid, psp_completion completion);
+void psp_app_fetch_changelog(const char *version, psp_completion completion);
+void psp_app_preferences_set(const char *prefs);
 void psp_app_flush_log(void);
 
 /* Daemon initialization. */
@@ -47,13 +93,11 @@ typedef struct {
     const char *profile;
     bool is_interactive;
     bool is_daemon;
-    void *status_ctx;
-    psp_event_callback status_cb;
-    void *jni_wrapper;
+    psp_tunnel_bindings bindings;
 } psp_tunnel_start_args;
 
 /* Daemon functions. */
-void psp_tunnel_start(const psp_tunnel_start_args *args, void *ctx, psp_abi_completion completion);
-void psp_tunnel_stop(void *ctx, psp_abi_completion completion);
+int psp_tunnel_start(const psp_tunnel_start_args *args);
+void psp_tunnel_stop(psp_completion completion);
 
 #endif

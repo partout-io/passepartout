@@ -22,27 +22,24 @@ public enum Resources {
         let bundle = ABI.AppBundle(
             distributionTarget: distributionTarget,
             buildTarget: buildTarget,
-            bundle: bundleConfiguration,
-            logTag: "Passepartout",
-            appLogPath: "app.log",
-            tunnelLogPath: "tunnel.log"
+            bundle: bundleConfiguration
         )
         return ABI.AppConfiguration(bundle: bundle, constants: constants)
     }
 
     // Do not expose this to views, use AppConfiguration.constants from environment
-    static let constants = Bundle.module.unsafeDecode(ABI.AppConstants.self, filename: "Constants")
+    static let constants = Bundle.module.unsafeDecode(ABI.AppConstants.self, filename: "constants")
 
-    public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "Credits")
+    public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "credits")
 
     public static let issueTemplate: String = {
         do {
-            guard let templateURL = Bundle.module.url(forResource: "Issue", withExtension: "txt") else {
-                fatalError("Unable to find Issue.txt in Resources")
+            guard let templateURL = Bundle.module.url(forResource: "issue", withExtension: "txt") else {
+                fatalError("Unable to find issue.txt in Resources")
             }
             return try String(contentsOf: templateURL)
         } catch {
-            fatalError("Unable to parse Issue.txt: \(error)")
+            fatalError("Unable to parse issue.txt: \(error)")
         }
     }()
 

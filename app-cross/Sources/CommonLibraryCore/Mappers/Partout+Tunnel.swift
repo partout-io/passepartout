@@ -5,26 +5,6 @@
 import Partout
 
 extension TunnelStatus {
-    func considering(_ environment: TunnelEnvironmentReader?) -> TunnelStatus {
-        // If the tunnel is active and it relies on a
-        // connection, map to the connection status
-        if self == .active,
-           let connectionStatus = environment?.environmentValue(forKey: TunnelEnvironmentKeys.connectionStatus) {
-            switch connectionStatus {
-            case .connecting:
-                return .activating
-            case .connected:
-                return .active
-            case .disconnecting:
-                return .deactivating
-            case .disconnected:
-                return .inactive
-            }
-        }
-        // Otherwise, map directly to the tunnel status
-        return self
-    }
-
     var abiStatus: ABI.AppProfileStatus {
         switch self {
         case .inactive: .disconnected
@@ -36,9 +16,10 @@ extension TunnelStatus {
 }
 
 extension TunnelSnapshot {
-    func abiInfo(withEnvironment environment: TunnelEnvironmentReader?) -> ABI.AppTunnelInfo {
+    public func abiInfo() -> ABI.AppTunnelInfo {
         ABI.AppTunnelInfo(
             id: id,
+            isEnabled: isEnabled,
             tunnelStatus: status,
             onDemand: onDemand,
             environment: environment
@@ -48,6 +29,6 @@ extension TunnelSnapshot {
 
 extension DataCount {
     var abiTransfer: ABI.ProfileTransfer {
-        ABI.ProfileTransfer(received: Int(received), sent: Int(sent))
+        ABI.ProfileTransfer(received: Int64(received), sent: Int64(sent))
     }
 }

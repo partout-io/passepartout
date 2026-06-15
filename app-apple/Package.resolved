@@ -1,13 +1,13 @@
 {
-  "originHash" : "6a275008bb14cd0342801d6bbf2e551c848c18c063549d085dbcbc78ce1ce63d",
+  "originHash" : "53445d53db4dc80ceb56f3625f79aa647e318021a7feca6081c9cfff3637dc90",
   "pins" : [
     {
       "identity" : "openssl-apple",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/openssl-apple",
       "state" : {
-        "revision" : "3252c9386a195198ae49911a06ef595698f48c5a",
-        "version" : "3.6.200"
+        "revision" : "4c152e7f49de4b0ae6e4059ba1425bd969ca4a84",
+        "version" : "3.6.300"
       }
     },
     {
@@ -38,15 +38,6 @@
       }
     },
     {
-      "identity" : "swift-syntax",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-syntax",
-      "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
-      }
-    },
-    {
       "identity" : "swift-system",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system.git",
@@ -60,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/wg-go-apple",
       "state" : {
-        "revision" : "0cae1d186f2e9e7f80a260a060b098b9aa734858",
-        "version" : "0.0.2025063103"
+        "revision" : "dfd5cc1f8840686297a4c3ec3e88b6a1adf87331",
+        "version" : "0.0.20260530"
       }
     }
   ],

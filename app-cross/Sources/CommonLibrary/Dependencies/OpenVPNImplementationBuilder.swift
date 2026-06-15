@@ -37,13 +37,21 @@ private extension OpenVPNImplementationBuilder {
         module: OpenVPNModule
     ) throws -> Connection {
         let ctx = PartoutLoggerContext(parameters.profile.id)
-        var options = OpenVPNConnection.Options()
+        var options = OpenVPNConnectionOptions()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
-#if !PSP_CROSS
+#if PSP_CROSS || USE_CMAKE
+        return try _OpenVPNConnectionV3(
+            ctx,
+            parameters: parameters,
+            module: module,
+            cachesURL: cachesURL,
+            options: options
+        )
+#else
         let flags = configBlock()
-        if flags.contains(.ovpnCrossV2) {
-            return try OpenVPNConnectionV2(
+        if flags.contains(.ovpnV3) {
+            return try _OpenVPNConnectionV3(
                 ctx,
                 parameters: parameters,
                 module: module,
@@ -51,7 +59,7 @@ private extension OpenVPNImplementationBuilder {
                 options: options
             )
         } else {
-            return try OpenVPNConnection(
+            return try _OpenVPNConnectionV2(
                 ctx,
                 parameters: parameters,
                 module: module,
@@ -59,14 +67,6 @@ private extension OpenVPNImplementationBuilder {
                 options: options
             )
         }
-#else
-        return try OpenVPNConnectionV2(
-            ctx,
-            parameters: parameters,
-            module: module,
-            cachesURL: cachesURL,
-            options: options
-        )
 #endif
     }
 }

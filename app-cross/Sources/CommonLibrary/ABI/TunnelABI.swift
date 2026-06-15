@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary_C
 import Partout
 
 public final class TunnelABI: TunnelABIProtocol {
@@ -27,28 +28,34 @@ public final class TunnelABI: TunnelABIProtocol {
     private var daemon: ConnectionDaemon?
     private let environment: TunnelEnvironment
     private let iap: IAP?
-    private let logFormatter: LogFormatter
     private let originalProfile: Profile
+    nonisolated(unsafe) private let bindings: psp_tunnel_bindings?
 
-    nonisolated(unsafe)
     private var verifierSubscription: Task<Void, Error>?
 
     public init(
         daemon: ConnectionDaemon,
         environment: TunnelEnvironment,
         iap: IAP?,
-        logFormatter: LogFormatter,
-        originalProfile: Profile
+        originalProfile: Profile,
+        bindings: psp_tunnel_bindings?
     ) {
         self.daemon = daemon
         self.environment = environment
         self.iap = iap
-        self.logFormatter = logFormatter
         self.originalProfile = originalProfile
+        self.bindings = bindings
 
         // Disable if skips purchases
         if let iap {
             iap.manager.isEnabled = !iap.skipsPurchases
+        }
+    }
+
+    deinit {
+        pspLog(.abi, .debug, "Deinit TunnelABI")
+        if var bindings {
+            bindings.free?(&bindings)
         }
     }
 
@@ -59,13 +66,13 @@ public final class TunnelABI: TunnelABIProtocol {
         do {
             // Check hold flag and hang the tunnel if set
             if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
-                pspLog(.core, .info, "Tunnel is on hold")
+                pspLog(.abi, .info, "Tunnel is on hold")
                 guard isInteractive else {
-                    pspLog(.core, .error, "Tunnel was started non-interactively, hang here")
+                    pspLog(.abi, .error, "Tunnel was started non-interactively, hang here")
                     await daemon.hold()
                     return
                 }
-                pspLog(.core, .info, "Tunnel was started interactively, clear hold flag")
+                pspLog(.abi, .info, "Tunnel was started interactively, clear hold flag")
                 environment.removeEnvironmentValue(forKey: TunnelEnvironmentKeys.holdFlag)
             }
 
@@ -101,7 +108,7 @@ public final class TunnelABI: TunnelABIProtocol {
                 )
             }
         } catch {
-            pspLog(.core, .fault, "Unable to start tunnel: \(error)")
+            pspLog(.abi, .fault, "Unable to start tunnel: \(error)")
             flushLogs()
             throw error
         }
@@ -118,20 +125,20 @@ public final class TunnelABI: TunnelABIProtocol {
 
     public func sendMessage(_ messageData: Data) async -> Data? {
         guard let daemon else { return nil }
-        pspLog(.core, .debug, "Handle tunnel message")
+        pspLog(.abi, .debug, "Handle tunnel message")
         do {
-            let input = try JSONDecoder().decode(Message.Input.self, from: messageData)
+            let input = try ABI.decode(Message.Input.self, from: messageData)
             let output = try await daemon.sendMessage(input)
-            let encodedOutput = try JSONEncoder().encode(output)
+            let encodedOutput = try ABI.encode(output)
             switch input {
             case .environment:
                 break
             default:
-                pspLog(.core, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
+                pspLog(.abi, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
             }
             return encodedOutput
         } catch {
-            pspLog(.core, .error, "Unable to decode message: \(messageData)")
+            pspLog(.abi, .error, "Unable to decode message: \(messageData)")
             return nil
         }
     }
@@ -154,7 +161,7 @@ public final class TunnelABI: TunnelABIProtocol {
 private extension TunnelABI {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
-            pspLog(.core, .info, "Active tunnels: \(activeTunnels)")
+            pspLog(.abi, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
@@ -164,13 +171,13 @@ private extension TunnelABI {
         guard Self.activeTunnels.isEmpty else {
             throw PartoutError(.App.multipleTunnels)
         }
-        pspLog(.core, .info, "Track context: \(daemon.profile.id)")
+        pspLog(.abi, .info, "Track context: \(daemon.profile.id)")
         Self.activeTunnels.insert(daemon.profile.id)
     }
 
     func untrackContext() {
         guard let daemon else { return }
-        pspLog(.core, .info, "Untrack context: \(daemon.profile.id)")
+        pspLog(.abi, .info, "Untrack context: \(daemon.profile.id)")
         Self.activeTunnels.remove(daemon.profile.id)
     }
 }

@@ -30,6 +30,10 @@ extension ABI.ChangelogEntry {
             optionalIssue = nil
         }
 
-        self.init(index, comps.joined(separator: " "), optionalIssue)
+        self.init(
+            id: index,
+            comment: comps.joined(separator: " "),
+            issue: optionalIssue
+        )
     }
 }

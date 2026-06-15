@@ -9,29 +9,27 @@ import Partout
 extension TunnelABI {
     // TODO: #218, cachesURL must be per-profile
     public static func forCrossPlatform(
+        bindings: psp_tunnel_bindings,
         appBundleData: Data,
         appConstantsData: Data,
         preferencesData: Data?,
         profileInput: ABI.ProfileImporterInput,
-        cachesURL: URL,
-        onStatus: SimpleConnectionDaemon.StatusCallback?,
-        jniWrapper: UnsafeMutableRawPointer?
+        cachesURL: URL
     ) throws -> TunnelABI {
-        let decoder = JSONDecoder()
-
-        // Decode app configuration
-        let bundle = try decoder.decode(ABI.AppBundle.self, from: appBundleData)
-        let constants = try decoder.decode(ABI.AppConstants.self, from: appConstantsData)
+        let bundle = try ABI.decode(ABI.AppBundle.self, from: appBundleData)
+        let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
+        let preferences = AppPreferencesStore.fromData(preferencesData)
+        let logFormatter = appConfiguration.newLogFormatter()
 
-        // Parse preferences
-        var preferences = ABI.AppPreferenceValues(
-            with: decoder,
-            data: preferencesData,
-            newDeviceId: true,
-            deviceIdLength: constants.deviceIdLength
+        // Logging context
+        _ = pspLogRegister(
+            for: .tunnelGlobal,
+            with: appConfiguration,
+            preferences: preferences,
+            localURL: nil,
+            localMapper: logFormatter?.localMapper
         )
-        preferences.configFlags = [.wgCrossV2]
 
         // Initialize objects from global configuration
         // TODO: #218, this directory must be per-profile
@@ -40,32 +38,39 @@ extension TunnelABI {
             cachesURL: cachesURL
         )
         let profile = try registry.importedProfile(from: profileInput, passphrase: nil)
-        let environment = appConfiguration.newStandaloneTunnelEnvironment(profileId: profile.id)
-        let logFormatter = appConfiguration.newLogFormatter()
+        let environment = SharedTunnelEnvironment(profileId: profile.id)
 
         // Logging context
         let ctx = pspLogRegister(
             for: .tunnelProfile(profile.id),
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localURL: nil,
+            localMapper: logFormatter?.localMapper
         )
+        pspLog(.abi, .debug, "Tunnel preferences: \(preferences.serialized())")
 
         // Create platform-specific objects
-        let controller = try VirtualTunnelController(ctx, impl: jniWrapper)
-        // FIXME: #1656, C ABI, better path block
-        let factory = POSIXInterfaceFactory(ctx, betterPathBlock: { PassthroughStream() })
-        // FIXME: #1656, C ABI, reachability observer
-        let reachability = DummyReachabilityObserver()
+        let betterPathFactory: BetterPathStreamFactory?
+#if !PSP_CROSS
+        betterPathFactory = NEBetterPathStreamFactory(ctx)
+#else
+        betterPathFactory = nil // Delegated from C
+#endif
+        let controller = try NativeTunnelController(
+            ctx,
+            ref: bindings.controller,
+            environment: environment,
+            betterPathFactory: betterPathFactory
+        )
+        let factory = controller.newSocketFactory()
 
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(
             profile: profile,
             controller: controller,
             factory: factory,
-            reachability: reachability,
+            reachability: controller,
             environment: environment,
             options: connectionOptions
         )
@@ -74,7 +79,8 @@ extension TunnelABI {
             connectionParameters: connectionParameters,
             messageHandler: DefaultMessageHandler(ctx, environment: environment),
             startsImmediately: false,
-            onStatus: onStatus
+            cancelsUnrecoverable: true,
+            minDataCountDelta: constants.tunnel.minDataCountDelta.map(\.magnitude)
         )
         let daemon = try SimpleConnectionDaemon(params: daemonParameters)
 
@@ -83,8 +89,8 @@ extension TunnelABI {
             daemon: daemon,
             environment: environment,
             iap: nil,
-            logFormatter: logFormatter,
-            originalProfile: profile
+            originalProfile: profile,
+            bindings: bindings
         )
     }
 }

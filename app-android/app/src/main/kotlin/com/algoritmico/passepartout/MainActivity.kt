@@ -4,185 +4,218 @@
 
 package com.algoritmico.passepartout
 
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.abi.AppConstants
-import com.algoritmico.passepartout.abi.AppProfileHeader
-import com.algoritmico.passepartout.abi.Event
-import com.algoritmico.passepartout.abi.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.ProfileEventSave
-import com.algoritmico.passepartout.helpers.ABIEventCallback
-import com.algoritmico.passepartout.helpers.NativeLibraryWrapper
-import io.partout.abi.TaggedProfile
-import io.partout.jni.AndroidTunnelStrategy
+import com.algoritmico.passepartout.observables.AppContext
+import com.algoritmico.passepartout.ui.PassepartoutApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import java.io.File
+import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CodingErrorAction
+import java.nio.charset.StandardCharsets
 
-val globalJsonCoder = Json {
-    ignoreUnknownKeys = true
-}
-
-class MainActivity : ComponentActivity(), ABIEventCallback {
-    private val wrapper = NativeLibraryWrapper()
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private var headers = mutableStateOf<Map<String, AppProfileHeader>>(emptyMap())
-    private lateinit var tunnelStrategy: AndroidTunnelStrategy
-
-    override fun onEvent(eventCtx: Any?, eventJSON: String) {
-        mainHandler.post {
-            val event: Event = globalJsonCoder.decodeFromString(eventJSON)
-            Log.i("Passepartout", ">>> MainActivity: $event")
-            when (event) {
-                is ProfileEventRefresh -> {
-                    headers.value = event.headers
-                }
-
-                is ProfileEventSave -> {
-                    Log.i("Passepartout", ">>> MainActivity: profile = ${event.profile}")
-                }
-
-                else -> {
-                    // Other events
-                }
-            }
-        }
-    }
+class MainActivity : ComponentActivity() {
+    private lateinit var appContext: AppContext
+    private var isProfileImporterOpen = false
+    private var importFailureMessage by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Start easy, test Partout version
-        val version = wrapper.partoutVersion()
-        Log.e("Passepartout", ">>> $version")
-
-        // Initialize app and event callback
-        val bundle = String(assets.open("bundle.json").readBytes())
-        val constants = String(assets.open("constants.json").readBytes())
-        val profilesDir = File(noBackupFilesDir, "profiles-v1").apply {
-            mkdirs()
-        }.absolutePath
-        val cachePath = cacheDir.absolutePath
-        val eventHandler = this
-        wrapper.appInit(
-            bundle,
-            constants,
-            profilesDir,
-            cachePath,
+        appContext = AppContext(
             this,
-            eventHandler
+            lifecycleScope,
+            requestVpnPermission = { permissionIntent ->
+                vpnPermissionLauncher.launch(permissionIntent)
+            }
         )
-        tunnelStrategy = AndroidTunnelStrategy(
-            context = this,
-            vpnServiceClass = PassepartoutVPNService::class.java,
-            requestVpnPermission = vpnPermissionLauncher::launch
-        )
-
-        val constantsJSON: AppConstants = globalJsonCoder.decodeFromString(constants)
-        Log.e("Passepartout", ">>> Test GitHub constants: ${constantsJSON.github.discussionsURL}")
 
         setContent {
-            HelloWorldView(
-                version,
-                headers,
-                { startVpnService() },
-                { stopVpnService() },
-                { importProfile() }
+            PassepartoutApp(
+                appContext.profileObservable,
+                appContext.tunnelObservable,
+                appContext.userPreferencesObservable,
+                appContext.configObservable,
+                appContext.iapObservable,
+                appContext.versionObservable,
+                appContext.appConfiguration,
+                importFailureMessage = importFailureMessage,
+                onDismissImportFailure = {
+                    importFailureMessage = null
+                },
+                onImportProfile = ::openProfileImporter
             )
         }
     }
 
     override fun onStart() {
         super.onStart()
-        wrapper.appOnForeground()
+        if (::appContext.isInitialized && !isProfileImporterOpen) {
+            appContext.onApplicationActive()
+        }
     }
 
-    fun startVpnService() {
+    override fun onDestroy() {
+        if (::appContext.isInitialized) {
+            appContext.close()
+        }
+        super.onDestroy()
+    }
+
+    private fun openProfileImporter() {
+        isProfileImporterOpen = true
+        try {
+            profileImportLauncher.launch(PROFILE_MIME_TYPES)
+        } catch (e: Exception) {
+            isProfileImporterOpen = false
+            throw e
+        }
+    }
+
+    private fun importProfile(uri: Uri) {
         lifecycleScope.launch {
-            val profile = runCatching {
-                loadFirstStoredProfile()
+            val profileName = displayName(uri) ?: "Imported profile"
+            val profileText = when (val result = readProfileText(uri)) {
+                ProfileTextReadResult.Binary -> {
+                    importFailureMessage = "$profileName appears to be a binary file."
+                    return@launch
+                }
+
+                ProfileTextReadResult.Failure -> {
+                    importFailureMessage = "Unable to read $profileName."
+                    return@launch
+                }
+
+                is ProfileTextReadResult.Text -> result.value
+            }
+            runCatching {
+                appContext.profileObservable.importText(profileText, profileName)
+            }.onSuccess {
+                appContext.onApplicationActive()
             }.onFailure {
-                Log.e("Passepartout", "Unable to load first stored profile", it)
-            }.getOrNull()
-            if (profile == null) {
-                Log.e("Passepartout", "No profiles found in profiles-v1")
-                return@launch
+                Log.e(Globals.TAG_APP, "Import failure: $profileName", it)
+                importFailureMessage = "Unable to import $profileName."
             }
-            tunnelStrategy.connect(profile)
         }
     }
 
-    fun stopVpnService() {
-        lifecycleScope.launch {
-            tunnelStrategy.disconnect()
+    private suspend fun readProfileText(uri: Uri): ProfileTextReadResult = withContext(Dispatchers.IO) {
+        try {
+            val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                ?: return@withContext ProfileTextReadResult.Failure
+            bytes.decodeProfileTextOrNull()
+                ?.let(ProfileTextReadResult::Text)
+                ?: ProfileTextReadResult.Binary
+        } catch (e: Exception) {
+            Log.e(Globals.TAG_APP, "Unable to read profile file: $uri", e)
+            ProfileTextReadResult.Failure
         }
     }
 
-    fun importProfile(connect: Boolean = false) {
-        val file = String(assets.open("vps.conf").readBytes())
-//        val file = String(assets.open("vps-crypt-v2.ovpn").readBytes())
-        wrapper.appImportProfileText(file, "SomeName") { ctx, code, errorMessage ->
-            if (code == 0) {
-                Log.i("Passepartout", "Import success!")
-            } else {
-                Log.e("Passepartout", "Import failure (code=$code): $errorMessage")
-            }
+    private suspend fun displayName(uri: Uri): String? = withContext(Dispatchers.IO) {
+        try {
+            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+                ?.use { cursor ->
+                    if (!cursor.moveToFirst()) {
+                        return@use null
+                    }
+                    val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (displayNameIndex >= 0) {
+                        cursor.getString(displayNameIndex)
+                    } else {
+                        null
+                    }
+                }
+        } catch (e: Exception) {
+            Log.e(Globals.TAG_APP, "Unable to resolve profile file name: $uri", e)
+            null
         }
     }
 
     private val vpnPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        tunnelStrategy.onVpnPermissionResult(result.resultCode == RESULT_OK)
-    }
-
-    private suspend fun loadFirstStoredProfile(): TaggedProfile? = withContext(Dispatchers.IO) {
-        val profilesDir = File(noBackupFilesDir, PROFILES_DIR)
-        val firstProfileId = readFirstProfileId(profilesDir) ?: return@withContext null
-        val profileFile = File(File(profilesDir, OBJECTS_DIR), "$firstProfileId.json")
-        if (!profileFile.isFile) {
-            Log.e("Passepartout", "Stored profile object does not exist: ${profileFile.absolutePath}")
-            return@withContext null
+        if (::appContext.isInitialized) {
+            appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
         }
-        globalJsonCoder.decodeFromString<TaggedProfile>(profileFile.readText())
     }
 
-    private fun readFirstProfileId(profilesDir: File): String? {
-        val indexFile = File(profilesDir, INDEX_FILE)
-        if (!indexFile.isFile) {
-            Log.e("Passepartout", "Profile index does not exist: ${indexFile.absolutePath}")
-            return null
+    private val profileImportLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        isProfileImporterOpen = false
+        if (uri != null) {
+            importProfile(uri)
+        } else if (::appContext.isInitialized) {
+            appContext.onApplicationActive()
         }
-        val index = globalJsonCoder.decodeFromString<ProfileIndex>(indexFile.readText())
-        return index.profiles.firstOrNull()?.id
     }
-
-    @Serializable
-    private data class ProfileIndex(
-        @SerialName("profiles")
-        val profiles: List<ProfileIndexEntry> = emptyList()
-    )
-
-    @Serializable
-    private data class ProfileIndexEntry(
-        @SerialName("id")
-        val id: String
-    )
 
     private companion object {
-        const val PROFILES_DIR = "profiles-v1"
-        const val OBJECTS_DIR = "objects"
-        const val INDEX_FILE = "index.json"
+        val PROFILE_MIME_TYPES = arrayOf(
+            "application/x-openvpn-profile",
+            "application/x-wireguard-profile",
+            "application/octet-stream",
+            "text/*",
+            "*/*"
+        )
     }
 }
+
+private sealed class ProfileTextReadResult {
+    data class Text(val value: String) : ProfileTextReadResult()
+    data object Binary : ProfileTextReadResult()
+    data object Failure : ProfileTextReadResult()
+}
+
+private fun ByteArray.decodeProfileTextOrNull(): String? {
+    if (hasBinaryControlBytes()) {
+        return null
+    }
+    val decoder = StandardCharsets.UTF_8
+        .newDecoder()
+        .onMalformedInput(CodingErrorAction.REPORT)
+        .onUnmappableCharacter(CodingErrorAction.REPORT)
+    return try {
+        decoder.decode(ByteBuffer.wrap(this)).toString()
+    } catch (_: CharacterCodingException) {
+        null
+    }
+}
+
+private fun ByteArray.hasBinaryControlBytes(): Boolean {
+    if (isEmpty()) {
+        return false
+    }
+    var controlCount = 0
+    for (byte in this) {
+        val value = byte.toInt() and 0xFF
+        if (value == 0) {
+            return true
+        }
+        if (value < ASCII_SPACE && value !in TEXT_CONTROL_BYTES) {
+            controlCount += 1
+        }
+    }
+    return controlCount > 0 && controlCount * 100 > size
+}
+
+private val TEXT_CONTROL_BYTES = setOf(
+    '\t'.code,
+    '\n'.code,
+    '\r'.code,
+    '\u000C'.code
+)
+
+private const val ASCII_SPACE = 0x20

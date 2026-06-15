@@ -32,13 +32,13 @@ private extension API {
         guard let bundledURL = API.url(forVersion: version) else {
             fatalError("Unable to find bundled API")
         }
-        return DefaultAPIMapper(baseURL: bundledURL, timeout: Resources.constants.api.timeoutInterval)
+        return DefaultAPIMapper(baseURL: bundledURL, timeout: Resources.constants.url.timeoutInterval)
     }()
 
     // Fetch remote JS (baseURL = remote)
     // Fetch remote JSON (URL in scripts)
     static let remoteV7: APIMapper = {
         let remoteURL = Resources.constants.websites.apiURL.appending(path: "v\(version)")
-        return DefaultAPIMapper(baseURL: remoteURL, timeout: Resources.constants.api.timeoutInterval)
+        return DefaultAPIMapper(baseURL: remoteURL, timeout: Resources.constants.url.timeoutInterval)
     }()
 }

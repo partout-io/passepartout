@@ -10,15 +10,12 @@ public final class AppContext {
     private let abi: AppABI
     public let appConfiguration: ABI.AppConfiguration
 
-    // Observables (yet unused in Main app and active TV app)
-
     // ABI concerns (reusable cross-platform)
     public let appEncoderObservable: AppEncoderObservable
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
     public let profileObservable: ProfileObservable
     public let registryObservable: RegistryObservable
-    public let tunnelObservable: TunnelObservable
     public let versionObservable: VersionObservable
     public let webReceiverObservable: WebReceiverObservable
 
@@ -28,12 +25,21 @@ public final class AppContext {
     @available(*, deprecated, message: "#1679")
     public var preferencesManager: PreferencesManager { abi.preferencesManager }
 
+    // Tunnel concerns
+    public let tunnelObservable: TunnelObservable
+
     // View concerns (app-specific)
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
 
-    public init(abi: AppABI, appConfiguration: ABI.AppConfiguration, kvStore: KeyValueStore) {
+    public init(
+        abi: AppABI,
+        appConfiguration: ABI.AppConfiguration,
+        preferences: AppPreferencesStore,
+        defaults: UserDefaults,
+        tunnelObservable: TunnelObservable
+    ) {
         self.abi = abi
         self.appConfiguration = appConfiguration
 
@@ -43,19 +49,24 @@ public final class AppContext {
         iapObservable = IAPObservable(abi: abi.iap)
         profileObservable = ProfileObservable(abi: abi.profile)
         registryObservable = RegistryObservable(abi: abi.registry)
-        tunnelObservable = TunnelObservable(abi: abi.tunnel, formatter: abi)
         versionObservable = VersionObservable(abi: abi.version)
         webReceiverObservable = WebReceiverObservable(abi: abi.webReceiver)
 
+        // Tunnel
+        self.tunnelObservable = tunnelObservable
+
         // View
         appFormatter = AppFormatter(constants: appConfiguration.constants)
-        userPreferences = UserPreferencesObservable(kvStore: kvStore)
+        userPreferences = UserPreferencesObservable(abi: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
 
         // Register for ABI events
         let opaqueEnvironment = Unmanaged.passRetained(self).toOpaque()
         let handler = ABI.EventHandler(context: opaqueEnvironment, callback: Self.abiCallback)
         abi.registerEvents(handler)
+
+        // Register for tunnel events
+        tunnelObservable.observeObjects()
     }
 }
 
@@ -80,15 +91,18 @@ private extension AppContext {
                 appContext.configObservable.onUpdate(event)
             case .iap(let event):
                 appContext.iapObservable.onUpdate(event)
+            case .mixed:
+                break
             case .profile(let event):
                 appContext.profileObservable.onUpdate(event)
-            case .tunnel(let event):
-                appContext.tunnelObservable.onUpdate(event)
             case .version(let event):
                 appContext.versionObservable.onUpdate(event)
             case .webReceiver(let event):
                 appContext.webReceiverObservable.onUpdate(event)
             }
+            // Report all events to these
+            appContext.tunnelObservable.onUpdate(mainEvent)
+            appContext.userPreferences.onUpdate(mainEvent)
         }
     }
 }

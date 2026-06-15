@@ -11,6 +11,8 @@ FUNZIONALITÀ INCLUSE:
 - Automazione con Comandi Rapidi per operazioni semplificate.
 - Esclusione di endpoint per un controllo preciso.
 
+Il supporto OpenVPN si concentra sulle opzioni più comuni; la compressione non è supportata perché non è sicura.
+
 RICHIEDE UN ACQUISTO IN-APP:
 
 - Supporto per Apple TV.

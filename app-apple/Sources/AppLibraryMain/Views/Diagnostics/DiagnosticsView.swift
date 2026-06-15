@@ -157,14 +157,7 @@ private extension DiagnosticsView {
         AppCommandLine.contains(.withReportIssue) ||
             iapObservable.isEligibleForFeedback ||
             appConfiguration.bundle.distributionTarget.canAlwaysReportIssue ||
-            isUsingExperimentalFeatures
-    }
-
-    var isUsingExperimentalFeatures: Bool {
-        !configObservable.activeFlags.isDisjoint(with: [
-            .neSocketUDP,
-            .neSocketTCP
-        ])
+            configObservable.isUsingExperimentalFeatures
     }
 
     func computedTunnelLogs() async -> [ABI.LogEntry] {
@@ -172,7 +165,7 @@ private extension DiagnosticsView {
     }
 
     func defaultTunnelLogs() async -> [ABI.LogEntry] {
-        let url = appConfiguration.bundle.urlForTunnelLog
+        let url = appConfiguration.urlForTunnelLog
         return await Task.detached {
             pspLogEntriesAvailable(at: url)
         }.value
@@ -194,7 +187,7 @@ private extension DiagnosticsView {
     }
 
     func removeTunnelLogs() {
-        pspLogEntriesPurge(at: appConfiguration.bundle.urlForTunnelLog)
+        pspLogEntriesPurge(at: appConfiguration.urlForTunnelLog)
         Task {
             tunnelLogs = await computedTunnelLogs()
         }

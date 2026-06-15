@@ -6,13 +6,17 @@ extension ABI {
     public typealias AppBundle = OpenAPIAppBundle
     public typealias AppConfiguration = OpenAPIAppConfiguration
     public typealias AppConstants = OpenAPIAppConstants
+    public typealias AppErrorCode = OpenAPIAppErrorCode
     public typealias AppFeature = OpenAPIAppFeature
+    public typealias AppPreferenceKey = OpenAPIAppPreferenceKey
+    public typealias AppPreferences = OpenAPIAppPreferences
     public typealias AppProfileStatus = OpenAPIAppProfileStatus
     public typealias AppUserLevel = OpenAPIAppUserLevel
+    public typealias ChangelogEntry = OpenAPIChangelogEntry
     public typealias ConfigFlag = OpenAPIConfigFlag
     public typealias Credits = OpenAPICredits
     public typealias DistributionTarget = OpenAPIDistributionTarget
-    public typealias OnConnectionStatus = OpenAPIOnConnectionStatus
+    public typealias ExperimentalPreferences = OpenAPIExperimentalPreferences
     public typealias ProfileSharingFlag = OpenAPIProfileSharingFlag
     public typealias ProfileTransfer = OpenAPIProfileTransfer
     public typealias SemanticVersion = OpenAPISemanticVersion
@@ -34,6 +38,10 @@ extension ABI.IAPEvent {
     public typealias Status = OpenAPIIAPEventStatus
     public typealias LoadReceipt = OpenAPIIAPEventLoadReceipt
     public typealias EligibleFeatures = OpenAPIIAPEventEligibleFeatures
+}
+
+extension ABI.MixedEvent {
+    public typealias ShouldUpdatePreferences = OpenAPIMixedEventShouldUpdatePreferences
 }
 
 extension ABI.ProfileEvent {

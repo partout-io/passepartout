@@ -1,14 +1,14 @@
 package com.algoritmico.passepartout
 
-import io.partout.abi.DNSModuleProtocolType
-import io.partout.abi.DNSModuleProtocolTypecleartext
-import io.partout.abi.DNSModuleProtocolTypehttps
-import io.partout.abi.DNSModuleProtocolTypetls
-import io.partout.abi.OpenVPNObfuscationMethod
-import io.partout.abi.OpenVPNObfuscationMethodobfuscate
-import io.partout.abi.OpenVPNObfuscationMethodreverse
-import io.partout.abi.OpenVPNObfuscationMethodxormask
-import io.partout.abi.OpenVPNObfuscationMethodxorptrpos
+import io.partout.models.DNSModuleProtocolType
+import io.partout.models.DNSModuleProtocolTypecleartext
+import io.partout.models.DNSModuleProtocolTypehttps
+import io.partout.models.DNSModuleProtocolTypetls
+import io.partout.models.OpenVPNObfuscationMethod
+import io.partout.models.OpenVPNObfuscationMethodobfuscate
+import io.partout.models.OpenVPNObfuscationMethodreverse
+import io.partout.models.OpenVPNObfuscationMethodxormask
+import io.partout.models.OpenVPNObfuscationMethodxorptrpos
 import kotlinx.serialization.json.encodeToJsonElement
 import org.junit.Assert.*
 import org.junit.Test
@@ -32,7 +32,7 @@ class SerializationUnitTest {
 
     @Test
     fun dnsProtocolType_isDeserialized() {
-        val dnsProtocols = globalJsonCoder.decodeFromString<List<DNSModuleProtocolType>>(dnsProtocolsJSON)
+        val dnsProtocols = Globals.json.decodeFromString<List<DNSModuleProtocolType>>(dnsProtocolsJSON)
         assertEquals(dnsProtocols.size, 3)
         assert(dnsProtocols[0] is DNSModuleProtocolTypecleartext)
         val https = dnsProtocols[1] as DNSModuleProtocolTypehttps
@@ -47,7 +47,7 @@ class SerializationUnitTest {
         val https = DNSModuleProtocolTypehttps(url = "https://www.google.com")
         val tls = DNSModuleProtocolTypetls(hostname = "google.com")
         val dnsProtocols = listOf(clear, https, tls)
-        val json = globalJsonCoder.encodeToJsonElement(dnsProtocols).toString().trimIndent()
+        val json = Globals.json.encodeToJsonElement(dnsProtocols).toString().trimIndent()
         println(json)
         println(dnsProtocolsJSON)
         assertEquals(json, dnsProtocolsJSON)
@@ -55,7 +55,7 @@ class SerializationUnitTest {
 
     @Test
     fun obfMethod_isDeserialized() {
-        val obfMethods = globalJsonCoder.decodeFromString<List<OpenVPNObfuscationMethod>>(obfMethodsJSON)
+        val obfMethods = Globals.json.decodeFromString<List<OpenVPNObfuscationMethod>>(obfMethodsJSON)
         assertEquals(obfMethods.size, 4)
         val xormask = obfMethods[0] as OpenVPNObfuscationMethodxormask
         assertTrue(xormask.mask.contentEquals(obfMaskBase64))
@@ -72,7 +72,7 @@ class SerializationUnitTest {
         val reverse = OpenVPNObfuscationMethodreverse()
         val obfuscate = OpenVPNObfuscationMethodobfuscate(mask = obfMaskBase64)
         val obfMethods = listOf(xormask, xorptrpos, reverse, obfuscate)
-        val json = globalJsonCoder.encodeToJsonElement(obfMethods).toString().trimIndent()
+        val json = Globals.json.encodeToJsonElement(obfMethods).toString().trimIndent()
         println(json)
         println(obfMethodsJSON)
         assertEquals(json, obfMethodsJSON)

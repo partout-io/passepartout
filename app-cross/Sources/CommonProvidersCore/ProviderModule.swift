@@ -136,7 +136,7 @@ extension ProviderModule {
         }
 
         public mutating func setOptions<O>(_ options: O, for moduleType: ModuleType) throws where O: ProviderOptions {
-            let encoded = try JSONEncoder().encode(options)
+            let encoded = try JSONEncoder.shared().encode(options)
             if moduleOptions == nil {
                 moduleOptions = CodableOptions(map: [moduleType: encoded])
             } else {
@@ -206,7 +206,7 @@ extension ProviderModule {
             }
         }
 
-        public func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             let rawMap: [String: Data] = map.reduce(into: [:]) {
                 $0[$1.key.id] = $1.value
             }

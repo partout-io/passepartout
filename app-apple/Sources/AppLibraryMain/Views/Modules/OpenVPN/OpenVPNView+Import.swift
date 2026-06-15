@@ -76,11 +76,11 @@ private extension OpenVPNView.ImportModifier {
             let parsed: Module
             do {
                 parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
-            } catch let error as PartoutError {
+            } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
-
-                switch error.code {
-                case .OpenVPN.passphraseRequired:
+                let appError = ABI.AppError(error)
+                switch appError {
+                case .openVPNPassphraseRequired:
                     Task {
                         // XXX: re-present same alert after artificial delay
                         try? await Task.sleep(for: .milliseconds(500))
@@ -88,16 +88,12 @@ private extension OpenVPNView.ImportModifier {
                         requiresPassphrase = true
                     }
                     return
-
-                case .unknownImportedModule:
-                    throw PartoutError(.parsing)
-
                 default:
-                    throw error
+                    throw appError
                 }
             }
             guard let module = parsed as? OpenVPNModule else {
-                throw PartoutError(.parsing)
+                throw ABI.AppError.importError()
             }
             draft.module.configurationBuilder = module.configuration?.builder()
             draft.module.credentials = module.credentials

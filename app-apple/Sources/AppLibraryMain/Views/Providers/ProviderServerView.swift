@@ -47,7 +47,10 @@ struct ProviderServerView: View {
     @StateObject
     private var filtersViewModel = ProviderFiltersView.Model(
         userPreferences: UserPreferencesObservable(
-            kvStore: UserDefaultsStore(.standard)
+            abi: AppPreferencesStore(
+                UserDefaultsAppPreferences(defaults: .standard)
+            ),
+            ui: .standard
         )
     )
 

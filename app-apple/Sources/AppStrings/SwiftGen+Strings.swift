@@ -84,16 +84,6 @@ public enum Strings {
       public static let inactive = Strings.tr("Localizable", "entities.tunnel_status.inactive", fallback: "Inactive")
     }
     public enum Ui {
-      public enum ConfigFlag {
-        /// Modern TCP
-        public static let neSocketTCP = Strings.tr("Localizable", "entities.ui.config_flag.neSocketTCP", fallback: "Modern TCP")
-        /// Modern UDP
-        public static let neSocketUDP = Strings.tr("Localizable", "entities.ui.config_flag.neSocketUDP", fallback: "Modern UDP")
-        /// Cross-platform OpenVPN
-        public static let ovpnCrossConnection = Strings.tr("Localizable", "entities.ui.config_flag.ovpnCrossConnection", fallback: "Cross-platform OpenVPN")
-        /// Cross-platform WireGuard
-        public static let wgCrossConnection = Strings.tr("Localizable", "entities.ui.config_flag.wgCrossConnection", fallback: "Cross-platform WireGuard")
-      }
       public enum SystemAppearance {
         /// Dark
         public static let dark = Strings.tr("Localizable", "entities.ui.system_appearance.dark", fallback: "Dark")
@@ -106,8 +96,10 @@ public enum Strings {
   }
   public enum Errors {
     public enum App {
-      /// Unable to complete operation.
-      public static let `default` = Strings.tr("Localizable", "errors.app.default", fallback: "Unable to complete operation.")
+      /// Unable to connect to provider server (reason=%@).
+      public static func corruptProviderModule(_ p1: Any) -> String {
+        return Strings.tr("Localizable", "errors.app.corrupt_provider_module", String(describing: p1), fallback: "Unable to connect to provider server (reason=%@).")
+      }
       /// Unable to duplicate profile '%@'.
       public static func duplicate(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.app.duplicate", String(describing: p1), fallback: "Unable to duplicate profile '%@'.")
@@ -118,45 +110,49 @@ public enum Strings {
       public static let emptyProfileName = Strings.tr("Localizable", "errors.app.empty_profile_name", fallback: "Profile name is empty.")
       /// Unable to import profiles.
       public static let `import` = Strings.tr("Localizable", "errors.app.import", fallback: "Unable to import profiles.")
+      /// Some active modules are incompatible, try to only activate one of them.
+      public static let incompatibleModules = Strings.tr("Localizable", "errors.app.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
+      /// Please finish the configuration of the %@ module.
+      public static func incompleteModule(_ p1: Any) -> String {
+        return Strings.tr("Localizable", "errors.app.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
+      }
+      /// Invalid fields.
+      public static let invalidFields = Strings.tr("Localizable", "errors.app.invalid_fields", fallback: "Invalid fields.")
       /// Module %@ is malformed. %@
       public static func malformedModule(_ p1: Any, _ p2: Any) -> String {
         return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@")
       }
+      /// No server selected in provider.
+      public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.missing_provider_entity", fallback: "No server selected in provider.")
       /// The %@ module requires an active connection among the following types: %@
       public static func moduleRequiresConnection(_ p1: Any, _ p2: Any) -> String {
         return Strings.tr("Localizable", "errors.app.module_requires_connection", String(describing: p1), String(describing: p2), fallback: "The %@ module requires an active connection among the following types: %@")
       }
+      /// The profile has no active modules.
+      public static let noActiveModules = Strings.tr("Localizable", "errors.app.no_active_modules", fallback: "The profile has no active modules.")
+      /// Unable to complete operation.
+      public static let other = Strings.tr("Localizable", "errors.app.other", fallback: "Unable to complete operation.")
+      /// Unable to parse.
+      public static let parsing = Strings.tr("Localizable", "errors.app.parsing", fallback: "Unable to parse.")
+      /// Unable to complete operation (code=%@).
+      public static func partout(_ p1: Any) -> String {
+        return Strings.tr("Localizable", "errors.app.partout", String(describing: p1), fallback: "Unable to complete operation (code=%@).")
+      }
       /// Permission denied
       public static let permissionDenied = Strings.tr("Localizable", "errors.app.permission_denied", fallback: "Permission denied")
+      /// The operation timed out.
+      public static let timeout = Strings.tr("Localizable", "errors.app.timeout", fallback: "The operation timed out.")
       /// Unable to execute operation.
       public static let tunnel = Strings.tr("Localizable", "errors.app.tunnel", fallback: "Unable to execute operation.")
       /// Unable to start the import. Make sure that your TV is properly connected to the local network.
       public static let webReceiver = Strings.tr("Localizable", "errors.app.web_receiver", fallback: "Unable to start the import. Make sure that your TV is properly connected to the local network.")
-      public enum Passepartout {
-        /// Unable to connect to provider server (reason=%@).
-        public static func corruptProviderModule(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.passepartout.corrupt_provider_module", String(describing: p1), fallback: "Unable to connect to provider server (reason=%@).")
-        }
-        /// Unable to complete operation (code=%@).
-        public static func `default`(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.passepartout.default", String(describing: p1), fallback: "Unable to complete operation (code=%@).")
-        }
-        /// Some active modules are incompatible, try to only activate one of them.
-        public static let incompatibleModules = Strings.tr("Localizable", "errors.app.passepartout.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
-        /// Please finish the configuration of the %@ module.
-        public static func incompleteModule(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.app.passepartout.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
-        }
-        /// Invalid fields.
-        public static let invalidFields = Strings.tr("Localizable", "errors.app.passepartout.invalid_fields", fallback: "Invalid fields.")
-        /// No server selected in provider.
-        public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.passepartout.missing_provider_entity", fallback: "No server selected in provider.")
-        /// The profile has no active modules.
-        public static let noActiveModules = Strings.tr("Localizable", "errors.app.passepartout.no_active_modules", fallback: "The profile has no active modules.")
-        /// Unable to parse file.
-        public static let parsing = Strings.tr("Localizable", "errors.app.passepartout.parsing", fallback: "Unable to parse file.")
-        /// The operation timed out.
-        public static let timeout = Strings.tr("Localizable", "errors.app.passepartout.timeout", fallback: "The operation timed out.")
+      public enum Openvpn {
+        /// OpenVPN compression is unsafe and no longer supported.
+        public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
+      }
+      public enum Wireguard {
+        /// No peers defined.
+        public static let emptyPeers = Strings.tr("Localizable", "errors.app.wireguard.empty_peers", fallback: "No peers defined.")
       }
     }
     public enum Modules {
@@ -732,6 +728,8 @@ public enum Strings {
       public static let compressionFraming = Strings.tr("Localizable", "modules.openvpn.compression_framing", fallback: "Framing")
       /// Credentials
       public static let credentials = Strings.tr("Localizable", "modules.openvpn.credentials", fallback: "Credentials")
+      /// Data ciphers
+      public static let dataCiphers = Strings.tr("Localizable", "modules.openvpn.data_ciphers", fallback: "Data ciphers")
       /// Digest
       public static let digest = Strings.tr("Localizable", "modules.openvpn.digest", fallback: "Digest")
       /// Extended verification
@@ -1117,6 +1115,14 @@ public enum Strings {
       /// Appearance
       public static let systemAppearance = Strings.tr("Localizable", "views.preferences.system_appearance", fallback: "Appearance")
       public enum Advanced {
+        public enum Override {
+          /// These features are controlled remotely, but you may override their enabled status for testing purposes.
+          public static let footer = Strings.tr("Localizable", "views.preferences.advanced.override.footer", fallback: "These features are controlled remotely, but you may override their enabled status for testing purposes.")
+          public enum Picker {
+            /// Remote
+            public static let remote = Strings.tr("Localizable", "views.preferences.advanced.override.picker.remote", fallback: "Remote")
+          }
+        }
         public enum Remote {
           /// These features are controlled remotely. Turn off the toggles if something does not work.
           public static let footer = Strings.tr("Localizable", "views.preferences.advanced.remote.footer", fallback: "These features are controlled remotely. Turn off the toggles if something does not work.")

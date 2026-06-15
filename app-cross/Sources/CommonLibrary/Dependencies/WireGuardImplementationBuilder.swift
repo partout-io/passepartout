@@ -18,27 +18,27 @@ struct WireGuardImplementationBuilder: Sendable {
             validatorBlock: { newParser() },
             connectionBlock: {
                 let ctx = PartoutLoggerContext($0.profile.id)
-#if !PSP_CROSS
+#if PSP_CROSS || USE_CMAKE
+                return try _WireGuardConnectionV2(
+                    ctx,
+                    parameters: $0,
+                    module: $1
+                )
+#else
                 let flags = configBlock()
                 if flags.contains(.wgCrossV2) {
-                    return try WireGuardConnection(
+                    return try _WireGuardConnectionV2(
                         ctx,
                         parameters: $0,
                         module: $1
                     )
                 } else {
-                    return try LegacyWireGuardConnection(
+                    return try _WireGuardConnectionV1(
                         ctx,
                         parameters: $0,
                         module: $1
                     )
                 }
-#else
-                return try WireGuardConnection(
-                    ctx,
-                    parameters: $0,
-                    module: $1
-                )
 #endif
             }
         )

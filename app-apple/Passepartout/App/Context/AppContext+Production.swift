@@ -15,14 +15,19 @@ extension AppContext {
 #else
         distributionTarget = .appStore
 #endif
+        // Fetch bundle and constants
         let appConfiguration = Resources.newAppConfiguration(
             distributionTarget: distributionTarget,
             buildTarget: .app
         )
-        let kvStore = appConfiguration.newKeyValueStore()
-        let abi = AppABI.forNetworkExtension(
+        // Create ABI returning Tunnel to build TunnelObservable
+        let defaults: UserDefaults = .standard
+        let preferences = AppPreferencesStore(
+            UserDefaultsAppPreferences(defaults: defaults)
+        )
+        let result = AppABI.forNetworkExtension(
             appConfiguration: appConfiguration,
-            kvStore: kvStore,
+            preferences: preferences,
             assertModule: { moduleType, registry in
 #if !os(tvOS)
                 let builder = registry.newModule(ofType: moduleType)
@@ -35,6 +40,12 @@ extension AppContext {
             withUITesting: AppCommandLine.contains(.uiTesting),
             withFakeIAPs: AppCommandLine.contains(.fakeIAP)
         )
-        return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
+        return AppContext(
+            abi: result.abi,
+            appConfiguration: appConfiguration,
+            preferences: preferences,
+            defaults: defaults,
+            tunnelObservable: result.tunnelObservable
+        )
     }
 }

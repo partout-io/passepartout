@@ -17,15 +17,17 @@ extension AppContext {
             cachesURL: FileManager.default.temporaryDirectory,
             configBlock: { [] }
         )
-        let kvStore = InMemoryStore()
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
+        let preferences = AppPreferencesStore()
+        let defaults = UserDefaults()
+        let appEncoder = AppEncoder(coder: registry)
 
         let logFormatter = DummyLogFormatter()
         pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: .init(),
-            mapper: \.message
+            localURL: nil,
+            localMapper: \.message
         )
 
         let apiManager = APIManager(
@@ -34,7 +36,7 @@ extension AppContext {
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
-            inAppHelper: appConfiguration.newAppProductHelper(),
+            inAppHelper: appConfiguration.newInAppHelper(),
             receiptReader: FakeInAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
@@ -53,20 +55,24 @@ extension AppContext {
             processor: profileProcessor
         )
         profileManager.enableRemoteImporting(true)
-        let tunnel = Tunnel(.global, strategy: FakeTunnelStrategy()) { @Sendable _ in
-            SharedTunnelEnvironment(profileId: nil)
-        }
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
+            extensionInstaller: nil,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }
         )
-        let tunnelManager = TunnelManager(
+        let tunnel = Tunnel(
+            .global,
+            strategy: FakeTunnelStrategy(),
+            environmentFactory: { @Sendable _ in
+                SharedTunnelEnvironment(profileId: nil)
+            }
+        )
+        let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
-            processor: tunnelProcessor,
-            interval: appConfiguration.constants.tunnel.refreshInterval
+            willInstall: tunnelProcessor.willInstall
         )
         let configManager = ConfigManager()
         let preferencesManager = PreferencesManager()
@@ -80,15 +86,21 @@ extension AppContext {
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            bindings: nil
         )
-        return AppContext(abi: abi, appConfiguration: appConfiguration, kvStore: kvStore)
+        return AppContext(
+            abi: abi,
+            appConfiguration: appConfiguration,
+            preferences: preferences,
+            defaults: defaults,
+            tunnelObservable: tunnelObservable
+        )
     }
 }

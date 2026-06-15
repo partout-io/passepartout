@@ -36,23 +36,24 @@
             "1.1.1.1",
             "1.0.0.1"
         ],
+        "minDataCountDelta": 1024,
         "verification": {
             "production": {
-                "defaultDelay": 120.0,
+                "defaultDelay": 240.0,
                 "tvDelay": 900.0,
                 "interval": 21600.0,
                 "attempts": 3,
                 "retryInterval": 300.0
             },
             "beta": {
-                "defaultDelay": 600.0,
-                "interval": 600.0,
-                "attempts": 3,
+                "defaultDelay": 1800.0,
+                "interval": 1800.0,
+                "attempts": 6,
                 "retryInterval": 10.0
             }
         }
     },
-    "api": {
+    "url": {
         "timeoutInterval": 5.0,
         "versionRateLimit": 86400.0,
         "refreshInfrastructureRateLimit": 86400.0
@@ -66,6 +67,7 @@
         "passcodeLength": 6
     },
     "log": {
+        "tag": "PassepartoutABI",
         "sinceLast": 86400.0,
         "options": {
             "maxLevel": 3,
@@ -76,6 +78,10 @@
         "formatter": {
             "timestamp": "HH:mm:ss",
             "message": "%@ - %@"
+        },
+        "filenames": {
+            "app": "app.log",
+            "tunnel": "tunnel.log"
         }
     }
 }

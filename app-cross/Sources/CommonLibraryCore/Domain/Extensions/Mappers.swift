@@ -36,6 +36,7 @@ extension ABI.AppTunnelInfo: OpenAPIEncodable {
     var toProto: OpenAPIAppTunnelInfo {
         OpenAPIAppTunnelInfo(
             id: id.uuidString,
+            isEnabled: isEnabled,
             status: status,
             onDemand: onDemand,
             transfer: transfer,
@@ -48,7 +49,7 @@ extension ABI.OriginalPurchase: OpenAPIEncodable {
     var toProto: OpenAPIOriginalPurchase {
         OpenAPIOriginalPurchase(
             buildNumber: buildNumber,
-            purchaseDate: purchaseDate.formatted(.iso8601)
+            purchaseDate: purchaseDate.timestamp
         )
     }
 }

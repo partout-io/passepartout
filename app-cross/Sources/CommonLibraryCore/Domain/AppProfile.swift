@@ -55,6 +55,7 @@ extension ABI {
 
     public struct AppTunnelInfo: Identifiable, Hashable, Sendable {
         public let id: Profile.ID
+        public let isEnabled: Bool
         public let status: AppProfileStatus
         public let tunnelStatus: TunnelStatus
         public let onDemand: Bool
@@ -63,34 +64,31 @@ extension ABI {
 
         public init(
             id: Profile.ID,
+            isEnabled: Bool,
             tunnelStatus: TunnelStatus,
             onDemand: Bool,
-            environment: TunnelEnvironmentReader?
+            environment: TunnelSnapshot.Environment?
         ) {
             self.id = id
+            self.isEnabled = isEnabled
             status = tunnelStatus.considering(environment).abiStatus
             self.tunnelStatus = tunnelStatus
             self.onDemand = onDemand
             transfer = nil
             lastErrorCode = nil
 
-            transfer = environment?.environmentValue(
-                forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer
-            lastErrorCode = environment?.environmentValue(
-                forKey: TunnelEnvironmentKeys.lastErrorCode
-            )
+            transfer = environment?.dataCount.abiTransfer
+            lastErrorCode = environment?.lastErrorCode
         }
 
-        public func with(environment: TunnelEnvironmentReader) -> Self {
-            var copy = self
-            copy.transfer = environment.environmentValue(
-                forKey: TunnelEnvironmentKeys.dataCount
-            )?.abiTransfer
-            copy.lastErrorCode = environment.environmentValue(
-                forKey: TunnelEnvironmentKeys.lastErrorCode
+        public func with(environment: TunnelSnapshot.Environment) -> Self {
+            Self(
+                id: id,
+                isEnabled: isEnabled,
+                tunnelStatus: tunnelStatus,
+                onDemand: onDemand,
+                environment: environment
             )
-            return copy
         }
     }
 }

@@ -12,6 +12,7 @@ on:
       - "**/*.md"
       - "**/*.sh"
       - "fastlane/**"
+      - "app-android" # For now
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,12 +24,19 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+      - name: Verify CMake file lists
+        run: |
+          scripts/gen-cmake-files.sh
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi
       - uses: partout-io/action-prepare-xcode-build@master
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -36,7 +44,7 @@ jobs:
       - name: Install OpenAPI Generator dependencies
         run: npm ci
       - name: Cache OpenAPI Generator runtime
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.openapi-generator
           key: ${{ runner.os }}-openapi-generator-${{ hashFiles('package-lock.json', 'openapitools.json') }}
@@ -44,7 +52,7 @@ jobs:
             ${{ runner.os }}-openapi-generator-
       - name: Verify generated Swift ABI is up to date
         run: |
-          scripts/gen-abi-swift.sh
+          scripts/gen-models-swift.sh
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
             exit 1
@@ -58,8 +66,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm

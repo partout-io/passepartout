@@ -11,16 +11,18 @@ private var globalABI: TunnelABIProtocol?
 
 @c(psp_tunnel_start)
 public func __psp_tunnel_start(
-    args: UnsafePointer<psp_tunnel_start_args>?,
-    context: UnsafeMutableRawPointer?,
-    callback: psp_abi_completion?
-) {
-    guard let args,
-          let appBundleData = args.pointee.bundle?.asJSONData,
+    args: UnsafePointer<psp_tunnel_start_args>?
+) -> Int32 {
+    guard let args else {
+        return PSPCompletionCodeArgs
+    }
+    nonisolated(unsafe) var bindings = args.pointee.bindings
+    guard let appBundleData = args.pointee.bundle?.asJSONData,
           let appConstantsData = args.pointee.constants?.asJSONData,
           let cProfileJSON = args.pointee.profile,
           let cCacheDir = args.pointee.cache_dir else {
-        fatalError("NULL args or required fields")
+        bindings.free?(&bindings)
+        return PSPCompletionCodeArgs
     }
     // Process input
     let preferencesData = args.pointee.preferences?.asJSONData
@@ -35,75 +37,55 @@ public func __psp_tunnel_start(
     let cachesURL = URL(filePath: String(cString: cCacheDir))
     let isInteractive = args.pointee.is_interactive
     let isDaemon = args.pointee.is_daemon
-    nonisolated(unsafe) let statusContext = args.pointee.status_ctx
-    let statusCallback = args.pointee.status_cb
-    let onStatus: SimpleConnectionDaemon.StatusCallback = { profileId, status in
-        guard let statusCallback else { return }
-        let wrapper = ABI.OnConnectionStatus(
-            profileId: profileId.uuidString,
-            status: status
-        )
-        do {
-            let json = try ABI.encodeWrapper(wrapper)
-            json.withCString {
-                statusCallback(statusContext, $0)
-            }
-        } catch {
-            assertionFailure("Unable to encode status: \(status), \(error)")
-        }
-    }
-    nonisolated(unsafe) let jniWrapper = args.pointee.jni_wrapper
     // Start tunnel ABI
-    ABI.run(context) { ctx in
-        defer { pspUnlock() }
+    let result = ABI.runBlockingInitialization {
         do {
+            await globalABI?.stop()
+            globalABI = nil
             globalABI = try TunnelABI.forCrossPlatform(
+                bindings: bindings,
                 appBundleData: appBundleData,
                 appConstantsData: appConstantsData,
                 preferencesData: preferencesData,
                 profileInput: profileInput,
-                cachesURL: cachesURL,
-                onStatus: onStatus,
-                jniWrapper: jniWrapper
+                cachesURL: cachesURL
             )
             try await globalABI?.start(isInteractive: isInteractive)
-            callback?(ctx, 0, nil)
+            return PSPCompletionCodeOK
         } catch {
-            callback?(ctx, -1, error.localizedDescription)
-            fatalError("Unable to start tunnel: \(error)")
+            pspLog(.abi, .fault, "Unable to start tunnel ABI: \(error)")
+            if globalABI != nil {
+                await globalABI?.stop()
+                globalABI = nil
+            } else {
+                bindings.free?(&bindings)
+            }
+            return PSPCompletionCodeFailure
         }
     }
-    pspLock(isDaemon: isDaemon)
+    if result == PSPCompletionCodeOK {
+        pspLock(isDaemon: isDaemon)
+    }
+    return result
 }
 
 @c(psp_tunnel_stop)
-public func __psp_tunnel_stop(
-    context: UnsafeMutableRawPointer?,
-    callback: psp_abi_completion?
-) {
-    ABI.run(context) { ctx in
+public func __psp_tunnel_stop(completion: psp_completion) {
+    ABI.run(completion) { callback in
         await globalABI?.stop()
         globalABI = nil
-        callback?(ctx, 0, nil)
+        callback?(PSPCompletionCodeOK, nil, nil)
     }
 }
 
-private let semaphore = DispatchSemaphore(value: 0)
-
 private func pspLock(isDaemon: Bool) {
+    guard isDaemon else { return }
 #if canImport(Darwin)
-    if isDaemon { CFRunLoopRun() }
+    CFRunLoopRun()
 #else
-    // Wait for ABI to start
+    // Block main thread indefinitely to keep the process running
+    let semaphore = DispatchSemaphore(value: 0)
     semaphore.wait()
-    // Block main thread indefinitely if daemon
-    if isDaemon { semaphore.wait() }
-#endif
-}
-
-private func pspUnlock() {
-#if !canImport(Darwin)
-    semaphore.signal()
 #endif
 }
 

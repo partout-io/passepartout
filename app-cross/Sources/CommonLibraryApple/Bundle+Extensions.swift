@@ -11,7 +11,7 @@ extension Bundle {
         }
         do {
             let data = try Data(contentsOf: jsonURL)
-            return try JSONDecoder().decode(type, from: data)
+            return try ABI.decode(type, from: data)
         } catch {
             fatalError("Unable to decode \(filename).json: \(error)")
         }

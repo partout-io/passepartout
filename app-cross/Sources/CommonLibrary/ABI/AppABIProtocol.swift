@@ -48,23 +48,9 @@ public protocol AppABIRegistryProtocol: Sendable {
     func resolvedModule(_ module: ProviderModule, in profile: Profile?) throws -> Module
 }
 
-public enum AppABITunnelValueKey: Sendable {
-    case openVPNServerConfiguration
-}
-
-@BusinessActor
-public protocol AppABITunnelProtocol: Sendable {
-    func connect(to profile: Profile, force: Bool) async throws
-//    func reconnect(to profileId: Profile.ID) async throws
-    func disconnect(from profileId: Profile.ID) async throws
-    func currentLog() async -> [ABI.LogLine]
-    // Non-observable
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) async -> Any?
-}
-
 @BusinessActor
 public protocol AppABIVersionProtocol: Sendable {
-    func checkLatestRelease() async
+    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry]
 }
 
 @BusinessActor
@@ -78,15 +64,4 @@ public protocol AppABIWebReceiverProtocol: Sendable {
 public protocol AppABILoggerProtocol: Sendable {
     func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String)
     func flushLogs()
-}
-
-// MARK: - Aggregate
-
-extension AppABITunnelProtocol where Self: AppABIProfileProtocol {
-    public func connect(to profileId: Profile.ID, force: Bool) async throws {
-        guard let profile = profile(withId: profileId) else {
-            throw ABI.AppError.notFound
-        }
-        try await connect(to: profile, force: force)
-    }
 }

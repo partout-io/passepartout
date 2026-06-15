@@ -11,24 +11,32 @@ import CoreData
 import Partout
 
 extension AppABI {
+    public struct Result {
+        public let abi: AppABI
+        public let tunnelObservable: TunnelObservable
+    }
+
     public static func forNetworkExtension(
         appConfiguration: ABI.AppConfiguration,
-        kvStore: KeyValueStore,
+        preferences: AppPreferencesStore,
         assertModule: (ModuleType, ModuleRegistry) -> Void,
         apiMappers: [APIMapper],
         webHTMLPath: String?,
         webStringsBundle: Bundle?,
         withUITesting: Bool,
         withFakeIAPs: Bool
-    ) -> AppABI {
+    ) -> Result {
+        let deviceId = preferences.configureDeviceId(
+            length: appConfiguration.constants.deviceIdLength
+        )
+
         let logFormatter = appConfiguration.newLogFormatter()
         let ctx = pspLogRegister(
             for: .app,
             with: appConfiguration,
-            preferences: kvStore.preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            preferences: preferences,
+            localURL: appConfiguration.urlForAppLog,
+            localMapper: logFormatter?.localMapper
         )
 
         // MARK: Config (GitHub)
@@ -45,7 +53,11 @@ extension AppABI {
                 await betaChecker.isBeta()
             },
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: false)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: false,
+                    bindings: nil
+                )
             }
         )
 
@@ -53,8 +65,9 @@ extension AppABI {
 
         let cachesURL = FileManager.default.temporaryDirectory
         let registry = appConfiguration.newRegistryForApp(
+            deviceId: deviceId,
+            preferences: preferences,
             configManager: configManager,
-            kvStore: kvStore,
             cachesURL: cachesURL
         )
 
@@ -99,9 +112,24 @@ extension AppABI {
 
         // MARK: IAP (StoreKit)
 
+        let iapHelper: InAppHelper
+        let iapReceiptReader: UserInAppReceiptReader
+        if !withFakeIAPs {
+            iapHelper = appConfiguration.newInAppHelper()
+            iapReceiptReader = SharedReceiptReader(
+                reader: appConfiguration.newInAppReceiptReader {
+                    // TODO: #1786, StoreKit receipt caching
+                    .uncached
+                }
+            )
+        } else {
+            let fakeHelper = appConfiguration.newInAppFakeHelper()
+            iapHelper = fakeHelper
+            iapReceiptReader = fakeHelper.receiptReader
+        }
         let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.simulatedAppProductHelper(isFake: withFakeIAPs),
-            receiptReader: appConfiguration.simulatedAppReceiptReader(isFake: withFakeIAPs),
+            inAppHelper: iapHelper,
+            receiptReader: iapReceiptReader,
             betaChecker: betaChecker
         )
 
@@ -116,11 +144,12 @@ extension AppABI {
 
         // MARK: Profiles and Tunnel (NE)
 
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
-        let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
+        let sysexManager = appConfiguration.newSystemExtensionManager()
+        let appEncoder = AppEncoder(coder: registry)
         let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
+            extensionInstaller: sysexManager,
             providerServerSorter: {
                 $0.sort(using: $1.sortingComparators)
             }
@@ -135,14 +164,8 @@ extension AppABI {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let tunnelStrategy = NETunnelStrategy(
-            ctx,
-            bundleIdentifier: tunnelIdentifier,
-            coder: appConfiguration.newNEProtocolCoder(ctx, coder: registry)
-        )
-        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy) { [weak tunnelProcessor] in
-            tunnelProcessor?.title(for: $0) ?? $0.name
-        }
+        let tunnelStrategy = appConfiguration.newNETunnelStrategy(ctx, coder: registry)
+        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy)
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
@@ -159,17 +182,26 @@ extension AppABI {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) { @Sendable in
-            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
-        }
-        let sysexManager = appConfiguration.newSystemExtensionManager(
-            tunnelIdentifier: tunnelIdentifier
+        let tunnel = Tunnel(
+            ctx,
+            strategy: tunnelStrategy,
+            refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
+            environmentFactory: { @Sendable in
+                appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+            }
         )
-        let tunnelManager = appConfiguration.newTunnelManager(
+
+        // Provide hooks through observable
+        let logging = TunnelObservable.Logging(
+            maxDebugLogLevel: appConfiguration.constants.log.options.maxDebugLogLevel,
+            sinceLast: appConfiguration.constants.log.sinceLast,
+            formatter: logFormatter
+        )
+        let tunnelObservable = TunnelObservable(
             tunnel: tunnel,
-            extensionInstaller: sysexManager,
-            kvStore: kvStore,
-            processor: tunnelProcessor
+            preferences: preferences,
+            logging: logging,
+            willInstall: tunnelProcessor.willInstall
         )
 
         // MARK: Preferences (Core Data)
@@ -179,7 +211,7 @@ extension AppABI {
         // MARK: Version (GitHub)
 
         let versionChecker = appConfiguration.newVersionChecker(
-            kvStore: kvStore,
+            preferences: preferences,
             downloadURL: {
                 switch appConfiguration.bundle.distributionTarget {
                 case .appStore:
@@ -191,7 +223,11 @@ extension AppABI {
                 }
             }(),
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: true)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: true,
+                    bindings: nil
+                )
             }
         )
 
@@ -225,7 +261,7 @@ extension AppABI {
                 profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
                 let isCloudKitEnabled = withUITesting || appConfiguration.isCloudKitEnabled
-                pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
+                pspLog(.abi, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
                 let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
@@ -244,7 +280,7 @@ extension AppABI {
                 }
             }
 
-            pspLog(.core, .info, "\tRefresh modules preferences repository...")
+            pspLog(.abi, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
                 do {
                     return try CommonData.cdModulePreferencesRepositoryV3(
@@ -252,12 +288,12 @@ extension AppABI {
                         moduleId: $0
                     )
                 } catch {
-                    pspLog(.core, .error, "Unable to load preferences for module \($0): \(error)")
+                    pspLog(.abi, .error, "Unable to load preferences for module \($0): \(error)")
                     throw error
                 }
             }
 
-            pspLog(.core, .info, "\tRefresh providers preferences repository...")
+            pspLog(.abi, .info, "\tRefresh providers preferences repository...")
             preferencesManager.providersRepositoryFactory = {
                 do {
                     return try CommonData.cdProviderPreferencesRepositoryV3(
@@ -265,29 +301,30 @@ extension AppABI {
                         providerId: $0
                     )
                 } catch {
-                    pspLog(.core, .error, "Unable to load preferences for provider \($0): \(error)")
+                    pspLog(.abi, .error, "Unable to load preferences for provider \($0): \(error)")
                     throw error
                 }
             }
         }
 
-        return AppABI(
+        let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
             extensionInstaller: sysexManager,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            onEligibleFeaturesBlock: onEligibleFeaturesBlock
+            onEligibleFeaturesBlock: onEligibleFeaturesBlock,
+            bindings: nil
         )
+        return Result(abi: abi, tunnelObservable: tunnelObservable)
     }
 }
 
@@ -323,21 +360,8 @@ private extension ABI.AppConfiguration {
         )
     }
 
-    func simulatedAppProductHelper(isFake: Bool) -> InAppHelper {
-        guard !isFake else { return FakeInAppHelper() }
-        return newAppProductHelper()
-    }
-
-    func simulatedAppReceiptReader(isFake: Bool) -> UserInAppReceiptReader {
-        guard !isFake else {
-            guard let mockHelper = simulatedAppProductHelper(isFake: true) as? FakeInAppHelper else {
-                fatalError("When .isFakeIAP, simulatedInAppHelper is expected to be MockAppProductHelper")
-            }
-            return mockHelper.receiptReader
-        }
-        return SharedReceiptReader(
-            reader: StoreKitReceiptReader()
-        )
+    func newInAppFakeHelper() -> FakeInAppHelper {
+        FakeInAppHelper()
     }
 }
 #endif

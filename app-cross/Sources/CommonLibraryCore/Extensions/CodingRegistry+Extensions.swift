@@ -53,8 +53,13 @@ extension CodingRegistry {
         }
 
         // Fall back to parsing a single module
-        let importedModule = try module(fromContents: contents, object: passphrase)
-        return try Profile(withName: name, singleModule: importedModule)
+        do {
+            let importedModule = try module(fromContents: contents, object: passphrase)
+            return try Profile(withName: name, singleModule: importedModule)
+        } catch {
+            pspLog(.core, .error, "Unable to import profile module: \(error)")
+            throw error
+        }
     }
 }
 

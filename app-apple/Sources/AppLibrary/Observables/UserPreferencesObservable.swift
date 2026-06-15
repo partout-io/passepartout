@@ -8,37 +8,35 @@ import SwiftUI
 
 @MainActor @Observable
 public final class UserPreferencesObservable {
-    private let kvStore: KeyValueStore
+    private let abi: AppPreferencesStore
+    private let ui: UserDefaults
 
-    public init(kvStore: KeyValueStore) {
-        self.kvStore = kvStore
+    public init(abi: AppPreferencesStore, ui: UserDefaults) {
+        self.abi = abi
+        self.ui = ui
 
-        dnsFallsBack = kvStore.bool(forAppPreference: .dnsFallsBack, fallback: true)
-        if let experimentalData = kvStore.object(forAppPreference: .experimental) as Data? {
-            do {
-                experimental = try JSONDecoder().decode(ABI.AppPreferenceValues.Experimental.self, from: experimentalData)
-            } catch {
-                pspLog(.core, .error, "Unable to decode experimental: \(error)")
-                experimental = ABI.AppPreferenceValues.Experimental()
-            }
-        } else {
-            experimental = ABI.AppPreferenceValues.Experimental()
-        }
-        extensiveLogging = kvStore.bool(forAppPreference: .extensiveLogging)
-        keepsInMenu = kvStore.bool(forUIPreference: .keepsInMenu)
-        lastInfrastructureRefresh = kvStore.object(forUIPreference: .lastInfrastructureRefresh) as [String: TimeInterval]?
-        locksInBackground = kvStore.bool(forUIPreference: .locksInBackground)
-        logsPrivateData = kvStore.bool(forAppPreference: .logsPrivateData)
-        onboardingStep = kvStore.string(forUIPreference: .onboardingStep).flatMap {
+        // Fallbacks
+        ui.register(defaults: [
+            UIPreference.pinsActiveProfile.key: true
+        ])
+
+        dnsFallsBack = abi[\.dnsFallsBack]
+        experimental = abi[\.experimental]
+        extensiveLogging = abi[\.extensiveLogging]
+        keepsInMenu = ui.bool(forUIPreference: .keepsInMenu)
+        lastInfrastructureRefresh = ui.object(forUIPreference: .lastInfrastructureRefresh) as? [String: TimeInterval]
+        locksInBackground = ui.bool(forUIPreference: .locksInBackground)
+        logsPrivateData = abi[\.logsPrivateData]
+        onboardingStep = ui.string(forUIPreference: .onboardingStep).flatMap {
             OnboardingStep(rawValue: $0)
         }
-        onlyShowsFavorites = kvStore.bool(forUIPreference: .onlyShowsFavorites)
-        pinsActiveProfile = kvStore.bool(forUIPreference: .pinsActiveProfile, fallback: true)
-        profilesLayout = kvStore.string(forUIPreference: .profilesLayout).flatMap {
+        onlyShowsFavorites = ui.bool(forUIPreference: .onlyShowsFavorites)
+        pinsActiveProfile = ui.bool(forUIPreference: .pinsActiveProfile)
+        profilesLayout = ui.string(forUIPreference: .profilesLayout).flatMap {
             ProfilesLayout(rawValue: $0)
         } ?? .list
-        relaxedVerification = kvStore.bool(forAppPreference: .relaxedVerification)
-        systemAppearance = kvStore.string(forUIPreference: .systemAppearance).flatMap {
+        relaxedVerification = abi[\.relaxedVerification]
+        systemAppearance = ui.string(forUIPreference: .systemAppearance).flatMap {
             SystemAppearance(rawValue: $0)
         }
     }
@@ -47,85 +45,105 @@ public final class UserPreferencesObservable {
 
     public var dnsFallsBack: Bool {
         didSet {
-            kvStore.set(dnsFallsBack, forAppPreference: .dnsFallsBack)
+            abi.overwrite {
+                $0.dnsFallsBack = dnsFallsBack
+            }
         }
     }
 
-    public var experimental: ABI.AppPreferenceValues.Experimental {
+    public var experimental: ABI.ExperimentalPreferences {
         didSet {
-            do {
-                let experimentalData = try JSONEncoder().encode(experimental)
-                kvStore.set(experimentalData, forAppPreference: .experimental)
-            } catch {
-                pspLog(.core, .error, "Unable to encode experimental: \(error)")
+            abi.overwrite {
+                $0.experimental = experimental
             }
         }
     }
 
     public var extensiveLogging: Bool {
         didSet {
-            kvStore.set(extensiveLogging, forAppPreference: .extensiveLogging)
+            abi.overwrite {
+                $0.extensiveLogging = extensiveLogging
+            }
         }
     }
 
     public var keepsInMenu: Bool {
         didSet {
-            kvStore.set(keepsInMenu, forUIPreference: .keepsInMenu)
+            ui.set(keepsInMenu, forUIPreference: .keepsInMenu)
         }
     }
 
     public var lastInfrastructureRefresh: [String: TimeInterval]? {
         didSet {
-            kvStore.set(lastInfrastructureRefresh, forUIPreference: .lastInfrastructureRefresh)
+            ui.set(lastInfrastructureRefresh, forUIPreference: .lastInfrastructureRefresh)
         }
     }
 
     public var locksInBackground: Bool {
         didSet {
-            kvStore.set(locksInBackground, forUIPreference: .locksInBackground)
+            ui.set(locksInBackground, forUIPreference: .locksInBackground)
         }
     }
 
     public var logsPrivateData: Bool {
         didSet {
-            kvStore.set(logsPrivateData, forAppPreference: .logsPrivateData)
+            abi.overwrite {
+                $0.logsPrivateData = logsPrivateData
+            }
         }
     }
 
     public var onboardingStep: OnboardingStep? {
         didSet {
-            kvStore.set(onboardingStep?.rawValue, forUIPreference: .onboardingStep)
+            ui.set(onboardingStep?.rawValue, forUIPreference: .onboardingStep)
         }
     }
 
     public var onlyShowsFavorites: Bool {
         didSet {
-            kvStore.set(onlyShowsFavorites, forUIPreference: .onlyShowsFavorites)
+            ui.set(onlyShowsFavorites, forUIPreference: .onlyShowsFavorites)
         }
     }
 
     public var pinsActiveProfile: Bool {
         didSet {
-            kvStore.set(pinsActiveProfile, forUIPreference: .pinsActiveProfile)
+            ui.set(pinsActiveProfile, forUIPreference: .pinsActiveProfile)
         }
     }
 
     public var profilesLayout: ProfilesLayout {
         didSet {
-            kvStore.set(profilesLayout.rawValue, forUIPreference: .profilesLayout)
+            ui.set(profilesLayout.rawValue, forUIPreference: .profilesLayout)
         }
     }
 
     public var relaxedVerification: Bool {
         didSet {
-            kvStore.set(relaxedVerification, forAppPreference: .relaxedVerification)
+            abi.overwrite {
+                $0.relaxedVerification = relaxedVerification
+            }
         }
     }
 
     public var systemAppearance: SystemAppearance? {
         didSet {
-            kvStore.set(systemAppearance?.rawValue, forUIPreference: .systemAppearance)
+            ui.set(systemAppearance?.rawValue, forUIPreference: .systemAppearance)
             applyAppearance()
+        }
+    }
+}
+
+// MARK: - Observation
+
+extension UserPreferencesObservable {
+    public func onUpdate(_ event: ABI.Event) {
+        switch event {
+        case .iap(.status(let status)):
+            abi.overwrite {
+                $0.skipsPurchases = !status.isEnabled
+            }
+        default:
+            break
         }
     }
 }
@@ -163,5 +181,35 @@ extension UserPreferencesObservable {
             app.appearance = nil
         }
 #endif
+    }
+}
+
+private extension UserDefaults {
+    func set<V>(_ value: V?, forUIPreference pref: UIPreference) {
+        set(value, forKey: pref.key)
+    }
+
+    func string(forUIPreference pref: UIPreference) -> String? {
+        string(forKey: pref.key)
+    }
+
+    func bool(forUIPreference pref: UIPreference) -> Bool {
+        bool(forKey: pref.key)
+    }
+
+    func integer(forUIPreference pref: UIPreference) -> Int {
+        integer(forKey: pref.key)
+    }
+
+    func double(forUIPreference pref: UIPreference) -> Double {
+        double(forKey: pref.key)
+    }
+
+    func data(forUIPreference pref: UIPreference) -> Data? {
+        data(forKey: pref.key)
+    }
+
+    func object(forUIPreference pref: UIPreference) -> Any? {
+        object(forKey: pref.key)
     }
 }

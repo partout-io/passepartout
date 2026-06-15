@@ -6,7 +6,7 @@ import Partout
 
 @BusinessActor
 public final class VersionChecker {
-    private let kvStore: KeyValueStore
+    private let preferences: AppPreferencesStore
 
     private let strategy: VersionCheckerStrategy
 
@@ -19,7 +19,7 @@ public final class VersionChecker {
     public nonisolated let didChange: PassthroughStream<ABI.VersionEvent>
 
     public nonisolated init(
-        kvStore: KeyValueStore,
+        preferences: AppPreferencesStore,
         strategy: VersionCheckerStrategy,
         currentVersion: String,
         downloadURL: URL
@@ -27,7 +27,7 @@ public final class VersionChecker {
         guard let semCurrent = ABI.SemanticVersion(currentVersion) else {
             preconditionFailure("Unparsable current version: \(currentVersion)")
         }
-        self.kvStore = kvStore
+        self.preferences = preferences
         self.strategy = strategy
         self.currentVersion = semCurrent
         self.downloadURL = downloadURL
@@ -35,7 +35,7 @@ public final class VersionChecker {
     }
 
     public var latestRelease: ABI.VersionRelease? {
-        guard let latestVersionDescription = kvStore.string(forAppPreference: .lastCheckedVersion),
+        guard let latestVersionDescription = preferences[\.lastCheckedVersion],
               let latestVersion = ABI.SemanticVersion(latestVersionDescription) else {
             return nil
         }
@@ -52,31 +52,32 @@ public final class VersionChecker {
         }
         let now = Date()
         do {
-            let lastCheckedInterval = kvStore.double(forAppPreference: .lastCheckedVersionDate)
-            let lastCheckedDate = lastCheckedInterval > 0.0 ? Date(timeIntervalSinceReferenceDate: lastCheckedInterval) : .distantPast
+            let lastCheckedDate = preferences[\.lastCheckedVersionDate] ?? .distantPast
 
             pspLog(.core, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
-            kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
-            kvStore.set(fetchedLatestVersion.description, forAppPreference: .lastCheckedVersion)
-            pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
-
-            guard let latestRelease else {
-                pspLog(.core, .debug, "Version: current is latest version")
-                return
+            preferences.request(changesTo: [.lastCheckedVersion, .lastCheckedVersionDate]) {
+                $0.lastCheckedVersionDate = now
+                $0.lastCheckedVersion = fetchedLatestVersion.description
             }
-            pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
-            didChange.send(.new(.init(release: latestRelease)))
+            pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
         } catch ABI.AppError.rateLimit {
             pspLog(.core, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
-            // save the check date regardless because the service call succeeded
-            kvStore.set(now.timeIntervalSinceReferenceDate, forAppPreference: .lastCheckedVersionDate)
-
+            // Save the check date regardless because the service call succeeded
+            preferences.request(changesTo: [.lastCheckedVersionDate]) {
+                $0.lastCheckedVersionDate = now
+            }
             pspLog(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
             pspLog(.core, .error, "Unable to check version: \(error)")
         }
+        guard let latestRelease else {
+            pspLog(.core, .debug, "Version: current is latest version")
+            return
+        }
+        pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
+        didChange.send(.new(.init(release: latestRelease)))
     }
 }
 
@@ -92,7 +93,7 @@ extension VersionChecker {
         currentVersion: String = "255.255.255" // An update is never available
     ) {
         self.init(
-            kvStore: InMemoryStore(),
+            preferences: AppPreferencesStore(),
             strategy: DummyStrategy(),
             currentVersion: currentVersion,
             downloadURL: downloadURL

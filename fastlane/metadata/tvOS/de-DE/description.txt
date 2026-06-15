@@ -16,6 +16,10 @@ Passepartout wurde mit Fokus auf Transparenz und Datenschutz entwickelt:
 - Sehen Sie genau, mit welchen Servern Sie sich verbinden.  
 - Keine Werbung, Tracker oder unnötige Hintergrundaktivitäten – nur die VPN-Verbindung, die Sie benötigen.
 
+KOMPATIBILITÄT
+
+Die OpenVPN-Unterstützung konzentriert sich auf gängige Optionen; Kompression wird nicht unterstützt, da sie nicht sicher ist.
+
 OPEN SOURCE UND COMMUNITY-GESTEUERT
 
 Passepartout ist Open Source und entwickelt sich ständig weiter, dank der Unterstützung seiner Community. Schauen Sie sich das Projekt auf GitHub an: https://github.com/partout-io

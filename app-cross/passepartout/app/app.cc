@@ -19,7 +19,7 @@ bool MyApp::OnInit()
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
 
-    psp_app_init_args args;
+    psp_app_init_args args = { 0 };
     char *bundle = NULL;
     char *constants = NULL;
     MyFrame* frame = 0;
@@ -27,7 +27,7 @@ bool MyApp::OnInit()
     /* Paths to JSON input. */
     const char *bundle_path = "bundle.json";
     const char *constants_path = "constants.json";
-    // FIXME: ###, Cross UI, hardcoded profiles dir and cache dir
+    // FIXME: #209/notes, Cross UI, hardcoded profiles dir and cache dir
     const char *profiles_dir = ".";
     const char *cache_dir = ".";
 #ifdef USE_SWIFTPM
@@ -48,9 +48,9 @@ bool MyApp::OnInit()
     args.preferences = NULL;
     args.profiles_dir = profiles_dir;
     args.cache_dir = cache_dir;
-    args.event_ctx = this;
-    args.event_cb = onABIEvent;
-    psp_app_init(&args);
+    args.bindings.event_ctx = this;
+    args.bindings.event_cb = onABIEvent;
+    if (psp_app_init(&args) != PSPCompletionCodeOK) goto failure;
     free(bundle);
     free(constants);
 
@@ -112,10 +112,10 @@ void MyFrame::OnImportProfile(wxCommandEvent &)
     const wxString path = openFileDialog.GetPath();
     const char *cPath = path.utf8_str().data();
     printf("Path: %s\n", cPath);
-    psp_app_import_profile_path(cPath, this, [](void *ctx, int code, const char *error) {
-        printf(">>> ABI Result: (ctx=%p), %d, %s\n", ctx, code, error);
+    psp_app_import_profile_path(cPath, PSP_CB(this, [](void *ctx, int code, const char *json) {
+        printf(">>> ABI Result: (ctx=%p), %d, %p\n", ctx, code, json);
         wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
-    });
+    }));
 }
 
 void MyFrame::OnFlushLog(wxCommandEvent &)

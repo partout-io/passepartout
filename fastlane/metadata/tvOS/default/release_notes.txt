@@ -1,1 +1,1 @@
-* OpenVPN: Update connection to v2 with config flag (#1771)
+* Update Partout with cross-platform event loop (#1853)

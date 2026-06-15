@@ -23,7 +23,7 @@ jobs:
     env:
       RELEASE_NOTES: CHANGELOG.txt
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           ref: "builds/${{ inputs.build }}"

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "passepartout.h"
 
 static char *psp_strdup(const char *value) {
 #ifdef _WIN32
@@ -73,4 +74,8 @@ failure:
     if (file) fclose(file);
     if (abs_path) free(abs_path);
     return NULL;
+}
+
+void psp_free(void *ptr) {
+    free(ptr);
 }

@@ -79,7 +79,7 @@ public struct RefreshInfrastructureButtonProgressView: View {
 
 private extension RefreshInfrastructureButton {
     var isEnabled: Bool {
-        AppCommandLine.contains(.withoutRateLimits) || elapsed >= appConfiguration.constants.api.refreshInfrastructureRateLimit
+        AppCommandLine.contains(.withoutRateLimits) || elapsed >= appConfiguration.constants.url.refreshInfrastructureRateLimit
     }
 
     func loadLastUpdate() {

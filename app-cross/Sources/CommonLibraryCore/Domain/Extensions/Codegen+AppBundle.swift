@@ -14,24 +14,9 @@ extension ABI.AppBundle {
         buildNumber = 12345
         bundleStrings = [:]
         customUserLevel = nil
-
-        let dummyURL = URL(fileURLWithPath: "")
-        appLogPath = ""
-        tunnelLogPath = ""
-        appLogsURL = dummyURL
-        tunnelLogsURL = dummyURL
-        reviewURL = dummyURL
     }
 
     public var versionString: String {
         "\(versionNumber) (\(buildNumber))"
-    }
-
-    public var urlForAppLog: URL {
-        appLogsURL.appending(path: appLogPath)
-    }
-
-    public var urlForTunnelLog: URL {
-        tunnelLogsURL.appending(path: tunnelLogPath)
     }
 }

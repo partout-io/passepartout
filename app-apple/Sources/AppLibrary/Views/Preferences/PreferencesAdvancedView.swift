@@ -9,47 +9,65 @@ struct PreferencesAdvancedView: View {
     @Environment(ConfigObservable.self)
     private var configObservable
 
+    @Environment(IAPObservable.self)
+    private var iapObservable
+
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @Binding
-    var experimental: ABI.AppPreferenceValues.Experimental
+    var experimental: ABI.ExperimentalPreferences
 
     var body: some View {
         Form {
-            remoteSection
+            configSection
         }
         .themeForm()
     }
 }
 
+private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
+    case remote
+    case enable
+    case disable
+
+    var id: Self {
+        self
+    }
+}
+
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .neSocketUDP,
-        .neSocketTCP,
         .newProfileEncoding,
+        .ovpnV3,
         .wgCrossV2
     ]
 
-    static func description(for flag: ABI.ConfigFlag) -> String {
-        let V = Strings.Entities.Ui.ConfigFlag.self
-        switch flag {
-        case .neSocketUDP:
-            return V.neSocketUDP
-        case .neSocketTCP:
-            return V.neSocketTCP
-        case .newProfileEncoding:
-            return "New profile encoding"
-        case .wgCrossV2:
-            return "Cross-platform WireGuard v2"
-        default:
-            assertionFailure()
-            return ""
+    var canOverride: Bool {
+        iapObservable.isBeta || appConfiguration.bundle.distributionTarget == .developerID
+    }
+
+    @ViewBuilder
+    var configSection: some View {
+        if canOverride {
+            overrideSection
+        } else {
+            remoteSection
         }
+    }
+
+    var overrideSection: some View {
+        ForEach(Self.flags, id: \.rawValue) { flag in
+            configPicker(for: flag)
+        }
+        .themeSection(
+            footer: Strings.Views.Preferences.Advanced.Override.footer
+        )
     }
 
     var remoteSection: some View {
         ForEach(Self.flags, id: \.rawValue) { flag in
-            Toggle(isOn: isOnBinding(for: flag)) {
-                flagView(for: flag)
-            }
+            configToggle(for: flag)
         }
         .themeSection(
             header: Strings.Global.Actions.allow,
@@ -57,33 +75,103 @@ private extension PreferencesAdvancedView {
         )
     }
 
-    func isOnBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
+    func configPicker(for flag: ABI.ConfigFlag) -> some View {
+        Picker(selection: preferenceBinding(for: flag)) {
+            ForEach(ConfigFlagPreference.allCases) { pref in
+                Text(pref.localizedDescription)
+                    .tag(pref)
+            }
+        } label: {
+            flagView(for: flag)
+        }
+    }
+
+    func configToggle(for flag: ABI.ConfigFlag) -> some View {
+        Toggle(isOn: isAllowedBinding(for: flag)) {
+            flagView(for: flag)
+        }
+    }
+
+    func isAllowedBinding(for flag: ABI.ConfigFlag) -> Binding<Bool> {
         Binding {
-            experimental.isUsed(flag)
+            experimental.isAllowed(flag)
         } set: {
-            experimental.setUsed(flag, isUsed: $0)
+            experimental.setAllowed(flag, isAllowed: $0)
+        }
+    }
+
+    func preferenceBinding(for flag: ABI.ConfigFlag) -> Binding<ConfigFlagPreference> {
+        Binding {
+            experimental.preference(for: flag)
+        } set: {
+            experimental.setPreference($0, for: flag)
         }
     }
 
     func flagView(for flag: ABI.ConfigFlag) -> some View {
         VStack(alignment: .leading) {
-            Text(Self.description(for: flag))
+            Text(flag.localizedDescription)
             Text(configObservable.isActive(flag) ? Strings.Global.Nouns.enabled : Strings.Global.Nouns.disabled)
                 .themeSubtitle()
         }
     }
 }
 
-private extension ABI.AppPreferenceValues.Experimental {
-    func isUsed(_ flag: ABI.ConfigFlag) -> Bool {
+private extension ABI.ExperimentalPreferences {
+    func isAllowed(_ flag: ABI.ConfigFlag) -> Bool {
         !ignoredConfigFlags.contains(flag)
     }
 
-    mutating func setUsed(_ flag: ABI.ConfigFlag, isUsed: Bool) {
-        if isUsed {
-            ignoredConfigFlags.remove(flag)
+    mutating func setAllowed(_ flag: ABI.ConfigFlag, isAllowed: Bool) {
+        if isAllowed {
+            unignore(flag)
         } else {
-            ignoredConfigFlags.insert(flag)
+            ignore(flag)
+        }
+    }
+
+    func preference(for flag: ABI.ConfigFlag) -> ConfigFlagPreference {
+        if ignoredConfigFlags.contains(flag) {
+            return .disable
+        }
+        if enabledConfigFlags.contains(flag) {
+            return .enable
+        }
+        return .remote
+    }
+
+    mutating func setPreference(_ preference: ConfigFlagPreference, for flag: ABI.ConfigFlag) {
+        unignore(flag)
+        disable(flag)
+
+        switch preference {
+        case .enable:
+            enable(flag)
+        case .disable:
+            ignore(flag)
+        case .remote:
+            break
+        }
+    }
+}
+
+// MARK: - Localization
+
+private extension ABI.ConfigFlag {
+    var localizedDescription: String {
+        rawValue
+    }
+}
+
+private extension ConfigFlagPreference {
+    var localizedDescription: String {
+        switch self {
+        case .remote:
+            return Strings.Views.Preferences.Advanced.Override.Picker.remote
+        case .enable:
+            return Strings.Global.Actions.enable
+        case .disable:
+            return Strings.Global.Actions.disable
         }
     }
 }

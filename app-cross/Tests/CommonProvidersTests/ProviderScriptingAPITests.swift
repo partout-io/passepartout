@@ -32,8 +32,8 @@ struct ProviderScriptingAPITests {
     }
 
     @Test(arguments: [
-        (1752562800, "Tue, 15 Jul 2025 07:00:00 GMT"),
-        (1698907632, "Thu, 02 Nov 2023 06:47:12 GMT")
+        (1752562800 * 1000, "Tue, 15 Jul 2025 07:00:00 GMT"),
+        (1698907632 * 1000, "Thu, 02 Nov 2023 06:47:12 GMT")
     ])
     func givenTimestamp_whenGetRFC1123_thenIsExpected(timestamp: Timestamp, rfc: String) {
         #expect(timestamp.toRFC1123() == rfc)
@@ -48,7 +48,7 @@ struct ProviderScriptingAPITests {
 
         let object = try #require(sut.serialized()["cache"])
         let data = try JSONSerialization.data(withJSONObject: object)
-        let cache = try JSONDecoder().decode(ProviderCache.self, from: data)
+        let cache = try JSONDecoder.shared().decode(ProviderCache.self, from: data)
 
         #expect(cache.lastUpdate == date)
         #expect(cache.tag == tag)

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary_C
 import Partout
 
 @BusinessActor
@@ -11,7 +12,6 @@ public final class AppABI: Sendable {
     public nonisolated let iap: AppABIIAPProtocol
     public nonisolated let profile: AppABIProfileProtocol
     public nonisolated let registry: AppABIRegistryProtocol
-    public nonisolated let tunnel: AppABITunnelProtocol
     public nonisolated let version: AppABIVersionProtocol
     public nonisolated let webReceiver: AppABIWebReceiverProtocol
 #if !PSP_CROSS
@@ -24,23 +24,24 @@ public final class AppABI: Sendable {
 
     // Constants and storage
     private let appConfiguration: ABI.AppConfiguration
-    private let kvStore: KeyValueStore
+    private let preferences: AppPreferencesStore
     // Managers wrapped in ABI
     private let configManager: ConfigManager
     private let extensionInstaller: ExtensionInstaller?
     private let iapManager: IAPManager
-    private let logFormatter: LogFormatter
+    private let logFormatter: LogFormatter?
     private let profileManager: ProfileManager
-    private let tunnelManager: TunnelManager
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
     private let onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)?
+    nonisolated(unsafe) private let bindings: psp_app_bindings?
 
     // Internal state
     private var launchTask: Task<Void, Error>?
     private var pendingTask: Task<Void, Never>?
     private var didLoadReceiptDate: Date?
+    private var handler: ABI.EventHandler?
     private var subscriptions: [Task<Void, Never>]
 
     public init(
@@ -50,24 +51,23 @@ public final class AppABI: Sendable {
         configManager: ConfigManager,
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
-        kvStore: KeyValueStore,
-        logFormatter: LogFormatter,
+        logFormatter: LogFormatter?,
+        preferences: AppPreferencesStore,
         preferencesManager: PreferencesManager?,
         profileManager: ProfileManager,
         registry partoutRegistry: CodingRegistry,
-        tunnelManager: TunnelManager,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
+        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil,
+        bindings: psp_app_bindings?
     ) {
         self.appConfiguration = appConfiguration
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
-        self.kvStore = kvStore
         self.logFormatter = logFormatter
+        self.preferences = preferences
         self.profileManager = profileManager
-        self.tunnelManager = tunnelManager
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
@@ -75,15 +75,15 @@ public final class AppABI: Sendable {
         self.apiManager = apiManager ?? APIManager()
         self.preferencesManager = preferencesManager ?? PreferencesManager()
 #endif
+        self.bindings = bindings
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !kvStore.bool(forAppPreference: .skipsPurchases)
+        iapManager.isEnabled = supportsIAP && !preferences[\.skipsPurchases]
 
         encoder = AppABIEncoder(appEncoder: appEncoder)
         iap = AppABIIAP(
             iapManager: iapManager,
-            kvStore: kvStore,
             supportsIAP: supportsIAP
         )
         profile = AppABIProfile(
@@ -91,59 +91,81 @@ public final class AppABI: Sendable {
             registry: partoutRegistry
         )
         registry = AppABIRegistry(registry: partoutRegistry)
-        tunnel = AppABITunnel(
-            tunnelManager: tunnelManager,
-            logParameters: appConfiguration.constants.log
-        )
-        version = AppABIVersion(versionChecker: versionChecker)
+        version = AppABIVersion(appConfiguration: appConfiguration, bindings: bindings)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
+
+#if PSP_CROSS
+        // Do not commit the local preferences, emit update event
+        // and let the consumer perform the actual commit
+        preferences.onRequest = { [weak self] in
+            self?.emitShouldUpdatePreferencesEvent($0, fields: $1)
+        }
+#endif
     }
 
     deinit {
+        pspLog(.abi, .debug, "Deinit AppABI")
         subscriptions.forEach { $0.cancel() }
+        if var bindings {
+            bindings.free?(&bindings)
+        }
     }
 }
 
 extension AppABI {
-    public func registerEvents(_ handler: ABI.EventHandler?) {
+    public func registerEvents(_ newHandler: ABI.EventHandler?) {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
         let profileEvents = profileManager.didChange.subscribe()
-        let tunnelEvents = tunnelManager.observeObjects()
         let versionEvents = versionChecker.didChange.subscribe()
         let webReceiverEvents = webReceiverManager.didChange.subscribe()
 
-        // Post initial state AFTER events registration (in case it was missed)
+        // Set new handler
+        handler = newHandler
+
+        // Post initial state AFTER events registration, because *Observable
+        // classes fully rely on the onUpdate() method for their state, including
+        // the initial state. Early initializations would be otherwise missed by
+        // the UI, e.g.:
+        //
+        // - ProfileObservable.isRemoteImportingEnabled = false on init. iCloud
+        // sync appears disabled if the initial ProfileManager update is missed.
+        //
+        // - IAPObservable.isEnabled = true on init. If "Skips purchases" is ON,
+        // then IAPManager starts disabled, but the UI shows that in-app
+        // purchases are enabled if the initial IAPManager update is missed.
+        //
+        emitShouldUpdatePreferencesEvent(preferences.serialized(), fields: [.deviceId])
         iapManager.postInitialState()
         profileManager.postInitialState()
 
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in configEvents {
+                guard let self else { return }
                 dispatch(.config(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in iapEvents {
+                guard let self else { return }
                 dispatch(.iap(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in profileEvents {
+                guard let self else { return }
                 dispatch(.profile(event), handler)
             }
         })
-        subscriptions.append(Task {
-            for await event in tunnelEvents {
-                dispatch(.tunnel(event), handler)
-            }
-        })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in versionEvents {
+                guard let self else { return }
                 dispatch(.version(event), handler)
             }
         })
-        subscriptions.append(Task {
+        subscriptions.append(Task { [weak self] in
             for await event in webReceiverEvents {
+                guard let self else { return }
                 switch event {
                 case .newUpload(let payload):
                     do {
@@ -162,13 +184,38 @@ extension AppABI {
         })
     }
 
+    public func unregisterEvents() {
+        handler = nil
+    }
+
     func dispatch(_ event: ABI.Event, _ handler: ABI.EventHandler?) {
-        guard let handler else { return }
+        guard let handler = handler ?? self.handler else { return }
         handler.callback(handler.context, event)
     }
 }
 
 // MARK: - Actions
+
+extension AppABI {
+    // Consumer updates library
+    public func setPreferences(_ new: ABI.AppPreferences) {
+        pspLog(.abi, .debug, "Commit preferences: \(new)")
+        preferences.overwrite {
+            $0 = new
+        }
+    }
+
+    // Library requests update to consumer
+    private func emitShouldUpdatePreferencesEvent(
+        _ updated: ABI.AppPreferences,
+        fields: Set<ABI.NonUserFacingAppPreferenceKey>
+    ) {
+        dispatch(.mixed(.shouldUpdatePreferences(.init(
+            preferences: updated,
+            fields: fields.map(\.innerKey)
+        ))), nil)
+    }
+}
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
@@ -188,12 +235,10 @@ private struct AppABIEncoder: AppABIEncoderProtocol {
 
 private struct AppABIIAP: AppABIIAPProtocol {
     let iapManager: IAPManager
-    let kvStore: KeyValueStore
     let supportsIAP: Bool
 
     func enable(_ isEnabled: Bool) {
         iapManager.isEnabled = supportsIAP && isEnabled
-        kvStore.set(!iapManager.isEnabled, forAppPreference: .skipsPurchases)
     }
 
     func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
@@ -306,42 +351,34 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
     }
 }
 
-private struct AppABITunnel: AppABITunnelProtocol {
-    let tunnelManager: TunnelManager
-    let logParameters: ABI.AppConstants.Log
-
-    func connect(to profile: Profile, force: Bool) async throws {
-        try await tunnelManager.connect(with: profile, force: force)
-    }
-
-//    func reconnect(to profileId: ABI.Identifier) async throws {
-//        try await tunnel.
-//    }
-
-    func disconnect(from profileId: Profile.ID) async throws {
-        try await tunnelManager.disconnect(from: profileId)
-    }
-
-    func currentLog() async -> [ABI.LogLine] {
-        await tunnelManager.currentLog(parameters: logParameters)
-    }
-
-    func environmentValue(for key: AppABITunnelValueKey, ofProfileId profileId: Profile.ID) async -> Any? {
-        switch key {
-        case .openVPNServerConfiguration:
-            await tunnelManager.value(
-                forKey: TunnelEnvironmentKeys.OpenVPN.serverConfiguration,
-                ofProfileId: profileId
-            )
-        }
-    }
-}
-
 private struct AppABIVersion: AppABIVersionProtocol {
-    let versionChecker: VersionChecker
+    let appConfiguration: ABI.AppConfiguration
+    nonisolated(unsafe)let bindings: psp_app_bindings?
 
-    func checkLatestRelease() async {
-        await versionChecker.checkLatestRelease()
+    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        pspLog(.core, .info, "CHANGELOG: Load for version \(version)")
+        let url = appConfiguration.constants.github.urlForChangelog(ofVersion: version)
+        pspLog(.abi, .info, "CHANGELOG: Fetching \(url)")
+        do {
+            let data = try await appConfiguration.newRequest(
+                for: url,
+                cached: false,
+                bindings: bindings
+            )
+            guard let text = String(data: data, encoding: .utf8) else {
+                throw ABI.AppError.notFound
+            }
+            pspLog(.abi, .info, "CHANGELOG: Fetched \(data.count) bytes")
+            return text
+                .split(separator: "\n")
+                .enumerated()
+                .compactMap {
+                    ABI.ChangelogEntry($0.offset, line: String($0.element))
+                }
+        } catch {
+            pspLog(.abi, .error, "CHANGELOG: Unable to fetch: \(error)")
+            throw error
+        }
     }
 }
 
@@ -357,7 +394,7 @@ private struct AppABIWebReceiver: AppABIWebReceiverProtocol {
     }
 }
 
-// MARK: - Logging
+// MARK: - Generic
 
 extension AppABI: AppABILoggerProtocol, LogFormatter {
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
@@ -369,7 +406,7 @@ extension AppABI: AppABILoggerProtocol, LogFormatter {
     }
 
     public nonisolated func formattedLog(timestamp: Date, message: String) -> String {
-        logFormatter.formattedLog(timestamp: timestamp, message: message)
+        logFormatter?.formattedLog(timestamp: timestamp, message: message) ?? message
     }
 }
 
@@ -385,15 +422,19 @@ extension AppABI {
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            // Propagate active config flags to tunnel via preferences
-            kvStore.preferences.configFlags = configManager.activeFlags
+            preferences.request(changesTo: [
+                .configFlags, .newProfileEncoding, .relaxedVerification
+            ]) {
+                // Propagate active config flags to tunnel via preferences
+                $0.configFlags = Array(configManager.activeFlags)
 
-            // Imply some hidden preferences from config flags
-            kvStore.preferences.newProfileEncoding = configManager.isActive(.newProfileEncoding)
+                // Imply some hidden preferences from config flags
+                $0.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
-            // Constrain .relaxedVerification preference to .allows and
-            // .forces combinations in ConfigManager. At most, it's left as is
-            kvStore.constrainRelaxedVerification(to: configManager)
+                // Constrain .relaxedVerification preference to .allows and
+                // .forces combinations in ConfigManager. At most, it's left as is
+                $0.constrainRelaxedVerification(to: configManager)
+            }
         }
     }
 }
@@ -401,7 +442,7 @@ extension AppABI {
 // Invoked on internal events
 private extension AppABI {
     func onLaunch() async throws {
-        pspLog(.core, .notice, "Application did launch")
+        pspLog(.abi, .notice, "Application did launch")
 
         pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
@@ -421,13 +462,12 @@ private extension AppABI {
         pspLog(.iap, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
-            guard let self else { return }
             for await event in iapEvents {
+                guard let self else { return }
                 switch event {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates()
                     pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
-                    kvStore.set(!payload.isEnabled, forAppPreference: .skipsPurchases)
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
@@ -447,8 +487,8 @@ private extension AppABI {
         pspLog(.profiles, .info, "\tObserve changes in ProfileManager...")
         let profileEvents = profileManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
-            guard let self else { return }
             for await event in profileEvents {
+                guard let self else { return }
                 switch event {
                 case .save(let payload):
                     do {
@@ -466,23 +506,23 @@ private extension AppABI {
         })
 #if !PSP_CROSS
         do {
-            pspLog(.core, .info, "\tFetch providers index...")
+            pspLog(.abi, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
-            pspLog(.core, .error, "\tUnable to fetch providers index: \(error)")
+            pspLog(.abi, .error, "\tUnable to fetch providers index: \(error)")
         }
 #endif
     }
 
     func onForeground() async throws {
-
         // onForeground() is redundant after launch
         let didLaunch = try await waitForTasks()
         guard !didLaunch else {
             return
         }
+        assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did enter foreground")
+        pspLog(.abi, .notice, "Application did enter foreground")
         pendingTask = Task {
             await reloadExtensions()
 
@@ -498,8 +538,9 @@ private extension AppABI {
 
     func onEligibleFeatures(_ features: Set<ABI.AppFeature>) async throws {
         try await waitForTasks()
+        assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did update eligible features")
+        pspLog(.abi, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -509,44 +550,21 @@ private extension AppABI {
 
     func onSaveProfile(_ profile: Profile, previous: Profile?) async throws {
         try await waitForTasks()
+        assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did save profile (\(profile.id))")
+        pspLog(.abi, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            pspLog(.abi, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
-            return
-        }
-        guard tunnelManager.isActiveProfile(withId: profile.id) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is not current, do nothing")
-            return
-        }
-        let status = tunnelManager.tunnelStatus(ofProfileId: profile.id)
-        guard [.active, .activating].contains(status) else {
-            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            pspLog(.abi, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
 
-        pendingTask = Task {
-            do {
-                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
-                try await tunnelManager.disconnect(from: profile.id)
-                do {
-                    try await tunnelManager.connect(with: profile)
-                } catch ABI.AppError.interactiveLogin {
-                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
-                } catch {
-                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
-                }
-            } catch {
-                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
-            }
-        }
-        await pendingTask?.value
-        pendingTask = nil
+        // Suggest tunnel reconnection (may or may not happen)
+        dispatch(.mixed(.shouldReconnect(.init(profile: profile))), nil)
     }
 
     func onWebUpload(_ upload: ABI.WebFileUpload) async throws {
@@ -601,18 +619,18 @@ private extension AppABI {
 
     func reloadExtensions() async {
         guard let extensionInstaller else { return }
-        pspLog(.core, .info, "Extensions: load current status...")
+        pspLog(.abi, .info, "Extensions: load current status...")
         do {
             let result = try await extensionInstaller.load()
-            pspLog(.core, .info, "Extensions: load result is \(result)")
+            pspLog(.abi, .info, "Extensions: load result is \(result)")
         } catch {
-            pspLog(.core, .error, "Extensions: load error: \(error)")
+            pspLog(.abi, .error, "Extensions: load error: \(error)")
         }
     }
 
     var shouldInvalidateReceipt: Bool {
         // Always invalidate if "old" verification strategy
-        guard kvStore.bool(forAppPreference: .relaxedVerification) else {
+        guard preferences[\.relaxedVerification] else {
             return true
         }
         // Receipt never loaded, force load

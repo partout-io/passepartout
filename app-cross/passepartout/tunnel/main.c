@@ -8,16 +8,6 @@
 #include <stdlib.h>
 #include "passepartout.h"
 
-static
-void start_callback(void *ctx, int result, const char *error) {
-    (void)ctx;
-    if (error) {
-        printf("Result: %d, %s\n", result, error);
-    } else {
-        printf("Result: %d\n", result);
-    }
-}
-
 int main(int argc, char *argv[]) {
     char *bundle = NULL;
     char *constants = NULL;
@@ -50,27 +40,28 @@ int main(int argc, char *argv[]) {
     }
 
     /* Current directory. */
-    // FIXME: ###, Cross UI, hardcoded cache dir
+    // FIXME: #209/notes, Cross UI, hardcoded values
     const char *cache_dir = ".";
 //    const char *cache_dir = mkdtemp("psp");
+    const char *preferences = "{\"deviceId\":\"abcdef\",\"configFlags\":[\"ovpnCrossV2\", \"wgCrossV2\"]}";
 
     psp_tunnel_start_args args = { 0 };
     args.bundle = bundle;
     args.constants = constants;
-    args.preferences = NULL;
+    args.preferences = preferences;
     args.cache_dir = cache_dir;
     args.profile = profile;
     args.is_interactive = true;
     args.is_daemon = true;
-    args.jni_wrapper = NULL;
+    args.bindings.controller = NULL;
 
     /* Will block indefinitely. */
-    psp_tunnel_start(&args, NULL, start_callback);
+    const int result = psp_tunnel_start(&args);
 
     free(bundle);
     free(constants);
     free(profile);
-    return 0;
+    return result;
 failure:
     if (bundle) free(bundle);
     if (constants) free(constants);

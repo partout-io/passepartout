@@ -11,8 +11,11 @@ public protocol ProfileProcessor: AnyObject, Sendable {
 }
 
 public protocol AppTunnelProcessor: AnyObject, Sendable {
-    nonisolated func title(for profile: Profile) -> String
-    nonisolated func willInstall(_ profile: Profile) async throws -> Profile
+    nonisolated func willInstall(
+        _ preProfile: Profile,
+        connect: Bool,
+        force: Bool
+    ) async throws -> Profile?
 }
 
 public protocol PacketTunnelProcessor: AnyObject, Sendable {

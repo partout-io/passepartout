@@ -13,8 +13,8 @@ android {
         applicationId = "com.algoritmico.passepartout"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4100
+        versionName = "3.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -27,9 +27,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,12 +42,12 @@ android {
         }
     }
     buildFeatures {
-        viewBinding = true
         compose = true
     }
     ndkVersion = "29.0.13846066"
     externalNativeBuild {
         cmake {
+            version = "4.1.2"
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
@@ -63,15 +68,13 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

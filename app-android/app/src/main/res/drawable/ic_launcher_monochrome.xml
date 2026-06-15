@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@android:color/transparent"
+        android:height="@dimen/launcher_icon_foreground_canvas_size"
+        android:width="@dimen/launcher_icon_foreground_canvas_size" />
+    <item
+        android:drawable="@drawable/ic_launcher_monochrome_mark"
+        android:gravity="center"
+        android:height="@dimen/launcher_icon_foreground_size"
+        android:width="@dimen/launcher_icon_foreground_size" />
+</layer-list>

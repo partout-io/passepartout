@@ -40,57 +40,88 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
 
     private let resolver: Resolver
 
-    private let title: @Sendable (Profile) -> String
+    private let extensionInstaller: ExtensionInstaller?
 
     private let providerServerSorter: ProviderServerParameters.Sorter
 
     init(
         apiManager: APIManager?,
         resolver: Resolver,
-        title: @escaping @Sendable (Profile) -> String,
+        extensionInstaller: ExtensionInstaller?,
         providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
         self.apiManager = apiManager
         self.resolver = resolver
-        self.title = title
+        self.extensionInstaller = extensionInstaller
         self.providerServerSorter = providerServerSorter
     }
 
-    nonisolated func title(for profile: Profile) -> String {
-        title(profile)
-    }
+    nonisolated func willInstall(
+        _ preProfile: Profile,
+        connect: Bool,
+        force: Bool
+    ) async throws -> Profile? {
+        var profile = preProfile
 
-    nonisolated func willInstall(_ profile: Profile) async throws -> Profile {
-        guard let apiManager else {
-            return profile
+        // Apply provider preprocessing if APIManager provided
+        if let apiManager {
+            // Apply connection heuristic
+            do {
+                if let builder = profile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
+                   let heuristic = builder.entity?.heuristic {
+                    pspLog(.core, .info, "Apply connection heuristic: \(heuristic)")
+                    profile.activeProviderModule?.entity.map {
+                        pspLog(.core, .info, "\tOld server: \($0.server)")
+                    }
+                    profile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
+                    profile.activeProviderModule?.entity.map {
+                        pspLog(.core, .info, "\tNew server: \($0.server)")
+                    }
+                }
+            } catch {
+                pspLog(.core, .error, "Unable to pick new provider server: \(error)")
+            }
+
+            // Validate provider modules. Do not commit resolved
+            // profile, the tunnel requires the original profile.
+            do {
+                _ = try resolver.resolvedProfile(profile)
+            } catch {
+                pspLog(.core, .error, "Unable to inject provider modules: \(error)")
+                throw error
+            }
         }
 
-        // Apply connection heuristic
-        var newProfile = profile
-        do {
-            if let builder = newProfile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
-               let heuristic = builder.entity?.heuristic {
-                pspLog(.core, .info, "Apply connection heuristic: \(heuristic)")
-                newProfile.activeProviderModule?.entity.map {
-                    pspLog(.core, .info, "\tOld server: \($0.server)")
-                }
-                newProfile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
-                newProfile.activeProviderModule?.entity.map {
-                    pspLog(.core, .info, "\tNew server: \($0.server)")
+        // Trigger user input if profile is interactive
+        if connect {
+            guard !profile.isInteractive || force else {
+                throw ABI.AppError.interactiveLogin
+            }
+        }
+
+        // Install extension before proceeding
+        if let extensionInstaller {
+            if extensionInstaller.currentResult == .success {
+                pspLog(.core, .info, "Extensions: already installed")
+            } else {
+                pspLog(.core, .info, "Extensions: install...")
+                do {
+                    let result = try await extensionInstaller.install()
+                    switch result {
+                    case .success:
+                        break
+                    default:
+                        throw ABI.AppError.systemExtension(result)
+                    }
+                    pspLog(.core, .info, "Extensions: installation result is \(result)")
+                } catch {
+                    pspLog(.core, .error, "Extensions: installation error: \(error)")
                 }
             }
-        } catch {
-            pspLog(.core, .error, "Unable to pick new provider server: \(error)")
         }
 
-        // Validate provider modules
-        do {
-            _ = try resolver.resolvedProfile(newProfile)
-            return newProfile
-        } catch {
-            pspLog(.core, .error, "Unable to inject provider modules: \(error)")
-            throw error
-        }
+        // Return processed profile
+        return profile
     }
 }
 

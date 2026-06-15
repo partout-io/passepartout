@@ -63,18 +63,19 @@ private var isDefaultLoggerRegistered = false
 public func pspLogRegister(
     for target: LoggingTarget,
     with appConfiguration: ABI.AppConfiguration,
-    preferences: ABI.AppPreferenceValues,
-    mapper: @escaping @Sendable (DebugLog.Line) -> String
+    preferences: AppPreferencesStore,
+    localURL: URL?,
+    localMapper: (@Sendable (DebugLog.Line) -> String)?
 ) -> PartoutLoggerContext {
     switch target {
     case .app:
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
             let logger = PartoutLogger.logger(
-                to: appConfiguration.bundle.urlForAppLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
-                mapper: mapper
+                localURL: localURL,
+                localMapper: localMapper
             )
             PartoutLogger.register(logger)
             logger.logPreamble(
@@ -85,10 +86,10 @@ public func pspLogRegister(
         return .global
     case .tunnelGlobal:
         let logger = PartoutLogger.tunnelLogger(
-            to: appConfiguration.bundle.urlForTunnelLog,
             preferences: preferences,
             parameters: appConfiguration.constants.log,
-            mapper: mapper
+            localURL: localURL,
+            localMapper: localMapper
         )
         PartoutLogger.register(logger)
         logger.logPreamble(
@@ -100,10 +101,10 @@ public func pspLogRegister(
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
             let logger = PartoutLogger.tunnelLogger(
-                to: appConfiguration.bundle.urlForTunnelLog,
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
-                mapper: mapper
+                localURL: localURL,
+                localMapper: localMapper
             )
             PartoutLogger.register(logger)
         }
@@ -115,33 +116,33 @@ public func pspLogRegister(
 
 private extension PartoutLogger {
     static func logger(
-        to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
-        mapper: @escaping @Sendable (DebugLog.Line) -> String
+        localURL: URL?,
+        localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
-            to: url,
             preferences: preferences,
             parameters: parameters,
-            mapper: mapper
+            localURL: localURL,
+            localMapper: localMapper
         )
         return builder.build()
     }
 
     static func tunnelLogger(
-        to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
-        mapper: @escaping @Sendable (DebugLog.Line) -> String
+        localURL: URL?,
+        localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
-            to: url,
             preferences: preferences,
             parameters: parameters,
-            mapper: mapper
+            localURL: localURL,
+            localMapper: localMapper
         )
         builder.willPrint = {
             let prefix = "[\($0.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
@@ -172,10 +173,10 @@ private extension PartoutLogger {
 
 private extension PartoutLogger.Builder {
     mutating func configureLogging(
-        to url: URL,
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
-        mapper: @escaping @Sendable (DebugLog.Line) -> String
+        localURL: URL?,
+        localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
         assertsMissingLoggingCategory = true
         var list: [LoggerCategory] = [
@@ -183,35 +184,38 @@ private extension PartoutLogger.Builder {
             .os,
             .openvpn,
             .wireguard,
+            .App.abi,
             .App.core,
             .App.iap,
             .App.profiles,
             .App.web
         ]
         list.append(.providers)
-        setDefaultDestination(for: list)
+        setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
-        if preferences.extensiveLogging {
+        if preferences[\.extensiveLogging] {
             newOptions.maxLevel = .debug
         }
-        setLocalLogger(
-            url: url,
-            options: newOptions.fromProto,
-            mapper: mapper
-        )
-        if preferences.logsPrivateData {
+        if let localURL, let localMapper {
+            setLocalLogger(
+                url: localURL,
+                options: newOptions.fromProto,
+                mapper: localMapper
+            )
+        }
+        if preferences[\.logsPrivateData] {
             logsAddresses = true
             logsModules = true
         }
     }
 
-    mutating func setDefaultDestination(for categories: [LoggerCategory]) {
+    mutating func setDefaultDestination(for categories: [LoggerCategory], tag: String) {
         categories.forEach {
 #if canImport(Darwin)
             setDestination(OSLogDestination($0), for: [$0])
 #else
-            setDestination(SimpleLogDestination(tag: "Passepartout"), for: [$0])
+            setDestination(SimpleLogDestination(tag: tag), for: [$0])
 #endif
         }
     }
@@ -222,6 +226,7 @@ private extension PartoutLogger.Builder {
 private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {
         switch self {
+        case .abi: .App.abi
         case .core: .App.core
         case .iap: .App.iap
         case .profiles: .App.profiles
@@ -244,6 +249,8 @@ private extension ABI.AppLogLevel {
 
 private extension LoggerCategory {
     enum App {
+        static let abi = LoggerCategory(appCategory: .abi)
+
         static let core = LoggerCategory(appCategory: .core)
 
         static let iap = LoggerCategory(appCategory: .iap)

@@ -1,8 +1,25 @@
 # Configure as shared library
 add_library(passepartout_shared SHARED "")
-file(GLOB_RECURSE PSP_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.swift
+
+# Include file lists
+include("passepartout_shared.cmake")
+
+set(PSP_ABI_INPUTS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include/passepartout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include/module.modulemap
 )
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${PSP_ABI_INPUTS})
+set(PSP_ABI_INPUTS_HASH "")
+foreach(input IN LISTS PSP_ABI_INPUTS)
+    file(SHA256 ${input} input_hash)
+    string(APPEND PSP_ABI_INPUTS_HASH "${input_hash}\n")
+endforeach()
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/passepartout_shared.swift.in
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/passepartout_shared.swift
+    @ONLY
+)
+
 target_compile_options(passepartout_shared PRIVATE
     -DUSE_CMAKE
 )
@@ -11,13 +28,15 @@ set_target_properties(passepartout_shared PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     OUTPUT_NAME passepartout
+    Swift_COMPILATION_MODE incremental
 )
 
 # Build Partout dependency
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
-set(PP_BUILD_USE_WGGO ON)
+set(PP_BUILD_USE_OPENVPN ON)
+set(PP_BUILD_USE_WIREGUARD ON)
 add_subdirectory(partout)
 
 # Set exclusions and symbols for non-Apple builds
@@ -30,16 +49,19 @@ endif()
 foreach(pattern ${PSP_EXCLUSIONS})
     list(FILTER PSP_SOURCES EXCLUDE REGEX ${pattern})
 endforeach()
-target_sources(passepartout_shared PRIVATE ${PSP_SOURCES})
+target_sources(passepartout_shared PRIVATE
+    ${PSP_SOURCES}
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/passepartout_shared.swift
+)
 
 # Link the C ABI code
-file(GLOB_RECURSE PSP_C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/*.c)
 add_library(passepartout_shared_c STATIC ${PSP_C_SOURCES})
 target_link_libraries(passepartout_shared PUBLIC passepartout_shared_c)
 
 # Import the modulemap for the C ABI
-set(ABI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include)
-target_include_directories(passepartout_shared PUBLIC ${ABI_INCLUDE})
+target_include_directories(passepartout_shared_c PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/CommonLibrary_C/include
+)
 
 # Depend on Partout
 add_dependencies(passepartout_shared partout)
@@ -62,11 +84,6 @@ if(LINUX)
 endif()
 
 # Distribute with dependencies
-if(ANDROID)
-    set(STRIP llvm-strip)
-else()
-    set(STRIP ${CMAKE_STRIP})
-endif()
 if(WIN32)
     set(LIBEXT lib)
 elseif(APPLE)
@@ -78,14 +95,12 @@ add_custom_command(
     TARGET passepartout_shared
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-        -DABI_INCLUDE=${ABI_INCLUDE}
         -DOUTPUT_DIR=${OUTPUT_DIR}
         -DDIST_DIR=${DIST_DIR}
-        -DSTRIP=${STRIP} -DLIBEXT=${LIBEXT}
+        -DSTRIP=${CMAKE_STRIP}
+        -DLIBEXT=${LIBEXT}
         -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
 )
 
-# Optionally build end-user applications
-if(BUILD_APP)
-    add_subdirectory(passepartout)
-endif()
+# Build end-user applications
+add_subdirectory(passepartout)

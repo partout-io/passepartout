@@ -10,14 +10,11 @@ $swift_arch = switch ($env:PROCESSOR_ARCHITECTURE) {
 }
 
 $swift_root = "$env:USERPROFILE/AppData/Local/Programs/Swift"
-$swift_version = "6.2.1"
+$swift_version = "6.3.1"
 $env:SWIFT_SDK = "$swift_root/Platforms/$swift_version/Windows.platform/Developer/SDKs/Windows.sdk/usr/lib/swift/windows/$swift_arch"
 $env:SWIFT_RUNTIME = "$swift_root/Runtimes/$swift_version/usr/bin"
 
 try {
-    # Remove all .txt files in the build folder
-    Remove-Item -Path "$build_dir\*.txt" -ErrorAction SilentlyContinue
-
     # Create build folder if it doesn't exist
     if (-not (Test-Path -Path "$build_dir")) {
         New-Item -ItemType Directory -Path "$build_dir" | Out-Null

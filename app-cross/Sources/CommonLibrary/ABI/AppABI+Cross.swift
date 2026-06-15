@@ -8,87 +8,103 @@ import Partout
 
 extension AppABI {
     public static func forCrossPlatform(
+        bindings: psp_app_bindings,
         appBundleData: Data,
         appConstantsData: Data,
         preferencesData: Data?,
         profilesDir: String,
         cachesURL: URL
     ) throws -> AppABI {
-        let decoder = JSONDecoder()
-
-        // Decode app configuration
-        let bundle = try decoder.decode(ABI.AppBundle.self, from: appBundleData)
-        let constants = try decoder.decode(ABI.AppConstants.self, from: appConstantsData)
+        let bundle = try ABI.decode(ABI.AppBundle.self, from: appBundleData)
+        let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
         let appConfiguration = ABI.AppConfiguration(bundle: bundle, constants: constants)
-
-        // Parse preferences
-        let preferences = ABI.AppPreferenceValues(
-            with: decoder,
-            data: preferencesData,
-            newDeviceId: true,
-            deviceIdLength: constants.deviceIdLength
+        let preferences = AppPreferencesStore.fromData(preferencesData)
+        let deviceId = preferences.configureDeviceId(
+            length: appConfiguration.constants.deviceIdLength
         )
 
-        let logFormatter = appConfiguration.newLogFormatter()
-        let kvStore = appConfiguration.newKeyValueStore()
-        kvStore.preferences = preferences
-
         // Logging context
-        let ctx = pspLogRegister(
+        let logFormatter = appConfiguration.newLogFormatter()
+        _ = pspLogRegister(
             for: .app,
             with: appConfiguration,
             preferences: preferences,
-            mapper: {
-                logFormatter.formattedLog(timestamp: $0.timestamp, message: $0.message)
-            }
+            localURL: nil,
+            localMapper: logFormatter?.localMapper
         )
+        pspLog(.abi, .debug, "App preferences: \(preferences.serialized())")
 
         // Initialize objects from global configuration
+        nonisolated(unsafe) let unsafeBindings = bindings
         let configManager = appConfiguration.newConfigManager(
             withTestBundle: false,
             isBeta: {
+                // FIXME: ###, Check cross beta flag
                 false
             },
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: false)
+                try await appConfiguration.newRequest(
+                    for: $0,
+                    cached: false,
+                    bindings: unsafeBindings
+                )
             }
         )
         let registry = appConfiguration.newRegistryForApp(
+            deviceId: deviceId,
+            preferences: preferences,
             configManager: configManager,
-            kvStore: kvStore,
             cachesURL: cachesURL
         )
 
-        let appEncoder = AppEncoder(coder: registry, kvStore: kvStore)
+        let appEncoder = AppEncoder(coder: registry)
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
-        let tunnelStrategy = appConfiguration.newStandaloneTunnelStrategy()
-        let tunnel = Tunnel(ctx, strategy: tunnelStrategy) { @Sendable in
-            appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
-        }
-        let tunnelManager = TunnelManager(tunnel: tunnel, interval: 1.0)
 
-        // Dummy
+        // FIXME: ###, Dummy
         let iapManager = IAPManager()
         let versionChecker = VersionChecker()
         let webReceiverManager = WebReceiverManager()
 
-        return AppABI(
+        let abi = AppABI(
             apiManager: nil,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,
-            kvStore: kvStore,
             logFormatter: logFormatter,
+            preferences: preferences,
             preferencesManager: nil,
             profileManager: profileManager,
             registry: registry,
-            tunnelManager: tunnelManager,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            bindings: bindings
         )
+
+        // Register for events
+        let eventContext = bindings.event_ctx
+        let eventCallback = bindings.event_cb
+        let eventHandler = ABI.EventHandler(
+            context: eventContext,
+            callback: { ctx, event in
+                guard let eventCallback else { return }
+                do {
+                    // Make the event encodable with metadata for decoding
+                    let eventWrapper = ABI.EventWrapper(event)
+                    let json = try ABI.encodeJSON(eventWrapper)
+                    json.withCString {
+                        eventCallback(ctx, $0)
+                    }
+                } catch {
+                    assertionFailure("Unable to encode event: \(event), \(error)")
+                }
+            }
+        )
+        abi.registerEvents(eventHandler)
+
+        return abi
     }
 }
 #endif

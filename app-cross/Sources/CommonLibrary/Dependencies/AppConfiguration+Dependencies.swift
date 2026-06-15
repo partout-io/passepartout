@@ -2,11 +2,20 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import CommonLibrary_C
 import Partout
 
 // MARK: Shared
 
 extension ABI.AppConfiguration {
+    public var appLogPath: String {
+        constants.log.filenames?.app ?? "app.log"
+    }
+
+    public var tunnelLogPath: String {
+        constants.log.filenames?.tunnel ?? "tunnel.log"
+    }
+
     public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
         DefaultProfileProcessor(iapManager: iapManager)
     }
@@ -14,14 +23,13 @@ extension ABI.AppConfiguration {
     public func newAppTunnelProcessor(
         apiManager: APIManager?,
         resolver: Resolver,
+        extensionInstaller: ExtensionInstaller?,
         providerServerSorter: @escaping ProviderServerParameters.Sorter
     ) -> AppTunnelProcessor {
         DefaultAppTunnelProcessor(
             apiManager: apiManager,
             resolver: resolver,
-            title: {
-                String(format: constants.tunnel.profileTitleFormat, $0.name)
-            },
+            extensionInstaller: extensionInstaller,
             providerServerSorter: providerServerSorter
         )
     }
@@ -52,6 +60,12 @@ extension ABI.AppConfiguration {
             ),
             buildNumber: bundle.buildNumber
         )
+    }
+
+    public func newFileProfileRepository(path: String) throws -> ProfileRepository {
+        try FileProfileRepository(
+           directoryURL: URL(filePath: path, directoryHint: .isDirectory)
+       )
     }
 
     public func newIAPManager(
@@ -92,63 +106,34 @@ extension ABI.AppConfiguration {
     }
 
     public func newRegistryForApp(
+        deviceId: String,
+        preferences: AppPreferencesStore,
         configManager: ConfigManager,
-        kvStore: KeyValueStore,
         cachesURL: URL
     ) -> CodingRegistry {
-        newRegistry(
-            deviceId: {
-                if let existingId = kvStore.string(forAppPreference: .deviceId) {
-                    pspLog(.core, .info, "Device ID: \(existingId)")
-                    return existingId
-                }
-                let newId = String.random(count: constants.deviceIdLength)
-                kvStore.set(newId, forAppPreference: .deviceId)
-                pspLog(.core, .info, "Device ID (new): \(newId)")
-                return newId
-            }(),
+        assert(deviceId == preferences[\.deviceId])
+        return newRegistry(
+            deviceId: deviceId,
             cachesURL: cachesURL,
-            configBlock: { [weak configManager, weak kvStore] in
-                guard let configManager, let kvStore else { return [] }
-                return kvStore.preferences.enabledFlags(of: configManager.activeFlags)
+            configBlock: { [weak configManager, weak preferences] in
+                guard let configManager, let preferences else { return [] }
+                return preferences.enabledFlags(of: configManager.activeFlags)
             }
         )
     }
 
     public func newRegistryForTunnel(
-        preferences: ABI.AppPreferenceValues,
+        preferences: AppPreferencesStore,
         cachesURL: URL
     ) -> CodingRegistry {
-        assert(preferences.deviceId != nil, "No Device ID found in preferences")
-        pspLog(.core, .info, "Device ID: \(preferences.deviceId ?? "not set")")
+        assert(preferences[\.deviceId] != nil, "No Device ID found in preferences")
+        pspLog(.core, .info, "Device ID: \(preferences[\.deviceId] ?? "not set")")
         return newRegistry(
-            deviceId: preferences.deviceId ?? "MissingDeviceID",
+            deviceId: preferences[\.deviceId] ?? "MissingDeviceID",
             cachesURL: cachesURL,
             configBlock: {
                 preferences.enabledFlags()
             }
-        )
-    }
-
-    public func newFileProfileRepository(path: String) throws -> ProfileRepository {
-        try FileProfileRepository(
-           directoryURL: URL(filePath: path, directoryHint: .isDirectory)
-       )
-    }
-
-    @BusinessActor
-    public func newTunnelManager(
-        tunnel: Tunnel,
-        extensionInstaller: ExtensionInstaller?,
-        kvStore: KeyValueStore,
-        processor: AppTunnelProcessor
-    ) -> TunnelManager {
-        TunnelManager(
-            tunnel: tunnel,
-            extensionInstaller: extensionInstaller,
-            kvStore: kvStore,
-            processor: processor,
-            interval: constants.tunnel.refreshInterval
         )
     }
 
@@ -157,17 +142,17 @@ extension ABI.AppConfiguration {
     }
 
     public func newVersionChecker(
-        kvStore: KeyValueStore,
+        preferences: AppPreferencesStore,
         downloadURL: URL,
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
             releaseURL: constants.github.latestReleaseURL,
-            rateLimit: constants.api.versionRateLimit,
+            rateLimit: constants.url.versionRateLimit,
             fetcher: fetcher
         )
         return VersionChecker(
-            kvStore: kvStore,
+            preferences: preferences,
             strategy: versionStrategy,
             currentVersion: bundle.versionNumber,
             downloadURL: downloadURL
@@ -213,10 +198,7 @@ extension ABI.AppBundle {
     public init(
         distributionTarget: ABI.DistributionTarget,
         buildTarget: BuildTarget,
-        bundle: BundleConfiguration,
-        logTag: String,
-        appLogPath: String,
-        tunnelLogPath: String
+        bundle: BundleConfiguration
     ) {
         let displayName = bundle.displayName
         let versionNumber = bundle.versionNumber
@@ -233,84 +215,76 @@ extension ABI.AppBundle {
             ABI.AppUserLevel(rawValue: $0)
         } ?? nil
 
-        let log = SimpleLogDestination(tag: logTag)
-
-        let appGroupURL = {
-            let groupId = bundle.string(for: .groupId)
-            guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
-                log.append(.error, "Unable to access App Group container")
-                return FileManager.default.temporaryDirectory
-            }
-            return url
-        }()
-
-        let appLogsURL = appGroupURL.forCaches
-        let tunnelLogsURL = {
-            let baseURL: URL
-            if distributionTarget.supportsAppGroups {
-                baseURL = appGroupURL.forCaches
-            } else {
-                let fm: FileManager = .default
-                baseURL = fm.temporaryDirectory
-                do {
-                    try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
-                } catch {
-                    log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
-                }
-            }
-            return baseURL
-        }()
-
-        let reviewURL: URL?
-        if requiredBundleKeys.contains(.appStoreId) {
-            reviewURL = {
-                let appStoreId = bundle.string(for: .appStoreId)
-                guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
-                    fatalError("Unable to build urlForReview")
-                }
-                return url
-            }()
-        } else {
-            reviewURL = nil
-        }
-
         self.init(
             distributionTarget: distributionTarget,
             displayName: displayName,
             versionNumber: versionNumber,
             buildNumber: buildNumber,
             customUserLevel: customUserLevel,
-            bundleStrings: bundleStrings,
-            appLogPath: appLogPath,
-            tunnelLogPath: tunnelLogPath,
-            appLogsURL: appLogsURL,
-            tunnelLogsURL: tunnelLogsURL,
-            reviewURL: reviewURL
+            bundleStrings: bundleStrings
         )
     }
 
     public func bundleString(for key: ABI.AppBundle.BundleKey) -> String {
-        guard let value = bundleStrings[key.rawValue] else {
+        guard let value = bundleStrings?[key.rawValue] else {
             fatalError("Missing bundle value in JSON for: \(key.rawValue)")
         }
         return value
     }
 }
 
-private extension BundleConfiguration {
-    func string(for key: ABI.AppBundle.BundleKey) -> String {
-        guard let value: String = value(forKey: key.rawValue) else {
-            fatalError("Missing main bundle key: \(key.rawValue)")
+extension ABI.AppConfiguration {
+    public var urlForAppLog: URL {
+        bundle.appLogsURL.appending(path: appLogPath)
+    }
+
+    public var urlForTunnelLog: URL {
+        bundle.tunnelLogsURL.appending(path: tunnelLogPath)
+    }
+
+    public var urlForReview: URL? {
+        let requiredKeys = ABI.AppBundle.BundleKey.requiredKeys(for: .app)
+        guard requiredKeys.contains(.appStoreId) else {
+            return nil
         }
-        return value
+        let appStoreId = bundle.bundleString(for: .appStoreId)
+        guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
+            fatalError("Unable to build urlForReview")
+        }
+        return url
+    }
+}
+
+private extension ABI.AppBundle {
+    static let log = SimpleLogDestination(tag: nil)
+
+    var appGroupURL: URL {
+        let groupId = bundleString(for: .groupId)
+        guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
+            Self.log.append(.error, "Unable to access App Group container")
+            return FileManager.default.temporaryDirectory
+        }
+        return url
     }
 
-    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
-        value(forKey: key.rawValue)
+    var appLogsURL: URL {
+        appGroupURL.forCaches
     }
 
-    func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {
-        value(forKey: key.rawValue)
+    var tunnelLogsURL: URL {
+        let baseURL: URL
+        if distributionTarget.supportsAppGroups {
+            baseURL = appGroupURL.forCaches
+        } else {
+            let fm: FileManager = .default
+            baseURL = fm.temporaryDirectory
+            do {
+                try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
+            } catch {
+                Self.log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
+            }
+        }
+        return baseURL
     }
 }
 
@@ -364,19 +338,26 @@ private extension URL {
 
 #endif
 
+private extension BundleConfiguration {
+    func string(for key: ABI.AppBundle.BundleKey) -> String {
+        guard let value: String = value(forKey: key.rawValue) else {
+            fatalError("Missing main bundle key: \(key.rawValue)")
+        }
+        return value
+    }
+
+    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
+        value(forKey: key.rawValue)
+    }
+
+    func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {
+        value(forKey: key.rawValue)
+    }
+}
+
 // MARK: Dependencies
 
 extension ABI.AppConfiguration {
-    public func newAppProductHelper() -> InAppHelper {
-        StoreKitHelper(
-            products: ABI.AppProduct.all,
-            inAppIdentifier: {
-                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
-                return "\(iapBundlePrefix).\($0.rawValue)"
-            }
-        )
-    }
-
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if bundle.distributionTarget.supportsAppGroups {
             return newTunnelEnvironment(profileId: profileId)
@@ -392,11 +373,23 @@ extension ABI.AppConfiguration {
         TestFlightChecker()
     }
 
-    public func newKeyValueStore() -> KeyValueStore {
-        UserDefaultsStore(.standard)
+    public func newInAppHelper() -> InAppHelper {
+        StoreKitHelper(
+            products: ABI.AppProduct.all,
+            inAppIdentifier: {
+                let iapBundlePrefix = bundle.bundleString(for: .iapBundlePrefix)
+                return "\(iapBundlePrefix).\($0.rawValue)"
+            }
+        )
     }
 
-    public func newLogFormatter() -> LogFormatter {
+    public func newInAppReceiptReader(
+        modeBlock: @escaping @Sendable @BusinessActor () async -> StoreKitReceiptReader.Mode
+    ) -> InAppReceiptReader {
+        StoreKitReceiptReader(modeBlock: modeBlock)
+    }
+
+    public func newLogFormatter() -> LogFormatter? {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
             messageFormat: constants.log.formatter.message
@@ -404,44 +397,49 @@ extension ABI.AppConfiguration {
     }
 
     public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NEProtocolCoder {
+        let tunnelIdentifier = bundle.bundleString(for: .tunnelId)
         if bundle.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: tunnelIdentifier,
                 coder: coder,
                 keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId))
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
-                tunnelBundleIdentifier: bundle.bundleString(for: .tunnelId),
+                tunnelBundleIdentifier: tunnelIdentifier,
                 coder: coder
             )
         }
     }
 
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.cachePolicy = cached ? .useProtocolCachePolicy : .reloadIgnoringCacheData
-        return try await URLSession.shared.data(for: request).0
+    public func newNETunnelStrategy(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NETunnelStrategy {
+        NETunnelStrategy(
+            ctx,
+            bundleIdentifier: bundle.bundleString(for: .tunnelId),
+            coder: newNEProtocolCoder(ctx, coder: coder),
+            title: {
+                String(format: constants.tunnel.profileTitleFormat, $0.name)
+            }
+        )
     }
 
-    // FIXME: ###, Cross UI, Apple standalone tunnel environment
-    public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        SharedTunnelEnvironment(profileId: profileId)
+    public func newRequest(
+        for url: URL,
+        cached: Bool,
+        bindings: psp_app_bindings?
+    ) async throws -> Data {
+        try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
+            .data(for: url, cached: cached)
     }
 
-    // FIXME: ###, Cross UI, Apple standalone tunnel strategy
-    public func newStandaloneTunnelStrategy() -> TunnelObservableStrategy {
-        FakeTunnelStrategy()
-    }
-
-    public func newSystemExtensionManager(tunnelIdentifier: String) -> ExtensionInstaller? {
+    public func newSystemExtensionManager() -> SystemExtensionManager? {
         guard bundle.distributionTarget == .developerID else {
             return nil
         }
         return SystemExtensionManager(
-            identifier: tunnelIdentifier,
+            identifier: bundle.bundleString(for: .tunnelId),
             version: bundle.versionNumber,
             build: bundle.buildNumber
         )
@@ -476,30 +474,25 @@ extension ABI.AppConfiguration {
 
 // MARK: - Non-Apple
 
-// FIXME: #1656, C ABI, non-Apple strategies
 extension ABI.AppConfiguration {
-    public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        SharedTunnelEnvironment(profileId: profileId)
+    public func newLogFormatter() -> LogFormatter? {
+        nil
     }
 
-    public func newKeyValueStore() -> KeyValueStore {
-        InMemoryStore()
-    }
-
-    public func newLogFormatter() -> LogFormatter {
-        DummyLogFormatter()
-    }
-
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
-        Data()
-    }
-
-    public func newStandaloneTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        SharedTunnelEnvironment(profileId: profileId)
-    }
-
-    public func newStandaloneTunnelStrategy() -> TunnelObservableStrategy {
-        FakeTunnelStrategy()
+    public func newRequest(
+        for url: URL,
+        cached: Bool,
+        bindings: psp_app_bindings?
+    ) async throws -> Data {
+        guard let bindings else {
+            throw ABI.AppError.urlRequestUnavailable
+        }
+        return try await NativeURLFetcher(
+            ctx: bindings.request_ctx,
+            callback: bindings.request_cb,
+            timeout: constants.url.timeoutInterval
+        )
+        .data(for: url, cached: cached)
     }
 }
 

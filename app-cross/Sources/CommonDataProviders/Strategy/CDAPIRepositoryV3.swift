@@ -102,7 +102,7 @@ private final class CDAPIRepositoryV3: NSObject, APIRepository {
                 providerRequest.predicate = predicate
                 let providers = try providerRequest.execute()
                 if let provider = providers.first, let cache = infrastructure.cache {
-                    provider.cache = try JSONEncoder().encode(cache)
+                    provider.cache = try ABI.encode(cache)
                 }
 
                 // delete all provider entities

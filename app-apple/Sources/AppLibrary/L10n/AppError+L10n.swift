@@ -6,22 +6,47 @@ import AppStrings
 import CommonLibrary
 import Foundation
 
+// MARK: ErrorHandler
+
+// Typically displayed in ErrorHandler
 extension ABI.AppError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
         switch self {
+        case .corruptProviderModule(let reason):
+            return V.corruptProviderModule(
+                reason?.appLocalizedDescription ?? "?"
+            )
         case .couldNotLaunch(let reason):
             return reason.localizedDescription
         case .emptyProducts:
             return V.emptyProducts
         case .emptyProfileName:
             return V.emptyProfileName
+        case .encoding(let reason):
+            return reason?.localizedDescription
+        case .importError(let message):
+            return V.parsing.appending(message, separator: " ")
+        case .incompatibleModules:
+            return V.incompatibleModules
+        case .incompleteModule(let builder):
+            return V.incompleteModule(builder.moduleType.localizedDescription)
         case .ineligibleProfile:
             return nil
         case .interactiveLogin:
             return nil
-        case .malformedModule(let module, let error):
-            return V.malformedModule(module.moduleType.localizedDescription, error.localizedDescription)
+        case .invalidField(let stringKey):
+            guard let stringKey else {
+                return Strings.Errors.Modules.generic
+            }
+            return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
+        case .malformedModule(let module, let reason):
+            return V.malformedModule(
+                module.moduleType.localizedDescription,
+                reason.appLocalizedDescription
+            )
+        case .missingProviderEntity:
+            return V.missingProviderEntity
         case .moduleRequiresConnection(let module):
             return V.moduleRequiresConnection(
                 module.moduleType.localizedDescription,
@@ -29,10 +54,20 @@ extension ABI.AppError: @retroactive LocalizedError {
                     .map(\.localizedDescription)
                     .joined(separator: ", ")
             )
+        case .noActiveModules:
+            return V.noActiveModules
         case .notFound:
+            // Typically asserts
             return nil
+        case .openVPNPassphraseRequired:
+            // Handled manually
+            return nil
+        case .openVPNUnsupportedCompression(let option):
+            return V.Openvpn.unsupportedCompression.appending(option, separator: "\n\n")
+        case .other(let error):
+            return V.other.appending(error?.localizedDescription, separator: " ")
         case .partout(let error):
-            return error.localizedDescription
+            return V.partout(error.code.rawValue)
         case .permissionDenied:
             return V.permissionDenied
         case .rateLimit:
@@ -42,17 +77,17 @@ extension ABI.AppError: @retroactive LocalizedError {
             assertionFailure("ABI.AppError.systemExtension should be handled in AppCoordinator")
             return nil
         case .timeout:
-            return Strings.Errors.App.Passepartout.timeout
+            return V.timeout
         case .unexpectedResponse:
             // Handled manually
             return nil
-        case .unknown:
+        case .urlRequestUnavailable, .urlRequestFailed:
             return nil
         case .verificationReceiptIsLoading, .verificationRequiredFeatures:
             // Handled manually
             return nil
         case .webReceiver:
-            return Strings.Errors.App.webReceiver
+            return V.webReceiver
         case .webUploader(let status, let error):
             switch status {
             case 403:
@@ -62,66 +97,38 @@ extension ABI.AppError: @retroactive LocalizedError {
             default:
                 return error?.localizedDescription
             }
+        case .wireGuardEmptyPeers:
+            return V.Wireguard.emptyPeers
         }
     }
 }
 
-// MARK: - App side
+private extension String {
+    func appending(_ optional: String?, separator: String) -> String {
+        [self, optional]
+            .compactMap { $0 }
+            .joined(separator: separator)
+    }
+}
 
-extension PartoutError: @retroactive LocalizedError {
-    public var errorDescription: String? {
-        let V = Strings.Errors.App.Passepartout.self
-        switch code {
-        case .Providers.corruptModule:
-            return V.corruptProviderModule(reason?.localizedDescription ?? "")
-
-        case .incompatibleModules:
-            return V.incompatibleModules
-
-        case .incompleteModule:
-            guard let builder = userInfo as? any ModuleBuilder else {
-                break
-            }
-            return V.incompleteModule(builder.moduleType.localizedDescription)
-
-        case .invalidField:
-            guard let userInfo = userInfo as? PartoutError.ModuleField else {
-                return Strings.Errors.Modules.generic
-            }
-            let stringKey = "errors.modules.\(userInfo.key)"
-            return AppStrings.bundle.localizedString(forKey: stringKey, value: nil, table: nil)
-
-        case .Providers.missingEntity:
-            return V.missingProviderEntity
-
-        case .noActiveModules:
-            return V.noActiveModules
-
-        case .parsing:
-            let message = userInfo as? String ?? (reason as? LocalizedError)?.localizedDescription
-
-            return [V.parsing, message]
-                .compactMap { $0 }
-                .joined(separator: " ")
-
-        case .timeout:
-            return V.timeout
-
-        case .unhandled:
-            return reason?.localizedDescription
-
+private extension Error {
+    var appLocalizedDescription: String {
+        switch self {
+        case let error as ABI.AppError:
+            return error.localizedDescription
+        case let error as PartoutError:
+            return ABI.AppError(error).localizedDescription
         default:
-            break
+            return localizedDescription
         }
-        return V.default(code.rawValue)
     }
 }
 
-// MARK: - Tunnel side
+// MARK: - Tunnel errors
 
 extension PartoutError.Code: StyledLocalizableEntity {
     public enum Style {
-        case tunnel
+        case tunnel // Displayed in ConnectionStatusText
     }
 
     public func localizedDescription(style: Style) -> String {
@@ -131,31 +138,24 @@ extension PartoutError.Code: StyledLocalizableEntity {
             switch self {
             case .App.ineligibleProfile:
                 return V.ineligible
-
             case .authentication:
                 return V.auth
-
             case .crypto:
                 return V.encryption
-
             case .dnsFailure:
                 return V.dns
-
             case .timeout:
                 return Strings.Global.Nouns.timeout
-
             case .OpenVPN.compressionMismatch:
                 return V.compression
-
             case .OpenVPN.noRouting:
                 return V.routing
-
+            case .OpenVPN.recoverableAuthentication:
+                return Strings.Entities.TunnelStatus.activating
             case .OpenVPN.serverShutdown:
                 return V.shutdown
-
             case .OpenVPN.tlsFailure:
                 return V.tls
-
             default:
                 return V.generic
             }

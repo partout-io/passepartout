@@ -16,6 +16,10 @@ Passepartout zostało zaprojektowane z myślą o przejrzystości i ochronie pryw
 - Sprawdzaj dokładnie, z którymi serwerami się łączysz.  
 - Bez reklam, śledzenia ani zbędnych procesów w tle – tylko potrzebne połączenie VPN.
 
+ZGODNOŚĆ
+
+Obsługa OpenVPN obejmuje najczęściej używane opcje; kompresja nie jest obsługiwana, ponieważ nie jest bezpieczna.
+
 OPEN SOURCE I WSPIERANE PRZEZ SPOŁECZNOŚĆ
 
 Passepartout to projekt open source, który stale się rozwija dzięki pomocy społeczności. Sprawdź projekt na GitHub: https://github.com/partout-io

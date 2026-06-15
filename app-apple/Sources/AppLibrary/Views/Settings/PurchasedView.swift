@@ -9,6 +9,9 @@ public struct PurchasedView: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
+    @Environment(\.appConfiguration)
+    private var appConfiguration
+
     @State
     private var isLoading = true
 
@@ -76,7 +79,9 @@ private extension PurchasedView {
             downloadSection
             productsSection
             featuresSection
-            restoreSection
+            if appConfiguration.bundle.distributionTarget.supportsIAP && !iapObservable.isBeta {
+                restoreSection
+            }
         }
     }
 

@@ -14,8 +14,8 @@ extension AppleJavaScriptEngine: ProviderScriptingEngine {
         func getJSON(_ urlString: String, _ headers: [String: String]?) -> [String: Any]
         func jsonFromBase64(_ string: String) -> Any?
         func jsonToBase64(_ object: Any) -> String?
-        func timestampFromISO(_ isoString: String) -> Int
-        func timestampToISO(_ timestamp: Int) -> String
+        func timestampFromISO(_ isoString: String) -> Int64
+        func timestampToISO(_ timestamp: Int64) -> String
         func ipV4ToBase64(_ ip: String) -> String?
         func openVPNTLSWrap(_ strategy: String, _ file: String) -> [String: Any]?
         func errorResponse(_ message: String) -> [String: Any]
@@ -67,11 +67,11 @@ extension AppleJavaScriptEngine: ProviderScriptingEngine {
             vm.jsonToBase64(object: object)
         }
 
-        func timestampFromISO(_ isoString: String) -> Int {
+        func timestampFromISO(_ isoString: String) -> Int64 {
             vm.timestampFromISO(isoString: isoString)
         }
 
-        func timestampToISO(_ timestamp: Int) -> String {
+        func timestampToISO(_ timestamp: Int64) -> String {
             vm.timestampToISO(timestamp: timestamp)
         }
 
