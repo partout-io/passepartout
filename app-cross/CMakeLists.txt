@@ -110,23 +110,10 @@ add_custom_command(
 )
 
 # Distribute Partout with dependencies
-if(WIN32)
-    set(LIBEXT lib)
-elseif(APPLE)
-    set(LIBEXT dylib)
-else()
-    set(LIBEXT so)
-endif()
-add_custom_target(partout-post ALL
-    COMMAND ${CMAKE_COMMAND}
-        "-DOUTPUT_DIR=${OUTPUT_DIR}"
-        "-DDIST_DIR=${DIST_DIR}"
-        "-DSTRIP=${CMAKE_STRIP}"
-        "-DLIBEXT=${LIBEXT}"
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/distribute.cmake"
-    VERBATIM
+partout_add_distribution_target(partout-post ALL
+    OUTPUT_DIR "${OUTPUT_DIR}"
+    DIST_DIR "${DIST_DIR}"
 )
-add_dependencies(partout-post partout)
 add_dependencies(passepartout-tunnel partout-post)
 if(BUILD_APP)
     add_dependencies(passepartout partout-post)
