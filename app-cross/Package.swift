@@ -23,7 +23,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "passepartout",
-            dependencies: ["partout"],
+            dependencies: [
+                "partout",
+                "passepartout-shared"
+            ],
             path: "app",
             cxxSettings: [
                 .unsafeFlags([
@@ -55,7 +58,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "passepartout-tunnel",
-            dependencies: ["partout"],
+            dependencies: [
+                "partout",
+                "passepartout-shared"
+            ],
             path: "tunnel",
             cSettings: [.define("USE_SWIFTPM")]
         )

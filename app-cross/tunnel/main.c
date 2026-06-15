@@ -6,16 +6,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "passepartout.h"
+#include "partout.h"
 
 int main(int argc, char *argv[]) {
     char *bundle = NULL;
     char *constants = NULL;
     char *profile = NULL;
 
-    printf("Passepartout Tunnel (Partout: %s)\n", psp_partout_version());
-    if (argc <= 3) {
-        fprintf(stderr, "Missing path to bundle, constants, profile\n");
+    printf("Passepartout Tunnel (Partout: %s)\n", partout_version());
+//    if (argc <= 3) {
+//        fprintf(stderr, "Missing path to bundle, constants, profile\n");
+//        return -1;
+//    }
+    if (argc <= 1) {
+        fprintf(stderr, "Missing path to profile\n");
         return -1;
     }
 
@@ -26,16 +30,16 @@ int main(int argc, char *argv[]) {
 #endif
 
     /* Paths to JSON input. */
-    if ((bundle = psp_readfile(argv[1], parent)) == NULL) {
-        fprintf(stderr, "Unable to open bundle: %s\n", argv[1]);
-        goto failure;
-    }
-    if ((constants = psp_readfile(argv[2], parent)) == NULL) {
-        fprintf(stderr, "Unable to open constants: %s\n", argv[2]);
-        goto failure;
-    }
-    if ((profile = psp_readfile(argv[3], parent)) == NULL) {
-        fprintf(stderr, "Unable to open profile: %s\n", argv[3]);
+//    if ((bundle = partout_readfile(argv[1], parent)) == NULL) {
+//        fprintf(stderr, "Unable to open bundle: %s\n", argv[1]);
+//        goto failure;
+//    }
+//    if ((constants = partout_readfile(argv[2], parent)) == NULL) {
+//        fprintf(stderr, "Unable to open constants: %s\n", argv[2]);
+//        goto failure;
+//    }
+    if ((profile = partout_readfile(argv[1], parent)) == NULL) {
+        fprintf(stderr, "Unable to open profile: %s\n", argv[1]);
         goto failure;
     }
 
@@ -43,20 +47,16 @@ int main(int argc, char *argv[]) {
     // FIXME: #209/notes, Cross UI, hardcoded values
     const char *cache_dir = ".";
 //    const char *cache_dir = mkdtemp("psp");
-    const char *preferences = "{\"deviceId\":\"abcdef\",\"configFlags\":[\"ovpnCrossV2\", \"wgCrossV2\"]}";
+    const char *preferences = "{\"deviceId\":\"abcdef\"}";
 
-    psp_tunnel_start_args args = { 0 };
-    args.bundle = bundle;
-    args.constants = constants;
-    args.preferences = preferences;
+    partout_daemon_start_args args = { 0 };
     args.cache_dir = cache_dir;
     args.profile = profile;
-    args.is_interactive = true;
     args.is_daemon = true;
-    args.bindings.controller = NULL;
+    args.bindings = NULL;
 
     /* Will block indefinitely. */
-    const int result = psp_tunnel_start(&args);
+    const int result = partout_daemon_start(&args);
 
     free(bundle);
     free(constants);
