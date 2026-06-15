@@ -9,7 +9,7 @@
 
 extern "C" {
 #include <stdlib.h>
-#include "passepartout.h"
+#include "partout.h"
 }
 
 bool MyApp::OnInit()
@@ -19,7 +19,6 @@ bool MyApp::OnInit()
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
 
-    psp_app_init_args args = { 0 };
     char *bundle = NULL;
     char *constants = NULL;
     MyFrame* frame = 0;
@@ -35,22 +34,22 @@ bool MyApp::OnInit()
 #else
     const char *parent = NULL;
 #endif
-    if ((bundle = psp_readfile(bundle_path, parent)) == NULL) {
-        fprintf(stderr, "Unable to open bundle: %s\n", bundle_path);
-        goto failure;
-    }
-    if ((constants = psp_readfile(constants_path, parent)) == NULL) {
-        fprintf(stderr, "Unable to open constants: %s\n", constants_path);
-        goto failure;
-    }
-    args.bundle = bundle;
-    args.constants = constants;
-    args.preferences = NULL;
-    args.profiles_dir = profiles_dir;
-    args.cache_dir = cache_dir;
-    args.bindings.event_ctx = this;
-    args.bindings.event_cb = onABIEvent;
-    if (psp_app_init(&args) != PSPCompletionCodeOK) goto failure;
+//    if ((bundle = partout_readfile(bundle_path, parent)) == NULL) {
+//        fprintf(stderr, "Unable to open bundle: %s\n", bundle_path);
+//        goto failure;
+//    }
+//    if ((constants = partout_readfile(constants_path, parent)) == NULL) {
+//        fprintf(stderr, "Unable to open constants: %s\n", constants_path);
+//        goto failure;
+//    }
+//    args.bundle = bundle;
+//    args.constants = constants;
+//    args.preferences = NULL;
+//    args.profiles_dir = profiles_dir;
+//    args.cache_dir = cache_dir;
+//    args.bindings.event_ctx = this;
+//    args.bindings.event_cb = onABIEvent;
+//    if (psp_app_init(&args) != PSPCompletionCodeOK) goto failure;
     free(bundle);
     free(constants);
 
@@ -66,7 +65,7 @@ failure:
 }
 
 void MyApp::OnActivateApp(wxActivateEvent &) {
-    psp_app_on_foreground();
+//    psp_app_on_foreground();
 }
 
 MyFrame::MyFrame()
@@ -82,7 +81,7 @@ MyFrame::MyFrame()
     wxMenu* actionsMenu = new wxMenu;
     actionsMenu->Append(ID_ImportProfile, "Import profile");
     actionsMenu->Append(ID_FlushLog, "Flush log");
-    const wxString partoutVersion = wxString::Format("Partout %s", psp_partout_version());
+    const wxString partoutVersion = wxString::Format("Partout %s", partout_version());
     actionsMenu->Append(wxID_ANY, partoutVersion);
 
     // macOS expects the first menu to be the App menu
@@ -103,24 +102,24 @@ MyFrame::MyFrame()
 
 void MyFrame::OnImportProfile(wxCommandEvent &)
 {
-    wxFileDialog openFileDialog(this, _("Import profile"), "", "",
-                                "*.ovpn;*.conf;*.json",
-                                wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-    if (openFileDialog.ShowModal() == wxID_CANCEL) return;
-
-    const wxString path = openFileDialog.GetPath();
-    const char *cPath = path.utf8_str().data();
-    printf("Path: %s\n", cPath);
-    psp_app_import_profile_path(cPath, PSP_CB(this, [](void *ctx, int code, const char *json) {
-        printf(">>> ABI Result: (ctx=%p), %d, %p\n", ctx, code, json);
-        wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
-    }));
+//    wxFileDialog openFileDialog(this, _("Import profile"), "", "",
+//                                "*.ovpn;*.conf;*.json",
+//                                wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+//
+//    if (openFileDialog.ShowModal() == wxID_CANCEL) return;
+//
+//    const wxString path = openFileDialog.GetPath();
+//    const char *cPath = path.utf8_str().data();
+//    printf("Path: %s\n", cPath);
+//    psp_app_import_profile_path(cPath, PSP_CB(this, [](void *ctx, int code, const char *json) {
+//        printf(">>> ABI Result: (ctx=%p), %d, %p\n", ctx, code, json);
+//        wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
+//    }));
 }
 
 void MyFrame::OnFlushLog(wxCommandEvent &)
 {
-    psp_app_flush_log();
+//    psp_app_flush_log();
 }
 
 void MyFrame::OnAbout(wxCommandEvent &)

@@ -22,5 +22,5 @@ message(STATUS "Option OUTPUT_DIR = ${OUTPUT_DIR}")
 message(STATUS "Option DIST_DIR = ${DIST_DIR}")
 message(STATUS "Option BUILD_APP = ${BUILD_APP}")
 
-# Build Passepartout cross-platform app and library
+# Build cross-platform apps
 add_subdirectory(app-cross)
