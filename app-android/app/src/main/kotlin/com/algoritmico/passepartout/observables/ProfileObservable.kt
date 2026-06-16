@@ -44,13 +44,13 @@ class ProfileObservable(
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
-        manager.events
-            .onEach(::onUpdate)
-            .launchIn(scope)
-
         searchRequests
             .debounce(searchDebounceMillis)
             .onEach(::reloadHeaders)
+            .launchIn(scope)
+
+        manager.events
+            .onEach(::onUpdate)
             .launchIn(scope)
 
         scope.launch {
@@ -108,7 +108,7 @@ class ProfileObservable(
     }
 
     suspend fun removeAll() {
-        remove(_state.value.filteredHeaders.map { it.id })
+        remove(state.value.filteredHeaders.map { it.id })
     }
 
     fun firstUniqueName(name: String): String {
