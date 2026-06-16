@@ -122,7 +122,7 @@ class PassepartoutVpnService: VpnService() {
                     val json = readLastFile(lastProfileFile)
                     val profile = JSON.decode<TaggedProfile>(json)
                     if (profile.id != id) { return@runCatching }
-                    Log.i(logTag, "Forget last profile ($id)")
+                    Log.i(logTag, "Forget last profile $id")
                     lastProfileFile.delete()
                 }.onFailure {
                     Log.e(logTag, "Unable to forget last profile", it)
