@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +55,10 @@ fun ChangelogView(
         isLoading = true
         entries = runCatching {
             versionObservable.fetchChangelog(versionNumber)
-        }.getOrDefault(emptyList())
+        }.getOrElse {
+            Log.w("????", "Unable to load changelog: $it")
+            emptyList()
+        }
         isLoading = false
     }
 

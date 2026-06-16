@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -49,7 +50,10 @@ fun CreditsView(
     val credits = remember(context) {
         runCatching {
             context.credits()
-        }.getOrDefault(Credits(emptyList(), emptyList(), emptyMap()))
+        }.getOrElse {
+            Log.w("????", "Unable to load credits: $it")
+            Credits(emptyList(), emptyList(), emptyMap())
+        }
     }
     val contentForLicense = remember {
         mutableStateMapOf<String, String>()

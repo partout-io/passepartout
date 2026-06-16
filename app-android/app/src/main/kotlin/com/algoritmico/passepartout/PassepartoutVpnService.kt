@@ -141,9 +141,10 @@ class PassepartoutVpnService: VpnService() {
         private fun readLastPreferences(): String? {
             return runCatching {
                 readLastFile(lastPreferencesFile)
-            }.onFailure {
+            }.getOrElse {
                 Log.w(logTag, "Unable to read last tunnel preferences", it)
-            }.getOrNull()
+                null
+            }
         }
 
         private fun writeLastPreferences(json: String) {
