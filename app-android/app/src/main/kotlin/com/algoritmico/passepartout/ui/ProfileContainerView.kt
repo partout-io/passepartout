@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
-import com.algoritmico.passepartout.models.ProfileEventSave
 import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
@@ -168,14 +167,6 @@ fun ProfileContainerView(
     LaunchedEffect(profileIds) {
         if (selectedProfileId !in profileIds) {
             selectedProfileId = profileIds.firstOrNull()
-        }
-    }
-
-    LaunchedEffect(profileObservable) {
-        profileObservable.events.collect { event ->
-            if (event is ProfileEventSave) {
-                selectedProfileId = event.profile.id
-            }
         }
     }
 
