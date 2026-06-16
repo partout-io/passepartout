@@ -12,7 +12,7 @@ extension ABI {
 // the events where we want to:
 //
 // - Retain the Swift strong typing (for app-apple)
-// - Manually encode to OpenAPI formats (for app-cross)
+// - Manually encode to OpenAPI formats (for app-shared)
 //
 // Any other event that maps 1:1 to JSON is a typealias to OpenAPI.
 
