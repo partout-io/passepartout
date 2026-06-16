@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.extensions.blogURL
 import com.algoritmico.passepartout.extensions.disclaimerURL
 import com.algoritmico.passepartout.extensions.privacyPolicyURL
+import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 
 @Composable
@@ -107,7 +108,7 @@ private fun ExternalLinkRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                uriHandler.openUri(url)
+                uriHandler.safeOpenUri(url)
             },
         headlineContent = {
             Text(title)

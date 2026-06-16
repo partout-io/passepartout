@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.extensions.faqURL
+import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,7 +151,7 @@ private fun SettingsListView(
                 SettingsLinkRow(
                     title = "FAQ",
                     onClick = {
-                        uriHandler.openUri(appConfiguration.constants.websites.faqURL)
+                        uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL)
                     }
                 )
                 linkContent(SettingsCoordinatorRoute.Diagnostics)

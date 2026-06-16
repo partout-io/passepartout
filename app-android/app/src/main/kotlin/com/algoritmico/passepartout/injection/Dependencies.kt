@@ -6,6 +6,8 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
+import androidx.compose.ui.platform.UriHandler
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -111,6 +113,14 @@ val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore
 
 val Context.isBetaSuggestedByAndroidAPI: Boolean
     get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+fun UriHandler.safeOpenUri(uri: String) {
+    runCatching {
+        openUri(uri)
+    }.onFailure {
+        Log.e(Tags.APP, "Unable to open URL ($uri): $it")
+    }
+}
 
 private fun Context.readAsset(name: String): String {
     return assets.open(name).bufferedReader().use { it.readText() }
