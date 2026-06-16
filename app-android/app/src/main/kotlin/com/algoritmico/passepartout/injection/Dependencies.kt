@@ -23,6 +23,7 @@ import com.algoritmico.passepartout.models.AppConstants
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.strategy.FileProfileRepository
 import com.algoritmico.passepartout.strategy.GitHubConfigStrategy
@@ -100,10 +101,10 @@ private fun Context.packageInfo(): PackageInfo {
 }
 
 val Context.lastTunnelProfile: File
-    get() = persistentFile(Globals.TUNNEL_PROFILE_FILENAME)
+    get() = noBackupFile(Globals.TUNNEL_PROFILE_FILENAME)
 
 val Context.lastTunnelPreferences: File
-    get() = persistentFile(Globals.TUNNEL_PREFERENCES_FILENAME)
+    get() = noBackupFile(Globals.TUNNEL_PREFERENCES_FILENAME)
 
 val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
     Globals.PREFERENCES_STORE_NAME
@@ -116,8 +117,8 @@ private fun Context.readAsset(name: String): String {
     return assets.open(name).bufferedReader().use { it.readText() }
 }
 
-private fun Context.persistentFile(path: String): File {
-    return File(filesDir, path)
+private fun Context.noBackupFile(path: String): File {
+    return File(noBackupFilesDir, path)
 }
 //endregion
 
@@ -151,7 +152,7 @@ fun AppConfiguration.newProfileManager(
     library: PassepartoutWrapper
 ): ProfileManager {
     val localName = constants.containers.local.lowercase()
-    val directory = applicationContext.persistentFile(localName)
+    val directory = applicationContext.noBackupFile(localName)
         .apply {
             mkdirs()
         }
