@@ -178,12 +178,17 @@ class PassepartoutVpnService: VpnService() {
             notificationTransfer.reset()
             updateCurrentProfileName(it)
         }
-        ServiceCompat.startForeground(
-            this,
-            VPN_NOTIFICATION_ID,
-            createNotification(snapshot = null),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
-        )
+        runCatching {
+            ServiceCompat.startForeground(
+                this,
+                VPN_NOTIFICATION_ID,
+                createNotification(snapshot = null),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+            )
+        }.onFailure {
+            Log.e(logTag, "Unable to start service in foreground: $it")
+            return START_NOT_STICKY
+        }
         return runtime.onStartCommand(intent, flags, startId)
     }
 
