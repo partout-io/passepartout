@@ -6,19 +6,6 @@
 import CommonLibrary_C
 import Partout
 
-@c(psp_partout_version)
-public nonisolated func __psp_partout_version() -> UnsafePointer<CChar>! {
-    PartoutConstants.cVersionIdentifier
-}
-
-@c(psp_log)
-public nonisolated func __psp_log(message: UnsafePointer<CChar>?) {
-    guard let message else { return }
-    pspLog(.abi, .debug, String(cString: message))
-}
-
-// MARK: - Helpers
-
 extension ABI {
     // Following psp_completion:
     //
