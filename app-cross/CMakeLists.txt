@@ -1,6 +1,3 @@
-set(CMAKE_C_FLAGS "-Wall -W -pedantic")
-set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
-
 # Depend on Partout
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
