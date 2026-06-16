@@ -118,7 +118,7 @@ fun UriHandler.safeOpenUri(uri: String) {
     runCatching {
         openUri(uri)
     }.onFailure {
-        Log.e(Tags.APP, "Unable to open URL ($uri): $it")
+        Log.e(Tags.APP, "Unable to open URL ($uri)", it)
     }
 }
 

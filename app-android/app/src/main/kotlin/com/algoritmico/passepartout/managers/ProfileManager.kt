@@ -45,7 +45,7 @@ class ProfileManager(
             setProfiles(repository.fetchProfiles())
             _events.emit(ProfileEventReady())
         }.onFailure {
-            Log.e(logTag, "Unable to load initial profiles: $it")
+            Log.e(logTag, "Unable to load initial profiles", it)
         }
     }
 

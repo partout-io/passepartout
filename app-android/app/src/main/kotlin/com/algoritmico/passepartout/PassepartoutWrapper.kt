@@ -34,7 +34,7 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
         wrapper = runCatching {
             UnsafePassepartoutWrapper()
         }.getOrElse {
-            Log.e(Tags.PARTOUT_JNI, "Unable to load JNI library: $it")
+            Log.e(Tags.PARTOUT_JNI, "Unable to load JNI library", it)
             null
         }
     }

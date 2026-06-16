@@ -103,7 +103,7 @@ class UserPreferencesObservable(
             store.edit(transform)
             savePreferences()
         }.onFailure {
-            Log.e(logTag, "Unable to save preferences: $it")
+            Log.e(logTag, "Unable to save preferences", it)
         }
     }
 

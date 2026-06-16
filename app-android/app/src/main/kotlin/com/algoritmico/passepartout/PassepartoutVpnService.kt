@@ -187,7 +187,7 @@ class PassepartoutVpnService: VpnService() {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
             )
         }.onFailure {
-            Log.e(logTag, "Unable to start service in foreground: $it")
+            Log.e(logTag, "Unable to start service in foreground", it)
             return START_NOT_STICKY
         }
         return runtime.onStartCommand(intent, flags, startId)

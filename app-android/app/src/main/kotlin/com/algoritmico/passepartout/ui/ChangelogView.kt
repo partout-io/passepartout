@@ -56,7 +56,7 @@ fun ChangelogView(
         entries = runCatching {
             versionObservable.fetchChangelog(versionNumber)
         }.getOrElse {
-            Log.w("????", "Unable to load changelog: $it")
+            Log.w("????", "Unable to load changelog", it)
             emptyList()
         }
         isLoading = false

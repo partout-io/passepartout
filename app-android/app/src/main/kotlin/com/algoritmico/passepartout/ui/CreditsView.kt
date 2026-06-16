@@ -51,7 +51,7 @@ fun CreditsView(
         runCatching {
             context.credits()
         }.getOrElse {
-            Log.w("????", "Unable to load credits: $it")
+            Log.w("????", "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }
