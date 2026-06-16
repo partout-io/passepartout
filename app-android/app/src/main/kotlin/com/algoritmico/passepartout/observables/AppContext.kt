@@ -42,8 +42,8 @@ class AppContext(
     val appConfiguration: AppConfiguration
 
     init {
-        library.prepare()
-        val partoutVersion = library.version()
+        library.partoutInit()
+        val partoutVersion = library.partoutVersion()
         Log.i(logTag, ">>> Partout $partoutVersion")
 
         Log.e(logTag, ">>> Started app")

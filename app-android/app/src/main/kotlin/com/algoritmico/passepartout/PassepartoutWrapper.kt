@@ -10,19 +10,19 @@ import io.partout.abi.PartoutCompletionCallback
 import io.partout.vpn.JNITunnelController
 
 class PassepartoutWrapper {
-    external fun prepare()
-    external fun version(): String
-    external fun importProfile(
+    external fun partoutInit()
+    external fun partoutVersion(): String
+    external fun partoutImportProfile(
         text: String,
         name: String?,
         completion: PartoutCompletionCallback
     )
-    external fun daemonStart(
+    external fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
         controller: JNITunnelController
     ): Int
-    external fun daemonStop(
+    external fun partoutDaemonStop(
         completion: PartoutCompletionCallback
     )
 

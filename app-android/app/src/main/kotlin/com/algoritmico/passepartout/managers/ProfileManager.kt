@@ -49,7 +49,7 @@ class ProfileManager(
 
     suspend fun importText(text: String, name: String?) {
         val result = PartoutResult.await { completion ->
-            library.importProfile(text, name, completion)
+            library.partoutImportProfile(text, name, completion)
         }
         result.payload?.let {
             val profile = Globals.json.decodeFromString<TaggedProfile>(it)

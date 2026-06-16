@@ -76,8 +76,8 @@ class PassepartoutVpnService: VpnService() {
 //            }
 
             // This call retains the controller strongly
-            library.prepare()
-            val code = library.daemonStart(
+            library.partoutInit()
+            val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
                 controller
@@ -89,10 +89,10 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun stop() = withContext(Dispatchers.IO) {
             val result = CompletableDeferred<Unit>()
-            library.daemonStop { code, payload ->
+            library.partoutDaemonStop { code, payload ->
                 if (code != 0) {
                     result.completeExceptionally(PartoutException(code, payload))
-                    return@daemonStop
+                    return@partoutDaemonStop
                 }
                 result.complete(Unit)
             }
