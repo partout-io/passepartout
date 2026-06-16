@@ -19,9 +19,7 @@ import com.algoritmico.passepartout.managers.update
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
-import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.ExperimentalPreferences
-import com.algoritmico.passepartout.models.MixedEventShouldUpdatePreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -95,16 +93,6 @@ class UserPreferencesObservable(
             it.update(newValue, fields)
             snapshot = snapshot.update(newValue, fields)
         }
-        savePreferences()
-    }
-
-    private suspend fun onUpdate(event: Event) {
-        if (event !is MixedEventShouldUpdatePreferences) return
-        Log.d(logTag, "Updating fields from library: ${event.fields}")
-        store.edit {
-            it.update(event.preferences, event.fields)
-        }
-        snapshot = snapshot.update(event.preferences, event.fields)
         savePreferences()
     }
 
