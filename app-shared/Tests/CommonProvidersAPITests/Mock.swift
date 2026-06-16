@@ -6,27 +6,22 @@ import CommonProvidersAPI
 import CommonProvidersCore
 import Partout
 
-struct MockModule: Module {
-    static let moduleType = ModuleType("mock-module")
-
-    var supportedField = 123
-}
-
-struct MockUnsupportedModule: Module {
-    static let moduleType = ModuleType("mock-unsupported-module")
-
-    let unsupportedField: Int
-}
-
 extension ProviderID {
     static let mock = ProviderID(rawValue: "mock-provider")
 }
 
 struct MockAPI: APIMapper {
+    typealias SupportedModule = DNSModule
+    typealias UnsupportedModule = HTTPProxyModule
+
     func index() async throws -> [Provider] {
         [
             Provider("foo1", description: "bar1"),
-            Provider("foo2", description: "bar2", moduleTypes: [MockModule.self]),
+            Provider(
+                ProviderID.mock.rawValue,
+                description: "bar2",
+                moduleTypes: [SupportedModule.self]
+            ),
             Provider("foo3", description: "bar3")
         ]
     }
@@ -42,7 +37,7 @@ struct MockAPI: APIMapper {
                     providerId: .mock,
                     presetId: "default",
                     description: "MockPreset",
-                    moduleType: ModuleType("mock-module"),
+                    moduleType: SupportedModule.moduleType,
                     templateData: Data()
                 )
             ],
@@ -139,7 +134,7 @@ extension ProviderServer {
             serverId: "mock",
             hostname: "mock-hostname.com",
             ipAddresses: [Data(hex: "01020304")],
-            supportedModuleTypes: [MockModule.moduleType],
+            supportedModuleTypes: [MockAPI.SupportedModule.moduleType],
             supportedPresetIds: []
         )
     }

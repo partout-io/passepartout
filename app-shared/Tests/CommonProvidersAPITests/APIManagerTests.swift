@@ -53,7 +53,7 @@ struct APIManagerTests {
         try await exp.fulfillment(timeout: 200)
 
         let supporting = sut.providers.filter {
-            $0.supports(MockModule.self)
+            $0.supports(MockAPI.SupportedModule.self)
         }
         #expect(supporting.map(\.description) == ["bar2"])
     }
