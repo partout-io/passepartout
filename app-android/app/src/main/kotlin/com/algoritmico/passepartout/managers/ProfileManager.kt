@@ -43,10 +43,10 @@ class ProfileManager(
     suspend fun loadInitialProfiles() {
         runCatching {
             setProfiles(repository.fetchProfiles())
-            _events.emit(ProfileEventReady())
         }.onFailure {
             Log.e(logTag, "Unable to load initial profiles", it)
         }
+        _events.emit(ProfileEventReady())
     }
 
     suspend fun importText(text: String, name: String?) {
