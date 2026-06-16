@@ -95,7 +95,7 @@ struct DomainMapper {
             serverId: serverId,
             hostname: hostname,
             ipAddresses: ipAddresses,
-            supportedModuleTypes: supportedModuleTypes?.map(ModuleType.init(rawValue:)),
+            supportedModuleTypes: supportedModuleTypes?.map(ModuleType.init),
             supportedPresetIds: supportedPresetIds
         )
     }
