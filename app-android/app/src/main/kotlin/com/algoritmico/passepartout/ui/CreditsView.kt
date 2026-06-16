@@ -47,7 +47,9 @@ fun CreditsView(
 ) {
     val context = LocalContext.current
     val credits = remember(context) {
-        context.credits()
+        runCatching {
+            context.credits()
+        }.getOrDefault(Credits(emptyList(), emptyList(), emptyMap()))
     }
     val contentForLicense = remember {
         mutableStateMapOf<String, String>()
