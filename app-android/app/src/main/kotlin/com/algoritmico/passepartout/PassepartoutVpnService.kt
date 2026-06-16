@@ -54,8 +54,10 @@ class PassepartoutVpnService: VpnService() {
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
         private val library = PassepartoutWrapper()
-        private val lastProfileFile = applicationContext.lastTunnelProfile
-        private val lastPreferencesFile = applicationContext.lastTunnelPreferences
+        private val lastProfileFile: File
+            get() = applicationContext.lastTunnelProfile
+        private val lastPreferencesFile: File
+            get() = applicationContext.lastTunnelPreferences
 
         override suspend fun start(
             intent: Intent?,
