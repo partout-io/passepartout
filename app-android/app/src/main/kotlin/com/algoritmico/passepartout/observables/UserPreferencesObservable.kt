@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -20,11 +21,13 @@ import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.ExperimentalPreferences
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -41,7 +44,13 @@ class UserPreferencesObservable(
 
     private val flow: Flow<Preferences>
         get() {
-            return store.data
+            return store.data.catch {
+                if (it is CancellationException) {
+                    throw it
+                }
+                Log.e(logTag, "Unable to read preferences", it)
+                emit(emptyPreferences())
+            }
         }
 
     val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
@@ -52,8 +61,8 @@ class UserPreferencesObservable(
             runBlocking {
                 preferences.first()
             }
-        } catch(e: Exception) {
-            Log.e(logTag, "Unable to load preferences: $e")
+        } catch (e: Exception) {
+            Log.e(logTag, "Unable to load preferences", e)
             AppPreferences.default
         }
     }
@@ -103,6 +112,9 @@ class UserPreferencesObservable(
             store.edit(transform)
             savePreferences()
         }.onFailure {
+            if (it is CancellationException) {
+                throw it
+            }
             Log.e(logTag, "Unable to save preferences", it)
         }
     }
