@@ -27,22 +27,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.algoritmico.passepartout.abi.default
-import com.algoritmico.passepartout.abi.models.AppPreferences
-import com.algoritmico.passepartout.abi.models.ConfigFlag
-import com.algoritmico.passepartout.abi.models.DistributionTarget
-import com.algoritmico.passepartout.abi.models.ExperimentalPreferences
 import com.algoritmico.passepartout.extensions.disable
 import com.algoritmico.passepartout.extensions.enable
 import com.algoritmico.passepartout.extensions.isAllowed
+import com.algoritmico.passepartout.extensions.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.extensions.setAllowed
 import com.algoritmico.passepartout.extensions.unignore
+import com.algoritmico.passepartout.managers.default
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.DistributionTarget
+import com.algoritmico.passepartout.models.ExperimentalPreferences
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalConfigObservable
-import com.algoritmico.passepartout.observables.LocalIAPObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import kotlinx.coroutines.launch
 
@@ -52,9 +53,7 @@ fun PreferencesAdvancedView(
     userPreferencesObservable: UserPreferencesObservable
 ) {
     val appConfiguration = LocalAppConfiguration.current
-    val isBeta by LocalIAPObservable.current.isBeta.collectAsStateWithLifecycle(
-        initialValue = false
-    )
+    val isBeta = LocalContext.current.isBetaSuggestedByAndroidAPI
     val configState by LocalConfigObservable.current.state.collectAsStateWithLifecycle()
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default

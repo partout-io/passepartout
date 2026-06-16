@@ -4,11 +4,11 @@
 
 package com.algoritmico.passepartout.extensions
 
-import com.algoritmico.passepartout.abi.models.AppConstantsEmails
-import com.algoritmico.passepartout.abi.models.AppConstantsGithub
-import com.algoritmico.passepartout.abi.models.AppConstantsTunnel
-import com.algoritmico.passepartout.abi.models.AppConstantsTunnelVerificationParameters
-import com.algoritmico.passepartout.abi.models.AppConstantsWebsites
+import com.algoritmico.passepartout.models.AppConstantsEmails
+import com.algoritmico.passepartout.models.AppConstantsGithub
+import com.algoritmico.passepartout.models.AppConstantsTunnel
+import com.algoritmico.passepartout.models.AppConstantsTunnelVerificationParameters
+import com.algoritmico.passepartout.models.AppConstantsWebsites
 
 val AppConstantsWebsites.apiURL: String
     get() = homeURL.appendingPath("api")

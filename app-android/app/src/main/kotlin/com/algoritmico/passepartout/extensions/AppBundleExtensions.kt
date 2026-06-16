@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.extensions
 
-import com.algoritmico.passepartout.abi.models.AppBundle
+import com.algoritmico.passepartout.models.AppBundle
 
 val AppBundle.versionString: String
     get() = "$versionNumber ($buildNumber)"

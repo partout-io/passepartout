@@ -48,11 +48,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.abi.models.AppProfileHeader
-import com.algoritmico.passepartout.abi.models.AppProfileStatus
-import com.algoritmico.passepartout.abi.models.AppTunnelInfo
-import com.algoritmico.passepartout.abi.models.ProfileEventSave
-import com.algoritmico.passepartout.abi.models.ProfileTransfer
+import com.algoritmico.passepartout.models.AppProfileHeader
+import com.algoritmico.passepartout.models.AppProfileStatus
+import com.algoritmico.passepartout.models.AppTunnelInfo
+import com.algoritmico.passepartout.models.ProfileEventSave
+import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import io.partout.models.TaggedProfile

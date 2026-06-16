@@ -22,27 +22,15 @@
 
 # JNI entry points are exported with static Java_* symbols, so their Kotlin
 # owner and method names must remain stable after R8.
--keep class com.algoritmico.passepartout.abi.PassepartoutWrapper {
+-keep class com.algoritmico.passepartout.PassepartoutWrapper {
     native <methods>;
 }
 
 # The native core calls these handlers by method name through GetMethodID.
 # Keep both the fun-interface methods and their generated lambda/object
 # implementors so R8 cannot rename the callback entry points.
--keep interface com.algoritmico.passepartout.abi.helpers.ABIEventHandler {
-    public void onEvent(java.lang.String);
-}
--keep class * implements com.algoritmico.passepartout.abi.helpers.ABIEventHandler {
-    public void onEvent(java.lang.String);
-}
--keep interface com.algoritmico.passepartout.abi.helpers.ABICompletionCallback {
+-keep interface io.partout.abi.PartoutCompletionCallback {
     public void onComplete(int, java.lang.String);
-}
--keep class * implements com.algoritmico.passepartout.abi.helpers.ABICompletionCallback {
-    public void onComplete(int, java.lang.String);
-}
--keep class com.algoritmico.passepartout.abi.helpers.ABIURLFetcher {
-    public byte[] fetch(java.lang.String, boolean, double);
 }
 # JNI entry points are exported with static Java_* symbols, and the native
 # tunnel backend also receives this controller object and calls into it by name

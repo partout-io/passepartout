@@ -21,9 +21,9 @@ extension ABI.AppProfileHeader: OpenAPIEncodable {
         OpenAPIAppProfileHeader(
             id: id.uuidString,
             name: name,
-            moduleTypes: moduleTypes.compactMap(\.toProto),
-            primaryModuleType: primaryModuleType?.toProto,
-            secondaryModuleTypes: secondaryModuleTypes?.compactMap(\.toProto) ?? [],
+            moduleTypes: moduleTypes,
+            primaryModuleType: primaryModuleType,
+            secondaryModuleTypes: secondaryModuleTypes ?? [],
             providerInfo: providerInfo?.toProto,
             fingerprint: fingerprint,
             sharingFlags: sharingFlags,
@@ -69,12 +69,6 @@ extension ABI.VersionRelease: OpenAPIEncodable {
             version: version,
             url: url.absoluteString
         )
-    }
-}
-
-extension ModuleType: OpenAPIEncodable {
-    var toProto: OpenAPIModuleType? {
-        OpenAPIModuleType(rawValue: rawValue)
     }
 }
 

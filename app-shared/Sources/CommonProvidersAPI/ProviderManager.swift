@@ -23,7 +23,7 @@ public final class ProviderManager {
 
     public init(sorting: [ProviderSortField] = []) {
         self.sorting = sorting
-        moduleType = ModuleType("")
+        moduleType = .Undefined
         repository = DummyRepository()
         options = ProviderFilterOptions()
     }

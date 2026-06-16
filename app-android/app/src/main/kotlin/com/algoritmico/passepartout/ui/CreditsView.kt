@@ -32,11 +32,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.Globals
-import com.algoritmico.passepartout.abi.models.Credits
-import com.algoritmico.passepartout.abi.models.CreditsLicensesInner
-import com.algoritmico.passepartout.abi.models.CreditsNoticesInner
-import com.algoritmico.passepartout.readAsset
+import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.models.Credits
+import com.algoritmico.passepartout.models.CreditsLicensesInner
+import com.algoritmico.passepartout.models.CreditsNoticesInner
+import com.algoritmico.passepartout.extensions.readAsset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL

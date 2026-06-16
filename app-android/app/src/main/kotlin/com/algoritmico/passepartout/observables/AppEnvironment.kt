@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.observables
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.algoritmico.passepartout.abi.models.AppConfiguration
+import com.algoritmico.passepartout.models.AppConfiguration
 
 val LocalAppConfiguration = staticCompositionLocalOf<AppConfiguration> {
     error("No AppConfiguration provided")
@@ -13,10 +13,6 @@ val LocalAppConfiguration = staticCompositionLocalOf<AppConfiguration> {
 
 val LocalConfigObservable = staticCompositionLocalOf<ConfigObservable> {
     error("No ConfigObservable provided")
-}
-
-val LocalIAPObservable = staticCompositionLocalOf<IAPObservable> {
-    error("No IAPObservable provided")
 }
 
 val LocalVersionObservable = staticCompositionLocalOf<VersionObservable> {

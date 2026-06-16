@@ -13,32 +13,27 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.algoritmico.passepartout.Globals
-import com.algoritmico.passepartout.abi.AppABIKeyStoreProtocol
-import com.algoritmico.passepartout.abi.default
-import com.algoritmico.passepartout.abi.models.AppPreferenceKey
-import com.algoritmico.passepartout.abi.models.AppPreferences
-import com.algoritmico.passepartout.abi.models.ConfigFlag
-import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.abi.models.ExperimentalPreferences
-import com.algoritmico.passepartout.abi.models.MixedEventShouldUpdatePreferences
-import com.algoritmico.passepartout.abi.update
+import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.managers.default
+import com.algoritmico.passepartout.managers.update
+import com.algoritmico.passepartout.models.AppPreferenceKey
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ExperimentalPreferences
+import com.algoritmico.passepartout.models.MixedEventShouldUpdatePreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import java.io.Closeable
 
 class UserPreferencesObservable(
     private val logTag: String,
-    private val abi: AppABIKeyStoreProtocol,
-    events: Flow<Event>,
     coroutineScope: CoroutineScope,
     private val store: DataStore<Preferences>
 ) : Closeable {
@@ -58,14 +53,14 @@ class UserPreferencesObservable(
         snapshot = runBlocking {
             preferences.first()
         }
-        events
-            .onEach(::onUpdate)
-            .launchIn(scope)
     }
 
     override fun close() {
         scope.cancel()
     }
+
+    val currentPreferences: AppPreferences
+        get() = snapshot
 
     val dnsFallback: Flow<Boolean> = preferences.map { it.dnsFallsBack }
 
@@ -91,10 +86,16 @@ class UserPreferencesObservable(
         savePreferences()
     }
 
-    fun preferencesJSON(): String? {
-        return runCatching {
-            return Globals.json.encodeToString(snapshot)
-        }.getOrNull()
+    suspend fun updatePreferences(
+        fields: List<AppPreferenceKey>,
+        transform: (AppPreferences) -> AppPreferences
+    ) {
+        store.edit {
+            val newValue = transform(snapshot)
+            it.update(newValue, fields)
+            snapshot = snapshot.update(newValue, fields)
+        }
+        savePreferences()
     }
 
     private suspend fun onUpdate(event: Event) {
@@ -108,8 +109,7 @@ class UserPreferencesObservable(
     }
 
     private fun savePreferences() {
-        Log.d(logTag, "Saving new preferences: $snapshot")
-        abi.set(snapshot)
+        Log.d(logTag, "Preferences updated: $snapshot")
     }
 
     private fun Preferences.toAppPreferences(): AppPreferences {

@@ -4,21 +4,21 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.Globals
-import com.algoritmico.passepartout.abi.AppABIProfileProtocol
-import com.algoritmico.passepartout.abi.models.AppFeature
-import com.algoritmico.passepartout.abi.models.AppProfileHeader
-import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.abi.models.ProfileEventChangeRemoteImporting
-import com.algoritmico.passepartout.abi.models.ProfileEventReady
-import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.models.ProfileSharingFlag
+import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.managers.ProfileManager
+import com.algoritmico.passepartout.models.AppFeature
+import com.algoritmico.passepartout.models.AppProfileHeader
+import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ProfileEventChangeRemoteImporting
+import com.algoritmico.passepartout.models.ProfileEventReady
+import com.algoritmico.passepartout.models.ProfileEventRefresh
+import com.algoritmico.passepartout.models.ProfileSharingFlag
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,12 +29,12 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.Closeable
 
+@OptIn(FlowPreview::class)
 class ProfileObservable(
-    private val logTag: String,
-    private val abi: AppABIProfileProtocol,
-    events: Flow<Event>,
+    private val manager: ProfileManager,
     coroutineScope: CoroutineScope,
     searchDebounceMillis: Long = 200L
 ) : Closeable {
@@ -56,9 +56,13 @@ class ProfileObservable(
             .onEach(::reloadHeaders)
             .launchIn(scope)
 
-        events
+        manager.events
             .onEach(::onUpdate)
             .launchIn(scope)
+
+        scope.launch {
+            manager.loadInitialProfiles()
+        }
     }
 
     fun search(name: String) {
@@ -99,19 +103,19 @@ class ProfileObservable(
     }
 
     suspend fun profile(profileId: String): TaggedProfile? {
-        return abi.profile(profileId)
+        return manager.profile(profileId)
     }
 
     suspend fun importText(text: String, filename: String) {
-        abi.importText(text, filename)
+        manager.importText(text, filename)
     }
 
     suspend fun remove(profileId: String) {
-        abi.remove(profileId)
+        manager.remove(profileId)
     }
 
     suspend fun remove(profileIds: Collection<String>) {
-        abi.remove(profileIds)
+        manager.remove(profileIds)
     }
 
     suspend fun removeAll() {

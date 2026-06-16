@@ -4,25 +4,26 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.abi.models.ConfigEventRefresh
-import com.algoritmico.passepartout.abi.models.ConfigFlag
-import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.managers.ConfigManager
+import com.algoritmico.passepartout.models.ConfigEventRefresh
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import java.io.Closeable
 
 class ConfigObservable(
-    events: Flow<Event>,
+    private val manager: ConfigManager,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -33,7 +34,7 @@ class ConfigObservable(
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
-        events
+        manager.events
             .onEach(::onUpdate)
             .launchIn(scope)
     }
@@ -53,6 +54,12 @@ class ConfigObservable(
 
     fun data(flag: ConfigFlag): JsonElement? {
         return state.value.data(flag)
+    }
+
+    fun refresh() {
+        scope.launch {
+            manager.refreshBundle()
+        }
     }
 
     val isUsingExperimentalFeatures: Boolean

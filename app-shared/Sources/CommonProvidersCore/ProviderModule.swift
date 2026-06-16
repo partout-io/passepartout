@@ -4,10 +4,6 @@
 
 import Partout
 
-extension ModuleType {
-    public static let Provider = ProviderModule.moduleType
-}
-
 @available(*, deprecated)
 extension ProviderModule {
     public static let moduleHandler = ModuleHandler(.Provider, ProviderModule.self)
@@ -15,7 +11,7 @@ extension ProviderModule {
 
 /// A provider-based ``Module``.
 public struct ProviderModule: Module, BuildableType, Hashable, Codable {
-    public static let moduleType = ModuleType("Provider")
+    public static let moduleType: ModuleType = .Provider
 
     public let id: UniqueID
 
@@ -198,7 +194,10 @@ extension ProviderModule {
             do {
                 let rawMap = try container.decode([String: Data].self)
                 map = rawMap.reduce(into: [:]) {
-                    $0[ModuleType($1.key)] = $1.value
+                    guard let moduleType = ModuleType(rawValue: $1.key) else {
+                        return
+                    }
+                    $0[moduleType] = $1.value
                 }
             } catch {
                 // legacy
@@ -227,10 +226,8 @@ extension ProviderModule {
 
 extension ProviderModule {
     public init(emptyWithProviderId providerId: ProviderID) throws {
-
-        // requires the two for .build() to succeed
-        let moduleType = ModuleType("")
-        self = try Builder(providerId: providerId, providerModuleType: moduleType)
+        // Requires the two for .build() to succeed
+        self = try Builder(providerId: providerId, providerModuleType: .Undefined)
             .build()
     }
 }
