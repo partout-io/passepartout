@@ -7,7 +7,6 @@ package com.algoritmico.passepartout.managers
 import android.util.Log
 import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.extensions.versionString
-import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.Event
@@ -22,19 +21,16 @@ import kotlinx.coroutines.sync.Mutex
 
 interface VersionCheckerStrategy {
     suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion
+    suspend fun fetchChangelog(version: String): List<ChangelogEntry>
+    fun preferences(): AppPreferences
+    suspend fun updatePreferences(transform: (AppPreferences) -> AppPreferences)
 }
 
 class VersionChecker(
     private val logTag: String,
-    private val preferences: () -> AppPreferences = { AppPreferences.default },
-    private val updatePreferences: suspend (
-        fields: List<AppPreferenceKey>,
-        transform: (AppPreferences) -> AppPreferences
-    ) -> Unit = { _, _ -> },
     private val strategy: VersionCheckerStrategy = DummyVersionCheckerStrategy(),
     currentVersion: String = "255.255.255",
-    private val downloadURL: String = "http://",
-    private val changelogFetcher: suspend (String) -> List<ChangelogEntry> = { emptyList() }
+    private val downloadURL: String = "http://"
 ) {
     private val currentVersion = currentVersion.toSemanticVersionOrNull()
         ?: error("Unparsable current version: $currentVersion")
@@ -49,16 +45,12 @@ class VersionChecker(
 
     val latestRelease: VersionRelease?
         get() {
-            val latestVersionDescription = preferences().lastCheckedVersion ?: return null
+            val latestVersionDescription = strategy.preferences().lastCheckedVersion ?: return null
             val latestVersion = latestVersionDescription.toSemanticVersionOrNull() ?: return null
-            return if (latestVersion > currentVersion) {
-                VersionRelease(
-                    version = latestVersion,
-                    url = downloadURL
-                )
-            } else {
-                null
+            if (latestVersion <= currentVersion) {
+                return null
             }
+            return VersionRelease(version = latestVersion, url = downloadURL)
         }
 
     suspend fun checkLatestRelease() {
@@ -68,16 +60,10 @@ class VersionChecker(
         try {
             val now = System.currentTimeMillis()
             try {
-                val lastCheckedTimestamp = preferences().lastCheckedVersionTimestamp
-
+                val lastCheckedTimestamp = strategy.preferences().lastCheckedVersionTimestamp
                 Log.d(logTag, "Version: checking for updates...")
                 val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
-                updatePreferences(
-                    listOf(
-                        AppPreferenceKey.lastCheckedVersion,
-                        AppPreferenceKey.lastCheckedVersionDate
-                    )
-                ) {
+                strategy.updatePreferences {
                     it.copy(
                         lastCheckedVersionTimestamp = now,
                         lastCheckedVersion = fetchedLatestVersion.versionString
@@ -91,7 +77,7 @@ class VersionChecker(
             } catch (_: VersionCheckerRateLimitException) {
                 Log.d(logTag, "Version: rate limit")
             } catch (error: VersionCheckerUnexpectedResponseException) {
-                updatePreferences(listOf(AppPreferenceKey.lastCheckedVersionDate)) {
+                strategy.updatePreferences {
                     it.copy(lastCheckedVersionTimestamp = now)
                 }
                 Log.e(logTag, "Unable to check version", error)
@@ -114,19 +100,13 @@ class VersionChecker(
     }
 
     suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
-        return changelogFetcher(version)
+        return strategy.fetchChangelog(version)
     }
 }
 
 class VersionCheckerRateLimitException : Exception()
 
 class VersionCheckerUnexpectedResponseException : Exception()
-
-private class DummyVersionCheckerStrategy : VersionCheckerStrategy {
-    override suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion {
-        return SemanticVersion(255, 255, 255)
-    }
-}
 
 fun String.toSemanticVersionOrNull(): SemanticVersion? {
     val parts = split(".")
@@ -145,4 +125,21 @@ private operator fun SemanticVersion.compareTo(other: SemanticVersion): Int {
 
 private fun SemanticVersion.encodedValue(): Int {
     return ((major and 0xff) shl 16) + ((minor and 0xff) shl 8) + (patch and 0xff)
+}
+
+private class DummyVersionCheckerStrategy : VersionCheckerStrategy {
+    override suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion {
+        return SemanticVersion(255, 255, 255)
+    }
+
+    override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
+        return emptyList()
+    }
+
+    override fun preferences(): AppPreferences {
+        return AppPreferences.default
+    }
+
+    override suspend fun updatePreferences(transform: (AppPreferences) -> AppPreferences) {
+    }
 }

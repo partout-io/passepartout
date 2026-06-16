@@ -16,9 +16,9 @@ import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.extensions.appBundle
 import com.algoritmico.passepartout.extensions.appConstants
 import com.algoritmico.passepartout.extensions.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.managers.newConfigManager
-import com.algoritmico.passepartout.managers.newProfileManager
-import com.algoritmico.passepartout.managers.newVersionChecker
+import com.algoritmico.passepartout.extensions.newConfigManager
+import com.algoritmico.passepartout.extensions.newProfileManager
+import com.algoritmico.passepartout.extensions.newVersionChecker
 import com.algoritmico.passepartout.models.AppConfiguration
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
@@ -115,10 +115,7 @@ class AppContext(
         // Version checker
         val versionChecker = appConfiguration.newVersionChecker(
             logTag,
-            preferences = {
-                userPreferencesObservable.currentPreferences
-            },
-            updatePreferences = userPreferencesObservable::updatePreferences
+            userPreferencesObservable
         )
         versionObservable = VersionObservable(
             versionChecker,
