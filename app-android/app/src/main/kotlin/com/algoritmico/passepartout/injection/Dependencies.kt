@@ -23,7 +23,6 @@ import com.algoritmico.passepartout.models.AppConstants
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
-import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.strategy.FileProfileRepository
 import com.algoritmico.passepartout.strategy.GitHubConfigStrategy
