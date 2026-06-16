@@ -111,6 +111,7 @@ class AppContext(
         tunnelObservable = TunnelObservable(
             logTag,
             tunnel,
+            profileManager,
             userPreferencesObservable.preferences,
             coroutineScope
         )

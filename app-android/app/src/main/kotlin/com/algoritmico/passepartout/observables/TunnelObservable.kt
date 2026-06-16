@@ -8,6 +8,7 @@ import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
@@ -41,6 +42,7 @@ import kotlin.coroutines.resumeWithException
 class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
+    profileManager: ProfileManager,
     preferences: Flow<AppPreferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
@@ -55,6 +57,10 @@ class TunnelObservable(
     init {
         tunnel.state
             .onEach(::onTunnelState)
+            .launchIn(scope)
+
+        profileManager.events
+            .onEach(::onUpdate)
             .launchIn(scope)
     }
 
