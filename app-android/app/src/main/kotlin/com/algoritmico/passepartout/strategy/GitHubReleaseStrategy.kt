@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.strategy
 
 import android.util.Log
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.JSON
 import com.algoritmico.passepartout.managers.VersionCheckerRateLimitException
 import com.algoritmico.passepartout.managers.VersionCheckerStrategy
 import com.algoritmico.passepartout.managers.VersionCheckerUnexpectedResponseException
@@ -35,7 +35,7 @@ class GitHubReleaseStrategy(
             }
         }
         val data = fetcher(releaseURL)
-        val json = Globals.json.decodeFromString<VersionJSON>(data.decodeToString())
+        val json = JSON.decode<VersionJSON>(data.decodeToString())
         val newVersion = json.name
         val semanticVersion = newVersion.toSemanticVersionOrNull()
         if (semanticVersion == null) {

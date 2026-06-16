@@ -34,7 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.extensions.disable
 import com.algoritmico.passepartout.extensions.enable
 import com.algoritmico.passepartout.extensions.isAllowed
-import com.algoritmico.passepartout.extensions.isBetaSuggestedByAndroidAPI
+import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.extensions.setAllowed
 import com.algoritmico.passepartout.extensions.unignore
 import com.algoritmico.passepartout.managers.default

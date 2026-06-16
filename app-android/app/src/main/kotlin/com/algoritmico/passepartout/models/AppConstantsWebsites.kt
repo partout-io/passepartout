@@ -28,6 +28,7 @@ import kotlinx.serialization.Contextual
  * @param appStoreDownloadURL 
  * @param macDownloadURL 
  * @param configTTL 
+ * @param betaTTLFactor 
  */
 @Serializable
 
@@ -46,7 +47,10 @@ data class AppConstantsWebsites (
     val macDownloadURL: kotlin.String,
 
     @SerialName(value = "configTTL")
-    val configTTL: kotlin.Double
+    val configTTL: kotlin.Double,
+
+    @SerialName(value = "betaTTLFactor")
+    val betaTTLFactor: kotlin.Double
 
 ) {
 

@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppFeature
 import com.algoritmico.passepartout.models.AppProfileHeader
@@ -19,11 +18,8 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
@@ -45,9 +41,6 @@ class ProfileObservable(
     private var allHeaders: Map<String, AppProfileHeader> = emptyMap()
     private val _state = MutableStateFlow(State())
     private val searchRequests = MutableStateFlow("")
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY)
-
-    val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
@@ -73,25 +66,21 @@ class ProfileObservable(
     }
 
     fun onUpdate(event: Event) {
-        _events.tryEmit(event)
         when (event) {
             is ProfileEventReady -> {
                 _state.update {
                     it.copy(isReady = true)
                 }
             }
-
             is ProfileEventRefresh -> {
                 allHeaders = event.headers
                 reloadHeaders(search = state.value.search)
             }
-
             is ProfileEventChangeRemoteImporting -> {
                 _state.update {
                     it.copy(isRemoteImportingEnabled = event.isImporting)
                 }
             }
-
             else -> {
                 // Other app domains are intentionally ignored here.
             }
@@ -102,7 +91,7 @@ class ProfileObservable(
         return allHeaders[profileId]
     }
 
-    suspend fun profile(profileId: String): TaggedProfile? {
+    fun profile(profileId: String): TaggedProfile? {
         return manager.profile(profileId)
     }
 

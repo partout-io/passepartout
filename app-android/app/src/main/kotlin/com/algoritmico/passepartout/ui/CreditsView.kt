@@ -32,11 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
-import com.algoritmico.passepartout.extensions.readAsset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -48,7 +47,7 @@ fun CreditsView(
 ) {
     val context = LocalContext.current
     val credits = remember(context) {
-        Globals.json.decodeFromString<Credits>(context.readAsset(CREDITS_FILENAME))
+        context.credits()
     }
     val contentForLicense = remember {
         mutableStateMapOf<String, String>()
@@ -314,5 +313,3 @@ private sealed interface CreditsSelection {
         val notice: CreditsNoticesInner
     ) : CreditsSelection
 }
-
-private const val CREDITS_FILENAME = "credits.json"

@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.observables
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.JSON
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
@@ -86,7 +86,7 @@ class TunnelObservable(
     private val onConnectIntent: (Intent) -> Unit = { intent ->
         val json = runBlocking {
             val prefs = preferences.first()
-            Globals.json.encodeToString(prefs)
+            JSON.encode(prefs)
         }
         intent.putExtra(PassepartoutVpnService.EXTRA_TUNNEL_PREFERENCES, json)
     }

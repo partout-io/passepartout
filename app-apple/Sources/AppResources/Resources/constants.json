@@ -11,7 +11,8 @@
         "eulaURL": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
         "appStoreDownloadURL": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",
         "macDownloadURL": "https://passepartoutvpn.app/#app-mac",
-        "configTTL": 3600.0
+        "configTTL": 3600.0,
+        "betaTTLFactor": 0.1
     },
     "github": {
         "discussionsURL": "http://github.com/orgs/partout-io/discussions",

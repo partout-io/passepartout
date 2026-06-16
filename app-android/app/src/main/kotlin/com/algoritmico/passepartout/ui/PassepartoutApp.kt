@@ -29,6 +29,7 @@ import com.algoritmico.passepartout.observables.VersionObservable
 
 @Composable
 fun PassepartoutApp(
+    logTag: String,
     profileObservable: ProfileObservable,
     tunnelObservable: TunnelObservable,
     userPreferencesObservable: UserPreferencesObservable,
@@ -68,6 +69,7 @@ fun PassepartoutApp(
                 color = MaterialTheme.colorScheme.background
             ) {
                 AppCoordinator(
+                    logTag,
                     title = "Passepartout",
                     profileObservable = profileObservable,
                     tunnelObservable = tunnelObservable,

@@ -5,12 +5,13 @@
 package com.algoritmico.passepartout.managers
 
 import android.util.Log
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.Event
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
@@ -30,11 +31,8 @@ class ConfigManager(
     private val bundleLock = Any()
     private var bundle: ConfigBundle? = null
 
-    private val _events = MutableSharedFlow<ConfigEventRefresh>(
-        replay = Globals.EVENT_REPLAY,
-        extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
-    )
-    val events: SharedFlow<ConfigEventRefresh> = _events.asSharedFlow()
+    private val _events = newEventFlow()
+    val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun refreshBundle() {
         val strategy = strategy ?: return
@@ -113,8 +111,8 @@ class ConfigBundle(
 
     companion object {
         fun decode(data: ByteArray): ConfigBundle {
-            val map = Globals.json
-                .decodeFromString<Map<String, ConfigBundleConfig>>(data.decodeToString())
+            val map = JSON
+                .decode<Map<String, ConfigBundleConfig>>(data.decodeToString())
                 .mapNotNull { (key, value) ->
                     ConfigFlag.decode(key)?.let { it to value }
                 }

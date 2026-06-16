@@ -13,7 +13,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.JSON
 import com.algoritmico.passepartout.managers.default
 import com.algoritmico.passepartout.managers.update
 import com.algoritmico.passepartout.models.AppPreferenceKey
@@ -78,7 +78,7 @@ class UserPreferencesObservable(
             val current = it[EXPERIMENTAL]?.decodePreference<ExperimentalPreferences>()
                 ?: snapshot.experimental
             val newValue = transform(current)
-            it[EXPERIMENTAL] = Globals.json.encodeToString(newValue)
+            it[EXPERIMENTAL] = JSON.encode(newValue)
             snapshot = snapshot.copy(experimental = newValue)
         }
         savePreferences()
@@ -142,7 +142,7 @@ class UserPreferencesObservable(
                 AppPreferenceKey.dnsFallsBack ->
                     this[DNS_FALLS_BACK] = new.dnsFallsBack
                 AppPreferenceKey.experimental ->
-                    this[EXPERIMENTAL] = Globals.json.encodeToString(new.experimental)
+                    this[EXPERIMENTAL] = JSON.encode(new.experimental)
                 AppPreferenceKey.extensiveLogging ->
                     this[EXTENSIVE_LOGGING] = new.extensiveLogging
                 AppPreferenceKey.lastCheckedVersion ->
@@ -182,7 +182,7 @@ class UserPreferencesObservable(
 
     private inline fun <reified T> String.decodePreference(): T? {
         return runCatching {
-            Globals.json.decodeFromString<T>(this)
+            JSON.decode<T>(this)
         }.getOrNull()
     }
 
