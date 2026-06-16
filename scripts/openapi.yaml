@@ -497,6 +497,7 @@ components:
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
           MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
+          ProfileEventDelete: "#/components/schemas/ProfileEventDelete"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
           ProfileEventRefresh: "#/components/schemas/ProfileEventRefresh"
@@ -791,6 +792,22 @@ components:
       required:
       - type
       - isImporting
+    ProfileEventDelete:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventDelete
+          type: string
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+      - type
+      - ids
     ProfileEventLocalProfiles:
       type: object
       additionalProperties: false

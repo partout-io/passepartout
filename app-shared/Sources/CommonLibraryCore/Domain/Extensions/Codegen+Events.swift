@@ -86,6 +86,15 @@ extension ABI.ProfileEvent {
             ))
         }
     }
+    public struct Delete: ABI.EventProtocol {
+        public let ids: [Profile.ID]
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(OpenAPIProfileEventDelete(
+                ids: ids.map(\.uuidString)
+            ))
+        }
+    }
 }
 
 extension ABI.VersionEvent {
