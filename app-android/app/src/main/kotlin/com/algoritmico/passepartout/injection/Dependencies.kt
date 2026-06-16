@@ -14,7 +14,6 @@ import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.extensions.betaConfigURL
 import com.algoritmico.passepartout.extensions.configURL
 import com.algoritmico.passepartout.extensions.urlForChangelog
-import com.algoritmico.passepartout.injection.JSON.decode
 import com.algoritmico.passepartout.managers.ConfigManager
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.managers.VersionChecker
@@ -218,15 +217,15 @@ object JSON {
         ignoreUnknownKeys = true
     }
 
-    inline fun <reified T> JSON.encode(value: T): String {
+    inline fun <reified T> encode(value: T): String {
         return _coder.encodeToString(value)
     }
 
-    inline fun <reified T> JSON.encodeElement(value: T): JsonElement {
+    inline fun <reified T> encodeElement(value: T): JsonElement {
         return _coder.encodeToJsonElement(value)
     }
 
-    inline fun <reified T> JSON.decode(json: String): T {
+    inline fun <reified T> decode(json: String): T {
         return _coder.decodeFromString<T>(json)
     }
 }

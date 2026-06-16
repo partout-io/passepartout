@@ -8,7 +8,6 @@ import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.JSON.encode
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo

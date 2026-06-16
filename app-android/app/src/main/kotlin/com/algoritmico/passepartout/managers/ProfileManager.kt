@@ -8,7 +8,6 @@ import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.extensions.fingerprint
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.JSON.decode
 import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event

@@ -6,7 +6,6 @@ package com.algoritmico.passepartout.strategy
 
 import android.util.Log
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.JSON.decode
 import com.algoritmico.passepartout.managers.VersionCheckerRateLimitException
 import com.algoritmico.passepartout.managers.VersionCheckerStrategy
 import com.algoritmico.passepartout.managers.VersionCheckerUnexpectedResponseException

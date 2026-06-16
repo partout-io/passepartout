@@ -5,7 +5,6 @@
 package com.algoritmico.passepartout
 
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.JSON.encodeElement
 import io.partout.models.DNSModuleProtocolType
 import io.partout.models.DNSModuleProtocolTypecleartext
 import io.partout.models.DNSModuleProtocolTypehttps
@@ -15,7 +14,8 @@ import io.partout.models.OpenVPNObfuscationMethodobfuscate
 import io.partout.models.OpenVPNObfuscationMethodreverse
 import io.partout.models.OpenVPNObfuscationMethodxormask
 import io.partout.models.OpenVPNObfuscationMethodxorptrpos
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Base64
 

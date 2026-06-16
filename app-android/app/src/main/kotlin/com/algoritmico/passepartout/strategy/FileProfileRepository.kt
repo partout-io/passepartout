@@ -6,8 +6,6 @@ package com.algoritmico.passepartout.strategy
 
 import android.util.Log
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.JSON.decode
-import com.algoritmico.passepartout.injection.JSON.encode
 import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.managers.ProfileRepository
 import io.partout.models.TaggedProfile
