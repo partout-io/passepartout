@@ -36,7 +36,7 @@ class ProfileManager(
 ) {
     private var profiles: Map<String, TaggedProfile> = emptyMap()
 
-    private val _events = newEventFlow<Event>()
+    private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun loadInitialProfiles() {

@@ -31,7 +31,7 @@ class ConfigManager(
     private val bundleLock = Any()
     private var bundle: ConfigBundle? = null
 
-    private val _events = newEventFlow<Event>()
+    private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun refreshBundle() {

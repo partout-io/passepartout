@@ -22,6 +22,7 @@ import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.AppConstants
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.DistributionTarget
+import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.strategy.FileProfileRepository
 import com.algoritmico.passepartout.strategy.GitHubConfigStrategy
@@ -203,8 +204,8 @@ fun AppConfiguration.newVersionChecker(
     )
 }
 
-fun <T> newEventFlow(withReplay: Boolean = true): MutableSharedFlow<T> {
-    return MutableSharedFlow<T>(
+fun newEventFlow(withReplay: Boolean = true): MutableSharedFlow<Event> {
+    return MutableSharedFlow(
         replay = if (withReplay) Globals.EVENT_REPLAY else 0,
         extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
     )

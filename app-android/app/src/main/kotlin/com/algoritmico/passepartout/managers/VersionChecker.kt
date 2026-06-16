@@ -36,7 +36,7 @@ class VersionChecker(
 
     private val checkMutex = Mutex()
 
-    private val _events = newEventFlow<Event>()
+    private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     val latestRelease: VersionRelease?
