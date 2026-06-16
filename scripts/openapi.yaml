@@ -67,12 +67,15 @@ components:
               format: uri
             configTTL:
               type: number
+            betaTTLFactor:
+              type: number
           required:
           - homeURL
           - eulaURL
           - appStoreDownloadURL
           - macDownloadURL
           - configTTL
+          - betaTTLFactor
         github:
           type: object
           properties:

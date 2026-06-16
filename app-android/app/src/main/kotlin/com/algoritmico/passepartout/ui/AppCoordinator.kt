@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
@@ -44,6 +43,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppCoordinator(
+    logTag: String,
     title: String,
     profileObservable: ProfileObservable,
     tunnelObservable: TunnelObservable,
@@ -88,7 +88,7 @@ fun AppCoordinator(
                 runCatching {
                     profileObservable.remove(profileIds)
                 }.onFailure {
-                    Log.e(Globals.TAG_APP, "Unable to delete profiles", it)
+                    Log.e(logTag, "Unable to delete profiles", it)
                 }
             }
         },

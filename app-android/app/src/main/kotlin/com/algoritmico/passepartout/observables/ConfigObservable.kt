@@ -17,13 +17,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import java.io.Closeable
 
 class ConfigObservable(
-    private val manager: ConfigManager,
+    manager: ConfigManager,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -54,12 +53,6 @@ class ConfigObservable(
 
     fun data(flag: ConfigFlag): JsonElement? {
         return state.value.data(flag)
-    }
-
-    fun refresh() {
-        scope.launch {
-            manager.refreshBundle()
-        }
     }
 
     val isUsingExperimentalFeatures: Boolean

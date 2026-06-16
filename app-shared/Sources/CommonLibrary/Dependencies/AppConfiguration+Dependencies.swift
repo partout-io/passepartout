@@ -55,6 +55,7 @@ extension ABI.AppConfiguration {
                 url: configURL,
                 betaURL: betaConfigURL,
                 ttl: constants.websites.configTTL,
+                betaTTLFactor: constants.websites.betaTTLFactor,
                 isBeta: isBeta,
                 fetcher: fetcher
             ),

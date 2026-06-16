@@ -7,42 +7,51 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.extensions.Globals
-import com.algoritmico.passepartout.extensions.appBundle
-import com.algoritmico.passepartout.extensions.appConstants
-import com.algoritmico.passepartout.extensions.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.extensions.newConfigManager
-import com.algoritmico.passepartout.extensions.newProfileManager
-import com.algoritmico.passepartout.extensions.newVersionChecker
+import com.algoritmico.passepartout.injection.Tags
+import com.algoritmico.passepartout.injection.appBundle
+import com.algoritmico.passepartout.injection.appConstants
+import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
+import com.algoritmico.passepartout.injection.newConfigManager
+import com.algoritmico.passepartout.injection.newProfileManager
+import com.algoritmico.passepartout.injection.newTunnel
+import com.algoritmico.passepartout.injection.newVersionChecker
+import com.algoritmico.passepartout.injection.userPreferencesStore
+import com.algoritmico.passepartout.managers.ConfigManager
+import com.algoritmico.passepartout.managers.ProfileManager
+import com.algoritmico.passepartout.managers.VersionChecker
 import com.algoritmico.passepartout.models.AppConfiguration
-import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import java.io.Closeable
-import java.io.File
 
 class AppContext(
     logTag: String,
     context: Context,
-    coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
     private val library = PassepartoutWrapper()
 
+    // Internal logic
+    private val configManager: ConfigManager
+    private val profileManager: ProfileManager
+    private val versionChecker: VersionChecker
+    private var applicationActiveJob: Job? = null
+
+    // Expose to Compose
+    val appConfiguration: AppConfiguration
+    val configObservable: ConfigObservable
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
     val userPreferencesObservable: UserPreferencesObservable
-    val configObservable: ConfigObservable
     val versionObservable: VersionObservable
-    val appConfiguration: AppConfiguration
 
     init {
-        library.partoutInit()
+        library.partoutInit(Tags.PARTOUT)
         val partoutVersion = library.partoutVersion()
         Log.i(logTag, ">>> Partout $partoutVersion")
 
@@ -70,52 +79,40 @@ class AppContext(
         // Beta?
         val isBeta = context.isBetaSuggestedByAndroidAPI
 
-        // Profiles
-        // FIXME: ###, PROFILES_DIRECTORY
-        val profilesDirectory = File(applicationContext.noBackupFilesDir, Globals.PROFILES_DIRECTORY)
-            .apply {
-                mkdirs()
-            }
-        val profileManager = appConfiguration.newProfileManager(
+        // Managers
+        val tunnel = appConfiguration.newTunnel(
             logTag,
-            library,
-            directory = profilesDirectory
+            applicationContext,
+            requestVpnPermission
+        )
+        configManager = appConfiguration.newConfigManager(
+            logTag,
+            isBeta
+        )
+        profileManager = appConfiguration.newProfileManager(
+            logTag,
+            applicationContext,
+            library
+        )
+        versionChecker = appConfiguration.newVersionChecker(
+            logTag,
+            userPreferencesObservable
+        )
+
+        // Observables from managers
+        configObservable = ConfigObservable(
+            configManager,
+            coroutineScope
         )
         profileObservable = ProfileObservable(
             profileManager,
             coroutineScope
-        )
-
-        // Tunnel controller
-        val tunnel = PartoutTunnel(
-            logTag,
-            applicationContext,
-            PassepartoutVpnService::class.java,
-            // FIXME: ###, TUNNEL_IS_FOREGROUND
-            isForeground = Globals.TUNNEL_IS_FOREGROUND,
-            requestVpnPermission
         )
         tunnelObservable = TunnelObservable(
             logTag,
             tunnel,
             userPreferencesObservable.preferences,
             coroutineScope
-        )
-
-        // Config flags
-        val configManager = appConfiguration.newConfigManager(
-            logTag,
-            isBeta
-        )
-        configObservable = ConfigObservable(
-            configManager,
-            coroutineScope
-        )
-
-        // Version checker
-        val versionChecker = appConfiguration.newVersionChecker(
-            logTag,
-            userPreferencesObservable
         )
         versionObservable = VersionObservable(
             versionChecker,
@@ -126,8 +123,19 @@ class AppContext(
     fun onApplicationActive() {
         // FIXME: ###, LifecycleManager.onApplicationActive()
 //        library.appOnForeground()
-        configObservable.refresh()
-        versionObservable.checkLatestRelease()
+        if (applicationActiveJob?.isActive == true) {
+            return
+        }
+        applicationActiveJob = coroutineScope.launch {
+            supervisorScope {
+                launch {
+                    configManager.refreshBundle()
+                }
+                launch {
+                    versionChecker.checkLatestRelease()
+                }
+            }
+        }
     }
 
     override fun close() {
@@ -138,8 +146,3 @@ class AppContext(
         versionObservable.close()
     }
 }
-
-private val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
-    // FIXME: ###, PREFERENCES_STORE_NAME
-    Globals.PREFERENCES_STORE_NAME
-)

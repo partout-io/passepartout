@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.io.Closeable
 
 class VersionObservable(
@@ -54,12 +53,6 @@ class VersionObservable(
 
     suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         return manager.fetchChangelog(version)
-    }
-
-    fun checkLatestRelease() {
-        scope.launch {
-            manager.checkLatestRelease()
-        }
     }
 
     override fun close() {

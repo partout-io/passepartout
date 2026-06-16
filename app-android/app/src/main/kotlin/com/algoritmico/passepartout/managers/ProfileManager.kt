@@ -6,8 +6,10 @@ package com.algoritmico.passepartout.managers
 
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.extensions.fingerprint
+import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.injection.JSON.decode
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
@@ -19,7 +21,6 @@ import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
 import io.partout.models.ModuleType
 import io.partout.models.TaggedProfile
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -36,10 +37,7 @@ class ProfileManager(
 ) {
     private var profiles: Map<String, TaggedProfile> = emptyMap()
 
-    private val _events = MutableSharedFlow<Event>(
-        replay = Globals.EVENT_REPLAY,
-        extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
-    )
+    private val _events = newEventFlow<Event>()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun loadInitialProfiles() {
@@ -52,7 +50,7 @@ class ProfileManager(
             library.partoutImportProfile(text, name, completion)
         }
         result.payload?.let {
-            val profile = Globals.json.decodeFromString<TaggedProfile>(it)
+            val profile = JSON.decode<TaggedProfile>(it)
             val previous = profiles[profile.id]
             repository.saveProfile(profile)
             profiles = profiles + (profile.id to profile)

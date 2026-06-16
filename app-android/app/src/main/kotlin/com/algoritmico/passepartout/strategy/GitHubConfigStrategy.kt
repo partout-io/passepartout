@@ -6,7 +6,6 @@ package com.algoritmico.passepartout.strategy
 
 import android.os.SystemClock
 import android.util.Log
-import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.managers.ConfigBundle
 import com.algoritmico.passepartout.managers.ConfigManagerRateLimitException
 import com.algoritmico.passepartout.managers.ConfigManagerStrategy

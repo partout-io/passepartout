@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppFeature
 import com.algoritmico.passepartout.models.AppProfileHeader
@@ -19,7 +19,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +44,7 @@ class ProfileObservable(
     private var allHeaders: Map<String, AppProfileHeader> = emptyMap()
     private val _state = MutableStateFlow(State())
     private val searchRequests = MutableStateFlow("")
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY)
+    private val _events = newEventFlow<Event>()
 
     val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()

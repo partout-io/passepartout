@@ -5,7 +5,10 @@
 package com.algoritmico.passepartout.strategy
 
 import android.util.Log
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.injection.JSON.decode
+import com.algoritmico.passepartout.injection.JSON.encode
+import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.managers.ProfileRepository
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +22,7 @@ import java.io.File
 import java.util.UUID
 
 class FileProfileRepository(
+    private val logTag: String,
     directory: File
 ) : ProfileRepository {
     private val rootDirectory = directory
@@ -38,7 +42,7 @@ class FileProfileRepository(
     }
 
     override suspend fun saveProfile(profile: TaggedProfile) = withContext(Dispatchers.IO) {
-        val data = Globals.json.encodeToString(profile).encodeToByteArray()
+        val data = JSON.encode(profile).encodeToByteArray()
         writeAtomically(data, objectFile(profile.id))
         persistIndex(loadProfilesById())
     }
@@ -61,7 +65,7 @@ class FileProfileRepository(
         runCatching {
             loadIndex()
         }.onFailure {
-            Log.e(Globals.TAG_APP, "Rebuilding malformed profile index", it)
+            Log.e(logTag, "Rebuilding malformed profile index", it)
             persistIndex(loadProfilesByIdFromObjects())
         }
     }
@@ -80,7 +84,7 @@ class FileProfileRepository(
         val objects = loadProfilesByIdFromObjects()
         val unknownIds = objects.keys - knownIds
         if (unknownIds.isNotEmpty()) {
-            Log.e(Globals.TAG_APP, "Profile index missing ${unknownIds.size} entries, rebuilding")
+            Log.e(Tags.APP, "Profile index missing ${unknownIds.size} entries, rebuilding")
             persistIndex(objects)
         }
         return objects
@@ -92,7 +96,7 @@ class FileProfileRepository(
             .orEmpty()
             .associate { file ->
                 val profile = runCatching {
-                    Globals.json.decodeFromString<TaggedProfile>(file.readText())
+                    JSON.decode<TaggedProfile>(file.readText())
                 }.getOrElse {
                     throw FileProfileRepositoryException(
                         "Unable to decode profile at ${file.name}",
@@ -109,7 +113,7 @@ class FileProfileRepository(
 
     private fun loadIndex(): IndexFile {
         return runCatching {
-            Globals.json.decodeFromString<IndexFile>(indexFile.readText())
+            JSON.decode<IndexFile>(indexFile.readText())
         }.getOrElse {
             throw FileProfileRepositoryException("Unable to decode profile index", it)
         }
@@ -131,7 +135,7 @@ class FileProfileRepository(
             profiles = entries
         )
         writeAtomically(
-            Globals.json.encodeToString(index).encodeToByteArray(),
+            JSON.encode(index).encodeToByteArray(),
             indexFile
         )
     }

@@ -16,7 +16,11 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.injection.JSON.decode
+import com.algoritmico.passepartout.injection.Tags
+import com.algoritmico.passepartout.injection.lastTunnelPreferences
+import com.algoritmico.passepartout.injection.lastTunnelProfile
 import com.algoritmico.passepartout.ui.NotificationTransferFormatter
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
@@ -28,7 +32,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class PassepartoutVpnService: VpnService() {
+class PassepartoutVpnService(): VpnService() {
+    private val logTag = Tags.SERVICE
+    private val jniLogTag = Tags.PARTOUT_JNI
+    private lateinit var lastProfileFile: File
+    private lateinit var lastPreferencesFile: File
+
     @Volatile
     private var currentProfileName: String? = null
 
@@ -39,27 +48,22 @@ class PassepartoutVpnService: VpnService() {
 
     private val runtime by lazy {
         PartoutVpnServiceRuntime(
-            logTag = Globals.TAG_SERVICE,
-            jniLogTag = Globals.TAG_JNI,
+            logTag = logTag,
+            jniLogTag = jniLogTag,
             service = this,
             engine = engine
         )
     }
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
-        private val logTag = Globals.TAG_SERVICE
         private val library = PassepartoutWrapper()
-        private val lastPreferencesFile: File
-            get() = File(noBackupFilesDir, Globals.TUNNEL_PREFERENCES_LAST_PATH)
-        private val lastProfileFile: File
-            get() = File(noBackupFilesDir, Globals.TUNNEL_PROFILE_LAST_PATH)
 
         override suspend fun start(
             intent: Intent?,
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            // FIXME: ###: Tunnel bundle/constants/preferences
+            // FIXME: ###: Load tunnel bundle/constants/preferences
 //            val bundle = appBundleJSON()
 //            Log.e(logTag, ">>> Bundle: $bundle")
 //            updateCurrentProfileName(profileJSON)
@@ -76,7 +80,7 @@ class PassepartoutVpnService: VpnService() {
 //            }
 
             // This call retains the controller strongly
-            library.partoutInit()
+            library.partoutInit(Tags.PARTOUT)
             val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
@@ -123,7 +127,7 @@ class PassepartoutVpnService: VpnService() {
             return runCatching {
                 readLastFile(lastPreferencesFile)
             }.onFailure {
-                Log.w(Globals.TAG_SERVICE, "Unable to read last tunnel preferences", it)
+                Log.w(logTag, "Unable to read last tunnel preferences", it)
             }.getOrNull()
         }
 
@@ -148,6 +152,12 @@ class PassepartoutVpnService: VpnService() {
                 throw e
             }
         }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        lastProfileFile = applicationContext.lastTunnelProfile
+        lastPreferencesFile = applicationContext.lastTunnelPreferences
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -236,10 +246,10 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private fun updateNotification(snapshot: TunnelSnapshot) {
-        Log.e(Globals.TAG_SERVICE, "updateNotification()")
+        Log.e(logTag, "updateNotification()")
         val notificationManager = NotificationManagerCompat.from(this)
         if (!notificationManager.areNotificationsEnabled()) {
-            Log.w(Globals.TAG_SERVICE, "Skip VPN notification update, notifications are disabled")
+            Log.w(logTag, "Skip VPN notification update, notifications are disabled")
             return
         }
         val notification = createNotification(snapshot)
@@ -247,7 +257,7 @@ class PassepartoutVpnService: VpnService() {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
         }.onFailure {
             if (it is SecurityException) {
-                Log.w(Globals.TAG_SERVICE, "Unable to update VPN notification", it)
+                Log.w(logTag, "Unable to update VPN notification", it)
             } else {
                 throw it
             }
@@ -261,7 +271,7 @@ class PassepartoutVpnService: VpnService() {
 
         val notificationManager = NotificationManagerCompat.from(this)
         if (!notificationManager.areNotificationsEnabled()) {
-            Log.w(Globals.TAG_SERVICE, "Skip stopped VPN notification, notifications are disabled")
+            Log.w(logTag, "Skip stopped VPN notification, notifications are disabled")
             return
         }
         val notification = createNotification(
@@ -272,7 +282,7 @@ class PassepartoutVpnService: VpnService() {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
         }.onFailure {
             if (it is SecurityException) {
-                Log.w(Globals.TAG_SERVICE, "Unable to show stopped VPN notification", it)
+                Log.w(logTag, "Unable to show stopped VPN notification", it)
             } else {
                 throw it
             }
@@ -315,11 +325,11 @@ class PassepartoutVpnService: VpnService() {
 
     private fun updateCurrentProfileName(profileJSON: String) {
         runCatching {
-            Globals.json.decodeFromString<TaggedProfile>(profileJSON).name
+            JSON.decode<TaggedProfile>(profileJSON).name
         }.onSuccess {
             currentProfileName = it
         }.onFailure {
-            Log.w(Globals.TAG_SERVICE, "Unable to decode VPN profile name", it)
+            Log.w(logTag, "Unable to decode VPN profile name", it)
         }
     }
 

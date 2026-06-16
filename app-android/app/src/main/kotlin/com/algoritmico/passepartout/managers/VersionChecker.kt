@@ -5,8 +5,8 @@
 package com.algoritmico.passepartout.managers
 
 import android.util.Log
-import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.extensions.versionString
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.Event
@@ -14,7 +14,6 @@ import com.algoritmico.passepartout.models.SemanticVersion
 import com.algoritmico.passepartout.models.VersionEventNew
 import com.algoritmico.passepartout.models.VersionRelease
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
@@ -37,10 +36,7 @@ class VersionChecker(
 
     private val checkMutex = Mutex()
 
-    private val _events = MutableSharedFlow<Event>(
-        replay = Globals.EVENT_REPLAY,
-        extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
-    )
+    private val _events = newEventFlow<Event>()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     val latestRelease: VersionRelease?

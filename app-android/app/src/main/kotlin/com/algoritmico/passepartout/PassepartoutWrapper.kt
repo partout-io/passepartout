@@ -5,12 +5,12 @@
 package com.algoritmico.passepartout
 
 import android.util.Log
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.Tags
 import io.partout.abi.PartoutCompletionCallback
 import io.partout.vpn.JNITunnelController
 
 class PassepartoutWrapper {
-    external fun partoutInit()
+    external fun partoutInit(tag: String)
     external fun partoutVersion(): String
     external fun partoutImportProfile(
         text: String,
@@ -27,12 +27,14 @@ class PassepartoutWrapper {
     )
 
     companion object {
+        private const val logTag = Tags.PARTOUT_JNI
+
         init {
             try {
                 // Name of the NDK .so without "lib" prefix or ".so"
                 System.loadLibrary("passepartout_wrapper")
             } catch (e: Exception) {
-                Log.e(Globals.TAG_APP, e.localizedMessage ?: "")
+                Log.e(logTag, e.localizedMessage ?: "")
             }
         }
     }

@@ -14,13 +14,15 @@ public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
     public var appStoreDownloadURL: URL
     public var macDownloadURL: URL
     public var configTTL: Double
+    public var betaTTLFactor: Double
 
-    public init(homeURL: URL, eulaURL: URL, appStoreDownloadURL: URL, macDownloadURL: URL, configTTL: Double) {
+    public init(homeURL: URL, eulaURL: URL, appStoreDownloadURL: URL, macDownloadURL: URL, configTTL: Double, betaTTLFactor: Double) {
         self.homeURL = homeURL
         self.eulaURL = eulaURL
         self.appStoreDownloadURL = appStoreDownloadURL
         self.macDownloadURL = macDownloadURL
         self.configTTL = configTTL
+        self.betaTTLFactor = betaTTLFactor
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -29,6 +31,7 @@ public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
         case appStoreDownloadURL
         case macDownloadURL
         case configTTL
+        case betaTTLFactor
     }
 
     // Encodable protocol methods
@@ -40,6 +43,7 @@ public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
         try container.encode(appStoreDownloadURL, forKey: .appStoreDownloadURL)
         try container.encode(macDownloadURL, forKey: .macDownloadURL)
         try container.encode(configTTL, forKey: .configTTL)
+        try container.encode(betaTTLFactor, forKey: .betaTTLFactor)
     }
 }
 

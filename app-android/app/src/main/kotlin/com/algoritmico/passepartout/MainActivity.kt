@@ -15,18 +15,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.observables.AppContext
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
-import java.nio.charset.CharacterCodingException
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 
 class MainActivity : ComponentActivity() {
+    private val logTag = Tags.APP
     private lateinit var appContext: AppContext
     private var isProfileImporterOpen = false
     private var importFailureMessage by mutableStateOf<String?>(null)
@@ -35,16 +35,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         appContext = AppContext(
-            Globals.TAG_APP,
+            logTag,
             this,
             lifecycleScope,
             requestVpnPermission = { permissionIntent ->
                 vpnPermissionLauncher.launch(permissionIntent)
             }
         )
-
         setContent {
             PassepartoutApp(
+                logTag,
                 appContext.profileObservable,
                 appContext.tunnelObservable,
                 appContext.userPreferencesObservable,
@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
             }.onSuccess {
                 appContext.onApplicationActive()
             }.onFailure {
-                Log.e(Globals.TAG_APP, "Import failure: $profileName", it)
+                Log.e(logTag, "Import failure: $profileName", it)
                 importFailureMessage = "Unable to import $profileName."
             }
         }
@@ -117,7 +117,7 @@ class MainActivity : ComponentActivity() {
                 ?.let(ProfileTextReadResult::Text)
                 ?: ProfileTextReadResult.Binary
         } catch (e: Exception) {
-            Log.e(Globals.TAG_APP, "Unable to read profile file: $uri", e)
+            Log.e(logTag, "Unable to read profile file: $uri", e)
             ProfileTextReadResult.Failure
         }
     }
@@ -137,7 +137,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
         } catch (e: Exception) {
-            Log.e(Globals.TAG_APP, "Unable to resolve profile file name: $uri", e)
+            Log.e(logTag, "Unable to resolve profile file name: $uri", e)
             null
         }
     }

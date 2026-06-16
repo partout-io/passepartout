@@ -13,9 +13,15 @@
 static void daemon_bindings_free(partout_daemon_bindings *b);
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(
+        JNIEnv *env,
+        jobject thiz,
+        jstring tag
+) {
     (void)thiz;
-    partout_init();
+    const char *cTag = (*env)->GetStringUTFChars(env, tag, NULL);
+    partout_init(cTag);
+    (*env)->ReleaseStringUTFChars(env, tag, cTag);
 }
 
 JNIEXPORT jstring JNICALL
