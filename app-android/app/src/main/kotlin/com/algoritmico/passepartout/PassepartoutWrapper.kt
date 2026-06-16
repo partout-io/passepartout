@@ -30,11 +30,11 @@ class PassepartoutWrapper {
         private const val logTag = Tags.PARTOUT_JNI
 
         init {
-            try {
+            runCatching {
                 // Name of the NDK .so without "lib" prefix or ".so"
                 System.loadLibrary("passepartout_wrapper")
-            } catch (e: Exception) {
-                Log.e(logTag, e.localizedMessage ?: "")
+            }.onFailure {
+                Log.e(logTag, "Unable to load JNI library: $it")
             }
         }
     }
