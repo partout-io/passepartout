@@ -72,12 +72,6 @@ extension ABI.VersionRelease: OpenAPIEncodable {
     }
 }
 
-extension ModuleType: OpenAPIEncodable {
-    var toProto: OpenAPIModuleType? {
-        OpenAPIModuleType(rawValue: rawValue)
-    }
-}
-
 // MARK: - Decodable
 
 extension OpenAPILocalLoggerOptions: OpenAPIDecodable {

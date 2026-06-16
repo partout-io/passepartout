@@ -563,6 +563,18 @@ components:
       - ovpnV3
       - wgCrossV2
       - unknown
+    ConfigBundle.Config:
+      type: object
+      additionalProperties: false
+      properties:
+        rate:
+          type: integer
+        minBuild:
+          type: integer
+        data:
+          type: object
+      required:
+      - rate
     ConnectionStatus:
       type: object
     Credits:
@@ -770,21 +782,7 @@ components:
       - preferences
       - fields
     ModuleType:
-      type: string
-      x-enum-varnames:
-      - DNS
-      - HTTPProxy
-      - IP
-      - OnDemand
-      - OpenVPN
-      - WireGuard
-      enum:
-      - DNS
-      - HTTPProxy
-      - IP
-      - OnDemand
-      - OpenVPN
-      - WireGuard
+      type: object
     OriginalPurchase:
       type: object
       additionalProperties: false

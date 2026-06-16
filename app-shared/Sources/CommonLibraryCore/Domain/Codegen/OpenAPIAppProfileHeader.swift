@@ -11,15 +11,15 @@ public struct OpenAPIAppProfileHeader: Sendable, Codable, Hashable {
 
     public var id: String
     public var name: String
-    public var moduleTypes: [OpenAPIModuleType]
-    public var primaryModuleType: OpenAPIModuleType?
-    public var secondaryModuleTypes: [OpenAPIModuleType]
+    public var moduleTypes: [ModuleType]
+    public var primaryModuleType: ModuleType?
+    public var secondaryModuleTypes: [ModuleType]
     public var providerInfo: OpenAPIProviderInfo?
     public var fingerprint: String
     public var sharingFlags: [OpenAPIProfileSharingFlag]
     public var requiredFeatures: [OpenAPIAppFeature]
 
-    public init(id: String, name: String, moduleTypes: [OpenAPIModuleType], primaryModuleType: OpenAPIModuleType? = nil, secondaryModuleTypes: [OpenAPIModuleType], providerInfo: OpenAPIProviderInfo? = nil, fingerprint: String, sharingFlags: [OpenAPIProfileSharingFlag], requiredFeatures: [OpenAPIAppFeature]) {
+    public init(id: String, name: String, moduleTypes: [ModuleType], primaryModuleType: ModuleType? = nil, secondaryModuleTypes: [ModuleType], providerInfo: OpenAPIProviderInfo? = nil, fingerprint: String, sharingFlags: [OpenAPIProfileSharingFlag], requiredFeatures: [OpenAPIAppFeature]) {
         self.id = id
         self.name = name
         self.moduleTypes = moduleTypes

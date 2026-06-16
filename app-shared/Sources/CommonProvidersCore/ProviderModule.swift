@@ -4,10 +4,6 @@
 
 import Partout
 
-extension ModuleType {
-    public static let Provider = ProviderModule.moduleType
-}
-
 @available(*, deprecated)
 extension ProviderModule {
     public static let moduleHandler = ModuleHandler(.Provider, ProviderModule.self)
@@ -15,7 +11,7 @@ extension ProviderModule {
 
 /// A provider-based ``Module``.
 public struct ProviderModule: Module, BuildableType, Hashable, Codable {
-    public static let moduleType = ModuleType("Provider")
+    public static let moduleType: ModuleType = .Provider
 
     public let id: UniqueID
 

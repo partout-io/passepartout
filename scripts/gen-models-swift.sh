@@ -20,6 +20,7 @@ $codegen generate \
     --global-property=models,modelDocs=false,modelTests=false \
     --type-mappings JSONValue=JSON \
     --schema-mappings ConnectionStatus=ConnectionStatus \
+    --schema-mappings ModuleType=ModuleType \
     --schema-mappings TaggedProfile=TaggedProfile \
     --import-mappings JSONValue=JSON \
     --model-name-prefix=$abi_prefix \
@@ -41,6 +42,7 @@ sed -i '' 's/\([A-Za-z0-9_]*\)URL: String/\1URL: URL/g' $abi_output
 
 # Replace external Partout types
 sed -i '' 's/OpenAPIConnectionStatus/ConnectionStatus/g' $models_gen/${abi_prefix}*.swift
+sed -i '' 's/OpenAPIModuleType/ModuleType/g' $models_gen/${abi_prefix}*.swift
 sed -i '' 's/OpenAPITaggedProfile/TaggedProfile/g' $models_gen/${abi_prefix}*.swift
 
 # openapi-generator models the event discriminator as a regular property.
