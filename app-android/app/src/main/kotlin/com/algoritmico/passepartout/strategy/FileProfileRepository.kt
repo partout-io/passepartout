@@ -82,7 +82,7 @@ class FileProfileRepository(
         val objects = loadProfilesByIdFromObjects()
         val unknownIds = objects.keys - knownIds
         if (unknownIds.isNotEmpty()) {
-            Log.e(Tags.APP, "Profile index missing ${unknownIds.size} entries, rebuilding")
+            Log.e(logTag, "Profile index missing ${unknownIds.size} entries, rebuilding")
             persistIndex(objects)
         }
         return objects
