@@ -41,8 +41,12 @@ class ProfileManager(
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun loadInitialProfiles() {
-        setProfiles(repository.fetchProfiles())
-        _events.emit(ProfileEventReady())
+        runCatching {
+            setProfiles(repository.fetchProfiles())
+            _events.emit(ProfileEventReady())
+        }.onFailure {
+            Log.e(logTag, "Unable to load initial profiles: $it")
+        }
     }
 
     suspend fun importText(text: String, name: String?) {

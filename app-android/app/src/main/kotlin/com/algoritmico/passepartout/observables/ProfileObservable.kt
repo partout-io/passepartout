@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
+import android.util.Log
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppFeature
 import com.algoritmico.passepartout.models.AppProfileHeader
