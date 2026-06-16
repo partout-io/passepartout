@@ -40,6 +40,7 @@ extension WireGuardView {
                 privateKeySection
                 interfaceSection
                 dnsSection
+                amneziaSection
                 peerSections
                 Section {
                     ThemeTrailingContent(content: addPeerButton)
@@ -86,6 +87,27 @@ private extension WireGuardView.ConfigurationView {
                 inputType: .number,
                 sideAligned: true
             )
+        }
+    }
+
+    var amneziaSection: some View {
+        themeModuleSection(header: Strings.Unlocalized.amneziaWG) {
+            ThemeTextField("Jc", text: $viewModel.awgJc, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("Jmin", text: $viewModel.awgJmin, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("Jmax", text: $viewModel.awgJmax, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("S1", text: $viewModel.awgS1, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("S2", text: $viewModel.awgS2, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("S3", text: $viewModel.awgS3, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("S4", text: $viewModel.awgS4, placeholder: "0", inputType: .number, sideAligned: true)
+            ThemeTextField("H1", text: $viewModel.awgH1, placeholder: "", inputType: .number, sideAligned: true)
+            ThemeTextField("H2", text: $viewModel.awgH2, placeholder: "", inputType: .number, sideAligned: true)
+            ThemeTextField("H3", text: $viewModel.awgH3, placeholder: "", inputType: .number, sideAligned: true)
+            ThemeTextField("H4", text: $viewModel.awgH4, placeholder: "", inputType: .number, sideAligned: true)
+            ThemeTextField("I1", text: $viewModel.awgI1, placeholder: "", sideAligned: true)
+            ThemeTextField("I2", text: $viewModel.awgI2, placeholder: "", sideAligned: true)
+            ThemeTextField("I3", text: $viewModel.awgI3, placeholder: "", sideAligned: true)
+            ThemeTextField("I4", text: $viewModel.awgI4, placeholder: "", sideAligned: true)
+            ThemeTextField("I5", text: $viewModel.awgI5, placeholder: "", sideAligned: true)
         }
     }
 
@@ -209,6 +231,23 @@ extension WireGuardView.ConfigurationView {
 
         var dnsDomains = ""
 
+        var awgJc = ""
+        var awgJmin = ""
+        var awgJmax = ""
+        var awgS1 = ""
+        var awgS2 = ""
+        var awgS3 = ""
+        var awgS4 = ""
+        var awgH1 = ""
+        var awgH2 = ""
+        var awgH3 = ""
+        var awgH4 = ""
+        var awgI1 = ""
+        var awgI2 = ""
+        var awgI3 = ""
+        var awgI4 = ""
+        var awgI5 = ""
+
         var peers: [String: Peer] = [:]
 
         var peersOrder: [String] = []
@@ -220,6 +259,25 @@ extension WireGuardView.ConfigurationView {
 
             dnsServers = configuration.interface.dns?.servers.joined(separator: separator) ?? ""
             dnsDomains = configuration.interface.dns?.domains?.joined(separator: separator) ?? ""
+
+            if let awg = configuration.interface.amneziaParameters {
+                awgJc = awg.jc?.description ?? ""
+                awgJmin = awg.jmin?.description ?? ""
+                awgJmax = awg.jmax?.description ?? ""
+                awgS1 = awg.s1?.description ?? ""
+                awgS2 = awg.s2?.description ?? ""
+                awgS3 = awg.s3?.description ?? ""
+                awgS4 = awg.s4?.description ?? ""
+                awgH1 = awg.h1 ?? ""
+                awgH2 = awg.h2 ?? ""
+                awgH3 = awg.h3 ?? ""
+                awgH4 = awg.h4 ?? ""
+                awgI1 = awg.i1 ?? ""
+                awgI2 = awg.i2 ?? ""
+                awgI3 = awg.i3 ?? ""
+                awgI4 = awg.i4 ?? ""
+                awgI5 = awg.i5 ?? ""
+            }
 
             peers = configuration.peers.reduce(into: [:]) {
                 var peer = Peer()
@@ -253,6 +311,30 @@ extension WireGuardView.ConfigurationView {
                 )
             } else {
                 configuration.interface.dns = nil
+            }
+
+            let awgFields: [String] = [awgJc, awgJmin, awgJmax, awgS1, awgS2, awgS3, awgS4, awgH1, awgH2, awgH3, awgH4, awgI1, awgI2, awgI3, awgI4, awgI5]
+            if awgFields.contains(where: { !$0.isEmpty }) {
+                var awg = WireGuard.AmneziaParameters.Builder()
+                awg.jc = UInt16(awgJc)
+                awg.jmin = UInt16(awgJmin)
+                awg.jmax = UInt16(awgJmax)
+                awg.s1 = UInt16(awgS1)
+                awg.s2 = UInt16(awgS2)
+                awg.s3 = UInt16(awgS3)
+                awg.s4 = UInt16(awgS4)
+                awg.h1 = awgH1.isEmpty ? nil : (UInt32(awgH1) != nil ? awgH1 : nil)
+                awg.h2 = awgH2.isEmpty ? nil : (UInt32(awgH2) != nil ? awgH2 : nil)
+                awg.h3 = awgH3.isEmpty ? nil : (UInt32(awgH3) != nil ? awgH3 : nil)
+                awg.h4 = awgH4.isEmpty ? nil : (UInt32(awgH4) != nil ? awgH4 : nil)
+                awg.i1 = awgI1.isEmpty ? nil : awgI1
+                awg.i2 = awgI2.isEmpty ? nil : awgI2
+                awg.i3 = awgI3.isEmpty ? nil : awgI3
+                awg.i4 = awgI4.isEmpty ? nil : awgI4
+                awg.i5 = awgI5.isEmpty ? nil : awgI5
+                configuration.interface.amneziaParameters = awg
+            } else {
+                configuration.interface.amneziaParameters = nil
             }
 
             configuration.peers = peersOrder

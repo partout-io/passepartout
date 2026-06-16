@@ -108,6 +108,8 @@ extension Strings {
 
         public static let wireGuard = "WireGuard"
 
+        public static let amneziaWG = "AmneziaWG"
+
         public static let xor = "XOR"
     }
 }
