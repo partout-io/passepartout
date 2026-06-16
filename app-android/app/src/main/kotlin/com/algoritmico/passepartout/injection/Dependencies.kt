@@ -100,10 +100,10 @@ private fun Context.packageInfo(): PackageInfo {
 }
 
 val Context.lastTunnelProfile: File
-    get() = noBackupFile(Globals.TUNNEL_PROFILE_FILENAME)
+    get() = persistentFile(Globals.TUNNEL_PROFILE_FILENAME)
 
 val Context.lastTunnelPreferences: File
-    get() = noBackupFile(Globals.TUNNEL_PREFERENCES_FILENAME)
+    get() = persistentFile(Globals.TUNNEL_PREFERENCES_FILENAME)
 
 val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
     Globals.PREFERENCES_STORE_NAME
@@ -116,8 +116,8 @@ private fun Context.readAsset(name: String): String {
     return assets.open(name).bufferedReader().use { it.readText() }
 }
 
-private fun Context.noBackupFile(path: String): File {
-    return File(noBackupFilesDir, path)
+private fun Context.persistentFile(path: String): File {
+    return File(filesDir, path)
 }
 //endregion
 
@@ -151,7 +151,7 @@ fun AppConfiguration.newProfileManager(
     library: PassepartoutWrapper
 ): ProfileManager {
     val localName = constants.containers.local.lowercase()
-    val directory = applicationContext.noBackupFile(localName)
+    val directory = applicationContext.persistentFile(localName)
         .apply {
             mkdirs()
         }
