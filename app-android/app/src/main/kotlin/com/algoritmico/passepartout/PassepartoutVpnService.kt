@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
 package com.algoritmico.passepartout
 
 import android.app.Notification
@@ -12,9 +16,10 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
-import com.algoritmico.passepartout.abi.PassepartoutWrapper
-import com.algoritmico.passepartout.abi.helpers.ABIException
+import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.ui.NotificationTransferFormatter
 import io.partout.PartoutVpnServiceRuntime
+import io.partout.abi.PartoutException
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.vpn.JNITunnelController
@@ -54,41 +59,40 @@ class PassepartoutVpnService: VpnService() {
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            val bundle = appBundleJSON()
-            Log.e(logTag, ">>> Bundle: $bundle")
-            updateCurrentProfileName(profileJSON)
-
-            // Try preferences from intent, otherwise load last persisted
-            val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
-            val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
-                Log.i(logTag, "Load last preferences")
-                readLastPreferences()
-            } else {
-                Log.i(logTag, "Load and persist start preferences")
-                writeLastPreferences(intentPreferencesJSON)
-                intentPreferencesJSON
-            }
+            // FIXME: ###: Tunnel bundle/constants/preferences
+//            val bundle = appBundleJSON()
+//            Log.e(logTag, ">>> Bundle: $bundle")
+//            updateCurrentProfileName(profileJSON)
+//
+//            // Try preferences from intent, otherwise load last persisted
+//            val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
+//            val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
+//                Log.i(logTag, "Load last preferences")
+//                readLastPreferences()
+//            } else {
+//                Log.i(logTag, "Load and persist start preferences")
+//                writeLastPreferences(intentPreferencesJSON)
+//                intentPreferencesJSON
+//            }
 
             // This call retains the controller strongly
-            val code = library.tunnelStart(
-                bundle,
-                readAsset(Globals.CONSTANTS_FILENAME),
-                preferencesJSON,
+            library.prepare()
+            val code = library.daemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
                 controller
             )
             if (code != 0) {
-                throw ABIException(code, null)
+                throw PartoutException(code, null)
             }
         }
 
         override suspend fun stop() = withContext(Dispatchers.IO) {
             val result = CompletableDeferred<Unit>()
-            library.tunnelStop { code, _ ->
+            library.daemonStop { code, payload ->
                 if (code != 0) {
-                    result.completeExceptionally(ABIException(code, null))
-                    return@tunnelStop
+                    result.completeExceptionally(PartoutException(code, payload))
+                    return@daemonStop
                 }
                 result.complete(Unit)
             }

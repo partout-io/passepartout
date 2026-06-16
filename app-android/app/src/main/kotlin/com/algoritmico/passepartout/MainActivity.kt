@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
+import com.algoritmico.passepartout.extensions.Globals
 import com.algoritmico.passepartout.observables.AppContext
 import com.algoritmico.passepartout.ui.PassepartoutApp
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         appContext = AppContext(
+            Globals.TAG_APP,
             this,
             lifecycleScope,
             requestVpnPermission = { permissionIntent ->
@@ -47,7 +49,6 @@ class MainActivity : ComponentActivity() {
                 appContext.tunnelObservable,
                 appContext.userPreferencesObservable,
                 appContext.configObservable,
-                appContext.iapObservable,
                 appContext.versionObservable,
                 appContext.appConfiguration,
                 importFailureMessage = importFailureMessage,
@@ -91,12 +92,10 @@ class MainActivity : ComponentActivity() {
                     importFailureMessage = "$profileName appears to be a binary file."
                     return@launch
                 }
-
                 ProfileTextReadResult.Failure -> {
                     importFailureMessage = "Unable to read $profileName."
                     return@launch
                 }
-
                 is ProfileTextReadResult.Text -> result.value
             }
             runCatching {

@@ -1,8 +1,12 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
 package com.algoritmico.passepartout
 
-import com.algoritmico.passepartout.extensions.interactiveOpenVPNModule
-import com.algoritmico.passepartout.extensions.isInteractive
-import com.algoritmico.passepartout.extensions.withInteractiveOpenVPNCredentials
+import io.partout.extensions.interactiveOpenVPNModule
+import io.partout.extensions.isInteractive
+import io.partout.extensions.withInteractiveOpenVPNCredentials
 import io.partout.models.OpenVPNConfiguration
 import io.partout.models.OpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod

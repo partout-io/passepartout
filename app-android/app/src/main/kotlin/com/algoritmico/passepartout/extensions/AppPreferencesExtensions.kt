@@ -4,9 +4,9 @@
 
 package com.algoritmico.passepartout.extensions
 
-import com.algoritmico.passepartout.abi.models.AppPreferences
-import com.algoritmico.passepartout.abi.models.ConfigFlag
-import com.algoritmico.passepartout.abi.models.ExperimentalPreferences
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.ExperimentalPreferences
 
 fun AppPreferences.isFlagEnabled(flag: ConfigFlag): Boolean {
     return (configFlags.contains(flag) || experimental.enabledConfigFlags.contains(flag)) &&

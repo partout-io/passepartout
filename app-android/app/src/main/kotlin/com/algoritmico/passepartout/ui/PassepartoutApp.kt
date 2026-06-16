@@ -17,12 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.algoritmico.passepartout.abi.models.AppConfiguration
+import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.observables.ConfigObservable
-import com.algoritmico.passepartout.observables.IAPObservable
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalConfigObservable
-import com.algoritmico.passepartout.observables.LocalIAPObservable
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
@@ -35,7 +33,6 @@ fun PassepartoutApp(
     tunnelObservable: TunnelObservable,
     userPreferencesObservable: UserPreferencesObservable,
     configObservable: ConfigObservable,
-    iapObservable: IAPObservable,
     versionObservable: VersionObservable,
     appConfiguration: AppConfiguration,
     importFailureMessage: String?,
@@ -63,7 +60,6 @@ fun PassepartoutApp(
     CompositionLocalProvider(
         LocalAppConfiguration provides appConfiguration,
         LocalConfigObservable provides configObservable,
-        LocalIAPObservable provides iapObservable,
         LocalVersionObservable provides versionObservable
     ) {
         MaterialTheme(colorScheme = colorScheme) {

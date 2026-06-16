@@ -31,7 +31,7 @@ ExternalProject_Add(libpartout
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env ${ENV_ANDROID}
         ${CMAKE_COMMAND}
         -G Ninja
-        -DCMAKE_TOOLCHAIN_FILE=${PARTOUT_ROOT}/toolchains/android.toolchain.cmake
+        -DCMAKE_TOOLCHAIN_FILE=${PARTOUT_ROOT}/cmake/android.toolchain.cmake
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DPP_BUILD_OUTPUT=${LIBPARTOUT_OUTPUT}
         -DPP_BUILD_LIBRARY=ON

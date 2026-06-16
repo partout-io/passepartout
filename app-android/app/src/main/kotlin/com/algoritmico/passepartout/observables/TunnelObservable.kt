@@ -6,16 +6,16 @@ package com.algoritmico.passepartout.observables
 
 import android.content.Intent
 import android.util.Log
-import com.algoritmico.passepartout.Globals
 import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.abi.models.AppPreferences
-import com.algoritmico.passepartout.abi.models.AppProfileStatus
-import com.algoritmico.passepartout.abi.models.AppTunnelInfo
-import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.models.ProfileTransfer
-import com.algoritmico.passepartout.extensions.isInteractive
+import com.algoritmico.passepartout.extensions.Globals
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.AppProfileStatus
+import com.algoritmico.passepartout.models.AppTunnelInfo
+import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ProfileEventRefresh
+import com.algoritmico.passepartout.models.ProfileTransfer
 import io.partout.PartoutTunnel
+import io.partout.extensions.isInteractive
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
@@ -41,7 +41,6 @@ import kotlin.coroutines.resumeWithException
 class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
-    events: Flow<Event>,
     preferences: Flow<AppPreferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
@@ -56,10 +55,6 @@ class TunnelObservable(
     init {
         tunnel.state
             .onEach(::onTunnelState)
-            .launchIn(scope)
-
-        events
-            .onEach(::onUpdate)
             .launchIn(scope)
     }
 
