@@ -39,12 +39,11 @@ class ConfigObservable(
     }
 
     private fun onUpdate(event: Event) {
-        if (event is ConfigEventRefresh) {
-            _state.value = State(
-                activeFlags = event.flags.toSet(),
-                allData = event.data.configData()
-            )
-        }
+        if (event !is ConfigEventRefresh) { return }
+        _state.value = State(
+            activeFlags = event.flags.toSet(),
+            allData = event.data.configData()
+        )
     }
 
     fun isActive(flag: ConfigFlag): Boolean {

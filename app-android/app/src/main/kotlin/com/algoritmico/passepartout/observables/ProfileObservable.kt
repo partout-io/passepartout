@@ -65,7 +65,7 @@ class ProfileObservable(
         searchRequests.value = name
     }
 
-    fun onUpdate(event: Event) {
+    private fun onUpdate(event: Event) {
         when (event) {
             is ProfileEventReady -> {
                 _state.update {
