@@ -39,15 +39,9 @@ class VersionObservable(
     }
 
     private fun onUpdate(event: Event) {
-        when (event) {
-            is VersionEventNew -> {
-                _state.update {
-                    it.copy(latestRelease = event.release)
-                }
-            }
-            else -> {
-                // Other app domains are intentionally ignored here.
-            }
+        if (event !is VersionEventNew) { return }
+        _state.update {
+            it.copy(latestRelease = event.release)
         }
     }
 

@@ -11,6 +11,7 @@ import com.algoritmico.passepartout.injection.JSON
 import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ProfileEventDelete
 import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
@@ -73,6 +74,7 @@ class ProfileManager(
         }
         repository.removeProfiles(profileIds)
         profiles = profiles - profileIds.toSet()
+        _events.emit(ProfileEventDelete(profileIds.toList()))
         publishProfiles()
     }
 

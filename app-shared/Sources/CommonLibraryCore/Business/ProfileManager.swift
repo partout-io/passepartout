@@ -188,6 +188,7 @@ extension ProfileManager {
         do {
             try await repository.removeProfiles(withIds: profileIds)
             try? await remoteRepository?.removeProfiles(withIds: profileIds)
+            didChange.send(.delete(.init(ids: profileIds)))
         } catch {
             pspLog(.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
         }

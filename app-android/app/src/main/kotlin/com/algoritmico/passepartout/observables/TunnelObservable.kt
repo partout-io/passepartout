@@ -8,11 +8,12 @@ import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.Event
-import com.algoritmico.passepartout.models.ProfileEventRefresh
+import com.algoritmico.passepartout.models.ProfileEventDelete
 import com.algoritmico.passepartout.models.ProfileTransfer
 import io.partout.PartoutTunnel
 import io.partout.extensions.isInteractive
@@ -41,6 +42,7 @@ import kotlin.coroutines.resumeWithException
 class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
+    profileManager: ProfileManager,
     preferences: Flow<AppPreferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
@@ -55,6 +57,10 @@ class TunnelObservable(
     init {
         tunnel.state
             .onEach(::onTunnelState)
+            .launchIn(scope)
+
+        profileManager.events
+            .onEach(::onUpdate)
             .launchIn(scope)
     }
 
@@ -143,20 +149,10 @@ class TunnelObservable(
     }
 
     private fun onUpdate(event: Event) {
-        if (event !is ProfileEventRefresh) { return }
-        // Iterate through active tunnels
-        state.value.activeProfiles.forEach {
-            val info = it.value
-            // Ignore profiles that were not deleted
-            if (info.id in event.headers) {
-                return@forEach
-            }
-            // Ignore deletion of inactive profiles
-            if (!info.status.isActive) {
-                return@forEach
-            }
-            Log.i(logTag, "Disconnect from removed profile ${info.id}")
-            tunnel.disconnect(info.id) { _ -> }
+        if (event !is ProfileEventDelete) { return }
+        event.ids.forEach {
+            Log.i(logTag, "Disconnect from removed profile $it")
+            tunnel.disconnect(it, forget = true) { _ -> }
         }
     }
 

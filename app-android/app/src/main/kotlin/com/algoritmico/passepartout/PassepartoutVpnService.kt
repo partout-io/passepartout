@@ -116,6 +116,20 @@ class PassepartoutVpnService: VpnService() {
             }
         }
 
+        override suspend fun deleteLastProfile(id: String) {
+            withContext(Dispatchers.IO) {
+                runCatching {
+                    val json = readLastFile(lastProfileFile)
+                    val profile = JSON.decode<TaggedProfile>(json)
+                    if (profile.id != id) { return@runCatching }
+                    Log.i(logTag, "Forget last profile $id")
+                    lastProfileFile.delete()
+                }.onFailure {
+                    Log.e(logTag, "Unable to forget last profile", it)
+                }
+            }
+        }
+
         override fun onSnapshot(snapshot: TunnelSnapshot) {
             updateNotification(snapshot)
         }

@@ -47,6 +47,7 @@ extension ABI {
         case localProfiles(LocalProfiles = .init())
         case refresh(Refresh)
         case save(Save)
+        case delete(Delete)
         case startRemoteImport(StartRemoteImport = .init())
         case stopRemoteImport(StopRemoteImport = .init())
         case changeRemoteImporting(ChangeRemoteImporting)
