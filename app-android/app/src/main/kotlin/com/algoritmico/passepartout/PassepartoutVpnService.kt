@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class PassepartoutVpnService(): VpnService() {
+class PassepartoutVpnService: VpnService() {
     private val logTag = Tags.SERVICE
     private val jniLogTag = Tags.PARTOUT_JNI
     private lateinit var lastProfileFile: File
