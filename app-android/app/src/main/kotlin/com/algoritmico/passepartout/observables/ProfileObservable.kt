@@ -44,7 +44,7 @@ class ProfileObservable(
     private var allHeaders: Map<String, AppProfileHeader> = emptyMap()
     private val _state = MutableStateFlow(State())
     private val searchRequests = MutableStateFlow("")
-    private val _events = newEventFlow<Event>()
+    private val _events = newEventFlow<Event>(withReplay = false)
 
     val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()

@@ -10,6 +10,7 @@ import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.Event
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -30,8 +31,8 @@ class ConfigManager(
     private val bundleLock = Any()
     private var bundle: ConfigBundle? = null
 
-    private val _events = newEventFlow<ConfigEventRefresh>()
-    val events: SharedFlow<ConfigEventRefresh> = _events.asSharedFlow()
+    private val _events = newEventFlow<Event>()
+    val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun refreshBundle() {
         val strategy = strategy ?: return

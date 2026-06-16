@@ -203,9 +203,9 @@ fun AppConfiguration.newVersionChecker(
     )
 }
 
-fun <T> newEventFlow(): MutableSharedFlow<T> {
+fun <T> newEventFlow(withReplay: Boolean = true): MutableSharedFlow<T> {
     return MutableSharedFlow<T>(
-        replay = Globals.EVENT_REPLAY,
+        replay = if (withReplay) Globals.EVENT_REPLAY else 0,
         extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
     )
 }
