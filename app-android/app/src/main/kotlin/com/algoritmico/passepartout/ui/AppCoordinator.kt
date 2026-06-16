@@ -224,6 +224,7 @@ private fun AppCoordinatorScaffold(
                     .fillMaxWidth()
                     .clickable {
                         isAddSheetPresented = false
+                        // FIXME: ###, May throw, run this in observable
                         onImportProfile()
                     }
                     .padding(bottom = 24.dp)

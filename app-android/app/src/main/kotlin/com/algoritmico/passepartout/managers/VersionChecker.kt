@@ -31,9 +31,7 @@ class VersionChecker(
     currentVersion: String = "255.255.255",
     private val downloadURL: String = "http://"
 ) {
-    private val currentVersion = currentVersion.toSemanticVersionOrNull()
-        ?: error("Unparsable current version: $currentVersion")
-
+    private val currentVersion = currentVersion.toSemanticVersionOrNull() ?: SemanticVersion(0, 0, 0)
     private val checkMutex = Mutex()
 
     private val _events = newEventFlow()
@@ -105,14 +103,18 @@ class VersionCheckerRateLimitException : Exception()
 class VersionCheckerUnexpectedResponseException : Exception()
 
 fun String.toSemanticVersionOrNull(): SemanticVersion? {
-    val parts = split(".")
-    if (parts.size != 3) {
+    try {
+        val parts = split(".")
+        if (parts.size != 3) {
+            throw IllegalArgumentException()
+        }
+        val major = parts[0].toInt()
+        val minor = parts[1].toInt()
+        val patch = parts[2].toInt()
+        return SemanticVersion(major, minor, patch)
+    } catch (e: Exception) {
         return null
     }
-    val major = parts[0].toIntOrNull() ?: return null
-    val minor = parts[1].toIntOrNull() ?: return null
-    val patch = parts[2].toIntOrNull() ?: return null
-    return SemanticVersion(major, minor, patch)
 }
 
 private operator fun SemanticVersion.compareTo(other: SemanticVersion): Int {
