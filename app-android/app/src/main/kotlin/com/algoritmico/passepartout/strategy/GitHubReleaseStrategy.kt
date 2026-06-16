@@ -84,7 +84,7 @@ private fun String.toChangelogEntry(id: Int): ChangelogEntry? {
         val issueString = last.substring(2, last.length - 1)
         val parsedIssue = issueString.toIntOrNull()
         if (parsedIssue != null) {
-            components.removeLast()
+            components.removeAt(components.lastIndex)
             issue = parsedIssue
         }
     }
