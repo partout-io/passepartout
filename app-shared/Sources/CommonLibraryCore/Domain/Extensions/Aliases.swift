@@ -40,10 +40,6 @@ extension ABI.IAPEvent {
     public typealias EligibleFeatures = OpenAPIIAPEventEligibleFeatures
 }
 
-extension ABI.MixedEvent {
-    public typealias ShouldUpdatePreferences = OpenAPIMixedEventShouldUpdatePreferences
-}
-
 extension ABI.ProfileEvent {
     public typealias Ready = OpenAPIProfileEventReady
     public typealias LocalProfiles = OpenAPIProfileEventLocalProfiles
