@@ -79,8 +79,9 @@ class MainActivity : ComponentActivity() {
         try {
             profileImportLauncher.launch(PROFILE_MIME_TYPES)
         } catch (e: Exception) {
+            Log.e(logTag, "Unable to open profile importer", e)
             isProfileImporterOpen = false
-            throw e
+            importFailureMessage = "Unable to open the profile importer: "
         }
     }
 
