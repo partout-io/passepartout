@@ -118,20 +118,23 @@ fun ProfileContainerView(
         requestedConnection = request
         selectProfile(profileId)
         coroutineScope.launch {
-            val didStart = try {
+            val didStart = runCatching {
                 toggleProfile(
                     profileObservable,
                     tunnelObservable,
                     profileId,
                     enabled
                 )
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: TunnelObservable.InteractiveException) {
-                interactiveProfile = e.profile
-                false
-            } catch (_: Exception) {
-                false
+            }.getOrElse {
+                when (it) {
+                    is CancellationException -> throw it
+                    is TunnelObservable.InteractiveException -> {
+                        interactiveProfile = it.profile
+                        false
+                    }
+                    is Exception -> false
+                    else -> throw it
+                }
             }
             if (!didStart && requestedConnection == request) {
                 requestedConnection = null
@@ -144,16 +147,19 @@ fun ProfileContainerView(
         requestedConnection = request
         selectProfile(profile.id)
         coroutineScope.launch {
-            val didStart = try {
+            val didStart = runCatching {
                 tunnelObservable.connect(profile, force = force)
                 true
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: TunnelObservable.InteractiveException) {
-                interactiveProfile = e.profile
-                false
-            } catch (_: Exception) {
-                false
+            }.getOrElse {
+                when (it) {
+                    is CancellationException -> throw it
+                    is TunnelObservable.InteractiveException -> {
+                        interactiveProfile = it.profile
+                        false
+                    }
+                    is Exception -> false
+                    else -> throw it
+                }
             }
             if (didStart) {
                 interactiveProfile = null

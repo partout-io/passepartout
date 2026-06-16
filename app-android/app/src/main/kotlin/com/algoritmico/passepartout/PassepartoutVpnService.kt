@@ -160,12 +160,15 @@ class PassepartoutVpnService: VpnService() {
         private fun writeLastFile(file: File, json: String) {
             val atomicFile = AtomicFile(file)
             val stream = atomicFile.startWrite()
-            try {
+            runCatching {
                 stream.write(json.toByteArray(Charsets.UTF_8))
                 atomicFile.finishWrite(stream)
-            } catch (e: Exception) {
+            }.onFailure {
+                if (it !is Exception) {
+                    throw it
+                }
                 atomicFile.failWrite(stream)
-                throw e
+                throw it
             }
         }
     }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 
@@ -76,12 +77,15 @@ class MainActivity : ComponentActivity() {
 
     private fun openProfileImporter() {
         isProfileImporterOpen = true
-        try {
+        runCatching {
             profileImportLauncher.launch(PROFILE_MIME_TYPES)
-        } catch (e: Exception) {
-            Log.e(logTag, "Unable to open profile importer", e)
+        }.onFailure {
+            if (it !is Exception) {
+                throw it
+            }
+            Log.e(logTag, "Unable to open profile importer", it)
             isProfileImporterOpen = false
-            importFailureMessage = "Unable to open the profile importer: "
+            importFailureMessage = "Unable to open the profile importer."
         }
     }
 
@@ -111,20 +115,26 @@ class MainActivity : ComponentActivity() {
     }
 
     private suspend fun readProfileText(uri: Uri): ProfileTextReadResult = withContext(Dispatchers.IO) {
-        try {
+        runCatching {
             val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                ?: return@withContext ProfileTextReadResult.Failure
-            bytes.decodeProfileTextOrNull()
-                ?.let(ProfileTextReadResult::Text)
-                ?: ProfileTextReadResult.Binary
-        } catch (e: Exception) {
-            Log.e(logTag, "Unable to read profile file: $uri", e)
+            if (bytes == null) {
+                ProfileTextReadResult.Failure
+            } else {
+                bytes.decodeProfileTextOrNull()
+                    ?.let(ProfileTextReadResult::Text)
+                    ?: ProfileTextReadResult.Binary
+            }
+        }.getOrElse {
+            if (it !is Exception) {
+                throw it
+            }
+            Log.e(logTag, "Unable to read profile file: $uri", it)
             ProfileTextReadResult.Failure
         }
     }
 
     private suspend fun displayName(uri: Uri): String? = withContext(Dispatchers.IO) {
-        try {
+        runCatching {
             contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
                 ?.use { cursor ->
                     if (!cursor.moveToFirst()) {
@@ -137,8 +147,11 @@ class MainActivity : ComponentActivity() {
                         null
                     }
                 }
-        } catch (e: Exception) {
-            Log.e(logTag, "Unable to resolve profile file name: $uri", e)
+        }.getOrElse {
+            if (it !is Exception) {
+                throw it
+            }
+            Log.e(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }
     }
@@ -187,10 +200,14 @@ private fun ByteArray.decodeProfileTextOrNull(): String? {
         .newDecoder()
         .onMalformedInput(CodingErrorAction.REPORT)
         .onUnmappableCharacter(CodingErrorAction.REPORT)
-    return try {
+    return runCatching {
         decoder.decode(ByteBuffer.wrap(this)).toString()
-    } catch (_: CharacterCodingException) {
-        null
+    }.getOrElse {
+        if (it is CharacterCodingException) {
+            null
+        } else {
+            throw it
+        }
     }
 }
 

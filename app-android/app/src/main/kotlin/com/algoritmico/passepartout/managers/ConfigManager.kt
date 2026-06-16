@@ -39,7 +39,7 @@ class ConfigManager(
         if (!refreshMutex.tryLock()) {
             return
         }
-        try {
+        runCatching {
             Log.d(logTag, "Config: refreshing bundle...")
             val newBundle = strategy.bundle()
             val event = synchronized(bundleLock) {
@@ -49,14 +49,14 @@ class ConfigManager(
             _events.emit(event)
             Log.i(logTag, "Config: active flags = ${event.flags}")
             Log.d(logTag, "Config: $newBundle")
-        } catch (_: ConfigManagerRateLimitException) {
-            Log.d(logTag, "Config: TTL")
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Throwable) {
-            Log.e(logTag, "Unable to refresh config flags", error)
-        } finally {
+        }.also {
             refreshMutex.unlock()
+        }.onFailure {
+            when (it) {
+                is ConfigManagerRateLimitException -> Log.d(logTag, "Config: TTL")
+                is CancellationException -> throw it
+                else -> Log.e(logTag, "Unable to refresh config flags", it)
+            }
         }
     }
 

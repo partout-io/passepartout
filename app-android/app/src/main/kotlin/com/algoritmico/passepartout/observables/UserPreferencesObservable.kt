@@ -57,12 +57,15 @@ class UserPreferencesObservable(
     private var snapshot: AppPreferences
 
     init {
-        snapshot = try {
+        snapshot = runCatching {
             runBlocking {
                 preferences.first()
             }
-        } catch (e: Exception) {
-            Log.e(logTag, "Unable to load preferences", e)
+        }.getOrElse {
+            if (it !is Exception) {
+                throw it
+            }
+            Log.e(logTag, "Unable to load preferences", it)
             AppPreferences.default
         }
     }

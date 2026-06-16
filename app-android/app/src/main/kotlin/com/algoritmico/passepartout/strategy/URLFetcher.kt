@@ -19,7 +19,7 @@ object URLFetcher {
 
     private fun fetchBlocking(url: String, cached: Boolean, timeout: Double): ByteArray {
         val connection = URL(url).openConnection() as HttpURLConnection
-        return try {
+        return runCatching {
             connection.requestMethod = "GET"
             connection.useCaches = cached
             connection.connectTimeout = timeout.toInt() * 1000
@@ -29,8 +29,8 @@ object URLFetcher {
                 throw IOException("HTTP $status")
             }
             connection.inputStream.use { it.readBytes() }
-        } finally {
+        }.also {
             connection.disconnect()
-        }
+        }.getOrThrow()
     }
 }

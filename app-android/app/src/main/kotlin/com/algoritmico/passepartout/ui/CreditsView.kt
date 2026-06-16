@@ -238,10 +238,13 @@ private fun LicenseView(
     LaunchedEffect(license.licenseURL, content) {
         if (content == null) {
             val loadedContent = withContext(Dispatchers.IO) {
-                try {
+                runCatching {
                     URL(license.licenseURL).readText()
-                } catch (e: Exception) {
-                    "Unable to load license: ${e.localizedMessage ?: e::class.java.simpleName}"
+                }.getOrElse {
+                    if (it !is Exception) {
+                        throw it
+                    }
+                    "Unable to load license: ${it.localizedMessage ?: it::class.java.simpleName}"
                 }
             }
             onContent(loadedContent)

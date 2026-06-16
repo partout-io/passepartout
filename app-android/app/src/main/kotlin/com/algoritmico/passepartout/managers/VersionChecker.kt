@@ -51,9 +51,9 @@ class VersionChecker(
         if (!checkMutex.tryLock()) {
             return
         }
-        try {
+        runCatching {
             val now = System.currentTimeMillis()
-            try {
+            runCatching {
                 val lastCheckedTimestamp = strategy.preferences().lastCheckedVersionTimestamp
                 Log.d(logTag, "Version: checking for updates...")
                 val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
@@ -68,17 +68,18 @@ class VersionChecker(
                     "Version: ${fetchedLatestVersion.versionString} > " +
                         "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
                 )
-            } catch (_: VersionCheckerRateLimitException) {
-                Log.d(logTag, "Version: rate limit")
-            } catch (error: VersionCheckerUnexpectedResponseException) {
-                strategy.updatePreferences {
-                    it.copy(lastCheckedVersionTimestamp = now)
+            }.onFailure {
+                when (it) {
+                    is VersionCheckerRateLimitException -> Log.d(logTag, "Version: rate limit")
+                    is VersionCheckerUnexpectedResponseException -> {
+                        strategy.updatePreferences {
+                            it.copy(lastCheckedVersionTimestamp = now)
+                        }
+                        Log.e(logTag, "Unable to check version", it)
+                    }
+                    is CancellationException -> throw it
+                    else -> Log.e(logTag, "Unable to check version", it)
                 }
-                Log.e(logTag, "Unable to check version", error)
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Throwable) {
-                Log.e(logTag, "Unable to check version", error)
             }
 
             val latestRelease = latestRelease
@@ -88,9 +89,9 @@ class VersionChecker(
             }
             Log.i(logTag, "Version: new version available at ${latestRelease.url}")
             _events.emit(VersionEventNew(release = latestRelease))
-        } finally {
+        }.also {
             checkMutex.unlock()
-        }
+        }.getOrThrow()
     }
 
     suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
@@ -103,18 +104,14 @@ class VersionCheckerRateLimitException : Exception()
 class VersionCheckerUnexpectedResponseException : Exception()
 
 fun String.toSemanticVersionOrNull(): SemanticVersion? {
-    try {
+    return runCatching {
         val parts = split(".")
-        if (parts.size != 3) {
-            throw IllegalArgumentException()
-        }
+        require(parts.size == 3)
         val major = parts[0].toInt()
         val minor = parts[1].toInt()
         val patch = parts[2].toInt()
-        return SemanticVersion(major, minor, patch)
-    } catch (e: Exception) {
-        return null
-    }
+        SemanticVersion(major, minor, patch)
+    }.getOrNull()
 }
 
 private operator fun SemanticVersion.compareTo(other: SemanticVersion): Int {
