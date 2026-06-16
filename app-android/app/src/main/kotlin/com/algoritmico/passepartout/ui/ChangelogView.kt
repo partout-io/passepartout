@@ -37,6 +37,8 @@ import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 
+private const val TAG = "ChangelogView"
+
 @Composable
 fun ChangelogView(
     modifier: Modifier = Modifier
@@ -56,7 +58,7 @@ fun ChangelogView(
         entries = runCatching {
             versionObservable.fetchChangelog(versionNumber)
         }.getOrElse {
-            Log.w("????", "Unable to load changelog", it)
+            Log.w(TAG, "Unable to load changelog", it)
             emptyList()
         }
         isLoading = false

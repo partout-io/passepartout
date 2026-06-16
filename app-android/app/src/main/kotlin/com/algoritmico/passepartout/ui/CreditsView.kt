@@ -42,6 +42,8 @@ import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.Locale
 
+private const val TAG = "CreditsView"
+
 @Composable
 fun CreditsView(
     modifier: Modifier = Modifier
@@ -51,7 +53,7 @@ fun CreditsView(
         runCatching {
             context.credits()
         }.getOrElse {
-            Log.w("????", "Unable to load credits", it)
+            Log.w(TAG, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }
