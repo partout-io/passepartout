@@ -13,7 +13,7 @@
 static void daemon_bindings_free(partout_daemon_bindings *b);
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(
+Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutInit(
         JNIEnv *env,
         jobject thiz,
         jstring tag
@@ -25,14 +25,14 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
     (void)thiz;
     jstring jmsg = (*env)->NewStringUTF(env, partout_version());
     return jmsg;
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutImportProfile(
+Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutImportProfile(
         JNIEnv *env,
         jobject thiz,
         jstring text,
@@ -48,7 +48,7 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutImportProfile(
 }
 
 JNIEXPORT jint JNICALL
-Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
+Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutDaemonStart(
         JNIEnv *env,
         jobject thiz,
         jstring profile,
@@ -76,7 +76,7 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStop(
+Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutDaemonStop(
         JNIEnv *env,
         jobject thiz,
         jobject completion

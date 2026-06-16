@@ -9,33 +9,100 @@ import com.algoritmico.passepartout.injection.Tags
 import io.partout.abi.PartoutCompletionCallback
 import io.partout.vpn.JNITunnelController
 
-class PassepartoutWrapper {
-    external fun partoutInit(tag: String)
-    external fun partoutVersion(): String
-    external fun partoutImportProfile(
+interface PassepartoutWrapperProtocol {
+    fun partoutInit(tag: String)
+    fun partoutVersion(): String
+    fun partoutImportProfile(
         text: String,
         name: String?,
         completion: PartoutCompletionCallback
     )
-    external fun partoutDaemonStart(
+    fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
         controller: JNITunnelController
     ): Int
-    external fun partoutDaemonStop(
+    fun partoutDaemonStop(
+        completion: PartoutCompletionCallback
+    )
+}
+
+class PassepartoutWrapper: PassepartoutWrapperProtocol {
+    private val wrapper: PassepartoutWrapperProtocol?
+
+    init {
+        wrapper = runCatching {
+            UnsafePassepartoutWrapper()
+        }.getOrElse {
+            Log.e(Tags.PARTOUT_JNI, "Unable to load JNI library: $it")
+            null
+        }
+    }
+
+    override fun partoutInit(tag: String) {
+        wrapper?.partoutInit(tag)
+    }
+
+    override fun partoutVersion(): String {
+        if (wrapper == null) {
+            return "x.y.z"
+        }
+        return wrapper.partoutVersion()
+    }
+
+    override fun partoutDaemonStart(
+        profile: String,
+        cacheDir: String,
+        controller: JNITunnelController
+    ): Int {
+        if (wrapper == null) {
+            return -1
+        }
+        return wrapper.partoutDaemonStart(profile, cacheDir, controller)
+    }
+
+    override fun partoutDaemonStop(completion: PartoutCompletionCallback) {
+        if (wrapper == null) {
+            completion.onComplete(-1, null)
+            return
+        }
+        wrapper.partoutDaemonStop(completion)
+    }
+
+    override fun partoutImportProfile(
+        text: String,
+        name: String?,
+        completion: PartoutCompletionCallback
+    ) {
+        if (wrapper == null) {
+            completion.onComplete(-1, null)
+            return
+        }
+        wrapper.partoutImportProfile(text, name, completion)
+    }
+}
+
+private class UnsafePassepartoutWrapper: PassepartoutWrapperProtocol {
+    override external fun partoutInit(tag: String)
+    override external fun partoutVersion(): String
+    override external fun partoutImportProfile(
+        text: String,
+        name: String?,
+        completion: PartoutCompletionCallback
+    )
+    override external fun partoutDaemonStart(
+        profile: String,
+        cacheDir: String,
+        controller: JNITunnelController
+    ): Int
+    override external fun partoutDaemonStop(
         completion: PartoutCompletionCallback
     )
 
     companion object {
-        private const val logTag = Tags.PARTOUT_JNI
-
         init {
-            runCatching {
-                // Name of the NDK .so without "lib" prefix or ".so"
-                System.loadLibrary("passepartout_wrapper")
-            }.onFailure {
-                Log.e(logTag, "Unable to load JNI library: $it")
-            }
+            // Name of the NDK .so without "lib" prefix or ".so"
+            System.loadLibrary("passepartout_wrapper")
         }
     }
 }
