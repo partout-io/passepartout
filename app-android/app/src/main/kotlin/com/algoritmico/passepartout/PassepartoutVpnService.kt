@@ -34,8 +34,6 @@ import java.io.File
 class PassepartoutVpnService: VpnService() {
     private val logTag = Tags.SERVICE
     private val jniLogTag = Tags.PARTOUT_JNI
-    private lateinit var lastProfileFile: File
-    private lateinit var lastPreferencesFile: File
 
     @Volatile
     private var currentProfileName: String? = null
@@ -56,6 +54,8 @@ class PassepartoutVpnService: VpnService() {
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
         private val library = PassepartoutWrapper()
+        private val lastProfileFile = applicationContext.lastTunnelProfile
+        private val lastPreferencesFile = applicationContext.lastTunnelPreferences
 
         override suspend fun start(
             intent: Intent?,
@@ -151,12 +151,6 @@ class PassepartoutVpnService: VpnService() {
                 throw e
             }
         }
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        lastProfileFile = applicationContext.lastTunnelProfile
-        lastPreferencesFile = applicationContext.lastTunnelPreferences
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
