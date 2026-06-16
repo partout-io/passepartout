@@ -493,7 +493,6 @@ components:
           IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
           MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
-          MixedEventShouldUpdatePreferences: "#/components/schemas/MixedEventShouldUpdatePreferences"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
@@ -762,25 +761,6 @@ components:
       required:
       - type
       - profile
-    MixedEventShouldUpdatePreferences:
-      type: object
-      additionalProperties: false
-      allOf:
-      - "$ref": "#/components/schemas/Event"
-      properties:
-        type:
-          const: MixedEventShouldUpdatePreferences
-          type: string
-        preferences:
-          "$ref": "#/components/schemas/AppPreferences"
-        fields:
-          type: array
-          items:
-            "$ref": "#/components/schemas/AppPreferenceKey"
-      required:
-      - type
-      - preferences
-      - fields
     ModuleType:
       type: object
     OriginalPurchase:
