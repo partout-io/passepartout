@@ -68,37 +68,43 @@ class UserPreferencesObservable(
     val dnsFallback: Flow<Boolean> = preferences.map { it.dnsFallsBack }
 
     suspend fun toggleDnsFallback() {
-        store.edit {
+        editSafely {
             val newValue = !(it[DNS_FALLS_BACK] ?: AppPreferences.default.dnsFallsBack)
             it[DNS_FALLS_BACK] = newValue
             snapshot = snapshot.copy(dnsFallsBack = newValue)
         }
-        savePreferences()
     }
 
     suspend fun updateExperimentalPreferences(
         transform: (ExperimentalPreferences) -> ExperimentalPreferences
     ) {
-        store.edit {
+        editSafely {
             val current = it[EXPERIMENTAL]?.decodePreference<ExperimentalPreferences>()
                 ?: snapshot.experimental
             val newValue = transform(current)
             it[EXPERIMENTAL] = JSON.encode(newValue)
             snapshot = snapshot.copy(experimental = newValue)
         }
-        savePreferences()
     }
 
     suspend fun updatePreferences(
         fields: List<AppPreferenceKey>,
         transform: (AppPreferences) -> AppPreferences
     ) {
-        store.edit {
+        editSafely {
             val newValue = transform(snapshot)
             it.update(newValue, fields)
             snapshot = snapshot.update(newValue, fields)
         }
-        savePreferences()
+    }
+
+    private suspend fun editSafely(transform: suspend (MutablePreferences) -> Unit) {
+        runCatching {
+            store.edit(transform)
+            savePreferences()
+        }.onFailure {
+            Log.e(logTag, "Unable to save preferences: $it")
+        }
     }
 
     private fun savePreferences() {
