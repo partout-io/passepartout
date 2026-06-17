@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
+    //region Import profile
     private fun openProfileImporter() {
         isProfileImporterOpen = true
         runCatching {
@@ -75,14 +76,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val vpnPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (::appContext.isInitialized) {
-            appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
-        }
-    }
-
     private val profileImportLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
@@ -93,4 +86,15 @@ class MainActivity : ComponentActivity() {
             appContext.onApplicationActive()
         }
     }
+    //endregion
+
+    //region Allow VPN
+    private val vpnPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (::appContext.isInitialized) {
+            appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
+        }
+    }
+    //endregion
 }
