@@ -18,7 +18,7 @@ fun AppProfileStatus.statusText(): String {
 }
 
 fun ProfileTransfer.transferText(): String {
-    return "↓${received.toLong().formatDataUnit()} ↑${sent.toLong().formatDataUnit()}"
+    return "↓${received.formatDataUnit()} ↑${sent.formatDataUnit()}"
 }
 
 private fun Long.formatDataUnit(): String {
