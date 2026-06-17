@@ -20,6 +20,7 @@ import kotlinx.serialization.json.JsonObject
 
 interface ConfigManagerStrategy {
     suspend fun bundle(): ConfigBundle
+    fun resetTTL()
 }
 
 sealed class ConfigManagerException: Exception() {
@@ -28,7 +29,7 @@ sealed class ConfigManagerException: Exception() {
 
 class ConfigManager(
     private val logTag: String,
-    private val strategy: ConfigManagerStrategy? = null,
+    private val strategy: ConfigManagerStrategy,
     private val buildNumber: Int = Int.MAX_VALUE
 ) {
     private val refreshMutex = Mutex()
@@ -39,7 +40,6 @@ class ConfigManager(
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun refreshBundle() {
-        val strategy = strategy ?: return
         if (!refreshMutex.tryLock()) {
             return
         }
@@ -62,6 +62,10 @@ class ConfigManager(
                 else -> Log.e(logTag, "Unable to refresh config flags", it)
             }
         }
+    }
+
+    fun resetTTL() {
+        strategy.resetTTL()
     }
 
     fun isActive(flag: ConfigFlag): Boolean {
