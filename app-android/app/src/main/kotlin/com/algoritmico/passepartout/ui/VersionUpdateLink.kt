@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.extensions.versionString
 import com.algoritmico.passepartout.injection.safeOpenUri
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 
 @Composable
@@ -18,11 +19,12 @@ fun VersionUpdateLink() {
     val state by versionObservable.state.collectAsState()
     val latestRelease = state.latestRelease ?: return
     val uriHandler = LocalUriHandler.current
+    val errorHandler = LocalErrorHandler.current
 
     SettingsLinkRow(
         title = "Update to ${latestRelease.version.versionString}",
         onClick = {
-            uriHandler.safeOpenUri(latestRelease.url)
+            uriHandler.safeOpenUri(latestRelease.url, errorHandler)
         }
     )
 }

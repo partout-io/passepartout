@@ -25,6 +25,7 @@ import com.algoritmico.passepartout.extensions.disclaimerURL
 import com.algoritmico.passepartout.extensions.privacyPolicyURL
 import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 
 @Composable
 fun LinksView(
@@ -104,11 +105,12 @@ private fun ExternalLinkRow(
     url: String
 ) {
     val uriHandler = LocalUriHandler.current
+    val errorHandler = LocalErrorHandler.current
     ListItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                uriHandler.safeOpenUri(url)
+                uriHandler.safeOpenUri(url, errorHandler)
             },
         headlineContent = {
             Text(title)

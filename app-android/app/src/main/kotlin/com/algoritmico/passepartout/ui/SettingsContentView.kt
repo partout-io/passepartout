@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.extensions.faqURL
 import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,7 +129,7 @@ private fun SettingsListView(
 ) {
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
-
+    val errorHandler = LocalErrorHandler.current
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -151,7 +152,7 @@ private fun SettingsListView(
                 SettingsLinkRow(
                     title = "FAQ",
                     onClick = {
-                        uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL)
+                        uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL, errorHandler)
                     }
                 )
                 linkContent(SettingsCoordinatorRoute.Diagnostics)

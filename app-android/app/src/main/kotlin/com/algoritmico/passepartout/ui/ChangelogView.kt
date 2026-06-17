@@ -30,11 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.extensions.urlForIssue
 import com.algoritmico.passepartout.extensions.versionString
 import com.algoritmico.passepartout.injection.safeOpenUri
+import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 
 private const val TAG = "ChangelogView"
@@ -107,6 +108,7 @@ private fun ChangelogListView(
 ) {
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
+    val errorHandler = LocalErrorHandler.current
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -140,7 +142,7 @@ private fun ChangelogListView(
                     .then(
                         if (issueURL != null) {
                             Modifier.clickable {
-                                uriHandler.safeOpenUri(issueURL)
+                                uriHandler.safeOpenUri(issueURL, errorHandler)
                             }
                         } else {
                             Modifier

@@ -18,3 +18,7 @@ val LocalConfigObservable = staticCompositionLocalOf<ConfigObservable> {
 val LocalVersionObservable = staticCompositionLocalOf<VersionObservable> {
     error("No VersionObservable provided")
 }
+
+val LocalErrorHandler = staticCompositionLocalOf<ErrorHandler> {
+    error("No ErrorHandler provided")
+}
