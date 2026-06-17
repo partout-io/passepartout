@@ -23,6 +23,7 @@ object ErrorHandler {
     val errors: Flow<AppError> = _errors.asSharedFlow()
 
     fun report(error: Throwable) {
+        // This is a guard of last resort to rethrow CancellationException
         error.throwIfCancellation()
         Log.e(Tags.APP, "Invoke error handler", error)
         _errors.tryEmit(error.asAppError)

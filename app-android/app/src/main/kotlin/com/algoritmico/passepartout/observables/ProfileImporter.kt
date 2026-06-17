@@ -8,6 +8,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
+import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.managers.ProfileManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,9 +48,7 @@ class ProfileImporter(
             }.onSuccess {
                 onImportSuccess()
             }.onFailure {
-                if (it !is Exception) {
-                    throw it
-                }
+                it.throwIfCancellation()
                 Log.e(logTag, "Import failure: $profileName", it)
                 reportFailure("Unable to import $profileName.", it)
             }
@@ -67,9 +66,7 @@ class ProfileImporter(
                     ?: ProfileTextReadResult.Binary
             }
         }.getOrElse {
-            if (it !is Exception) {
-                throw it
-            }
+            it.throwIfCancellation()
             Log.e(logTag, "Unable to read profile file: $uri", it)
             ProfileTextReadResult.Failure
         }
@@ -90,9 +87,7 @@ class ProfileImporter(
                     }
                 }
         }.getOrElse {
-            if (it !is Exception) {
-                throw it
-            }
+            it.throwIfCancellation()
             Log.e(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }
