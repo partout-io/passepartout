@@ -20,7 +20,7 @@ import com.algoritmico.passepartout.business.injection.lastTunnelPreferences
 import com.algoritmico.passepartout.business.injection.lastTunnelProfile
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.injection.Tags
-import com.algoritmico.passepartout.ui.models.NotificationTransferFormatter
+import com.algoritmico.passepartout.ui.extensions.NotificationTransferFormatter
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
 import io.partout.models.TaggedProfile

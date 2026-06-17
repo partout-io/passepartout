@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import com.algoritmico.passepartout.ui.observables.AppError
-import com.algoritmico.passepartout.ui.models.localizedMessage
+import com.algoritmico.passepartout.ui.extensions.localizedMessage
 
 @Composable
 fun GenericErrorAlert(

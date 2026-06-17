@@ -59,8 +59,8 @@ import com.algoritmico.passepartout.ui.observables.TunnelObservable
 import com.algoritmico.passepartout.ui.observables.TunnelObservableException
 import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
-import com.algoritmico.passepartout.ui.models.statusText
-import com.algoritmico.passepartout.ui.models.transferText
+import com.algoritmico.passepartout.ui.extensions.statusText
+import com.algoritmico.passepartout.ui.extensions.transferText
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
