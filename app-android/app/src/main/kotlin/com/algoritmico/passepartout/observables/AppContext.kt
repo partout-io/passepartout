@@ -8,15 +8,15 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
+import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.injection.appBundle
 import com.algoritmico.passepartout.injection.appConstants
 import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.injection.userPreferencesStore
-import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.injection.newConfigManager
 import com.algoritmico.passepartout.injection.newProfileManager
 import com.algoritmico.passepartout.injection.newTunnel
 import com.algoritmico.passepartout.injection.newVersionChecker
+import com.algoritmico.passepartout.injection.userPreferencesStore
 import com.algoritmico.passepartout.managers.ConfigManager
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.managers.VersionChecker
@@ -45,6 +45,7 @@ class AppContext(
     // Expose to Compose
     val appConfiguration: AppConfiguration
     val configObservable: ConfigObservable
+    val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
     val userPreferencesObservable: UserPreferencesObservable
@@ -107,6 +108,13 @@ class AppContext(
         profileObservable = ProfileObservable(
             profileManager,
             coroutineScope
+        )
+        profileImporter = ProfileImporter(
+            logTag,
+            applicationContext,
+            coroutineScope,
+            profileManager,
+            onImportSuccess = ::onApplicationActive
         )
         tunnelObservable = TunnelObservable(
             logTag,
