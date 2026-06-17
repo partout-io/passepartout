@@ -11,6 +11,6 @@ import com.algoritmico.passepartout.observables.ProfileImporterException
 val AppError.localizedMessage: String
     get() = when (cause) {
         is ProfileImporterException.Binary -> "Importing a binary file."
-        is ProfileImporterException.Failure -> "Unable to import profile: $cause"
+        is ProfileImporterException.Null -> "Unable to read profile content"
         else -> cause?.localizedMessage ?: code.name
     }
