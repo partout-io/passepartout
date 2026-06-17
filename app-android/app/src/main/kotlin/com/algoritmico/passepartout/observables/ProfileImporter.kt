@@ -43,7 +43,7 @@ class ProfileImporter(
             }.onFailure {
                 it.throwIfCancellation()
                 Log.e(logTag, "Import failure: $profileName", it)
-                reportFailure("Unable to import $profileName", it)
+                errorHandler.report(it)
             }
         }
     }
@@ -86,10 +86,5 @@ class ProfileImporter(
             Log.e(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }
-    }
-
-    private fun reportFailure(message: String, cause: Throwable) {
-        Log.e(logTag, message, cause)
-        errorHandler.report(cause)
     }
 }
