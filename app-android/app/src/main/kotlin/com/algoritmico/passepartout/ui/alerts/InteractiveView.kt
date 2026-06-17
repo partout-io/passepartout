@@ -17,9 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.interactiveModule
-import com.algoritmico.passepartout.extensions.withInteractiveOpenVPNCredentials
+import io.partout.extensions.interactiveModule
 import io.partout.extensions.moduleType
+import io.partout.extensions.withInteractiveOpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.OpenVPNModule
 import io.partout.models.TaggedModule
