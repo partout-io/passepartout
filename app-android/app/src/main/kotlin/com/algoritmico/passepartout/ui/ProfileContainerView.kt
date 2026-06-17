@@ -115,18 +115,29 @@ fun ProfileContainerView(
         return activeProfiles[profileId]?.lastErrorCode
     }
 
-    fun requestProfileToggle(profileId: String, enabled: Boolean) {
+    fun requestProfileConnection(
+        profileId: String,
+        enabled: Boolean,
+        profile: TaggedProfile? = null,
+        force: Boolean = false
+    ) {
         val request = RequestedConnection(profileId, enabled)
         requestedConnection = request
         selectProfile(profileId)
         coroutineScope.launch {
             val didStart = runCatching {
-                toggleProfile(
-                    profileObservable,
-                    tunnelObservable,
-                    profileId,
-                    enabled
-                )
+                if (enabled) {
+                    val connectionProfile = profile ?: profileObservable.profile(profileId)
+                    if (connectionProfile == null) {
+                        false
+                    } else {
+                        tunnelObservable.connect(connectionProfile, force = force)
+                        true
+                    }
+                } else {
+                    tunnelObservable.disconnect(profileId)
+                    true
+                }
             }.getOrElse {
                 it.throwIfCancellation()
                 when (it) {
@@ -140,34 +151,7 @@ fun ProfileContainerView(
                     }
                 }
             }
-            if (!didStart && requestedConnection == request) {
-                requestedConnection = null
-            }
-        }
-    }
-
-    fun requestProfileConnection(profile: TaggedProfile, force: Boolean = false) {
-        val request = RequestedConnection(profile.id, enabled = true)
-        requestedConnection = request
-        selectProfile(profile.id)
-        coroutineScope.launch {
-            val didStart = runCatching {
-                tunnelObservable.connect(profile, force = force)
-                true
-            }.getOrElse {
-                it.throwIfCancellation()
-                when (it) {
-                    is TunnelObservable.InteractiveException -> {
-                        interactiveProfile = it.profile
-                        false
-                    }
-                    else -> {
-                        errorHandler.report(it)
-                        false
-                    }
-                }
-            }
-            if (didStart) {
+            if (didStart && profile != null) {
                 interactiveProfile = null
             }
             if (!didStart && requestedConnection == request) {
@@ -239,7 +223,12 @@ fun ProfileContainerView(
             },
             onConnect = {
                 interactiveProfile = null
-                requestProfileConnection(it, force = true)
+                requestProfileConnection(
+                    profileId = it.id,
+                    enabled = true,
+                    profile = it,
+                    force = true
+                )
             }
         )
     }
@@ -265,7 +254,9 @@ fun ProfileContainerView(
         profileTransfer = ::profileTransfer,
         profileLastErrorCode = ::profileLastErrorCode,
         onProfileSelected = onProfileSelected,
-        onProfileToggle = ::requestProfileToggle,
+        onProfileToggle = { profileId, enabled ->
+            requestProfileConnection(profileId, enabled)
+        },
         onProfileContextualAction = onProfileContextualAction
     )
 }
@@ -539,21 +530,6 @@ private fun openVpnSettings(context: Context) {
             context.startActivity(appSettingsIntent)
         }
     }
-}
-
-private suspend fun toggleProfile(
-    profileObservable: ProfileObservable,
-    tunnelObservable: TunnelObservable,
-    profileId: String,
-    enabled: Boolean
-): Boolean {
-    if (!enabled) {
-        tunnelObservable.disconnect(profileId)
-        return true
-    }
-    val profile = profileObservable.profile(profileId) ?: return false
-    tunnelObservable.connect(profile)
-    return true
 }
 
 private data class RequestedConnection(
