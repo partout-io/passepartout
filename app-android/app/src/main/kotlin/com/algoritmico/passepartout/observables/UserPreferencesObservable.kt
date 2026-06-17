@@ -16,8 +16,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.algoritmico.passepartout.injection.JSON
 import com.algoritmico.passepartout.injection.throwIfCancellation
-import com.algoritmico.passepartout.managers.default
-import com.algoritmico.passepartout.managers.update
+import com.algoritmico.passepartout.extensions.default
+import com.algoritmico.passepartout.extensions.update
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag

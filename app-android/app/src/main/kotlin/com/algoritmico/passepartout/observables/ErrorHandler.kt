@@ -7,8 +7,6 @@ package com.algoritmico.passepartout.observables
 import android.util.Log
 import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.injection.throwIfCancellation
-import com.algoritmico.passepartout.managers.AppError
-import com.algoritmico.passepartout.managers.asAppError
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

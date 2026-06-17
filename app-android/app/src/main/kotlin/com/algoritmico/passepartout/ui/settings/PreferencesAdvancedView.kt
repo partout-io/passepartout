@@ -37,7 +37,7 @@ import com.algoritmico.passepartout.extensions.isAllowed
 import com.algoritmico.passepartout.extensions.setAllowed
 import com.algoritmico.passepartout.extensions.unignore
 import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.managers.default
+import com.algoritmico.passepartout.extensions.default
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget

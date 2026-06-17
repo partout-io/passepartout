@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.ui.models
 
-import com.algoritmico.passepartout.managers.AppError
+import com.algoritmico.passepartout.observables.AppError
 
 // FIXME: ###, AppError, Localize messages
 val AppError.localizedMessage: String

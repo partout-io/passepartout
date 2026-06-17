@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.managers
+package com.algoritmico.passepartout.observables
 
 import com.algoritmico.passepartout.models.AppErrorCode
 
