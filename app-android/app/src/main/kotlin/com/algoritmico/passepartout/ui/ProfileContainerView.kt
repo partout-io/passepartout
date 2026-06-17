@@ -48,14 +48,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import io.partout.models.TaggedProfile
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -88,6 +89,7 @@ fun ProfileContainerView(
     var previousActiveProfiles by remember {
         mutableStateOf<Map<String, AppTunnelInfo>>(emptyMap())
     }
+    val errorHandler = LocalErrorHandler.current
 
     fun selectProfile(profileId: String) {
         if (profileId in profileIds) {
@@ -126,14 +128,16 @@ fun ProfileContainerView(
                     enabled
                 )
             }.getOrElse {
+                it.throwIfCancellation()
                 when (it) {
-                    is CancellationException -> throw it
                     is TunnelObservable.InteractiveException -> {
                         interactiveProfile = it.profile
                         false
                     }
-                    is Exception -> false
-                    else -> throw it
+                    else -> {
+                        errorHandler.report(it)
+                        false
+                    }
                 }
             }
             if (!didStart && requestedConnection == request) {
@@ -151,14 +155,16 @@ fun ProfileContainerView(
                 tunnelObservable.connect(profile, force = force)
                 true
             }.getOrElse {
+                it.throwIfCancellation()
                 when (it) {
-                    is CancellationException -> throw it
                     is TunnelObservable.InteractiveException -> {
                         interactiveProfile = it.profile
                         false
                     }
-                    is Exception -> false
-                    else -> throw it
+                    else -> {
+                        errorHandler.report(it)
+                        false
+                    }
                 }
             }
             if (didStart) {

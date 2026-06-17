@@ -7,11 +7,11 @@ package com.algoritmico.passepartout.managers
 import android.util.Log
 import com.algoritmico.passepartout.injection.JSON
 import com.algoritmico.passepartout.injection.newEventFlow
+import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.Event
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
@@ -52,9 +52,9 @@ class ConfigManager(
         }.also {
             refreshMutex.unlock()
         }.onFailure {
+            it.throwIfCancellation()
             when (it) {
                 is ConfigManagerRateLimitException -> Log.d(logTag, "Config: TTL")
-                is CancellationException -> throw it
                 else -> Log.e(logTag, "Unable to refresh config flags", it)
             }
         }

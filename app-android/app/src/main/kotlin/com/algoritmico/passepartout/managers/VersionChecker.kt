@@ -7,13 +7,13 @@ package com.algoritmico.passepartout.managers
 import android.util.Log
 import com.algoritmico.passepartout.extensions.versionString
 import com.algoritmico.passepartout.injection.newEventFlow
+import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.SemanticVersion
 import com.algoritmico.passepartout.models.VersionEventNew
 import com.algoritmico.passepartout.models.VersionRelease
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
@@ -69,6 +69,7 @@ class VersionChecker(
                         "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
                 )
             }.onFailure {
+                it.throwIfCancellation()
                 when (it) {
                     is VersionCheckerRateLimitException -> Log.d(logTag, "Version: rate limit")
                     is VersionCheckerUnexpectedResponseException -> {
@@ -77,7 +78,6 @@ class VersionChecker(
                         }
                         Log.e(logTag, "Unable to check version", it)
                     }
-                    is CancellationException -> throw it
                     else -> Log.e(logTag, "Unable to check version", it)
                 }
             }

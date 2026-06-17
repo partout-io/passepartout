@@ -15,13 +15,13 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.managers.default
 import com.algoritmico.passepartout.managers.update
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.ExperimentalPreferences
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -45,9 +45,7 @@ class UserPreferencesObservable(
     private val flow: Flow<Preferences>
         get() {
             return store.data.catch {
-                if (it is CancellationException) {
-                    throw it
-                }
+                it.throwIfCancellation()
                 Log.e(logTag, "Unable to read preferences", it)
                 emit(emptyPreferences())
             }
@@ -115,9 +113,7 @@ class UserPreferencesObservable(
             store.edit(transform)
             savePreferences()
         }.onFailure {
-            if (it is CancellationException) {
-                throw it
-            }
+            it.throwIfCancellation()
             Log.e(logTag, "Unable to save preferences", it)
         }
     }
