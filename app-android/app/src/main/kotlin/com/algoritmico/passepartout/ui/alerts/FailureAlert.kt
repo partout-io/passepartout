@@ -8,20 +8,21 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import com.algoritmico.passepartout.managers.AppError
+import com.algoritmico.passepartout.ui.models.localizedMessage
 
 @Composable
 fun FailureAlert(
-    title: String,
-    message: String,
+    error: AppError,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(title)
+            Text("Error")
         },
         text = {
-            Text(message)
+            Text(error.localizedMessage)
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {

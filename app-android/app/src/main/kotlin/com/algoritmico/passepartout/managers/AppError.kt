@@ -14,7 +14,3 @@ data class AppError(
 // FIXME: ###, AppError, Map known Throwable to AppError
 val Throwable.asAppError: AppError
     get() = AppError(AppErrorCode.other, this)
-
-// FIXME: ###, AppError, Localize messages
-val AppError.localizedMessage: String
-    get() = cause?.localizedMessage ?: code.name

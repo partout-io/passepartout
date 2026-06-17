@@ -19,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.algoritmico.passepartout.managers.localizedMessage
+import com.algoritmico.passepartout.managers.AppError
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
@@ -63,8 +63,8 @@ fun PassepartoutApp(
             inversePrimary = Color(0xFFFFB878)
         )
     }
-    var failureMessage by remember {
-        mutableStateOf<String?>(null)
+    var lastError by remember {
+        mutableStateOf<AppError?>(null)
     }
     CompositionLocalProvider(
         LocalAppConfiguration provides appConfiguration,
@@ -88,15 +88,14 @@ fun PassepartoutApp(
             }
             LaunchedEffect(errorHandler) {
                 errorHandler.errors.collect { error ->
-                    failureMessage = error.localizedMessage
+                    lastError = error
                 }
             }
-            failureMessage?.let { message ->
+            lastError?.let { error ->
                 FailureAlert(
-                    title = "Error",
-                    message = message,
+                    error = error,
                     onDismiss = {
-                        failureMessage = null
+                        lastError = null
                     }
                 )
             }
