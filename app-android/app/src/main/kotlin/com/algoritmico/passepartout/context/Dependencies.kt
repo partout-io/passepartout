@@ -19,11 +19,11 @@ import com.algoritmico.passepartout.business.strategy.FileProfileRepository
 import com.algoritmico.passepartout.business.strategy.GitHubConfigStrategy
 import com.algoritmico.passepartout.business.strategy.GitHubReleaseStrategy
 import com.algoritmico.passepartout.business.strategy.URLFetcher
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -132,11 +132,10 @@ fun AppConfiguration.newVersionChecker(
                     AppPreferenceKey.lastCheckedVersionDate
                 )
                 userPreferencesObservable.updatePreferences(fields) {
-                    it.copy(lastCheckedVersionTimestamp = timestamp)
-                    if (version != null) {
-                        it.copy(lastCheckedVersion = version)
-                    }
-                    it
+                    it.copy(
+                        lastCheckedVersionTimestamp = timestamp,
+                        lastCheckedVersion = version ?: it.lastCheckedVersion
+                    )
                 }
             },
             onLastSnapshot = {

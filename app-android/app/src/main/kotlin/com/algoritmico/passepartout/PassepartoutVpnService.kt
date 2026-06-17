@@ -75,6 +75,7 @@ class PassepartoutVpnService: VpnService() {
 
             // Try preferences from intent, otherwise load last persisted
             val preferences = readPreferences(intent)
+            Log.e(logTag, ">>> Preferences: $preferences")
 
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
