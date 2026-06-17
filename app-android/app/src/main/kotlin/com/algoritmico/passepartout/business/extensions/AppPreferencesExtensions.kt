@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -19,9 +20,12 @@ import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.ExperimentalPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
+
+data class LastCheckedVersionSnapshot(
+    val timestamp: Long,
+    val version: String?
+)
 
 //region Flows
 fun DataStore<Preferences>.appPreferences(logTag: String): Flow<AppPreferences> {
@@ -34,10 +38,11 @@ fun Flow<Preferences>.appPreferences(logTag: String): Flow<AppPreferences> {
         .map { it.toAppPreferences() }
 }
 
-fun DataStore<Preferences>.currentAppPreferences(logTag: String): AppPreferences {
-    return runBlocking {
-        appPreferences(logTag).first()
-    }
+fun DataStore<Preferences>.lastCheckedVersionSnapshots(
+    logTag: String
+): Flow<LastCheckedVersionSnapshot?> {
+    return appPreferences(logTag)
+        .map { it.lastCheckedVersionSnapshot() }
 }
 
 private fun Flow<Preferences>.safePreferences(logTag: String): Flow<Preferences> {
@@ -136,6 +141,11 @@ fun Preferences.toAppPreferences(): AppPreferences {
     )
 }
 
+private fun AppPreferences.lastCheckedVersionSnapshot(): LastCheckedVersionSnapshot? {
+    val timestamp = lastCheckedVersionTimestamp ?: return null
+    return LastCheckedVersionSnapshot(timestamp, lastCheckedVersion)
+}
+
 private inline fun <reified T> String.decodePreference(): T? {
     return runCatching {
         JSON.decode<T>(this)
@@ -148,6 +158,20 @@ fun MutablePreferences.toggleDnsFallback(): Boolean {
     val newValue = !(this[K.DNS_FALLS_BACK] ?: AppPreferences.default.dnsFallsBack)
     this[K.DNS_FALLS_BACK] = newValue
     return newValue
+}
+
+suspend fun DataStore<Preferences>.updateLastCheckedVersion(
+    timestamp: Long,
+    version: String?
+) {
+    edit {
+        val current = it.toAppPreferences()
+        val newValue = current.copy(
+            lastCheckedVersionTimestamp = timestamp,
+            lastCheckedVersion = version ?: current.lastCheckedVersion
+        )
+        it.update(LAST_CHECKED_VERSION_FIELDS, newValue)
+    }
 }
 
 fun MutablePreferences.updateExperimentalPreferences(
@@ -241,6 +265,11 @@ private object K {
     val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
     val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
 }
+
+private val LAST_CHECKED_VERSION_FIELDS = listOf(
+    AppPreferenceKey.lastCheckedVersion,
+    AppPreferenceKey.lastCheckedVersionDate
+)
 //endregion
 
 //region Experimental

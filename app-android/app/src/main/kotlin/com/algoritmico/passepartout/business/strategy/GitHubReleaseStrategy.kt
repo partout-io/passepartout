@@ -6,9 +6,9 @@ package com.algoritmico.passepartout.business.strategy
 
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.toSemanticVersionOrNull
 import com.algoritmico.passepartout.business.managers.VersionCheckerException
 import com.algoritmico.passepartout.business.managers.VersionCheckerStrategy
-import com.algoritmico.passepartout.business.managers.toSemanticVersionOrNull
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.SemanticVersion
 import kotlinx.serialization.SerialName

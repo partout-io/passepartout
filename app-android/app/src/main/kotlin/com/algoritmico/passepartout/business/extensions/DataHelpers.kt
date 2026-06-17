@@ -12,7 +12,7 @@ data class DataSpeed(
     val sent: Long
 ) {
     companion object {
-        val ZERO = DataSpeed(received = 0L, sent = 0L)
+        val zero = DataSpeed(received = 0L, sent = 0L)
     }
 }
 
@@ -28,7 +28,7 @@ fun DataCount.speedSince(
     elapsedRealtimeMillis: Long
 ): DataSpeed {
     if (previous == null || previous.id != id) {
-        return DataSpeed.ZERO
+        return DataSpeed.zero
     }
     val elapsedMillis = elapsedRealtimeMillis - previous.elapsedRealtimeMillis
     return DataSpeed(

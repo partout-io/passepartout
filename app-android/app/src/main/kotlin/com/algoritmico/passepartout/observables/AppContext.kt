@@ -97,7 +97,8 @@ class AppContext(
         )
         versionChecker = appConfiguration.newVersionChecker(
             logTag,
-            context.userPreferencesStore
+            context.userPreferencesStore,
+            coroutineScope
         )
 
         // Observables from managers
@@ -165,6 +166,7 @@ class AppContext(
         tunnelObservable.close()
         userPreferencesObservable.close()
         versionObservable.close()
+        versionChecker.close()
     }
 
     private suspend fun persistConfigFlags(flags: Set<ConfigFlag>) {

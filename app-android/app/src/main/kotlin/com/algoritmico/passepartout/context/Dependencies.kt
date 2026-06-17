@@ -24,6 +24,7 @@ import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
 import io.partout.PartoutTunnel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 //region Constants
@@ -110,7 +111,8 @@ fun AppConfiguration.newTunnel(
 
 fun AppConfiguration.newVersionChecker(
     logTag: String,
-    preferences: DataStore<Preferences>
+    preferences: DataStore<Preferences>,
+    coroutineScope: CoroutineScope
 ): VersionChecker {
     val changelogURL = constants.github::urlForChangelog
     val isCached = false
@@ -118,6 +120,7 @@ fun AppConfiguration.newVersionChecker(
     return VersionChecker(
         logTag = logTag,
         store = preferences,
+        coroutineScope = coroutineScope,
         strategy = GitHubReleaseStrategy(
             logTag = logTag,
             releaseURL = constants.github.latestReleaseURL,
