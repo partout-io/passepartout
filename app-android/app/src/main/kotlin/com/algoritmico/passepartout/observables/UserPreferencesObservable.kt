@@ -10,12 +10,14 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.managers.default
-import com.algoritmico.passepartout.managers.update
+import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.default
+import com.algoritmico.passepartout.business.extensions.update
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
@@ -25,6 +27,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -35,65 +38,90 @@ class UserPreferencesObservable(
     coroutineScope: CoroutineScope,
     private val store: DataStore<Preferences>
 ) : Closeable {
+    //region State
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
 
     private val flow: Flow<Preferences>
         get() {
-            return store.data
+            return store.data.catch {
+                it.throwIfCancellation()
+                Log.e(logTag, "Unable to read preferences", it)
+                emit(emptyPreferences())
+            }
         }
 
     val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
+    val currentPreferences: AppPreferences
+        get() = snapshot
     private var snapshot: AppPreferences
+    //endregion
 
+    //region Lifecycle
     init {
-        snapshot = runBlocking {
-            preferences.first()
+        snapshot = runCatching {
+            runBlocking {
+                preferences.first()
+            }
+        }.getOrElse {
+            if (it !is Exception) {
+                throw it
+            }
+            Log.e(logTag, "Unable to load preferences", it)
+            AppPreferences.default
         }
     }
 
     override fun close() {
         scope.cancel()
     }
+    //endregion
 
-    val currentPreferences: AppPreferences
-        get() = snapshot
-
+    //region Editing
     val dnsFallback: Flow<Boolean> = preferences.map { it.dnsFallsBack }
 
     suspend fun toggleDnsFallback() {
-        store.edit {
+        editSafely {
             val newValue = !(it[DNS_FALLS_BACK] ?: AppPreferences.default.dnsFallsBack)
             it[DNS_FALLS_BACK] = newValue
             snapshot = snapshot.copy(dnsFallsBack = newValue)
         }
-        savePreferences()
     }
 
     suspend fun updateExperimentalPreferences(
         transform: (ExperimentalPreferences) -> ExperimentalPreferences
     ) {
-        store.edit {
+        editSafely {
             val current = it[EXPERIMENTAL]?.decodePreference<ExperimentalPreferences>()
                 ?: snapshot.experimental
             val newValue = transform(current)
             it[EXPERIMENTAL] = JSON.encode(newValue)
             snapshot = snapshot.copy(experimental = newValue)
         }
-        savePreferences()
     }
 
     suspend fun updatePreferences(
         fields: List<AppPreferenceKey>,
         transform: (AppPreferences) -> AppPreferences
     ) {
-        store.edit {
+        editSafely {
             val newValue = transform(snapshot)
             it.update(newValue, fields)
             snapshot = snapshot.update(newValue, fields)
         }
-        savePreferences()
+    }
+    //endregion
+
+    //region Private
+    private suspend fun editSafely(transform: suspend (MutablePreferences) -> Unit) {
+        runCatching {
+            store.edit(transform)
+            savePreferences()
+        }.onFailure {
+            Log.e(logTag, "Unable to save preferences", it)
+            throw it
+        }
     }
 
     private fun savePreferences() {
@@ -201,4 +229,5 @@ class UserPreferencesObservable(
         val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
         val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
     }
+    //endregion
 }

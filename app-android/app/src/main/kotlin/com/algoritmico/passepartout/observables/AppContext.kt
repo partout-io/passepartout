@@ -1,26 +1,22 @@
-// SPDX-FileCopyrightText: 2026 Davide De Rosa
-//
-// SPDX-License-Identifier: GPL-3.0
-
 package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.injection.Tags
-import com.algoritmico.passepartout.injection.appBundle
-import com.algoritmico.passepartout.injection.appConstants
-import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.injection.newConfigManager
-import com.algoritmico.passepartout.injection.newProfileManager
-import com.algoritmico.passepartout.injection.newTunnel
-import com.algoritmico.passepartout.injection.newVersionChecker
-import com.algoritmico.passepartout.injection.userPreferencesStore
-import com.algoritmico.passepartout.managers.ConfigManager
-import com.algoritmico.passepartout.managers.ProfileManager
-import com.algoritmico.passepartout.managers.VersionChecker
+import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.appConstants
+import com.algoritmico.passepartout.business.managers.ConfigManager
+import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.context.newConfigManager
+import com.algoritmico.passepartout.context.newProfileManager
+import com.algoritmico.passepartout.context.newTunnel
+import com.algoritmico.passepartout.context.newVersionChecker
+import com.algoritmico.passepartout.context.userPreferencesStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -45,16 +41,14 @@ class AppContext(
     // Expose to Compose
     val appConfiguration: AppConfiguration
     val configObservable: ConfigObservable
+    val errorHandler: ErrorHandler
+    val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
     val userPreferencesObservable: UserPreferencesObservable
     val versionObservable: VersionObservable
 
     init {
-        library.partoutInit(Tags.PARTOUT)
-        val partoutVersion = library.partoutVersion()
-        Log.i(logTag, ">>> Partout $partoutVersion")
-
         Log.e(logTag, ">>> Started app")
 
         // User preferences
@@ -65,6 +59,10 @@ class AppContext(
         )
         val preferences = userPreferencesObservable.currentPreferences
         Log.i(logTag, ">>> Preferences: $preferences")
+
+        library.partoutInit(Tags.PARTOUT, preferences.logsPrivateData)
+        val partoutVersion = library.partoutVersion()
+        Log.i(logTag, ">>> Partout $partoutVersion")
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
@@ -100,13 +98,22 @@ class AppContext(
         )
 
         // Observables from managers
+        errorHandler = ErrorHandler
         configObservable = ConfigObservable(
             configManager,
             coroutineScope
         )
         profileObservable = ProfileObservable(
             profileManager,
-            coroutineScope
+            coroutineScope,
+            errorHandler
+        )
+        profileImporter = ProfileImporter(
+            logTag,
+            applicationContext,
+            coroutineScope,
+            profileManager,
+            onImportSuccess = ::onApplicationActive
         )
         tunnelObservable = TunnelObservable(
             logTag,
@@ -122,7 +129,7 @@ class AppContext(
     }
 
     fun onApplicationActive() {
-        // FIXME: ###, LifecycleManager.onApplicationActive()
+        // FIXME: ###, AppContext, LifecycleManager.onApplicationActive()
 //        library.appOnForeground()
         if (applicationActiveJob?.isActive == true) {
             return

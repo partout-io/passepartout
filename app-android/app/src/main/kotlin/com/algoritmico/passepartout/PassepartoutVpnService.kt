@@ -16,11 +16,13 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
-import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.Tags
-import com.algoritmico.passepartout.injection.lastTunnelPreferences
-import com.algoritmico.passepartout.injection.lastTunnelProfile
-import com.algoritmico.passepartout.ui.NotificationTransferFormatter
+import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.lastTunnelPreferences
+import com.algoritmico.passepartout.context.lastTunnelProfile
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.ui.extensions.NotificationTransferFormatter
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
 import io.partout.models.TaggedProfile
@@ -64,24 +66,23 @@ class PassepartoutVpnService: VpnService() {
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            // FIXME: ###: Load tunnel bundle/constants/preferences
-//            val bundle = appBundleJSON()
-//            Log.e(logTag, ">>> Bundle: $bundle")
-//            updateCurrentProfileName(profileJSON)
-//
-//            // Try preferences from intent, otherwise load last persisted
-//            val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
-//            val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
-//                Log.i(logTag, "Load last preferences")
-//                readLastPreferences()
-//            } else {
-//                Log.i(logTag, "Load and persist start preferences")
-//                writeLastPreferences(intentPreferencesJSON)
-//                intentPreferencesJSON
-//            }
+            Log.e(logTag, ">>> Started service")
+
+            // FIXME: ###: Prepend bundle metadata
+            val bundle = applicationContext.appBundle()
+            Log.e(logTag, ">>> Bundle: $bundle")
+            updateCurrentProfileName(profileJSON)
+
+            // Try preferences from intent, otherwise load last persisted
+            val preferences = readPreferences(intent)
+            Log.e(logTag, ">>> Preferences: $preferences")
+
+            // Initialize the library with the intent preferences
+//            val openvpn_version = preferences?.configFlags ? 3 : 2
+            val logsPrivateData = preferences?.logsPrivateData ?: false
+            library.partoutInit(Tags.PARTOUT, logsPrivateData)
 
             // This call retains the controller strongly
-            library.partoutInit(Tags.PARTOUT)
             val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
@@ -138,16 +139,33 @@ class PassepartoutVpnService: VpnService() {
             postStoppedNotification()
         }
 
-        private fun readLastPreferences(): String? {
-            return runCatching {
-                readLastFile(lastPreferencesFile)
-            }.onFailure {
-                Log.w(logTag, "Unable to read last tunnel preferences", it)
-            }.getOrNull()
-        }
-
-        private fun writeLastPreferences(json: String) {
-            writeLastFile(lastPreferencesFile, json)
+        private fun readPreferences(intent: Intent?): AppPreferences? {
+            val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
+            val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
+                Log.i(logTag, "Load last preferences")
+                runCatching {
+                    readLastFile(lastPreferencesFile)
+                }.getOrElse {
+                    Log.w(logTag, "Unable to read last tunnel preferences", it)
+                    null
+                }
+            } else {
+                Log.i(logTag, "Load and persist start preferences")
+                runCatching {
+                    writeLastFile(lastPreferencesFile, intentPreferencesJSON)
+                }.onFailure {
+                    Log.w(logTag, "Unable to write last tunnel preferences", it)
+                }
+                intentPreferencesJSON
+            }
+            return preferencesJSON?.let { json ->
+                runCatching {
+                    JSON.decode<AppPreferences>(json)
+                }.getOrElse {
+                    Log.w(logTag, "Unable to decode preferences JSON", it)
+                    null
+                }
+            }
         }
 
         private fun readLastFile(file: File): String {
@@ -159,12 +177,15 @@ class PassepartoutVpnService: VpnService() {
         private fun writeLastFile(file: File, json: String) {
             val atomicFile = AtomicFile(file)
             val stream = atomicFile.startWrite()
-            try {
+            runCatching {
                 stream.write(json.toByteArray(Charsets.UTF_8))
                 atomicFile.finishWrite(stream)
-            } catch (e: Exception) {
+            }.onFailure {
+                if (it !is Exception) {
+                    throw it
+                }
                 atomicFile.failWrite(stream)
-                throw e
+                throw it
             }
         }
     }
@@ -178,12 +199,17 @@ class PassepartoutVpnService: VpnService() {
             notificationTransfer.reset()
             updateCurrentProfileName(it)
         }
-        ServiceCompat.startForeground(
-            this,
-            VPN_NOTIFICATION_ID,
-            createNotification(snapshot = null),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
-        )
+        runCatching {
+            ServiceCompat.startForeground(
+                this,
+                VPN_NOTIFICATION_ID,
+                createNotification(snapshot = null),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+            )
+        }.onFailure {
+            Log.e(logTag, "Unable to start service in foreground", it)
+            return START_NOT_STICKY
+        }
         return runtime.onStartCommand(intent, flags, startId)
     }
 

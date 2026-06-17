@@ -22,7 +22,7 @@
 
 # JNI entry points are exported with static Java_* symbols, so their Kotlin
 # owner and method names must remain stable after R8.
--keep class com.algoritmico.passepartout.PassepartoutWrapper {
+-keep interface com.algoritmico.passepartout.PassepartoutWrapperProtocol {
     native <methods>;
 }
 

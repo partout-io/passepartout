@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.managers.VersionChecker
+import com.algoritmico.passepartout.business.managers.VersionChecker
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.VersionEventNew

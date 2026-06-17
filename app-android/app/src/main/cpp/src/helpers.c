@@ -52,6 +52,7 @@ void abi_completion_proxy(void *ctx, int code, const char *json) {
 JavaVM *jvm = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+    (void)reserved;
     jvm = vm;
     return JNI_VERSION_1_6;
 }

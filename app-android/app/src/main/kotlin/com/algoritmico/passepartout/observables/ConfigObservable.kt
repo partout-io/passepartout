@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.managers.ConfigManager
+import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.Event
