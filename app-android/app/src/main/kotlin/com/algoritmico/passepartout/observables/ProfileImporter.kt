@@ -44,7 +44,7 @@ class ProfileImporter(
             }.onFailure {
                 it.throwIfCancellation()
                 Log.e(logTag, "Import failure: $profileName", it)
-                errorHandler.report(it)
+                errorHandler.report(ProfileImporterException.Failure(it))
             }
         }
     }
