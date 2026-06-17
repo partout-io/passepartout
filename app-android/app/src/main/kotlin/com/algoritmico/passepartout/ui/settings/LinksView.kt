@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.extensions.blogURL
 import com.algoritmico.passepartout.extensions.disclaimerURL
 import com.algoritmico.passepartout.extensions.privacyPolicyURL
-import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.observables.safeOpenUri
 
 @Composable
 fun LinksView(

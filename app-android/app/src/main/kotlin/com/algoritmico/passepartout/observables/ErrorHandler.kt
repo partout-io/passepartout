@@ -5,8 +5,9 @@
 package com.algoritmico.passepartout.observables
 
 import android.util.Log
+import androidx.compose.ui.platform.UriHandler
+import com.algoritmico.passepartout.extensions.throwIfCancellation
 import com.algoritmico.passepartout.injection.Tags
-import com.algoritmico.passepartout.injection.throwIfCancellation
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,5 +26,14 @@ object ErrorHandler {
         error.throwIfCancellation()
         Log.e(Tags.APP, "Invoke error handler", error)
         _errors.tryEmit(error.asAppError)
+    }
+}
+
+fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
+    runCatching {
+        openUri(uri)
+    }.onFailure {
+        Log.e(Tags.APP, "Unable to open URL ($uri)", it)
+        handler.report(it)
     }
 }

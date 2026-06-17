@@ -9,9 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.extensions.versionString
-import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
+import com.algoritmico.passepartout.observables.safeOpenUri
 
 @Composable
 fun VersionUpdateLink() {

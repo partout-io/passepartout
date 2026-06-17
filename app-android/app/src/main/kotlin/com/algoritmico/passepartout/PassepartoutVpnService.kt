@@ -18,7 +18,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.algoritmico.passepartout.injection.lastTunnelPreferences
 import com.algoritmico.passepartout.injection.lastTunnelProfile
-import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.extensions.JSON
 import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.ui.models.NotificationTransferFormatter
 import io.partout.PartoutVpnServiceRuntime

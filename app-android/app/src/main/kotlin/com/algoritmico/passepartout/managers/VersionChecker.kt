@@ -8,7 +8,7 @@ import android.util.Log
 import com.algoritmico.passepartout.extensions.default
 import com.algoritmico.passepartout.extensions.versionString
 import com.algoritmico.passepartout.injection.newEventFlow
-import com.algoritmico.passepartout.injection.throwIfCancellation
+import com.algoritmico.passepartout.extensions.throwIfCancellation
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.Event

@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.observables
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.extensions.JSON
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus

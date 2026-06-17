@@ -2,11 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.injection
+package com.algoritmico.passepartout.extensions
 
-import android.util.Log
-import androidx.compose.ui.platform.UriHandler
-import com.algoritmico.passepartout.observables.ErrorHandler
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -14,15 +11,6 @@ import kotlinx.serialization.json.encodeToJsonElement
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
-
-fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
-    runCatching {
-        openUri(uri)
-    }.onFailure {
-        Log.e(Tags.APP, "Unable to open URL ($uri)", it)
-        handler.report(it)
-    }
-}
 
 fun Throwable.throwIfCancellation() {
     if (this is CancellationException) {

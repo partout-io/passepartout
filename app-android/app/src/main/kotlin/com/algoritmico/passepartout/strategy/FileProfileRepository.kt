@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.strategy
 
 import android.util.Log
-import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.extensions.JSON
 import com.algoritmico.passepartout.managers.ProfileManagerException
 import com.algoritmico.passepartout.managers.ProfileRepository
 import io.partout.models.TaggedProfile

@@ -9,8 +9,8 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import com.algoritmico.passepartout.injection.Files
-import com.algoritmico.passepartout.injection.decodeAsTextOrNull
-import com.algoritmico.passepartout.injection.throwIfCancellation
+import com.algoritmico.passepartout.extensions.decodeAsTextOrNull
+import com.algoritmico.passepartout.extensions.throwIfCancellation
 import com.algoritmico.passepartout.managers.ProfileManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

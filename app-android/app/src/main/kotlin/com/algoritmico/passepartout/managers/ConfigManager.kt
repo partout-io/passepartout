@@ -5,9 +5,9 @@
 package com.algoritmico.passepartout.managers
 
 import android.util.Log
-import com.algoritmico.passepartout.injection.JSON
+import com.algoritmico.passepartout.extensions.JSON
 import com.algoritmico.passepartout.injection.newEventFlow
-import com.algoritmico.passepartout.injection.throwIfCancellation
+import com.algoritmico.passepartout.extensions.throwIfCancellation
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
