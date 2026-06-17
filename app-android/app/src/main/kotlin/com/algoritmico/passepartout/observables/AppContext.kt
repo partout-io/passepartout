@@ -18,6 +18,7 @@ import com.algoritmico.passepartout.context.newVersionChecker
 import com.algoritmico.passepartout.context.userPreferencesStore
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.AppPreferenceKey
+import com.algoritmico.passepartout.models.ConfigFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ import kotlinx.coroutines.supervisorScope
 import java.io.Closeable
 
 class AppContext(
-    logTag: String,
+    private val logTag: String,
     context: Context,
     private val coroutineScope: CoroutineScope,
     requestVpnPermission: (Intent) -> Unit
@@ -139,12 +140,12 @@ class AppContext(
             supervisorScope {
                 launch {
                     configManager.refreshBundle()
-                    userPreferencesObservable.updatePreferences(
-                        fields = listOf(AppPreferenceKey.configFlags)
-                    ) {
-                        it.copy(
-                            configFlags = configManager.activeFlags.toList()
-                        )
+                    val flags = configManager.activeFlags
+                    runCatching {
+                        persistConfigFlags(flags)
+                    }.onFailure {
+                        Log.e(logTag, "Unable to persist config flags", it)
+                        configManager.resetTTL()
                     }
                 }
                 launch {
@@ -160,5 +161,13 @@ class AppContext(
         tunnelObservable.close()
         userPreferencesObservable.close()
         versionObservable.close()
+    }
+
+    private suspend fun persistConfigFlags(flags: Set<ConfigFlag>) {
+        userPreferencesObservable.updatePreferences(
+            fields = listOf(AppPreferenceKey.configFlags)
+        ) {
+            it.copy(configFlags = flags.toList())
+        }
     }
 }
