@@ -10,7 +10,7 @@ import io.partout.abi.PartoutCompletionCallback
 import io.partout.vpn.JNITunnelController
 
 interface PassepartoutWrapperProtocol {
-    fun partoutInit(tag: String)
+    fun partoutInit(tag: String, logsPrivateData: Boolean)
     fun partoutVersion(): String
     fun partoutImportProfile(
         text: String,
@@ -39,8 +39,8 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
         }
     }
 
-    override fun partoutInit(tag: String) {
-        wrapper?.partoutInit(tag)
+    override fun partoutInit(tag: String, logsPrivateData: Boolean) {
+        wrapper?.partoutInit(tag, logsPrivateData)
     }
 
     override fun partoutVersion(): String {
@@ -83,7 +83,7 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
 }
 
 private class UnsafePassepartoutWrapper: PassepartoutWrapperProtocol {
-    override external fun partoutInit(tag: String)
+    override external fun partoutInit(tag: String, logsPrivateData: Boolean)
     override external fun partoutVersion(): String
     override external fun partoutImportProfile(
         text: String,

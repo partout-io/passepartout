@@ -16,11 +16,15 @@ JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutInit(
         JNIEnv *env,
         jobject thiz,
-        jstring tag
+        jstring tag,
+        jboolean logs_private_data
 ) {
     (void)thiz;
+    partout_init_args args = { 0 };
     const char *cTag = (*env)->GetStringUTFChars(env, tag, NULL);
-    partout_init(cTag);
+    args.log_tag = cTag;
+    args.logs_private_data = logs_private_data;
+    partout_init(&args);
     (*env)->ReleaseStringUTFChars(env, tag, cTag);
 }
 
