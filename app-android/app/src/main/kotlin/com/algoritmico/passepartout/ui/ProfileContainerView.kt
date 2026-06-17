@@ -256,11 +256,9 @@ fun ProfileContainerView(
         return
     }
 
-    val selectedHeader = headers.firstOrNull { it.id == selectedProfileId } ?: headers.first()
     MobileProfilesView(
         modifier = modifier,
         headers = headers,
-        selectedProfileId = selectedHeader.id,
         contextualProfileIds = contextualProfileIds,
         isProfileEnabled = ::isProfileEnabled,
         profileStatus = ::profileStatus,
@@ -302,7 +300,6 @@ private fun VpnPermissionDeniedAlert(
 private fun MobileProfilesView(
     modifier: Modifier,
     headers: List<AppProfileHeader>,
-    selectedProfileId: String,
     contextualProfileIds: List<String>,
     isProfileEnabled: (String) -> Boolean,
     profileStatus: (String) -> AppProfileStatus,
@@ -554,7 +551,6 @@ private suspend fun toggleProfile(
         tunnelObservable.disconnect(profileId)
         return true
     }
-
     val profile = profileObservable.profile(profileId) ?: return false
     tunnelObservable.connect(profile)
     return true
