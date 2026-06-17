@@ -12,12 +12,15 @@ import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 
+//region Exceptions
 fun Throwable.throwIfCancellation() {
     if (this is CancellationException) {
         throw this
     }
 }
+//endregion
 
+//region JSON
 object JSON {
     val _coder = Json {
         ignoreUnknownKeys = true
@@ -35,7 +38,9 @@ object JSON {
         return _coder.decodeFromString<T>(json)
     }
 }
+//endregion
 
+//region ByteArray
 fun ByteArray.decodeAsTextOrNull(): String? {
     if (hasBinaryControlBytes()) {
         return null
@@ -80,3 +85,4 @@ private val TEXT_CONTROL_BYTES = setOf(
 )
 
 private const val ASCII_SPACE = 0x20
+//endregion
