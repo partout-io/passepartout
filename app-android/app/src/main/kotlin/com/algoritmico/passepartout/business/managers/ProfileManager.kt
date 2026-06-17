@@ -35,10 +35,6 @@ interface ProfileRepository {
 sealed class ProfileManagerException: Exception() {
     data class NotFound(val profileId: String): ProfileManagerException()
     data class ABI(val json: String?): ProfileManagerException()
-    data class Generic(
-        override val message: String,
-        override val cause: Throwable? = null
-    ): ProfileManagerException()
 }
 
 class ProfileManager(

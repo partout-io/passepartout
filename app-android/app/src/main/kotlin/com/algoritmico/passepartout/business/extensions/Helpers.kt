@@ -13,6 +13,15 @@ import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 
 //region Exceptions
+data class GenericException(
+    override val message: String?,
+    override val cause: Throwable? = null
+): Exception() {
+    override fun getLocalizedMessage(): String? {
+        return cause?.localizedMessage ?: message
+    }
+}
+
 fun Throwable.throwIfCancellation() {
     if (this is CancellationException) {
         throw this

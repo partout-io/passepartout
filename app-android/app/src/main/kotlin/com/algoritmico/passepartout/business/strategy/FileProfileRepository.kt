@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout.business.strategy
 
 import android.util.Log
+import com.algoritmico.passepartout.business.extensions.GenericException
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.managers.ProfileManagerException
 import com.algoritmico.passepartout.business.managers.ProfileRepository
@@ -94,7 +95,7 @@ class FileProfileRepository(
                 val profile = runCatching {
                     JSON.decode<TaggedProfile>(file.readText())
                 }.getOrElse {
-                    throw ProfileManagerException.Generic(
+                    throw GenericException(
                         "Unable to decode profile at ${file.name}",
                         it
                     )
@@ -111,7 +112,7 @@ class FileProfileRepository(
         return runCatching {
             JSON.decode<IndexFile>(indexFile.readText())
         }.getOrElse {
-            throw ProfileManagerException.Generic("Unable to decode profile index", it)
+            throw GenericException("Unable to decode profile index", it)
         }
     }
 
@@ -145,11 +146,11 @@ class FileProfileRepository(
         temporaryFile.writeBytes(data)
         if (destination.exists() && !destination.delete()) {
             temporaryFile.delete()
-            throw ProfileManagerException.Generic("Unable to replace ${destination.name}")
+            throw GenericException("Unable to replace ${destination.name}")
         }
         if (!temporaryFile.renameTo(destination)) {
             temporaryFile.delete()
-            throw ProfileManagerException.Generic("Unable to move ${temporaryFile.name} to ${destination.name}")
+            throw GenericException("Unable to move ${temporaryFile.name} to ${destination.name}")
         }
     }
 
