@@ -128,7 +128,6 @@ class TunnelObservable(
             tunnel.onVpnPermissionResult(true)
             return
         }
-
         _state.update {
             it.copy(isVpnPermissionDenied = true)
         }

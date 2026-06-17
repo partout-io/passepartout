@@ -12,7 +12,7 @@ import com.algoritmico.passepartout.managers.AppError
 import com.algoritmico.passepartout.ui.models.localizedMessage
 
 @Composable
-fun FailureAlert(
+fun GenericErrorAlert(
     error: AppError,
     onDismiss: () -> Unit
 ) {
