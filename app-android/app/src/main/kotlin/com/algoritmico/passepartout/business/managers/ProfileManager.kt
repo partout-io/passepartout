@@ -36,8 +36,8 @@ sealed class ProfileManagerException: Exception() {
     data class NotFound(val profileId: String): ProfileManagerException()
     data class ABI(val json: String?): ProfileManagerException()
     data class Generic(
-        val msg: String,
-        val reason: Throwable? = null
+        override val message: String,
+        override val cause: Throwable? = null
     ): ProfileManagerException()
 }
 

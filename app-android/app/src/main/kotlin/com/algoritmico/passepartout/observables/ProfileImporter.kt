@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 
 sealed class ProfileImporterException: Exception() {
     data object Binary: ProfileImporterException()
-    data class Failure(val reason: Throwable?): ProfileImporterException()
+    data class Failure(override val cause: Throwable?): ProfileImporterException()
 }
 
 class ProfileImporter(
