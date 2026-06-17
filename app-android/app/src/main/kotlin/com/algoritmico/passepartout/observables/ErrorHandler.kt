@@ -6,7 +6,7 @@ package com.algoritmico.passepartout.observables
 
 import android.util.Log
 import androidx.compose.ui.platform.UriHandler
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.context.Tags
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ object ErrorHandler {
 
     fun report(error: Throwable) {
         // This is a guard of last resort to rethrow CancellationException
-        error.throwIfCancellation()
+        error.throwIfFatal()
         Log.e(Tags.APP, "Invoke error handler", error)
         _errors.tryEmit(error.asAppError)
     }

@@ -9,7 +9,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.context.Files
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +42,7 @@ class ProfileImporter(
             }.onSuccess {
                 onImportSuccess()
             }.onFailure {
-                it.throwIfCancellation()
+                it.throwIfFatal()
                 Log.e(logTag, "Import failure: $profileName", it)
                 errorHandler.report(ProfileImporterException.Failure(it))
             }
@@ -53,7 +53,7 @@ class ProfileImporter(
         val bytes = runCatching {
             contentResolver.openInputStream(uri)?.use { it.readBytes() }
         }.getOrElse {
-            it.throwIfCancellation()
+            it.throwIfFatal()
             throw ProfileImporterException.Failure(it)
         }
         if (bytes == null) {
@@ -80,7 +80,7 @@ class ProfileImporter(
                     cursor.getString(displayNameIndex)
                 }
         }.getOrElse {
-            it.throwIfCancellation()
+            it.throwIfFatal()
             Log.e(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }

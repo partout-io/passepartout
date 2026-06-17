@@ -11,7 +11,7 @@ import com.algoritmico.passepartout.business.extensions.LastCheckedVersionSnapsh
 import com.algoritmico.passepartout.business.extensions.compareTo
 import com.algoritmico.passepartout.business.extensions.lastCheckedVersionSnapshots
 import com.algoritmico.passepartout.business.extensions.max
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.business.extensions.toSemanticVersionOrNull
 import com.algoritmico.passepartout.business.extensions.updateLastCheckedVersion
 import com.algoritmico.passepartout.business.extensions.versionString
@@ -116,7 +116,7 @@ class VersionChecker(
     }
 
     private suspend fun handleVersionCheckFailure(timestamp: Long, error: Throwable) {
-        error.throwIfCancellation()
+        error.throwIfFatal()
         when (error) {
             is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
             is VersionCheckerException.UnexpectedResponse -> {

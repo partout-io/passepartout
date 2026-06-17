@@ -22,8 +22,8 @@ data class GenericException(
     }
 }
 
-fun Throwable.throwIfCancellation() {
-    if (this is CancellationException) {
+fun Throwable.throwIfFatal() {
+    if (this !is Exception || this is CancellationException) {
         throw this
     }
 }
@@ -61,7 +61,7 @@ fun ByteArray.decodeAsTextOrNull(): String? {
     return runCatching {
         decoder.decode(ByteBuffer.wrap(this)).toString()
     }.getOrElse {
-        it.throwIfCancellation()
+        it.throwIfFatal()
         when (it) {
             is CharacterCodingException -> null
             else -> throw it

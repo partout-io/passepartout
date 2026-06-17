@@ -181,9 +181,6 @@ class PassepartoutVpnService: VpnService() {
                 stream.write(json.toByteArray(Charsets.UTF_8))
                 atomicFile.finishWrite(stream)
             }.onFailure {
-                if (it !is Exception) {
-                    throw it
-                }
                 atomicFile.failWrite(stream)
                 throw it
             }

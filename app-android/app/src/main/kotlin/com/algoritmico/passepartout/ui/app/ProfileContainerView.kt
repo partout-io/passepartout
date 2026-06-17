@@ -47,7 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
@@ -143,7 +143,7 @@ fun ProfileContainerView(
                     true
                 }
             }.getOrElse {
-                it.throwIfCancellation()
+                it.throwIfFatal()
                 when (it) {
                     is TunnelObservableException.Interactive -> {
                         interactiveProfile = it.profile

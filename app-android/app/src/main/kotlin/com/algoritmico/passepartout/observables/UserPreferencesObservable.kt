@@ -50,9 +50,6 @@ class UserPreferencesObservable(
                 preferences.first()
             }
         }.getOrElse {
-            if (it !is Exception) {
-                throw it
-            }
             Log.e(logTag, "Unable to load preferences", it)
             AppPreferences.default
         }

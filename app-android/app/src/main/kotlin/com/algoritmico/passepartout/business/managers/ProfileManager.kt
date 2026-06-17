@@ -8,7 +8,7 @@ import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -63,7 +63,7 @@ class ProfileManager(
                 library.partoutImportProfile(text, name, completion)
             }
         }.getOrElse {
-            it.throwIfCancellation()
+            it.throwIfFatal()
             when (it) {
                 is PartoutException -> throw ProfileManagerException.ABI(it.payload)
                 else -> throw it

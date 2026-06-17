@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
@@ -55,6 +56,7 @@ fun CreditsView(
         runCatching {
             context.credits()
         }.getOrElse {
+            it.throwIfFatal()
             Log.w(TAG, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
@@ -149,7 +151,6 @@ private fun CreditsListView(
                 HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
             }
         }
-
         if (notices.isNotEmpty()) {
             item {
                 CreditsSectionHeader("Notices")
@@ -173,7 +174,6 @@ private fun CreditsListView(
                 HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
             }
         }
-
         if (languages.isNotEmpty()) {
             item {
                 CreditsSectionHeader("Translations")
@@ -243,9 +243,7 @@ private fun LicenseView(
                 runCatching {
                     URL(license.licenseURL).readText()
                 }.getOrElse {
-                    if (it !is Exception) {
-                        throw it
-                    }
+                    it.throwIfFatal()
                     "Unable to load license: ${it.localizedMessage ?: it::class.java.simpleName}"
                 }
             }

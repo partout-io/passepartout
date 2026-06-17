@@ -10,10 +10,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.observables.AppContext
-import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.context.Files
 import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.observables.AppContext
+import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.ui.PassepartoutApp
 
 class MainActivity : ComponentActivity() {
@@ -67,9 +68,7 @@ class MainActivity : ComponentActivity() {
         runCatching {
             profileImportLauncher.launch(Files.MIME_TYPES)
         }.onFailure {
-            if (it !is Exception) {
-                throw it
-            }
+            it.throwIfFatal()
             Log.e(logTag, "Unable to open profile importer", it)
             isProfileImporterOpen = false
             ErrorHandler.report(it)

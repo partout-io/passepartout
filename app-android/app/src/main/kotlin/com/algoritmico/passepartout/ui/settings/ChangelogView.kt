@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.models.ChangelogEntry
@@ -59,6 +60,7 @@ fun ChangelogView(
         entries = runCatching {
             versionObservable.fetchChangelog(versionNumber)
         }.getOrElse {
+            it.throwIfFatal()
             Log.w(TAG, "Unable to load changelog", it)
             emptyList()
         }
@@ -74,7 +76,6 @@ fun ChangelogView(
                 CircularProgressIndicator()
             }
         }
-
         entries.isEmpty() -> {
             Box(
                 modifier = modifier
@@ -89,7 +90,6 @@ fun ChangelogView(
                 )
             }
         }
-
         else -> {
             ChangelogListView(
                 modifier = modifier,
