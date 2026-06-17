@@ -126,7 +126,7 @@ class ConfigBundle(
     }
 }
 
-fun ConfigBundleConfig.isActive(buildNumber: Int): Boolean {
+private fun ConfigBundleConfig.isActive(buildNumber: Int): Boolean {
     if (minBuild != null && buildNumber < minBuild) {
         return false
     }
