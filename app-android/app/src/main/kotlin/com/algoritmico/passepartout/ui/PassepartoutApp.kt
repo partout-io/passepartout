@@ -15,12 +15,19 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.observables.ConfigObservable
+import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalConfigObservable
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
@@ -36,8 +43,7 @@ fun PassepartoutApp(
     configObservable: ConfigObservable,
     versionObservable: VersionObservable,
     appConfiguration: AppConfiguration,
-    importFailureMessage: String?,
-    onDismissImportFailure: () -> Unit,
+    errorHandler: ErrorHandler,
     onImportProfile: () -> Unit
 ) {
     val colorScheme = if (isSystemInDarkTheme()) {
@@ -57,11 +63,14 @@ fun PassepartoutApp(
             inversePrimary = Color(0xFFFFB878)
         )
     }
-
+    var failureMessage by remember {
+        mutableStateOf<String?>(null)
+    }
     CompositionLocalProvider(
         LocalAppConfiguration provides appConfiguration,
         LocalConfigObservable provides configObservable,
-        LocalVersionObservable provides versionObservable
+        LocalVersionObservable provides versionObservable,
+        LocalErrorHandler provides errorHandler
     ) {
         MaterialTheme(colorScheme = colorScheme) {
             Surface(
@@ -77,10 +86,19 @@ fun PassepartoutApp(
                     onImportProfile = onImportProfile
                 )
             }
-            importFailureMessage?.let { message ->
-                ImportFailureAlert(
+            LaunchedEffect(errorHandler) {
+                errorHandler.errors.collect { error ->
+                    // FIXME: ###, Localize AppError
+                    failureMessage = error.code.name
+                }
+            }
+            failureMessage?.let { message ->
+                FailureAlert(
+                    title = "Error",
                     message = message,
-                    onDismiss = onDismissImportFailure
+                    onDismiss = {
+                        failureMessage = null
+                    }
                 )
             }
         }
@@ -88,14 +106,15 @@ fun PassepartoutApp(
 }
 
 @Composable
-private fun ImportFailureAlert(
+private fun FailureAlert(
+    title: String,
     message: String,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Import failed")
+            Text(title)
         },
         text = {
             Text(message)

@@ -16,7 +16,7 @@ fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
         openUri(uri)
     }.onFailure {
         Log.e(Tags.APP, "Unable to open URL ($uri)", it)
-        handler.handle(it)
+        handler.report(it)
     }
 }
 

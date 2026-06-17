@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.injection.Tags
 import com.algoritmico.passepartout.observables.AppContext
@@ -21,7 +20,6 @@ class MainActivity : ComponentActivity() {
     private val logTag = Tags.APP
     private lateinit var appContext: AppContext
     private var isProfileImporterOpen = false
-    private var importFailureMessage by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,10 +41,7 @@ class MainActivity : ComponentActivity() {
                 appContext.configObservable,
                 appContext.versionObservable,
                 appContext.appConfiguration,
-                importFailureMessage = importFailureMessage,
-                onDismissImportFailure = {
-                    importFailureMessage = null
-                },
+                ErrorHandler,
                 onImportProfile = ::openProfileImporter
             )
         }
