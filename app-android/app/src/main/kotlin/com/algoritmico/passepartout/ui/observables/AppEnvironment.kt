@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.observables
+package com.algoritmico.passepartout.ui.observables
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.algoritmico.passepartout.models.AppConfiguration

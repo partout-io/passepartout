@@ -17,7 +17,7 @@ import com.algoritmico.passepartout.managers.VersionChecker
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.strategy.FileProfileRepository
 import com.algoritmico.passepartout.strategy.GitHubConfigStrategy
 import com.algoritmico.passepartout.strategy.GitHubReleaseStrategy

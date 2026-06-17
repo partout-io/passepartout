@@ -16,7 +16,7 @@ import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.models.ProfileEventSave
-import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.ui.observables.ErrorHandler
 import io.partout.abi.PartoutResult
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType

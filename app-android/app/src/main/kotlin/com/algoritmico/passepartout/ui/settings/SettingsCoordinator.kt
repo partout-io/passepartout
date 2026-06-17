@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.extensions.versionString
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
 
 @Composable
 fun SettingsCoordinator(

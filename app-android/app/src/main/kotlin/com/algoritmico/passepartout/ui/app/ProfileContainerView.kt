@@ -52,11 +52,11 @@ import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
-import com.algoritmico.passepartout.observables.ErrorHandler
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.ProfileObservable
-import com.algoritmico.passepartout.observables.TunnelObservable
-import com.algoritmico.passepartout.observables.TunnelObservableException
+import com.algoritmico.passepartout.ui.observables.ErrorHandler
+import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.observables.ProfileObservable
+import com.algoritmico.passepartout.ui.observables.TunnelObservable
+import com.algoritmico.passepartout.ui.observables.TunnelObservableException
 import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.models.statusText

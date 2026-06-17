@@ -13,7 +13,7 @@ import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.SemanticVersion
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -42,10 +42,10 @@ import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalConfigObservable
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.observables.LocalConfigObservable
+import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
 import kotlinx.coroutines.launch
 
 @Composable
