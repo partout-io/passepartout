@@ -264,32 +264,6 @@ fun ProfileContainerView(
 }
 
 @Composable
-private fun VpnPermissionDeniedAlert(
-    onDismiss: () -> Unit,
-    onOpenSettings: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text("VPN permission required")
-        },
-        text = {
-            Text("Passepartout needs VPN permission to start a connection.")
-        },
-        confirmButton = {
-            TextButton(onClick = onOpenSettings) {
-                Text("Open VPN settings")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("OK")
-            }
-        }
-    )
-}
-
-@Composable
 private fun MobileProfilesView(
     modifier: Modifier,
     headers: List<AppProfileHeader>,
