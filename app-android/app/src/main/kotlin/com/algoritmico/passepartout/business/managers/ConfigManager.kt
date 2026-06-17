@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.business.managers
 
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
@@ -38,11 +39,11 @@ class ConfigManager(
     private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
-    suspend fun refreshBundle() {
+    suspend fun refreshBundle(): Boolean {
         if (!refreshMutex.tryLock()) {
-            return
+            return false
         }
-        runCatching {
+        return runCatching {
             Log.d(logTag, "Config: refreshing bundle...")
             val newBundle = strategy.bundle()
             val event = synchronized(bundleLock) {
@@ -52,14 +53,21 @@ class ConfigManager(
             _events.emit(event)
             Log.i(logTag, "Config: active flags = ${event.flags}")
             Log.d(logTag, "Config: $newBundle")
+            true
         }.also {
             refreshMutex.unlock()
-        }.onFailure {
+        }.getOrElse {
+            it.throwIfCancellation()
             when (it) {
-                is ConfigManagerException.RateLimit -> Log.d(logTag, "Config: TTL")
-                else -> Log.e(logTag, "Unable to refresh config flags", it)
+                is ConfigManagerException.RateLimit -> {
+                    Log.d(logTag, "Config: TTL")
+                    false
+                }
+                else -> {
+                    Log.e(logTag, "Unable to refresh config flags", it)
+                    throw it
+                }
             }
-            throw it
         }
     }
 

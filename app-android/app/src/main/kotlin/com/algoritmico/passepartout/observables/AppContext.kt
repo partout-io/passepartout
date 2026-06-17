@@ -141,7 +141,9 @@ class AppContext(
             supervisorScope {
                 launch {
                     runCatching {
-                        configManager.refreshBundle()
+                        if (!configManager.refreshBundle()) {
+                            return@runCatching
+                        }
                         val flags = configManager.activeFlags
                         persistConfigFlags(flags)
                     }.onFailure {
