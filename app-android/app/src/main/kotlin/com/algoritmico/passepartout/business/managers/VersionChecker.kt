@@ -74,34 +74,16 @@ class VersionChecker(
             return
         }
         runCatching {
+            val latestRelease = newReleaseOrNull() ?: latestRelease
             val now = System.currentTimeMillis()
-            var didCheck = false
-            val checkedRelease = runCatching {
-                val lastCheckedTimestamp = readySnapshot()?.timestamp
-                Log.d(logTag, "Version: checking for updates...")
-                val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
-                saveVersion(now, fetchedLatestVersion.versionString)
-                didCheck = true
-                Log.i(
-                    logTag,
-                    "Version: ${fetchedLatestVersion.versionString} > " +
-                        "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
-                )
-                fetchedLatestVersion.release()
-            }.getOrElse {
-                it.throwIfCancellation()
-                when (it) {
-                    is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
-                    is VersionCheckerException.UnexpectedResponse -> {
-                        saveVersion(now, null)
-                        Log.e(logTag, "Unable to check version", it)
-                    }
-                    else -> Log.e(logTag, "Unable to check version", it)
-                }
-                null
+            val result = runCatching {
+                newReleaseOrNull(now)
+            }.onFailure {
+                handleVersionCheckFailure(now, it)
             }
-
-            val latestRelease = if (didCheck) checkedRelease else latestRelease
+            val latestRelease = result.getOrElse {
+                latestRelease
+            }
             if (latestRelease == null) {
                 Log.d(logTag, "Version: current is latest version")
             } else {
@@ -121,6 +103,31 @@ class VersionChecker(
         scope.cancel()
     }
 
+    private suspend fun newReleaseOrNull(timestamp: Long): VersionRelease? {
+        val lastCheckedTimestamp = waitForSnapshot()?.timestamp
+        Log.d(logTag, "Version: checking for updates...")
+        val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
+        saveVersion(timestamp, fetchedLatestVersion.versionString)
+        Log.i(
+            logTag,
+            "Version: ${fetchedLatestVersion.versionString} > " +
+                    "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
+        )
+        return fetchedLatestVersion.release()
+    }
+
+    private suspend fun handleVersionCheckFailure(timestamp: Long, error: Throwable) {
+        error.throwIfCancellation()
+        when (error) {
+            is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
+            is VersionCheckerException.UnexpectedResponse -> {
+                saveVersion(timestamp, null)
+                Log.e(logTag, "Unable to check version", error)
+            }
+            else -> Log.e(logTag, "Unable to check version", error)
+        }
+    }
+
     private suspend fun saveVersion(timestamp: Long, version: String?) {
         store.updateLastCheckedVersion(timestamp, version)
     }
@@ -132,7 +139,7 @@ class VersionChecker(
         }
     }
 
-    private suspend fun readySnapshot(): LastCheckedVersionSnapshot? {
+    private suspend fun waitForSnapshot(): LastCheckedVersionSnapshot? {
         return when (val state = snapshots.value) {
             is VersionSnapshotState.Ready -> state.snapshot
             VersionSnapshotState.Loading -> {
