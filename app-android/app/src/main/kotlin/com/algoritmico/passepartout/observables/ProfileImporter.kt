@@ -77,7 +77,7 @@ class ProfileImporter(
                     }
                     val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                     if (displayNameIndex < 0) {
-                        null
+                        return@use null
                     }
                     cursor.getString(displayNameIndex)
                 }
