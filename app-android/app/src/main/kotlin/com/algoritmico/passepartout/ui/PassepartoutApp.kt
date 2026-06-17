@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.algoritmico.passepartout.managers.localizedMessage
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
@@ -88,8 +89,7 @@ fun PassepartoutApp(
             }
             LaunchedEffect(errorHandler) {
                 errorHandler.errors.collect { error ->
-                    // FIXME: ###, Localize AppError
-                    failureMessage = error.code.name
+                    failureMessage = error.localizedMessage
                 }
             }
             failureMessage?.let { message ->
