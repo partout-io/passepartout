@@ -6,9 +6,11 @@ package com.algoritmico.passepartout.extensions
 
 import io.partout.extensions.encodedPassword
 import io.partout.extensions.isInteractive
+import io.partout.extensions.moduleId
 import io.partout.models.OpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.OpenVPNModule
+import io.partout.models.TaggedModule
 import io.partout.models.TaggedModuleOpenVPN
 import io.partout.models.TaggedProfile
 import kotlinx.serialization.json.JsonObject
@@ -20,13 +22,13 @@ val TaggedProfile.fingerprint: String?
         ?.jsonPrimitive
         ?.content
 
-val TaggedProfile.interactiveOpenVPNModule: OpenVPNModule?
-    get() = modules.firstNotNullOfOrNull { module ->
-        val openVPNModule = (module as? TaggedModuleOpenVPN)?.value
-        openVPNModule?.takeIf {
-            it.id in activeModulesIds && it.isInteractive
-        }
+val TaggedProfile.interactiveModule: TaggedModule?
+    get() = modules.firstOrNull {
+        it.moduleId in activeModulesIds && it.isInteractive
     }
+
+val TaggedProfile.interactiveOpenVPNModule: OpenVPNModule?
+    get() = (interactiveModule as? TaggedModuleOpenVPN)?.value
 
 fun TaggedProfile.withInteractiveOpenVPNCredentials(
     username: String,

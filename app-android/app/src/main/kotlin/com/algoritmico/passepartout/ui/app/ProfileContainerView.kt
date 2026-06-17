@@ -56,7 +56,7 @@ import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
-import com.algoritmico.passepartout.ui.alerts.InteractiveOpenVPNView
+import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.models.statusText
 import com.algoritmico.passepartout.ui.models.transferText
@@ -219,7 +219,7 @@ fun ProfileContainerView(
     }
 
     interactiveProfile?.let { profile ->
-        InteractiveOpenVPNView(
+        InteractiveView(
             profile = profile,
             onDismiss = {
                 interactiveProfile = null

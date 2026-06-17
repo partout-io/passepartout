@@ -17,27 +17,55 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.interactiveOpenVPNModule
+import com.algoritmico.passepartout.extensions.interactiveModule
 import com.algoritmico.passepartout.extensions.withInteractiveOpenVPNCredentials
+import io.partout.extensions.moduleType
 import io.partout.models.OpenVPNCredentialsOTPMethod
+import io.partout.models.OpenVPNModule
+import io.partout.models.TaggedModule
+import io.partout.models.TaggedModuleOpenVPN
 import io.partout.models.TaggedProfile
 
-// FIXME: ###, Interactive, Generalize module views
 @Composable
-fun InteractiveOpenVPNView(
+fun InteractiveView(
     profile: TaggedProfile,
     onDismiss: () -> Unit,
     onConnect: (TaggedProfile) -> Unit
 ) {
-    val credentials = profile.interactiveOpenVPNModule?.credentials
+    when (val module = profile.interactiveModule) {
+        is TaggedModuleOpenVPN -> {
+            InteractiveOpenVPNView(
+                profile = profile,
+                module = module.value,
+                onDismiss = onDismiss,
+                onConnect = onConnect
+            )
+        }
+        else -> {
+            UnsupportedInteractiveView(
+                module = module,
+                onDismiss = onDismiss
+            )
+        }
+    }
+}
+
+@Composable
+private fun InteractiveOpenVPNView(
+    profile: TaggedProfile,
+    module: OpenVPNModule,
+    onDismiss: () -> Unit,
+    onConnect: (TaggedProfile) -> Unit
+) {
+    val credentials = module.credentials
     val otpMethod = credentials?.otpMethod ?: OpenVPNCredentialsOTPMethod.none
-    var username by remember(profile.id) {
+    var username by remember(profile.id, module.id) {
         mutableStateOf(credentials?.username.orEmpty())
     }
-    var password by remember(profile.id) {
+    var password by remember(profile.id, module.id) {
         mutableStateOf(credentials?.password.orEmpty())
     }
-    var otp by remember(profile.id) {
+    var otp by remember(profile.id, module.id) {
         mutableStateOf("")
     }
     val requiresOTP = otpMethod != OpenVPNCredentialsOTPMethod.none
@@ -111,6 +139,28 @@ fun InteractiveOpenVPNView(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+private fun UnsupportedInteractiveView(
+    module: TaggedModule?,
+    onDismiss: () -> Unit
+) {
+    val moduleName = module?.moduleType?.value ?: "profile"
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Interactive profile")
+        },
+        text = {
+            Text("$moduleName requires input that is not supported by this app version.")
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
             }
         }
     )
