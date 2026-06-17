@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.algoritmico.passepartout.business.extensions.currentAppPreferences
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.extensions.toAppPreferences
 import com.algoritmico.passepartout.business.extensions.update
@@ -21,8 +22,6 @@ import com.algoritmico.passepartout.models.VersionEventNew
 import com.algoritmico.passepartout.models.VersionRelease
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 
 data class VersionCheckerSnapshot(
@@ -127,9 +126,7 @@ class VersionChecker(
     }
 
     private fun onLastSnapshot(): VersionCheckerSnapshot? {
-        val snapshot = runBlocking {
-            store.data.first().toAppPreferences()
-        }
+        val snapshot = store.currentAppPreferences(logTag)
         val timestamp = snapshot.lastCheckedVersionTimestamp ?: return null
         return VersionCheckerSnapshot(timestamp, snapshot.lastCheckedVersion)
     }

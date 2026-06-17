@@ -9,10 +9,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
+import com.algoritmico.passepartout.business.extensions.appPreferences
 import com.algoritmico.passepartout.business.extensions.default
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
-import com.algoritmico.passepartout.business.extensions.toAppPreferences
 import com.algoritmico.passepartout.business.extensions.toggleDnsFallback
 import com.algoritmico.passepartout.business.extensions.update
 import com.algoritmico.passepartout.business.extensions.updateExperimentalPreferences
@@ -24,7 +22,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -40,16 +37,7 @@ class UserPreferencesObservable(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
 
-    private val flow: Flow<Preferences>
-        get() {
-            return store.data.catch {
-                it.throwIfCancellation()
-                Log.e(logTag, "Unable to read preferences", it)
-                emit(emptyPreferences())
-            }
-        }
-
-    val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
+    val preferences: Flow<AppPreferences> = store.appPreferences(logTag)
     val currentPreferences: AppPreferences
         get() = snapshot
     private var snapshot: AppPreferences

@@ -4,9 +4,12 @@
 
 package com.algoritmico.passepartout.business.extensions
 
+import android.util.Log
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -14,6 +17,37 @@ import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.ExperimentalPreferences
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
+
+//region Flows
+fun DataStore<Preferences>.appPreferences(logTag: String): Flow<AppPreferences> {
+    return data.safePreferences(logTag)
+        .map { it.toAppPreferences() }
+}
+
+fun Flow<Preferences>.appPreferences(logTag: String): Flow<AppPreferences> {
+    return safePreferences(logTag)
+        .map { it.toAppPreferences() }
+}
+
+fun DataStore<Preferences>.currentAppPreferences(logTag: String): AppPreferences {
+    return runBlocking {
+        appPreferences(logTag).first()
+    }
+}
+
+private fun Flow<Preferences>.safePreferences(logTag: String): Flow<Preferences> {
+    return catch {
+        it.throwIfCancellation()
+        Log.e(logTag, "Unable to read preferences", it)
+        emit(emptyPreferences())
+    }
+}
+//endregion
 
 //region Mapping
 val AppPreferences.Companion.default: AppPreferences

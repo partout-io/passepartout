@@ -9,8 +9,9 @@ import android.util.Log
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.business.extensions.JSON
-import com.algoritmico.passepartout.business.extensions.toAppPreferences
+import com.algoritmico.passepartout.business.extensions.appPreferences
 import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.Event
@@ -53,6 +54,8 @@ class TunnelObservable(
     storeFlow: Flow<Preferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
+    private val preferences: Flow<AppPreferences> = storeFlow.appPreferences(logTag)
+
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
@@ -98,7 +101,7 @@ class TunnelObservable(
 
     private val onConnectIntent: (Intent) -> Unit = { intent ->
         val json = runBlocking {
-            val prefs = storeFlow.first().toAppPreferences()
+            val prefs = preferences.first()
             JSON.encode(prefs)
         }
         intent.putExtra(PassepartoutVpnService.EXTRA_TUNNEL_PREFERENCES, json)
