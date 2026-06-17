@@ -461,6 +461,7 @@ private fun openVpnSettings(context: Context, errorHandler: ErrorHandler) {
     }.onFailure {
         runCatching {
             context.startActivity(appSettingsIntent)
+        }.onFailure {
             errorHandler.report(it)
         }
     }

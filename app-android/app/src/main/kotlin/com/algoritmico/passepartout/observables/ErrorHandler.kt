@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.observables
 
 import android.util.Log
 import com.algoritmico.passepartout.injection.Tags
+import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.managers.AppError
 import com.algoritmico.passepartout.managers.asAppError
 import kotlinx.coroutines.channels.BufferOverflow
@@ -22,6 +23,7 @@ object ErrorHandler {
     val errors: Flow<AppError> = _errors.asSharedFlow()
 
     fun report(error: Throwable) {
+        error.throwIfCancellation()
         Log.e(Tags.APP, "Invoke error handler", error)
         _errors.tryEmit(error.asAppError)
     }
