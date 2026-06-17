@@ -4,19 +4,22 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.context.Tags
-import com.algoritmico.passepartout.context.appBundle
-import com.algoritmico.passepartout.context.appConstants
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.appConstants
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.context.newConfigManager
 import com.algoritmico.passepartout.context.newProfileManager
 import com.algoritmico.passepartout.context.newTunnel
 import com.algoritmico.passepartout.context.newVersionChecker
 import com.algoritmico.passepartout.context.userPreferencesStore
+import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.models.AppPreferenceKey
+import com.algoritmico.passepartout.models.ConfigFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -24,7 +27,7 @@ import kotlinx.coroutines.supervisorScope
 import java.io.Closeable
 
 class AppContext(
-    logTag: String,
+    private val logTag: String,
     context: Context,
     private val coroutineScope: CoroutineScope,
     requestVpnPermission: (Intent) -> Unit
@@ -94,7 +97,8 @@ class AppContext(
         )
         versionChecker = appConfiguration.newVersionChecker(
             logTag,
-            userPreferencesObservable
+            context.userPreferencesStore,
+            coroutineScope
         )
 
         // Observables from managers
@@ -119,7 +123,7 @@ class AppContext(
             logTag,
             tunnel,
             profileManager,
-            userPreferencesObservable.preferences,
+            context.userPreferencesStore.data,
             coroutineScope
         )
         versionObservable = VersionObservable(
@@ -137,7 +141,17 @@ class AppContext(
         applicationActiveJob = coroutineScope.launch {
             supervisorScope {
                 launch {
-                    configManager.refreshBundle()
+                    runCatching {
+                        if (!configManager.refreshBundle()) {
+                            return@runCatching
+                        }
+                        val flags = configManager.activeFlags
+                        persistConfigFlags(flags)
+                    }.onFailure {
+                        it.throwIfCancellation()
+                        Log.e(logTag, "Unable to persist config flags", it)
+                        configManager.resetTTL()
+                    }
                 }
                 launch {
                     versionChecker.checkLatestRelease()
@@ -152,5 +166,14 @@ class AppContext(
         tunnelObservable.close()
         userPreferencesObservable.close()
         versionObservable.close()
+        versionChecker.close()
+    }
+
+    private suspend fun persistConfigFlags(flags: Set<ConfigFlag>) {
+        userPreferencesObservable.updatePreferences(
+            fields = listOf(AppPreferenceKey.configFlags)
+        ) {
+            it.copy(configFlags = flags.toList())
+        }
     }
 }

@@ -16,6 +16,7 @@ class GitHubConfigStrategy(
     private val ttl: Double,
     private val fetcher: suspend (String) -> ByteArray
 ) : ConfigManagerStrategy {
+    @Volatile
     private var lastUpdatedAtMillis: Long? = null
 
     override suspend fun bundle(): ConfigBundle {
@@ -33,5 +34,9 @@ class GitHubConfigStrategy(
         val bundle = ConfigBundle.Companion.decode(data)
         lastUpdatedAtMillis = SystemClock.elapsedRealtime()
         return bundle
+    }
+
+    override fun resetTTL() {
+        lastUpdatedAtMillis = null
     }
 }

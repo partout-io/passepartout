@@ -6,8 +6,10 @@ package com.algoritmico.passepartout.observables
 
 import android.content.Intent
 import android.util.Log
+import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.appPreferences
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.AppProfileStatus
@@ -49,9 +51,11 @@ class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
     profileManager: ProfileManager,
-    preferences: Flow<AppPreferences>,
+    storeFlow: Flow<Preferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
+    private val preferences: Flow<AppPreferences> = storeFlow.appPreferences(logTag)
+
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )

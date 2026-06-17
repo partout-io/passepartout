@@ -5,7 +5,15 @@
 package com.algoritmico.passepartout.business.managers
 
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import com.algoritmico.passepartout.business.extensions.LastCheckedVersionSnapshot
+import com.algoritmico.passepartout.business.extensions.compareTo
+import com.algoritmico.passepartout.business.extensions.lastCheckedVersionSnapshots
+import com.algoritmico.passepartout.business.extensions.max
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.toSemanticVersionOrNull
+import com.algoritmico.passepartout.business.extensions.updateLastCheckedVersion
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ChangelogEntry
@@ -13,20 +21,22 @@ import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.SemanticVersion
 import com.algoritmico.passepartout.models.VersionEventNew
 import com.algoritmico.passepartout.models.VersionRelease
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
-
-data class VersionCheckerSnapshot(
-    val timestamp: Long,
-    val version: String?
-)
+import java.io.Closeable
 
 interface VersionCheckerStrategy {
     suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion
-    suspend fun saveVersion(timestamp: Long, version: String?)
     suspend fun fetchChangelog(version: String): List<ChangelogEntry>
-    val lastSnapshot: VersionCheckerSnapshot?
 }
 
 sealed class VersionCheckerException: Exception() {
@@ -36,92 +46,119 @@ sealed class VersionCheckerException: Exception() {
 
 class VersionChecker(
     private val logTag: String,
+    private val store: DataStore<Preferences>,
+    coroutineScope: CoroutineScope,
     private val strategy: VersionCheckerStrategy = DummyVersionCheckerStrategy(),
     currentVersion: String = "255.255.255",
     private val downloadURL: String = "http://"
-) {
-    private val currentVersion = currentVersion.toSemanticVersionOrNull() ?: SemanticVersion(
-        0,
-        0,
-        0
+) : Closeable {
+    private val mutex = Mutex()
+    private val scope = CoroutineScope(
+        coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
-    private val checkMutex = Mutex()
-
+    private val snapshots = store.lastCheckedVersionSnapshots(logTag)
+        .map { VersionSnapshotState.Ready(it) }
+        .stateIn(scope, SharingStarted.Eagerly, VersionSnapshotState.Loading)
+    private val currentVersion = currentVersion.toSemanticVersionOrNull() ?: SemanticVersion.max
     private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     val latestRelease: VersionRelease?
         get() {
-            val latestVersionDescription = strategy.lastSnapshot?.version ?: return null
+            val latestVersionDescription = currentSnapshot()?.version ?: return null
             val latestVersion = latestVersionDescription.toSemanticVersionOrNull() ?: return null
-            if (latestVersion <= currentVersion) {
-                return null
-            }
-            return VersionRelease(version = latestVersion, url = downloadURL)
+            return latestVersion.release()
         }
 
     suspend fun checkLatestRelease() {
-        if (!checkMutex.tryLock()) {
+        if (!mutex.tryLock()) {
             return
         }
         runCatching {
             val now = System.currentTimeMillis()
-            runCatching {
-                val lastCheckedTimestamp = strategy.lastSnapshot?.timestamp
-                Log.d(logTag, "Version: checking for updates...")
-                val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
-                strategy.saveVersion(now, fetchedLatestVersion.versionString)
-                Log.i(
-                    logTag,
-                    "Version: ${fetchedLatestVersion.versionString} > " +
-                        "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
-                )
+            val release = runCatching {
+                newReleaseOrNull(now)
             }.onFailure {
-                it.throwIfCancellation()
-                when (it) {
-                    is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
-                    is VersionCheckerException.UnexpectedResponse -> {
-                        strategy.saveVersion(now, null)
-                        Log.e(logTag, "Unable to check version", it)
-                    }
-                    else -> Log.e(logTag, "Unable to check version", it)
-                }
+                handleVersionCheckFailure(now, it)
+            }.getOrElse {
+                latestRelease
             }
-
-            val latestRelease = latestRelease
-            if (latestRelease == null) {
+            if (release == null) {
                 Log.d(logTag, "Version: current is latest version")
-                return
+            } else {
+                Log.i(logTag, "Version: new version available at ${release.url}")
+                _events.emit(VersionEventNew(release = release))
             }
-            Log.i(logTag, "Version: new version available at ${latestRelease.url}")
-            _events.emit(VersionEventNew(release = latestRelease))
         }.also {
-            checkMutex.unlock()
+            mutex.unlock()
         }.getOrThrow()
     }
 
     suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         return strategy.fetchChangelog(version)
     }
+
+    override fun close() {
+        scope.cancel()
+    }
+
+    private suspend fun newReleaseOrNull(timestamp: Long): VersionRelease? {
+        val lastCheckedTimestamp = waitForSnapshot()?.timestamp
+        Log.d(logTag, "Version: checking for updates...")
+        val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
+        saveVersion(timestamp, fetchedLatestVersion.versionString)
+        Log.i(
+            logTag,
+            "Version: ${fetchedLatestVersion.versionString} > " +
+                    "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
+        )
+        return fetchedLatestVersion.release()
+    }
+
+    private suspend fun handleVersionCheckFailure(timestamp: Long, error: Throwable) {
+        error.throwIfCancellation()
+        when (error) {
+            is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
+            is VersionCheckerException.UnexpectedResponse -> {
+                saveVersion(timestamp, null)
+                Log.e(logTag, "Unable to check version", error)
+            }
+            else -> Log.e(logTag, "Unable to check version", error)
+        }
+    }
+
+    private suspend fun saveVersion(timestamp: Long, version: String?) {
+        store.updateLastCheckedVersion(timestamp, version)
+    }
+
+    private fun currentSnapshot(): LastCheckedVersionSnapshot? {
+        return when (val state = snapshots.value) {
+            is VersionSnapshotState.Ready -> state.snapshot
+            VersionSnapshotState.Loading -> null
+        }
+    }
+
+    private suspend fun waitForSnapshot(): LastCheckedVersionSnapshot? {
+        return when (val state = snapshots.value) {
+            is VersionSnapshotState.Ready -> state.snapshot
+            VersionSnapshotState.Loading -> {
+                (snapshots.first { it is VersionSnapshotState.Ready } as VersionSnapshotState.Ready)
+                    .snapshot
+            }
+        }
+    }
+
+    private fun SemanticVersion.release(): VersionRelease? {
+        if (this <= currentVersion) {
+            return null
+        }
+        return VersionRelease(version = this, url = downloadURL)
+    }
 }
 
-fun String.toSemanticVersionOrNull(): SemanticVersion? {
-    return runCatching {
-        val parts = split(".")
-        require(parts.size == 3)
-        val major = parts[0].toInt()
-        val minor = parts[1].toInt()
-        val patch = parts[2].toInt()
-        SemanticVersion(major, minor, patch)
-    }.getOrNull()
-}
-
-private operator fun SemanticVersion.compareTo(other: SemanticVersion): Int {
-    return encodedValue().compareTo(other.encodedValue())
-}
-
-private fun SemanticVersion.encodedValue(): Int {
-    return ((major and 0xff) shl 16) + ((minor and 0xff) shl 8) + (patch and 0xff)
+private sealed class VersionSnapshotState {
+    data object Loading : VersionSnapshotState()
+    data class Ready(val snapshot: LastCheckedVersionSnapshot?) : VersionSnapshotState()
 }
 
 private class DummyVersionCheckerStrategy : VersionCheckerStrategy {
@@ -129,13 +166,7 @@ private class DummyVersionCheckerStrategy : VersionCheckerStrategy {
         return SemanticVersion(255, 255, 255)
     }
 
-    override suspend fun saveVersion(timestamp: Long, version: String?) {
-    }
-
     override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         return emptyList()
     }
-
-    override val lastSnapshot: VersionCheckerSnapshot?
-        get() = null
 }

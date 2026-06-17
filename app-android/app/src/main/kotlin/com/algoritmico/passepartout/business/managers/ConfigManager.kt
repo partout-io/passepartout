@@ -20,6 +20,7 @@ import kotlinx.serialization.json.JsonObject
 
 interface ConfigManagerStrategy {
     suspend fun bundle(): ConfigBundle
+    fun resetTTL()
 }
 
 sealed class ConfigManagerException: Exception() {
@@ -28,7 +29,7 @@ sealed class ConfigManagerException: Exception() {
 
 class ConfigManager(
     private val logTag: String,
-    private val strategy: ConfigManagerStrategy? = null,
+    private val strategy: ConfigManagerStrategy,
     private val buildNumber: Int = Int.MAX_VALUE
 ) {
     private val refreshMutex = Mutex()
@@ -38,12 +39,11 @@ class ConfigManager(
     private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
-    suspend fun refreshBundle() {
-        val strategy = strategy ?: return
+    suspend fun refreshBundle(): Boolean {
         if (!refreshMutex.tryLock()) {
-            return
+            return false
         }
-        runCatching {
+        return runCatching {
             Log.d(logTag, "Config: refreshing bundle...")
             val newBundle = strategy.bundle()
             val event = synchronized(bundleLock) {
@@ -53,15 +53,26 @@ class ConfigManager(
             _events.emit(event)
             Log.i(logTag, "Config: active flags = ${event.flags}")
             Log.d(logTag, "Config: $newBundle")
+            true
         }.also {
             refreshMutex.unlock()
-        }.onFailure {
+        }.getOrElse {
             it.throwIfCancellation()
             when (it) {
-                is ConfigManagerException.RateLimit -> Log.d(logTag, "Config: TTL")
-                else -> Log.e(logTag, "Unable to refresh config flags", it)
+                is ConfigManagerException.RateLimit -> {
+                    Log.d(logTag, "Config: TTL")
+                    false
+                }
+                else -> {
+                    Log.e(logTag, "Unable to refresh config flags", it)
+                    throw it
+                }
             }
         }
+    }
+
+    fun resetTTL() {
+        strategy.resetTTL()
     }
 
     fun isActive(flag: ConfigFlag): Boolean {
