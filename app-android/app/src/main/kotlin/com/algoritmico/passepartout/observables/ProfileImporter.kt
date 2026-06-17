@@ -8,10 +8,10 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import com.algoritmico.passepartout.context.Files
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.context.Files
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +43,7 @@ class ProfileImporter(
             }.onFailure {
                 it.throwIfCancellation()
                 Log.e(logTag, "Import failure: $profileName", it)
-                reportFailure("Unable to import $profileName.", it)
+                reportFailure("Unable to import $profileName", it)
             }
         }
     }
@@ -68,11 +68,10 @@ class ProfileImporter(
                         return@use null
                     }
                     val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (displayNameIndex >= 0) {
-                        cursor.getString(displayNameIndex)
-                    } else {
+                    if (displayNameIndex < 0) {
                         null
                     }
+                    cursor.getString(displayNameIndex)
                 }
         }.getOrElse {
             it.throwIfCancellation()
