@@ -8,19 +8,16 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.algoritmico.passepartout.business.extensions.JSON
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.extensions.default
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.toAppPreferences
+import com.algoritmico.passepartout.business.extensions.toggleDnsFallback
 import com.algoritmico.passepartout.business.extensions.update
+import com.algoritmico.passepartout.business.extensions.updateExperimentalPreferences
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
-import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.ExperimentalPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -83,8 +80,7 @@ class UserPreferencesObservable(
 
     suspend fun toggleDnsFallback() {
         editSafely {
-            val newValue = !(it[DNS_FALLS_BACK] ?: AppPreferences.default.dnsFallsBack)
-            it[DNS_FALLS_BACK] = newValue
+            val newValue = it.toggleDnsFallback()
             snapshot = snapshot.copy(dnsFallsBack = newValue)
         }
     }
@@ -93,10 +89,7 @@ class UserPreferencesObservable(
         transform: (ExperimentalPreferences) -> ExperimentalPreferences
     ) {
         editSafely {
-            val current = it[EXPERIMENTAL]?.decodePreference<ExperimentalPreferences>()
-                ?: snapshot.experimental
-            val newValue = transform(current)
-            it[EXPERIMENTAL] = JSON.encode(newValue)
+            val newValue = it.updateExperimentalPreferences(snapshot.experimental, transform)
             snapshot = snapshot.copy(experimental = newValue)
         }
     }
@@ -107,8 +100,8 @@ class UserPreferencesObservable(
     ) {
         editSafely {
             val newValue = transform(snapshot)
-            it.update(newValue, fields)
-            snapshot = snapshot.update(newValue, fields)
+            it.update(fields, newValue)
+            snapshot = snapshot.update(fields, newValue)
         }
     }
     //endregion
@@ -126,108 +119,6 @@ class UserPreferencesObservable(
 
     private fun savePreferences() {
         Log.d(logTag, "Preferences updated: $snapshot")
-    }
-
-    private fun Preferences.toAppPreferences(): AppPreferences {
-        val default = AppPreferences.default
-        return AppPreferences(
-            configFlags = this[CONFIG_FLAGS]
-                ?.mapNotNull { ConfigFlag.decode(it) }
-                ?.toMutableList()
-                ?: default.configFlags,
-            dnsFallsBack = this[DNS_FALLS_BACK]
-                ?: default.dnsFallsBack,
-            experimental = this[EXPERIMENTAL]
-                ?.decodePreference()
-                ?: default.experimental,
-            extensiveLogging = this[EXTENSIVE_LOGGING]
-                ?: default.extensiveLogging,
-            logsPrivateData = this[LOGS_PRIVATE_DATA]
-                ?: default.logsPrivateData,
-            newProfileEncoding = this[NEW_PROFILE_ENCODING]
-                ?: default.newProfileEncoding,
-            relaxedVerification = this[RELAXED_VERIFICATION]
-                ?: default.relaxedVerification,
-            skipsPurchases = this[SKIPS_PURCHASES]
-                ?: default.skipsPurchases,
-            deviceId = this[DEVICE_ID],
-            lastCheckedVersionTimestamp = this[LAST_CHECKED_VERSION_DATE],
-            lastCheckedVersion = this[LAST_CHECKED_VERSION],
-            lastUsedProfileUUID = this[LAST_USED_PROFILE_ID]
-        )
-    }
-
-    private fun MutablePreferences.update(new: AppPreferences, fields: List<AppPreferenceKey>) {
-        fields.forEach {
-            when (it) {
-                AppPreferenceKey.deviceId ->
-                    setOrRemove(
-                        DEVICE_ID,
-                        new.deviceId
-                    )
-                AppPreferenceKey.configFlags ->
-                    this[CONFIG_FLAGS] = new.configFlags.map { it.value }.toSet()
-                AppPreferenceKey.dnsFallsBack ->
-                    this[DNS_FALLS_BACK] = new.dnsFallsBack
-                AppPreferenceKey.experimental ->
-                    this[EXPERIMENTAL] = JSON.encode(new.experimental)
-                AppPreferenceKey.extensiveLogging ->
-                    this[EXTENSIVE_LOGGING] = new.extensiveLogging
-                AppPreferenceKey.lastCheckedVersion ->
-                    setOrRemove(
-                        LAST_CHECKED_VERSION,
-                        new.lastCheckedVersion
-                    )
-                AppPreferenceKey.lastCheckedVersionDate ->
-                    setOrRemove(
-                        LAST_CHECKED_VERSION_DATE,
-                        new.lastCheckedVersionTimestamp
-                    )
-                AppPreferenceKey.lastUsedProfileId ->
-                    setOrRemove(
-                        LAST_USED_PROFILE_ID,
-                        new.lastUsedProfileUUID
-                    )
-                AppPreferenceKey.logsPrivateData ->
-                    this[LOGS_PRIVATE_DATA] = new.logsPrivateData
-                AppPreferenceKey.newProfileEncoding ->
-                    this[NEW_PROFILE_ENCODING] = new.newProfileEncoding
-                AppPreferenceKey.relaxedVerification ->
-                    this[RELAXED_VERIFICATION] = new.relaxedVerification
-                AppPreferenceKey.skipsPurchases ->
-                    this[SKIPS_PURCHASES] = new.skipsPurchases
-            }
-        }
-    }
-
-    private fun <T> MutablePreferences.setOrRemove(key: Preferences.Key<T>, value: T?) {
-        if (value == null) {
-            remove(key)
-            return
-        }
-        this[key] = value
-    }
-
-    private inline fun <reified T> String.decodePreference(): T? {
-        return runCatching {
-            JSON.decode<T>(this)
-        }.getOrNull()
-    }
-
-    private companion object {
-        val CONFIG_FLAGS = stringSetPreferencesKey(AppPreferenceKey.configFlags.name)
-        val DEVICE_ID = stringPreferencesKey(AppPreferenceKey.deviceId.name)
-        val DNS_FALLS_BACK = booleanPreferencesKey(AppPreferenceKey.dnsFallsBack.name)
-        val EXPERIMENTAL = stringPreferencesKey(AppPreferenceKey.experimental.name)
-        val EXTENSIVE_LOGGING = booleanPreferencesKey(AppPreferenceKey.extensiveLogging.name)
-        val LAST_CHECKED_VERSION = stringPreferencesKey(AppPreferenceKey.lastCheckedVersion.name)
-        val LAST_CHECKED_VERSION_DATE =
-            longPreferencesKey(AppPreferenceKey.lastCheckedVersionDate.name)
-        val LAST_USED_PROFILE_ID = stringPreferencesKey(AppPreferenceKey.lastUsedProfileId.name)
-        val LOGS_PRIVATE_DATA = booleanPreferencesKey(AppPreferenceKey.logsPrivateData.name)
-        val NEW_PROFILE_ENCODING = booleanPreferencesKey(AppPreferenceKey.newProfileEncoding.name)
-        val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
-        val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
     }
     //endregion
 }

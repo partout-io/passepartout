@@ -7,7 +7,6 @@ package com.algoritmico.passepartout.business.strategy
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.managers.VersionCheckerException
-import com.algoritmico.passepartout.business.managers.VersionCheckerSnapshot
 import com.algoritmico.passepartout.business.managers.VersionCheckerStrategy
 import com.algoritmico.passepartout.business.managers.toSemanticVersionOrNull
 import com.algoritmico.passepartout.models.ChangelogEntry
@@ -20,9 +19,7 @@ class GitHubReleaseStrategy(
     private val releaseURL: String,
     private val changelogURL: (String) -> String,
     private val rateLimit: Double,
-    private val fetcher: suspend (String) -> ByteArray,
-    private val onSaveVersion: suspend (Long, String?) -> Unit,
-    private val onLastSnapshot: () -> VersionCheckerSnapshot?
+    private val fetcher: suspend (String) -> ByteArray
 ) : VersionCheckerStrategy {
     override suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion {
         if (sinceTimestamp != null) {
@@ -43,10 +40,6 @@ class GitHubReleaseStrategy(
         return semanticVersion
     }
 
-    override suspend fun saveVersion(timestamp: Long, version: String?) {
-        onSaveVersion(timestamp, version)
-    }
-
     override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         val url = changelogURL(version)
         val text = fetcher(url).decodeToString()
@@ -57,8 +50,6 @@ class GitHubReleaseStrategy(
             }
     }
 
-    override val lastSnapshot: VersionCheckerSnapshot?
-        get() = onLastSnapshot()
 }
 
 private fun String.toChangelogEntry(id: Int): ChangelogEntry? {

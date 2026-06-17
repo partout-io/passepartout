@@ -6,6 +6,8 @@ package com.algoritmico.passepartout.context
 
 import android.content.Context
 import android.content.Intent
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.betaConfigURL
@@ -14,16 +16,13 @@ import com.algoritmico.passepartout.business.extensions.urlForChangelog
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
-import com.algoritmico.passepartout.business.managers.VersionCheckerSnapshot
 import com.algoritmico.passepartout.business.strategy.FileProfileRepository
 import com.algoritmico.passepartout.business.strategy.GitHubConfigStrategy
 import com.algoritmico.passepartout.business.strategy.GitHubReleaseStrategy
 import com.algoritmico.passepartout.business.strategy.URLFetcher
 import com.algoritmico.passepartout.models.AppConfiguration
-import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import io.partout.PartoutTunnel
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -111,13 +110,14 @@ fun AppConfiguration.newTunnel(
 
 fun AppConfiguration.newVersionChecker(
     logTag: String,
-    userPreferencesObservable: UserPreferencesObservable
+    preferences: DataStore<Preferences>
 ): VersionChecker {
     val changelogURL = constants.github::urlForChangelog
     val isCached = false
     val timeout = constants.url.timeoutInterval
     return VersionChecker(
         logTag = logTag,
+        store = preferences,
         strategy = GitHubReleaseStrategy(
             logTag = logTag,
             releaseURL = constants.github.latestReleaseURL,
@@ -125,26 +125,6 @@ fun AppConfiguration.newVersionChecker(
             changelogURL = changelogURL,
             fetcher = { url ->
                 URLFetcher.fetch(url, isCached, timeout)
-            },
-            onSaveVersion = { timestamp, version ->
-                val fields = listOf(
-                    AppPreferenceKey.lastCheckedVersion,
-                    AppPreferenceKey.lastCheckedVersionDate
-                )
-                userPreferencesObservable.updatePreferences(fields) {
-                    it.copy(
-                        lastCheckedVersionTimestamp = timestamp,
-                        lastCheckedVersion = version ?: it.lastCheckedVersion
-                    )
-                }
-            },
-            onLastSnapshot = {
-                val timestamp = userPreferencesObservable.currentPreferences.lastCheckedVersionTimestamp
-                val version = userPreferencesObservable.currentPreferences.lastCheckedVersion
-                if (timestamp == null) {
-                    return@GitHubReleaseStrategy null
-                }
-                return@GitHubReleaseStrategy VersionCheckerSnapshot(timestamp, version)
             }
         ),
         currentVersion = bundle.versionNumber,

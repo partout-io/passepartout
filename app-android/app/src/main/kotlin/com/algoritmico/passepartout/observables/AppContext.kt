@@ -97,7 +97,7 @@ class AppContext(
         )
         versionChecker = appConfiguration.newVersionChecker(
             logTag,
-            userPreferencesObservable
+            context.userPreferencesStore
         )
 
         // Observables from managers
@@ -122,7 +122,7 @@ class AppContext(
             logTag,
             tunnel,
             profileManager,
-            userPreferencesObservable.preferences,
+            context.userPreferencesStore.data,
             coroutineScope
         )
         versionObservable = VersionObservable(
