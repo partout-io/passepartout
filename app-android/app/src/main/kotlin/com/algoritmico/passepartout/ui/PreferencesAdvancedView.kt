@@ -34,9 +34,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.extensions.disable
 import com.algoritmico.passepartout.extensions.enable
 import com.algoritmico.passepartout.extensions.isAllowed
-import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.extensions.setAllowed
 import com.algoritmico.passepartout.extensions.unignore
+import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.managers.default
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
@@ -44,6 +44,7 @@ import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalConfigObservable
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import kotlinx.coroutines.launch
 
@@ -60,6 +61,7 @@ fun PreferencesAdvancedView(
     )
     val coroutineScope = rememberCoroutineScope()
     val canOverride = isBeta || appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
+    val errorHandler = LocalErrorHandler.current
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -77,8 +79,12 @@ fun PreferencesAdvancedView(
                             preference = preferences.experimental.preference(forFlag = flag),
                             onPreferenceChange = { preference ->
                                 coroutineScope.launch {
-                                    userPreferencesObservable.updateExperimentalPreferences {
-                                        it.setPreference(preference, forFlag = flag)
+                                    runCatching {
+                                        userPreferencesObservable.updateExperimentalPreferences {
+                                            it.setPreference(preference, forFlag = flag)
+                                        }
+                                    }.onFailure {
+                                        errorHandler.report(it)
                                     }
                                 }
                             }
@@ -99,8 +105,12 @@ fun PreferencesAdvancedView(
                             isAllowed = preferences.experimental.isAllowed(flag),
                             onAllowedChange = { isAllowed ->
                                 coroutineScope.launch {
-                                    userPreferencesObservable.updateExperimentalPreferences {
-                                        it.setAllowed(flag, isAllowed)
+                                    runCatching {
+                                        userPreferencesObservable.updateExperimentalPreferences {
+                                            it.setAllowed(flag, isAllowed)
+                                        }
+                                    }.onFailure {
+                                        errorHandler.report(it)
                                     }
                                 }
                             }
