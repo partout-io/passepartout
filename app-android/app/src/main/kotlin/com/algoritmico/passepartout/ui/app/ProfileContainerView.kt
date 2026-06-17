@@ -47,8 +47,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.statusText
-import com.algoritmico.passepartout.extensions.transferText
 import com.algoritmico.passepartout.injection.throwIfCancellation
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
@@ -60,6 +58,8 @@ import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import com.algoritmico.passepartout.ui.alerts.InteractiveOpenVPNView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
+import com.algoritmico.passepartout.ui.models.statusText
+import com.algoritmico.passepartout.ui.models.transferText
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 

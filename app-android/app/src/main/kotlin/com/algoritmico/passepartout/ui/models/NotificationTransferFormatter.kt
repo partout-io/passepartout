@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui.theme
+package com.algoritmico.passepartout.ui.models
 
 import android.os.SystemClock
 import io.partout.models.DataCount
