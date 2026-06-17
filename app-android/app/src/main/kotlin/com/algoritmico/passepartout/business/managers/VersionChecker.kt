@@ -5,11 +5,9 @@
 package com.algoritmico.passepartout.business.managers
 
 import android.util.Log
-import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.business.injection.newEventFlow
-import com.algoritmico.passepartout.business.models.AppPreferences
 import com.algoritmico.passepartout.business.models.ChangelogEntry
 import com.algoritmico.passepartout.business.models.Event
 import com.algoritmico.passepartout.business.models.SemanticVersion
@@ -19,11 +17,16 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
 
+data class VersionCheckerSnapshot(
+    val timestamp: Long,
+    val version: String?
+)
+
 interface VersionCheckerStrategy {
     suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion
+    suspend fun saveVersion(timestamp: Long, version: String?)
     suspend fun fetchChangelog(version: String): List<ChangelogEntry>
-    fun preferences(): AppPreferences
-    suspend fun updatePreferences(transform: (AppPreferences) -> AppPreferences)
+    val lastSnapshot: VersionCheckerSnapshot?
 }
 
 sealed class VersionCheckerException: Exception() {
@@ -49,7 +52,7 @@ class VersionChecker(
 
     val latestRelease: VersionRelease?
         get() {
-            val latestVersionDescription = strategy.preferences().lastCheckedVersion ?: return null
+            val latestVersionDescription = strategy.lastSnapshot?.version ?: return null
             val latestVersion = latestVersionDescription.toSemanticVersionOrNull() ?: return null
             if (latestVersion <= currentVersion) {
                 return null
@@ -64,15 +67,10 @@ class VersionChecker(
         runCatching {
             val now = System.currentTimeMillis()
             runCatching {
-                val lastCheckedTimestamp = strategy.preferences().lastCheckedVersionTimestamp
+                val lastCheckedTimestamp = strategy.lastSnapshot?.timestamp
                 Log.d(logTag, "Version: checking for updates...")
                 val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
-                strategy.updatePreferences {
-                    it.copy(
-                        lastCheckedVersionTimestamp = now,
-                        lastCheckedVersion = fetchedLatestVersion.versionString
-                    )
-                }
+                strategy.saveVersion(now, fetchedLatestVersion.versionString)
                 Log.i(
                     logTag,
                     "Version: ${fetchedLatestVersion.versionString} > " +
@@ -83,9 +81,7 @@ class VersionChecker(
                 when (it) {
                     is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
                     is VersionCheckerException.UnexpectedResponse -> {
-                        strategy.updatePreferences {
-                            it.copy(lastCheckedVersionTimestamp = now)
-                        }
+                        strategy.saveVersion(now, null)
                         Log.e(logTag, "Unable to check version", it)
                     }
                     else -> Log.e(logTag, "Unable to check version", it)
@@ -133,14 +129,13 @@ private class DummyVersionCheckerStrategy : VersionCheckerStrategy {
         return SemanticVersion(255, 255, 255)
     }
 
+    override suspend fun saveVersion(timestamp: Long, version: String?) {
+    }
+
     override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         return emptyList()
     }
 
-    override fun preferences(): AppPreferences {
-        return AppPreferences.default
-    }
-
-    override suspend fun updatePreferences(transform: (AppPreferences) -> AppPreferences) {
-    }
+    override val lastSnapshot: VersionCheckerSnapshot?
+        get() = null
 }

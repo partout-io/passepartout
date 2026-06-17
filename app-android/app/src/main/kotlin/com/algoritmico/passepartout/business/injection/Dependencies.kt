@@ -14,7 +14,9 @@ import com.algoritmico.passepartout.business.extensions.urlForChangelog
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.business.managers.VersionCheckerSnapshot
 import com.algoritmico.passepartout.business.models.AppConfiguration
+import com.algoritmico.passepartout.business.models.AppPreferenceKey
 import com.algoritmico.passepartout.business.models.DistributionTarget
 import com.algoritmico.passepartout.business.models.Event
 import com.algoritmico.passepartout.business.strategy.FileProfileRepository
@@ -124,7 +126,27 @@ fun AppConfiguration.newVersionChecker(
             fetcher = { url ->
                 URLFetcher.fetch(url, isCached, timeout)
             },
-            userPreferencesObservable = userPreferencesObservable
+            onSaveVersion = { timestamp, version ->
+                val fields = listOf(
+                    AppPreferenceKey.lastCheckedVersion,
+                    AppPreferenceKey.lastCheckedVersionDate
+                )
+                userPreferencesObservable.updatePreferences(fields) {
+                    it.copy(lastCheckedVersionTimestamp = timestamp)
+                    if (version != null) {
+                        it.copy(lastCheckedVersion = version)
+                    }
+                    it
+                }
+            },
+            onLastSnapshot = {
+                val timestamp = userPreferencesObservable.currentPreferences.lastCheckedVersionTimestamp
+                val version = userPreferencesObservable.currentPreferences.lastCheckedVersion
+                if (timestamp == null) {
+                    return@GitHubReleaseStrategy null
+                }
+                return@GitHubReleaseStrategy VersionCheckerSnapshot(timestamp, version)
+            }
         ),
         currentVersion = bundle.versionNumber,
         downloadURL = when (bundle.distributionTarget) {

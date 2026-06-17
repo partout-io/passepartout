@@ -7,13 +7,11 @@ package com.algoritmico.passepartout.business.strategy
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.managers.VersionCheckerException
+import com.algoritmico.passepartout.business.managers.VersionCheckerSnapshot
 import com.algoritmico.passepartout.business.managers.VersionCheckerStrategy
 import com.algoritmico.passepartout.business.managers.toSemanticVersionOrNull
-import com.algoritmico.passepartout.business.models.AppPreferenceKey
-import com.algoritmico.passepartout.business.models.AppPreferences
 import com.algoritmico.passepartout.business.models.ChangelogEntry
 import com.algoritmico.passepartout.business.models.SemanticVersion
-import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +21,8 @@ class GitHubReleaseStrategy(
     private val changelogURL: (String) -> String,
     private val rateLimit: Double,
     private val fetcher: suspend (String) -> ByteArray,
-    private val userPreferencesObservable: UserPreferencesObservable
+    private val onSaveVersion: suspend (Long, String?) -> Unit,
+    private val onLastSnapshot: () -> VersionCheckerSnapshot?
 ) : VersionCheckerStrategy {
     override suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion {
         if (sinceTimestamp != null) {
@@ -44,6 +43,10 @@ class GitHubReleaseStrategy(
         return semanticVersion
     }
 
+    override suspend fun saveVersion(timestamp: Long, version: String?) {
+        onSaveVersion(timestamp, version)
+    }
+
     override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
         val url = changelogURL(version)
         val text = fetcher(url).decodeToString()
@@ -54,17 +57,8 @@ class GitHubReleaseStrategy(
             }
     }
 
-    override fun preferences(): AppPreferences {
-        return userPreferencesObservable.currentPreferences
-    }
-
-    override suspend fun updatePreferences(transform: (AppPreferences) -> AppPreferences) {
-        val fields = listOf(
-            AppPreferenceKey.lastCheckedVersion,
-            AppPreferenceKey.lastCheckedVersionDate
-        )
-        userPreferencesObservable.updatePreferences(fields, transform)
-    }
+    override val lastSnapshot: VersionCheckerSnapshot?
+        get() = onLastSnapshot()
 }
 
 private fun String.toChangelogEntry(id: Int): ChangelogEntry? {
