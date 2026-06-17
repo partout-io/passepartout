@@ -55,6 +55,7 @@ import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
+import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
@@ -211,7 +212,7 @@ fun ProfileContainerView(
             },
             onOpenSettings = {
                 tunnelObservable.clearVpnPermissionDenied()
-                openVpnSettings(context)
+                openVpnSettings(context, errorHandler)
             }
         )
     }
@@ -472,9 +473,7 @@ private fun statusColor(status: AppProfileStatus): Color = when (status) {
     AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
 }
 
-
-
-private fun openVpnSettings(context: Context) {
+private fun openVpnSettings(context: Context, errorHandler: ErrorHandler) {
     val vpnSettingsIntent = Intent(Settings.ACTION_VPN_SETTINGS)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     val appSettingsIntent = Intent(
@@ -487,6 +486,7 @@ private fun openVpnSettings(context: Context) {
     }.onFailure {
         runCatching {
             context.startActivity(appSettingsIntent)
+            errorHandler.report(it)
         }
     }
 }
