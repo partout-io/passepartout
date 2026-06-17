@@ -49,7 +49,15 @@ class ProfileImporter(
     }
 
     private suspend fun readProfileText(uri: Uri): String = withContext(Dispatchers.IO) {
-        val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+        val bytes = runCatching {
+            contentResolver.openInputStream(uri)?.use { it.readBytes() }
+        }.getOrElse {
+            it.throwIfCancellation()
+            if (it !is Exception) {
+                throw it
+            }
+            throw ProfileImporterException.Failure(it)
+        }
         if (bytes == null) {
             throw ProfileImporterException.Failure(null)
         }
