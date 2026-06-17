@@ -38,6 +38,7 @@ class UserPreferencesObservable(
     coroutineScope: CoroutineScope,
     private val store: DataStore<Preferences>
 ) : Closeable {
+    //region State
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
@@ -52,8 +53,12 @@ class UserPreferencesObservable(
         }
 
     val preferences: Flow<AppPreferences> = flow.map { it.toAppPreferences() }
+    val currentPreferences: AppPreferences
+        get() = snapshot
     private var snapshot: AppPreferences
+    //endregion
 
+    //region Lifecycle
     init {
         snapshot = runCatching {
             runBlocking {
@@ -71,10 +76,9 @@ class UserPreferencesObservable(
     override fun close() {
         scope.cancel()
     }
+    //endregion
 
-    val currentPreferences: AppPreferences
-        get() = snapshot
-
+    //region Editing
     val dnsFallback: Flow<Boolean> = preferences.map { it.dnsFallsBack }
 
     suspend fun toggleDnsFallback() {
@@ -107,14 +111,16 @@ class UserPreferencesObservable(
             snapshot = snapshot.update(newValue, fields)
         }
     }
+    //endregion
 
+    //region Private
     private suspend fun editSafely(transform: suspend (MutablePreferences) -> Unit) {
         runCatching {
             store.edit(transform)
             savePreferences()
         }.onFailure {
-            it.throwIfCancellation()
             Log.e(logTag, "Unable to save preferences", it)
+            throw it
         }
     }
 
@@ -223,4 +229,5 @@ class UserPreferencesObservable(
         val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
         val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
     }
+    //endregion
 }
