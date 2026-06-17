@@ -22,7 +22,7 @@ fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
 }
 
 fun Throwable.throwIfCancellation() {
-    if (this !is CancellationException) {
+    if (this is CancellationException) {
         throw this
     }
 }
