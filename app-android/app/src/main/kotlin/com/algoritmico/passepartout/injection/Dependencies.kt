@@ -33,6 +33,18 @@ object Tags {
     const val PARTOUT_JNI = "PartoutJNI"
 }
 
+object Files {
+    val MIME_TYPES = arrayOf(
+        "application/x-openvpn-profile",
+        "application/x-wireguard-profile",
+        "application/octet-stream",
+        "text/*",
+        "*/*"
+    )
+
+    const val DEFAULT_PROFILE_NAME = "Imported profile"
+}
+
 private object Tuning {
     const val TUNNEL_IS_FOREGROUND = true
     const val EVENT_BUFFER_CAPACITY = 64

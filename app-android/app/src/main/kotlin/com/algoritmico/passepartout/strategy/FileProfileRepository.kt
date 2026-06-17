@@ -6,7 +6,7 @@ package com.algoritmico.passepartout.strategy
 
 import android.util.Log
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.injection.Tags
+import com.algoritmico.passepartout.managers.ProfileManagerException
 import com.algoritmico.passepartout.managers.ProfileRepository
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.Dispatchers
@@ -71,9 +71,7 @@ class FileProfileRepository(
     private fun loadProfiles(): List<TaggedProfile> {
         val profilesById = loadProfilesById()
         return orderedIds().mapNotNull { profileId ->
-            profilesById[profileId] ?: throw FileProfileRepositoryException(
-                "Unable to locate stored profile $profileId"
-            )
+            profilesById[profileId] ?: throw ProfileManagerException.NotFound(profileId)
         }
     }
 
@@ -96,7 +94,7 @@ class FileProfileRepository(
                 val profile = runCatching {
                     JSON.decode<TaggedProfile>(file.readText())
                 }.getOrElse {
-                    throw FileProfileRepositoryException(
+                    throw ProfileManagerException.Generic(
                         "Unable to decode profile at ${file.name}",
                         it
                     )
@@ -113,7 +111,7 @@ class FileProfileRepository(
         return runCatching {
             JSON.decode<IndexFile>(indexFile.readText())
         }.getOrElse {
-            throw FileProfileRepositoryException("Unable to decode profile index", it)
+            throw ProfileManagerException.Generic("Unable to decode profile index", it)
         }
     }
 
@@ -147,11 +145,11 @@ class FileProfileRepository(
         temporaryFile.writeBytes(data)
         if (destination.exists() && !destination.delete()) {
             temporaryFile.delete()
-            throw FileProfileRepositoryException("Unable to replace ${destination.name}")
+            throw ProfileManagerException.Generic("Unable to replace ${destination.name}")
         }
         if (!temporaryFile.renameTo(destination)) {
             temporaryFile.delete()
-            throw FileProfileRepositoryException("Unable to move ${temporaryFile.name} to ${destination.name}")
+            throw ProfileManagerException.Generic("Unable to move ${temporaryFile.name} to ${destination.name}")
         }
     }
 
@@ -192,8 +190,3 @@ class FileProfileRepository(
             get() = this as? JsonObject
     }
 }
-
-class FileProfileRepositoryException(
-    message: String,
-    cause: Throwable? = null
-) : Exception(message, cause)

@@ -22,6 +22,10 @@ interface ConfigManagerStrategy {
     suspend fun bundle(): ConfigBundle
 }
 
+sealed class ConfigManagerException: Exception() {
+    data object RateLimit: ConfigManagerException()
+}
+
 class ConfigManager(
     private val logTag: String,
     private val strategy: ConfigManagerStrategy? = null,
@@ -54,7 +58,7 @@ class ConfigManager(
         }.onFailure {
             it.throwIfCancellation()
             when (it) {
-                is ConfigManagerRateLimitException -> Log.d(logTag, "Config: TTL")
+                is ConfigManagerException.RateLimit -> Log.d(logTag, "Config: TTL")
                 else -> Log.e(logTag, "Unable to refresh config flags", it)
             }
         }
@@ -128,5 +132,3 @@ fun ConfigBundleConfig.isActive(buildNumber: Int): Boolean {
     }
     return rate == 100
 }
-
-class ConfigManagerRateLimitException : Exception()

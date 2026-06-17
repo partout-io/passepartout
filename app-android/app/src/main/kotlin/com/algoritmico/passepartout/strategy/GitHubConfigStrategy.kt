@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.strategy
 import android.os.SystemClock
 import android.util.Log
 import com.algoritmico.passepartout.managers.ConfigBundle
-import com.algoritmico.passepartout.managers.ConfigManagerRateLimitException
+import com.algoritmico.passepartout.managers.ConfigManagerException
 import com.algoritmico.passepartout.managers.ConfigManagerStrategy
 
 class GitHubConfigStrategy(
@@ -24,7 +24,7 @@ class GitHubConfigStrategy(
             val elapsed = (now - lastUpdatedAtMillis) / 1000.0
             if (elapsed < ttl) {
                 Log.d(logTag, "Config (GitHub): elapsed $elapsed < $ttl")
-                throw ConfigManagerRateLimitException()
+                throw ConfigManagerException.RateLimit
             }
         }
 

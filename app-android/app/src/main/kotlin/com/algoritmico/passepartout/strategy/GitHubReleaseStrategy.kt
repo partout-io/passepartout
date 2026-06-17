@@ -6,9 +6,8 @@ package com.algoritmico.passepartout.strategy
 
 import android.util.Log
 import com.algoritmico.passepartout.injection.JSON
-import com.algoritmico.passepartout.managers.VersionCheckerRateLimitException
+import com.algoritmico.passepartout.managers.VersionCheckerException
 import com.algoritmico.passepartout.managers.VersionCheckerStrategy
-import com.algoritmico.passepartout.managers.VersionCheckerUnexpectedResponseException
 import com.algoritmico.passepartout.managers.toSemanticVersionOrNull
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
@@ -31,7 +30,7 @@ class GitHubReleaseStrategy(
             val elapsed = (System.currentTimeMillis() - sinceTimestamp) / 1000.0
             if (elapsed < rateLimit) {
                 Log.d(logTag, "Version (GitHub): elapsed $elapsed < $rateLimit")
-                throw VersionCheckerRateLimitException()
+                throw VersionCheckerException.RateLimit
             }
         }
         val data = fetcher(releaseURL)
@@ -40,7 +39,7 @@ class GitHubReleaseStrategy(
         val semanticVersion = newVersion.toSemanticVersionOrNull()
         if (semanticVersion == null) {
             Log.e(logTag, "Version (GitHub): unparsable release name '$newVersion'")
-            throw VersionCheckerUnexpectedResponseException()
+            throw VersionCheckerException.UnexpectedResponse
         }
         return semanticVersion
     }

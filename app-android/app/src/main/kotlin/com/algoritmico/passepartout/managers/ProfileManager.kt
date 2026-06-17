@@ -31,6 +31,14 @@ interface ProfileRepository {
     suspend fun removeProfiles(profileIds: Collection<String>)
 }
 
+sealed class ProfileManagerException: Exception() {
+    data class NotFound(val profileId: String): ProfileManagerException()
+    data class Generic(
+        val msg: String,
+        val reason: Throwable? = null
+    ): ProfileManagerException()
+}
+
 class ProfileManager(
     private val logTag: String,
     private val library: PassepartoutWrapper,

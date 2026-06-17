@@ -25,6 +25,11 @@ interface VersionCheckerStrategy {
     suspend fun updatePreferences(transform: (AppPreferences) -> AppPreferences)
 }
 
+sealed class VersionCheckerException: Exception() {
+    data object RateLimit: VersionCheckerException()
+    data object UnexpectedResponse: VersionCheckerException()
+}
+
 class VersionChecker(
     private val logTag: String,
     private val strategy: VersionCheckerStrategy = DummyVersionCheckerStrategy(),
@@ -71,8 +76,8 @@ class VersionChecker(
             }.onFailure {
                 it.throwIfCancellation()
                 when (it) {
-                    is VersionCheckerRateLimitException -> Log.d(logTag, "Version: rate limit")
-                    is VersionCheckerUnexpectedResponseException -> {
+                    is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
+                    is VersionCheckerException.UnexpectedResponse -> {
                         strategy.updatePreferences {
                             it.copy(lastCheckedVersionTimestamp = now)
                         }
@@ -98,10 +103,6 @@ class VersionChecker(
         return strategy.fetchChangelog(version)
     }
 }
-
-class VersionCheckerRateLimitException : Exception()
-
-class VersionCheckerUnexpectedResponseException : Exception()
 
 fun String.toSemanticVersionOrNull(): SemanticVersion? {
     return runCatching {

@@ -39,6 +39,12 @@ import java.io.Closeable
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+sealed class TunnelObservableException: Exception() {
+    data object Generic: TunnelObservableException()
+    data class Interactive(val profile: TaggedProfile): TunnelObservableException()
+    data object VpnPermissionDenied: TunnelObservableException()
+}
+
 class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
@@ -66,7 +72,7 @@ class TunnelObservable(
 
     suspend fun connect(profile: TaggedProfile, force: Boolean = false) {
         if (!force && profile.isInteractive) {
-            throw InteractiveException(profile)
+            throw TunnelObservableException.Interactive(profile)
         }
         suspendCancellableCoroutine { continuation ->
             pendingConnectContinuation = continuation
@@ -81,7 +87,7 @@ class TunnelObservable(
                     pendingConnectContinuation = null
                 }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    continuation.resumeWithException(TunnelException)
+                    continuation.resumeWithException(TunnelObservableException.Generic)
                     return@callback
                 }
                 continuation.resume(Unit)
@@ -104,7 +110,7 @@ class TunnelObservable(
                     return@callback
                 }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    continuation.resumeWithException(TunnelException)
+                    continuation.resumeWithException(TunnelObservableException.Generic)
                     return@callback
                 }
                 continuation.resume(Unit)
@@ -129,7 +135,7 @@ class TunnelObservable(
         pendingConnectContinuation?.let { continuation ->
             pendingConnectContinuation = null
             if (continuation.isActive) {
-                continuation.resumeWithException(VpnPermissionDeniedException())
+                continuation.resumeWithException(TunnelObservableException.VpnPermissionDenied)
             }
         }
     }
@@ -165,10 +171,6 @@ class TunnelObservable(
         val activeProfiles: Map<String, AppTunnelInfo> = emptyMap(),
         val isVpnPermissionDenied: Boolean = false
     )
-
-    data object TunnelException: Exception()
-    class InteractiveException(val profile: TaggedProfile): Exception()
-    private class VpnPermissionDeniedException: Exception()
 
     private val AppProfileStatus.isActive: Boolean
         get() = this == AppProfileStatus.connecting || this == AppProfileStatus.connected

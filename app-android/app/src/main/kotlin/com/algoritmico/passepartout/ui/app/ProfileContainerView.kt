@@ -56,6 +56,7 @@ import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
+import com.algoritmico.passepartout.observables.TunnelObservableException
 import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.models.statusText
@@ -144,7 +145,7 @@ fun ProfileContainerView(
             }.getOrElse {
                 it.throwIfCancellation()
                 when (it) {
-                    is TunnelObservable.InteractiveException -> {
+                    is TunnelObservableException.Interactive -> {
                         interactiveProfile = it.profile
                         false
                     }
