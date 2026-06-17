@@ -8,6 +8,7 @@ import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -16,6 +17,7 @@ import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.models.ProfileEventSave
+import io.partout.abi.PartoutException
 import io.partout.abi.PartoutResult
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
@@ -32,6 +34,7 @@ interface ProfileRepository {
 
 sealed class ProfileManagerException: Exception() {
     data class NotFound(val profileId: String): ProfileManagerException()
+    data class ABI(val json: String?): ProfileManagerException()
     data class Generic(
         val msg: String,
         val reason: Throwable? = null
@@ -59,22 +62,32 @@ class ProfileManager(
     }
 
     suspend fun importText(text: String, name: String?) {
-        val result = PartoutResult.await { completion ->
-            library.partoutImportProfile(text, name, completion)
+        val result = runCatching {
+            PartoutResult.await { completion ->
+                library.partoutImportProfile(text, name, completion)
+            }
+        }.getOrElse {
+            it.throwIfCancellation()
+            when (it) {
+                is PartoutException -> throw ProfileManagerException.ABI(it.payload)
+                else -> throw it
+            }
         }
-        result.payload?.let {
-            val profile = JSON.decode<TaggedProfile>(it)
-            val previous = profiles[profile.id]
-            repository.saveProfile(profile)
-            profiles = profiles + (profile.id to profile)
-            _events.emit(
-                ProfileEventSave(
-                    profile = profile,
-                    previous = previous
-                )
+        val json = result.payload
+        if (json == null) {
+            throw ProfileManagerException.ABI(null)
+        }
+        val profile = JSON.decode<TaggedProfile>(json)
+        val previous = profiles[profile.id]
+        repository.saveProfile(profile)
+        profiles = profiles + (profile.id to profile)
+        _events.emit(
+            ProfileEventSave(
+                profile = profile,
+                previous = previous
             )
-            publishProfiles()
-        }
+        )
+        publishProfiles()
     }
 
     suspend fun remove(profileId: String) {
