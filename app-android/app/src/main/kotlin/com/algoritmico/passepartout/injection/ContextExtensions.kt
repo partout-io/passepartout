@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.business.injection
+package com.algoritmico.passepartout.injection
 
 import android.content.Context
 import android.content.pm.ApplicationInfo

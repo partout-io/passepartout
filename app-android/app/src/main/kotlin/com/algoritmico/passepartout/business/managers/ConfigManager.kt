@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.business.managers
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
-import com.algoritmico.passepartout.business.injection.newEventFlow
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.business.models.ConfigBundleConfig
 import com.algoritmico.passepartout.business.models.ConfigEventRefresh
 import com.algoritmico.passepartout.business.models.ConfigFlag

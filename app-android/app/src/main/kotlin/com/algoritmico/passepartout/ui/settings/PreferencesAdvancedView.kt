@@ -36,7 +36,7 @@ import com.algoritmico.passepartout.business.extensions.enable
 import com.algoritmico.passepartout.business.extensions.isAllowed
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
-import com.algoritmico.passepartout.business.injection.isBetaSuggestedByAndroidAPI
+import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.models.AppPreferences
 import com.algoritmico.passepartout.business.models.ConfigFlag

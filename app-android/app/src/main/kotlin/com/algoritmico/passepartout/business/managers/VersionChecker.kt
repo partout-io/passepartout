@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.business.managers
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.business.injection.newEventFlow
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.business.models.ChangelogEntry
 import com.algoritmico.passepartout.business.models.Event
 import com.algoritmico.passepartout.business.models.SemanticVersion

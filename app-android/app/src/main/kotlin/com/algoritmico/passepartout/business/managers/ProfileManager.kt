@@ -8,7 +8,7 @@ import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
-import com.algoritmico.passepartout.business.injection.newEventFlow
+import com.algoritmico.passepartout.injection.newEventFlow
 import com.algoritmico.passepartout.business.models.AppProfileHeader
 import com.algoritmico.passepartout.business.models.Event
 import com.algoritmico.passepartout.business.models.ProfileEventDelete

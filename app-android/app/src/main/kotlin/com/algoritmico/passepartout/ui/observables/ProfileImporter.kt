@@ -8,7 +8,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import com.algoritmico.passepartout.business.injection.Files
+import com.algoritmico.passepartout.injection.Files
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
 import com.algoritmico.passepartout.business.managers.ProfileManager
