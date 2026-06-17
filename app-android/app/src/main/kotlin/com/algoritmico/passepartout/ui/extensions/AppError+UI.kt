@@ -4,8 +4,15 @@
 
 package com.algoritmico.passepartout.ui.extensions
 
+import com.algoritmico.passepartout.business.managers.ProfileManagerException
 import com.algoritmico.passepartout.observables.AppError
+import com.algoritmico.passepartout.observables.ProfileImporterException
 
 // FIXME: ###, AppError, Localize messages
 val AppError.localizedMessage: String
-    get() = cause?.localizedMessage ?: code.name
+    get() = when (cause) {
+        is ProfileImporterException.Binary -> "Importing a binary file."
+        is ProfileImporterException.Failure -> cause.localizedMessage
+        is ProfileManagerException.Generic -> cause.localizedMessage
+        else -> cause?.localizedMessage ?: code.name
+    }
