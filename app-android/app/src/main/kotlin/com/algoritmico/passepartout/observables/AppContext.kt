@@ -4,19 +4,20 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.context.Tags
-import com.algoritmico.passepartout.context.appBundle
-import com.algoritmico.passepartout.context.appConstants
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.appConstants
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.context.newConfigManager
 import com.algoritmico.passepartout.context.newProfileManager
 import com.algoritmico.passepartout.context.newTunnel
 import com.algoritmico.passepartout.context.newVersionChecker
 import com.algoritmico.passepartout.context.userPreferencesStore
+import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.models.AppPreferenceKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -138,6 +139,13 @@ class AppContext(
             supervisorScope {
                 launch {
                     configManager.refreshBundle()
+                    userPreferencesObservable.updatePreferences(
+                        fields = listOf(AppPreferenceKey.configFlags)
+                    ) {
+                        it.copy(
+                            configFlags = configManager.activeFlags.toList()
+                        )
+                    }
                 }
                 launch {
                     versionChecker.checkLatestRelease()
