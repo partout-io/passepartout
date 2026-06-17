@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 sealed class ProfileImporterException: Exception() {
     data object Binary: ProfileImporterException()
     data object Null: ProfileImporterException()
+    data class Failure(override val cause: Throwable?): ProfileImporterException()
 }
 
 class ProfileImporter(
@@ -53,7 +54,7 @@ class ProfileImporter(
             contentResolver.openInputStream(uri)?.use { it.readBytes() }
         }.getOrElse {
             it.throwIfCancellation()
-            throw it
+            throw ProfileImporterException.Failure(it)
         }
         if (bytes == null) {
             throw ProfileImporterException.Null
