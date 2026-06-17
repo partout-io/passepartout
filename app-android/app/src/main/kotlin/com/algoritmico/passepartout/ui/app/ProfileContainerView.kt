@@ -47,11 +47,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.throwIfCancellation
-import com.algoritmico.passepartout.models.AppProfileHeader
-import com.algoritmico.passepartout.models.AppProfileStatus
-import com.algoritmico.passepartout.models.AppTunnelInfo
-import com.algoritmico.passepartout.models.ProfileTransfer
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.models.AppProfileHeader
+import com.algoritmico.passepartout.business.models.AppProfileStatus
+import com.algoritmico.passepartout.business.models.AppTunnelInfo
+import com.algoritmico.passepartout.business.models.ProfileTransfer
 import com.algoritmico.passepartout.ui.observables.ErrorHandler
 import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
 import com.algoritmico.passepartout.ui.observables.ProfileObservable

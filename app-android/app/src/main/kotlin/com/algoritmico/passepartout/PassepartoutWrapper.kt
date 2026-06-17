@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout
 
 import android.util.Log
-import com.algoritmico.passepartout.injection.Tags
+import com.algoritmico.passepartout.business.injection.Tags
 import io.partout.abi.PartoutCompletionCallback
 import io.partout.vpn.JNITunnelController
 

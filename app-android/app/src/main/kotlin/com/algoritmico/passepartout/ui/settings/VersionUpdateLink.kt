@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalUriHandler
-import com.algoritmico.passepartout.extensions.versionString
+import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
 import com.algoritmico.passepartout.ui.observables.LocalVersionObservable
 import com.algoritmico.passepartout.ui.observables.safeOpenUri

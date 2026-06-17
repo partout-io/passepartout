@@ -6,11 +6,11 @@ cd $cwd/..
 set -e
 openapi=`realpath scripts/openapi.yaml`
 models_dir=`realpath app-android/app`
-package_name=com.algoritmico.passepartout.models
+package_name=com.algoritmico.passepartout.business.models
 extra_imports="ConnectionStatus,ModuleType,TaggedProfile"
 
 # Clean up
-rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/models
+rm -rf $models_dir/src/main/kotlin/com/algoritmico/passepartout/business/models
 
 # Enter package
 pushd partout

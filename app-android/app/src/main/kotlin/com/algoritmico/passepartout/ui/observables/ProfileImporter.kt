@@ -8,10 +8,10 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import com.algoritmico.passepartout.injection.Files
-import com.algoritmico.passepartout.extensions.decodeAsTextOrNull
-import com.algoritmico.passepartout.extensions.throwIfCancellation
-import com.algoritmico.passepartout.managers.ProfileManager
+import com.algoritmico.passepartout.business.injection.Files
+import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
+import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.managers.ProfileManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

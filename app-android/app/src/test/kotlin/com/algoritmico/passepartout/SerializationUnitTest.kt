@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout
 
-import com.algoritmico.passepartout.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.JSON
 import io.partout.models.DNSModuleProtocolType
 import io.partout.models.DNSModuleProtocolTypecleartext
 import io.partout.models.DNSModuleProtocolTypehttps

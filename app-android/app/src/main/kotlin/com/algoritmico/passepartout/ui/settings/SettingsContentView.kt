@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.faqURL
+import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
 import com.algoritmico.passepartout.ui.observables.safeOpenUri

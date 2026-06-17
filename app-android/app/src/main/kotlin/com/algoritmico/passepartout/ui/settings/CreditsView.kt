@@ -34,10 +34,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.injection.credits
-import com.algoritmico.passepartout.models.Credits
-import com.algoritmico.passepartout.models.CreditsLicensesInner
-import com.algoritmico.passepartout.models.CreditsNoticesInner
+import com.algoritmico.passepartout.business.injection.credits
+import com.algoritmico.passepartout.business.models.Credits
+import com.algoritmico.passepartout.business.models.CreditsLicensesInner
+import com.algoritmico.passepartout.business.models.CreditsNoticesInner
 import com.algoritmico.passepartout.ui.theme.ListItemTrailingText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

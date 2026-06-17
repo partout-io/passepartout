@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.blogURL
-import com.algoritmico.passepartout.extensions.disclaimerURL
-import com.algoritmico.passepartout.extensions.privacyPolicyURL
+import com.algoritmico.passepartout.business.extensions.blogURL
+import com.algoritmico.passepartout.business.extensions.disclaimerURL
+import com.algoritmico.passepartout.business.extensions.privacyPolicyURL
 import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
 import com.algoritmico.passepartout.ui.observables.safeOpenUri

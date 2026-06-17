@@ -5,10 +5,10 @@
 package com.algoritmico.passepartout.ui.models
 
 import android.os.SystemClock
-import com.algoritmico.passepartout.extensions.DataSample
-import com.algoritmico.passepartout.extensions.DataSpeed
-import com.algoritmico.passepartout.extensions.formatDataUnit
-import com.algoritmico.passepartout.extensions.speedSince
+import com.algoritmico.passepartout.business.extensions.DataSample
+import com.algoritmico.passepartout.business.extensions.DataSpeed
+import com.algoritmico.passepartout.business.extensions.formatDataUnit
+import com.algoritmico.passepartout.business.extensions.speedSince
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
 

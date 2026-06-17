@@ -4,10 +4,10 @@
 
 package com.algoritmico.passepartout.ui.observables
 
-import com.algoritmico.passepartout.managers.ConfigManager
-import com.algoritmico.passepartout.models.ConfigEventRefresh
-import com.algoritmico.passepartout.models.ConfigFlag
-import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.business.managers.ConfigManager
+import com.algoritmico.passepartout.business.models.ConfigEventRefresh
+import com.algoritmico.passepartout.business.models.ConfigFlag
+import com.algoritmico.passepartout.business.models.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob

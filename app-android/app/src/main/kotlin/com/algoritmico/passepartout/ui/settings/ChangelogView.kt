@@ -30,9 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.extensions.urlForIssue
-import com.algoritmico.passepartout.extensions.versionString
-import com.algoritmico.passepartout.models.ChangelogEntry
+import com.algoritmico.passepartout.business.extensions.urlForIssue
+import com.algoritmico.passepartout.business.extensions.versionString
+import com.algoritmico.passepartout.business.models.ChangelogEntry
 import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
 import com.algoritmico.passepartout.ui.observables.LocalVersionObservable

@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.ui.observables
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.business.models.AppConfiguration
 
 val LocalAppConfiguration = staticCompositionLocalOf<AppConfiguration> {
     error("No AppConfiguration provided")

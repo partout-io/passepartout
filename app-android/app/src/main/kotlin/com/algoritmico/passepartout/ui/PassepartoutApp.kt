@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.algoritmico.passepartout.ui.observables.AppError
-import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.business.models.AppConfiguration
 import com.algoritmico.passepartout.ui.observables.ConfigObservable
 import com.algoritmico.passepartout.ui.observables.ErrorHandler
 import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration

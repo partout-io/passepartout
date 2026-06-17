@@ -4,11 +4,11 @@
 
 package com.algoritmico.passepartout.ui.observables
 
-import com.algoritmico.passepartout.managers.VersionChecker
-import com.algoritmico.passepartout.models.ChangelogEntry
-import com.algoritmico.passepartout.models.Event
-import com.algoritmico.passepartout.models.VersionEventNew
-import com.algoritmico.passepartout.models.VersionRelease
+import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.business.models.ChangelogEntry
+import com.algoritmico.passepartout.business.models.Event
+import com.algoritmico.passepartout.business.models.VersionEventNew
+import com.algoritmico.passepartout.business.models.VersionRelease
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob

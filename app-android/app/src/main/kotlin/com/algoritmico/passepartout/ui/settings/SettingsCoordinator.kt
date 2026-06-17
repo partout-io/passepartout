@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.algoritmico.passepartout.extensions.versionString
+import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
 

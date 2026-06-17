@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.ui.observables
 
-import com.algoritmico.passepartout.models.AppErrorCode
+import com.algoritmico.passepartout.business.models.AppErrorCode
 
 data class AppError(
     val code: AppErrorCode,

@@ -4,14 +4,14 @@
 
 package com.algoritmico.passepartout.ui.observables
 
-import com.algoritmico.passepartout.managers.ProfileManager
-import com.algoritmico.passepartout.models.AppFeature
-import com.algoritmico.passepartout.models.AppProfileHeader
-import com.algoritmico.passepartout.models.Event
-import com.algoritmico.passepartout.models.ProfileEventChangeRemoteImporting
-import com.algoritmico.passepartout.models.ProfileEventReady
-import com.algoritmico.passepartout.models.ProfileEventRefresh
-import com.algoritmico.passepartout.models.ProfileSharingFlag
+import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.business.models.AppFeature
+import com.algoritmico.passepartout.business.models.AppProfileHeader
+import com.algoritmico.passepartout.business.models.Event
+import com.algoritmico.passepartout.business.models.ProfileEventChangeRemoteImporting
+import com.algoritmico.passepartout.business.models.ProfileEventReady
+import com.algoritmico.passepartout.business.models.ProfileEventRefresh
+import com.algoritmico.passepartout.business.models.ProfileSharingFlag
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
