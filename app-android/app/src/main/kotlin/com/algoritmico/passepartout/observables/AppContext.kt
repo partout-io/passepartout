@@ -45,6 +45,7 @@ class AppContext(
     // Expose to Compose
     val appConfiguration: AppConfiguration
     val configObservable: ConfigObservable
+    val errorHandler: ErrorHandler
     val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
@@ -101,13 +102,15 @@ class AppContext(
         )
 
         // Observables from managers
+        errorHandler = ErrorHandler
         configObservable = ConfigObservable(
             configManager,
             coroutineScope
         )
         profileObservable = ProfileObservable(
             profileManager,
-            coroutineScope
+            coroutineScope,
+            errorHandler
         )
         profileImporter = ProfileImporter(
             logTag,

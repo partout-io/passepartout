@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.util.Log
 import com.algoritmico.passepartout.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppFeature
 import com.algoritmico.passepartout.models.AppProfileHeader
@@ -33,6 +32,7 @@ import java.io.Closeable
 class ProfileObservable(
     private val manager: ProfileManager,
     coroutineScope: CoroutineScope,
+    errorHandler: ErrorHandler,
     searchDebounceMillis: Long = 200L
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -55,7 +55,7 @@ class ProfileObservable(
             .launchIn(scope)
 
         scope.launch {
-            manager.loadInitialProfiles()
+            manager.loadInitialProfiles(errorHandler)
         }
     }
 

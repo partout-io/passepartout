@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 appContext.configObservable,
                 appContext.versionObservable,
                 appContext.appConfiguration,
-                ErrorHandler,
+                appContext.errorHandler,
                 onImportProfile = ::openProfileImporter
             )
         }

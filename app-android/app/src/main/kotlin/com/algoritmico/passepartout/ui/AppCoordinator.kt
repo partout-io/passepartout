@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
@@ -58,6 +59,7 @@ fun AppCoordinator(
     }
     val coroutineScope = rememberCoroutineScope()
     val isContextualMode = contextualProfileIds.isNotEmpty()
+    val errorHandler = LocalErrorHandler.current
 
     fun clearContextualMode() {
         contextualProfileIds = emptyList()
@@ -89,6 +91,7 @@ fun AppCoordinator(
                     profileObservable.remove(profileIds)
                 }.onFailure {
                     Log.e(logTag, "Unable to delete profiles", it)
+                    errorHandler.report(it)
                 }
             }
         },
