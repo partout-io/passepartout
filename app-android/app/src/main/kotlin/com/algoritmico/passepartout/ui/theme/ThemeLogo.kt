@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.ui.theme
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable

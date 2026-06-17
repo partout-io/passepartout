@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -40,6 +40,7 @@ import com.algoritmico.passepartout.extensions.faqURL
 import com.algoritmico.passepartout.injection.safeOpenUri
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.theme.ListItemTrailingText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

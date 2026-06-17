@@ -31,6 +31,8 @@ import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.observables.VersionObservable
+import com.algoritmico.passepartout.ui.alerts.FailureAlert
+import com.algoritmico.passepartout.ui.app.AppCoordinator
 
 @Composable
 fun PassepartoutApp(

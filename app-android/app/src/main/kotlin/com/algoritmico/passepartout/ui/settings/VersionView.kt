@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.ui.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.extensions.versionString
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.theme.ThemeLogo
 
 @Composable
 fun VersionView(

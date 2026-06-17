@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.ui.app
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -16,6 +16,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.settings.SettingsCoordinator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -238,7 +240,7 @@ private fun AppCoordinatorScaffold(
 @Preview(showBackground = true, widthDp = 393, heightDp = 852)
 @Composable
 private fun AppCoordinatorPreview() {
-    androidx.compose.material3.MaterialTheme {
+    MaterialTheme {
         AppCoordinatorScaffold(
             title = "Passepartout",
             contextualProfileCount = 0,
@@ -260,7 +262,7 @@ private fun AppCoordinatorPreview() {
 @Preview(showBackground = true, widthDp = 393, heightDp = 852)
 @Composable
 private fun AppCoordinatorContextualPreview() {
-    androidx.compose.material3.MaterialTheme {
+    MaterialTheme {
         AppCoordinatorScaffold(
             title = "Passepartout",
             contextualProfileCount = 2,

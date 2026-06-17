@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.ui.app
 
 import android.content.Context
 import android.content.Intent
@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +58,8 @@ import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
+import com.algoritmico.passepartout.ui.alerts.InteractiveOpenVPNView
+import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 

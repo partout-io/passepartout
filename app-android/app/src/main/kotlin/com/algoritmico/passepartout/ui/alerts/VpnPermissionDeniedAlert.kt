@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui
+package com.algoritmico.passepartout.ui.alerts
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
