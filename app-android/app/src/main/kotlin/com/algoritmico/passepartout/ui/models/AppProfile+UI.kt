@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.ui.models
 
-import com.algoritmico.passepartout.business.extensions.formatDataUnit
 import com.algoritmico.passepartout.business.models.AppProfileStatus
 import com.algoritmico.passepartout.business.models.ProfileTransfer
 
