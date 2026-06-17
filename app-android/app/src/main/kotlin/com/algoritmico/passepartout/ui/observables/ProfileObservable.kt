@@ -55,7 +55,7 @@ class ProfileObservable(
             .launchIn(scope)
 
         scope.launch {
-            manager.loadInitialProfiles(errorHandler)
+            manager.loadInitialProfiles(errorHandler::report)
         }
     }
 

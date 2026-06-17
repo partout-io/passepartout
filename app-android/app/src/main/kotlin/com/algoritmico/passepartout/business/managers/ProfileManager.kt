@@ -16,7 +16,6 @@ import com.algoritmico.passepartout.business.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.business.models.ProfileEventReady
 import com.algoritmico.passepartout.business.models.ProfileEventRefresh
 import com.algoritmico.passepartout.business.models.ProfileEventSave
-import com.algoritmico.passepartout.ui.observables.ErrorHandler
 import io.partout.abi.PartoutResult
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
@@ -49,12 +48,12 @@ class ProfileManager(
     private val _events = newEventFlow()
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
-    suspend fun loadInitialProfiles(errorHandler: ErrorHandler) {
+    suspend fun loadInitialProfiles(reportError: (Throwable) -> Unit) {
         runCatching {
             setProfiles(repository.fetchProfiles())
         }.onFailure {
             Log.e(logTag, "Unable to load initial profiles", it)
-            errorHandler.report(it)
+            reportError(it)
         }
         _events.emit(ProfileEventReady())
     }
