@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.theme.ThemeLogo
 
 @Composable

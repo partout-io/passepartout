@@ -37,9 +37,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.faqURL
-import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
-import com.algoritmico.passepartout.ui.observables.safeOpenUri
+import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.ListItemTrailingText
 
 @OptIn(ExperimentalMaterial3Api::class)

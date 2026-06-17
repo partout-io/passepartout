@@ -10,8 +10,8 @@ import com.algoritmico.passepartout.business.managers.VersionCheckerException
 import com.algoritmico.passepartout.business.managers.VersionCheckerSnapshot
 import com.algoritmico.passepartout.business.managers.VersionCheckerStrategy
 import com.algoritmico.passepartout.business.managers.toSemanticVersionOrNull
-import com.algoritmico.passepartout.business.models.ChangelogEntry
-import com.algoritmico.passepartout.business.models.SemanticVersion
+import com.algoritmico.passepartout.models.ChangelogEntry
+import com.algoritmico.passepartout.models.SemanticVersion
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

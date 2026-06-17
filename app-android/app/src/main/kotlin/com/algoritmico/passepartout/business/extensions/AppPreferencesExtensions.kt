@@ -4,10 +4,10 @@
 
 package com.algoritmico.passepartout.business.extensions
 
-import com.algoritmico.passepartout.business.models.AppPreferenceKey
-import com.algoritmico.passepartout.business.models.AppPreferences
-import com.algoritmico.passepartout.business.models.ConfigFlag
-import com.algoritmico.passepartout.business.models.ExperimentalPreferences
+import com.algoritmico.passepartout.models.AppPreferenceKey
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.ExperimentalPreferences
 
 fun AppPreferences.isFlagEnabled(flag: ConfigFlag): Boolean {
     return (configFlags.contains(flag) || experimental.enabledConfigFlags.contains(flag)) &&

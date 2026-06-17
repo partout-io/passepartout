@@ -7,11 +7,11 @@ package com.algoritmico.passepartout.business.managers
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
-import com.algoritmico.passepartout.injection.newEventFlow
-import com.algoritmico.passepartout.business.models.ConfigBundleConfig
-import com.algoritmico.passepartout.business.models.ConfigEventRefresh
-import com.algoritmico.passepartout.business.models.ConfigFlag
-import com.algoritmico.passepartout.business.models.Event
+import com.algoritmico.passepartout.context.newEventFlow
+import com.algoritmico.passepartout.models.ConfigBundleConfig
+import com.algoritmico.passepartout.models.ConfigEventRefresh
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.Event
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex

@@ -36,16 +36,16 @@ import com.algoritmico.passepartout.business.extensions.enable
 import com.algoritmico.passepartout.business.extensions.isAllowed
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
-import com.algoritmico.passepartout.injection.isBetaSuggestedByAndroidAPI
+import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.business.extensions.default
-import com.algoritmico.passepartout.business.models.AppPreferences
-import com.algoritmico.passepartout.business.models.ConfigFlag
-import com.algoritmico.passepartout.business.models.DistributionTarget
-import com.algoritmico.passepartout.business.models.ExperimentalPreferences
-import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.ui.observables.LocalConfigObservable
-import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
-import com.algoritmico.passepartout.ui.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.DistributionTarget
+import com.algoritmico.passepartout.models.ExperimentalPreferences
+import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalConfigObservable
+import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import kotlinx.coroutines.launch
 
 @Composable

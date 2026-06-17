@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.extensions
 
-import com.algoritmico.passepartout.business.models.SemanticVersion
+import com.algoritmico.passepartout.models.SemanticVersion
 
 val SemanticVersion.versionString: String
     get() = "$major.$minor.$patch"

@@ -4,8 +4,8 @@
 
 package com.algoritmico.passepartout.ui.extensions
 
-import com.algoritmico.passepartout.business.models.AppProfileStatus
-import com.algoritmico.passepartout.business.models.ProfileTransfer
+import com.algoritmico.passepartout.models.AppProfileStatus
+import com.algoritmico.passepartout.models.ProfileTransfer
 
 fun AppProfileStatus.statusText(): String {
     return when (this) {

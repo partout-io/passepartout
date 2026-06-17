@@ -32,11 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.business.models.ChangelogEntry
-import com.algoritmico.passepartout.ui.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.ui.observables.LocalErrorHandler
-import com.algoritmico.passepartout.ui.observables.LocalVersionObservable
-import com.algoritmico.passepartout.ui.observables.safeOpenUri
+import com.algoritmico.passepartout.models.ChangelogEntry
+import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.observables.LocalVersionObservable
+import com.algoritmico.passepartout.observables.safeOpenUri
 
 private const val TAG = "ChangelogView"
 

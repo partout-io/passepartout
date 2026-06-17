@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.extensions
 
-import com.algoritmico.passepartout.business.models.DistributionTarget
+import com.algoritmico.passepartout.models.DistributionTarget
 
 val DistributionTarget.canAlwaysReportIssue: Boolean
     get() = this == DistributionTarget.enterprise
