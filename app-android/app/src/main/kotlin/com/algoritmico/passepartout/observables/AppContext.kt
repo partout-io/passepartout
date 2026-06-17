@@ -130,7 +130,7 @@ class AppContext(
     }
 
     fun onApplicationActive() {
-        // FIXME: ###, LifecycleManager.onApplicationActive()
+        // FIXME: ###, AppContext, LifecycleManager.onApplicationActive()
 //        library.appOnForeground()
         if (applicationActiveJob?.isActive == true) {
             return

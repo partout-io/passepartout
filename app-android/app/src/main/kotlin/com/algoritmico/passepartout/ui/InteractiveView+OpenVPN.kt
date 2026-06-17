@@ -22,7 +22,7 @@ import com.algoritmico.passepartout.extensions.withInteractiveOpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.TaggedProfile
 
-// FIXME: ###, Generalize interactive prompt
+// FIXME: ###, Interactive, Generalize module views
 @Composable
 fun InteractiveOpenVPNView(
     profile: TaggedProfile,

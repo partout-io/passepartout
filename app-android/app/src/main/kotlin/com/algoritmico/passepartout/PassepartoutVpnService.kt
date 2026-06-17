@@ -64,7 +64,7 @@ class PassepartoutVpnService: VpnService() {
             controller: JNITunnelController,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            // FIXME: ###: Load tunnel bundle/constants/preferences
+            // FIXME: ###: Tunnel, Load bundle/constants/preferences
 //            val bundle = appBundleJSON()
 //            Log.e(logTag, ">>> Bundle: $bundle")
 //            updateCurrentProfileName(profileJSON)
