@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.business.extensions.LastCheckedVersionSnapshot
+import com.algoritmico.passepartout.business.extensions.compareTo
 import com.algoritmico.passepartout.business.extensions.lastCheckedVersionSnapshots
 import com.algoritmico.passepartout.business.extensions.max
 import com.algoritmico.passepartout.business.extensions.throwIfCancellation
@@ -74,21 +75,19 @@ class VersionChecker(
             return
         }
         runCatching {
-            val latestRelease = newReleaseOrNull() ?: latestRelease
             val now = System.currentTimeMillis()
-            val result = runCatching {
+            val release = runCatching {
                 newReleaseOrNull(now)
             }.onFailure {
                 handleVersionCheckFailure(now, it)
-            }
-            val latestRelease = result.getOrElse {
+            }.getOrElse {
                 latestRelease
             }
-            if (latestRelease == null) {
+            if (release == null) {
                 Log.d(logTag, "Version: current is latest version")
             } else {
-                Log.i(logTag, "Version: new version available at ${latestRelease.url}")
-                _events.emit(VersionEventNew(release = latestRelease))
+                Log.i(logTag, "Version: new version available at ${release.url}")
+                _events.emit(VersionEventNew(release = release))
             }
         }.also {
             mutex.unlock()
@@ -160,14 +159,6 @@ class VersionChecker(
 private sealed class VersionSnapshotState {
     data object Loading : VersionSnapshotState()
     data class Ready(val snapshot: LastCheckedVersionSnapshot?) : VersionSnapshotState()
-}
-
-private operator fun SemanticVersion.compareTo(other: SemanticVersion): Int {
-    return encodedValue().compareTo(other.encodedValue())
-}
-
-private fun SemanticVersion.encodedValue(): Int {
-    return ((major and 0xff) shl 16) + ((minor and 0xff) shl 8) + (patch and 0xff)
 }
 
 private class DummyVersionCheckerStrategy : VersionCheckerStrategy {

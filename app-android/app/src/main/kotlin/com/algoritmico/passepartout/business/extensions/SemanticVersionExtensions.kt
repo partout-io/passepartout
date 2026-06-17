@@ -22,3 +22,11 @@ fun String.toSemanticVersionOrNull(): SemanticVersion? {
         SemanticVersion(major, minor, patch)
     }.getOrNull()
 }
+
+operator fun SemanticVersion.compareTo(other: SemanticVersion): Int {
+    return encodedValue().compareTo(other.encodedValue())
+}
+
+private fun SemanticVersion.encodedValue(): Int {
+    return ((major and 0xff) shl 16) + ((minor and 0xff) shl 8) + (patch and 0xff)
+}
