@@ -45,10 +45,11 @@ fun PreferencesView(
             }
         }
         HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
-        SettingsLinkRow(
-            title = "Advanced",
-            onClick = onAdvanced
-        )
+        // Hide "Advanced" because there are no actionable config flags
+//        SettingsLinkRow(
+//            title = "Advanced",
+//            onClick = onAdvanced
+//        )
         HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
     }
 }
