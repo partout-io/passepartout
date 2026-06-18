@@ -57,7 +57,8 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
         jobject thiz,
         jstring profile,
         jstring cacheDir,
-        jobject controller
+        jobject controller,
+        jboolean logsSnapshots
 ) {
     (void)thiz;
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
@@ -71,6 +72,7 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_daemon = false;
+    args.logs_snapshots = logsSnapshots;
     args.bindings = &bindings;
     const jint result = partout_daemon_start(&args);
 

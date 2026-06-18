@@ -19,6 +19,7 @@ import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.TunnelConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
@@ -88,7 +89,8 @@ class PassepartoutVpnService: VpnService() {
             val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
-                controller
+                controller,
+                logsSnapshots
             )
             if (code != 0) {
                 throw PartoutException(code, null)
@@ -140,6 +142,9 @@ class PassepartoutVpnService: VpnService() {
         override fun onServiceStopped() {
             postStoppedNotification()
         }
+
+        override val logsSnapshots: Boolean
+            get() = TunnelConstants.LOGS_SNAPSHOTS
 
         private fun readPreferences(intent: Intent?): AppPreferences? {
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
@@ -278,10 +283,14 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private fun updateNotification(snapshot: TunnelSnapshot) {
-        AppLog.e(logTag, "updateNotification()")
+        if (engine.logsSnapshots) {
+            AppLog.e(logTag, "updateNotification()")
+        }
         val notificationManager = NotificationManagerCompat.from(this)
         if (!notificationManager.areNotificationsEnabled()) {
-            AppLog.w(logTag, "Skip VPN notification update, notifications are disabled")
+            if (engine.logsSnapshots) {
+                AppLog.w(logTag, "Skip VPN notification update, notifications are disabled")
+            }
             return
         }
         val notification = createNotification(snapshot)
