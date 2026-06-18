@@ -4,13 +4,14 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.algoritmico.passepartout.business.extensions.appPreferences
 import com.algoritmico.passepartout.business.extensions.default
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.toggleDnsFallback
 import com.algoritmico.passepartout.business.extensions.update
 import com.algoritmico.passepartout.business.extensions.updateExperimentalPreferences
@@ -45,15 +46,12 @@ class UserPreferencesObservable(
 
     //region Lifecycle
     init {
-        snapshot = runCatching {
+        snapshot = runCatchingNonFatal {
             runBlocking {
                 preferences.first()
             }
         }.getOrElse {
-            if (it !is Exception) {
-                throw it
-            }
-            Log.e(logTag, "Unable to load preferences", it)
+            AppLog.e(logTag, "Unable to load preferences", it)
             AppPreferences.default
         }
     }
@@ -96,17 +94,17 @@ class UserPreferencesObservable(
 
     //region Private
     private suspend fun editSafely(transform: suspend (MutablePreferences) -> Unit) {
-        runCatching {
+        runCatchingNonFatal {
             store.edit(transform)
             savePreferences()
         }.onFailure {
-            Log.e(logTag, "Unable to save preferences", it)
+            AppLog.e(logTag, "Unable to save preferences", it)
             throw it
         }
     }
 
     private fun savePreferences() {
-        Log.d(logTag, "Preferences updated: $snapshot")
+        AppLog.d(logTag, "Preferences updated: $snapshot")
     }
     //endregion
 }

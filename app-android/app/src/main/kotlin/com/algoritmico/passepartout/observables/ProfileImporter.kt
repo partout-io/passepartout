@@ -7,9 +7,9 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.context.Files
 import kotlinx.coroutines.CoroutineScope
@@ -36,24 +36,22 @@ class ProfileImporter(
     fun importProfile(uri: Uri) {
         coroutineScope.launch {
             val profileName = displayName(uri) ?: Files.DEFAULT_PROFILE_NAME
-            runCatching {
+            runCatchingNonFatal {
                 val profileText = readProfileText(uri)
                 profileManager.importText(profileText, profileName)
             }.onSuccess {
                 onImportSuccess()
             }.onFailure {
-                it.throwIfCancellation()
-                Log.e(logTag, "Import failure: $profileName", it)
+                AppLog.e(logTag, "Import failure: $profileName", it)
                 errorHandler.report(ProfileImporterException.Failure(it))
             }
         }
     }
 
     private suspend fun readProfileText(uri: Uri): String = withContext(Dispatchers.IO) {
-        val bytes = runCatching {
+        val bytes = runCatchingNonFatal {
             contentResolver.openInputStream(uri)?.use { it.readBytes() }
         }.getOrElse {
-            it.throwIfCancellation()
             throw ProfileImporterException.Failure(it)
         }
         if (bytes == null) {
@@ -67,7 +65,7 @@ class ProfileImporter(
     }
 
     private suspend fun displayName(uri: Uri): String? = withContext(Dispatchers.IO) {
-        runCatching {
+        runCatchingNonFatal {
             contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
                 ?.use { cursor ->
                     if (!cursor.moveToFirst()) {
@@ -80,8 +78,7 @@ class ProfileImporter(
                     cursor.getString(displayNameIndex)
                 }
         }.getOrElse {
-            it.throwIfCancellation()
-            Log.e(logTag, "Unable to resolve profile file name: $uri", it)
+            AppLog.e(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }
     }

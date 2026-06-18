@@ -33,6 +33,7 @@ object Tags {
     const val SERVICE = "PassepartoutVpnService"
     const val PARTOUT = "Partout"
     const val PARTOUT_JNI = "PartoutJNI"
+    const val OOB = "PassepartoutOOB"
 }
 
 object Files {
@@ -47,8 +48,12 @@ object Files {
     const val DEFAULT_PROFILE_NAME = "Imported profile"
 }
 
+object TunnelConstants {
+    const val LOGS_SNAPSHOTS = false
+    const val IS_FOREGROUND = true
+}
+
 private object Tuning {
-    const val TUNNEL_IS_FOREGROUND = true
     const val EVENT_BUFFER_CAPACITY = 64
     const val EVENT_REPLAY = 64
 }
@@ -104,7 +109,8 @@ fun AppConfiguration.newTunnel(
         logTag,
         applicationContext,
         PassepartoutVpnService::class.java,
-        Tuning.TUNNEL_IS_FOREGROUND,
+        TunnelConstants.IS_FOREGROUND,
+        TunnelConstants.LOGS_SNAPSHOTS,
         requestVpnPermission
     )
 }

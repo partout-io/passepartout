@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.models.ChangelogEntry
@@ -56,10 +57,10 @@ fun ChangelogView(
 
     LaunchedEffect(versionNumber, versionObservable) {
         isLoading = true
-        entries = runCatching {
+        entries = runCatchingNonFatal {
             versionObservable.fetchChangelog(versionNumber)
         }.getOrElse {
-            Log.w(TAG, "Unable to load changelog", it)
+            AppLog.w(TAG, "Unable to load changelog", it)
             emptyList()
         }
         isLoading = false
@@ -74,7 +75,6 @@ fun ChangelogView(
                 CircularProgressIndicator()
             }
         }
-
         entries.isEmpty() -> {
             Box(
                 modifier = modifier
@@ -89,7 +89,6 @@ fun ChangelogView(
                 )
             }
         }
-
         else -> {
             ChangelogListView(
                 modifier = modifier,

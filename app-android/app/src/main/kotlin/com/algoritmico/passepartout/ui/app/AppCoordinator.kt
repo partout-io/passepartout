@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.ui.app
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
@@ -89,10 +90,10 @@ fun AppCoordinator(
             val profileIds = contextualProfileIds
             clearContextualMode()
             coroutineScope.launch {
-                runCatching {
+                runCatchingNonFatal {
                     profileObservable.remove(profileIds)
                 }.onFailure {
-                    Log.e(logTag, "Unable to delete profiles", it)
+                    AppLog.e(logTag, "Unable to delete profiles", it)
                     errorHandler.report(it)
                 }
             }

@@ -4,30 +4,37 @@
 
 package com.algoritmico.passepartout
 
+import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.net.VpnService
+import android.os.Build
 import android.os.IBinder
 import android.util.AtomicFile
-import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.TunnelConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
+import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.ui.extensions.NotificationTransferFormatter
+import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
-import io.partout.vpn.JNITunnelController
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,19 +70,19 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun start(
             intent: Intent?,
-            controller: JNITunnelController,
+            controller: NativeTunnelControllerJNI,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            Log.e(logTag, ">>> Started service")
+            applicationContext.logPreamble(logTag)
 
-            // FIXME: ###: Prepend bundle metadata
+            AppLog.e(logTag, ">>> Started service")
             val bundle = applicationContext.appBundle()
-            Log.e(logTag, ">>> Bundle: $bundle")
+            AppLog.e(logTag, ">>> Bundle: $bundle")
             updateCurrentProfileName(profileJSON)
 
             // Try preferences from intent, otherwise load last persisted
             val preferences = readPreferences(intent)
-            Log.e(logTag, ">>> Preferences: $preferences")
+            AppLog.e(logTag, ">>> Preferences: $preferences")
 
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
@@ -86,7 +93,8 @@ class PassepartoutVpnService: VpnService() {
             val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
-                controller
+                controller,
+                logsSnapshots
             )
             if (code != 0) {
                 throw PartoutException(code, null)
@@ -119,14 +127,14 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun deleteLastProfile(id: String) {
             withContext(Dispatchers.IO) {
-                runCatching {
+                runCatchingNonFatal {
                     val json = readLastFile(lastProfileFile)
                     val profile = JSON.decode<TaggedProfile>(json)
-                    if (profile.id != id) { return@runCatching }
-                    Log.i(logTag, "Forget last profile $id")
+                    if (profile.id != id) { return@runCatchingNonFatal }
+                    AppLog.i(logTag, "Forget last profile $id")
                     lastProfileFile.delete()
                 }.onFailure {
-                    Log.e(logTag, "Unable to forget last profile", it)
+                    AppLog.e(logTag, "Unable to forget last profile", it)
                 }
             }
         }
@@ -139,32 +147,33 @@ class PassepartoutVpnService: VpnService() {
             postStoppedNotification()
         }
 
+        override val logsSnapshots: Boolean
+            get() = TunnelConstants.LOGS_SNAPSHOTS
+
         private fun readPreferences(intent: Intent?): AppPreferences? {
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
             val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
-                Log.i(logTag, "Load last preferences")
-                runCatching {
+                AppLog.i(logTag, "Load last preferences")
+                runCatchingNonFatal {
                     readLastFile(lastPreferencesFile)
-                }.getOrElse {
-                    Log.w(logTag, "Unable to read last tunnel preferences", it)
-                    null
-                }
+                }.onFailure {
+                    AppLog.w(logTag, "Unable to read last tunnel preferences", it)
+                }.getOrNull()
             } else {
-                Log.i(logTag, "Load and persist start preferences")
-                runCatching {
+                AppLog.i(logTag, "Load and persist start preferences")
+                runCatchingNonFatal {
                     writeLastFile(lastPreferencesFile, intentPreferencesJSON)
                 }.onFailure {
-                    Log.w(logTag, "Unable to write last tunnel preferences", it)
+                    AppLog.w(logTag, "Unable to write last tunnel preferences", it)
                 }
                 intentPreferencesJSON
             }
             return preferencesJSON?.let { json ->
-                runCatching {
+                runCatchingNonFatal {
                     JSON.decode<AppPreferences>(json)
-                }.getOrElse {
-                    Log.w(logTag, "Unable to decode preferences JSON", it)
-                    null
-                }
+                }.onFailure {
+                    AppLog.w(logTag, "Unable to decode preferences JSON", it)
+                }.getOrNull()
             }
         }
 
@@ -177,13 +186,10 @@ class PassepartoutVpnService: VpnService() {
         private fun writeLastFile(file: File, json: String) {
             val atomicFile = AtomicFile(file)
             val stream = atomicFile.startWrite()
-            runCatching {
+            runCatchingNonFatal {
                 stream.write(json.toByteArray(Charsets.UTF_8))
                 atomicFile.finishWrite(stream)
             }.onFailure {
-                if (it !is Exception) {
-                    throw it
-                }
                 atomicFile.failWrite(stream)
                 throw it
             }
@@ -199,15 +205,16 @@ class PassepartoutVpnService: VpnService() {
             notificationTransfer.reset()
             updateCurrentProfileName(it)
         }
-        runCatching {
-            ServiceCompat.startForeground(
-                this,
-                VPN_NOTIFICATION_ID,
-                createNotification(snapshot = null),
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
-            )
-        }.onFailure {
-            Log.e(logTag, "Unable to start service in foreground", it)
+        try {
+            if (!canPostNotifications()) {
+                AppLog.w(logTag, "Starting service in foreground with notifications disabled")
+            }
+            startForegroundGracefully(createNotification(snapshot = null))
+        } catch (it: SecurityException) {
+            AppLog.e(logTag, "Unable to start service in foreground", it)
+            return START_NOT_STICKY
+        } catch (it: RuntimeException) {
+            AppLog.e(logTag, "Unable to start service in foreground", it)
             return START_NOT_STICKY
         }
         return runtime.onStartCommand(intent, flags, startId)
@@ -281,21 +288,21 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private fun updateNotification(snapshot: TunnelSnapshot) {
-        Log.e(logTag, "updateNotification()")
+        if (engine.logsSnapshots) {
+            AppLog.e(logTag, "updateNotification()")
+        }
         val notificationManager = NotificationManagerCompat.from(this)
-        if (!notificationManager.areNotificationsEnabled()) {
-            Log.w(logTag, "Skip VPN notification update, notifications are disabled")
+        if (!canPostNotifications(notificationManager)) {
+            if (engine.logsSnapshots) {
+                AppLog.w(logTag, "Skip VPN notification update, notifications are disabled")
+            }
             return
         }
         val notification = createNotification(snapshot)
-        runCatching {
+        try {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
-        }.onFailure {
-            if (it is SecurityException) {
-                Log.w(logTag, "Unable to update VPN notification", it)
-            } else {
-                throw it
-            }
+        } catch (it: SecurityException) {
+            AppLog.w(logTag, "Unable to update VPN notification", it)
         }
     }
 
@@ -305,22 +312,18 @@ class PassepartoutVpnService: VpnService() {
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
 
         val notificationManager = NotificationManagerCompat.from(this)
-        if (!notificationManager.areNotificationsEnabled()) {
-            Log.w(logTag, "Skip stopped VPN notification, notifications are disabled")
+        if (!canPostNotifications(notificationManager)) {
+            AppLog.w(logTag, "Skip stopped VPN notification, notifications are disabled")
             return
         }
         val notification = createNotification(
             snapshot = null,
             isServiceStopped = true
         )
-        runCatching {
+        try {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
-        }.onFailure {
-            if (it is SecurityException) {
-                Log.w(logTag, "Unable to show stopped VPN notification", it)
-            } else {
-                throw it
-            }
+        } catch (it: SecurityException) {
+            AppLog.w(logTag, "Unable to show stopped VPN notification", it)
         }
     }
 
@@ -353,18 +356,49 @@ class PassepartoutVpnService: VpnService() {
             .cancel(VPN_NOTIFICATION_ID)
     }
 
+    private fun startForegroundGracefully(notification: Notification) {
+        ServiceCompat.startForeground(
+            this,
+            VPN_NOTIFICATION_ID,
+            notification,
+            vpnForegroundServiceType
+        )
+    }
+
+    private val vpnForegroundServiceType: Int
+        get() {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+            } else {
+                0
+            }
+        }
+
+    private fun canPostNotifications(
+        notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(this)
+    ): Boolean {
+        if (!notificationManager.areNotificationsEnabled()) {
+            return false
+        }
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
     private fun resetNotificationState() {
         currentProfileName = null
         notificationTransfer.reset()
     }
 
     private fun updateCurrentProfileName(profileJSON: String) {
-        runCatching {
+        runCatchingNonFatal {
             JSON.decode<TaggedProfile>(profileJSON).name
         }.onSuccess {
             currentProfileName = it
         }.onFailure {
-            Log.w(logTag, "Unable to decode VPN profile name", it)
+            AppLog.w(logTag, "Unable to decode VPN profile name", it)
         }
     }
 

@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.business.strategy
 
 import android.os.SystemClock
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.managers.ConfigBundle
 import com.algoritmico.passepartout.business.managers.ConfigManagerException
 import com.algoritmico.passepartout.business.managers.ConfigManagerStrategy
@@ -24,14 +24,14 @@ class GitHubConfigStrategy(
         lastUpdatedAtMillis?.let { lastUpdatedAtMillis ->
             val elapsed = (now - lastUpdatedAtMillis) / 1000.0
             if (elapsed < ttl) {
-                Log.d(logTag, "Config (GitHub): elapsed $elapsed < $ttl")
+                AppLog.d(logTag, "Config (GitHub): elapsed $elapsed < $ttl")
                 throw ConfigManagerException.RateLimit
             }
         }
 
-        Log.i(logTag, "Config (GitHub): fetching bundle from $url")
+        AppLog.i(logTag, "Config (GitHub): fetching bundle from $url")
         val data = fetcher(url)
-        val bundle = ConfigBundle.Companion.decode(data)
+        val bundle = ConfigBundle.decode(data)
         lastUpdatedAtMillis = SystemClock.elapsedRealtime()
         return bundle
     }

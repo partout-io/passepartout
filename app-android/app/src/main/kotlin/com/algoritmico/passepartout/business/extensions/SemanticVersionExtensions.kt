@@ -13,7 +13,7 @@ val SemanticVersion.Companion.max: SemanticVersion
     get() = SemanticVersion(255, 255, 255)
 
 fun String.toSemanticVersionOrNull(): SemanticVersion? {
-    return runCatching {
+    return runCatchingNonFatal {
         val parts = split(".")
         require(parts.size == 3)
         val major = parts[0].toInt()

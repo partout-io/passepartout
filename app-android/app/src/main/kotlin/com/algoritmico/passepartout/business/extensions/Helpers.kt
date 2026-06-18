@@ -4,6 +4,8 @@
 
 package com.algoritmico.passepartout.business.extensions
 
+import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.context.Tags
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -22,8 +24,55 @@ data class GenericException(
     }
 }
 
-fun Throwable.throwIfCancellation() {
-    if (this is CancellationException) {
+class NonFatalResult<T> @PublishedApi internal constructor(
+    @PublishedApi internal val result: Result<T>
+) {
+    inline fun onSuccess(action: (value: T) -> Unit): NonFatalResult<T> {
+        result.onSuccess(action)
+        return this
+    }
+
+    inline fun onFailure(action: (exception: Throwable) -> Unit): NonFatalResult<T> {
+        val error = result.exceptionOrNull() ?: return this
+        error.throwIfFatal()
+        action(error)
+        return this
+    }
+
+    inline fun getOrElse(onFailure: (exception: Throwable) -> T): T {
+        val error = result.exceptionOrNull()
+        if (error != null) {
+            error.throwIfFatal()
+            return onFailure(error)
+        }
+        return result.getOrThrow()
+    }
+
+    fun getOrNull(): T? {
+        val error = result.exceptionOrNull()
+        if (error != null) {
+            error.throwIfFatal()
+            return null
+        }
+        return result.getOrNull()
+    }
+
+    fun getOrThrow(): T {
+        return result.getOrThrow()
+    }
+}
+
+inline fun <T> runCatchingNonFatal(block: () -> T): NonFatalResult<T> {
+    return try {
+        NonFatalResult(Result.success(block()))
+    } catch (error: Throwable) {
+        AppLog.d(Tags.OOB, "runCatchingNonFatal(): $error")
+        NonFatalResult(Result.failure(error))
+    }
+}
+
+fun Throwable.throwIfFatal() {
+    if (this !is Exception || this is CancellationException) {
         throw this
     }
 }
@@ -58,15 +107,13 @@ fun ByteArray.decodeAsTextOrNull(): String? {
         .newDecoder()
         .onMalformedInput(CodingErrorAction.REPORT)
         .onUnmappableCharacter(CodingErrorAction.REPORT)
-    return runCatching {
+    return runCatchingNonFatal {
         decoder.decode(ByteBuffer.wrap(this)).toString()
-    }.getOrElse {
-        it.throwIfCancellation()
-        when (it) {
-            is CharacterCodingException -> null
-            else -> throw it
+    }.onFailure {
+        if (it !is CharacterCodingException) {
+            throw it
         }
-    }
+    }.getOrNull()
 }
 
 private fun ByteArray.hasBinaryControlBytes(): Boolean {

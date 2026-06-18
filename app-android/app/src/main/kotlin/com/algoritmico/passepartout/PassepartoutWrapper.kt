@@ -4,10 +4,11 @@
 
 package com.algoritmico.passepartout
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.Tags
+import io.partout.NativeTunnelControllerJNI
 import io.partout.abi.PartoutCompletionCallback
-import io.partout.vpn.JNITunnelController
 
 interface PassepartoutWrapperProtocol {
     fun partoutInit(tag: String, logsPrivateData: Boolean)
@@ -20,7 +21,8 @@ interface PassepartoutWrapperProtocol {
     fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
-        controller: JNITunnelController
+        controller: NativeTunnelControllerJNI,
+        logsSnapshots: Boolean
     ): Int
     fun partoutDaemonStop(
         completion: PartoutCompletionCallback
@@ -28,61 +30,6 @@ interface PassepartoutWrapperProtocol {
 }
 
 class PassepartoutWrapper: PassepartoutWrapperProtocol {
-    private val wrapper: PassepartoutWrapperProtocol?
-
-    init {
-        wrapper = runCatching {
-            UnsafePassepartoutWrapper()
-        }.getOrElse {
-            Log.e(Tags.PARTOUT_JNI, "Unable to load JNI library", it)
-            null
-        }
-    }
-
-    override fun partoutInit(tag: String, logsPrivateData: Boolean) {
-        wrapper?.partoutInit(tag, logsPrivateData)
-    }
-
-    override fun partoutVersion(): String {
-        if (wrapper == null) {
-            return "x.y.z"
-        }
-        return wrapper.partoutVersion()
-    }
-
-    override fun partoutDaemonStart(
-        profile: String,
-        cacheDir: String,
-        controller: JNITunnelController
-    ): Int {
-        if (wrapper == null) {
-            return -1
-        }
-        return wrapper.partoutDaemonStart(profile, cacheDir, controller)
-    }
-
-    override fun partoutDaemonStop(completion: PartoutCompletionCallback) {
-        if (wrapper == null) {
-            completion.onComplete(-1, null)
-            return
-        }
-        wrapper.partoutDaemonStop(completion)
-    }
-
-    override fun partoutImportProfile(
-        text: String,
-        name: String?,
-        completion: PartoutCompletionCallback
-    ) {
-        if (wrapper == null) {
-            completion.onComplete(-1, null)
-            return
-        }
-        wrapper.partoutImportProfile(text, name, completion)
-    }
-}
-
-private class UnsafePassepartoutWrapper: PassepartoutWrapperProtocol {
     override external fun partoutInit(tag: String, logsPrivateData: Boolean)
     override external fun partoutVersion(): String
     override external fun partoutImportProfile(
@@ -93,7 +40,8 @@ private class UnsafePassepartoutWrapper: PassepartoutWrapperProtocol {
     override external fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
-        controller: JNITunnelController
+        controller: NativeTunnelControllerJNI,
+        logsSnapshots: Boolean
     ): Int
     override external fun partoutDaemonStop(
         completion: PartoutCompletionCallback
@@ -102,7 +50,11 @@ private class UnsafePassepartoutWrapper: PassepartoutWrapperProtocol {
     companion object {
         init {
             // Name of the NDK .so without "lib" prefix or ".so"
-            System.loadLibrary("passepartout_wrapper")
+            runCatchingNonFatal {
+                System.loadLibrary("passepartout_wrapper")
+            }.onFailure {
+                AppLog.e(Tags.PARTOUT_JNI, "Unable to load JNI library", it)
+            }.getOrNull()
         }
     }
 }

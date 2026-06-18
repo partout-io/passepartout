@@ -4,9 +4,9 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.JSON
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
@@ -43,28 +43,27 @@ class ConfigManager(
         if (!refreshMutex.tryLock()) {
             return false
         }
-        return runCatching {
-            Log.d(logTag, "Config: refreshing bundle...")
+        return runCatchingNonFatal {
+            AppLog.d(logTag, "Config: refreshing bundle...")
             val newBundle = strategy.bundle()
             val event = synchronized(bundleLock) {
                 bundle = newBundle
                 refreshEvent(newBundle)
             }
             _events.emit(event)
-            Log.i(logTag, "Config: active flags = ${event.flags}")
-            Log.d(logTag, "Config: $newBundle")
+            AppLog.i(logTag, "Config: active flags = ${event.flags}")
+            AppLog.d(logTag, "Config: $newBundle")
             true
         }.also {
             refreshMutex.unlock()
         }.getOrElse {
-            it.throwIfCancellation()
             when (it) {
                 is ConfigManagerException.RateLimit -> {
-                    Log.d(logTag, "Config: TTL")
+                    AppLog.d(logTag, "Config: TTL")
                     false
                 }
                 else -> {
-                    Log.e(logTag, "Unable to refresh config flags", it)
+                    AppLog.e(logTag, "Config: Unable to refresh flags", it)
                     throw it
                 }
             }
@@ -129,7 +128,7 @@ class ConfigBundle(
             val map = JSON
                 .decode<Map<String, ConfigBundleConfig>>(data.decodeToString())
                 .mapNotNull { (key, value) ->
-                    ConfigFlag.Companion.decode(key)?.let { it to value }
+                    ConfigFlag.decode(key)?.let { it to value }
                 }
                 .toMap()
             return ConfigBundle(map)

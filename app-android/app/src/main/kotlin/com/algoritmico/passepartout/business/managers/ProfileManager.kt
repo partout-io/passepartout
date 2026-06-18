@@ -4,11 +4,11 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -48,22 +48,21 @@ class ProfileManager(
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun loadInitialProfiles(reportError: (Throwable) -> Unit) {
-        runCatching {
+        runCatchingNonFatal {
             setProfiles(repository.fetchProfiles())
         }.onFailure {
-            Log.e(logTag, "Unable to load initial profiles", it)
+            AppLog.e(logTag, "Unable to load initial profiles", it)
             reportError(it)
         }
         _events.emit(ProfileEventReady())
     }
 
     suspend fun importText(text: String, name: String?) {
-        val result = runCatching {
+        val result = runCatchingNonFatal {
             PartoutResult.await { completion ->
                 library.partoutImportProfile(text, name, completion)
             }
         }.getOrElse {
-            it.throwIfCancellation()
             when (it) {
                 is PartoutException -> throw ProfileManagerException.ABI(it.payload)
                 else -> throw it
@@ -111,7 +110,7 @@ class ProfileManager(
 
     private suspend fun publishProfiles() {
         val newHeaders = profiles.mapValues { it.value.appHeader() }
-        Log.d(logTag, "New headers: $newHeaders")
+        AppLog.d(logTag, "New headers: $newHeaders")
         _events.emit(ProfileEventLocalProfiles())
         _events.emit(
             ProfileEventRefresh(

@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,7 @@ fun PreferencesView(
     ) {
         PreferenceSwitchRow("DNS fallback", userPreferencesObservable.dnsFallback) {
             coroutineScope.launch {
-                runCatching {
+                runCatchingNonFatal {
                     userPreferencesObservable.toggleDnsFallback()
                 }.onFailure {
                     errorHandler.report(it)

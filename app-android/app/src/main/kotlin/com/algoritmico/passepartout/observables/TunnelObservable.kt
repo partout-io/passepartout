@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.observables
 
 import android.content.Intent
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
 import com.algoritmico.passepartout.business.extensions.JSON
@@ -123,7 +123,7 @@ class TunnelObservable(
 
     suspend fun getEnvironmentValue(name: String): String? {
         val json = tunnel.requestEnvironmentValue(name)
-        Log.i(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
+        AppLog.i(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
         return json
     }
 
@@ -160,7 +160,7 @@ class TunnelObservable(
     private fun onUpdate(event: Event) {
         if (event !is ProfileEventDelete) { return }
         event.ids.forEach {
-            Log.i(logTag, "Disconnect from removed profile $it")
+            AppLog.i(logTag, "Disconnect from removed profile $it")
             tunnel.disconnect(it, forget = true) { _ -> }
         }
     }

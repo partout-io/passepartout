@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.business.strategy
 
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -19,7 +20,7 @@ object URLFetcher {
 
     private fun fetchBlocking(url: String, cached: Boolean, timeout: Double): ByteArray {
         val connection = URL(url).openConnection() as HttpURLConnection
-        return runCatching {
+        return runCatchingNonFatal {
             connection.requestMethod = "GET"
             connection.useCaches = cached
             connection.connectTimeout = timeout.toInt() * 1000

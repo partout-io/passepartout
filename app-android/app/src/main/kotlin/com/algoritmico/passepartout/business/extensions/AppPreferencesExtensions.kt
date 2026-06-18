@@ -4,13 +4,13 @@
 
 package com.algoritmico.passepartout.business.extensions
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -47,8 +47,8 @@ fun DataStore<Preferences>.lastCheckedVersionSnapshots(
 
 private fun Flow<Preferences>.safePreferences(logTag: String): Flow<Preferences> {
     return catch {
-        it.throwIfCancellation()
-        Log.e(logTag, "Unable to read preferences", it)
+        it.throwIfFatal()
+        AppLog.e(logTag, "Unable to read preferences", it)
         emit(emptyPreferences())
     }
 }
@@ -147,7 +147,7 @@ private fun AppPreferences.lastCheckedVersionSnapshot(): LastCheckedVersionSnaps
 }
 
 private inline fun <reified T> String.decodePreference(): T? {
-    return runCatching {
+    return runCatchingNonFatal {
         JSON.decode<T>(this)
     }.getOrNull()
 }

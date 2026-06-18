@@ -4,9 +4,10 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.compose.ui.platform.UriHandler
-import com.algoritmico.passepartout.business.extensions.throwIfCancellation
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.context.Tags
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -23,17 +24,17 @@ object ErrorHandler {
 
     fun report(error: Throwable) {
         // This is a guard of last resort to rethrow CancellationException
-        error.throwIfCancellation()
-        Log.e(Tags.APP, "Invoke error handler", error)
+        error.throwIfFatal()
+        AppLog.e(Tags.APP, "Invoke error handler", error)
         _errors.tryEmit(error.asAppError)
     }
 }
 
 fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
-    runCatching {
+    runCatchingNonFatal {
         openUri(uri)
     }.onFailure {
-        Log.e(Tags.APP, "Unable to open URL ($uri)", it)
+        AppLog.e(Tags.APP, "Unable to open URL ($uri)", it)
         handler.report(it)
     }
 }

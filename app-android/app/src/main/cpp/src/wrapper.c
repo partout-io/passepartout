@@ -13,7 +13,7 @@
 static void daemon_bindings_free(partout_daemon_bindings *b);
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutInit(
+Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(
         JNIEnv *env,
         jobject thiz,
         jstring tag,
@@ -29,14 +29,14 @@ Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutInit(
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
+Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutVersion(JNIEnv *env, jobject thiz) {
     (void)thiz;
     jstring jmsg = (*env)->NewStringUTF(env, partout_version());
     return jmsg;
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutImportProfile(
+Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutImportProfile(
         JNIEnv *env,
         jobject thiz,
         jstring text,
@@ -52,12 +52,13 @@ Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutImportProfile
 }
 
 JNIEXPORT jint JNICALL
-Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutDaemonStart(
+Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
         JNIEnv *env,
         jobject thiz,
         jstring profile,
         jstring cacheDir,
-        jobject controller
+        jobject controller,
+        jboolean logsSnapshots
 ) {
     (void)thiz;
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
@@ -71,6 +72,7 @@ Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutDaemonStart(
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_daemon = false;
+    args.logs_snapshots = logsSnapshots;
     args.bindings = &bindings;
     const jint result = partout_daemon_start(&args);
 
@@ -80,7 +82,7 @@ Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutDaemonStart(
 }
 
 JNIEXPORT void JNICALL
-Java_com_algoritmico_passepartout_UnsafePassepartoutWrapper_partoutDaemonStop(
+Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStop(
         JNIEnv *env,
         jobject thiz,
         jobject completion
