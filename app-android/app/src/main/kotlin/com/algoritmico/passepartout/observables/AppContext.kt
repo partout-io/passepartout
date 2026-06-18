@@ -44,6 +44,7 @@ class AppContext(
     // Expose to Compose
     val appConfiguration: AppConfiguration
     val configObservable: ConfigObservable
+    val diagnosticsObservable: DiagnosticsObservable
     val errorHandler: ErrorHandler
     val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
@@ -107,6 +108,7 @@ class AppContext(
             configManager,
             coroutineScope
         )
+        diagnosticsObservable = DiagnosticsObservable()
         profileObservable = ProfileObservable(
             profileManager,
             coroutineScope,

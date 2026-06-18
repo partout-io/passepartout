@@ -23,7 +23,7 @@ import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
-import com.algoritmico.passepartout.context.TunnelConstants
+import com.algoritmico.passepartout.context.LocalConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
@@ -148,7 +148,7 @@ class PassepartoutVpnService: VpnService() {
         }
 
         override val logsSnapshots: Boolean
-            get() = TunnelConstants.LOGS_SNAPSHOTS
+            get() = LocalConstants.TUNNEL_LOGS_SNAPSHOTS
 
         private fun readPreferences(intent: Intent?): AppPreferences? {
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)

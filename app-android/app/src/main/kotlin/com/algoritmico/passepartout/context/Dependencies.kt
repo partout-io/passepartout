@@ -55,9 +55,12 @@ object Files {
     const val DEFAULT_PROFILE_NAME = "Imported profile"
 }
 
-object TunnelConstants {
-    const val LOGS_SNAPSHOTS = false
-    const val IS_FOREGROUND = true
+object LocalConstants {
+    const val TUNNEL_LOGS_SNAPSHOTS = false
+    const val TUNNEL_IS_FOREGROUND = true
+    const val LOGCAT_TIMEOUT_SECONDS = 3
+    const val LOGCAT_VIEW_HOURS = 6L
+    const val LOGCAT_DESTROY_TIMEOUT_MILLIS = 500L
 }
 
 private object Tuning {
@@ -116,8 +119,8 @@ fun AppConfiguration.newTunnel(
         logTag,
         applicationContext,
         PassepartoutVpnService::class.java,
-        TunnelConstants.IS_FOREGROUND,
-        TunnelConstants.LOGS_SNAPSHOTS,
+        LocalConstants.TUNNEL_IS_FOREGROUND,
+        LocalConstants.TUNNEL_LOGS_SNAPSHOTS,
         requestVpnPermission
     )
 }

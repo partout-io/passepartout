@@ -26,19 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.LocalConstants
+import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun LogcatView(
     modifier: Modifier = Modifier,
     tags: Collection<String>
 ) {
+    val diagnosticsObservable = LocalDiagnosticsObservable.current
     val errorHandler = LocalErrorHandler.current
     val listState = rememberLazyListState()
     var lines by remember(tags) {
@@ -48,7 +45,7 @@ fun LogcatView(
     LaunchedEffect(tags) {
         lines = null
         runCatchingNonFatal {
-            Logcat.read(tags)
+            diagnosticsObservable.logcat(tags, LocalConstants.LOGCAT_VIEW_HOURS)
         }.onSuccess {
             lines = it
         }.onFailure {
@@ -104,36 +101,5 @@ fun LogcatView(
                 }
             }
         }
-    }
-}
-
-private object Logcat {
-    private const val HOURS = 6L
-
-    suspend fun read(tags: Collection<String>): List<String> = withContext(Dispatchers.IO) {
-        val since = Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(HOURS))
-        val sinceString = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US).format(since)
-        val command = listOf(
-            "logcat",
-            "-d",
-            "-T",
-            sinceString,
-            "-v",
-            "time"
-        ) + tags.map {
-            "$it:V"
-        } + "*:S"
-
-        val process = ProcessBuilder(command)
-            .redirectErrorStream(true)
-            .start()
-        val lines = process.inputStream.bufferedReader().use {
-            it.readLines()
-        }
-        val exitCode = process.waitFor()
-        if (exitCode != 0) {
-            error("logcat exited with status $exitCode")
-        }
-        lines
     }
 }
