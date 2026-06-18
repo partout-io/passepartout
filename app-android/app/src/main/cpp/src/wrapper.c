@@ -72,7 +72,10 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_daemon = false;
-    args.logs_snapshots = logsSnapshots;
+    args.options.logs_snapshots = logsSnapshots;
+    args.options.dns_fallback = NULL;
+    args.options.dns_fallback_len = 0;
+    args.options.min_data_count_delta = 0;
     args.bindings = &bindings;
     const jint result = partout_daemon_start(&args);
 
