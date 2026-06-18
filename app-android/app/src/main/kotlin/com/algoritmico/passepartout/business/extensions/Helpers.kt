@@ -66,7 +66,7 @@ inline fun <T> runCatchingNonFatal(block: () -> T): NonFatalResult<T> {
     return try {
         NonFatalResult(Result.success(block()))
     } catch (error: Throwable) {
-        Log.e(Tags.OOB, "runCatchingNonFatal(): $error")
+        Log.d(Tags.OOB, "runCatchingNonFatal(): $error")
         NonFatalResult(Result.failure(error))
     }
 }
