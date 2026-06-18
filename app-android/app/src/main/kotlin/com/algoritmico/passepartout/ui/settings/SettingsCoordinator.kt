@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.business.extensions.versionString
+import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 
 @Composable
@@ -34,7 +35,9 @@ fun SettingsCoordinator(
 
     fun navigateBack() {
         navigationRoute = when (navigationRoute) {
+            SettingsCoordinatorRoute.AppLog -> SettingsCoordinatorRoute.Diagnostics
             SettingsCoordinatorRoute.PreferencesAdvanced -> SettingsCoordinatorRoute.Preferences
+            SettingsCoordinatorRoute.TunnelLog -> SettingsCoordinatorRoute.Diagnostics
             else -> null
         }
     }
@@ -64,8 +67,8 @@ fun SettingsCoordinator(
             settingsDestination = { route ->
                 PushDestination(
                     route = route,
-                    onAdvanced = {
-                        navigationRoute = SettingsCoordinatorRoute.PreferencesAdvanced
+                    onRoute = {
+                        navigationRoute = it
                     }
                 )
             },
@@ -97,18 +100,30 @@ private fun LinkView(
 @Composable
 private fun PushDestination(
     route: SettingsCoordinatorRoute?,
-    onAdvanced: () -> Unit
+    onRoute: (SettingsCoordinatorRoute) -> Unit
 ) {
     when (route) {
+        SettingsCoordinatorRoute.AppLog -> {
+            LogcatView(tags = Tags.appTags)
+        }
         SettingsCoordinatorRoute.Credits -> CreditsView()
-        SettingsCoordinatorRoute.Diagnostics -> DiagnosticsView()
+        SettingsCoordinatorRoute.Diagnostics -> {
+            DiagnosticsView(
+                onLiveLog = onRoute
+            )
+        }
         SettingsCoordinatorRoute.Links -> LinksView()
         SettingsCoordinatorRoute.Preferences -> {
             PreferencesView(
-                onAdvanced = onAdvanced
+                onAdvanced = {
+                    onRoute(SettingsCoordinatorRoute.PreferencesAdvanced)
+                }
             )
         }
         SettingsCoordinatorRoute.PreferencesAdvanced -> PreferencesAdvancedView()
+        SettingsCoordinatorRoute.TunnelLog -> {
+            LogcatView(tags = Tags.serviceTags)
+        }
         SettingsCoordinatorRoute.Version -> VersionView()
         null -> PlaceholderDestination("No selection")
     }
@@ -134,11 +149,13 @@ private fun PlaceholderDestination(
 
 private fun title(route: SettingsCoordinatorRoute?): String {
     return when (route) {
+        SettingsCoordinatorRoute.AppLog -> "App"
         SettingsCoordinatorRoute.Credits -> "Credits"
         SettingsCoordinatorRoute.Diagnostics -> "Diagnostics"
         SettingsCoordinatorRoute.Links -> "Links"
         SettingsCoordinatorRoute.Preferences -> "Preferences"
         SettingsCoordinatorRoute.PreferencesAdvanced -> "Advanced"
+        SettingsCoordinatorRoute.TunnelLog -> "Tunnel"
         SettingsCoordinatorRoute.Version -> "Passepartout"
         null -> "Settings"
     }
@@ -156,8 +173,10 @@ enum class SettingsCoordinatorRoute(
 ) {
     Credits(0),
     Diagnostics(1),
-    Links(2),
-    Preferences(3),
-    PreferencesAdvanced(4),
-    Version(5)
+    AppLog(2),
+    TunnelLog(3),
+    Links(4),
+    Preferences(5),
+    PreferencesAdvanced(6),
+    Version(7)
 }

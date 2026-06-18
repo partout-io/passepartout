@@ -32,7 +32,6 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
-import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
@@ -42,7 +41,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DiagnosticsView(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLiveLog: (SettingsCoordinatorRoute) -> Unit
 ) {
     val context = LocalContext.current
     val isBeta = context.isBetaSuggestedByAndroidAPI
@@ -66,7 +66,20 @@ fun DiagnosticsView(
             }
         }
         item {
-            DiagnosticsSection(header = "Live log")
+            DiagnosticsSection(header = "Live log") {
+                SettingsLinkRow(
+                    title = "App",
+                    onClick = {
+                        onLiveLog(SettingsCoordinatorRoute.AppLog)
+                    }
+                )
+                SettingsLinkRow(
+                    title = "Tunnel",
+                    onClick = {
+                        onLiveLog(SettingsCoordinatorRoute.TunnelLog)
+                    }
+                )
+            }
         }
         item {
             DiagnosticsSection(header = "Preferences") {
