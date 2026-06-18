@@ -128,7 +128,7 @@ class ConfigBundle(
             val map = JSON
                 .decode<Map<String, ConfigBundleConfig>>(data.decodeToString())
                 .mapNotNull { (key, value) ->
-                    ConfigFlag.Companion.decode(key)?.let { it to value }
+                    ConfigFlag.decode(key)?.let { it to value }
                 }
                 .toMap()
             return ConfigBundle(map)

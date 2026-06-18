@@ -31,7 +31,7 @@ class GitHubConfigStrategy(
 
         Log.i(logTag, "Config (GitHub): fetching bundle from $url")
         val data = fetcher(url)
-        val bundle = ConfigBundle.Companion.decode(data)
+        val bundle = ConfigBundle.decode(data)
         lastUpdatedAtMillis = SystemClock.elapsedRealtime()
         return bundle
     }
