@@ -48,7 +48,7 @@ fun DataStore<Preferences>.lastCheckedVersionSnapshots(
 private fun Flow<Preferences>.safePreferences(logTag: String): Flow<Preferences> {
     return catch {
         it.throwIfFatal()
-        AppLog.e(logTag, "Unable to read preferences", it)
+        AppLog.w(logTag, "Unable to read preferences", it)
         emit(emptyPreferences())
     }
 }

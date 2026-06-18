@@ -123,7 +123,7 @@ class TunnelObservable(
 
     suspend fun getEnvironmentValue(name: String): String? {
         val json = tunnel.requestEnvironmentValue(name)
-        AppLog.i(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
+        AppLog.d(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
         return json
     }
 

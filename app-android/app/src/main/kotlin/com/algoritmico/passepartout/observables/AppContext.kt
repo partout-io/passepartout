@@ -52,7 +52,7 @@ class AppContext(
     val versionObservable: VersionObservable
 
     init {
-        AppLog.e(logTag, ">>> Started app")
+        AppLog.i(logTag, ">>> Started app")
 
         // User preferences
         userPreferencesObservable = UserPreferencesObservable(
@@ -71,7 +71,7 @@ class AppContext(
         val bundle = applicationContext.appBundle()
         AppLog.d(logTag, ">>> Bundle: $bundle")
         val constants = applicationContext.appConstants()
-        AppLog.d(logTag, ">>> Constants: $bundle")
+        AppLog.d(logTag, ">>> Constants: $constants")
         appConfiguration = AppConfiguration(
             bundle = bundle,
             constants = constants
@@ -148,7 +148,7 @@ class AppContext(
                         val flags = configManager.activeFlags
                         persistConfigFlags(flags)
                     }.onFailure {
-                        AppLog.e(logTag, "Unable to persist config flags", it)
+                        AppLog.w(logTag, "Unable to update config flags", it)
                         configManager.resetTTL()
                     }
                 }

@@ -59,15 +59,15 @@ fun Context.appBundle(): AppBundle {
 
 fun Context.logPreamble(logTag: String) {
     val bundle = appBundle()
-    AppLog.e(logTag, "")
-    AppLog.e(logTag, "--- BEGIN ---")
-    AppLog.e(logTag, "")
-    AppLog.e(logTag, "App: ${bundle.versionString}")
-    AppLog.e(logTag, "OS: $androidOsString")
+    AppLog.i(logTag, "")
+    AppLog.i(logTag, "--- BEGIN ---")
+    AppLog.i(logTag, "")
+    AppLog.i(logTag, "App: ${bundle.versionString}")
+    AppLog.i(logTag, "OS: $androidOsString")
     androidDeviceString?.let {
-        AppLog.e(logTag, "Device: $it")
+        AppLog.i(logTag, "Device: $it")
     }
-    AppLog.e(logTag, "")
+    AppLog.i(logTag, "")
 }
 
 private val Context.androidOsString: String

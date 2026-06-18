@@ -42,7 +42,7 @@ class ProfileImporter(
             }.onSuccess {
                 onImportSuccess()
             }.onFailure {
-                AppLog.e(logTag, "Import failure: $profileName", it)
+                AppLog.e(logTag, "Unable to import profile ($profileName)", it)
                 errorHandler.report(ProfileImporterException.Failure(it))
             }
         }
@@ -78,7 +78,7 @@ class ProfileImporter(
                     cursor.getString(displayNameIndex)
                 }
         }.getOrElse {
-            AppLog.e(logTag, "Unable to resolve profile file name: $uri", it)
+            AppLog.w(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }
     }

@@ -120,9 +120,9 @@ class VersionChecker(
             is VersionCheckerException.RateLimit -> AppLog.d(logTag, "Version: rate limit")
             is VersionCheckerException.UnexpectedResponse -> {
                 saveVersion(timestamp, null)
-                AppLog.e(logTag, "Unable to check version", error)
+                AppLog.w(logTag, "Unable to check version", error)
             }
-            else -> AppLog.e(logTag, "Unable to check version", error)
+            else -> AppLog.w(logTag, "Unable to check version", error)
         }
     }
 
