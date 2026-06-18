@@ -51,7 +51,7 @@ extension Strings {
         }
 
         public enum Issues {
-            public static let subject = "\(appName) - Report issue"
+            public static let subject = "\(appName)/Apple - Report issue"
 
             public static let attachmentMimeType = "text/plain"
         }

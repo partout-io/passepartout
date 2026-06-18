@@ -28,6 +28,11 @@ private object Storage {
     const val PREFERENCES_STORE_NAME = "preferences"
 }
 
+data class AndroidSystemInformation(
+    val osLine: String,
+    val deviceLine: String?
+)
+
 fun Context.appConstants(): AppConstants {
     val json = readAsset(Storage.CONSTANTS_FILENAME)
     return JSON.decode<AppConstants>(json)
@@ -59,15 +64,23 @@ fun Context.appBundle(): AppBundle {
 
 fun Context.logPreamble(logTag: String) {
     val bundle = appBundle()
+    val systemInformation = androidSystemInformation()
     AppLog.i(logTag, "")
     AppLog.i(logTag, "--- BEGIN ---")
     AppLog.i(logTag, "")
     AppLog.i(logTag, "App: ${bundle.versionString}")
-    AppLog.i(logTag, "OS: $androidOsString")
-    androidDeviceString?.let {
+    AppLog.i(logTag, "OS: ${systemInformation.osLine}")
+    systemInformation.deviceLine?.let {
         AppLog.i(logTag, "Device: $it")
     }
     AppLog.i(logTag, "")
+}
+
+fun Context.androidSystemInformation(): AndroidSystemInformation {
+    return AndroidSystemInformation(
+        osLine = androidOsString,
+        deviceLine = androidDeviceString
+    )
 }
 
 private val Context.androidOsString: String

@@ -49,7 +49,7 @@ data class AppConstantsLog (
     val options: LocalLoggerOptions,
 
     @SerialName(value = "filenames")
-    val filenames: AppConstantsLogFilenames? = null
+    val filenames: AppConstantsLogFilenames
 
 ) {
 

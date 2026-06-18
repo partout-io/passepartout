@@ -80,8 +80,8 @@
             "message": "%@ - %@"
         },
         "filenames": {
-            "app": "app.log",
-            "tunnel": "tunnel.log"
+            "app": "app.txt",
+            "tunnel": "tunnel.txt"
         }
     }
 }

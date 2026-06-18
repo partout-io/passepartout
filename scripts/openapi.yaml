@@ -217,6 +217,7 @@ components:
           - formatter
           - sinceLast
           - options
+          - filenames
       required:
       - deviceIdLength
       - containers
@@ -717,6 +718,52 @@ components:
       required:
       - type
       - isEnabled
+    Issue:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        appLine:
+          type: string
+        purchasedProducts:
+          type: array
+          items:
+            type: string
+        providerLastUpdates:
+          type: object
+          additionalProperties:
+            "$ref": "#/components/schemas/Timestamp"
+        attachments:
+          type: array
+          items:
+            "$ref": "#/components/schemas/IssueAttachment"
+        osLine:
+          type: string
+        deviceLine:
+          type: string
+      required:
+      - id
+      - comment
+      - purchasedProducts
+      - providerLastUpdates
+      - attachments
+      - osLine
+    IssueAttachment:
+      type: object
+      additionalProperties: false
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          format: byte
+      required:
+      - filename
+      - content
     LocalLoggerOptions:
       type: object
       properties:

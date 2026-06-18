@@ -22,8 +22,8 @@ import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.LocalConstants
+import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
@@ -76,6 +76,9 @@ class PassepartoutVpnService: VpnService() {
             applicationContext.logPreamble(logTag)
 
             AppLog.i(logTag, "Started service")
+            val partoutVersion = library.partoutVersion()
+            AppLog.i(logTag, "Partout $partoutVersion")
+
             val bundle = applicationContext.appBundle()
             AppLog.d(logTag, "Bundle: $bundle")
             updateCurrentProfileName(profileJSON)

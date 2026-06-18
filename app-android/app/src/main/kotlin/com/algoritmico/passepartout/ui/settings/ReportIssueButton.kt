@@ -1,0 +1,158 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+package com.algoritmico.passepartout.ui.settings
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
+import com.algoritmico.passepartout.observables.LocalErrorHandler
+import kotlinx.coroutines.launch
+
+private enum class ReportIssueModalRoute {
+    Comment
+}
+
+@Composable
+fun ReportIssueButton(
+    modifier: Modifier = Modifier,
+    title: String = "Report issue"
+) {
+    val context = LocalContext.current
+    val appConfiguration = LocalAppConfiguration.current
+    val diagnosticsObservable = LocalDiagnosticsObservable.current
+    val errorHandler = LocalErrorHandler.current
+    val coroutineScope = rememberCoroutineScope()
+    var isPending by remember {
+        mutableStateOf(false)
+    }
+    var comment by rememberSaveable {
+        mutableStateOf("")
+    }
+    var modalRoute by rememberSaveable {
+        mutableStateOf<ReportIssueModalRoute?>(null)
+    }
+
+    if (modalRoute == ReportIssueModalRoute.Comment) {
+        ReportIssueCommentDialog(
+            comment = comment,
+            isPending = isPending,
+            onCommentChange = {
+                comment = it
+            },
+            onDismiss = {
+                modalRoute = null
+            },
+            onSubmit = {
+                val currentComment = it.trim()
+                coroutineScope.launch {
+                    isPending = true
+                    runCatchingNonFatal {
+                        diagnosticsObservable.sendEmail(
+                            context = context,
+                            appConfiguration = appConfiguration,
+                            comment = currentComment
+                        )
+                    }.onSuccess {
+                        comment = ""
+                        modalRoute = null
+                    }.onFailure {
+                        errorHandler.report(it)
+                    }
+                    isPending = false
+                }
+            }
+        )
+    }
+
+    Button(
+        enabled = !isPending,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        onClick = {
+            modalRoute = ReportIssueModalRoute.Comment
+        }
+    ) {
+        if (isPending) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        } else {
+            Text(title)
+        }
+    }
+}
+
+@Composable
+private fun ReportIssueCommentDialog(
+    comment: String,
+    isPending: Boolean,
+    onCommentChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onSubmit: (String) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {
+            if (!isPending) {
+                onDismiss()
+            }
+        },
+        title = {
+            Text("Report issue")
+        },
+        text = {
+            OutlinedTextField(
+                value = comment,
+                onValueChange = onCommentChange,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isPending,
+                minLines = 3,
+                label = {
+                    Text("Comment")
+                }
+            )
+        },
+        confirmButton = {
+            TextButton(
+                enabled = !isPending && comment.isNotBlank(),
+                onClick = {
+                    onSubmit(comment)
+                }
+            ) {
+                Text("Send")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                enabled = !isPending,
+                onClick = onDismiss
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
+}
