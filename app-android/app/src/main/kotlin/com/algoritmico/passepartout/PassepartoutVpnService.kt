@@ -146,10 +146,9 @@ class PassepartoutVpnService: VpnService() {
                 Log.i(logTag, "Load last preferences")
                 runCatchingNonFatal {
                     readLastFile(lastPreferencesFile)
-                }.getOrElse {
+                }.onFailure {
                     Log.w(logTag, "Unable to read last tunnel preferences", it)
-                    null
-                }
+                }.getOrNull()
             } else {
                 Log.i(logTag, "Load and persist start preferences")
                 runCatchingNonFatal {
@@ -162,10 +161,9 @@ class PassepartoutVpnService: VpnService() {
             return preferencesJSON?.let { json ->
                 runCatchingNonFatal {
                     JSON.decode<AppPreferences>(json)
-                }.getOrElse {
+                }.onFailure {
                     Log.w(logTag, "Unable to decode preferences JSON", it)
-                    null
-                }
+                }.getOrNull()
             }
         }
 

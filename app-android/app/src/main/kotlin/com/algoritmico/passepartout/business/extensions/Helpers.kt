@@ -22,12 +22,49 @@ data class GenericException(
     }
 }
 
-inline fun <T> runCatchingNonFatal(block: () -> T): Result<T> {
-    return try {
-        Result.success(block())
-    } catch (error: Throwable) {
+class NonFatalResult<T> @PublishedApi internal constructor(
+    @PublishedApi internal val result: Result<T>
+) {
+    inline fun onSuccess(action: (value: T) -> Unit): NonFatalResult<T> {
+        result.onSuccess(action)
+        return this
+    }
+
+    inline fun onFailure(action: (exception: Throwable) -> Unit): NonFatalResult<T> {
+        val error = result.exceptionOrNull() ?: return this
         error.throwIfFatal()
-        Result.failure(error)
+        action(error)
+        return this
+    }
+
+    inline fun getOrElse(onFailure: (exception: Throwable) -> T): T {
+        val error = result.exceptionOrNull()
+        if (error != null) {
+            error.throwIfFatal()
+            return onFailure(error)
+        }
+        return result.getOrThrow()
+    }
+
+    fun getOrNull(): T? {
+        val error = result.exceptionOrNull()
+        if (error != null) {
+            error.throwIfFatal()
+            return null
+        }
+        return result.getOrNull()
+    }
+
+    fun getOrThrow(): T {
+        return result.getOrThrow()
+    }
+}
+
+inline fun <T> runCatchingNonFatal(block: () -> T): NonFatalResult<T> {
+    return try {
+        NonFatalResult(Result.success(block()))
+    } catch (error: Throwable) {
+        NonFatalResult(Result.failure(error))
     }
 }
 
@@ -69,12 +106,11 @@ fun ByteArray.decodeAsTextOrNull(): String? {
         .onUnmappableCharacter(CodingErrorAction.REPORT)
     return runCatchingNonFatal {
         decoder.decode(ByteBuffer.wrap(this)).toString()
-    }.getOrElse {
-        when (it) {
-            is CharacterCodingException -> null
-            else -> throw it
+    }.onFailure {
+        if (it !is CharacterCodingException) {
+            throw it
         }
-    }
+    }.getOrNull()
 }
 
 private fun ByteArray.hasBinaryControlBytes(): Boolean {

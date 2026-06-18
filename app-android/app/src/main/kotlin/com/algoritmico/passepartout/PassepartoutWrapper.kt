@@ -34,10 +34,9 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
     init {
         wrapper = runCatchingNonFatal {
             UnsafePassepartoutWrapper()
-        }.getOrElse {
+        }.onFailure {
             Log.e(Tags.PARTOUT_JNI, "Unable to load JNI library", it)
-            null
-        }
+        }.getOrNull()
     }
 
     override fun partoutInit(tag: String, logsPrivateData: Boolean) {
