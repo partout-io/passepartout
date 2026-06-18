@@ -68,22 +68,19 @@ fun ReportIssueButton(
                 val currentComment = it.trim()
                 coroutineScope.launch {
                     isPending = true
-                    try {
-                        runCatchingNonFatal {
-                            diagnosticsObservable.sendEmail(
-                                context = context,
-                                appConfiguration = appConfiguration,
-                                comment = currentComment
-                            )
-                        }.onSuccess {
-                            comment = ""
-                            modalRoute = null
-                        }.onFailure {
-                            errorHandler.report(it)
-                        }
-                    } finally {
-                        isPending = false
+                    runCatchingNonFatal {
+                        diagnosticsObservable.sendEmail(
+                            context = context,
+                            appConfiguration = appConfiguration,
+                            comment = currentComment
+                        )
+                    }.onSuccess {
+                        comment = ""
+                        modalRoute = null
+                    }.onFailure {
+                        errorHandler.report(it)
                     }
+                    isPending = false
                 }
             }
         )
