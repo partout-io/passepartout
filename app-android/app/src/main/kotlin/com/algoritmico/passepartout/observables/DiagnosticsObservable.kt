@@ -15,7 +15,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class DiagnosticsObservable() {
+class DiagnosticsObservable {
     suspend fun logcat(
         tags: Collection<String>,
         hours: Long
@@ -40,7 +40,6 @@ class DiagnosticsObservable() {
                 if (!process.waitFor(LocalConstants.LOGCAT_DESTROY_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
                     process.destroyForcibly()
                 }
-                output.cancel()
                 error("logcat timed out")
             }
 
@@ -50,11 +49,14 @@ class DiagnosticsObservable() {
                 error("logcat exited with status $exitCode")
             }
             lines
-        }.onFailure {
-            process.destroyForcibly()
+        }.also {
+            if (process.isAlive) {
+                process.destroyForcibly()
+            }
             output.cancel()
+        }.getOrElse {
             throw it
-        }.getOrThrow()
+        }
     }
 
     private val logTimeoutMillis: Long
