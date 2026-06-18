@@ -32,6 +32,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
@@ -49,7 +50,6 @@ fun DiagnosticsView(
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -76,21 +76,6 @@ fun DiagnosticsView(
                         userPreferencesObservable.updateLogsPrivateData(isChecked)
                     }
                 )
-            }
-        }
-        item {
-            DiagnosticsSection(header = "Active profiles") {
-                if (activeProfiles.isEmpty()) {
-                    ListItem(
-                        headlineContent = {
-                            Text("No active profiles")
-                        }
-                    )
-                } else {
-                    activeProfiles.forEach {
-                        ActiveProfileRow(it)
-                    }
-                }
             }
         }
         item {
@@ -156,17 +141,6 @@ private fun LogsPrivateDataRow(
         },
         modifier = Modifier.clickable {
             update(!isChecked)
-        }
-    )
-}
-
-@Composable
-private fun ActiveProfileRow(
-    header: AppProfileHeader
-) {
-    ListItem(
-        headlineContent = {
-            Text(header.name)
         }
     )
 }
