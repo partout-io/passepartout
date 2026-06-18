@@ -15,6 +15,7 @@
 
 package com.algoritmico.passepartout.models
 
+import com.algoritmico.passepartout.models.IssueAttachment
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -27,10 +28,9 @@ import kotlinx.serialization.Contextual
  * @param comment 
  * @param purchasedProducts 
  * @param providerLastUpdates 
+ * @param attachments 
  * @param osLine 
  * @param appLine 
- * @param appLog 
- * @param tunnelLog 
  * @param deviceLine 
  */
 @Serializable
@@ -49,17 +49,14 @@ data class Issue (
     @SerialName(value = "providerLastUpdates")
     val providerLastUpdates: kotlin.collections.Map<kotlin.String, kotlin.Long>,
 
+    @SerialName(value = "attachments")
+    val attachments: kotlin.collections.List<IssueAttachment>,
+
     @SerialName(value = "osLine")
     val osLine: kotlin.String,
 
     @SerialName(value = "appLine")
     val appLine: kotlin.String? = null,
-
-    @SerialName(value = "appLog")
-    val appLog: kotlin.ByteArray? = null,
-
-    @SerialName(value = "tunnelLog")
-    val tunnelLog: kotlin.ByteArray? = null,
 
     @SerialName(value = "deviceLine")
     val deviceLine: kotlin.String? = null

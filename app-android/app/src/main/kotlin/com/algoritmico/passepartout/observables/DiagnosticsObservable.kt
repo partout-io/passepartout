@@ -4,10 +4,14 @@
 
 package com.algoritmico.passepartout.observables
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.app.ApplicationExitInfo
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.core.content.FileProvider
 import com.algoritmico.passepartout.business.extensions.body
 import com.algoritmico.passepartout.business.extensions.issues
@@ -19,6 +23,7 @@ import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.androidSystemInformation
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.Issue
+import com.algoritmico.passepartout.models.IssueAttachment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -36,11 +41,17 @@ class DiagnosticsObservable {
         appConfiguration: AppConfiguration,
         comment: String
     ): Issue = coroutineScope {
+        val appContext = context.applicationContext
         val appLog = async {
-            logcat(Tags.appTags, LocalConstants.LOGCAT_VIEW_HOURS).toLogData()
+            logcat(Tags.appTags, LocalConstants.LOGCAT_VIEW_HOURS)
+                .toIssueAttachment(appConfiguration.appLogPath)
         }
         val tunnelLog = async {
-            logcat(Tags.serviceTags, LocalConstants.LOGCAT_VIEW_HOURS).toLogData()
+            logcat(Tags.serviceTags, LocalConstants.LOGCAT_VIEW_HOURS)
+                .toIssueAttachment(appConfiguration.tunnelLogPath)
+        }
+        val exitReasons = async(Dispatchers.IO) {
+            appContext.exitReasonsAttachment()
         }
         val systemInformation = context.androidSystemInformation()
         Issue(
@@ -49,8 +60,11 @@ class DiagnosticsObservable {
             appLine = "${appConfiguration.bundle.displayName} ${appConfiguration.bundle.versionString} [${appConfiguration.bundle.distributionTarget}]",
             purchasedProducts = emptyList(),
             providerLastUpdates = emptyMap(),
-            appLog = appLog.await(),
-            tunnelLog = tunnelLog.await(),
+            attachments = listOfNotNull(
+                appLog.await(),
+                tunnelLog.await(),
+                exitReasons.await()
+            ),
             osLine = systemInformation.osLine,
             deviceLine = systemInformation.deviceLine
         )
@@ -67,7 +81,7 @@ class DiagnosticsObservable {
             comment = comment
         )
         val attachments = withContext(Dispatchers.IO) {
-            report.attachmentUris(context, appConfiguration)
+            report.attachmentUris(context)
         }
         context.openIssueEmail(
             appConfiguration = appConfiguration,
@@ -142,12 +156,16 @@ class DiagnosticsObservable {
         } + "*:S"
     }
 
-    private fun List<String>.toLogData(): ByteArray? {
+    private fun List<String>.toIssueAttachment(filename: String): IssueAttachment? {
         if (isEmpty()) {
             return null
         }
-        return joinToString(separator = "\n")
+        val content = joinToString(separator = "\n")
             .toByteArray(Charsets.UTF_8)
+        return IssueAttachment(
+            filename = filename,
+            content = content
+        )
     }
 }
 
@@ -170,25 +188,18 @@ private fun Context.openIssueEmail(
     startActivity(Intent.createChooser(intent, "Report issue"))
 }
 
-private fun Issue.attachmentUris(
-    context: Context,
-    appConfiguration: AppConfiguration
-): List<Uri> {
-    return listOfNotNull(
-        appLog?.toAttachmentUri(context, appConfiguration.appLogPath),
-        tunnelLog?.toAttachmentUri(context, appConfiguration.tunnelLogPath)
-    )
+private fun Issue.attachmentUris(context: Context): List<Uri> {
+    return attachments.map {
+        it.toAttachmentUri(context)
+    }
 }
 
-private fun ByteArray.toAttachmentUri(
-    context: Context,
-    fileName: String
-): Uri {
+private fun IssueAttachment.toAttachmentUri(context: Context): Uri {
     val directory = File(context.cacheDir, "issue").apply {
         mkdirs()
     }
-    val file = File(directory, File(fileName).name).apply {
-        writeBytes(this@toAttachmentUri)
+    val file = File(directory, File(filename).name).apply {
+        writeBytes(content)
     }
     return FileProvider.getUriForFile(
         context,
@@ -211,3 +222,79 @@ private val AppConfiguration.appLogPath: String
 
 private val AppConfiguration.tunnelLogPath: String
     get() = constants.log.filenames.tunnel
+
+private const val EXIT_REASONS_FILENAME = "exit-reasons.txt"
+
+private const val EXIT_REASONS_LIMIT = 8
+
+@SuppressLint("NewApi")
+private fun Context.exitReasonsAttachment(): IssueAttachment? {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        return null
+    }
+    val exitReasons = runCatchingNonFatal {
+        getSystemService(ActivityManager::class.java)
+            ?.getHistoricalProcessExitReasons(packageName, 0, EXIT_REASONS_LIMIT)
+    }.getOrNull()
+        ?.takeIf {
+            it.isNotEmpty()
+        } ?: return null
+
+    return IssueAttachment(
+        filename = EXIT_REASONS_FILENAME,
+        content = exitReasons.toExitReasonsText().toByteArray(Charsets.UTF_8)
+    )
+}
+
+@SuppressLint("NewApi")
+private fun List<ApplicationExitInfo>.toExitReasonsText(): String {
+    return mapIndexed { index, exitInfo ->
+        exitInfo.toDiagnosticsText(index)
+    }.joinToString(separator = "\n")
+}
+
+@SuppressLint("NewApi")
+private fun ApplicationExitInfo.toDiagnosticsText(index: Int): String {
+    return buildString {
+        appendLine("#${index + 1}")
+        appendLine("timestamp: ${exitReasonTimestampFormatter.format(Date(timestamp))}")
+        appendLine("process: ${processName ?: "unknown"}")
+        appendLine("pid: $pid")
+        appendLine("reason: ${reason.exitReasonDescription()} ($reason)")
+        appendLine("status: $status")
+        appendLine("importance: $importance")
+        appendLine("pss: $pss KB")
+        appendLine("rss: $rss KB")
+        val exitDescription = description
+        if (!exitDescription.isNullOrBlank()) {
+            appendLine("description: $exitDescription")
+        }
+    }
+}
+
+@SuppressLint("NewApi")
+private fun Int.exitReasonDescription(): String {
+    return when (this) {
+        ApplicationExitInfo.REASON_ANR -> "ANR"
+        ApplicationExitInfo.REASON_CRASH -> "crash"
+        ApplicationExitInfo.REASON_CRASH_NATIVE -> "native crash"
+        ApplicationExitInfo.REASON_DEPENDENCY_DIED -> "dependency died"
+        ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE -> "excessive resource usage"
+        ApplicationExitInfo.REASON_EXIT_SELF -> "exit self"
+        ApplicationExitInfo.REASON_FREEZER -> "freezer"
+        ApplicationExitInfo.REASON_INITIALIZATION_FAILURE -> "initialization failure"
+        ApplicationExitInfo.REASON_LOW_MEMORY -> "low memory"
+        ApplicationExitInfo.REASON_OTHER -> "other"
+        ApplicationExitInfo.REASON_PACKAGE_STATE_CHANGE -> "package state change"
+        ApplicationExitInfo.REASON_PACKAGE_UPDATED -> "package updated"
+        ApplicationExitInfo.REASON_PERMISSION_CHANGE -> "permission change"
+        ApplicationExitInfo.REASON_SIGNALED -> "signaled"
+        ApplicationExitInfo.REASON_UNKNOWN -> "unknown"
+        ApplicationExitInfo.REASON_USER_REQUESTED -> "user requested"
+        ApplicationExitInfo.REASON_USER_STOPPED -> "user stopped"
+        else -> "unrecognized"
+    }
+}
+
+private val exitReasonTimestampFormatter: SimpleDateFormat
+    get() = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z", Locale.US)
