@@ -10,17 +10,20 @@ import Partout
 public struct OpenAPIConfigBundleConfig: Sendable, Codable, Hashable {
 
     public var rate: Int
+    public var platforms: [OpenAPIConfigBundlePlatform]?
     public var minBuild: Int?
     public var data: JSON?
 
-    public init(rate: Int, minBuild: Int? = nil, data: JSON? = nil) {
+    public init(rate: Int, platforms: [OpenAPIConfigBundlePlatform]? = nil, minBuild: Int? = nil, data: JSON? = nil) {
         self.rate = rate
+        self.platforms = platforms
         self.minBuild = minBuild
         self.data = data
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case rate
+        case platforms
         case minBuild
         case data
     }
@@ -30,6 +33,7 @@ public struct OpenAPIConfigBundleConfig: Sendable, Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(rate, forKey: .rate)
+        try container.encodeIfPresent(platforms, forKey: .platforms)
         try container.encodeIfPresent(minBuild, forKey: .minBuild)
         try container.encodeIfPresent(data, forKey: .data)
     }
