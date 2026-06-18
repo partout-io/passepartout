@@ -152,7 +152,7 @@ class DiagnosticsObservable {
             "-v",
             "time"
         ) + tags.map {
-            "$it:V"
+            "$it:I" // INFO
         } + "*:S"
     }
 
