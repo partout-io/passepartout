@@ -87,7 +87,7 @@ class PassepartoutVpnService: VpnService() {
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
-            library.partoutInit(Tags.PARTOUT, logsPrivateData)
+            library.partoutInit(Tags.SERVICE_PARTOUT, logsPrivateData)
 
             // This call retains the controller strongly
             val code = library.partoutDaemonStart(

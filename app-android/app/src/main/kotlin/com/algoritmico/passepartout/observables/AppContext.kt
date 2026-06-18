@@ -2,12 +2,12 @@ package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
@@ -63,7 +63,7 @@ class AppContext(
         val preferences = userPreferencesObservable.currentPreferences
         AppLog.i(logTag, "Preferences: $preferences")
 
-        library.partoutInit(Tags.PARTOUT, preferences.logsPrivateData)
+        library.partoutInit(Tags.APP_PARTOUT, preferences.logsPrivateData)
         val partoutVersion = library.partoutVersion()
         AppLog.i(logTag, "Partout $partoutVersion")
 

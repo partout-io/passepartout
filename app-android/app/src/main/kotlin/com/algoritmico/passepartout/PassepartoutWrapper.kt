@@ -4,8 +4,8 @@
 
 package com.algoritmico.passepartout
 
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
 import io.partout.NativeTunnelControllerJNI
 import io.partout.abi.PartoutCompletionCallback

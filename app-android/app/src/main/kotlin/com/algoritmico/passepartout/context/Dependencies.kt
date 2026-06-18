@@ -29,9 +29,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 //region Constants
 object Tags {
+    val appTags: Collection<String>
+        get() = listOf(APP, APP_PARTOUT)
+
+    val serviceTags: Collection<String>
+        get() = listOf(SERVICE, SERVICE_PARTOUT, PARTOUT_JNI)
+
     const val APP = "Passepartout"
+    const val APP_PARTOUT = "PartoutApp"
     const val SERVICE = "PassepartoutVpnService"
-    const val PARTOUT = "Partout"
+    const val SERVICE_PARTOUT = "PartoutService"
     const val PARTOUT_JNI = "PartoutJNI"
     const val OOB = "PassepartoutOOB"
 }
