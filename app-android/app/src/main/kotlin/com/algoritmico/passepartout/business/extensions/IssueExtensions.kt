@@ -35,7 +35,7 @@ val Issue.body: String
     }
 
 val Issue.subject: String
-    get() = "Passepartout - Report issue"
+    get() = "Passepartout/Android - Report issue"
 
 private val timestampFormatter: DateFormat
     get() = DateFormat.getDateTimeInstance(
