@@ -54,6 +54,8 @@ class AppContext(
 
     init {
         AppLog.i(logTag, "Started app")
+        val partoutVersion = library.partoutVersion()
+        AppLog.i(logTag, "Partout $partoutVersion")
 
         // User preferences
         userPreferencesObservable = UserPreferencesObservable(
@@ -63,10 +65,7 @@ class AppContext(
         )
         val preferences = userPreferencesObservable.currentPreferences
         AppLog.i(logTag, "Preferences: $preferences")
-
         library.partoutInit(Tags.APP_PARTOUT, preferences.logsPrivateData)
-        val partoutVersion = library.partoutVersion()
-        AppLog.i(logTag, "Partout $partoutVersion")
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
