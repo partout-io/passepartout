@@ -4,17 +4,21 @@
 
 package com.algoritmico.passepartout
 
+import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.net.VpnService
+import android.os.Build
 import android.os.IBinder
 import android.util.AtomicFile
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
@@ -201,14 +205,16 @@ class PassepartoutVpnService: VpnService() {
             notificationTransfer.reset()
             updateCurrentProfileName(it)
         }
-        runCatchingNonFatal {
-            ServiceCompat.startForeground(
-                this,
-                VPN_NOTIFICATION_ID,
-                createNotification(snapshot = null),
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
-            )
-        }.onFailure {
+        try {
+            if (!canPostNotifications()) {
+                AppLog.w(logTag, "Unable to start service in foreground, notifications are disabled")
+                return START_NOT_STICKY
+            }
+            startForegroundGracefully(createNotification(snapshot = null))
+        } catch (it: SecurityException) {
+            AppLog.e(logTag, "Unable to start service in foreground", it)
+            return START_NOT_STICKY
+        } catch (it: RuntimeException) {
             AppLog.e(logTag, "Unable to start service in foreground", it)
             return START_NOT_STICKY
         }
@@ -287,21 +293,17 @@ class PassepartoutVpnService: VpnService() {
             AppLog.e(logTag, "updateNotification()")
         }
         val notificationManager = NotificationManagerCompat.from(this)
-        if (!notificationManager.areNotificationsEnabled()) {
+        if (!canPostNotifications(notificationManager)) {
             if (engine.logsSnapshots) {
                 AppLog.w(logTag, "Skip VPN notification update, notifications are disabled")
             }
             return
         }
         val notification = createNotification(snapshot)
-        runCatchingNonFatal {
+        try {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
-        }.onFailure {
-            if (it is SecurityException) {
-                AppLog.w(logTag, "Unable to update VPN notification", it)
-            } else {
-                throw it
-            }
+        } catch (it: SecurityException) {
+            AppLog.w(logTag, "Unable to update VPN notification", it)
         }
     }
 
@@ -311,7 +313,7 @@ class PassepartoutVpnService: VpnService() {
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
 
         val notificationManager = NotificationManagerCompat.from(this)
-        if (!notificationManager.areNotificationsEnabled()) {
+        if (!canPostNotifications(notificationManager)) {
             AppLog.w(logTag, "Skip stopped VPN notification, notifications are disabled")
             return
         }
@@ -319,14 +321,10 @@ class PassepartoutVpnService: VpnService() {
             snapshot = null,
             isServiceStopped = true
         )
-        runCatchingNonFatal {
+        try {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
-        }.onFailure {
-            if (it is SecurityException) {
-                AppLog.w(logTag, "Unable to show stopped VPN notification", it)
-            } else {
-                throw it
-            }
+        } catch (it: SecurityException) {
+            AppLog.w(logTag, "Unable to show stopped VPN notification", it)
         }
     }
 
@@ -357,6 +355,37 @@ class PassepartoutVpnService: VpnService() {
         NotificationManagerCompat
             .from(this)
             .cancel(VPN_NOTIFICATION_ID)
+    }
+
+    private fun startForegroundGracefully(notification: Notification) {
+        ServiceCompat.startForeground(
+            this,
+            VPN_NOTIFICATION_ID,
+            notification,
+            vpnForegroundServiceType
+        )
+    }
+
+    private val vpnForegroundServiceType: Int
+        get() {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+            } else {
+                0
+            }
+        }
+
+    private fun canPostNotifications(
+        notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(this)
+    ): Boolean {
+        if (!notificationManager.areNotificationsEnabled()) {
+            return false
+        }
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun resetNotificationState() {
