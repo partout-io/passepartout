@@ -24,11 +24,11 @@ import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.ui.extensions.NotificationTransferFormatter
+import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
-import io.partout.vpn.JNITunnelController
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -64,7 +64,7 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun start(
             intent: Intent?,
-            controller: JNITunnelController,
+            controller: NativeTunnelControllerJNI,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
             Log.e(logTag, ">>> Started service")

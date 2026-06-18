@@ -35,7 +35,7 @@
 # JNI entry points are exported with static Java_* symbols, and the native
 # tunnel backend also receives this controller object and calls into it by name
 # through GetMethodID. Keep the class and both sides of that method contract.
--keep class io.partout.vpn.JNITunnelController {
+-keep interface io.partout.NativeTunnelControllerJNI {
     native <methods>;
     public long setDelegate(long);
     public int setTunnel(java.lang.String);

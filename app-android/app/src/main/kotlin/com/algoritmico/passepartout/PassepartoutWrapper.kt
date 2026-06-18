@@ -7,8 +7,8 @@ package com.algoritmico.passepartout
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.Tags
+import io.partout.NativeTunnelControllerJNI
 import io.partout.abi.PartoutCompletionCallback
-import io.partout.vpn.JNITunnelController
 
 interface PassepartoutWrapperProtocol {
     fun partoutInit(tag: String, logsPrivateData: Boolean)
@@ -21,7 +21,7 @@ interface PassepartoutWrapperProtocol {
     fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
-        controller: JNITunnelController
+        controller: NativeTunnelControllerJNI
     ): Int
     fun partoutDaemonStop(
         completion: PartoutCompletionCallback
@@ -53,7 +53,7 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
     override fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
-        controller: JNITunnelController
+        controller: NativeTunnelControllerJNI
     ): Int {
         if (wrapper == null) {
             return -1
@@ -93,7 +93,7 @@ private class UnsafePassepartoutWrapper: PassepartoutWrapperProtocol {
     override external fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
-        controller: JNITunnelController
+        controller: NativeTunnelControllerJNI
     ): Int
     override external fun partoutDaemonStop(
         completion: PartoutCompletionCallback
