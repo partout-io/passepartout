@@ -4,11 +4,12 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
+import com.algoritmico.passepartout.models.ConfigBundlePlatform
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.Event
@@ -137,8 +138,14 @@ class ConfigBundle(
 }
 
 private fun ConfigBundleConfig.isActive(buildNumber: Int): Boolean {
+    if (rate != 100) {
+        return false
+    }
     if (minBuild != null && buildNumber < minBuild) {
         return false
     }
-    return rate == 100
+    if (platforms != null) {
+        return platforms.contains(ConfigBundlePlatform.android)
+    }
+    return true
 }

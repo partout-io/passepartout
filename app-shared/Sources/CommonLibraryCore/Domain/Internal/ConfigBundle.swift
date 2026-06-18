@@ -36,9 +36,15 @@ public struct ConfigBundle: Decodable, Sendable {
 
 extension ConfigBundle.Config {
     func isActive(withBuild buildNumber: Int) -> Bool {
+        guard rate == 100 else {
+            return false
+        }
         if let minBuild, buildNumber < minBuild {
             return false
         }
-        return rate == 100
+        if let platforms {
+            return platforms.contains(.apple)
+        }
+        return true
     }
 }
