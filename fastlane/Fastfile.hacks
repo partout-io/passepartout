@@ -1,0 +1,22 @@
+require "shellwords"
+require "fastlane_core/itunes_transporter"
+
+class ::FastlaneCore::AltoolTransporterExecutor
+    private
+
+    # Xcode 26's altool shim rejects Fastlane's iTMSTransporter-style -assetFile flag.
+    def file_upload_option(source)
+        "-f #{source.shellescape}"
+    end
+end
+
+def xcode_major_version
+    version = `xcodebuild -version`.match(/^Xcode\s+(\d+)/)
+    version[1].to_i if version
+end
+
+if xcode_major_version.to_i >= 26
+    additional_upload_parameters = Shellwords.split(ENV["DELIVER_ALTOOL_ADDITIONAL_UPLOAD_PARAMETERS"].to_s)
+    additional_upload_parameters << "--use-old-altool"
+    ENV["DELIVER_ALTOOL_ADDITIONAL_UPLOAD_PARAMETERS"] = Shellwords.join(additional_upload_parameters.uniq)
+end
