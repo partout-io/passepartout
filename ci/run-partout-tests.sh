@@ -1,2 +1,2 @@
 #!/bin/bash
-cd app-cross/partout && swift test
+cd partout && swift test
