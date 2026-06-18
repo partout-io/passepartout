@@ -43,6 +43,7 @@ import java.io.File
 class PassepartoutVpnService: VpnService() {
     private val logTag = Tags.SERVICE
     private val jniLogTag = Tags.PARTOUT_JNI
+    private val logsSnapshots = LocalConstants.TUNNEL_LOGS_SNAPSHOTS
 
     @Volatile
     private var currentProfileName: String? = null
@@ -57,7 +58,8 @@ class PassepartoutVpnService: VpnService() {
             logTag = logTag,
             jniLogTag = jniLogTag,
             service = this,
-            engine = engine
+            engine = engine,
+            logsSnapshots = logsSnapshots
         )
     }
 
@@ -149,9 +151,6 @@ class PassepartoutVpnService: VpnService() {
         override fun onServiceStopped() {
             postStoppedNotification()
         }
-
-        override val logsSnapshots: Boolean
-            get() = LocalConstants.TUNNEL_LOGS_SNAPSHOTS
 
         private fun readPreferences(intent: Intent?): AppPreferences? {
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
@@ -291,12 +290,12 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private fun updateNotification(snapshot: TunnelSnapshot) {
-        if (engine.logsSnapshots) {
+        if (logsSnapshots) {
             AppLog.d(logTag, "updateNotification()")
         }
         val notificationManager = NotificationManagerCompat.from(this)
         if (!canPostNotifications(notificationManager)) {
-            if (engine.logsSnapshots) {
+            if (logsSnapshots) {
                 AppLog.w(logTag, "Skip VPN notification update, notifications are disabled")
             }
             return
