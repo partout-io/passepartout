@@ -1,1 +1,1 @@
-* Update Partout with cross-platform event loop (#1853)
+* Refactor minor things
