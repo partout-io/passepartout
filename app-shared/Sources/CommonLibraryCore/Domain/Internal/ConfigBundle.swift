@@ -5,20 +5,7 @@
 import Partout
 
 public struct ConfigBundle: Decodable, Sendable {
-    public struct Config: Decodable, Sendable {
-        public let rate: Int
-
-        public let minBuild: Int?
-
-        public let data: JSON?
-
-        public func isActive(withBuild buildNumber: Int) -> Bool {
-            if let minBuild, buildNumber < minBuild {
-                return false
-            }
-            return rate == 100
-        }
-    }
+    public typealias Config = OpenAPIConfigBundleConfig
 
     // flag -> deployment (0-100)
     public let map: [ABI.ConfigFlag: Config]
@@ -44,5 +31,14 @@ public struct ConfigBundle: Decodable, Sendable {
             $0.value.isActive(withBuild: buildNumber)
         }
         return Set(flags.keys)
+    }
+}
+
+extension ConfigBundle.Config {
+    func isActive(withBuild buildNumber: Int) -> Bool {
+        if let minBuild, buildNumber < minBuild {
+            return false
+        }
+        return rate == 100
     }
 }
