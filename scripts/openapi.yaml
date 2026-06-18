@@ -573,12 +573,23 @@ components:
       properties:
         rate:
           type: integer
+        platforms:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ConfigBundle.Platform"
         minBuild:
           type: integer
         data:
           type: object
       required:
       - rate
+    ConfigBundle.Platform:
+      x-enum-varnames:
+      - android
+      - apple
+      enum:
+      - android
+      - apple
     ConnectionStatus:
       type: object
     Credits:

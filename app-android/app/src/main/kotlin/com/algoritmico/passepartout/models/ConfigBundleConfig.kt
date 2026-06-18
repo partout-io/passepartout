@@ -15,6 +15,7 @@
 
 package com.algoritmico.passepartout.models
 
+import com.algoritmico.passepartout.models.ConfigBundlePlatform
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -24,6 +25,7 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param rate 
+ * @param platforms 
  * @param minBuild 
  * @param `data` 
  */
@@ -33,6 +35,9 @@ data class ConfigBundleConfig (
 
     @SerialName(value = "rate")
     val rate: kotlin.Int,
+
+    @SerialName(value = "platforms")
+    val platforms: kotlin.collections.List<@Contextual ConfigBundlePlatform>? = null,
 
     @SerialName(value = "minBuild")
     val minBuild: kotlin.Int? = null,

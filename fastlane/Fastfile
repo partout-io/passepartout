@@ -13,7 +13,7 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-load File.expand_path("Fastfile.hacks", __dir__)
+load File.expand_path("Fastfile.hacks", __dir__) if RUBY_PLATFORM.include?("darwin")
 
 desc "Push a new beta build to TestFlight"
 lane :beta do

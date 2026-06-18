@@ -60,9 +60,10 @@ extension TunnelABI {
         let controller = try NativeTunnelController(
             ctx,
             ref: bindings.controller,
+            profile: profile,
             environment: environment,
             betterPathFactory: betterPathFactory,
-            logsSnapshots: false
+            options: TunnelControllerOptions()
         )
         let factory = controller.newSocketFactory()
 
