@@ -217,6 +217,7 @@ components:
           - formatter
           - sinceLast
           - options
+          - filenames
       required:
       - deviceIdLength
       - containers

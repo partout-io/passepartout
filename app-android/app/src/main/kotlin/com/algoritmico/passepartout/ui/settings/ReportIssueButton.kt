@@ -266,7 +266,7 @@ private fun List<Uri>.toClipData(context: Context): ClipData? {
 }
 
 private val AppConfiguration.appLogPath: String
-    get() = constants.log.filenames?.app ?: "app.log"
+    get() = constants.log.filenames.app
 
 private val AppConfiguration.tunnelLogPath: String
-    get() = constants.log.filenames?.tunnel ?: "tunnel.log"
+    get() = constants.log.filenames.tunnel

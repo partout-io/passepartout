@@ -13,9 +13,9 @@ public struct OpenAPIAppConstantsLog: Sendable, Codable, Hashable {
     public var formatter: OpenAPIAppConstantsLogFormatter
     public var sinceLast: Double
     public var options: OpenAPILocalLoggerOptions
-    public var filenames: OpenAPIAppConstantsLogFilenames?
+    public var filenames: OpenAPIAppConstantsLogFilenames
 
-    public init(tag: String, formatter: OpenAPIAppConstantsLogFormatter, sinceLast: Double, options: OpenAPILocalLoggerOptions, filenames: OpenAPIAppConstantsLogFilenames? = nil) {
+    public init(tag: String, formatter: OpenAPIAppConstantsLogFormatter, sinceLast: Double, options: OpenAPILocalLoggerOptions, filenames: OpenAPIAppConstantsLogFilenames) {
         self.tag = tag
         self.formatter = formatter
         self.sinceLast = sinceLast
@@ -39,7 +39,7 @@ public struct OpenAPIAppConstantsLog: Sendable, Codable, Hashable {
         try container.encode(formatter, forKey: .formatter)
         try container.encode(sinceLast, forKey: .sinceLast)
         try container.encode(options, forKey: .options)
-        try container.encodeIfPresent(filenames, forKey: .filenames)
+        try container.encode(filenames, forKey: .filenames)
     }
 }
 

@@ -9,11 +9,11 @@ import Partout
 
 extension ABI.AppConfiguration {
     public var appLogPath: String {
-        constants.log.filenames?.app ?? "app.log"
+        constants.log.filenames.app
     }
 
     public var tunnelLogPath: String {
-        constants.log.filenames?.tunnel ?? "tunnel.log"
+        constants.log.filenames.tunnel
     }
 
     public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
