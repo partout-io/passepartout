@@ -4,11 +4,18 @@
 
 package com.algoritmico.passepartout.observables
 
+import android.content.ClipData
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.core.content.FileProvider
+import com.algoritmico.passepartout.business.extensions.body
+import com.algoritmico.passepartout.business.extensions.issues
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.business.extensions.subject
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.LocalConstants
+import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.androidSystemInformation
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.Issue
@@ -16,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,6 +53,26 @@ class DiagnosticsObservable {
             tunnelLog = tunnelLog.await(),
             osLine = systemInformation.osLine,
             deviceLine = systemInformation.deviceLine
+        )
+    }
+
+    suspend fun sendEmail(
+        context: Context,
+        appConfiguration: AppConfiguration,
+        comment: String
+    ) {
+        val report = issue(
+            context = context.applicationContext,
+            appConfiguration = appConfiguration,
+            comment = comment
+        )
+        val attachments = withContext(Dispatchers.IO) {
+            report.attachmentUris(context, appConfiguration)
+        }
+        context.openIssueEmail(
+            appConfiguration = appConfiguration,
+            issue = report,
+            attachments = attachments
         )
     }
 
@@ -122,3 +150,64 @@ class DiagnosticsObservable {
             .toByteArray(Charsets.UTF_8)
     }
 }
+
+private fun Context.openIssueEmail(
+    appConfiguration: AppConfiguration,
+    issue: Issue,
+    attachments: List<Uri>
+) {
+    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+        type = "message/rfc822"
+        putExtra(Intent.EXTRA_EMAIL, arrayOf(appConfiguration.constants.emails.issues))
+        putExtra(Intent.EXTRA_SUBJECT, issue.subject)
+        putExtra(Intent.EXTRA_TEXT, issue.body)
+        if (attachments.isNotEmpty()) {
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachments))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            clipData = attachments.toClipData(this@openIssueEmail)
+        }
+    }
+    startActivity(Intent.createChooser(intent, "Report issue"))
+}
+
+private fun Issue.attachmentUris(
+    context: Context,
+    appConfiguration: AppConfiguration
+): List<Uri> {
+    return listOfNotNull(
+        appLog?.toAttachmentUri(context, appConfiguration.appLogPath),
+        tunnelLog?.toAttachmentUri(context, appConfiguration.tunnelLogPath)
+    )
+}
+
+private fun ByteArray.toAttachmentUri(
+    context: Context,
+    fileName: String
+): Uri {
+    val directory = File(context.cacheDir, "issue").apply {
+        mkdirs()
+    }
+    val file = File(directory, File(fileName).name).apply {
+        writeBytes(this@toAttachmentUri)
+    }
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
+}
+
+private fun List<Uri>.toClipData(context: Context): ClipData? {
+    val first = firstOrNull() ?: return null
+    return ClipData.newUri(context.contentResolver, "Issue logs", first).apply {
+        drop(1).forEach {
+            addItem(ClipData.Item(it))
+        }
+    }
+}
+
+private val AppConfiguration.appLogPath: String
+    get() = constants.log.filenames.app
+
+private val AppConfiguration.tunnelLogPath: String
+    get() = constants.log.filenames.tunnel
