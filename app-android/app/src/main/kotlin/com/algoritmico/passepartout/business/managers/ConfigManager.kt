@@ -63,7 +63,7 @@ class ConfigManager(
                     false
                 }
                 else -> {
-                    AppLog.w(logTag, "Unable to refresh config flags", it)
+                    AppLog.w(logTag, "Config: Unable to refresh config flags", it)
                     throw it
                 }
             }

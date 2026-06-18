@@ -34,7 +34,7 @@ class GitHubReleaseStrategy(
         val newVersion = json.name
         val semanticVersion = newVersion.toSemanticVersionOrNull()
         if (semanticVersion == null) {
-            AppLog.w(logTag, "Unable to parse GitHub release name '$newVersion'")
+            AppLog.w(logTag, "Version (GitHub): unparsable release name '$newVersion'")
             throw VersionCheckerException.UnexpectedResponse
         }
         return semanticVersion
