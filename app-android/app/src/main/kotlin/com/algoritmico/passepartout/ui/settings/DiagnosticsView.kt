@@ -8,10 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -22,21 +20,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.business.extensions.default
-import com.algoritmico.passepartout.business.extensions.issues
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
-import com.algoritmico.passepartout.observables.safeOpenUri
 import kotlinx.coroutines.launch
 
 @Composable
@@ -156,26 +150,6 @@ private fun LogsPrivateDataRow(
             update(!isChecked)
         }
     )
-}
-
-@Composable
-private fun ReportIssueButton() {
-    val appConfiguration = LocalAppConfiguration.current
-    val uriHandler = LocalUriHandler.current
-    val errorHandler = LocalErrorHandler.current
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        onClick = {
-            uriHandler.safeOpenUri(
-                "mailto:${appConfiguration.constants.emails.issues}",
-                errorHandler
-            )
-        }
-    ) {
-        Text("Report issue")
-    }
 }
 
 private suspend fun UserPreferencesObservable.updateLogsPrivateData(
