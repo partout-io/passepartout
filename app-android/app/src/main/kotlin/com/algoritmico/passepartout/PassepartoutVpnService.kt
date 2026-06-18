@@ -11,17 +11,18 @@ import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.IBinder
 import android.util.AtomicFile
-import com.algoritmico.passepartout.context.AppLog
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
+import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.ui.extensions.NotificationTransferFormatter
 import io.partout.NativeTunnelControllerJNI
@@ -67,9 +68,9 @@ class PassepartoutVpnService: VpnService() {
             controller: NativeTunnelControllerJNI,
             profileJSON: String
         ) = withContext(Dispatchers.IO) {
-            AppLog.e(logTag, ">>> Started service")
+            applicationContext.logPreamble(logTag)
 
-            // FIXME: ###: Prepend bundle metadata
+            AppLog.e(logTag, ">>> Started service")
             val bundle = applicationContext.appBundle()
             AppLog.e(logTag, ">>> Bundle: $bundle")
             updateCurrentProfileName(profileJSON)

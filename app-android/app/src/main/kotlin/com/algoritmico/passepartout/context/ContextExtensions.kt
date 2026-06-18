@@ -13,6 +13,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.models.AppBundle
 import com.algoritmico.passepartout.models.AppConstants
 import com.algoritmico.passepartout.models.Credits
@@ -55,6 +56,40 @@ fun Context.appBundle(): AppBundle {
         bundleStrings = emptyMap()
     )
 }
+
+fun Context.logPreamble(logTag: String) {
+    val bundle = appBundle()
+    AppLog.e(logTag, "")
+    AppLog.e(logTag, "--- BEGIN ---")
+    AppLog.e(logTag, "")
+    AppLog.e(logTag, "App: ${bundle.versionString}")
+    AppLog.e(logTag, "OS: $androidOsString")
+    androidDeviceString?.let {
+        AppLog.e(logTag, "Device: $it")
+    }
+    AppLog.e(logTag, "")
+}
+
+private val Context.androidOsString: String
+    get() {
+        val version = Build.VERSION.RELEASE
+            .takeIf { it.isNotBlank() }
+            ?: "API ${Build.VERSION.SDK_INT}"
+        return "Android $version"
+    }
+
+private val Context.androidDeviceString: String?
+    get() {
+        val manufacturer = Build.MANUFACTURER.trim()
+        val model = Build.MODEL.trim()
+        return when {
+            manufacturer.isBlank() && model.isBlank() -> null
+            manufacturer.isBlank() -> model
+            model.isBlank() -> manufacturer
+            model.startsWith(manufacturer, ignoreCase = true) -> model
+            else -> "$manufacturer $model"
+        }
+    }
 
 private fun Context.packageInfo(): PackageInfo {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
