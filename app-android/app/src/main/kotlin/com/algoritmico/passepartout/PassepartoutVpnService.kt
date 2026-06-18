@@ -75,14 +75,14 @@ class PassepartoutVpnService: VpnService() {
         ) = withContext(Dispatchers.IO) {
             applicationContext.logPreamble(logTag)
 
-            AppLog.i(logTag, ">>> Started service")
+            AppLog.i(logTag, "Started service")
             val bundle = applicationContext.appBundle()
-            AppLog.d(logTag, ">>> Bundle: $bundle")
+            AppLog.d(logTag, "Bundle: $bundle")
             updateCurrentProfileName(profileJSON)
 
             // Try preferences from intent, otherwise load last persisted
             val preferences = readPreferences(intent)
-            AppLog.i(logTag, ">>> Preferences: $preferences")
+            AppLog.i(logTag, "Preferences: $preferences")
 
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
