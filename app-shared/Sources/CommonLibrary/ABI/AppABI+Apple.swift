@@ -38,6 +38,7 @@ extension AppABI {
             localURL: appConfiguration.urlForAppLog,
             localMapper: logFormatter?.localMapper
         )
+        pspLog(.core, .notice, "Partout \(PartoutConstants.version)")
 
         // MARK: Config (GitHub)
 
