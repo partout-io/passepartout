@@ -717,6 +717,41 @@ components:
       required:
       - type
       - isEnabled
+    Issue:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        appLine:
+          type: string
+        purchasedProducts:
+          type: array
+          items:
+            type: string
+        providerLastUpdates:
+          type: object
+          additionalProperties:
+            "$ref": "#/components/schemas/Timestamp"
+        appLog:
+          type: string
+          format: byte
+        tunnelLog:
+          type: string
+          format: byte
+        osLine:
+          type: string
+        deviceLine:
+          type: string
+      required:
+      - id
+      - comment
+      - purchasedProducts
+      - providerLastUpdates
+      - osLine
     LocalLoggerOptions:
       type: object
       properties:

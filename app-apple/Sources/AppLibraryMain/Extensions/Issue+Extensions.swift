@@ -17,7 +17,7 @@ extension ABI.Issue {
             .replacingOccurrences(of: "$osLine", with: osLine)
             .replacingOccurrences(of: "$deviceLine", with: deviceLine ?? "unknown")
             .replacingOccurrences(of: "$providerLastUpdates", with: providers.description)
-            .replacingOccurrences(of: "$purchasedProducts", with: purchasedProducts.map(\.rawValue).description)
+            .replacingOccurrences(of: "$purchasedProducts", with: purchasedProducts.description)
     }
 }
 

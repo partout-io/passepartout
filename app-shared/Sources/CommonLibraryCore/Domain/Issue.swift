@@ -4,45 +4,40 @@
 
 import Partout
 
-extension ABI {
-    public struct Issue: Identifiable, Sendable {
-        public let id: UniqueID
+extension ABI.Issue {
+    public init(
+        comment: String,
+        appLine: String?,
+        purchasedProducts: Set<ABI.AppProduct>,
+        providerLastUpdates: [ProviderID: Timestamp] = [:],
+        appLog: Data? = nil,
+        tunnelLog: Data? = nil
+    ) {
+        let systemInfo = SystemInformation()
+        self.init(
+            id: UniqueID(),
+            comment: comment,
+            appLine: appLine,
+            purchasedProducts: purchasedProducts
+                .map(\.rawValue)
+                .sorted(),
+            providerLastUpdates: providerLastUpdates.reduce(into: [:]) {
+                $0[$1.key.rawValue] = $1.value
+            },
+            appLog: appLog,
+            tunnelLog: tunnelLog,
+            osLine: systemInfo.osString,
+            deviceLine: systemInfo.deviceString
+        )
+    }
+}
 
-        public let comment: String
-
-        public let appLine: String?
-
-        public let purchasedProducts: Set<ABI.AppProduct>
-
-        public let providerLastUpdates: [ProviderID: Timestamp]
-
-        public let appLog: Data?
-
-        public let tunnelLog: Data?
-
-        public let osLine: String
-
-        public let deviceLine: String?
-
-        public init(
-            comment: String,
-            appLine: String?,
-            purchasedProducts: Set<ABI.AppProduct>,
-            providerLastUpdates: [ProviderID: Timestamp] = [:],
-            appLog: Data? = nil,
-            tunnelLog: Data? = nil
-        ) {
-            id = UniqueID()
-            self.comment = comment
-            self.appLine = appLine
-            self.purchasedProducts = purchasedProducts
-            self.appLog = appLog
-            self.tunnelLog = tunnelLog
-            self.providerLastUpdates = providerLastUpdates
-
-            let systemInfo = SystemInformation()
-            osLine = systemInfo.osString
-            deviceLine = systemInfo.deviceString
-        }
+extension ABI.Issue {
+    public var appProducts: Set<ABI.AppProduct> {
+        Set(
+            purchasedProducts.compactMap {
+                ABI.AppProduct(rawValue: $0)
+            }
+        )
     }
 }
