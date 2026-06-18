@@ -59,13 +59,20 @@ extension ABI.Issue {
             tunnelLog = nil
         }
 
+        var attachments: [ABI.IssueAttachment] = []
+        if let appLog {
+            attachments.append(.init(filename: metadata.appConfiguration.appLogPath, content: appLog))
+        }
+        if let tunnelLog {
+            attachments.append(.init(filename: metadata.appConfiguration.tunnelLogPath, content: tunnelLog))
+        }
+
         return ABI.Issue(
             comment: metadata.comment,
             appLine: "\(Strings.Unlocalized.appName) \(metadata.appConfiguration.bundle.versionString) [\(metadata.appConfiguration.bundle.distributionTarget.rawValue)]",
             purchasedProducts: metadata.purchasedProducts,
             providerLastUpdates: metadata.providerLastUpdates,
-            appLog: appLog,
-            tunnelLog: tunnelLog
+            attachments: attachments
         )
     }
 }

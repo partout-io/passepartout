@@ -14,19 +14,17 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
     public var appLine: String?
     public var purchasedProducts: [String]
     public var providerLastUpdates: [String: Int64]
-    public var appLog: Data?
-    public var tunnelLog: Data?
+    public var attachments: [OpenAPIIssueAttachment]
     public var osLine: String
     public var deviceLine: String?
 
-    public init(id: UUID, comment: String, appLine: String? = nil, purchasedProducts: [String], providerLastUpdates: [String: Int64], appLog: Data? = nil, tunnelLog: Data? = nil, osLine: String, deviceLine: String? = nil) {
+    public init(id: UUID, comment: String, appLine: String? = nil, purchasedProducts: [String], providerLastUpdates: [String: Int64], attachments: [OpenAPIIssueAttachment], osLine: String, deviceLine: String? = nil) {
         self.id = id
         self.comment = comment
         self.appLine = appLine
         self.purchasedProducts = purchasedProducts
         self.providerLastUpdates = providerLastUpdates
-        self.appLog = appLog
-        self.tunnelLog = tunnelLog
+        self.attachments = attachments
         self.osLine = osLine
         self.deviceLine = deviceLine
     }
@@ -37,8 +35,7 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
         case appLine
         case purchasedProducts
         case providerLastUpdates
-        case appLog
-        case tunnelLog
+        case attachments
         case osLine
         case deviceLine
     }
@@ -52,8 +49,7 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
         try container.encodeIfPresent(appLine, forKey: .appLine)
         try container.encode(purchasedProducts, forKey: .purchasedProducts)
         try container.encode(providerLastUpdates, forKey: .providerLastUpdates)
-        try container.encodeIfPresent(appLog, forKey: .appLog)
-        try container.encodeIfPresent(tunnelLog, forKey: .tunnelLog)
+        try container.encode(attachments, forKey: .attachments)
         try container.encode(osLine, forKey: .osLine)
         try container.encodeIfPresent(deviceLine, forKey: .deviceLine)
     }

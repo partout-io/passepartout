@@ -737,12 +737,10 @@ components:
           type: object
           additionalProperties:
             "$ref": "#/components/schemas/Timestamp"
-        appLog:
-          type: string
-          format: byte
-        tunnelLog:
-          type: string
-          format: byte
+        attachments:
+          type: array
+          items:
+            "$ref": "#/components/schemas/IssueAttachment"
         osLine:
           type: string
         deviceLine:
@@ -752,7 +750,20 @@ components:
       - comment
       - purchasedProducts
       - providerLastUpdates
+      - attachments
       - osLine
+    IssueAttachment:
+      type: object
+      additionalProperties: false
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          format: byte
+      required:
+      - filename
+      - content
     LocalLoggerOptions:
       type: object
       properties:

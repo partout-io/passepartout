@@ -10,8 +10,7 @@ extension ABI.Issue {
         appLine: String?,
         purchasedProducts: Set<ABI.AppProduct>,
         providerLastUpdates: [ProviderID: Timestamp] = [:],
-        appLog: Data? = nil,
-        tunnelLog: Data? = nil
+        attachments: [ABI.IssueAttachment] = []
     ) {
         let systemInfo = SystemInformation()
         self.init(
@@ -24,8 +23,7 @@ extension ABI.Issue {
             providerLastUpdates: providerLastUpdates.reduce(into: [:]) {
                 $0[$1.key.rawValue] = $1.value
             },
-            appLog: appLog,
-            tunnelLog: tunnelLog,
+            attachments: attachments,
             osLine: systemInfo.osString,
             deviceLine: systemInfo.deviceString
         )

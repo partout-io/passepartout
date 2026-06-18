@@ -46,7 +46,7 @@ extension ReportIssueButton {
             toRecipients: [issue.to(cfg: appConfiguration)],
             subject: issue.subject,
             messageBody: issue.body,
-            attachments: issue.attachments(cfg: appConfiguration)
+            attachments: issue.mailComposerAttachments()
         )
     }
 
@@ -84,16 +84,11 @@ extension ReportIssueButton {
 }
 
 private extension ABI.Issue {
-    func attachments(cfg: ABI.AppConfiguration) -> [MailComposerView.Attachment] {
-        var list: [MailComposerView.Attachment] = []
+    func mailComposerAttachments() -> [MailComposerView.Attachment] {
         let mimeType = Strings.Unlocalized.Issues.attachmentMimeType
-        if let appLog {
-            list.append(.init(data: appLog, mimeType: mimeType, fileName: cfg.appLogPath))
+        return attachments.map {
+            .init(data: $0.content, mimeType: mimeType, fileName: $0.filename)
         }
-        if let tunnelLog {
-            list.append(.init(data: tunnelLog, mimeType: mimeType, fileName: cfg.tunnelLogPath))
-        }
-        return list
     }
 }
 

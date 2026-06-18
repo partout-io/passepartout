@@ -18,6 +18,7 @@ extension ABI {
     public typealias DistributionTarget = OpenAPIDistributionTarget
     public typealias ExperimentalPreferences = OpenAPIExperimentalPreferences
     public typealias Issue = OpenAPIIssue
+    public typealias IssueAttachment = OpenAPIIssueAttachment
     public typealias ProfileSharingFlag = OpenAPIProfileSharingFlag
     public typealias ProfileTransfer = OpenAPIProfileTransfer
     public typealias SemanticVersion = OpenAPISemanticVersion
