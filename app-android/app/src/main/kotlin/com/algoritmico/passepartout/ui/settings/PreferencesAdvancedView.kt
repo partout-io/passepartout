@@ -31,13 +31,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.disable
 import com.algoritmico.passepartout.business.extensions.enable
 import com.algoritmico.passepartout.business.extensions.isAllowed
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
@@ -79,7 +80,7 @@ fun PreferencesAdvancedView(
                             preference = preferences.experimental.preference(forFlag = flag),
                             onPreferenceChange = { preference ->
                                 coroutineScope.launch {
-                                    runCatching {
+                                    runCatchingNonFatal {
                                         userPreferencesObservable.updateExperimentalPreferences {
                                             it.setPreference(preference, forFlag = flag)
                                         }
@@ -105,7 +106,7 @@ fun PreferencesAdvancedView(
                             isAllowed = preferences.experimental.isAllowed(flag),
                             onAllowedChange = { isAllowed ->
                                 coroutineScope.launch {
-                                    runCatching {
+                                    runCatchingNonFatal {
                                         userPreferencesObservable.updateExperimentalPreferences {
                                             it.setAllowed(flag, isAllowed)
                                         }

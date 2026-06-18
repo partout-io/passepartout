@@ -7,6 +7,7 @@ package com.algoritmico.passepartout.business.strategy
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.GenericException
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ProfileManagerException
 import com.algoritmico.passepartout.business.managers.ProfileRepository
 import io.partout.models.TaggedProfile
@@ -61,7 +62,7 @@ class FileProfileRepository(
             persistIndex(loadProfilesByIdFromObjects())
             return
         }
-        runCatching {
+        runCatchingNonFatal {
             loadIndex()
         }.onFailure {
             Log.e(logTag, "Rebuilding malformed profile index", it)
@@ -92,7 +93,7 @@ class FileProfileRepository(
             .listFiles { file -> file.isFile && file.extension == "json" }
             .orEmpty()
             .associate { file ->
-                val profile = runCatching {
+                val profile = runCatchingNonFatal {
                     JSON.decode<TaggedProfile>(file.readText())
                 }.getOrElse {
                     throw GenericException(
@@ -109,7 +110,7 @@ class FileProfileRepository(
     }
 
     private fun loadIndex(): IndexFile {
-        return runCatching {
+        return runCatchingNonFatal {
             JSON.decode<IndexFile>(indexFile.readText())
         }.getOrElse {
             throw GenericException("Unable to decode profile index", it)

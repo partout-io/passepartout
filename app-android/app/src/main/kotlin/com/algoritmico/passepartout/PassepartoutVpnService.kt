@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
@@ -119,10 +120,10 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun deleteLastProfile(id: String) {
             withContext(Dispatchers.IO) {
-                runCatching {
+                runCatchingNonFatal {
                     val json = readLastFile(lastProfileFile)
                     val profile = JSON.decode<TaggedProfile>(json)
-                    if (profile.id != id) { return@runCatching }
+                    if (profile.id != id) { return@runCatchingNonFatal }
                     Log.i(logTag, "Forget last profile $id")
                     lastProfileFile.delete()
                 }.onFailure {
@@ -143,7 +144,7 @@ class PassepartoutVpnService: VpnService() {
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
             val preferencesJSON = if (intentPreferencesJSON.isNullOrBlank()) {
                 Log.i(logTag, "Load last preferences")
-                runCatching {
+                runCatchingNonFatal {
                     readLastFile(lastPreferencesFile)
                 }.getOrElse {
                     Log.w(logTag, "Unable to read last tunnel preferences", it)
@@ -151,7 +152,7 @@ class PassepartoutVpnService: VpnService() {
                 }
             } else {
                 Log.i(logTag, "Load and persist start preferences")
-                runCatching {
+                runCatchingNonFatal {
                     writeLastFile(lastPreferencesFile, intentPreferencesJSON)
                 }.onFailure {
                     Log.w(logTag, "Unable to write last tunnel preferences", it)
@@ -159,7 +160,7 @@ class PassepartoutVpnService: VpnService() {
                 intentPreferencesJSON
             }
             return preferencesJSON?.let { json ->
-                runCatching {
+                runCatchingNonFatal {
                     JSON.decode<AppPreferences>(json)
                 }.getOrElse {
                     Log.w(logTag, "Unable to decode preferences JSON", it)
@@ -177,7 +178,7 @@ class PassepartoutVpnService: VpnService() {
         private fun writeLastFile(file: File, json: String) {
             val atomicFile = AtomicFile(file)
             val stream = atomicFile.startWrite()
-            runCatching {
+            runCatchingNonFatal {
                 stream.write(json.toByteArray(Charsets.UTF_8))
                 atomicFile.finishWrite(stream)
             }.onFailure {
@@ -196,7 +197,7 @@ class PassepartoutVpnService: VpnService() {
             notificationTransfer.reset()
             updateCurrentProfileName(it)
         }
-        runCatching {
+        runCatchingNonFatal {
             ServiceCompat.startForeground(
                 this,
                 VPN_NOTIFICATION_ID,
@@ -285,7 +286,7 @@ class PassepartoutVpnService: VpnService() {
             return
         }
         val notification = createNotification(snapshot)
-        runCatching {
+        runCatchingNonFatal {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
         }.onFailure {
             if (it is SecurityException) {
@@ -310,7 +311,7 @@ class PassepartoutVpnService: VpnService() {
             snapshot = null,
             isServiceStopped = true
         )
-        runCatching {
+        runCatchingNonFatal {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
         }.onFailure {
             if (it is SecurityException) {
@@ -356,7 +357,7 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private fun updateCurrentProfileName(profileJSON: String) {
-        runCatching {
+        runCatchingNonFatal {
             JSON.decode<TaggedProfile>(profileJSON).name
         }.onSuccess {
             currentProfileName = it

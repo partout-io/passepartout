@@ -47,7 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.algoritmico.passepartout.business.extensions.throwIfFatal
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
@@ -129,7 +129,7 @@ fun ProfileContainerView(
         requestedConnection = request
         selectProfile(profileId)
         coroutineScope.launch {
-            val didStart = runCatching {
+            val didStart = runCatchingNonFatal {
                 if (enabled) {
                     val connectionProfile = profile ?: profileObservable.profile(profileId)
                     if (connectionProfile == null) {
@@ -143,7 +143,6 @@ fun ProfileContainerView(
                     true
                 }
             }.getOrElse {
-                it.throwIfFatal()
                 when (it) {
                     is TunnelObservableException.Interactive -> {
                         interactiveProfile = it.profile
@@ -457,10 +456,10 @@ private fun openVpnSettings(context: Context, errorHandler: ErrorHandler) {
         Uri.fromParts("package", context.packageName, null)
     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-    runCatching {
+    runCatchingNonFatal {
         context.startActivity(vpnSettingsIntent)
     }.onFailure {
-        runCatching {
+        runCatchingNonFatal {
             context.startActivity(appSettingsIntent)
         }.onFailure {
             errorHandler.report(it)

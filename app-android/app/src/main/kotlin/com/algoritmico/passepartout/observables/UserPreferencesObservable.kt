@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.algoritmico.passepartout.business.extensions.appPreferences
 import com.algoritmico.passepartout.business.extensions.default
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.toggleDnsFallback
 import com.algoritmico.passepartout.business.extensions.update
 import com.algoritmico.passepartout.business.extensions.updateExperimentalPreferences
@@ -45,7 +46,7 @@ class UserPreferencesObservable(
 
     //region Lifecycle
     init {
-        snapshot = runCatching {
+        snapshot = runCatchingNonFatal {
             runBlocking {
                 preferences.first()
             }
@@ -93,7 +94,7 @@ class UserPreferencesObservable(
 
     //region Private
     private suspend fun editSafely(transform: suspend (MutablePreferences) -> Unit) {
-        runCatching {
+        runCatchingNonFatal {
             store.edit(transform)
             savePreferences()
         }.onFailure {

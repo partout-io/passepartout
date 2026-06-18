@@ -147,7 +147,7 @@ private fun AppPreferences.lastCheckedVersionSnapshot(): LastCheckedVersionSnaps
 }
 
 private inline fun <reified T> String.decodePreference(): T? {
-    return runCatching {
+    return runCatchingNonFatal {
         JSON.decode<T>(this)
     }.getOrNull()
 }

@@ -22,6 +22,15 @@ data class GenericException(
     }
 }
 
+inline fun <T> runCatchingNonFatal(block: () -> T): Result<T> {
+    return try {
+        Result.success(block())
+    } catch (error: Throwable) {
+        error.throwIfFatal()
+        Result.failure(error)
+    }
+}
+
 fun Throwable.throwIfFatal() {
     if (this !is Exception || this is CancellationException) {
         throw this
@@ -58,10 +67,9 @@ fun ByteArray.decodeAsTextOrNull(): String? {
         .newDecoder()
         .onMalformedInput(CodingErrorAction.REPORT)
         .onUnmappableCharacter(CodingErrorAction.REPORT)
-    return runCatching {
+    return runCatchingNonFatal {
         decoder.decode(ByteBuffer.wrap(this)).toString()
     }.getOrElse {
-        it.throwIfFatal()
         when (it) {
             is CharacterCodingException -> null
             else -> throw it

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.business.extensions.throwIfFatal
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
@@ -141,14 +141,13 @@ class AppContext(
         applicationActiveJob = coroutineScope.launch {
             supervisorScope {
                 launch {
-                    runCatching {
+                    runCatchingNonFatal {
                         if (!configManager.refreshBundle()) {
-                            return@runCatching
+                            return@runCatchingNonFatal
                         }
                         val flags = configManager.activeFlags
                         persistConfigFlags(flags)
                     }.onFailure {
-                        it.throwIfFatal()
                         Log.e(logTag, "Unable to persist config flags", it)
                         configManager.resetTTL()
                     }

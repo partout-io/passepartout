@@ -6,7 +6,7 @@ package com.algoritmico.passepartout.business.managers
 
 import android.util.Log
 import com.algoritmico.passepartout.business.extensions.JSON
-import com.algoritmico.passepartout.business.extensions.throwIfFatal
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
 import com.algoritmico.passepartout.models.ConfigEventRefresh
@@ -43,7 +43,7 @@ class ConfigManager(
         if (!refreshMutex.tryLock()) {
             return false
         }
-        return runCatching {
+        return runCatchingNonFatal {
             Log.d(logTag, "Config: refreshing bundle...")
             val newBundle = strategy.bundle()
             val event = synchronized(bundleLock) {
@@ -57,7 +57,6 @@ class ConfigManager(
         }.also {
             refreshMutex.unlock()
         }.getOrElse {
-            it.throwIfFatal()
             when (it) {
                 is ConfigManagerException.RateLimit -> {
                     Log.d(logTag, "Config: TTL")

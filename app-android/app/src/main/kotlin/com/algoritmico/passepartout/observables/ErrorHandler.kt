@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.observables
 
 import android.util.Log
 import androidx.compose.ui.platform.UriHandler
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.throwIfFatal
 import com.algoritmico.passepartout.context.Tags
 import kotlinx.coroutines.channels.BufferOverflow
@@ -30,7 +31,7 @@ object ErrorHandler {
 }
 
 fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
-    runCatching {
+    runCatchingNonFatal {
         openUri(uri)
     }.onFailure {
         Log.e(Tags.APP, "Unable to open URL ($uri)", it)

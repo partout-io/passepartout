@@ -8,7 +8,7 @@ import android.util.Log
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
-import com.algoritmico.passepartout.business.extensions.throwIfFatal
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -48,7 +48,7 @@ class ProfileManager(
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun loadInitialProfiles(reportError: (Throwable) -> Unit) {
-        runCatching {
+        runCatchingNonFatal {
             setProfiles(repository.fetchProfiles())
         }.onFailure {
             Log.e(logTag, "Unable to load initial profiles", it)
@@ -58,12 +58,11 @@ class ProfileManager(
     }
 
     suspend fun importText(text: String, name: String?) {
-        val result = runCatching {
+        val result = runCatchingNonFatal {
             PartoutResult.await { completion ->
                 library.partoutImportProfile(text, name, completion)
             }
         }.getOrElse {
-            it.throwIfFatal()
             when (it) {
                 is PartoutException -> throw ProfileManagerException.ABI(it.payload)
                 else -> throw it

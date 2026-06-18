@@ -10,7 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.algoritmico.passepartout.business.extensions.throwIfFatal
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.Files
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.observables.AppContext
@@ -65,10 +65,9 @@ class MainActivity : ComponentActivity() {
     //region Import profile
     private fun openProfileImporter() {
         isProfileImporterOpen = true
-        runCatching {
+        runCatchingNonFatal {
             profileImportLauncher.launch(Files.MIME_TYPES)
         }.onFailure {
-            it.throwIfFatal()
             Log.e(logTag, "Unable to open profile importer", it)
             isProfileImporterOpen = false
             ErrorHandler.report(it)
