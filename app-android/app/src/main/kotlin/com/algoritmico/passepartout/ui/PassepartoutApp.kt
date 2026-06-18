@@ -26,6 +26,9 @@ import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalConfigObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.observables.LocalProfileObservable
+import com.algoritmico.passepartout.observables.LocalTunnelObservable
+import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
@@ -69,6 +72,9 @@ fun PassepartoutApp(
     CompositionLocalProvider(
         LocalAppConfiguration provides appConfiguration,
         LocalConfigObservable provides configObservable,
+        LocalProfileObservable provides profileObservable,
+        LocalTunnelObservable provides tunnelObservable,
+        LocalUserPreferencesObservable provides userPreferencesObservable,
         LocalVersionObservable provides versionObservable,
         LocalErrorHandler provides errorHandler
     ) {
@@ -80,9 +86,6 @@ fun PassepartoutApp(
                 AppCoordinator(
                     logTag,
                     title = "Passepartout",
-                    profileObservable = profileObservable,
-                    tunnelObservable = tunnelObservable,
-                    userPreferencesObservable = userPreferencesObservable,
                     onImportProfile = onImportProfile
                 )
             }

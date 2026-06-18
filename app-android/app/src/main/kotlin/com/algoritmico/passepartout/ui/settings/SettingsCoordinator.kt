@@ -23,11 +23,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
 
 @Composable
 fun SettingsCoordinator(
-    userPreferencesObservable: UserPreferencesObservable,
     onDismissRequest: () -> Unit
 ) {
     var navigationRoute by rememberSaveable {
@@ -66,7 +64,6 @@ fun SettingsCoordinator(
             settingsDestination = { route ->
                 PushDestination(
                     route = route,
-                    userPreferencesObservable = userPreferencesObservable,
                     onAdvanced = {
                         navigationRoute = SettingsCoordinatorRoute.PreferencesAdvanced
                     }
@@ -100,24 +97,18 @@ private fun LinkView(
 @Composable
 private fun PushDestination(
     route: SettingsCoordinatorRoute?,
-    userPreferencesObservable: UserPreferencesObservable,
     onAdvanced: () -> Unit
 ) {
     when (route) {
         SettingsCoordinatorRoute.Credits -> CreditsView()
-        SettingsCoordinatorRoute.Diagnostics -> PlaceholderDestination("Diagnostics")
+        SettingsCoordinatorRoute.Diagnostics -> DiagnosticsView()
         SettingsCoordinatorRoute.Links -> LinksView()
         SettingsCoordinatorRoute.Preferences -> {
             PreferencesView(
-                userPreferencesObservable = userPreferencesObservable,
                 onAdvanced = onAdvanced
             )
         }
-        SettingsCoordinatorRoute.PreferencesAdvanced -> {
-            PreferencesAdvancedView(
-                userPreferencesObservable = userPreferencesObservable
-            )
-        }
+        SettingsCoordinatorRoute.PreferencesAdvanced -> PreferencesAdvancedView()
         SettingsCoordinatorRoute.Version -> VersionView()
         null -> PlaceholderDestination("No selection")
     }
