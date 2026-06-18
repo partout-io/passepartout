@@ -61,7 +61,8 @@ extension TunnelABI {
             ctx,
             ref: bindings.controller,
             environment: environment,
-            betterPathFactory: betterPathFactory
+            betterPathFactory: betterPathFactory,
+            logsSnapshots: false
         )
         let factory = controller.newSocketFactory()
 
