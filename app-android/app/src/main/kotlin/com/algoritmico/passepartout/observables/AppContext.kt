@@ -2,12 +2,12 @@ package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
@@ -44,6 +44,7 @@ class AppContext(
     // Expose to Compose
     val appConfiguration: AppConfiguration
     val configObservable: ConfigObservable
+    val diagnosticsObservable: DiagnosticsObservable
     val errorHandler: ErrorHandler
     val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
@@ -52,7 +53,7 @@ class AppContext(
     val versionObservable: VersionObservable
 
     init {
-        AppLog.e(logTag, ">>> Started app")
+        AppLog.i(logTag, "Started app")
 
         // User preferences
         userPreferencesObservable = UserPreferencesObservable(
@@ -61,17 +62,17 @@ class AppContext(
             applicationContext.userPreferencesStore
         )
         val preferences = userPreferencesObservable.currentPreferences
-        AppLog.i(logTag, ">>> Preferences: $preferences")
+        AppLog.i(logTag, "Preferences: $preferences")
 
-        library.partoutInit(Tags.PARTOUT, preferences.logsPrivateData)
+        library.partoutInit(Tags.APP_PARTOUT, preferences.logsPrivateData)
         val partoutVersion = library.partoutVersion()
-        AppLog.i(logTag, ">>> Partout $partoutVersion")
+        AppLog.i(logTag, "Partout $partoutVersion")
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
-        AppLog.d(logTag, ">>> Bundle: $bundle")
+        AppLog.d(logTag, "Bundle: $bundle")
         val constants = applicationContext.appConstants()
-        AppLog.d(logTag, ">>> Constants: $bundle")
+        AppLog.d(logTag, "Constants: $constants")
         appConfiguration = AppConfiguration(
             bundle = bundle,
             constants = constants
@@ -107,6 +108,7 @@ class AppContext(
             configManager,
             coroutineScope
         )
+        diagnosticsObservable = DiagnosticsObservable()
         profileObservable = ProfileObservable(
             profileManager,
             coroutineScope,
@@ -148,7 +150,7 @@ class AppContext(
                         val flags = configManager.activeFlags
                         persistConfigFlags(flags)
                     }.onFailure {
-                        AppLog.e(logTag, "Unable to persist config flags", it)
+                        AppLog.w(logTag, "Unable to update config flags", it)
                         configManager.resetTTL()
                     }
                 }

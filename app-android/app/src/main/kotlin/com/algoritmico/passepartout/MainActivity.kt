@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
                 appContext.tunnelObservable,
                 appContext.userPreferencesObservable,
                 appContext.configObservable,
+                appContext.diagnosticsObservable,
                 appContext.versionObservable,
                 appContext.appConfiguration,
                 appContext.errorHandler,

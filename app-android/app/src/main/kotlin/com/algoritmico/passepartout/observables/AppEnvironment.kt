@@ -15,6 +15,22 @@ val LocalConfigObservable = staticCompositionLocalOf<ConfigObservable> {
     error("No ConfigObservable provided")
 }
 
+val LocalDiagnosticsObservable = staticCompositionLocalOf<DiagnosticsObservable> {
+    error("No DiagnosticsObservable provided")
+}
+
+val LocalProfileObservable = staticCompositionLocalOf<ProfileObservable> {
+    error("No ProfileObservable provided")
+}
+
+val LocalTunnelObservable = staticCompositionLocalOf<TunnelObservable> {
+    error("No TunnelObservable provided")
+}
+
+val LocalUserPreferencesObservable = staticCompositionLocalOf<UserPreferencesObservable> {
+    error("No UserPreferencesObservable provided")
+}
+
 val LocalVersionObservable = staticCompositionLocalOf<VersionObservable> {
     error("No VersionObservable provided")
 }

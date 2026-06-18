@@ -23,7 +23,7 @@ import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
-import com.algoritmico.passepartout.context.TunnelConstants
+import com.algoritmico.passepartout.context.LocalConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
@@ -75,19 +75,19 @@ class PassepartoutVpnService: VpnService() {
         ) = withContext(Dispatchers.IO) {
             applicationContext.logPreamble(logTag)
 
-            AppLog.e(logTag, ">>> Started service")
+            AppLog.i(logTag, "Started service")
             val bundle = applicationContext.appBundle()
-            AppLog.e(logTag, ">>> Bundle: $bundle")
+            AppLog.d(logTag, "Bundle: $bundle")
             updateCurrentProfileName(profileJSON)
 
             // Try preferences from intent, otherwise load last persisted
             val preferences = readPreferences(intent)
-            AppLog.e(logTag, ">>> Preferences: $preferences")
+            AppLog.i(logTag, "Preferences: $preferences")
 
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
-            library.partoutInit(Tags.PARTOUT, logsPrivateData)
+            library.partoutInit(Tags.SERVICE_PARTOUT, logsPrivateData)
 
             // This call retains the controller strongly
             val code = library.partoutDaemonStart(
@@ -134,7 +134,7 @@ class PassepartoutVpnService: VpnService() {
                     AppLog.i(logTag, "Forget last profile $id")
                     lastProfileFile.delete()
                 }.onFailure {
-                    AppLog.e(logTag, "Unable to forget last profile", it)
+                    AppLog.w(logTag, "Unable to forget last profile", it)
                 }
             }
         }
@@ -148,7 +148,7 @@ class PassepartoutVpnService: VpnService() {
         }
 
         override val logsSnapshots: Boolean
-            get() = TunnelConstants.LOGS_SNAPSHOTS
+            get() = LocalConstants.TUNNEL_LOGS_SNAPSHOTS
 
         private fun readPreferences(intent: Intent?): AppPreferences? {
             val intentPreferencesJSON = intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
@@ -289,7 +289,7 @@ class PassepartoutVpnService: VpnService() {
 
     private fun updateNotification(snapshot: TunnelSnapshot) {
         if (engine.logsSnapshots) {
-            AppLog.e(logTag, "updateNotification()")
+            AppLog.d(logTag, "updateNotification()")
         }
         val notificationManager = NotificationManagerCompat.from(this)
         if (!canPostNotifications(notificationManager)) {

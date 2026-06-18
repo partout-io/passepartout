@@ -20,18 +20,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @Composable
 fun PreferencesView(
     modifier: Modifier = Modifier,
-    userPreferencesObservable: UserPreferencesObservable,
     onAdvanced: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val errorHandler = LocalErrorHandler.current
+    val userPreferencesObservable = LocalUserPreferencesObservable.current
     Column(
         modifier = modifier.fillMaxSize()
     ) {

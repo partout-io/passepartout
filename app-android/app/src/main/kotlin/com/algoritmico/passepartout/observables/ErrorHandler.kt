@@ -25,7 +25,7 @@ object ErrorHandler {
     fun report(error: Throwable) {
         // This is a guard of last resort to rethrow CancellationException
         error.throwIfFatal()
-        AppLog.e(Tags.APP, "Invoke error handler", error)
+        AppLog.e(Tags.APP, "Unable to complete operation", error)
         _errors.tryEmit(error.asAppError)
     }
 }

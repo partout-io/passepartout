@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.ui.app
 
-import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,10 +36,9 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.ProfileObservable
-import com.algoritmico.passepartout.observables.TunnelObservable
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.observables.LocalProfileObservable
 import com.algoritmico.passepartout.ui.settings.SettingsCoordinator
 import kotlinx.coroutines.launch
 
@@ -49,9 +47,6 @@ import kotlinx.coroutines.launch
 fun AppCoordinator(
     logTag: String,
     title: String,
-    profileObservable: ProfileObservable,
-    tunnelObservable: TunnelObservable,
-    userPreferencesObservable: UserPreferencesObservable,
     onImportProfile: () -> Unit
 ) {
     var contextualProfileIds by rememberSaveable {
@@ -63,6 +58,7 @@ fun AppCoordinator(
     val coroutineScope = rememberCoroutineScope()
     val isContextualMode = contextualProfileIds.isNotEmpty()
     val errorHandler = LocalErrorHandler.current
+    val profileObservable = LocalProfileObservable.current
 
     fun clearContextualMode() {
         contextualProfileIds = emptyList()
@@ -105,8 +101,6 @@ fun AppCoordinator(
     ) { modifier ->
         ProfileContainerView(
             modifier = modifier,
-            profileObservable = profileObservable,
-            tunnelObservable = tunnelObservable,
             contextualProfileIds = contextualProfileIds,
             onContextualProfileSelected = ::toggleContextualProfile,
             onContextualProfileAction = { profileId ->
@@ -118,7 +112,6 @@ fun AppCoordinator(
 
     if (isSettingsPresented) {
         SettingsCoordinator(
-            userPreferencesObservable,
             onDismissRequest = {
                 isSettingsPresented = false
             }

@@ -46,17 +46,17 @@ import com.algoritmico.passepartout.models.ExperimentalPreferences
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalConfigObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import kotlinx.coroutines.launch
 
 @Composable
 fun PreferencesAdvancedView(
-    modifier: Modifier = Modifier,
-    userPreferencesObservable: UserPreferencesObservable
+    modifier: Modifier = Modifier
 ) {
     val appConfiguration = LocalAppConfiguration.current
     val isBeta = LocalContext.current.isBetaSuggestedByAndroidAPI
     val configState by LocalConfigObservable.current.state.collectAsStateWithLifecycle()
+    val userPreferencesObservable = LocalUserPreferencesObservable.current
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )

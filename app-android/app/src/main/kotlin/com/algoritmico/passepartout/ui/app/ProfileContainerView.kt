@@ -54,8 +54,8 @@ import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.ProfileObservable
-import com.algoritmico.passepartout.observables.TunnelObservable
+import com.algoritmico.passepartout.observables.LocalProfileObservable
+import com.algoritmico.passepartout.observables.LocalTunnelObservable
 import com.algoritmico.passepartout.observables.TunnelObservableException
 import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
@@ -67,13 +67,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileContainerView(
     modifier: Modifier = Modifier,
-    profileObservable: ProfileObservable,
-    tunnelObservable: TunnelObservable,
     contextualProfileIds: List<String>,
     onContextualProfileSelected: (String) -> Unit,
     onContextualProfileAction: (String) -> Unit,
     onImportProfile: () -> Unit
 ) {
+    val profileObservable = LocalProfileObservable.current
+    val tunnelObservable = LocalTunnelObservable.current
     val profileState by profileObservable.state.collectAsState()
     val tunnelState by tunnelObservable.state.collectAsState()
     val coroutineScope = rememberCoroutineScope()

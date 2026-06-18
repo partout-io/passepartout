@@ -65,7 +65,7 @@ class FileProfileRepository(
         runCatchingNonFatal {
             loadIndex()
         }.onFailure {
-            AppLog.e(logTag, "Rebuilding malformed profile index", it)
+            AppLog.w(logTag, "Unable to read profile index, rebuilding", it)
             persistIndex(loadProfilesByIdFromObjects())
         }
     }
@@ -82,7 +82,7 @@ class FileProfileRepository(
         val objects = loadProfilesByIdFromObjects()
         val unknownIds = objects.keys - knownIds
         if (unknownIds.isNotEmpty()) {
-            AppLog.e(logTag, "Profile index missing ${unknownIds.size} entries, rebuilding")
+            AppLog.w(logTag, "Profile index missing ${unknownIds.size} entries, rebuilding")
             persistIndex(objects)
         }
         return objects
