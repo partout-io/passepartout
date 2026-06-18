@@ -2,7 +2,7 @@ package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
@@ -52,7 +52,7 @@ class AppContext(
     val versionObservable: VersionObservable
 
     init {
-        Log.e(logTag, ">>> Started app")
+        AppLog.e(logTag, ">>> Started app")
 
         // User preferences
         userPreferencesObservable = UserPreferencesObservable(
@@ -61,17 +61,17 @@ class AppContext(
             applicationContext.userPreferencesStore
         )
         val preferences = userPreferencesObservable.currentPreferences
-        Log.i(logTag, ">>> Preferences: $preferences")
+        AppLog.i(logTag, ">>> Preferences: $preferences")
 
         library.partoutInit(Tags.PARTOUT, preferences.logsPrivateData)
         val partoutVersion = library.partoutVersion()
-        Log.i(logTag, ">>> Partout $partoutVersion")
+        AppLog.i(logTag, ">>> Partout $partoutVersion")
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
-        Log.d(logTag, ">>> Bundle: $bundle")
+        AppLog.d(logTag, ">>> Bundle: $bundle")
         val constants = applicationContext.appConstants()
-        Log.d(logTag, ">>> Constants: $bundle")
+        AppLog.d(logTag, ">>> Constants: $bundle")
         appConfiguration = AppConfiguration(
             bundle = bundle,
             constants = constants
@@ -148,7 +148,7 @@ class AppContext(
                         val flags = configManager.activeFlags
                         persistConfigFlags(flags)
                     }.onFailure {
-                        Log.e(logTag, "Unable to persist config flags", it)
+                        AppLog.e(logTag, "Unable to persist config flags", it)
                         configManager.resetTTL()
                     }
                 }

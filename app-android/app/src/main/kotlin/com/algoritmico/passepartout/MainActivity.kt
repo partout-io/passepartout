@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout
 
 import android.os.Bundle
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
         runCatchingNonFatal {
             profileImportLauncher.launch(Files.MIME_TYPES)
         }.onFailure {
-            Log.e(logTag, "Unable to open profile importer", it)
+            AppLog.e(logTag, "Unable to open profile importer", it)
             isProfileImporterOpen = false
             ErrorHandler.report(it)
         }

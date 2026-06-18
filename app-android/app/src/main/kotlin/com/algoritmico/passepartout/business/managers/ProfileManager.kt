@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
@@ -51,7 +51,7 @@ class ProfileManager(
         runCatchingNonFatal {
             setProfiles(repository.fetchProfiles())
         }.onFailure {
-            Log.e(logTag, "Unable to load initial profiles", it)
+            AppLog.e(logTag, "Unable to load initial profiles", it)
             reportError(it)
         }
         _events.emit(ProfileEventReady())
@@ -110,7 +110,7 @@ class ProfileManager(
 
     private suspend fun publishProfiles() {
         val newHeaders = profiles.mapValues { it.value.appHeader() }
-        Log.d(logTag, "New headers: $newHeaders")
+        AppLog.d(logTag, "New headers: $newHeaders")
         _events.emit(ProfileEventLocalProfiles())
         _events.emit(
             ProfileEventRefresh(

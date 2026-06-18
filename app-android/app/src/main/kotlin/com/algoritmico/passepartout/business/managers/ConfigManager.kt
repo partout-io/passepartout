@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.newEventFlow
@@ -44,26 +44,26 @@ class ConfigManager(
             return false
         }
         return runCatchingNonFatal {
-            Log.d(logTag, "Config: refreshing bundle...")
+            AppLog.d(logTag, "Config: refreshing bundle...")
             val newBundle = strategy.bundle()
             val event = synchronized(bundleLock) {
                 bundle = newBundle
                 refreshEvent(newBundle)
             }
             _events.emit(event)
-            Log.i(logTag, "Config: active flags = ${event.flags}")
-            Log.d(logTag, "Config: $newBundle")
+            AppLog.i(logTag, "Config: active flags = ${event.flags}")
+            AppLog.d(logTag, "Config: $newBundle")
             true
         }.also {
             refreshMutex.unlock()
         }.getOrElse {
             when (it) {
                 is ConfigManagerException.RateLimit -> {
-                    Log.d(logTag, "Config: TTL")
+                    AppLog.d(logTag, "Config: TTL")
                     false
                 }
                 else -> {
-                    Log.e(logTag, "Config: Unable to refresh flags", it)
+                    AppLog.e(logTag, "Config: Unable to refresh flags", it)
                     throw it
                 }
             }

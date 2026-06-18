@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.Tags
 import io.partout.NativeTunnelControllerJNI
@@ -51,7 +51,7 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
             runCatchingNonFatal {
                 System.loadLibrary("passepartout_wrapper")
             }.onFailure {
-                Log.e(Tags.PARTOUT_JNI, "Unable to load JNI library", it)
+                AppLog.e(Tags.PARTOUT_JNI, "Unable to load JNI library", it)
             }.getOrNull()
         }
     }

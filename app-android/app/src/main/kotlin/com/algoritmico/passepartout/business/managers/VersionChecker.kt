@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.business.extensions.LastCheckedVersionSnapshot
@@ -84,9 +84,9 @@ class VersionChecker(
                 latestRelease
             }
             if (release == null) {
-                Log.d(logTag, "Version: current is latest version")
+                AppLog.d(logTag, "Version: current is latest version")
             } else {
-                Log.i(logTag, "Version: new version available at ${release.url}")
+                AppLog.i(logTag, "Version: new version available at ${release.url}")
                 _events.emit(VersionEventNew(release = release))
             }
         }.also {
@@ -104,10 +104,10 @@ class VersionChecker(
 
     private suspend fun newReleaseOrNull(timestamp: Long): VersionRelease? {
         val lastCheckedTimestamp = waitForSnapshot()?.timestamp
-        Log.d(logTag, "Version: checking for updates...")
+        AppLog.d(logTag, "Version: checking for updates...")
         val fetchedLatestVersion = strategy.latestVersion(lastCheckedTimestamp)
         saveVersion(timestamp, fetchedLatestVersion.versionString)
-        Log.i(
+        AppLog.i(
             logTag,
             "Version: ${fetchedLatestVersion.versionString} > " +
                     "${currentVersion.versionString} = ${fetchedLatestVersion > currentVersion}"
@@ -117,12 +117,12 @@ class VersionChecker(
 
     private suspend fun handleVersionCheckFailure(timestamp: Long, error: Throwable) {
         when (error) {
-            is VersionCheckerException.RateLimit -> Log.d(logTag, "Version: rate limit")
+            is VersionCheckerException.RateLimit -> AppLog.d(logTag, "Version: rate limit")
             is VersionCheckerException.UnexpectedResponse -> {
                 saveVersion(timestamp, null)
-                Log.e(logTag, "Unable to check version", error)
+                AppLog.e(logTag, "Unable to check version", error)
             }
-            else -> Log.e(logTag, "Unable to check version", error)
+            else -> AppLog.e(logTag, "Unable to check version", error)
         }
     }
 

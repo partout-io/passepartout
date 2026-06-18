@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.ui.app
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -93,7 +93,7 @@ fun AppCoordinator(
                 runCatchingNonFatal {
                     profileObservable.remove(profileIds)
                 }.onFailure {
-                    Log.e(logTag, "Unable to delete profiles", it)
+                    AppLog.e(logTag, "Unable to delete profiles", it)
                     errorHandler.report(it)
                 }
             }

@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.strategy
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.GenericException
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
@@ -65,7 +65,7 @@ class FileProfileRepository(
         runCatchingNonFatal {
             loadIndex()
         }.onFailure {
-            Log.e(logTag, "Rebuilding malformed profile index", it)
+            AppLog.e(logTag, "Rebuilding malformed profile index", it)
             persistIndex(loadProfilesByIdFromObjects())
         }
     }
@@ -82,7 +82,7 @@ class FileProfileRepository(
         val objects = loadProfilesByIdFromObjects()
         val unknownIds = objects.keys - knownIds
         if (unknownIds.isNotEmpty()) {
-            Log.e(logTag, "Profile index missing ${unknownIds.size} entries, rebuilding")
+            AppLog.e(logTag, "Profile index missing ${unknownIds.size} entries, rebuilding")
             persistIndex(objects)
         }
         return objects

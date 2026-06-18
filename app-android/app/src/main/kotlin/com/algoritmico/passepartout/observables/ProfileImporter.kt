@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ProfileManager
@@ -42,7 +42,7 @@ class ProfileImporter(
             }.onSuccess {
                 onImportSuccess()
             }.onFailure {
-                Log.e(logTag, "Import failure: $profileName", it)
+                AppLog.e(logTag, "Import failure: $profileName", it)
                 errorHandler.report(ProfileImporterException.Failure(it))
             }
         }
@@ -78,7 +78,7 @@ class ProfileImporter(
                     cursor.getString(displayNameIndex)
                 }
         }.getOrElse {
-            Log.e(logTag, "Unable to resolve profile file name: $uri", it)
+            AppLog.e(logTag, "Unable to resolve profile file name: $uri", it)
             null
         }
     }

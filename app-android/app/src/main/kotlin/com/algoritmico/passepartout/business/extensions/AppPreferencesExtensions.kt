@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.business.extensions
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -48,7 +48,7 @@ fun DataStore<Preferences>.lastCheckedVersionSnapshots(
 private fun Flow<Preferences>.safePreferences(logTag: String): Flow<Preferences> {
     return catch {
         it.throwIfFatal()
-        Log.e(logTag, "Unable to read preferences", it)
+        AppLog.e(logTag, "Unable to read preferences", it)
         emit(emptyPreferences())
     }
 }

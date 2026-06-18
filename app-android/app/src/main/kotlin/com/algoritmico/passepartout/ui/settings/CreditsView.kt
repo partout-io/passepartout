@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,7 +56,7 @@ fun CreditsView(
         runCatchingNonFatal {
             context.credits()
         }.getOrElse {
-            Log.w(TAG, "Unable to load credits", it)
+            AppLog.w(TAG, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }

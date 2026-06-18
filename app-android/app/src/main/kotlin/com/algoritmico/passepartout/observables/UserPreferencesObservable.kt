@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.util.Log
+import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -51,7 +51,7 @@ class UserPreferencesObservable(
                 preferences.first()
             }
         }.getOrElse {
-            Log.e(logTag, "Unable to load preferences", it)
+            AppLog.e(logTag, "Unable to load preferences", it)
             AppPreferences.default
         }
     }
@@ -98,13 +98,13 @@ class UserPreferencesObservable(
             store.edit(transform)
             savePreferences()
         }.onFailure {
-            Log.e(logTag, "Unable to save preferences", it)
+            AppLog.e(logTag, "Unable to save preferences", it)
             throw it
         }
     }
 
     private fun savePreferences() {
-        Log.d(logTag, "Preferences updated: $snapshot")
+        AppLog.d(logTag, "Preferences updated: $snapshot")
     }
     //endregion
 }
