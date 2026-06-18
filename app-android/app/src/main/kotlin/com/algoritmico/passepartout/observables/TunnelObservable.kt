@@ -78,6 +78,7 @@ class TunnelObservable(
         if (!force && profile.isInteractive) {
             throw TunnelObservableException.Interactive(profile)
         }
+        AppLog.d(logTag, "Connect profile ${profile.id}")
         suspendCancellableCoroutine { continuation ->
             pendingConnectContinuation = continuation
             continuation.invokeOnCancellation {
@@ -107,7 +108,8 @@ class TunnelObservable(
         intent.putExtra(PassepartoutVpnService.EXTRA_TUNNEL_PREFERENCES, json)
     }
 
-    suspend fun disconnect(profileId: String) =
+    suspend fun disconnect(profileId: String) {
+        AppLog.d(logTag, "Disconnect profile $profileId")
         suspendCancellableCoroutine { continuation ->
             tunnel.disconnect(profileId) callback@ { status ->
                 if (!continuation.isActive) {
@@ -120,6 +122,7 @@ class TunnelObservable(
                 continuation.resume(Unit)
             }
         }
+    }
 
     suspend fun getEnvironmentValue(name: String): String? {
         val json = tunnel.requestEnvironmentValue(name)
@@ -132,6 +135,7 @@ class TunnelObservable(
             tunnel.onVpnPermissionResult(true)
             return
         }
+        AppLog.d(logTag, "VPN permission denied")
         _state.update {
             it.copy(isVpnPermissionDenied = true)
         }

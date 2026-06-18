@@ -40,6 +40,7 @@ class ProfileImporter(
                 val profileText = readProfileText(uri)
                 profileManager.importText(profileText, profileName)
             }.onSuccess {
+                AppLog.i(logTag, "Imported profile ($profileName)")
                 onImportSuccess()
             }.onFailure {
                 AppLog.e(logTag, "Unable to import profile ($profileName)", it)
