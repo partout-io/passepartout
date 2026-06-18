@@ -33,6 +33,7 @@ object Tags {
     const val SERVICE = "PassepartoutVpnService"
     const val PARTOUT = "Partout"
     const val PARTOUT_JNI = "PartoutJNI"
+    const val OOB = "PassepartoutOOB"
 }
 
 object Files {

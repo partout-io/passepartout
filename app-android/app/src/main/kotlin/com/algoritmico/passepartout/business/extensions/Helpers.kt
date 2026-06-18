@@ -4,6 +4,8 @@
 
 package com.algoritmico.passepartout.business.extensions
 
+import android.util.Log
+import com.algoritmico.passepartout.context.Tags
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -64,6 +66,7 @@ inline fun <T> runCatchingNonFatal(block: () -> T): NonFatalResult<T> {
     return try {
         NonFatalResult(Result.success(block()))
     } catch (error: Throwable) {
+        Log.e(Tags.OOB, "runCatchingNonFatal(): $error")
         NonFatalResult(Result.failure(error))
     }
 }
