@@ -58,24 +58,30 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
         jstring profile,
         jstring cacheDir,
         jobject controller,
-        jboolean logsSnapshots
+        jboolean dnsFallsBack,
+        jboolean logsSnapshots,
+        jlong minDataCountDelta
 ) {
-    (void)thiz;
+    (void) thiz;
     const char *cProfile = (*env)->GetStringUTFChars(env, profile, NULL);
     const char *cCacheDir = (*env)->GetStringUTFChars(env, cacheDir, NULL);
 
-    partout_daemon_bindings bindings = { 0 };
+    partout_daemon_bindings bindings = {0};
     bindings.controller = (*env)->NewGlobalRef(env, controller);
     bindings.free = daemon_bindings_free;
 
-    partout_daemon_start_args args = { 0 };
+    partout_daemon_start_args args = {0};
     args.cache_dir = cCacheDir;
     args.profile = cProfile;
     args.is_daemon = false;
     args.options.logs_snapshots = logsSnapshots;
-    args.options.dns_fallback = NULL;
-    args.options.dns_fallback_len = 0;
-    args.options.min_data_count_delta = 0;
+    if (dnsFallsBack) {
+        // XXX: Hardcoded CloudFlare for now
+        static const char *servers[] = { "1.1.1.1", "1.0.0.1" };
+        args.options.dns_fallback = servers;
+        args.options.dns_fallback_len = sizeof(servers) / sizeof(const char *);
+    }
+    args.options.min_data_count_delta = minDataCountDelta;
     args.bindings = &bindings;
     const jint result = partout_daemon_start(&args);
 

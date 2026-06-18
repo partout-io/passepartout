@@ -95,11 +95,14 @@ class PassepartoutVpnService: VpnService() {
             library.partoutInit(Tags.SERVICE_PARTOUT, logsPrivateData)
 
             // This call retains the controller strongly
+            val dnsFallsBack = preferences?.dnsFallsBack ?: true
             val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
                 controller,
-                logsSnapshots
+                dnsFallsBack,
+                logsSnapshots,
+                0L
             )
             if (code != 0) {
                 throw PartoutException(code, null)

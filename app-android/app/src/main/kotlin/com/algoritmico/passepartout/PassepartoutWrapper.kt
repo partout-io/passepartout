@@ -22,7 +22,9 @@ interface PassepartoutWrapperProtocol {
         profile: String,
         cacheDir: String,
         controller: NativeTunnelControllerJNI,
-        logsSnapshots: Boolean
+        dnsFallsBack: Boolean,
+        logsSnapshots: Boolean,
+        minDataCountDelta: Long
     ): Int
     fun partoutDaemonStop(
         completion: PartoutCompletionCallback
@@ -41,7 +43,9 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
         profile: String,
         cacheDir: String,
         controller: NativeTunnelControllerJNI,
-        logsSnapshots: Boolean
+        dnsFallsBack: Boolean,
+        logsSnapshots: Boolean,
+        minDataCountDelta: Long
     ): Int
     override external fun partoutDaemonStop(
         completion: PartoutCompletionCallback
