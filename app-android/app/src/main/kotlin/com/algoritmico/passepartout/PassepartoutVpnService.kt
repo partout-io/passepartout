@@ -207,8 +207,7 @@ class PassepartoutVpnService: VpnService() {
         }
         try {
             if (!canPostNotifications()) {
-                AppLog.w(logTag, "Unable to start service in foreground, notifications are disabled")
-                return START_NOT_STICKY
+                AppLog.w(logTag, "Starting service in foreground with notifications disabled")
             }
             startForegroundGracefully(createNotification(snapshot = null))
         } catch (it: SecurityException) {
