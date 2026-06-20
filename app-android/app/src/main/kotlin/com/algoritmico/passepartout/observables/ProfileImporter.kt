@@ -11,7 +11,6 @@ import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ProfileManager
-import com.algoritmico.passepartout.context.Files
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,14 +27,15 @@ class ProfileImporter(
     context: Context,
     private val coroutineScope: CoroutineScope,
     private val profileManager: ProfileManager,
-    private val errorHandler: ErrorHandler = ErrorHandler,
+    private val fallbackProfileName: String,
+    private val errorHandler: ErrorHandler,
     private val onImportSuccess: () -> Unit = {}
 ) {
     private val contentResolver = context.applicationContext.contentResolver
 
     fun importProfile(uri: Uri) {
         coroutineScope.launch {
-            val profileName = displayName(uri) ?: Files.DEFAULT_PROFILE_NAME
+            val profileName = displayName(uri) ?: fallbackProfileName
             runCatchingNonFatal {
                 val profileText = readProfileText(uri)
                 profileManager.importText(profileText, profileName)

@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.business.managers
 
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
@@ -31,13 +32,14 @@ sealed class ConfigManagerException: Exception() {
 class ConfigManager(
     private val logTag: String,
     private val strategy: ConfigManagerStrategy,
-    private val buildNumber: Int = Int.MAX_VALUE
+    private val buildNumber: Int = Int.MAX_VALUE,
+    eventConstants: AndroidConstants.Events
 ) {
     private val refreshMutex = Mutex()
     private val bundleLock = Any()
     private var bundle: ConfigBundle? = null
 
-    private val _events = newEventFlow()
+    private val _events = newEventFlow(eventConstants)
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun refreshBundle(): Boolean {

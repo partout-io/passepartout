@@ -15,6 +15,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.toSemanticVersionOrNull
 import com.algoritmico.passepartout.business.extensions.updateLastCheckedVersion
 import com.algoritmico.passepartout.business.extensions.versionString
+import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.models.Event
@@ -50,7 +51,8 @@ class VersionChecker(
     coroutineScope: CoroutineScope,
     private val strategy: VersionCheckerStrategy = DummyVersionCheckerStrategy(),
     currentVersion: String = "255.255.255",
-    private val downloadURL: String = "http://"
+    private val downloadURL: String = "http://",
+    eventConstants: AndroidConstants.Events
 ) : Closeable {
     private val mutex = Mutex()
     private val scope = CoroutineScope(
@@ -60,7 +62,7 @@ class VersionChecker(
         .map { VersionSnapshotState.Ready(it) }
         .stateIn(scope, SharingStarted.Eagerly, VersionSnapshotState.Loading)
     private val currentVersion = currentVersion.toSemanticVersionOrNull() ?: SemanticVersion.max
-    private val _events = newEventFlow()
+    private val _events = newEventFlow(eventConstants)
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     val latestRelease: VersionRelease?

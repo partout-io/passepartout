@@ -8,13 +8,14 @@ import com.algoritmico.passepartout.context.AppLog
 import androidx.compose.ui.platform.UriHandler
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.throwIfFatal
-import com.algoritmico.passepartout.context.Tags
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-object ErrorHandler {
+class ErrorHandler(
+    private val logTag: String
+) {
     private val _errors = MutableSharedFlow<AppError>(
         replay = 0,
         extraBufferCapacity = 64,
@@ -23,9 +24,13 @@ object ErrorHandler {
     val errors: Flow<AppError> = _errors.asSharedFlow()
 
     fun report(error: Throwable) {
+        report(error, "Unable to complete operation")
+    }
+
+    fun report(error: Throwable, message: String) {
         // This is a guard of last resort to rethrow CancellationException
         error.throwIfFatal()
-        AppLog.e(Tags.APP, "Unable to complete operation", error)
+        AppLog.e(logTag, message, error)
         _errors.tryEmit(error.asAppError)
     }
 }
@@ -34,7 +39,6 @@ fun UriHandler.safeOpenUri(uri: String, handler: ErrorHandler) {
     runCatchingNonFatal {
         openUri(uri)
     }.onFailure {
-        AppLog.e(Tags.APP, "Unable to open URL ($uri)", it)
-        handler.report(it)
+        handler.report(it, "Unable to open URL ($uri)")
     }
 }

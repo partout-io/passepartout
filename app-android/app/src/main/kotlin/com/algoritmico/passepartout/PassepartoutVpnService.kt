@@ -22,8 +22,7 @@ import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.LocalConstants
-import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
@@ -41,9 +40,10 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class PassepartoutVpnService: VpnService() {
-    private val logTag = Tags.SERVICE
-    private val jniLogTag = Tags.PARTOUT_JNI
-    private val logsSnapshots = LocalConstants.TUNNEL_LOGS_SNAPSHOTS
+    private val androidConstants = defaultAndroidConstants
+    private val logTag = androidConstants.tags.service
+    private val jniLogTag = androidConstants.tags.partoutJni
+    private val logsSnapshots = androidConstants.tunnel.logsSnapshots
 
     @Volatile
     private var currentProfileName: String? = null
@@ -66,9 +66,9 @@ class PassepartoutVpnService: VpnService() {
     private val engine = object : PartoutVpnServiceRuntime.Engine {
         private val library = PassepartoutWrapper()
         private val lastProfileFile: File
-            get() = applicationContext.lastTunnelProfile
+            get() = applicationContext.lastTunnelProfile(androidConstants.storage)
         private val lastPreferencesFile: File
-            get() = applicationContext.lastTunnelPreferences
+            get() = applicationContext.lastTunnelPreferences(androidConstants.storage)
 
         override suspend fun start(
             intent: Intent?,
@@ -92,7 +92,7 @@ class PassepartoutVpnService: VpnService() {
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
-            library.partoutInit(Tags.SERVICE_PARTOUT, logsPrivateData)
+            library.partoutInit(androidConstants.tags.servicePartout, logsPrivateData)
 
             // This call retains the controller strongly
             val dnsFallsBack = preferences?.dnsFallsBack ?: true

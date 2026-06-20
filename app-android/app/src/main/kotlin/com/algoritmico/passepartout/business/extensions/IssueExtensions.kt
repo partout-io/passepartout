@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout.business.extensions
 
 import com.algoritmico.passepartout.models.Issue
+import com.algoritmico.passepartout.ui.Strings
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
@@ -35,7 +36,7 @@ val Issue.body: String
     }
 
 val Issue.subject: String
-    get() = "Passepartout/Android - Report issue"
+    get() = Strings.Unlocalized.Issues.subject
 
 private val timestampFormatter: DateFormat
     get() = DateFormat.getDateTimeInstance(

@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.observables.ConfigObservable
@@ -40,6 +41,7 @@ fun PassepartoutApp(
     diagnosticsObservable: DiagnosticsObservable,
     versionObservable: VersionObservable,
     appConfiguration: AppConfiguration,
+    androidConstants: AndroidConstants,
     errorHandler: ErrorHandler,
     theme: Theme = Theme(),
     onImportProfile: () -> Unit
@@ -51,6 +53,7 @@ fun PassepartoutApp(
     CompositionLocalProvider(
         LocalTheme provides theme,
         LocalAppConfiguration provides appConfiguration,
+        LocalAndroidConstants provides androidConstants,
         LocalConfigObservable provides configObservable,
         LocalDiagnosticsObservable provides diagnosticsObservable,
         LocalProfileObservable provides profileObservable,

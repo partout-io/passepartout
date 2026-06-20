@@ -59,6 +59,8 @@ object Strings {
         object Issues {
             val subject = "$appName/Android - Report issue"
             const val attachmentMimeType = "text/plain"
+            const val emailChooserTitle = "Report issue"
+            const val logsClipLabel = "Issue logs"
         }
 
         const val appName = "Passepartout"

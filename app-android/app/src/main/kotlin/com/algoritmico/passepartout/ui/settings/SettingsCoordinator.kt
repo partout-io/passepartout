@@ -23,7 +23,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.ui.LocalAndroidConstants
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
@@ -105,9 +105,10 @@ private fun PushDestination(
     route: SettingsCoordinatorRoute?,
     onRoute: (SettingsCoordinatorRoute) -> Unit
 ) {
+    val androidConstants = LocalAndroidConstants.current
     when (route) {
         SettingsCoordinatorRoute.AppLog -> {
-            LogcatView(tags = Tags.appTags)
+            LogcatView(tags = androidConstants.tags.appTags)
         }
         SettingsCoordinatorRoute.Credits -> CreditsView()
         SettingsCoordinatorRoute.Diagnostics -> {
@@ -125,7 +126,7 @@ private fun PushDestination(
         }
         SettingsCoordinatorRoute.PreferencesAdvanced -> PreferencesAdvancedView()
         SettingsCoordinatorRoute.TunnelLog -> {
-            LogcatView(tags = Tags.serviceTags)
+            LogcatView(tags = androidConstants.tags.serviceTags)
         }
         SettingsCoordinatorRoute.Version -> VersionView()
         null -> PlaceholderDestination(stringResource(R.string.global_nouns_no_selection))

@@ -20,26 +20,18 @@ import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.DistributionTarget
 import java.io.File
 
-private object Storage {
-    const val CONSTANTS_FILENAME = "constants.json"
-    const val CREDITS_FILENAME = "credits.json"
-    const val TUNNEL_PROFILE_FILENAME = "tunnel_profile.json"
-    const val TUNNEL_PREFERENCES_FILENAME = "tunnel_preferences.json"
-    const val PREFERENCES_STORE_NAME = "preferences"
-}
-
 data class AndroidSystemInformation(
     val osLine: String,
     val deviceLine: String?
 )
 
-fun Context.appConstants(): AppConstants {
-    val json = readAsset(Storage.CONSTANTS_FILENAME)
+fun Context.appConstants(assets: AndroidConstants.Assets): AppConstants {
+    val json = readAsset(assets.constantsFilename)
     return JSON.decode<AppConstants>(json)
 }
 
-fun Context.credits(): Credits {
-    val json = readAsset(Storage.CREDITS_FILENAME)
+fun Context.credits(assets: AndroidConstants.Assets): Credits {
+    val json = readAsset(assets.creditsFilename)
     return JSON.decode<Credits>(json)
 }
 
@@ -116,14 +108,16 @@ private fun Context.packageInfo(): PackageInfo {
     }
 }
 
-val Context.lastTunnelProfile: File
-    get() = persistentFile(Storage.TUNNEL_PROFILE_FILENAME)
+fun Context.lastTunnelProfile(storage: AndroidConstants.Storage): File {
+    return persistentFile(storage.tunnelProfileFilename)
+}
 
-val Context.lastTunnelPreferences: File
-    get() = persistentFile(Storage.TUNNEL_PREFERENCES_FILENAME)
+fun Context.lastTunnelPreferences(storage: AndroidConstants.Storage): File {
+    return persistentFile(storage.tunnelPreferencesFilename)
+}
 
 val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
-    Storage.PREFERENCES_STORE_NAME
+    defaultAndroidConstants.storage.preferencesStoreName
 )
 
 val Context.isBetaSuggestedByAndroidAPI: Boolean

@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.context.LocalConstants
+import com.algoritmico.passepartout.ui.LocalAndroidConstants
 import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.theme.LocalTheme
@@ -37,6 +37,7 @@ fun LogcatView(
     modifier: Modifier = Modifier,
     tags: Collection<String>
 ) {
+    val androidConstants = LocalAndroidConstants.current
     val diagnosticsObservable = LocalDiagnosticsObservable.current
     val errorHandler = LocalErrorHandler.current
     val listState = rememberLazyListState()
@@ -47,7 +48,7 @@ fun LogcatView(
     LaunchedEffect(tags) {
         lines = null
         runCatchingNonFatal {
-            diagnosticsObservable.logcat(tags, LocalConstants.LOGCAT_VIEW_HOURS)
+            diagnosticsObservable.logcat(tags, androidConstants.diagnostics.logcatViewHours)
         }.onSuccess {
             lines = it
         }.onFailure {
