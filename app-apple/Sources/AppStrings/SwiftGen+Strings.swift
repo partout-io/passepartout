@@ -55,8 +55,6 @@ public enum Strings {
         public static let binary = Strings.tr("Localizable", "android.errors.profile_importer.binary", fallback: "Importing a binary file.")
         /// Unable to read profile content.
         public static let empty = Strings.tr("Localizable", "android.errors.profile_importer.empty", fallback: "Unable to read profile content.")
-        /// Unable to import profile.
-        public static let failure = Strings.tr("Localizable", "android.errors.profile_importer.failure", fallback: "Unable to import profile.")
       }
     }
     public enum Profiles {

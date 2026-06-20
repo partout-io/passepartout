@@ -511,7 +511,6 @@
 "android.profiles.layout.grid.content_description" = "Grid profiles";
 
 "android.errors.profile_importer.binary" = "Importing a binary file.";
-"android.errors.profile_importer.failure" = "Unable to import profile.";
 "android.errors.profile_importer.empty" = "Unable to read profile content.";
 
 // MARK: - Errors

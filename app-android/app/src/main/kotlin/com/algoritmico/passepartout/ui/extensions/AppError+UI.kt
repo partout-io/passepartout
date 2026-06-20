@@ -15,7 +15,7 @@ import com.algoritmico.passepartout.observables.asAppError
 fun AppError.localizedMessage(): String {
     var msg = when (cause) {
         is ProfileImporterException.Binary -> stringResource(R.string.android_errors_profile_importer_binary)
-        is ProfileImporterException.Failure -> stringResource(R.string.android_errors_profile_importer_failure)
+        is ProfileImporterException.Failure -> stringResource(R.string.errors_app_import)
         is ProfileImporterException.Null -> stringResource(R.string.android_errors_profile_importer_empty)
         else -> cause?.asAppError?.localizedMessage() ?: code.name
     }

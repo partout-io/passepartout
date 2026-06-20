@@ -432,7 +432,6 @@
     <string name="android_profiles_layout_list_content_description">List profiles</string>
     <string name="android_profiles_layout_grid_content_description">Grid profiles</string>
     <string name="android_errors_profile_importer_binary">Importing a binary file.</string>
-    <string name="android_errors_profile_importer_failure">Unable to import profile.</string>
     <string name="android_errors_profile_importer_empty">Unable to read profile content.</string>
     <string name="errors_wireguard_interface_title">Invalid interface</string>
     <string name="errors_wireguard_interface_messagenamerequired">Interface name is required</string>
