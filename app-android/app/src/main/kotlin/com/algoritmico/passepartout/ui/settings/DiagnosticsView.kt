@@ -18,6 +18,7 @@ import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
@@ -35,16 +36,15 @@ fun DiagnosticsView(
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )
-    val betaHeader = stringResource(R.string.android_settings_sections_beta)
     val liveLogHeader = stringResource(R.string.views_diagnostics_sections_live)
     val preferencesHeader = stringResource(R.string.global_nouns_preferences)
     ThemeList(modifier = modifier) {
         if (isBeta) {
-            themeListSection(header = betaHeader) {
+            themeListSection(header = Strings.Unlocalized.beta) {
                 item {
                     ListItem(
                         headlineContent = {
-                            Text(stringResource(R.string.android_settings_beta_build))
+                            Text(Strings.Unlocalized.betaBuild)
                         }
                     )
                 }

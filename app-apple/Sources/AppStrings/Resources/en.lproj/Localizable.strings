@@ -515,9 +515,6 @@
 "android.profiles.layout.list.content_description" = "List profiles";
 "android.profiles.layout.grid.content_description" = "Grid profiles";
 
-"android.settings.sections.beta" = "Beta";
-"android.settings.beta_build" = "This is a beta build";
-
 "android.errors.profile_importer.binary" = "Importing a binary file.";
 "android.errors.profile_importer.failure" = "Unable to import profile.";
 "android.errors.profile_importer.empty" = "Unable to read profile content.";

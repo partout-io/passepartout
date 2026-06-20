@@ -117,14 +117,6 @@ public enum Strings {
         }
       }
     }
-    public enum Settings {
-      /// This is a beta build
-      public static let betaBuild = Strings.tr("Localizable", "android.settings.beta_build", fallback: "This is a beta build")
-      public enum Sections {
-        /// Beta
-        public static let beta = Strings.tr("Localizable", "android.settings.sections.beta", fallback: "Beta")
-      }
-    }
   }
   public enum Entities {
     public enum Dns {

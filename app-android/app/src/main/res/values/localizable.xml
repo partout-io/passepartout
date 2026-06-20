@@ -435,8 +435,6 @@
     <string name="android_profiles_actions_delete_content_description">Delete profiles</string>
     <string name="android_profiles_layout_list_content_description">List profiles</string>
     <string name="android_profiles_layout_grid_content_description">Grid profiles</string>
-    <string name="android_settings_sections_beta">Beta</string>
-    <string name="android_settings_beta_build">This is a beta build</string>
     <string name="android_errors_profile_importer_binary">Importing a binary file.</string>
     <string name="android_errors_profile_importer_failure">Unable to import profile.</string>
     <string name="android_errors_profile_importer_empty">Unable to read profile content.</string>

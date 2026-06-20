@@ -64,6 +64,8 @@ object Strings {
         const val appName = "Passepartout"
         const val appleTV = "Apple TV"
         const val authorName = "Davide De Rosa (keeshux)"
+        const val beta = "Beta"
+        const val betaBuild = "This is a beta build"
         const val ca = "CA"
         const val changelog = "CHANGELOG"
         const val dns = "DNS"
