@@ -17,7 +17,7 @@ import com.algoritmico.passepartout.ui.PassepartoutApp
 
 class MainActivity : ComponentActivity() {
     private val androidConstants = defaultAndroidConstants
-    private val logTag = androidConstants.logTags.app
+    private val logTag = androidConstants.tags.app
     private lateinit var appContext: AppContext
     private var isProfileImporterOpen = false
 

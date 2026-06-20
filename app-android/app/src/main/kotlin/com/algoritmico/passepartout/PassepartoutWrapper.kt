@@ -57,7 +57,7 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
             runCatchingNonFatal {
                 System.loadLibrary("passepartout_wrapper")
             }.onFailure {
-                AppLog.e(defaultAndroidConstants.logTags.partoutJni, "Unable to load JNI library", it)
+                AppLog.e(defaultAndroidConstants.tags.partoutJni, "Unable to load JNI library", it)
             }.getOrNull()
         }
     }

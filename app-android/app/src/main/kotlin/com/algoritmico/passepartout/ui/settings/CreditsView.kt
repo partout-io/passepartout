@@ -57,7 +57,7 @@ fun CreditsView(
         runCatchingNonFatal {
             context.credits(androidConstants.assets)
         }.getOrElse {
-            AppLog.w(androidConstants.logTags.app, "Unable to load credits", it)
+            AppLog.w(androidConstants.tags.app, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }

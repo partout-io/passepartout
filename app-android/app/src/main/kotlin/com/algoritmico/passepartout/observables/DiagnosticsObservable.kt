@@ -36,7 +36,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class DiagnosticsObservable(
-    private val logTags: AndroidConstants.LogTags,
+    private val tags: AndroidConstants.Tags,
     private val diagnosticsConstants: AndroidConstants.Diagnostics
 ) {
     suspend fun issue(
@@ -46,11 +46,11 @@ class DiagnosticsObservable(
     ): Issue = coroutineScope {
         val appContext = context.applicationContext
         val appLog = async {
-            logcat(logTags.appTags, diagnosticsConstants.logcatViewHours)
+            logcat(tags.appTags, diagnosticsConstants.logcatViewHours)
                 .toIssueAttachment(appConfiguration.appLogPath)
         }
         val tunnelLog = async {
-            logcat(logTags.serviceTags, diagnosticsConstants.logcatViewHours)
+            logcat(tags.serviceTags, diagnosticsConstants.logcatViewHours)
                 .toIssueAttachment(appConfiguration.tunnelLogPath)
         }
         val exitReasons = async(Dispatchers.IO) {

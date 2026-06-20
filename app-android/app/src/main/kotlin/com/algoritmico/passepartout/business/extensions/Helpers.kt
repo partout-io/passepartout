@@ -66,7 +66,7 @@ inline fun <T> runCatchingNonFatal(block: () -> T): NonFatalResult<T> {
     return try {
         NonFatalResult(Result.success(block()))
     } catch (error: Throwable) {
-        AppLog.d(defaultAndroidConstants.logTags.outOfBand, "runCatchingNonFatal(): $error")
+        AppLog.d(defaultAndroidConstants.tags.outOfBand, "runCatchingNonFatal(): $error")
         NonFatalResult(Result.failure(error))
     }
 }

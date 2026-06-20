@@ -8,9 +8,9 @@ data class AndroidConstants(
     val assets: Assets = Assets(),
     val diagnostics: Diagnostics = Diagnostics(),
     val events: Events = Events(),
-    val logTags: LogTags = LogTags(),
     val profileImport: ProfileImport = ProfileImport(),
     val storage: Storage = Storage(),
+    val tags: Tags = Tags(),
     val tunnel: Tunnel = Tunnel()
 ) {
     data class Assets(
@@ -39,7 +39,7 @@ data class AndroidConstants(
         val replay: Int = 64
     )
 
-    data class LogTags(
+    data class Tags(
         val app: String = "Passepartout",
         val appPartout: String = "PartoutApp",
         val service: String = "PassepartoutVpnService",

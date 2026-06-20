@@ -108,7 +108,7 @@ private fun PushDestination(
     val androidConstants = LocalAndroidConstants.current
     when (route) {
         SettingsCoordinatorRoute.AppLog -> {
-            LogcatView(tags = androidConstants.logTags.appTags)
+            LogcatView(tags = androidConstants.tags.appTags)
         }
         SettingsCoordinatorRoute.Credits -> CreditsView()
         SettingsCoordinatorRoute.Diagnostics -> {
@@ -126,7 +126,7 @@ private fun PushDestination(
         }
         SettingsCoordinatorRoute.PreferencesAdvanced -> PreferencesAdvancedView()
         SettingsCoordinatorRoute.TunnelLog -> {
-            LogcatView(tags = androidConstants.logTags.serviceTags)
+            LogcatView(tags = androidConstants.tags.serviceTags)
         }
         SettingsCoordinatorRoute.Version -> VersionView()
         null -> PlaceholderDestination(stringResource(R.string.global_nouns_no_selection))

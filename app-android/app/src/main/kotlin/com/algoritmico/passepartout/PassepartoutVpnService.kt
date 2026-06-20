@@ -41,8 +41,8 @@ import java.io.File
 
 class PassepartoutVpnService: VpnService() {
     private val androidConstants = defaultAndroidConstants
-    private val logTag = androidConstants.logTags.service
-    private val jniLogTag = androidConstants.logTags.partoutJni
+    private val logTag = androidConstants.tags.service
+    private val jniLogTag = androidConstants.tags.partoutJni
     private val logsSnapshots = androidConstants.tunnel.logsSnapshots
 
     @Volatile
@@ -92,7 +92,7 @@ class PassepartoutVpnService: VpnService() {
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
-            library.partoutInit(androidConstants.logTags.servicePartout, logsPrivateData)
+            library.partoutInit(androidConstants.tags.servicePartout, logsPrivateData)
 
             // This call retains the controller strongly
             val dnsFallsBack = preferences?.dnsFallsBack ?: true

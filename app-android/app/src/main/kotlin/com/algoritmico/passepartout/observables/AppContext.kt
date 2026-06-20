@@ -69,7 +69,7 @@ class AppContext(
         )
         val preferences = userPreferencesObservable.currentPreferences
         AppLog.i(logTag, "Preferences: $preferences")
-        library.partoutInit(androidConstants.logTags.appPartout, preferences.logsPrivateData)
+        library.partoutInit(androidConstants.tags.appPartout, preferences.logsPrivateData)
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
@@ -110,13 +110,13 @@ class AppContext(
         )
 
         // Observables from managers
-        errorHandler = ErrorHandler(androidConstants.logTags.app)
+        errorHandler = ErrorHandler(androidConstants.tags.app)
         configObservable = ConfigObservable(
             configManager,
             coroutineScope
         )
         diagnosticsObservable = DiagnosticsObservable(
-            logTags = androidConstants.logTags,
+            tags = androidConstants.tags,
             diagnosticsConstants = androidConstants.diagnostics
         )
         profileObservable = ProfileObservable(
