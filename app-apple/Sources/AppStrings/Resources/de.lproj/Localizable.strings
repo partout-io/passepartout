@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Profil '%@' konnte nicht dupliziert werden.";
 "errors.app.empty_products" = "Produkte konnten nicht abgerufen werden, bitte versuche es später erneut.";
 "errors.app.empty_profile_name" = "Profilname ist leer.";
-"errors.app.import" = "Profile konnten nicht importiert werden.";
+"errors.app.import.binary" = "Eine Binärdatei wird importiert.";
+"errors.app.import.generic" = "Profile konnten nicht importiert werden.";
 "errors.app.malformed_module" = "Modul %@ ist fehlerhaft. %@";
 "errors.app.module_requires_connection" = "Das Modul %@ erfordert eine aktive Verbindung eines der folgenden Typen: %@";
 "errors.app.corrupt_provider_module" = "Verbindung zum Anbieter-Server konnte nicht hergestellt werden (Grund=%@).";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ und Freigabe";
 "global.actions.add" = "Hinzufügen";
 "global.actions.allow" = "Erlauben";
+"global.actions.back" = "Zurück";
 "global.actions.cancel" = "Abbrechen";
+"global.actions.close" = "Schließen";
 "global.actions.connect" = "Verbinden";
 "global.actions.delete" = "Löschen";
 "global.actions.disable" = "Deaktivieren";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "Endpunkt";
 "global.nouns.entries_n" = "%d Einträge";
 "global.nouns.entries_one" = "1 Eintrag";
+"global.nouns.error" = "Fehler";
 "global.nouns.features" = "Funktionen";
 "global.nouns.filters" = "Filter";
 "global.nouns.folder" = "Ordner";

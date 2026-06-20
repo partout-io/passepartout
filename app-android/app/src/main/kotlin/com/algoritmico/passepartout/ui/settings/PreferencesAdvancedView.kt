@@ -20,7 +20,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.disable
 import com.algoritmico.passepartout.business.extensions.enable
@@ -98,10 +100,14 @@ private fun AdvancedPreferencesContent(
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
     onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
+    val allowHeader = stringResource(R.string.global_actions_allow)
+    val overrideFooter = stringResource(R.string.views_preferences_advanced_override_footer)
+    val remoteFooter = stringResource(R.string.views_preferences_advanced_remote_footer)
+
     ThemeList(modifier = modifier) {
         if (canOverride) {
             themeListSection(
-                footer = "Override remote configuration for this device."
+                footer = overrideFooter
             ) {
                 items(AdvancedFlags) { flag ->
                     ConfigPreferencePickerRow(
@@ -116,8 +122,8 @@ private fun AdvancedPreferencesContent(
             }
         } else {
             themeListSection(
-                header = "Allow",
-                footer = "Disable a feature to opt this device out when it is enabled remotely."
+                header = allowHeader,
+                footer = remoteFooter
             ) {
                 items(AdvancedFlags) { flag ->
                     ConfigFlagAllowedRow(
@@ -176,7 +182,7 @@ private fun ConfigPreferencePickerRow(
                         isMenuExpanded = true
                     }
                 ) {
-                    Text(preference.localizedDescription)
+                    Text(preference.localizedDescription())
                 }
                 DropdownMenu(
                     expanded = isMenuExpanded,
@@ -187,7 +193,7 @@ private fun ConfigPreferencePickerRow(
                     ConfigFlagPreference.entries.forEach { item ->
                         DropdownMenuItem(
                             text = {
-                                Text(item.localizedDescription)
+                                Text(item.localizedDescription())
                             },
                             onClick = {
                                 isMenuExpanded = false
@@ -241,24 +247,25 @@ private fun ExperimentalPreferences.setPreference(
 private val ConfigFlag.localizedDescription: String
     get() = value
 
+@Composable
 private fun ConfigFlag.activeDescription(
     isActive: Boolean
 ): String {
     return if (isActive) {
-        "Enabled"
+        stringResource(R.string.global_nouns_enabled)
     } else {
-        "Disabled"
+        stringResource(R.string.global_nouns_disabled)
     }
 }
 
-private val ConfigFlagPreference.localizedDescription: String
-    get() {
-        return when (this) {
-            ConfigFlagPreference.Remote -> "Remote"
-            ConfigFlagPreference.Enable -> "Enable"
-            ConfigFlagPreference.Disable -> "Disable"
-        }
+@Composable
+private fun ConfigFlagPreference.localizedDescription(): String {
+    return when (this) {
+        ConfigFlagPreference.Remote -> stringResource(R.string.views_preferences_advanced_override_picker_remote)
+        ConfigFlagPreference.Enable -> stringResource(R.string.global_actions_enable)
+        ConfigFlagPreference.Disable -> stringResource(R.string.global_actions_disable)
     }
+}
 
 private fun UserPreferencesObservable.updateExperimentalPreferencesSafely(
     coroutineScope: CoroutineScope,

@@ -21,7 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.LocalConstants
 import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
@@ -65,7 +67,7 @@ fun LogcatView(
     when (val currentLines = lines) {
         null -> ThemeProgressView(modifier = modifier)
         emptyList<String>() -> ThemeEmptyMessage(
-            text = "No content",
+            text = stringResource(R.string.global_nouns_no_content),
             modifier = modifier
         )
         else -> LogcatListView(

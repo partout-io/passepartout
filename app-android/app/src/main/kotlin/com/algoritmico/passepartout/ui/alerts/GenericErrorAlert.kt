@@ -8,6 +8,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.ui.extensions.localizedMessage
 
@@ -19,14 +21,14 @@ fun GenericErrorAlert(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Error")
+            Text(stringResource(R.string.global_nouns_error))
         },
         text = {
-            Text(error.localizedMessage)
+            Text(error.localizedMessage())
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(stringResource(R.string.global_nouns_ok))
             }
         }
     )

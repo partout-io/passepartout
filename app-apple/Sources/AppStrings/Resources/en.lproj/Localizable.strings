@@ -316,7 +316,9 @@
 
 "global.actions.add" = "Add";
 "global.actions.allow" = "Allow";
+"global.actions.back" = "Back";
 "global.actions.cancel" = "Cancel";
+"global.actions.close" = "Close";
 "global.actions.connect" = "Connect";
 "global.actions.delete" = "Delete";
 "global.actions.disable" = "Disable";
@@ -366,6 +368,7 @@
 "global.nouns.endpoint" = "Endpoint";
 "global.nouns.entries_n" = "%d Entries";
 "global.nouns.entries_one" = "1 Entry";
+"global.nouns.error" = "Error";
 "global.nouns.features" = "Features";
 "global.nouns.filters" = "Filters";
 "global.nouns.folder" = "Folder";
@@ -439,7 +442,8 @@
 "errors.app.duplicate" = "Unable to duplicate profile '%@'.";
 "errors.app.empty_products" = "Unable to fetch products, please retry later.";
 "errors.app.empty_profile_name" = "Profile name is empty.";
-"errors.app.import" = "Unable to import profiles.";
+"errors.app.import.binary" = "Importing a binary file.";
+"errors.app.import.generic" = "Unable to import profiles.";
 "errors.app.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
 "errors.app.incomplete_module" = "Please finish the configuration of the %@ module.";
 "errors.app.invalid_fields" = "Invalid fields.";
@@ -492,6 +496,22 @@
 "theme.confirmation.cancel" = "Cancel";
 "theme.confirmation.message" = "Are you sure you want to proceed with this operation?";
 "theme.lock_screen.reason" = "%@ is locked";
+
+// MARK: Android
+
+"android.alerts.interactive_unsupported.title" = "Interactive profile";
+"android.alerts.interactive_unsupported.message" = "%@ requires input that is not supported by this app version.";
+"android.alerts.vpn_permission.title" = "VPN permission required";
+"android.alerts.vpn_permission.message" = "%@ needs VPN permission to start a connection.";
+"android.alerts.vpn_permission.open_settings" = "Open VPN settings";
+
+"android.profiles.selection.count" = "%d selected";
+"android.profiles.actions.add.content_description" = "Add profile";
+"android.profiles.actions.delete.content_description" = "Delete profiles";
+"android.profiles.layout.list.content_description" = "List profiles";
+"android.profiles.layout.grid.content_description" = "Grid profiles";
+
+"android.errors.profile_importer.empty" = "Unable to read profile content.";
 
 // MARK: - Errors
 

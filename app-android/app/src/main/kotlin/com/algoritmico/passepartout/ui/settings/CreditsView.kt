@@ -26,7 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.Tags
@@ -117,10 +119,13 @@ private fun CreditsListView(
     val languages = remember(credits) {
         credits.translations.keys.sortedBy { it.localizedLanguageName() }
     }
+    val licensesHeader = stringResource(R.string.views_settings_credits_licenses)
+    val noticesHeader = stringResource(R.string.views_settings_credits_notices)
+    val translationsHeader = stringResource(R.string.views_settings_credits_translations)
 
     ThemeList(modifier = modifier) {
         if (licenses.isNotEmpty()) {
-            themeListSection(header = "Licenses") {
+            themeListSection(header = licensesHeader) {
                 items(
                     items = licenses,
                     key = { it.name }
@@ -142,7 +147,7 @@ private fun CreditsListView(
             }
         }
         if (notices.isNotEmpty()) {
-            themeListSection(header = "Notices") {
+            themeListSection(header = noticesHeader) {
                 items(
                     items = notices,
                     key = { it.name }
@@ -161,7 +166,7 @@ private fun CreditsListView(
             }
         }
         if (languages.isNotEmpty()) {
-            themeListSection(header = "Translations") {
+            themeListSection(header = translationsHeader) {
                 items(
                     items = languages,
                     key = { it }
@@ -205,14 +210,15 @@ private fun LicenseView(
     onContent: (String) -> Unit
 ) {
     val theme = LocalTheme.current
+    val context = LocalContext.current
 
-    LaunchedEffect(license.licenseURL, content) {
+    LaunchedEffect(context, license.licenseURL, content) {
         if (content == null) {
             val loadedContent = withContext(Dispatchers.IO) {
                 runCatchingNonFatal {
                     URL(license.licenseURL).readText()
                 }.getOrElse {
-                    "Unable to load license: ${it.localizedMessage ?: it::class.java.simpleName}"
+                    context.getString(R.string.errors_app_other)
                 }
             }
             onContent(loadedContent)

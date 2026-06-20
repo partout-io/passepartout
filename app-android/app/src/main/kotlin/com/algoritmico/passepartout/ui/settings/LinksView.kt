@@ -6,6 +6,8 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.blogURL
 import com.algoritmico.passepartout.business.extensions.disclaimerURL
 import com.algoritmico.passepartout.business.extensions.privacyPolicyURL
@@ -21,26 +23,28 @@ fun LinksView(
     val appConfiguration = LocalAppConfiguration.current
     val constants = appConfiguration.constants
     val websites = constants.websites
+    val supportHeader = stringResource(R.string.views_settings_links_sections_support)
+    val webHeader = stringResource(R.string.views_settings_links_sections_web)
 
     ThemeList(modifier = modifier) {
-        themeListSection(header = "Support") {
+        themeListSection(header = supportHeader) {
             item {
                 ThemeExternalLinkRow(
-                    title = "Open discussion",
+                    title = stringResource(R.string.views_settings_links_rows_open_discussion),
                     url = constants.github.discussionsURL
                 )
             }
         }
-        themeListSection(header = "Web") {
+        themeListSection(header = webHeader) {
             item {
                 ThemeExternalLinkRow(
-                    title = "Home page",
+                    title = stringResource(R.string.views_settings_links_rows_home_page),
                     url = websites.homeURL
                 )
             }
             item {
                 ThemeExternalLinkRow(
-                    title = "Blog",
+                    title = stringResource(R.string.views_settings_links_rows_blog),
                     url = websites.blogURL
                 )
             }
@@ -48,13 +52,13 @@ fun LinksView(
         themeListSection {
             item {
                 ThemeExternalLinkRow(
-                    title = "Disclaimer",
+                    title = stringResource(R.string.views_settings_links_rows_disclaimer),
                     url = websites.disclaimerURL
                 )
             }
             item {
                 ThemeExternalLinkRow(
-                    title = "Privacy policy",
+                    title = stringResource(R.string.views_settings_links_rows_privacy_policy),
                     url = websites.privacyPolicyURL
                 )
             }

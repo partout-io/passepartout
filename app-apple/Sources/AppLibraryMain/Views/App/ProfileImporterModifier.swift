@@ -5,7 +5,7 @@
 import CommonLibrary
 import SwiftUI
 
-struct AppProfileImporterModifier: ViewModifier {
+struct ProfileImporterModifier: ViewModifier {
     let profileObservable: ProfileObservable
 
     @Binding
@@ -14,7 +14,7 @@ struct AppProfileImporterModifier: ViewModifier {
     let errorHandler: ErrorHandler
 
     @State
-    private var importer = AppProfileImporter()
+    private var importer = ProfileImporter()
 
     func body(content: Content) -> some View {
         content
@@ -37,7 +37,7 @@ struct AppProfileImporterModifier: ViewModifier {
     }
 }
 
-private extension AppProfileImporterModifier {
+private extension ProfileImporterModifier {
     @ViewBuilder
     func actions(for url: URL) -> some View {
         SecureField(
@@ -71,7 +71,7 @@ private extension AppProfileImporterModifier {
                 await errorHandler.handle(
                     error,
                     title: Strings.Views.App.Toolbar.importFile,
-                    message: Strings.Errors.App.import
+                    message: Strings.Errors.App.Import.generic
                 )
             }
         }

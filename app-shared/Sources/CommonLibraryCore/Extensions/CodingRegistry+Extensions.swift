@@ -37,12 +37,10 @@ extension CodingRegistry {
         switch input {
         case .contents(let filename, let data):
             name = filename
-            contents = data
+            contents = try Self.decodeAsTextOrThrow(Data(data.utf8))
         case .file(let url):
-            var encoding: String.Encoding = .utf8
-            // XXX: This may be very inefficient
-            contents = try String(contentsOf: url, usedEncoding: &encoding)
             name = url.lastPathComponent
+            contents = try Self.decodeAsTextOrThrow(Data(contentsOf: url))
         }
 
         // Try to decode a full Partout profile first
@@ -61,6 +59,42 @@ extension CodingRegistry {
             throw error
         }
     }
+}
+
+private extension CodingRegistry {
+    static func decodeAsTextOrThrow(_ data: Data) throws -> String {
+        guard !data.hasBinaryControlBytes, let text = String(data: data, encoding: .utf8) else {
+            throw ABI.AppError.binaryFile
+        }
+        return text
+    }
+}
+
+private extension Data {
+    var hasBinaryControlBytes: Bool {
+        guard !isEmpty else {
+            return false
+        }
+        var controlCount = 0
+        for byte in self {
+            if byte == 0 {
+                return true
+            }
+            if byte < Self.asciiSpace && !Self.textControlBytes.contains(byte) {
+                controlCount += 1
+            }
+        }
+        return controlCount > 0 && controlCount * 100 > count
+    }
+
+    static let textControlBytes: Set<UInt8> = [
+        0x09,
+        0x0A,
+        0x0D,
+        0x0C
+    ]
+
+    static let asciiSpace: UInt8 = 0x20
 }
 
 private extension ModuleType {

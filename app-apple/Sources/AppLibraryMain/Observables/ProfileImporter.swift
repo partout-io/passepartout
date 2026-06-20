@@ -6,7 +6,7 @@ import CommonLibrary
 import Foundation
 
 @MainActor @Observable
-final class AppProfileImporter {
+final class ProfileImporter {
     typealias ImportBlock = @Sendable (URL, String?) async throws -> Void
 
     var isPresentingPassphrase = false
@@ -75,7 +75,7 @@ final class AppProfileImporter {
     }
 }
 
-private extension AppProfileImporter {
+private extension ProfileImporter {
     func scheduleNextImport() {
         guard !urlsRequiringPassphrase.isEmpty else {
             return

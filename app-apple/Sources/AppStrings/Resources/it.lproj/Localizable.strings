@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Impossibile duplicare il profilo '%@'.";
 "errors.app.empty_products" = "Impossibile recuperare i prodotti, riprova più tardi.";
 "errors.app.empty_profile_name" = "Il nome del profilo è vuoto.";
-"errors.app.import" = "Impossibile importare i profili.";
+"errors.app.import.binary" = "Importazione di un file binario.";
+"errors.app.import.generic" = "Impossibile importare i profili.";
 "errors.app.malformed_module" = "Il modulo %@ è malformato. %@";
 "errors.app.module_requires_connection" = "Il modulo %@ richiede una connessione attiva tra i seguenti tipi: %@";
 "errors.app.corrupt_provider_module" = "Impossibile connettersi al server del provider (motivo=%@).";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ e Condivisione";
 "global.actions.add" = "Aggiungi";
 "global.actions.allow" = "Consenti";
+"global.actions.back" = "Indietro";
 "global.actions.cancel" = "Annulla";
+"global.actions.close" = "Chiudi";
 "global.actions.connect" = "Connetti";
 "global.actions.delete" = "Elimina";
 "global.actions.disable" = "Disabilita";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "Endpoint";
 "global.nouns.entries_n" = "%d Voci";
 "global.nouns.entries_one" = "1 Voce";
+"global.nouns.error" = "Errore";
 "global.nouns.features" = "Funzionalità";
 "global.nouns.filters" = "Filtri";
 "global.nouns.folder" = "Cartella";

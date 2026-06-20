@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "无法复制配置文件 \"%@\"。";
 "errors.app.empty_products" = "无法获取产品，请稍后重试。";
 "errors.app.empty_profile_name" = "配置文件名称为空。";
-"errors.app.import" = "无法导入配置文件。";
+"errors.app.import.binary" = "正在导入二进制文件。";
+"errors.app.import.generic" = "无法导入配置文件。";
 "errors.app.malformed_module" = "模块 %@ 格式错误。%@";
 "errors.app.module_requires_connection" = "模块 %@ 需要以下类型中的一个处于活动连接状态：%@";
 "errors.app.corrupt_provider_module" = "无法连接到提供商服务器（原因=%@）。";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ 与共享";
 "global.actions.add" = "添加";
 "global.actions.allow" = "允许";
+"global.actions.back" = "返回";
 "global.actions.cancel" = "取消";
+"global.actions.close" = "关闭";
 "global.actions.connect" = "连接";
 "global.actions.delete" = "删除";
 "global.actions.disable" = "禁用";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "端点";
 "global.nouns.entries_n" = "%d 条目";
 "global.nouns.entries_one" = "1 条目";
+"global.nouns.error" = "错误";
 "global.nouns.features" = "功能";
 "global.nouns.filters" = "筛选器";
 "global.nouns.folder" = "文件夹";
@@ -427,7 +431,7 @@
 "views.settings.title" = "关于";
 "views.tv.connection_profiles.header.import" = "或者，你可以在“配置文件”标签页找到其他选项。";
 "views.tv.connection_profiles.header.share" = "在你的 iOS 或 macOS 设备上打开 %@ 并启用某个配置文件的“%@”开关以在此处显示。";
-"views.tv.profiles.detail.profiles" = "长按以显示配置文件的可用操作。"
+"views.tv.profiles.detail.profiles" = "长按以显示配置文件的可用操作。";
 "views.tv.profiles.import_local" = "导入本地配置文件";
 "views.tv.web_receiver.qr" = "使用相机扫描二维码以打开网页，上传您的配置文件。确保您连接到同一网络。";
 "views.tv.web_receiver.toggle" = "切换以通过网页浏览器将本地配置文件导入电视。";

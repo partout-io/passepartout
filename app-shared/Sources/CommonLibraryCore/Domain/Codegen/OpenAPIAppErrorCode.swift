@@ -8,6 +8,7 @@
 import Partout
 
 public enum OpenAPIAppErrorCode: String, Sendable, Codable, CaseIterable {
+    case binaryFile = "binaryFile"
     case corruptProviderModule = "corruptProviderModule"
     case couldNotLaunch = "couldNotLaunch"
     case emptyProducts = "emptyProducts"

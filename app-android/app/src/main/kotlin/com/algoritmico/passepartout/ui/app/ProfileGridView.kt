@@ -16,7 +16,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.ui.theme.LocalTheme
@@ -42,7 +44,7 @@ fun ProfileGridView(
             }
         ) {
             Text(
-                text = "My Profiles",
+                text = stringResource(R.string.views_app_folders_default),
                 style = MaterialTheme.typography.titleLarge
             )
         }

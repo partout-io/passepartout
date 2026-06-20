@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Δεν ήταν δυνατή η αντιγραφή του προφίλ '%@'.";
 "errors.app.empty_products" = "Δεν ήταν δυνατή η ανάκτηση προϊόντων, παρακαλώ δοκιμάστε αργότερα.";
 "errors.app.empty_profile_name" = "Το όνομα του προφίλ είναι κενό.";
-"errors.app.import" = "Δεν ήταν δυνατή η εισαγωγή προφίλ.";
+"errors.app.import.binary" = "Γίνεται εισαγωγή δυαδικού αρχείου.";
+"errors.app.import.generic" = "Δεν ήταν δυνατή η εισαγωγή προφίλ.";
 "errors.app.malformed_module" = "Το μονάδα %@ είναι εσφαλμένη. %@";
 "errors.app.module_requires_connection" = "Η μονάδα %@ απαιτεί ενεργή σύνδεση ενός από τους παρακάτω τύπους: %@";
 "errors.app.corrupt_provider_module" = "Δεν ήταν δυνατή η σύνδεση στον διακομιστή παρόχου (λόγος=%@).";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ και Κοινή χρήση";
 "global.actions.add" = "Προσθήκη";
 "global.actions.allow" = "Να επιτρέπεται";
+"global.actions.back" = "Πίσω";
 "global.actions.cancel" = "Ακύρωση";
+"global.actions.close" = "Κλείσιμο";
 "global.actions.connect" = "Σύνδεση";
 "global.actions.delete" = "Διαγραφή";
 "global.actions.disable" = "Απενεργοποίηση";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "Τελικό σημείο";
 "global.nouns.entries_n" = "%d Εγγραφές";
 "global.nouns.entries_one" = "1 Εγγραφή";
+"global.nouns.error" = "Σφάλμα";
 "global.nouns.features" = "Λειτουργίες";
 "global.nouns.filters" = "Φίλτρα";
 "global.nouns.folder" = "Φάκελος";

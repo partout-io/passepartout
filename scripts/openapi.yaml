@@ -251,6 +251,7 @@ components:
     AppErrorCode:
       type: string
       x-enum-varnames:
+      - binaryFile
       - corruptProviderModule
       - couldNotLaunch
       - emptyProducts
@@ -284,6 +285,7 @@ components:
       - webUploader
       - wireGuardEmptyPeers
       enum:
+      - binaryFile
       - corruptProviderModule
       - couldNotLaunch
       - emptyProducts

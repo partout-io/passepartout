@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "No se pudo duplicar el perfil '%@'.";
 "errors.app.empty_products" = "No se pudieron obtener productos, por favor vuelve a intentarlo más tarde.";
 "errors.app.empty_profile_name" = "El nombre del perfil está vacío.";
-"errors.app.import" = "No se pudieron importar los perfiles.";
+"errors.app.import.binary" = "Importando un archivo binario.";
+"errors.app.import.generic" = "No se pudieron importar los perfiles.";
 "errors.app.malformed_module" = "El módulo %@ está malformado. %@";
 "errors.app.module_requires_connection" = "El módulo %@ requiere una conexión activa de uno de los siguientes tipos: %@";
 "errors.app.corrupt_provider_module" = "No se pudo conectar al servidor del proveedor (motivo=%@).";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ y Compartir";
 "global.actions.add" = "Agregar";
 "global.actions.allow" = "Permitir";
+"global.actions.back" = "Atrás";
 "global.actions.cancel" = "Cancelar";
+"global.actions.close" = "Cerrar";
 "global.actions.connect" = "Conectar";
 "global.actions.delete" = "Eliminar";
 "global.actions.disable" = "Desactivar";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "Punto final";
 "global.nouns.entries_n" = "%d Entradas";
 "global.nouns.entries_one" = "1 Entrada";
+"global.nouns.error" = "Error";
 "global.nouns.features" = "Funciones";
 "global.nouns.filters" = "Filtros";
 "global.nouns.folder" = "Carpeta";

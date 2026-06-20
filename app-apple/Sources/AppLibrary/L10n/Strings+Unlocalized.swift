@@ -62,6 +62,10 @@ extension Strings {
 
         public static let authorName = "Davide De Rosa (keeshux)"
 
+        public static let beta = "Beta"
+
+        public static let betaBuild = "This is a beta build"
+
         public static let ca = "CA"
 
         public static let changelog = "CHANGELOG"

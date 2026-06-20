@@ -13,6 +13,8 @@ extension ABI.AppError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
         switch self {
+        case .binaryFile:
+            return V.Import.binary
         case .corruptProviderModule(let reason):
             return V.corruptProviderModule(
                 reason?.appLocalizedDescription ?? "?"

@@ -15,7 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.moduleType
@@ -73,9 +76,6 @@ private fun InteractiveOpenVPNView(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text("OpenVPN credentials")
-        },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)
@@ -87,7 +87,7 @@ private fun InteractiveOpenVPNView(
                             otp = it
                         },
                         label = {
-                            Text("OTP")
+                            Text(Strings.Unlocalized.otp)
                         },
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation()
@@ -99,7 +99,7 @@ private fun InteractiveOpenVPNView(
                             username = it
                         },
                         label = {
-                            Text("Username")
+                            Text(stringResource(R.string.global_nouns_username))
                         },
                         singleLine = true
                     )
@@ -109,7 +109,7 @@ private fun InteractiveOpenVPNView(
                             password = it
                         },
                         label = {
-                            Text("Password")
+                            Text(stringResource(R.string.global_nouns_password))
                         },
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation()
@@ -134,12 +134,12 @@ private fun InteractiveOpenVPNView(
                     )
                 }
             ) {
-                Text("Connect")
+                Text(stringResource(R.string.global_actions_connect))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.global_actions_cancel))
             }
         }
     )
@@ -150,18 +150,18 @@ private fun UnsupportedInteractiveView(
     module: TaggedModule?,
     onDismiss: () -> Unit
 ) {
-    val moduleName = module?.moduleType?.value ?: "profile"
+    val moduleName = module?.moduleType?.value ?: stringResource(R.string.global_nouns_profile)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Interactive profile")
+            Text(stringResource(R.string.android_alerts_interactive_unsupported_title))
         },
         text = {
-            Text("$moduleName requires input that is not supported by this app version.")
+            Text(stringResource(R.string.android_alerts_interactive_unsupported_message, moduleName))
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(stringResource(R.string.global_nouns_ok))
             }
         }
     )

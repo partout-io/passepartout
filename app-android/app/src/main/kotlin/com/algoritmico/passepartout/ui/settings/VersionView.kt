@@ -26,10 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeLogo
 
@@ -92,7 +94,11 @@ private fun VersionContentView(
         )
         Spacer(modifier = Modifier.height(theme.spacing.xxLarge))
         Text(
-            text = versionMessage(appName),
+            text = stringResource(
+                R.string.views_version_extra,
+                appName,
+                Strings.Unlocalized.authorName
+            ),
             modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
@@ -101,15 +107,7 @@ private fun VersionContentView(
         Button(
             onClick = onChangelog
         ) {
-            Text("Changelog")
+            Text(Strings.Unlocalized.changelog)
         }
     }
-}
-
-private fun versionMessage(
-    appName: String
-): String {
-    return "$appName is a project maintained by Davide De Rosa (keeshux).\n\n" +
-        "Source code is publicly available on GitHub under the GPLv3, " +
-        "you can find links in the home page."
 }

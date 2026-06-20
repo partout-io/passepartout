@@ -20,6 +20,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
@@ -36,7 +38,7 @@ private enum class ReportIssueModalRoute {
 @Composable
 fun ReportIssueButton(
     modifier: Modifier = Modifier,
-    title: String = "Report issue"
+    title: String? = null
 ) {
     val context = LocalContext.current
     val appConfiguration = LocalAppConfiguration.current
@@ -98,7 +100,7 @@ fun ReportIssueButton(
         if (isPending) {
             ThemeProgressView(style = ThemeProgressViewStyle.inlineButton)
         } else {
-            Text(title)
+            Text(title ?: stringResource(R.string.views_diagnostics_report_issue_title))
         }
     }
 }
@@ -118,7 +120,7 @@ private fun ReportIssueCommentDialog(
             }
         },
         title = {
-            Text("Report issue")
+            Text(stringResource(R.string.views_diagnostics_report_issue_title))
         },
         text = {
             OutlinedTextField(
@@ -128,7 +130,7 @@ private fun ReportIssueCommentDialog(
                 enabled = !isPending,
                 minLines = 3,
                 label = {
-                    Text("Comment")
+                    Text(stringResource(R.string.global_nouns_comment))
                 }
             )
         },
@@ -139,7 +141,7 @@ private fun ReportIssueCommentDialog(
                     onSubmit(comment)
                 }
             ) {
-                Text("Send")
+                Text(stringResource(R.string.global_actions_send))
             }
         },
         dismissButton = {
@@ -147,7 +149,7 @@ private fun ReportIssueCommentDialog(
                 enabled = !isPending,
                 onClick = onDismiss
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.global_actions_cancel))
             }
         }
     )

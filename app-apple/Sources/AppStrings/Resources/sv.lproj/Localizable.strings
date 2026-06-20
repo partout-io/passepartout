@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Kan inte duplicera profil '%@'.";
 "errors.app.empty_products" = "Kan inte hämta produkter, försök igen senare.";
 "errors.app.empty_profile_name" = "Profilnamnet är tomt.";
-"errors.app.import" = "Kan inte importera profiler.";
+"errors.app.import.binary" = "Importerar en binär fil.";
+"errors.app.import.generic" = "Kan inte importera profiler.";
 "errors.app.malformed_module" = "Modulen %@ är felaktig. %@";
 "errors.app.module_requires_connection" = "Modulen %@ kräver en aktiv anslutning av någon av följande typer: %@";
 "errors.app.corrupt_provider_module" = "Kan inte ansluta till leverantörsservern (anledning=%@).";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ och Delning";
 "global.actions.add" = "Lägg till";
 "global.actions.allow" = "Tillåt";
+"global.actions.back" = "Tillbaka";
 "global.actions.cancel" = "Avbryt";
+"global.actions.close" = "Stäng";
 "global.actions.connect" = "Anslut";
 "global.actions.delete" = "Ta bort";
 "global.actions.disable" = "Inaktivera";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "Slutpunkt";
 "global.nouns.entries_n" = "%d Poster";
 "global.nouns.entries_one" = "1 Post";
+"global.nouns.error" = "Fel";
 "global.nouns.features" = "Funktioner";
 "global.nouns.filters" = "Filter";
 "global.nouns.folder" = "Mapp";

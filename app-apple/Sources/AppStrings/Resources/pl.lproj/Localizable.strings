@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Nie można zduplikować profilu '%@'.";
 "errors.app.empty_products" = "Nie można pobrać produktów. Spróbuj ponownie później.";
 "errors.app.empty_profile_name" = "Nazwa profilu jest pusta.";
-"errors.app.import" = "Nie można zaimportować profili.";
+"errors.app.import.binary" = "Importowanie pliku binarnego.";
+"errors.app.import.generic" = "Nie można zaimportować profili.";
 "errors.app.malformed_module" = "Moduł %@ jest uszkodzony. %@";
 "errors.app.module_requires_connection" = "Moduł %@ wymaga aktywnego połączenia jednego z następujących typów: %@";
 "errors.app.corrupt_provider_module" = "Nie można połączyć się z serwerem dostawcy (powód=%@).";
@@ -114,7 +115,9 @@
 "features.sharing" = "%@ i Udostępnianie";
 "global.actions.add" = "Dodaj";
 "global.actions.allow" = "Zezwól";
+"global.actions.back" = "Wstecz";
 "global.actions.cancel" = "Anuluj";
+"global.actions.close" = "Zamknij";
 "global.actions.connect" = "Połącz";
 "global.actions.delete" = "Usuń";
 "global.actions.disable" = "Wyłącz";
@@ -161,6 +164,7 @@
 "global.nouns.endpoint" = "Punkt końcowy";
 "global.nouns.entries_n" = "%d Wpisy";
 "global.nouns.entries_one" = "1 Wpis";
+"global.nouns.error" = "Błąd";
 "global.nouns.features" = "Funkcje";
 "global.nouns.filters" = "Filtry";
 "global.nouns.folder" = "Folder";
