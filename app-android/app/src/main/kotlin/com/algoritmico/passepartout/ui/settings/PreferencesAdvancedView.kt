@@ -84,7 +84,7 @@ fun PreferencesAdvancedView(
             }
         },
         onAllowedChange = { flag, isAllowed ->
-            updateExperimentalPreferences {
+            userPreferencesObservable.updateExperimentalPreferences {
                 it.setAllowed(flag, isAllowed)
             }
         }
@@ -98,7 +98,7 @@ private fun AdvancedPreferencesContent(
     configState: ConfigObservable.State,
     preferences: ExperimentalPreferences,
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
-    onAllowedChange: (ConfigFlag, Boolean) -> Unit
+    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -148,7 +148,7 @@ private fun ConfigOverrideSection(
 private fun ConfigAllowSection(
     configState: ConfigObservable.State,
     preferences: ExperimentalPreferences,
-    onAllowedChange: (ConfigFlag, Boolean) -> Unit
+    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
     ThemeListSection(
         header = "Allow",
@@ -172,13 +172,15 @@ private fun ConfigFlagAllowedRow(
     flag: ConfigFlag,
     isActive: Boolean,
     isAllowed: Boolean,
-    onAllowedChange: (Boolean) -> Unit
+    onAllowedChange: suspend (Boolean) -> Unit
 ) {
     ThemeSwitchRow(
         title = flag.localizedDescription,
         supportingText = flag.activeDescription(isActive),
         checked = isAllowed,
-        onCheckedChange = onAllowedChange
+        onCheckedChange = {
+            onAllowedChange(it)
+        }
     )
 }
 
