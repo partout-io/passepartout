@@ -6,6 +6,8 @@ import Partout
 
 extension ABI {
     public enum AppError: Error {
+        case binaryFile
+
         case corruptProviderModule(reason: Error?)
 
         case couldNotLaunch(reason: Error)

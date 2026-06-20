@@ -23,10 +23,13 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,moduleRequiresConnection,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
+ * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,moduleRequiresConnection,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
  */
 @Serializable
 enum class AppErrorCode(val value: kotlin.String) {
+
+    @SerialName(value = "binaryFile")
+    binaryFile("binaryFile"),
 
     @SerialName(value = "corruptProviderModule")
     corruptProviderModule("corruptProviderModule"),
@@ -150,5 +153,4 @@ enum class AppErrorCode(val value: kotlin.String) {
         }
     }
 }
-
 

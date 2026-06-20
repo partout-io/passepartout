@@ -103,6 +103,8 @@ extension ABI.AppError: Encodable {
 
     public var code: ABI.AppErrorCode {
         switch self {
+        case .binaryFile:
+            return .binaryFile
         case .corruptProviderModule:
             return .corruptProviderModule
         case .couldNotLaunch:
