@@ -504,8 +504,6 @@
 "android.alerts.vpn_permission.message" = "%@ needs VPN permission to start a connection.";
 "android.alerts.vpn_permission.open_settings" = "Open VPN settings";
 
-"android.profiles.empty.message" = "Import a profile file to get started.";
-"android.profiles.empty.import" = "Import profile";
 "android.profiles.selection.count" = "%d selected";
 "android.profiles.actions.add.content_description" = "Add profile";
 "android.profiles.actions.delete.content_description" = "Delete profiles";

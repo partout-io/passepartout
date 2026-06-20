@@ -426,8 +426,6 @@
     <string name="android_alerts_vpn_permission_title">VPN permission required</string>
     <string name="android_alerts_vpn_permission_message">%1$s needs VPN permission to start a connection.</string>
     <string name="android_alerts_vpn_permission_open_settings">Open VPN settings</string>
-    <string name="android_profiles_empty_message">Import a profile file to get started.</string>
-    <string name="android_profiles_empty_import">Import profile</string>
     <string name="android_profiles_selection_count">%1$d selected</string>
     <string name="android_profiles_actions_add_content_description">Add profile</string>
     <string name="android_profiles_actions_delete_content_description">Delete profiles</string>

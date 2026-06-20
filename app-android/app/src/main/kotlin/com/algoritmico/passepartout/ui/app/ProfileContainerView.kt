@@ -314,15 +314,9 @@ private fun EmptyProfilesView(
             text = stringResource(R.string.views_app_folders_no_profiles),
             style = MaterialTheme.typography.headlineSmall
         )
-        Spacer(modifier = Modifier.size(theme.spacing.medium))
-        Text(
-            text = stringResource(R.string.android_profiles_empty_message),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
         Spacer(modifier = Modifier.size(theme.spacing.xLarge))
         TextButton(onClick = onImportProfile) {
-            Text(stringResource(R.string.android_profiles_empty_import))
+            Text(stringResource(R.string.views_app_toolbar_import_file))
         }
     }
 }

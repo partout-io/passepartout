@@ -70,12 +70,6 @@ public enum Strings {
           public static let contentDescription = Strings.tr("Localizable", "android.profiles.actions.delete.content_description", fallback: "Delete profiles")
         }
       }
-      public enum Empty {
-        /// Import profile
-        public static let `import` = Strings.tr("Localizable", "android.profiles.empty.import", fallback: "Import profile")
-        /// Import a profile file to get started.
-        public static let message = Strings.tr("Localizable", "android.profiles.empty.message", fallback: "Import a profile file to get started.")
-      }
       public enum Layout {
         public enum Grid {
           /// Grid profiles
