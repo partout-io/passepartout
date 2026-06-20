@@ -9,7 +9,6 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,6 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileContainerView(
     modifier: Modifier = Modifier,
+    style: ProfileContainerStyle,
     contextualSelection: ProfileContextualSelection = ProfileContextualSelection(),
     onImportProfile: () -> Unit
 ) {
@@ -230,6 +230,7 @@ fun ProfileContainerView(
 
     ProfileStyleView(
         modifier = modifier,
+        style = style,
         state = ProfileContainerState(
             headers = headers,
             contextualSelection = contextualSelection,
@@ -264,21 +265,21 @@ fun ProfileContainerView(
 @Composable
 private fun ProfileStyleView(
     modifier: Modifier,
+    style: ProfileContainerStyle,
     state: ProfileContainerState,
     actions: ProfileContainerActions
 ) {
-    val theme = LocalTheme.current
-
-    BoxWithConstraints(modifier = modifier) {
-        if (maxWidth >= theme.layout.tabletMinWidth) {
-            ProfileGridView(
-                modifier = Modifier.fillMaxSize(),
+    when (style) {
+        ProfileContainerStyle.list -> {
+            ProfileListView(
+                modifier = modifier.fillMaxSize(),
                 state = state,
                 actions = actions
             )
-        } else {
-            ProfileListView(
-                modifier = Modifier.fillMaxSize(),
+        }
+        ProfileContainerStyle.grid -> {
+            ProfileGridView(
+                modifier = modifier.fillMaxSize(),
                 state = state,
                 actions = actions
             )

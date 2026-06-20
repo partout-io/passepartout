@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 fun AppCoordinator(
     logTag: String,
     title: String,
+    profileContainerStyle: ProfileContainerStyle = ProfileContainerStyle.list,
     onImportProfile: () -> Unit
 ) {
     val state = rememberAppCoordinatorState(logTag)
@@ -62,6 +63,7 @@ fun AppCoordinator(
     ) { modifier ->
         ProfileContainerView(
             modifier = modifier,
+            style = profileContainerStyle,
             contextualSelection = state.profileContextualSelection,
             onImportProfile = onImportProfile
         )
