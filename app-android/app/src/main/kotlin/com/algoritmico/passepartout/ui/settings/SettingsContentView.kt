@@ -4,11 +4,6 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -28,6 +23,7 @@ import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.ThemeNavigationAnimatedContent
 import com.algoritmico.passepartout.ui.theme.ThemeImage
 import com.algoritmico.passepartout.ui.theme.ThemeImageName
 import com.algoritmico.passepartout.ui.theme.ThemeList
@@ -83,23 +79,10 @@ fun SettingsContentView(
                 )
             }
         ) { innerPadding ->
-            AnimatedContent(
+            ThemeNavigationAnimatedContent(
                 modifier = Modifier.padding(innerPadding),
                 targetState = navigationRoute,
-                transitionSpec = {
-                    val direction = if (targetState.routeIndex > initialState.routeIndex) {
-                        AnimatedContentTransitionScope.SlideDirection.Left
-                    } else {
-                        AnimatedContentTransitionScope.SlideDirection.Right
-                    }
-                    slideIntoContainer(
-                        towards = direction,
-                        animationSpec = tween()
-                    ) togetherWith slideOutOfContainer(
-                        towards = direction,
-                        animationSpec = tween()
-                    ) using SizeTransform(clip = false)
-                },
+                routeIndex = { it.routeIndex },
                 label = "Settings navigation"
             ) { route ->
                 if (route == null) {

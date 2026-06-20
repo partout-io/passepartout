@@ -23,6 +23,7 @@ data class Theme(
     val lightColorScheme: ColorScheme = DefaultLightColorScheme,
     val darkColorScheme: ColorScheme = DefaultDarkColorScheme,
     val spacing: ThemeSpacing = ThemeSpacing(),
+    val animation: ThemeAnimation = ThemeAnimation(),
     val weight: ThemeWeight = ThemeWeight(),
     val colors: ThemeColors = ThemeColors(),
     val alpha: ThemeAlpha = ThemeAlpha()
@@ -64,6 +65,11 @@ data class ThemeSpacing(
     val large: Dp = 16.dp,
     val xLarge: Dp = 20.dp,
     val xxLarge: Dp = 24.dp
+)
+
+@Immutable
+data class ThemeAnimation(
+    val isEnabled: Boolean = true
 )
 
 @Immutable

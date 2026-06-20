@@ -8,8 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -58,7 +56,9 @@ import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.extensions.statusText
 import com.algoritmico.passepartout.ui.extensions.transferText
 import com.algoritmico.passepartout.ui.theme.LocalTheme
+import com.algoritmico.passepartout.ui.theme.ThemeCrossfade
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.theme.animateThemeColorAsState
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
@@ -329,7 +329,7 @@ private fun ProfileRow(
     } else {
         statusColor(status)
     }
-    val animatedStatusDescriptionColor by animateColorAsState(
+    val animatedStatusDescriptionColor by animateThemeColorAsState(
         targetValue = statusDescriptionColor,
         label = "Profile status color"
     )
@@ -369,7 +369,7 @@ private fun ProfileRow(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = theme.weight.strong
                 )
-                Crossfade(
+                ThemeCrossfade(
                     targetState = showsTransfer,
                     label = "Profile transfer visibility"
                 ) { isShowingTransfer ->
