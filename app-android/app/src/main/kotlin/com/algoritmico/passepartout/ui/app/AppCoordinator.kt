@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui.app
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -29,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
@@ -50,7 +55,13 @@ fun AppCoordinator(
     profileContainerStyle: ProfileContainerStyle = ProfileContainerStyle.list,
     onImportProfile: () -> Unit
 ) {
-    val state = rememberAppCoordinatorState(logTag)
+    val state = rememberAppCoordinatorState(logTag, profileContainerStyle)
+    val isTablet = isTablet()
+    val selectedProfileContainerStyle = if (isTablet) {
+        state.profileContainerStyle
+    } else {
+        ProfileContainerStyle.list
+    }
 
     BackHandler(enabled = state.isContextualMode) {
         state.clearContextualMode()
@@ -59,11 +70,13 @@ fun AppCoordinator(
     AppCoordinatorScaffold(
         title = title,
         state = state,
+        profileContainerStyle = selectedProfileContainerStyle,
+        isProfileContainerStylePickerVisible = isTablet,
         onImportProfile = onImportProfile
     ) { modifier ->
         ProfileContainerView(
             modifier = modifier,
-            style = profileContainerStyle,
+            style = selectedProfileContainerStyle,
             contextualSelection = state.profileContextualSelection,
             onImportProfile = onImportProfile
         )
@@ -78,7 +91,8 @@ fun AppCoordinator(
 
 @Composable
 private fun rememberAppCoordinatorState(
-    logTag: String
+    logTag: String,
+    profileContainerStyle: ProfileContainerStyle
 ): AppCoordinatorState {
     val contextualProfileIds = rememberSaveable {
         mutableStateOf(emptyList<String>())
@@ -86,15 +100,25 @@ private fun rememberAppCoordinatorState(
     val isSettingsPresented = rememberSaveable {
         mutableStateOf(false)
     }
+    val profileContainerStyleState = rememberSaveable(profileContainerStyle) {
+        mutableStateOf(profileContainerStyle)
+    }
     val coroutineScope = rememberCoroutineScope()
     val profileObservable = LocalProfileObservable.current
     val errorHandler = LocalErrorHandler.current
 
-    return remember(logTag, coroutineScope, profileObservable, errorHandler) {
+    return remember(
+        logTag,
+        profileContainerStyleState,
+        coroutineScope,
+        profileObservable,
+        errorHandler
+    ) {
         AppCoordinatorState(
             logTag = logTag,
             contextualProfileIdsState = contextualProfileIds,
             isSettingsPresentedState = isSettingsPresented,
+            profileContainerStyleState = profileContainerStyleState,
             coroutineScope = coroutineScope,
             profileObservable = profileObservable,
             errorHandler = errorHandler
@@ -106,6 +130,7 @@ private class AppCoordinatorState(
     private val logTag: String,
     private val contextualProfileIdsState: MutableState<List<String>>,
     private val isSettingsPresentedState: MutableState<Boolean>,
+    private val profileContainerStyleState: MutableState<ProfileContainerStyle>,
     private val coroutineScope: CoroutineScope,
     private val profileObservable: ProfileObservable,
     private val errorHandler: ErrorHandler
@@ -115,6 +140,9 @@ private class AppCoordinatorState(
 
     val isSettingsPresented: Boolean
         get() = isSettingsPresentedState.value
+
+    val profileContainerStyle: ProfileContainerStyle
+        get() = profileContainerStyleState.value
 
     val isContextualMode: Boolean
         get() = contextualProfileIds.isNotEmpty()
@@ -168,20 +196,29 @@ private class AppCoordinatorState(
     fun dismissSettings() {
         isSettingsPresentedState.value = false
     }
+
+    fun selectProfileContainerStyle(style: ProfileContainerStyle) {
+        profileContainerStyleState.value = style
+    }
 }
 
 @Composable
 private fun AppCoordinatorScaffold(
     title: String,
     state: AppCoordinatorState,
+    profileContainerStyle: ProfileContainerStyle,
+    isProfileContainerStylePickerVisible: Boolean,
     onImportProfile: () -> Unit,
     content: @Composable (Modifier) -> Unit
 ) {
     AppCoordinatorScaffold(
         title = title,
         contextualProfileCount = state.contextualProfileCount,
+        profileContainerStyle = profileContainerStyle,
+        isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
         onClearContextualMode = state::clearContextualMode,
         onDeleteProfiles = state::deleteContextualProfiles,
+        onProfileContainerStyle = state::selectProfileContainerStyle,
         onSettings = state::presentSettings,
         onImportProfile = onImportProfile,
         content = content
@@ -192,8 +229,11 @@ private fun AppCoordinatorScaffold(
 private fun AppCoordinatorScaffold(
     title: String,
     contextualProfileCount: Int,
+    profileContainerStyle: ProfileContainerStyle = ProfileContainerStyle.list,
+    isProfileContainerStylePickerVisible: Boolean = false,
     onClearContextualMode: () -> Unit,
     onDeleteProfiles: () -> Unit,
+    onProfileContainerStyle: (ProfileContainerStyle) -> Unit = {},
     onSettings: () -> Unit,
     onImportProfile: () -> Unit,
     content: @Composable (Modifier) -> Unit
@@ -208,8 +248,11 @@ private fun AppCoordinatorScaffold(
             AppCoordinatorTopBar(
                 title = title,
                 contextualProfileCount = contextualProfileCount,
+                profileContainerStyle = profileContainerStyle,
+                isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
                 onClearContextualMode = onClearContextualMode,
                 onDeleteProfiles = onDeleteProfiles,
+                onProfileContainerStyle = onProfileContainerStyle,
                 onSettings = onSettings
             )
         },
@@ -248,8 +291,11 @@ private fun AppCoordinatorScaffold(
 private fun AppCoordinatorTopBar(
     title: String,
     contextualProfileCount: Int,
+    profileContainerStyle: ProfileContainerStyle,
+    isProfileContainerStylePickerVisible: Boolean,
     onClearContextualMode: () -> Unit,
     onDeleteProfiles: () -> Unit,
+    onProfileContainerStyle: (ProfileContainerStyle) -> Unit,
     onSettings: () -> Unit
 ) {
     val isContextualMode = contextualProfileCount > 0
@@ -276,7 +322,10 @@ private fun AppCoordinatorTopBar(
         actions = {
             AppCoordinatorActions(
                 isContextualMode = isContextualMode,
+                profileContainerStyle = profileContainerStyle,
+                isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
                 onDeleteProfiles = onDeleteProfiles,
+                onProfileContainerStyle = onProfileContainerStyle,
                 onSettings = onSettings
             )
         }
@@ -298,7 +347,10 @@ private fun AppCoordinatorTitle(
 @Composable
 private fun AppCoordinatorActions(
     isContextualMode: Boolean,
+    profileContainerStyle: ProfileContainerStyle,
+    isProfileContainerStylePickerVisible: Boolean,
     onDeleteProfiles: () -> Unit,
+    onProfileContainerStyle: (ProfileContainerStyle) -> Unit,
     onSettings: () -> Unit
 ) {
     if (isContextualMode) {
@@ -318,6 +370,42 @@ private fun AppCoordinatorActions(
                 name = ThemeImageName.settings,
                 contentDescription = "Settings"
             )
+        }
+        if (isProfileContainerStylePickerVisible) {
+            ProfileContainerStylePicker(
+                selectedStyle = profileContainerStyle,
+                onStyleSelected = onProfileContainerStyle
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileContainerStylePicker(
+    selectedStyle: ProfileContainerStyle,
+    onStyleSelected: (ProfileContainerStyle) -> Unit
+) {
+    val styles = ProfileContainerStyle.entries
+
+    SingleChoiceSegmentedButtonRow {
+        styles.forEachIndexed { index, style ->
+            SegmentedButton(
+                selected = style == selectedStyle,
+                onClick = {
+                    onStyleSelected(style)
+                },
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = index,
+                    count = styles.size
+                ),
+                icon = {}
+            ) {
+                ThemeImage(
+                    name = style.imageName,
+                    contentDescription = style.contentDescription
+                )
+            }
         }
     }
 }
@@ -365,6 +453,33 @@ private fun ImportProfileSheet(
     }
 }
 
+@Composable
+private fun isTablet(): Boolean {
+    return LocalConfiguration.current.isTablet
+}
+
+private val Configuration.isTablet: Boolean
+    get() {
+        val screenSize = screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK
+        return screenSize >= Configuration.SCREENLAYOUT_SIZE_LARGE
+    }
+
+private val ProfileContainerStyle.imageName: ThemeImageName
+    get() {
+        return when (this) {
+            ProfileContainerStyle.list -> ThemeImageName.profilesList
+            ProfileContainerStyle.grid -> ThemeImageName.profilesGrid
+        }
+    }
+
+private val ProfileContainerStyle.contentDescription: String
+    get() {
+        return when (this) {
+            ProfileContainerStyle.list -> "List profiles"
+            ProfileContainerStyle.grid -> "Grid profiles"
+        }
+    }
+
 @Preview(showBackground = true, widthDp = 393, heightDp = 852)
 @Composable
 private fun AppCoordinatorPreview() {
@@ -372,6 +487,30 @@ private fun AppCoordinatorPreview() {
         AppCoordinatorScaffold(
             title = "Passepartout",
             contextualProfileCount = 0,
+            onClearContextualMode = {},
+            onDeleteProfiles = {},
+            onSettings = {},
+            onImportProfile = {}
+        ) { modifier ->
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Profiles")
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 840, heightDp = 852)
+@Composable
+private fun AppCoordinatorTabletPreview() {
+    MaterialTheme {
+        AppCoordinatorScaffold(
+            title = "Passepartout",
+            contextualProfileCount = 0,
+            profileContainerStyle = ProfileContainerStyle.grid,
+            isProfileContainerStylePickerVisible = true,
             onClearContextualMode = {},
             onDeleteProfiles = {},
             onSettings = {},

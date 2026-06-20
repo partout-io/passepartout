@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.ui.theme
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -24,6 +25,8 @@ enum class ThemeImageName {
     contextRemove,
     navigate,
     profileImportFile,
+    profilesGrid,
+    profilesList,
     settings
 }
 
@@ -49,6 +52,8 @@ fun Theme.imageVector(
         ThemeImageName.contextRemove -> Icons.Filled.Delete
         ThemeImageName.navigate -> Icons.AutoMirrored.Filled.KeyboardArrowRight
         ThemeImageName.profileImportFile -> profileImportFileImageVector()
+        ThemeImageName.profilesGrid -> profilesGridImageVector()
+        ThemeImageName.profilesList -> Icons.AutoMirrored.Filled.List
         ThemeImageName.settings -> Icons.Filled.Settings
     }
 }
@@ -85,6 +90,42 @@ private fun Theme.profileImportFileImageVector(): ImageVector {
             horizontalLineTo(13f)
             verticalLineTo(9f)
             lineTo(17f, 13f)
+            close()
+        }
+    }.build()
+}
+
+private fun Theme.profilesGridImageVector(): ImageVector {
+    return ImageVector.Builder(
+        name = "ProfilesGrid",
+        defaultWidth = Icons.Filled.Add.defaultWidth,
+        defaultHeight = Icons.Filled.Add.defaultHeight,
+        viewportWidth = 24f,
+        viewportHeight = 24f
+    ).apply {
+        path(
+            fill = SolidColor(colors.icon),
+            pathFillType = PathFillType.NonZero
+        ) {
+            moveTo(3f, 3f)
+            horizontalLineTo(10f)
+            verticalLineTo(10f)
+            horizontalLineTo(3f)
+            close()
+            moveTo(14f, 3f)
+            horizontalLineTo(21f)
+            verticalLineTo(10f)
+            horizontalLineTo(14f)
+            close()
+            moveTo(3f, 14f)
+            horizontalLineTo(10f)
+            verticalLineTo(21f)
+            horizontalLineTo(3f)
+            close()
+            moveTo(14f, 14f)
+            horizontalLineTo(21f)
+            verticalLineTo(21f)
+            horizontalLineTo(14f)
             close()
         }
     }.build()
