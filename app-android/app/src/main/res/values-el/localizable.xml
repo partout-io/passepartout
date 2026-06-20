@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Προσθέστε και διαγράψτε modules για να προσαρμόσετε το προφίλ σύνδεσής σας.</string>
     <string name="global_actions_add">Προσθήκη</string>
     <string name="global_actions_allow">Να επιτρέπεται</string>
+    <string name="global_actions_back">Πίσω</string>
     <string name="global_actions_cancel">Ακύρωση</string>
+    <string name="global_actions_close">Κλείσιμο</string>
     <string name="global_actions_connect">Σύνδεση</string>
     <string name="global_actions_delete">Διαγραφή</string>
     <string name="global_actions_disable">Απενεργοποίηση</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Τελικό σημείο</string>
     <string name="global_nouns_entries_n">%1$d Εγγραφές</string>
     <string name="global_nouns_entries_one">1 Εγγραφή</string>
+    <string name="global_nouns_error">Σφάλμα</string>
     <string name="global_nouns_features">Λειτουργίες</string>
     <string name="global_nouns_filters">Φίλτρα</string>
     <string name="global_nouns_folder">Φάκελος</string>

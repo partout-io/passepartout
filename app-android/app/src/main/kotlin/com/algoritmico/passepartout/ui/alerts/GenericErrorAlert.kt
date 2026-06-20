@@ -21,7 +21,7 @@ fun GenericErrorAlert(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(stringResource(R.string.android_global_nouns_error))
+            Text(stringResource(R.string.global_nouns_error))
         },
         text = {
             Text(error.localizedMessage())

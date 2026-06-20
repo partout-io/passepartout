@@ -114,7 +114,9 @@
 "features.sharing" = "%@ och Delning";
 "global.actions.add" = "Lägg till";
 "global.actions.allow" = "Tillåt";
+"global.actions.back" = "Tillbaka";
 "global.actions.cancel" = "Avbryt";
+"global.actions.close" = "Stäng";
 "global.actions.connect" = "Anslut";
 "global.actions.delete" = "Ta bort";
 "global.actions.disable" = "Inaktivera";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Slutpunkt";
 "global.nouns.entries_n" = "%d Poster";
 "global.nouns.entries_one" = "1 Post";
+"global.nouns.error" = "Fel";
 "global.nouns.features" = "Funktioner";
 "global.nouns.filters" = "Filter";
 "global.nouns.folder" = "Mapp";

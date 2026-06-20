@@ -316,7 +316,9 @@
 
 "global.actions.add" = "Add";
 "global.actions.allow" = "Allow";
+"global.actions.back" = "Back";
 "global.actions.cancel" = "Cancel";
+"global.actions.close" = "Close";
 "global.actions.connect" = "Connect";
 "global.actions.delete" = "Delete";
 "global.actions.disable" = "Disable";
@@ -366,6 +368,7 @@
 "global.nouns.endpoint" = "Endpoint";
 "global.nouns.entries_n" = "%d Entries";
 "global.nouns.entries_one" = "1 Entry";
+"global.nouns.error" = "Error";
 "global.nouns.features" = "Features";
 "global.nouns.filters" = "Filters";
 "global.nouns.folder" = "Folder";
@@ -495,18 +498,12 @@
 
 // MARK: Android
 
-"android.global.actions.back" = "Back";
-"android.global.actions.close" = "Close";
-"android.global.nouns.error" = "Error";
-
 "android.alerts.interactive_unsupported.title" = "Interactive profile";
 "android.alerts.interactive_unsupported.message" = "%@ requires input that is not supported by this app version.";
-"android.alerts.openvpn_credentials.title" = "OpenVPN credentials";
 "android.alerts.vpn_permission.title" = "VPN permission required";
 "android.alerts.vpn_permission.message" = "%@ needs VPN permission to start a connection.";
 "android.alerts.vpn_permission.open_settings" = "Open VPN settings";
 
-"android.profiles.empty.title" = "No profiles imported yet.";
 "android.profiles.empty.message" = "Import a profile file to get started.";
 "android.profiles.empty.import" = "Import profile";
 "android.profiles.selection.count" = "%d selected";
@@ -518,7 +515,6 @@
 "android.errors.profile_importer.binary" = "Importing a binary file.";
 "android.errors.profile_importer.failure" = "Unable to import profile.";
 "android.errors.profile_importer.empty" = "Unable to read profile content.";
-"android.errors.credits.license" = "Unable to load license: %@";
 
 // MARK: - Errors
 

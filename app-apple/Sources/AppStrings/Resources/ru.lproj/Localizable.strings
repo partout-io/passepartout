@@ -114,7 +114,9 @@
 "features.sharing" = "%@ и Совместное использование";
 "global.actions.add" = "Добавить";
 "global.actions.allow" = "Разрешить";
+"global.actions.back" = "Назад";
 "global.actions.cancel" = "Отмена";
+"global.actions.close" = "Закрыть";
 "global.actions.connect" = "Подключить";
 "global.actions.delete" = "Удалить";
 "global.actions.disable" = "Отключить";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Конечная точка";
 "global.nouns.entries_n" = "%d Записи";
 "global.nouns.entries_one" = "1 Запись";
+"global.nouns.error" = "Ошибка";
 "global.nouns.features" = "Функции";
 "global.nouns.filters" = "Фильтры";
 "global.nouns.folder" = "Папка";

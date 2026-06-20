@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Add and delete modules to customize your connection profile.</string>
     <string name="global_actions_add">Add</string>
     <string name="global_actions_allow">Allow</string>
+    <string name="global_actions_back">Back</string>
     <string name="global_actions_cancel">Cancel</string>
+    <string name="global_actions_close">Close</string>
     <string name="global_actions_connect">Connect</string>
     <string name="global_actions_delete">Delete</string>
     <string name="global_actions_disable">Disable</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Endpoint</string>
     <string name="global_nouns_entries_n">%1$d Entries</string>
     <string name="global_nouns_entries_one">1 Entry</string>
+    <string name="global_nouns_error">Error</string>
     <string name="global_nouns_features">Features</string>
     <string name="global_nouns_filters">Filters</string>
     <string name="global_nouns_folder">Folder</string>
@@ -418,16 +421,11 @@
     <string name="theme_confirmation_cancel">Cancel</string>
     <string name="theme_confirmation_message">Are you sure you want to proceed with this operation?</string>
     <string name="theme_lock_screen_reason">%1$s is locked</string>
-    <string name="android_global_actions_back">Back</string>
-    <string name="android_global_actions_close">Close</string>
-    <string name="android_global_nouns_error">Error</string>
     <string name="android_alerts_interactive_unsupported_title">Interactive profile</string>
     <string name="android_alerts_interactive_unsupported_message">%1$s requires input that is not supported by this app version.</string>
-    <string name="android_alerts_openvpn_credentials_title">OpenVPN credentials</string>
     <string name="android_alerts_vpn_permission_title">VPN permission required</string>
     <string name="android_alerts_vpn_permission_message">%1$s needs VPN permission to start a connection.</string>
     <string name="android_alerts_vpn_permission_open_settings">Open VPN settings</string>
-    <string name="android_profiles_empty_title">No profiles imported yet.</string>
     <string name="android_profiles_empty_message">Import a profile file to get started.</string>
     <string name="android_profiles_empty_import">Import profile</string>
     <string name="android_profiles_selection_count">%1$d selected</string>
@@ -438,7 +436,6 @@
     <string name="android_errors_profile_importer_binary">Importing a binary file.</string>
     <string name="android_errors_profile_importer_failure">Unable to import profile.</string>
     <string name="android_errors_profile_importer_empty">Unable to read profile content.</string>
-    <string name="android_errors_credits_license">Unable to load license: %1$s</string>
     <string name="errors_wireguard_interface_title">Invalid interface</string>
     <string name="errors_wireguard_interface_messagenamerequired">Interface name is required</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Interface’s private key is required</string>

@@ -76,9 +76,6 @@ private fun InteractiveOpenVPNView(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(stringResource(R.string.android_alerts_openvpn_credentials_title))
-        },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)

@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Voeg modules toe en verwijder ze om je verbindingsprofiel aan te passen.</string>
     <string name="global_actions_add">Toevoegen</string>
     <string name="global_actions_allow">Toestaan</string>
+    <string name="global_actions_back">Terug</string>
     <string name="global_actions_cancel">Annuleren</string>
+    <string name="global_actions_close">Sluiten</string>
     <string name="global_actions_connect">Verbinden</string>
     <string name="global_actions_delete">Verwijderen</string>
     <string name="global_actions_disable">Uitschakelen</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Eindpunt</string>
     <string name="global_nouns_entries_n">%1$d Invoeren</string>
     <string name="global_nouns_entries_one">1 Invoer</string>
+    <string name="global_nouns_error">Fout</string>
     <string name="global_nouns_features">Functies</string>
     <string name="global_nouns_filters">Filters</string>
     <string name="global_nouns_folder">Map</string>

@@ -114,7 +114,9 @@
 "features.sharing" = "%@ και Κοινή χρήση";
 "global.actions.add" = "Προσθήκη";
 "global.actions.allow" = "Να επιτρέπεται";
+"global.actions.back" = "Πίσω";
 "global.actions.cancel" = "Ακύρωση";
+"global.actions.close" = "Κλείσιμο";
 "global.actions.connect" = "Σύνδεση";
 "global.actions.delete" = "Διαγραφή";
 "global.actions.disable" = "Απενεργοποίηση";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Τελικό σημείο";
 "global.nouns.entries_n" = "%d Εγγραφές";
 "global.nouns.entries_one" = "1 Εγγραφή";
+"global.nouns.error" = "Σφάλμα";
 "global.nouns.features" = "Λειτουργίες";
 "global.nouns.filters" = "Φίλτρα";
 "global.nouns.folder" = "Φάκελος";

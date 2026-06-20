@@ -114,7 +114,9 @@
 "features.sharing" = "%@ en Delen";
 "global.actions.add" = "Toevoegen";
 "global.actions.allow" = "Toestaan";
+"global.actions.back" = "Terug";
 "global.actions.cancel" = "Annuleren";
+"global.actions.close" = "Sluiten";
 "global.actions.connect" = "Verbinden";
 "global.actions.delete" = "Verwijderen";
 "global.actions.disable" = "Uitschakelen";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Eindpunt";
 "global.nouns.entries_n" = "%d Invoeren";
 "global.nouns.entries_one" = "1 Invoer";
+"global.nouns.error" = "Fout";
 "global.nouns.features" = "Functies";
 "global.nouns.filters" = "Filters";
 "global.nouns.folder" = "Map";

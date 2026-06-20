@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Додавайте та видаляйте модулі, щоб налаштувати свій профіль підключення.</string>
     <string name="global_actions_add">Додати</string>
     <string name="global_actions_allow">Дозволити</string>
+    <string name="global_actions_back">Назад</string>
     <string name="global_actions_cancel">Скасувати</string>
+    <string name="global_actions_close">Закрити</string>
     <string name="global_actions_connect">Підключитися</string>
     <string name="global_actions_delete">Видалити</string>
     <string name="global_actions_disable">Вимкнути</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Кінцева точка</string>
     <string name="global_nouns_entries_n">%1$d Записи</string>
     <string name="global_nouns_entries_one">1 Запис</string>
+    <string name="global_nouns_error">Помилка</string>
     <string name="global_nouns_features">Функції</string>
     <string name="global_nouns_filters">Фільтри</string>
     <string name="global_nouns_folder">Папка</string>

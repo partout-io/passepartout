@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Lägg till och ta bort moduler för att anpassa din anslutningsprofil.</string>
     <string name="global_actions_add">Lägg till</string>
     <string name="global_actions_allow">Tillåt</string>
+    <string name="global_actions_back">Tillbaka</string>
     <string name="global_actions_cancel">Avbryt</string>
+    <string name="global_actions_close">Stäng</string>
     <string name="global_actions_connect">Anslut</string>
     <string name="global_actions_delete">Ta bort</string>
     <string name="global_actions_disable">Inaktivera</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Slutpunkt</string>
     <string name="global_nouns_entries_n">%1$d Poster</string>
     <string name="global_nouns_entries_one">1 Post</string>
+    <string name="global_nouns_error">Fel</string>
     <string name="global_nouns_features">Funktioner</string>
     <string name="global_nouns_filters">Filter</string>
     <string name="global_nouns_folder">Mapp</string>

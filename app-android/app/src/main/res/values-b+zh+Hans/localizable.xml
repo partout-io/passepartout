@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">添加和删除模块以自定义您的连接配置文件。</string>
     <string name="global_actions_add">添加</string>
     <string name="global_actions_allow">允许</string>
+    <string name="global_actions_back">返回</string>
     <string name="global_actions_cancel">取消</string>
+    <string name="global_actions_close">关闭</string>
     <string name="global_actions_connect">连接</string>
     <string name="global_actions_delete">删除</string>
     <string name="global_actions_disable">禁用</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">端点</string>
     <string name="global_nouns_entries_n">%1$d 条目</string>
     <string name="global_nouns_entries_one">1 条目</string>
+    <string name="global_nouns_error">错误</string>
     <string name="global_nouns_features">功能</string>
     <string name="global_nouns_filters">筛选器</string>
     <string name="global_nouns_folder">文件夹</string>

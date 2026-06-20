@@ -311,7 +311,7 @@ private fun EmptyProfilesView(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(R.string.android_profiles_empty_title),
+            text = stringResource(R.string.views_app_folders_no_profiles),
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.size(theme.spacing.medium))

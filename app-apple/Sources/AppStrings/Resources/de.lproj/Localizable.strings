@@ -114,7 +114,9 @@
 "features.sharing" = "%@ und Freigabe";
 "global.actions.add" = "Hinzufügen";
 "global.actions.allow" = "Erlauben";
+"global.actions.back" = "Zurück";
 "global.actions.cancel" = "Abbrechen";
+"global.actions.close" = "Schließen";
 "global.actions.connect" = "Verbinden";
 "global.actions.delete" = "Löschen";
 "global.actions.disable" = "Deaktivieren";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Endpunkt";
 "global.nouns.entries_n" = "%d Einträge";
 "global.nouns.entries_one" = "1 Eintrag";
+"global.nouns.error" = "Fehler";
 "global.nouns.features" = "Funktionen";
 "global.nouns.filters" = "Filter";
 "global.nouns.folder" = "Ordner";

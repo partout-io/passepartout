@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Agrega y elimina módulos para personalizar tu perfil de conexión.</string>
     <string name="global_actions_add">Agregar</string>
     <string name="global_actions_allow">Permitir</string>
+    <string name="global_actions_back">Atrás</string>
     <string name="global_actions_cancel">Cancelar</string>
+    <string name="global_actions_close">Cerrar</string>
     <string name="global_actions_connect">Conectar</string>
     <string name="global_actions_delete">Eliminar</string>
     <string name="global_actions_disable">Desactivar</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Punto final</string>
     <string name="global_nouns_entries_n">%1$d Entradas</string>
     <string name="global_nouns_entries_one">1 Entrada</string>
+    <string name="global_nouns_error">Error</string>
     <string name="global_nouns_features">Funciones</string>
     <string name="global_nouns_filters">Filtros</string>
     <string name="global_nouns_folder">Carpeta</string>

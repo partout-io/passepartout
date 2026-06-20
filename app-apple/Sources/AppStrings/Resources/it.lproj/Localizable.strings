@@ -114,7 +114,9 @@
 "features.sharing" = "%@ e Condivisione";
 "global.actions.add" = "Aggiungi";
 "global.actions.allow" = "Consenti";
+"global.actions.back" = "Indietro";
 "global.actions.cancel" = "Annulla";
+"global.actions.close" = "Chiudi";
 "global.actions.connect" = "Connetti";
 "global.actions.delete" = "Elimina";
 "global.actions.disable" = "Disabilita";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Endpoint";
 "global.nouns.entries_n" = "%d Voci";
 "global.nouns.entries_one" = "1 Voce";
+"global.nouns.error" = "Errore";
 "global.nouns.features" = "Funzionalità";
 "global.nouns.filters" = "Filtri";
 "global.nouns.folder" = "Cartella";

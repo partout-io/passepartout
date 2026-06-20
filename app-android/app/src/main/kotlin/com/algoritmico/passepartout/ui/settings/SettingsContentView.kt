@@ -62,7 +62,7 @@ fun SettingsContentView(
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.android_global_actions_back)
+                                    contentDescription = stringResource(R.string.global_actions_back)
                                 )
                             }
                         }
@@ -74,7 +74,7 @@ fun SettingsContentView(
                             ) {
                                 ThemeImage(
                                     name = ThemeImageName.close,
-                                    contentDescription = stringResource(R.string.android_global_actions_close)
+                                    contentDescription = stringResource(R.string.global_actions_close)
                                 )
                             }
                         }

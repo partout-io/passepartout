@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Aggiungi e rimuovi moduli per personalizzare il tuo profilo di connessione.</string>
     <string name="global_actions_add">Aggiungi</string>
     <string name="global_actions_allow">Consenti</string>
+    <string name="global_actions_back">Indietro</string>
     <string name="global_actions_cancel">Annulla</string>
+    <string name="global_actions_close">Chiudi</string>
     <string name="global_actions_connect">Connetti</string>
     <string name="global_actions_delete">Elimina</string>
     <string name="global_actions_disable">Disabilita</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Endpoint</string>
     <string name="global_nouns_entries_n">%1$d Voci</string>
     <string name="global_nouns_entries_one">1 Voce</string>
+    <string name="global_nouns_error">Errore</string>
     <string name="global_nouns_features">Funzionalità</string>
     <string name="global_nouns_filters">Filtri</string>
     <string name="global_nouns_folder">Cartella</string>

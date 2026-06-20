@@ -218,10 +218,7 @@ private fun LicenseView(
                 runCatchingNonFatal {
                     URL(license.licenseURL).readText()
                 }.getOrElse {
-                    context.getString(
-                        R.string.android_errors_credits_license,
-                        it.localizedMessage ?: it::class.java.simpleName
-                    )
+                    context.getString(R.string.errors_app_other)
                 }
             }
             onContent(loadedContent)

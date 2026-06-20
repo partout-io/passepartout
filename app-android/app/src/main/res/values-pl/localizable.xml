@@ -259,7 +259,9 @@
     <string name="tips_profile_build_your_profile_message">Dodaj i usuń moduły, aby dostosować swój profil połączenia.</string>
     <string name="global_actions_add">Dodaj</string>
     <string name="global_actions_allow">Zezwól</string>
+    <string name="global_actions_back">Wstecz</string>
     <string name="global_actions_cancel">Anuluj</string>
+    <string name="global_actions_close">Zamknij</string>
     <string name="global_actions_connect">Połącz</string>
     <string name="global_actions_delete">Usuń</string>
     <string name="global_actions_disable">Wyłącz</string>
@@ -306,6 +308,7 @@
     <string name="global_nouns_endpoint">Punkt końcowy</string>
     <string name="global_nouns_entries_n">%1$d Wpisy</string>
     <string name="global_nouns_entries_one">1 Wpis</string>
+    <string name="global_nouns_error">Błąd</string>
     <string name="global_nouns_features">Funkcje</string>
     <string name="global_nouns_filters">Filtry</string>
     <string name="global_nouns_folder">Folder</string>

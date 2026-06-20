@@ -114,7 +114,9 @@
 "features.sharing" = "%@ et Partage";
 "global.actions.add" = "Ajouter";
 "global.actions.allow" = "Autoriser";
+"global.actions.back" = "Retour";
 "global.actions.cancel" = "Annuler";
+"global.actions.close" = "Fermer";
 "global.actions.connect" = "Connecter";
 "global.actions.delete" = "Supprimer";
 "global.actions.disable" = "Désactiver";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Point final";
 "global.nouns.entries_n" = "%d Entrées";
 "global.nouns.entries_one" = "1 Entrée";
+"global.nouns.error" = "Erreur";
 "global.nouns.features" = "Fonctionnalités";
 "global.nouns.filters" = "Filtres";
 "global.nouns.folder" = "Dossier";

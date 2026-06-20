@@ -38,10 +38,6 @@ public enum Strings {
         /// Interactive profile
         public static let title = Strings.tr("Localizable", "android.alerts.interactive_unsupported.title", fallback: "Interactive profile")
       }
-      public enum OpenvpnCredentials {
-        /// OpenVPN credentials
-        public static let title = Strings.tr("Localizable", "android.alerts.openvpn_credentials.title", fallback: "OpenVPN credentials")
-      }
       public enum VpnPermission {
         /// %@ needs VPN permission to start a connection.
         public static func message(_ p1: Any) -> String {
@@ -54,12 +50,6 @@ public enum Strings {
       }
     }
     public enum Errors {
-      public enum Credits {
-        /// Unable to load license: %@
-        public static func license(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "android.errors.credits.license", String(describing: p1), fallback: "Unable to load license: %@")
-        }
-      }
       public enum ProfileImporter {
         /// Importing a binary file.
         public static let binary = Strings.tr("Localizable", "android.errors.profile_importer.binary", fallback: "Importing a binary file.")
@@ -67,18 +57,6 @@ public enum Strings {
         public static let empty = Strings.tr("Localizable", "android.errors.profile_importer.empty", fallback: "Unable to read profile content.")
         /// Unable to import profile.
         public static let failure = Strings.tr("Localizable", "android.errors.profile_importer.failure", fallback: "Unable to import profile.")
-      }
-    }
-    public enum Global {
-      public enum Actions {
-        /// Back
-        public static let back = Strings.tr("Localizable", "android.global.actions.back", fallback: "Back")
-        /// Close
-        public static let close = Strings.tr("Localizable", "android.global.actions.close", fallback: "Close")
-      }
-      public enum Nouns {
-        /// Error
-        public static let error = Strings.tr("Localizable", "android.global.nouns.error", fallback: "Error")
       }
     }
     public enum Profiles {
@@ -97,8 +75,6 @@ public enum Strings {
         public static let `import` = Strings.tr("Localizable", "android.profiles.empty.import", fallback: "Import profile")
         /// Import a profile file to get started.
         public static let message = Strings.tr("Localizable", "android.profiles.empty.message", fallback: "Import a profile file to get started.")
-        /// No profiles imported yet.
-        public static let title = Strings.tr("Localizable", "android.profiles.empty.title", fallback: "No profiles imported yet.")
       }
       public enum Layout {
         public enum Grid {
@@ -438,8 +414,12 @@ public enum Strings {
       public static let add = Strings.tr("Localizable", "global.actions.add", fallback: "Add")
       /// Allow
       public static let allow = Strings.tr("Localizable", "global.actions.allow", fallback: "Allow")
+      /// Back
+      public static let back = Strings.tr("Localizable", "global.actions.back", fallback: "Back")
       /// Cancel
       public static let cancel = Strings.tr("Localizable", "global.actions.cancel", fallback: "Cancel")
+      /// Close
+      public static let close = Strings.tr("Localizable", "global.actions.close", fallback: "Close")
       /// Connect
       public static let connect = Strings.tr("Localizable", "global.actions.connect", fallback: "Connect")
       /// Delete
@@ -532,6 +512,8 @@ public enum Strings {
       }
       /// 1 Entry
       public static let entriesOne = Strings.tr("Localizable", "global.nouns.entries_one", fallback: "1 Entry")
+      /// Error
+      public static let error = Strings.tr("Localizable", "global.nouns.error", fallback: "Error")
       /// Features
       public static let features = Strings.tr("Localizable", "global.nouns.features", fallback: "Features")
       /// Filters

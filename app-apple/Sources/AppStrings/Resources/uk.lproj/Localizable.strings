@@ -114,7 +114,9 @@
 "features.sharing" = "%@ і Спільний доступ";
 "global.actions.add" = "Додати";
 "global.actions.allow" = "Дозволити";
+"global.actions.back" = "Назад";
 "global.actions.cancel" = "Скасувати";
+"global.actions.close" = "Закрити";
 "global.actions.connect" = "Підключитися";
 "global.actions.delete" = "Видалити";
 "global.actions.disable" = "Вимкнути";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Кінцева точка";
 "global.nouns.entries_n" = "%d Записи";
 "global.nouns.entries_one" = "1 Запис";
+"global.nouns.error" = "Помилка";
 "global.nouns.features" = "Функції";
 "global.nouns.filters" = "Фільтри";
 "global.nouns.folder" = "Папка";

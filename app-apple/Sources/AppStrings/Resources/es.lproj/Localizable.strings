@@ -114,7 +114,9 @@
 "features.sharing" = "%@ y Compartir";
 "global.actions.add" = "Agregar";
 "global.actions.allow" = "Permitir";
+"global.actions.back" = "Atrás";
 "global.actions.cancel" = "Cancelar";
+"global.actions.close" = "Cerrar";
 "global.actions.connect" = "Conectar";
 "global.actions.delete" = "Eliminar";
 "global.actions.disable" = "Desactivar";
@@ -161,6 +163,7 @@
 "global.nouns.endpoint" = "Punto final";
 "global.nouns.entries_n" = "%d Entradas";
 "global.nouns.entries_one" = "1 Entrada";
+"global.nouns.error" = "Error";
 "global.nouns.features" = "Funciones";
 "global.nouns.filters" = "Filtros";
 "global.nouns.folder" = "Carpeta";
