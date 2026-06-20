@@ -11,17 +11,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.datastore.preferences.preferencesDataStore
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.models.AppBundle
 import com.algoritmico.passepartout.models.AppConstants
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.DistributionTarget
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import java.io.File
 
 data class AndroidSystemInformation(
@@ -120,20 +116,9 @@ fun Context.lastTunnelPreferences(storage: AndroidConstants.Storage): File {
     return persistentFile(storage.tunnelPreferencesFilename)
 }
 
-fun Context.userPreferencesStore(storage: AndroidConstants.Storage): DataStore<Preferences> {
-    val appContext = applicationContext
-    val key = "${appContext.packageName}:${storage.preferencesStoreName}"
-    return synchronized(userPreferencesStores) {
-        userPreferencesStores.getOrPut(key) {
-            PreferenceDataStoreFactory.create(
-                scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-                produceFile = {
-                    appContext.preferencesDataStoreFile(storage.preferencesStoreName)
-                }
-            )
-        }
-    }
-}
+val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
+    defaultAndroidConstants.storage.preferencesStoreName
+)
 
 val Context.isBetaSuggestedByAndroidAPI: Boolean
     get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -145,5 +130,3 @@ fun Context.persistentFile(path: String): File {
 private fun Context.readAsset(name: String): String {
     return assets.open(name).bufferedReader().use { it.readText() }
 }
-
-private val userPreferencesStores = mutableMapOf<String, DataStore<Preferences>>()

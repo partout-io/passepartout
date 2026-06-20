@@ -61,7 +61,7 @@ class AppContext(
         AppLog.i(logTag, "Partout $partoutVersion")
 
         // User preferences
-        val userPreferencesStore = applicationContext.userPreferencesStore(androidConstants.storage)
+        val userPreferencesStore = applicationContext.userPreferencesStore
         userPreferencesObservable = UserPreferencesObservable(
             logTag,
             coroutineScope,
