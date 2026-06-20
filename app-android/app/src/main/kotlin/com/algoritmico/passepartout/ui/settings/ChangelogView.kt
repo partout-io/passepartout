@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
@@ -33,7 +31,9 @@ import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.Theme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
+import com.algoritmico.passepartout.ui.theme.ThemeListDivider
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 
@@ -68,7 +68,7 @@ fun ChangelogView(
         isLoading -> ThemeProgressView(modifier = modifier)
         entries.isEmpty() -> ThemeEmptyMessage(
             text = "No content",
-            modifier = modifier.padding(24.dp)
+            modifier = modifier.padding(Theme.Spacing.xxLarge)
         )
         else -> ChangelogListView(
             modifier = modifier,
@@ -90,7 +90,7 @@ private fun ChangelogListView(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp),
+        contentPadding = PaddingValues(vertical = Theme.Spacing.small),
         verticalArrangement = Arrangement.Top
     ) {
         item {
@@ -121,7 +121,7 @@ private fun ChangelogListView(
             )
         }
         item {
-            HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+            ThemeListDivider()
         }
     }
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,12 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
+import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.ThemeListDivider
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
 import kotlinx.coroutines.Dispatchers
@@ -122,7 +122,7 @@ private fun CreditsListView(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
+        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
     ) {
         if (licenses.isNotEmpty()) {
             item {
@@ -147,7 +147,7 @@ private fun CreditsListView(
                 )
             }
             item {
-                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                ThemeListDivider()
             }
         }
         if (notices.isNotEmpty()) {
@@ -170,7 +170,7 @@ private fun CreditsListView(
                 )
             }
             item {
-                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                ThemeListDivider()
             }
         }
         if (languages.isNotEmpty()) {
@@ -233,7 +233,7 @@ private fun LicenseView(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(Theme.Spacing.large)
     ) {
         item {
             Text(
@@ -246,7 +246,7 @@ private fun LicenseView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp),
+                        .padding(top = Theme.Spacing.xxLarge),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator()
@@ -273,7 +273,7 @@ private fun NoticeView(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(Theme.Spacing.large)
     ) {
         Text(
             text = notice.name,
@@ -281,7 +281,7 @@ private fun NoticeView(
         )
         Text(
             text = notice.message,
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = Theme.Spacing.large),
             style = MaterialTheme.typography.bodyLarge
         )
     }

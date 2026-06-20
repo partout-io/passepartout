@@ -11,12 +11,10 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun ThemeNavigatingButton(
@@ -47,13 +45,13 @@ fun ThemeNavigatingButton(
 private val NavigateIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Navigate",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(10f, 6f)

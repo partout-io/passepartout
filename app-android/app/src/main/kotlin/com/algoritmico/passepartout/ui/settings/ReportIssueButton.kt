@@ -23,11 +23,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.theme.Theme
 import kotlinx.coroutines.launch
 
 private enum class ReportIssueModalRoute {
@@ -90,15 +90,15 @@ fun ReportIssueButton(
         enabled = !isPending,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = Theme.Spacing.large, vertical = Theme.Spacing.small),
         onClick = {
             modalRoute = ReportIssueModalRoute.Comment
         }
     ) {
         if (isPending) {
             CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
-                strokeWidth = 2.dp,
+                modifier = Modifier.size(Theme.Progress.smallSize),
+                strokeWidth = Theme.Progress.thinStroke,
                 color = MaterialTheme.colorScheme.onPrimary
             )
         } else {

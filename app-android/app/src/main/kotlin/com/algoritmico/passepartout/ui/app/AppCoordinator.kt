@@ -28,18 +28,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalProfileObservable
 import com.algoritmico.passepartout.ui.settings.SettingsCoordinator
+import com.algoritmico.passepartout.ui.theme.Theme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -288,7 +287,7 @@ private fun ImportProfileSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onImportProfile)
-                .padding(bottom = 24.dp)
+                .padding(bottom = Theme.Spacing.xxLarge)
         )
     }
 }
@@ -340,13 +339,13 @@ private fun AppCoordinatorContextualPreview() {
 private val AddIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Add",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(19f, 13f)
@@ -368,13 +367,13 @@ private val AddIcon: ImageVector
 private val CloseIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Close",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(18.3f, 5.71f)
@@ -396,13 +395,13 @@ private val CloseIcon: ImageVector
 private val ImportFileIcon: ImageVector
     get() = ImageVector.Builder(
         name = "ImportFile",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(14f, 2f)
@@ -432,13 +431,13 @@ private val ImportFileIcon: ImageVector
 private val SettingsIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Settings",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(19.43f, 12.98f)
@@ -492,13 +491,13 @@ private val SettingsIcon: ImageVector
 private val DeleteIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Delete",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(6f, 19f)

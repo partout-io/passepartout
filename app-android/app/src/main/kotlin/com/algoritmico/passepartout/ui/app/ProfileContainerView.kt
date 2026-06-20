@@ -41,10 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
@@ -59,6 +56,7 @@ import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.extensions.statusText
 import com.algoritmico.passepartout.ui.extensions.transferText
+import com.algoritmico.passepartout.ui.theme.Theme
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
@@ -278,8 +276,8 @@ private fun MobileProfilesView(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(Theme.Spacing.large),
+        verticalArrangement = Arrangement.spacedBy(Theme.Spacing.medium)
     ) {
         item {
             Text(
@@ -355,17 +353,17 @@ private fun ProfileRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(horizontal = Theme.Spacing.large, vertical = Theme.Spacing.large),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(Theme.Spacing.xSmall)
             ) {
                 Text(
                     text = header.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = Theme.Weight.strong
                 )
                 Crossfade(
                     targetState = showsTransfer,
@@ -378,13 +376,13 @@ private fun ProfileRow(
                             statusDescription
                         },
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Light,
+                        fontWeight = Theme.Weight.secondary,
                         color = animatedStatusDescriptionColor
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Theme.Spacing.large))
 
             Switch(
                 checked = isEnabled,
@@ -413,7 +411,7 @@ private fun EmptyProfilesView(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(Theme.Spacing.xxLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -421,13 +419,13 @@ private fun EmptyProfilesView(
             text = "No profiles imported yet.",
             style = MaterialTheme.typography.headlineSmall
         )
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(Theme.Spacing.medium))
         Text(
             text = "Import a profile file to get started.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(Theme.Spacing.xLarge))
         TextButton(onClick = onImportProfile) {
             Text("Import profile")
         }
@@ -435,11 +433,13 @@ private fun EmptyProfilesView(
 }
 
 @Composable
-private fun statusColor(status: AppProfileStatus): Color = when (status) {
-    AppProfileStatus.connected -> ProfileStatusActiveColor
+private fun statusColor(status: AppProfileStatus) = when (status) {
+    AppProfileStatus.connected -> Theme.Colors.active
     AppProfileStatus.connecting,
-    AppProfileStatus.disconnecting -> ProfileStatusPendingColor
-    AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
+    AppProfileStatus.disconnecting -> Theme.Colors.pending
+    AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(
+        alpha = Theme.Alpha.secondaryStatus
+    )
 }
 
 private fun openVpnSettings(context: Context, errorHandler: ErrorHandler) {
@@ -486,6 +486,4 @@ private fun AppProfileStatus.canToggle(): Boolean {
     }
 }
 
-private val ProfileStatusActiveColor = Color(0xFF00AA00)
-private val ProfileStatusPendingColor = Color(0xFFFF9800)
-private val ProfileStatusErrorColor = Color(0xFFD32F2F)
+private val ProfileStatusErrorColor = Theme.Colors.error

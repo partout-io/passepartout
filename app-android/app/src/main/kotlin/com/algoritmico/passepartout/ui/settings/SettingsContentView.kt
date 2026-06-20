@@ -23,17 +23,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.Theme
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 
@@ -128,7 +127,7 @@ private fun SettingsListView(
     val errorHandler = LocalErrorHandler.current
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
+        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
     ) {
         item {
             ThemeListSection {
@@ -163,13 +162,13 @@ private val SettingsCoordinatorRoute?.routeIndex: Int
 private val CloseIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Close",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(18.3f, 5.71f)
@@ -191,13 +190,13 @@ private val CloseIcon: ImageVector
 private val BackIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Back",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
+        defaultWidth = Theme.Icon.size,
+        defaultHeight = Theme.Icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Color.Black),
+            fill = SolidColor(Theme.Colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(20f, 11f)

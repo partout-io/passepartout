@@ -16,7 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
+import com.algoritmico.passepartout.ui.theme.Theme
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.moduleType
 import io.partout.extensions.withInteractiveOpenVPNCredentials
@@ -77,7 +77,7 @@ private fun InteractiveOpenVPNView(
         },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(Theme.Spacing.medium)
             ) {
                 if (requiresOTP) {
                     OutlinedTextField(

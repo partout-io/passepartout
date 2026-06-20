@@ -11,8 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun ThemeListSection(
@@ -25,11 +23,16 @@ fun ThemeListSection(
             ThemeListSectionHeader(header)
         }
         content()
-        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+        ThemeListDivider()
         if (footer != null) {
             ThemeListSectionFooter(footer)
         }
     }
+}
+
+@Composable
+fun ThemeListDivider() {
+    HorizontalDivider(modifier = Modifier.padding(start = Theme.Spacing.large))
 }
 
 @Composable
@@ -39,14 +42,14 @@ fun ThemeListSectionHeader(
     Text(
         text = title,
         modifier = Modifier.padding(
-            start = 16.dp,
-            top = 20.dp,
-            end = 16.dp,
-            bottom = 8.dp
+            start = Theme.Spacing.large,
+            top = Theme.Spacing.xLarge,
+            end = Theme.Spacing.large,
+            bottom = Theme.Spacing.small
         ),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.SemiBold
+        fontWeight = Theme.Weight.relevant
     )
 }
 
@@ -57,10 +60,10 @@ private fun ThemeListSectionFooter(
     Text(
         text = text,
         modifier = Modifier.padding(
-            start = 16.dp,
-            top = 8.dp,
-            end = 16.dp,
-            bottom = 12.dp
+            start = Theme.Spacing.large,
+            top = Theme.Spacing.small,
+            end = Theme.Spacing.large,
+            bottom = Theme.Spacing.medium
         ),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
