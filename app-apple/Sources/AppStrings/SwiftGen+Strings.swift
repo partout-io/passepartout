@@ -39,14 +39,14 @@ public enum Strings {
         public static let title = Strings.tr("Localizable", "android.alerts.interactive_unsupported.title", fallback: "Interactive profile")
       }
       public enum OpenvpnCredentials {
-        /// OTP
-        public static let otp = Strings.tr("Localizable", "android.alerts.openvpn_credentials.otp", fallback: "OTP")
         /// OpenVPN credentials
         public static let title = Strings.tr("Localizable", "android.alerts.openvpn_credentials.title", fallback: "OpenVPN credentials")
       }
       public enum VpnPermission {
-        /// Passepartout needs VPN permission to start a connection.
-        public static let message = Strings.tr("Localizable", "android.alerts.vpn_permission.message", fallback: "Passepartout needs VPN permission to start a connection.")
+        /// %@ needs VPN permission to start a connection.
+        public static func message(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "android.alerts.vpn_permission.message", String(describing: p1), fallback: "%@ needs VPN permission to start a connection.")
+        }
         /// Open VPN settings
         public static let openSettings = Strings.tr("Localizable", "android.alerts.vpn_permission.open_settings", fallback: "Open VPN settings")
         /// VPN permission required
@@ -120,10 +120,6 @@ public enum Strings {
     public enum Settings {
       /// This is a beta build
       public static let betaBuild = Strings.tr("Localizable", "android.settings.beta_build", fallback: "This is a beta build")
-      /// Changelog
-      public static let changelog = Strings.tr("Localizable", "android.settings.changelog", fallback: "Changelog")
-      /// FAQ
-      public static let faq = Strings.tr("Localizable", "android.settings.faq", fallback: "FAQ")
       public enum Sections {
         /// Beta
         public static let beta = Strings.tr("Localizable", "android.settings.sections.beta", fallback: "Beta")

@@ -10,6 +10,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.ui.Strings
 
 @Composable
 fun VpnPermissionDeniedAlert(
@@ -22,7 +23,12 @@ fun VpnPermissionDeniedAlert(
             Text(stringResource(R.string.android_alerts_vpn_permission_title))
         },
         text = {
-            Text(stringResource(R.string.android_alerts_vpn_permission_message))
+            Text(
+                stringResource(
+                    R.string.android_alerts_vpn_permission_message,
+                    Strings.Unlocalized.appName
+                )
+            )
         },
         confirmButton = {
             TextButton(onClick = onOpenSettings) {

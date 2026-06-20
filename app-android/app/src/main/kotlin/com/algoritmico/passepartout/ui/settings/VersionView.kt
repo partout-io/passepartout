@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeLogo
 
@@ -96,7 +97,7 @@ private fun VersionContentView(
             text = stringResource(
                 R.string.views_version_extra,
                 appName,
-                "Davide De Rosa (keeshux)"
+                Strings.Unlocalized.authorName
             ),
             modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.bodyLarge,
@@ -106,7 +107,7 @@ private fun VersionContentView(
         Button(
             onClick = onChangelog
         ) {
-            Text(stringResource(R.string.android_settings_changelog))
+            Text(Strings.Unlocalized.changelog)
         }
     }
 }

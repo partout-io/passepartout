@@ -424,9 +424,8 @@
     <string name="android_alerts_interactive_unsupported_title">Interactive profile</string>
     <string name="android_alerts_interactive_unsupported_message">%1$s requires input that is not supported by this app version.</string>
     <string name="android_alerts_openvpn_credentials_title">OpenVPN credentials</string>
-    <string name="android_alerts_openvpn_credentials_otp">OTP</string>
     <string name="android_alerts_vpn_permission_title">VPN permission required</string>
-    <string name="android_alerts_vpn_permission_message">Passepartout needs VPN permission to start a connection.</string>
+    <string name="android_alerts_vpn_permission_message">%1$s needs VPN permission to start a connection.</string>
     <string name="android_alerts_vpn_permission_open_settings">Open VPN settings</string>
     <string name="android_profiles_empty_title">No profiles imported yet.</string>
     <string name="android_profiles_empty_message">Import a profile file to get started.</string>
@@ -438,8 +437,6 @@
     <string name="android_profiles_layout_grid_content_description">Grid profiles</string>
     <string name="android_settings_sections_beta">Beta</string>
     <string name="android_settings_beta_build">This is a beta build</string>
-    <string name="android_settings_faq">FAQ</string>
-    <string name="android_settings_changelog">Changelog</string>
     <string name="android_errors_profile_importer_binary">Importing a binary file.</string>
     <string name="android_errors_profile_importer_failure">Unable to import profile.</string>
     <string name="android_errors_profile_importer_empty">Unable to read profile content.</string>

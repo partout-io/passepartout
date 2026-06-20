@@ -24,6 +24,7 @@ import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.ThemeNavigationAnimatedContent
 import com.algoritmico.passepartout.ui.theme.ThemeImage
@@ -133,7 +134,7 @@ private fun SettingsListView(
         themeListSection(header = troubleshootingHeader) {
             item {
                 ThemeNavigatingButton(
-                    title = stringResource(R.string.android_settings_faq),
+                    title = Strings.Unlocalized.faq,
                     onClick = {
                         uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL, errorHandler)
                     }

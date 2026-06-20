@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.moduleType
@@ -89,7 +90,7 @@ private fun InteractiveOpenVPNView(
                             otp = it
                         },
                         label = {
-                            Text(stringResource(R.string.android_alerts_openvpn_credentials_otp))
+                            Text(Strings.Unlocalized.otp)
                         },
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation()
