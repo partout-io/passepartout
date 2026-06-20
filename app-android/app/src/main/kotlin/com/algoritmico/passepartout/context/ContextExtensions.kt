@@ -11,35 +11,31 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.preferencesDataStoreFile
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.models.AppBundle
 import com.algoritmico.passepartout.models.AppConstants
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.DistributionTarget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
-
-private object Storage {
-    const val CONSTANTS_FILENAME = "constants.json"
-    const val CREDITS_FILENAME = "credits.json"
-    const val TUNNEL_PROFILE_FILENAME = "tunnel_profile.json"
-    const val TUNNEL_PREFERENCES_FILENAME = "tunnel_preferences.json"
-    const val PREFERENCES_STORE_NAME = "preferences"
-}
 
 data class AndroidSystemInformation(
     val osLine: String,
     val deviceLine: String?
 )
 
-fun Context.appConstants(): AppConstants {
-    val json = readAsset(Storage.CONSTANTS_FILENAME)
+fun Context.appConstants(assets: AndroidConstants.Assets): AppConstants {
+    val json = readAsset(assets.constantsFilename)
     return JSON.decode<AppConstants>(json)
 }
 
-fun Context.credits(): Credits {
-    val json = readAsset(Storage.CREDITS_FILENAME)
+fun Context.credits(assets: AndroidConstants.Assets): Credits {
+    val json = readAsset(assets.creditsFilename)
     return JSON.decode<Credits>(json)
 }
 
@@ -116,15 +112,28 @@ private fun Context.packageInfo(): PackageInfo {
     }
 }
 
-val Context.lastTunnelProfile: File
-    get() = persistentFile(Storage.TUNNEL_PROFILE_FILENAME)
+fun Context.lastTunnelProfile(storage: AndroidConstants.Storage): File {
+    return persistentFile(storage.tunnelProfileFilename)
+}
 
-val Context.lastTunnelPreferences: File
-    get() = persistentFile(Storage.TUNNEL_PREFERENCES_FILENAME)
+fun Context.lastTunnelPreferences(storage: AndroidConstants.Storage): File {
+    return persistentFile(storage.tunnelPreferencesFilename)
+}
 
-val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
-    Storage.PREFERENCES_STORE_NAME
-)
+fun Context.userPreferencesStore(storage: AndroidConstants.Storage): DataStore<Preferences> {
+    val appContext = applicationContext
+    val key = "${appContext.packageName}:${storage.preferencesStoreName}"
+    return synchronized(userPreferencesStores) {
+        userPreferencesStores.getOrPut(key) {
+            PreferenceDataStoreFactory.create(
+                scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+                produceFile = {
+                    appContext.preferencesDataStoreFile(storage.preferencesStoreName)
+                }
+            )
+        }
+    }
+}
 
 val Context.isBetaSuggestedByAndroidAPI: Boolean
     get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -136,3 +145,5 @@ fun Context.persistentFile(path: String): File {
 private fun Context.readAsset(name: String): String {
     return assets.open(name).bufferedReader().use { it.readText() }
 }
+
+private val userPreferencesStores = mutableMapOf<String, DataStore<Preferences>>()

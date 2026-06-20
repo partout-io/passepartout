@@ -7,8 +7,9 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
@@ -30,6 +31,7 @@ class AppContext(
     private val logTag: String,
     context: Context,
     private val coroutineScope: CoroutineScope,
+    val androidConstants: AndroidConstants = defaultAndroidConstants,
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
@@ -58,19 +60,20 @@ class AppContext(
         AppLog.i(logTag, "Partout $partoutVersion")
 
         // User preferences
+        val userPreferencesStore = applicationContext.userPreferencesStore(androidConstants.storage)
         userPreferencesObservable = UserPreferencesObservable(
             logTag,
             coroutineScope,
-            applicationContext.userPreferencesStore
+            userPreferencesStore
         )
         val preferences = userPreferencesObservable.currentPreferences
         AppLog.i(logTag, "Preferences: $preferences")
-        library.partoutInit(Tags.APP_PARTOUT, preferences.logsPrivateData)
+        library.partoutInit(androidConstants.logTags.appPartout, preferences.logsPrivateData)
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
         AppLog.d(logTag, "Bundle: $bundle")
-        val constants = applicationContext.appConstants()
+        val constants = applicationContext.appConstants(androidConstants.assets)
         AppLog.d(logTag, "Constants: $constants")
         appConfiguration = AppConfiguration(
             bundle = bundle,
@@ -84,30 +87,37 @@ class AppContext(
         val tunnel = appConfiguration.newTunnel(
             logTag,
             applicationContext,
+            androidConstants.tunnel,
             requestVpnPermission
         )
         configManager = appConfiguration.newConfigManager(
             logTag,
-            isBeta
+            isBeta,
+            androidConstants.events
         )
         profileManager = appConfiguration.newProfileManager(
             logTag,
             applicationContext,
-            library
+            library,
+            androidConstants.events
         )
         versionChecker = appConfiguration.newVersionChecker(
             logTag,
-            context.userPreferencesStore,
-            coroutineScope
+            userPreferencesStore,
+            coroutineScope,
+            androidConstants.events
         )
 
         // Observables from managers
-        errorHandler = ErrorHandler
+        errorHandler = ErrorHandler(androidConstants.logTags.app)
         configObservable = ConfigObservable(
             configManager,
             coroutineScope
         )
-        diagnosticsObservable = DiagnosticsObservable()
+        diagnosticsObservable = DiagnosticsObservable(
+            logTags = androidConstants.logTags,
+            diagnosticsConstants = androidConstants.diagnostics
+        )
         profileObservable = ProfileObservable(
             profileManager,
             coroutineScope,
@@ -118,13 +128,15 @@ class AppContext(
             applicationContext,
             coroutineScope,
             profileManager,
+            androidConstants.profileImport,
+            errorHandler,
             onImportSuccess = ::onApplicationActive
         )
         tunnelObservable = TunnelObservable(
             logTag,
             tunnel,
             profileManager,
-            context.userPreferencesStore.data,
+            userPreferencesStore.data,
             coroutineScope
         )
         versionObservable = VersionObservable(

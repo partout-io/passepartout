@@ -31,11 +31,11 @@ import androidx.compose.ui.text.font.FontFamily
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
+import com.algoritmico.passepartout.ui.LocalAndroidConstants
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
@@ -52,11 +52,12 @@ fun CreditsView(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val credits = remember(context) {
+    val androidConstants = LocalAndroidConstants.current
+    val credits = remember(context, androidConstants.assets) {
         runCatchingNonFatal {
-            context.credits()
+            context.credits(androidConstants.assets)
         }.getOrElse {
-            AppLog.w(Tags.APP, "Unable to load credits", it)
+            AppLog.w(androidConstants.logTags.app, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }

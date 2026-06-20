@@ -18,8 +18,7 @@ import com.algoritmico.passepartout.business.extensions.issues
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.subject
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.context.LocalConstants
-import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.androidSystemInformation
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.Issue
@@ -35,7 +34,10 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-class DiagnosticsObservable {
+class DiagnosticsObservable(
+    private val logTags: AndroidConstants.LogTags,
+    private val diagnosticsConstants: AndroidConstants.Diagnostics
+) {
     suspend fun issue(
         context: Context,
         appConfiguration: AppConfiguration,
@@ -43,15 +45,15 @@ class DiagnosticsObservable {
     ): Issue = coroutineScope {
         val appContext = context.applicationContext
         val appLog = async {
-            logcat(Tags.appTags, LocalConstants.LOGCAT_VIEW_HOURS)
+            logcat(logTags.appTags, diagnosticsConstants.logcatViewHours)
                 .toIssueAttachment(appConfiguration.appLogPath)
         }
         val tunnelLog = async {
-            logcat(Tags.serviceTags, LocalConstants.LOGCAT_VIEW_HOURS)
+            logcat(logTags.serviceTags, diagnosticsConstants.logcatViewHours)
                 .toIssueAttachment(appConfiguration.tunnelLogPath)
         }
         val exitReasons = async(Dispatchers.IO) {
-            appContext.exitReasonsAttachment()
+            appContext.exitReasonsAttachment(diagnosticsConstants)
         }
         val systemInformation = context.androidSystemInformation()
         Issue(
@@ -81,12 +83,13 @@ class DiagnosticsObservable {
             comment = comment
         )
         val attachments = withContext(Dispatchers.IO) {
-            report.attachmentUris(context)
+            report.attachmentUris(context, diagnosticsConstants)
         }
         context.openIssueEmail(
             appConfiguration = appConfiguration,
             issue = report,
-            attachments = attachments
+            attachments = attachments,
+            diagnosticsConstants = diagnosticsConstants
         )
     }
 
@@ -111,7 +114,7 @@ class DiagnosticsObservable {
             }
             if (!didFinish) {
                 process.destroy()
-                if (!process.waitFor(LocalConstants.LOGCAT_DESTROY_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+                if (!process.waitFor(diagnosticsConstants.logcatDestroyTimeoutMillis, TimeUnit.MILLISECONDS)) {
                     process.destroyForcibly()
                 }
                 error("logcat timed out")
@@ -134,9 +137,7 @@ class DiagnosticsObservable {
     }
 
     private val logTimeoutMillis: Long
-        get() = (LocalConstants.LOGCAT_TIMEOUT_SECONDS * 1000.0)
-            .toLong()
-            .coerceAtLeast(1L)
+        get() = diagnosticsConstants.logcatTimeoutMillis
 
     private fun logcatCommand(
         tags: Collection<String>,
@@ -172,30 +173,37 @@ class DiagnosticsObservable {
 private fun Context.openIssueEmail(
     appConfiguration: AppConfiguration,
     issue: Issue,
-    attachments: List<Uri>
+    attachments: List<Uri>,
+    diagnosticsConstants: AndroidConstants.Diagnostics
 ) {
     val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-        type = "message/rfc822"
+        type = diagnosticsConstants.issueEmailMimeType
         putExtra(Intent.EXTRA_EMAIL, arrayOf(appConfiguration.constants.emails.issues))
         putExtra(Intent.EXTRA_SUBJECT, issue.subject)
         putExtra(Intent.EXTRA_TEXT, issue.body)
         if (attachments.isNotEmpty()) {
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachments))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            clipData = attachments.toClipData(this@openIssueEmail)
+            clipData = attachments.toClipData(this@openIssueEmail, diagnosticsConstants)
         }
     }
-    startActivity(Intent.createChooser(intent, "Report issue"))
+    startActivity(Intent.createChooser(intent, diagnosticsConstants.issueEmailChooserTitle))
 }
 
-private fun Issue.attachmentUris(context: Context): List<Uri> {
+private fun Issue.attachmentUris(
+    context: Context,
+    diagnosticsConstants: AndroidConstants.Diagnostics
+): List<Uri> {
     return attachments.map {
-        it.toAttachmentUri(context)
+        it.toAttachmentUri(context, diagnosticsConstants)
     }
 }
 
-private fun IssueAttachment.toAttachmentUri(context: Context): Uri {
-    val directory = File(context.cacheDir, "issue").apply {
+private fun IssueAttachment.toAttachmentUri(
+    context: Context,
+    diagnosticsConstants: AndroidConstants.Diagnostics
+): Uri {
+    val directory = File(context.cacheDir, diagnosticsConstants.issueCacheDirectory).apply {
         mkdirs()
     }
     val file = File(directory, File(filename).name).apply {
@@ -208,9 +216,12 @@ private fun IssueAttachment.toAttachmentUri(context: Context): Uri {
     )
 }
 
-private fun List<Uri>.toClipData(context: Context): ClipData? {
+private fun List<Uri>.toClipData(
+    context: Context,
+    diagnosticsConstants: AndroidConstants.Diagnostics
+): ClipData? {
     val first = firstOrNull() ?: return null
-    return ClipData.newUri(context.contentResolver, "Issue logs", first).apply {
+    return ClipData.newUri(context.contentResolver, diagnosticsConstants.issueLogsClipLabel, first).apply {
         drop(1).forEach {
             addItem(ClipData.Item(it))
         }
@@ -223,25 +234,23 @@ private val AppConfiguration.appLogPath: String
 private val AppConfiguration.tunnelLogPath: String
     get() = constants.log.filenames.tunnel
 
-private const val EXIT_REASONS_FILENAME = "exit-reasons.txt"
-
-private const val EXIT_REASONS_LIMIT = 8
-
 @SuppressLint("NewApi")
-private fun Context.exitReasonsAttachment(): IssueAttachment? {
+private fun Context.exitReasonsAttachment(
+    diagnosticsConstants: AndroidConstants.Diagnostics
+): IssueAttachment? {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
         return null
     }
     val exitReasons = runCatchingNonFatal {
         getSystemService(ActivityManager::class.java)
-            ?.getHistoricalProcessExitReasons(packageName, 0, EXIT_REASONS_LIMIT)
+            ?.getHistoricalProcessExitReasons(packageName, 0, diagnosticsConstants.exitReasonsLimit)
     }.getOrNull()
         ?.takeIf {
             it.isNotEmpty()
         } ?: return null
 
     return IssueAttachment(
-        filename = EXIT_REASONS_FILENAME,
+        filename = diagnosticsConstants.exitReasonsFilename,
         content = exitReasons.toExitReasonsText().toByteArray(Charsets.UTF_8)
     )
 }

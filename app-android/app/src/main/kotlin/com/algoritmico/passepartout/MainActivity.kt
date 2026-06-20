@@ -11,14 +11,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.context.Files
-import com.algoritmico.passepartout.context.Tags
+import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.observables.AppContext
-import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.ui.PassepartoutApp
 
 class MainActivity : ComponentActivity() {
-    private val logTag = Tags.APP
+    private val androidConstants = defaultAndroidConstants
+    private val logTag = androidConstants.logTags.app
     private lateinit var appContext: AppContext
     private var isProfileImporterOpen = false
 
@@ -29,6 +28,7 @@ class MainActivity : ComponentActivity() {
             logTag,
             this,
             lifecycleScope,
+            androidConstants = androidConstants,
             requestVpnPermission = { permissionIntent ->
                 vpnPermissionLauncher.launch(permissionIntent)
             }
@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
                 appContext.diagnosticsObservable,
                 appContext.versionObservable,
                 appContext.appConfiguration,
+                appContext.androidConstants,
                 appContext.errorHandler,
                 onImportProfile = ::openProfileImporter
             )
@@ -67,11 +68,11 @@ class MainActivity : ComponentActivity() {
     private fun openProfileImporter() {
         isProfileImporterOpen = true
         runCatchingNonFatal {
-            profileImportLauncher.launch(Files.MIME_TYPES)
+            profileImportLauncher.launch(androidConstants.profileImport.mimeTypes.toTypedArray())
         }.onFailure {
             AppLog.e(logTag, "Unable to open profile importer", it)
             isProfileImporterOpen = false
-            ErrorHandler.report(it)
+            appContext.errorHandler.report(it)
         }
     }
 

@@ -24,9 +24,9 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.models.ChangelogEntry
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.LocalAndroidConstants
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalVersionObservable
@@ -40,6 +40,7 @@ import com.algoritmico.passepartout.ui.theme.themeListSection
 fun ChangelogView(
     modifier: Modifier = Modifier
 ) {
+    val androidConstants = LocalAndroidConstants.current
     val appConfiguration = LocalAppConfiguration.current
     val versionObservable = LocalVersionObservable.current
     val versionNumber = appConfiguration.bundle.versionNumber
@@ -51,12 +52,12 @@ fun ChangelogView(
     }
     val theme = LocalTheme.current
 
-    LaunchedEffect(versionNumber, versionObservable) {
+    LaunchedEffect(versionNumber, versionObservable, androidConstants.logTags.app) {
         isLoading = true
         entries = runCatchingNonFatal {
             versionObservable.fetchChangelog(versionNumber)
         }.getOrElse {
-            AppLog.w(Tags.APP, "Unable to load changelog", it)
+            AppLog.w(androidConstants.logTags.app, "Unable to load changelog", it)
             emptyList()
         }
         isLoading = false

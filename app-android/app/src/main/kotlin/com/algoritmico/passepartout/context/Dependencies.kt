@@ -27,52 +27,11 @@ import io.partout.PartoutTunnel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-//region Constants
-object Tags {
-    val appTags: Collection<String>
-        get() = listOf(APP, APP_PARTOUT)
-
-    val serviceTags: Collection<String>
-        get() = listOf(SERVICE, SERVICE_PARTOUT, PARTOUT_JNI)
-
-    const val APP = "Passepartout"
-    const val APP_PARTOUT = "PartoutApp"
-    const val SERVICE = "PassepartoutVpnService"
-    const val SERVICE_PARTOUT = "PartoutService"
-    const val PARTOUT_JNI = "PartoutJNI"
-    const val OOB = "PassepartoutOOB"
-}
-
-object Files {
-    val MIME_TYPES = arrayOf(
-        "application/x-openvpn-profile",
-        "application/x-wireguard-profile",
-        "application/octet-stream",
-        "text/*",
-        "*/*"
-    )
-
-    const val DEFAULT_PROFILE_NAME = "Imported profile"
-}
-
-object LocalConstants {
-    const val TUNNEL_LOGS_SNAPSHOTS = false
-    const val TUNNEL_IS_FOREGROUND = true
-    const val LOGCAT_TIMEOUT_SECONDS = 3
-    const val LOGCAT_VIEW_HOURS = 6L
-    const val LOGCAT_DESTROY_TIMEOUT_MILLIS = 500L
-}
-
-private object Tuning {
-    const val EVENT_BUFFER_CAPACITY = 64
-    const val EVENT_REPLAY = 64
-}
-//endregion
-
 //region Managers
 fun AppConfiguration.newConfigManager(
     logTag: String,
-    isBeta: Boolean
+    isBeta: Boolean,
+    eventConstants: AndroidConstants.Events
 ): ConfigManager {
     val url = if (isBeta) constants.websites.betaConfigURL else constants.websites.configURL
     val ttlFactor = if (isBeta) constants.websites.betaTTLFactor else 1.0
@@ -89,14 +48,16 @@ fun AppConfiguration.newConfigManager(
                 URLFetcher.fetch(url, isCached, timeout)
             }
         ),
-        buildNumber = bundle.buildNumber
+        buildNumber = bundle.buildNumber,
+        eventConstants = eventConstants
     )
 }
 
 fun AppConfiguration.newProfileManager(
     logTag: String,
     applicationContext: Context,
-    library: PassepartoutWrapper
+    library: PassepartoutWrapper,
+    eventConstants: AndroidConstants.Events
 ): ProfileManager {
     val localName = constants.containers.local.lowercase()
     val directory = applicationContext.persistentFile(localName)
@@ -106,21 +67,23 @@ fun AppConfiguration.newProfileManager(
     return ProfileManager(
         logTag,
         library,
-        FileProfileRepository(logTag, directory)
+        FileProfileRepository(logTag, directory),
+        eventConstants = eventConstants
     )
 }
 
 fun AppConfiguration.newTunnel(
     logTag: String,
     applicationContext: Context,
+    tunnelConstants: AndroidConstants.Tunnel,
     requestVpnPermission: (Intent) -> Unit
 ): PartoutTunnel {
     return PartoutTunnel(
         logTag,
         applicationContext,
         PassepartoutVpnService::class.java,
-        LocalConstants.TUNNEL_IS_FOREGROUND,
-        LocalConstants.TUNNEL_LOGS_SNAPSHOTS,
+        tunnelConstants.isForeground,
+        tunnelConstants.logsSnapshots,
         requestVpnPermission
     )
 }
@@ -128,7 +91,8 @@ fun AppConfiguration.newTunnel(
 fun AppConfiguration.newVersionChecker(
     logTag: String,
     preferences: DataStore<Preferences>,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    eventConstants: AndroidConstants.Events
 ): VersionChecker {
     val changelogURL = constants.github::urlForChangelog
     val isCached = false
@@ -151,14 +115,18 @@ fun AppConfiguration.newVersionChecker(
             DistributionTarget.appStore -> constants.websites.appStoreDownloadURL
             DistributionTarget.developerID -> constants.websites.macDownloadURL
             DistributionTarget.enterprise -> error("No URL for enterprise distribution")
-        }
+        },
+        eventConstants = eventConstants
     )
 }
 
-fun newEventFlow(withReplay: Boolean = true): MutableSharedFlow<Event> {
+fun newEventFlow(
+    eventConstants: AndroidConstants.Events,
+    withReplay: Boolean = true
+): MutableSharedFlow<Event> {
     return MutableSharedFlow(
-        replay = if (withReplay) Tuning.EVENT_REPLAY else 0,
-        extraBufferCapacity = Tuning.EVENT_BUFFER_CAPACITY
+        replay = if (withReplay) eventConstants.replay else 0,
+        extraBufferCapacity = eventConstants.bufferCapacity
     )
 }
 //endregion

@@ -9,6 +9,7 @@ import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -41,10 +42,11 @@ class ProfileManager(
     private val logTag: String,
     private val library: PassepartoutWrapper,
     private val repository: ProfileRepository,
+    eventConstants: AndroidConstants.Events
 ) {
     private var profiles: Map<String, TaggedProfile> = emptyMap()
 
-    private val _events = newEventFlow()
+    private val _events = newEventFlow(eventConstants)
     val events: SharedFlow<Event> = _events.asSharedFlow()
 
     suspend fun loadInitialProfiles(reportError: (Throwable) -> Unit) {
