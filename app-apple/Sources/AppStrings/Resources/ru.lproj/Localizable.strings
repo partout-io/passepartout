@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Не удалось дублировать профиль '%@'.";
 "errors.app.empty_products" = "Не удалось получить продукты, повторите позже.";
 "errors.app.empty_profile_name" = "Имя профиля пустое.";
-"errors.app.import" = "Не удалось импортировать профили.";
+"errors.app.import.binary" = "Импортируется двоичный файл.";
+"errors.app.import.generic" = "Не удалось импортировать профили.";
 "errors.app.malformed_module" = "Модуль %@ поврежден. %@";
 "errors.app.module_requires_connection" = "Модуль %@ требует активного подключения одного из следующих типов: %@";
 "errors.app.corrupt_provider_module" = "Не удалось подключиться к серверу поставщика (причина=%@).";

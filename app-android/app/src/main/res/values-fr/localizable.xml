@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">Impossible de dupliquer le profil \'%1$s\'.</string>
     <string name="errors_app_empty_products">Impossible d\'obtenir les produits, réessayez plus tard.</string>
     <string name="errors_app_empty_profile_name">Le nom du profil est vide.</string>
-    <string name="errors_app_import">Impossible d\'importer les profils.</string>
+    <string name="errors_app_import_binary">Importation d’un fichier binaire.</string>
+    <string name="errors_app_import_generic">Impossible d\'importer les profils.</string>
     <string name="errors_app_incompatible_modules">Certains modules actifs sont incompatibles, essayez d\'en activer un seul.</string>
     <string name="errors_app_incomplete_module">Veuillez terminer la configuration du module %1$s.</string>
     <string name="errors_app_invalid_fields">Champs invalides.</string>

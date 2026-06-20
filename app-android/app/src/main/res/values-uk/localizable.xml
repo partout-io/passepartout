@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">Не вдалося дублювати профіль \'%1$s\'.</string>
     <string name="errors_app_empty_products">Не вдалося отримати продукти, спробуйте пізніше.</string>
     <string name="errors_app_empty_profile_name">Ім\'я профілю порожнє.</string>
-    <string name="errors_app_import">Не вдалося імпортувати профілі.</string>
+    <string name="errors_app_import_binary">Імпортується двійковий файл.</string>
+    <string name="errors_app_import_generic">Не вдалося імпортувати профілі.</string>
     <string name="errors_app_incompatible_modules">Деякі активні модулі несумісні, спробуйте активувати лише один.</string>
     <string name="errors_app_incomplete_module">Будь ласка, завершіть налаштування модуля %1$s.</string>
     <string name="errors_app_invalid_fields">Некоректні поля.</string>

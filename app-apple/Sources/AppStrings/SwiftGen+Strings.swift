@@ -51,8 +51,6 @@ public enum Strings {
     }
     public enum Errors {
       public enum ProfileImporter {
-        /// Importing a binary file.
-        public static let binary = Strings.tr("Localizable", "android.errors.profile_importer.binary", fallback: "Importing a binary file.")
         /// Unable to read profile content.
         public static let empty = Strings.tr("Localizable", "android.errors.profile_importer.empty", fallback: "Unable to read profile content.")
       }
@@ -166,8 +164,6 @@ public enum Strings {
       public static let emptyProducts = Strings.tr("Localizable", "errors.app.empty_products", fallback: "Unable to fetch products, please retry later.")
       /// Profile name is empty.
       public static let emptyProfileName = Strings.tr("Localizable", "errors.app.empty_profile_name", fallback: "Profile name is empty.")
-      /// Unable to import profiles.
-      public static let `import` = Strings.tr("Localizable", "errors.app.import", fallback: "Unable to import profiles.")
       /// Some active modules are incompatible, try to only activate one of them.
       public static let incompatibleModules = Strings.tr("Localizable", "errors.app.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
       /// Please finish the configuration of the %@ module.
@@ -204,6 +200,12 @@ public enum Strings {
       public static let tunnel = Strings.tr("Localizable", "errors.app.tunnel", fallback: "Unable to execute operation.")
       /// Unable to start the import. Make sure that your TV is properly connected to the local network.
       public static let webReceiver = Strings.tr("Localizable", "errors.app.web_receiver", fallback: "Unable to start the import. Make sure that your TV is properly connected to the local network.")
+      public enum Import {
+        /// Importing a binary file.
+        public static let binary = Strings.tr("Localizable", "errors.app.import.binary", fallback: "Importing a binary file.")
+        /// Unable to import profiles.
+        public static let generic = Strings.tr("Localizable", "errors.app.import.generic", fallback: "Unable to import profiles.")
+      }
       public enum Openvpn {
         /// OpenVPN compression is unsafe and no longer supported.
         public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")

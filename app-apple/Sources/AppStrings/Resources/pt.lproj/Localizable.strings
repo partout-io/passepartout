@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "Não foi possível duplicar o perfil '%@'.";
 "errors.app.empty_products" = "Não foi possível buscar os produtos, tente novamente mais tarde.";
 "errors.app.empty_profile_name" = "O nome do perfil está vazio.";
-"errors.app.import" = "Não foi possível importar os perfis.";
+"errors.app.import.binary" = "A importar um ficheiro binário.";
+"errors.app.import.generic" = "Não foi possível importar os perfis.";
 "errors.app.malformed_module" = "O módulo %@ está corrompido. %@";
 "errors.app.module_requires_connection" = "O módulo %@ requer uma conexão ativa de um dos seguintes tipos: %@";
 "errors.app.corrupt_provider_module" = "Não foi possível conectar ao servidor do provedor (motivo=%@).";

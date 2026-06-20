@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">No se pudo duplicar el perfil \'%1$s\'.</string>
     <string name="errors_app_empty_products">No se pudieron obtener productos, por favor vuelve a intentarlo más tarde.</string>
     <string name="errors_app_empty_profile_name">El nombre del perfil está vacío.</string>
-    <string name="errors_app_import">No se pudieron importar los perfiles.</string>
+    <string name="errors_app_import_binary">Importando un archivo binario.</string>
+    <string name="errors_app_import_generic">No se pudieron importar los perfiles.</string>
     <string name="errors_app_incompatible_modules">Algunos módulos activos son incompatibles, intenta activar solo uno de ellos.</string>
     <string name="errors_app_incomplete_module">Por favor, completa la configuración del módulo %1$s.</string>
     <string name="errors_app_invalid_fields">Campos no válidos.</string>

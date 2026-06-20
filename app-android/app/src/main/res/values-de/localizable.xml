@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">Profil \'%1$s\' konnte nicht dupliziert werden.</string>
     <string name="errors_app_empty_products">Produkte konnten nicht abgerufen werden, bitte versuche es später erneut.</string>
     <string name="errors_app_empty_profile_name">Profilname ist leer.</string>
-    <string name="errors_app_import">Profile konnten nicht importiert werden.</string>
+    <string name="errors_app_import_binary">Eine Binärdatei wird importiert.</string>
+    <string name="errors_app_import_generic">Profile konnten nicht importiert werden.</string>
     <string name="errors_app_incompatible_modules">Einige aktive Module sind inkompatibel, versuche, nur eines von ihnen zu aktivieren.</string>
     <string name="errors_app_incomplete_module">Bitte schließen Sie die Konfiguration des %1$s-Moduls ab.</string>
     <string name="errors_app_invalid_fields">Ungültige Felder.</string>

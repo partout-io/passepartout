@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">Kan inte duplicera profil \'%1$s\'.</string>
     <string name="errors_app_empty_products">Kan inte hämta produkter, försök igen senare.</string>
     <string name="errors_app_empty_profile_name">Profilnamnet är tomt.</string>
-    <string name="errors_app_import">Kan inte importera profiler.</string>
+    <string name="errors_app_import_binary">Importerar en binär fil.</string>
+    <string name="errors_app_import_generic">Kan inte importera profiler.</string>
     <string name="errors_app_incompatible_modules">Vissa aktiva moduler är inkompatibla, försök att endast aktivera en.</string>
     <string name="errors_app_incomplete_module">Vänligen slutför konfigurationen av %1$s-modulen.</string>
     <string name="errors_app_invalid_fields">Ogiltiga fält.</string>

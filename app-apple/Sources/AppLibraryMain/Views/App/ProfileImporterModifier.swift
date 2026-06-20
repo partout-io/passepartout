@@ -71,7 +71,7 @@ private extension ProfileImporterModifier {
                 await errorHandler.handle(
                     error,
                     title: Strings.Views.App.Toolbar.importFile,
-                    message: Strings.Errors.App.import
+                    message: Strings.Errors.App.Import.generic
                 )
             }
         }

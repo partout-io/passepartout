@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">Δεν ήταν δυνατή η αντιγραφή του προφίλ \'%1$s\'.</string>
     <string name="errors_app_empty_products">Δεν ήταν δυνατή η ανάκτηση προϊόντων, παρακαλώ δοκιμάστε αργότερα.</string>
     <string name="errors_app_empty_profile_name">Το όνομα του προφίλ είναι κενό.</string>
-    <string name="errors_app_import">Δεν ήταν δυνατή η εισαγωγή προφίλ.</string>
+    <string name="errors_app_import_binary">Γίνεται εισαγωγή δυαδικού αρχείου.</string>
+    <string name="errors_app_import_generic">Δεν ήταν δυνατή η εισαγωγή προφίλ.</string>
     <string name="errors_app_incompatible_modules">Μερικές ενεργές μονάδες είναι ασύμβατες, δοκιμάστε να ενεργοποιήσετε μόνο μία.</string>
     <string name="errors_app_incomplete_module">Ολοκληρώστε τη ρύθμιση του %1$s module.</string>
     <string name="errors_app_invalid_fields">Μη έγκυρα πεδία.</string>

@@ -26,7 +26,8 @@
 "errors.app.duplicate" = "无法复制配置文件 \"%@\"。";
 "errors.app.empty_products" = "无法获取产品，请稍后重试。";
 "errors.app.empty_profile_name" = "配置文件名称为空。";
-"errors.app.import" = "无法导入配置文件。";
+"errors.app.import.binary" = "正在导入二进制文件。";
+"errors.app.import.generic" = "无法导入配置文件。";
 "errors.app.malformed_module" = "模块 %@ 格式错误。%@";
 "errors.app.module_requires_connection" = "模块 %@ 需要以下类型中的一个处于活动连接状态：%@";
 "errors.app.corrupt_provider_module" = "无法连接到提供商服务器（原因=%@）。";

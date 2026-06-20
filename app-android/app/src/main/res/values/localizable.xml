@@ -373,7 +373,8 @@
     <string name="errors_app_duplicate">Unable to duplicate profile \'%1$s\'.</string>
     <string name="errors_app_empty_products">Unable to fetch products, please retry later.</string>
     <string name="errors_app_empty_profile_name">Profile name is empty.</string>
-    <string name="errors_app_import">Unable to import profiles.</string>
+    <string name="errors_app_import_binary">Importing a binary file.</string>
+    <string name="errors_app_import_generic">Unable to import profiles.</string>
     <string name="errors_app_incompatible_modules">Some active modules are incompatible, try to only activate one of them.</string>
     <string name="errors_app_incomplete_module">Please finish the configuration of the %1$s module.</string>
     <string name="errors_app_invalid_fields">Invalid fields.</string>
@@ -431,7 +432,6 @@
     <string name="android_profiles_actions_delete_content_description">Delete profiles</string>
     <string name="android_profiles_layout_list_content_description">List profiles</string>
     <string name="android_profiles_layout_grid_content_description">Grid profiles</string>
-    <string name="android_errors_profile_importer_binary">Importing a binary file.</string>
     <string name="android_errors_profile_importer_empty">Unable to read profile content.</string>
     <string name="errors_wireguard_interface_title">Invalid interface</string>
     <string name="errors_wireguard_interface_messagenamerequired">Interface name is required</string>
