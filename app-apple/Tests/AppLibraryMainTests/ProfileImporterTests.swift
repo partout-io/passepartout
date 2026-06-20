@@ -8,10 +8,10 @@ import Foundation
 import Testing
 
 @MainActor
-struct AppProfileImporterTests {
+struct ProfileImporterTests {
     @Test
     func givenNoURLs_whenImport_thenNothingIsImported() async throws {
-        let sut = AppProfileImporter()
+        let sut = ProfileImporter()
         let profileManager = ProfileManager(profiles: [])
 
         try await sut.tryImport(
@@ -24,7 +24,7 @@ struct AppProfileImporterTests {
 
     @Test
     func givenURL_whenImport_thenOneProfileIsImported() async throws {
-        let sut = AppProfileImporter()
+        let sut = ProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.txt")!
 
@@ -56,7 +56,7 @@ struct AppProfileImporterTests {
 
     @Test
     func givenURLRequiringPassphrase_whenImportWithPassphrase_thenProfileIsImported() async throws {
-        let sut = AppProfileImporter()
+        let sut = ProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
 
@@ -95,7 +95,7 @@ struct AppProfileImporterTests {
 
     @Test
     func givenURLsRequiringPassphrase_whenImport_thenURLsArePending() async throws {
-        let sut = AppProfileImporter()
+        let sut = ProfileImporter()
         let profileManager = ProfileManager(profiles: [])
         let url = URL(string: "file:///filename.encrypted")!
 

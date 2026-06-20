@@ -30,7 +30,7 @@ struct ProfileContainerView: View, Routable {
                 tunnel: tunnel,
                 flow: flow
             ))
-            .modifier(AppProfileImporterModifier(
+            .modifier(ProfileImporterModifier(
                 profileObservable: profileObservable,
                 isPresented: $isImporting,
                 errorHandler: errorHandler
