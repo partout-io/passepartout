@@ -36,7 +36,7 @@ import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeListDivider
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
@@ -119,10 +119,11 @@ private fun CreditsListView(
     val languages = remember(credits) {
         credits.translations.keys.sortedBy { it.localizedLanguageName() }
     }
+    val theme = LocalTheme.current
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
+        contentPadding = PaddingValues(vertical = theme.spacing.small)
     ) {
         if (licenses.isNotEmpty()) {
             item {
@@ -218,6 +219,8 @@ private fun LicenseView(
     content: String?,
     onContent: (String) -> Unit
 ) {
+    val theme = LocalTheme.current
+
     LaunchedEffect(license.licenseURL, content) {
         if (content == null) {
             val loadedContent = withContext(Dispatchers.IO) {
@@ -233,7 +236,7 @@ private fun LicenseView(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Theme.Spacing.large)
+        contentPadding = PaddingValues(theme.spacing.large)
     ) {
         item {
             Text(
@@ -246,7 +249,7 @@ private fun LicenseView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = Theme.Spacing.xxLarge),
+                        .padding(top = theme.spacing.xxLarge),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator()
@@ -270,10 +273,12 @@ private fun NoticeView(
     modifier: Modifier,
     notice: CreditsNoticesInner
 ) {
+    val theme = LocalTheme.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(Theme.Spacing.large)
+            .padding(theme.spacing.large)
     ) {
         Text(
             text = notice.name,
@@ -281,7 +286,7 @@ private fun NoticeView(
         )
         Text(
             text = notice.message,
-            modifier = Modifier.padding(top = Theme.Spacing.large),
+            modifier = Modifier.padding(top = theme.spacing.large),
             style = MaterialTheme.typography.bodyLarge
         )
     }

@@ -16,7 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.moduleType
 import io.partout.extensions.withInteractiveOpenVPNCredentials
@@ -68,6 +68,7 @@ private fun InteractiveOpenVPNView(
     var otp by remember(profile.id, module.id) {
         mutableStateOf("")
     }
+    val theme = LocalTheme.current
     val requiresOTP = otpMethod != OpenVPNCredentialsOTPMethod.none
 
     AlertDialog(
@@ -77,7 +78,7 @@ private fun InteractiveOpenVPNView(
         },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(Theme.Spacing.medium)
+                verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)
             ) {
                 if (requiresOTP) {
                     OutlinedTextField(

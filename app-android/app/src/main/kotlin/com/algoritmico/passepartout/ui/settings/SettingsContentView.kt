@@ -32,6 +32,7 @@ import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.Theme
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
@@ -47,6 +48,8 @@ fun SettingsContentView(
     onBack: () -> Unit,
     onDismissRequest: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -64,7 +67,7 @@ fun SettingsContentView(
                                 onClick = onBack
                             ) {
                                 Icon(
-                                    imageVector = BackIcon,
+                                    imageVector = backIcon(theme),
                                     contentDescription = "Back"
                                 )
                             }
@@ -76,7 +79,7 @@ fun SettingsContentView(
                                 onClick = onDismissRequest
                             ) {
                                 Icon(
-                                    imageVector = CloseIcon,
+                                    imageVector = closeIcon(theme),
                                     contentDescription = "Close"
                                 )
                             }
@@ -122,12 +125,13 @@ private fun SettingsListView(
     linkContent: @Composable (SettingsCoordinatorRoute) -> Unit,
     versionUpdateContent: @Composable () -> Unit
 ) {
+    val theme = LocalTheme.current
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
+        contentPadding = PaddingValues(vertical = theme.spacing.small)
     ) {
         item {
             ThemeListSection {
@@ -159,16 +163,18 @@ private fun SettingsListView(
 private val SettingsCoordinatorRoute?.routeIndex: Int
     get() = this?.index ?: -1
 
-private val CloseIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun closeIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Close",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(18.3f, 5.71f)
@@ -186,17 +192,20 @@ private val CloseIcon: ImageVector
             close()
         }
     }.build()
+}
 
-private val BackIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun backIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Back",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(20f, 11f)
@@ -211,3 +220,4 @@ private val BackIcon: ImageVector
             close()
         }
     }.build()
+}

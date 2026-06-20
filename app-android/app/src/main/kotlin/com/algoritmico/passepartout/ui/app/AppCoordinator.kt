@@ -38,6 +38,7 @@ import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalProfileObservable
 import com.algoritmico.passepartout.ui.settings.SettingsCoordinator
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.Theme
 import kotlinx.coroutines.launch
 
@@ -182,6 +183,7 @@ private fun AppCoordinatorTopBar(
     onSettings: () -> Unit
 ) {
     val isContextualMode = contextualProfileCount > 0
+    val theme = LocalTheme.current
 
     TopAppBar(
         title = {
@@ -196,7 +198,7 @@ private fun AppCoordinatorTopBar(
                     onClick = onClearContextualMode
                 ) {
                     Icon(
-                        imageVector = CloseIcon,
+                        imageVector = closeIcon(theme),
                         contentDescription = "Cancel"
                     )
                 }
@@ -230,12 +232,14 @@ private fun AppCoordinatorActions(
     onDeleteProfiles: () -> Unit,
     onSettings: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     if (isContextualMode) {
         IconButton(
             onClick = onDeleteProfiles
         ) {
             Icon(
-                imageVector = DeleteIcon,
+                imageVector = deleteIcon(theme),
                 contentDescription = "Delete profiles"
             )
         }
@@ -244,7 +248,7 @@ private fun AppCoordinatorActions(
             onClick = onSettings
         ) {
             Icon(
-                imageVector = SettingsIcon,
+                imageVector = settingsIcon(theme),
                 contentDescription = "Settings"
             )
         }
@@ -255,11 +259,13 @@ private fun AppCoordinatorActions(
 private fun AddProfileButton(
     onClick: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     FloatingActionButton(
         onClick = onClick
     ) {
         Icon(
-            imageVector = AddIcon,
+            imageVector = addIcon(theme),
             contentDescription = "Add profile"
         )
     }
@@ -271,6 +277,8 @@ private fun ImportProfileSheet(
     onDismissRequest: () -> Unit,
     onImportProfile: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest
     ) {
@@ -280,14 +288,14 @@ private fun ImportProfileSheet(
             },
             leadingContent = {
                 Icon(
-                    imageVector = ImportFileIcon,
+                    imageVector = importFileIcon(theme),
                     contentDescription = null
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onImportProfile)
-                .padding(bottom = Theme.Spacing.xxLarge)
+                .padding(bottom = theme.spacing.xxLarge)
         )
     }
 }
@@ -336,16 +344,18 @@ private fun AppCoordinatorContextualPreview() {
     }
 }
 
-private val AddIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun addIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Add",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(19f, 13f)
@@ -363,17 +373,20 @@ private val AddIcon: ImageVector
             close()
         }
     }.build()
+}
 
-private val CloseIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun closeIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Close",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(18.3f, 5.71f)
@@ -391,17 +404,20 @@ private val CloseIcon: ImageVector
             close()
         }
     }.build()
+}
 
-private val ImportFileIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun importFileIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "ImportFile",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(14f, 2f)
@@ -427,17 +443,20 @@ private val ImportFileIcon: ImageVector
             close()
         }
     }.build()
+}
 
-private val SettingsIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun settingsIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Settings",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(19.43f, 12.98f)
@@ -487,17 +506,20 @@ private val SettingsIcon: ImageVector
             close()
         }
     }.build()
+}
 
-private val DeleteIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun deleteIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Delete",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(6f, 19f)
@@ -523,3 +545,4 @@ private val DeleteIcon: ImageVector
             close()
         }
     }.build()
+}

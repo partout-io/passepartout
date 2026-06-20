@@ -23,7 +23,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 
 @Composable
@@ -134,10 +134,12 @@ private fun PushDestination(
 private fun PlaceholderDestination(
     title: String
 ) {
+    val theme = LocalTheme.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(Theme.Spacing.xxLarge),
+            .padding(theme.spacing.xxLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

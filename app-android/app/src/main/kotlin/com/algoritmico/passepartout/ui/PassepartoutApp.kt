@@ -35,6 +35,7 @@ import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.observables.VersionObservable
 import com.algoritmico.passepartout.ui.alerts.GenericErrorAlert
 import com.algoritmico.passepartout.ui.app.AppCoordinator
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.Theme
 
 @Composable
@@ -48,17 +49,15 @@ fun PassepartoutApp(
     versionObservable: VersionObservable,
     appConfiguration: AppConfiguration,
     errorHandler: ErrorHandler,
+    theme: Theme = Theme(),
     onImportProfile: () -> Unit
 ) {
-    val colorScheme = if (isSystemInDarkTheme()) {
-        Theme.darkColorScheme
-    } else {
-        Theme.lightColorScheme
-    }
+    val colorScheme = theme.colorScheme(isDark = isSystemInDarkTheme())
     var lastError by remember {
         mutableStateOf<AppError?>(null)
     }
     CompositionLocalProvider(
+        LocalTheme provides theme,
         LocalAppConfiguration provides appConfiguration,
         LocalConfigObservable provides configObservable,
         LocalDiagnosticsObservable provides diagnosticsObservable,

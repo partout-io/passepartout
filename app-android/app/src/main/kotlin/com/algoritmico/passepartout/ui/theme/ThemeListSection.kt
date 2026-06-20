@@ -32,24 +32,26 @@ fun ThemeListSection(
 
 @Composable
 fun ThemeListDivider() {
-    HorizontalDivider(modifier = Modifier.padding(start = Theme.Spacing.large))
+    val theme = LocalTheme.current
+    HorizontalDivider(modifier = Modifier.padding(start = theme.spacing.large))
 }
 
 @Composable
 fun ThemeListSectionHeader(
     title: String
 ) {
+    val theme = LocalTheme.current
     Text(
         text = title,
         modifier = Modifier.padding(
-            start = Theme.Spacing.large,
-            top = Theme.Spacing.xLarge,
-            end = Theme.Spacing.large,
-            bottom = Theme.Spacing.small
+            start = theme.spacing.large,
+            top = theme.spacing.xLarge,
+            end = theme.spacing.large,
+            bottom = theme.spacing.small
         ),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,
-        fontWeight = Theme.Weight.relevant
+        fontWeight = theme.weight.relevant
     )
 }
 
@@ -57,13 +59,14 @@ fun ThemeListSectionHeader(
 private fun ThemeListSectionFooter(
     text: String
 ) {
+    val theme = LocalTheme.current
     Text(
         text = text,
         modifier = Modifier.padding(
-            start = Theme.Spacing.large,
-            top = Theme.Spacing.small,
-            end = Theme.Spacing.large,
-            bottom = Theme.Spacing.medium
+            start = theme.spacing.large,
+            top = theme.spacing.small,
+            end = theme.spacing.large,
+            bottom = theme.spacing.medium
         ),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant

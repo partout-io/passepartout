@@ -41,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.models.AppProfileHeader
@@ -56,7 +57,7 @@ import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.extensions.statusText
 import com.algoritmico.passepartout.ui.extensions.transferText
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
@@ -274,10 +275,12 @@ private fun MobileProfilesView(
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
 ) {
+    val theme = LocalTheme.current
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Theme.Spacing.large),
-        verticalArrangement = Arrangement.spacedBy(Theme.Spacing.medium)
+        contentPadding = PaddingValues(theme.spacing.large),
+        verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)
     ) {
         item {
             Text(
@@ -317,11 +320,12 @@ private fun ProfileRow(
     onProfileToggle: (String, Boolean) -> Unit,
     onProfileContextualAction: (String) -> Unit
 ) {
+    val theme = LocalTheme.current
     val showsTransfer = lastErrorCode == null && status == AppProfileStatus.connected && transfer != null
     val statusDescription = lastErrorCode ?: status.statusText()
     val transferDescription = transfer?.transferText()
     val statusDescriptionColor = if (lastErrorCode != null) {
-        ProfileStatusErrorColor
+        theme.colors.error
     } else {
         statusColor(status)
     }
@@ -353,17 +357,17 @@ private fun ProfileRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Theme.Spacing.large, vertical = Theme.Spacing.large),
+                .padding(horizontal = theme.spacing.large, vertical = theme.spacing.large),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(Theme.Spacing.xSmall)
+                verticalArrangement = Arrangement.spacedBy(theme.spacing.xSmall)
             ) {
                 Text(
                     text = header.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = Theme.Weight.strong
+                    fontWeight = theme.weight.strong
                 )
                 Crossfade(
                     targetState = showsTransfer,
@@ -376,13 +380,13 @@ private fun ProfileRow(
                             statusDescription
                         },
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = Theme.Weight.secondary,
+                        fontWeight = theme.weight.secondary,
                         color = animatedStatusDescriptionColor
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(Theme.Spacing.large))
+            Spacer(modifier = Modifier.width(theme.spacing.large))
 
             Switch(
                 checked = isEnabled,
@@ -408,10 +412,12 @@ private fun EmptyProfilesView(
     modifier: Modifier,
     onImportProfile: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(Theme.Spacing.xxLarge),
+            .padding(theme.spacing.xxLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -419,13 +425,13 @@ private fun EmptyProfilesView(
             text = "No profiles imported yet.",
             style = MaterialTheme.typography.headlineSmall
         )
-        Spacer(modifier = Modifier.size(Theme.Spacing.medium))
+        Spacer(modifier = Modifier.size(theme.spacing.medium))
         Text(
             text = "Import a profile file to get started.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.size(Theme.Spacing.xLarge))
+        Spacer(modifier = Modifier.size(theme.spacing.xLarge))
         TextButton(onClick = onImportProfile) {
             Text("Import profile")
         }
@@ -433,13 +439,17 @@ private fun EmptyProfilesView(
 }
 
 @Composable
-private fun statusColor(status: AppProfileStatus) = when (status) {
-    AppProfileStatus.connected -> Theme.Colors.active
-    AppProfileStatus.connecting,
-    AppProfileStatus.disconnecting -> Theme.Colors.pending
-    AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(
-        alpha = Theme.Alpha.secondaryStatus
-    )
+private fun statusColor(status: AppProfileStatus): Color {
+    val theme = LocalTheme.current
+
+    return when (status) {
+        AppProfileStatus.connected -> theme.colors.active
+        AppProfileStatus.connecting,
+        AppProfileStatus.disconnecting -> theme.colors.pending
+        AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(
+            alpha = theme.alpha.secondaryStatus
+        )
+    }
 }
 
 private fun openVpnSettings(context: Context, errorHandler: ErrorHandler) {
@@ -485,5 +495,3 @@ private fun AppProfileStatus.canToggle(): Boolean {
         AppProfileStatus.connected -> true
     }
 }
-
-private val ProfileStatusErrorColor = Theme.Colors.error

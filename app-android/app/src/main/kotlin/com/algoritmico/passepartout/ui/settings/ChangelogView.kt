@@ -31,7 +31,7 @@ import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 import com.algoritmico.passepartout.observables.safeOpenUri
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
 import com.algoritmico.passepartout.ui.theme.ThemeListDivider
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
@@ -52,6 +52,7 @@ fun ChangelogView(
     var isLoading by remember(versionNumber) {
         mutableStateOf(true)
     }
+    val theme = LocalTheme.current
 
     LaunchedEffect(versionNumber, versionObservable) {
         isLoading = true
@@ -68,7 +69,7 @@ fun ChangelogView(
         isLoading -> ThemeProgressView(modifier = modifier)
         entries.isEmpty() -> ThemeEmptyMessage(
             text = "No content",
-            modifier = modifier.padding(Theme.Spacing.xxLarge)
+            modifier = modifier.padding(theme.spacing.xxLarge)
         )
         else -> ChangelogListView(
             modifier = modifier,
@@ -87,10 +88,11 @@ private fun ChangelogListView(
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
+    val theme = LocalTheme.current
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = Theme.Spacing.small),
+        contentPadding = PaddingValues(vertical = theme.spacing.small),
         verticalArrangement = Arrangement.Top
     ) {
         item {

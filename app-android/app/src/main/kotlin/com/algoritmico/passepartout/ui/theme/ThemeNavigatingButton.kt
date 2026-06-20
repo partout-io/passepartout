@@ -22,6 +22,7 @@ fun ThemeNavigatingButton(
     trailingText: String? = null,
     onClick: () -> Unit
 ) {
+    val theme = LocalTheme.current
     ListItem(
         modifier = Modifier
             .fillMaxWidth()
@@ -34,7 +35,7 @@ fun ThemeNavigatingButton(
                 ThemeTrailingValue(trailingText)
             } else {
                 Icon(
-                    imageVector = NavigateIcon,
+                    imageVector = navigateIcon(theme),
                     contentDescription = null
                 )
             }
@@ -42,16 +43,18 @@ fun ThemeNavigatingButton(
     )
 }
 
-private val NavigateIcon: ImageVector
-    get() = ImageVector.Builder(
+private fun navigateIcon(
+    theme: Theme
+): ImageVector {
+    return ImageVector.Builder(
         name = "Navigate",
-        defaultWidth = Theme.Icon.size,
-        defaultHeight = Theme.Icon.size,
+        defaultWidth = theme.icon.size,
+        defaultHeight = theme.icon.size,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {
         path(
-            fill = SolidColor(Theme.Colors.icon),
+            fill = SolidColor(theme.colors.icon),
             pathFillType = PathFillType.NonZero
         ) {
             moveTo(10f, 6f)
@@ -63,3 +66,4 @@ private val NavigateIcon: ImageVector
             close()
         }
     }.build()
+}

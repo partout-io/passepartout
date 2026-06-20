@@ -42,7 +42,7 @@ import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import kotlinx.coroutines.CoroutineScope
@@ -100,9 +100,11 @@ private fun AdvancedPreferencesContent(
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
     onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
+    val theme = LocalTheme.current
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
+        contentPadding = PaddingValues(vertical = theme.spacing.small)
     ) {
         item {
             if (canOverride) {

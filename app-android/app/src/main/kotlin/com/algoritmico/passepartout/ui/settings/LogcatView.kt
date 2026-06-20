@@ -26,7 +26,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.LocalConstants
 import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 
@@ -82,17 +82,19 @@ private fun LogcatListView(
     lines: List<String>,
     state: LazyListState
 ) {
+    val theme = LocalTheme.current
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = state,
-        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
+        contentPadding = PaddingValues(vertical = theme.spacing.small)
     ) {
         itemsIndexed(lines) { _, line ->
             Text(
                 text = line,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Theme.Spacing.large, vertical = Theme.Spacing.xSmall),
+                    .padding(horizontal = theme.spacing.large, vertical = theme.spacing.xSmall),
                 style = MaterialTheme.typography.bodySmall,
                 fontFamily = FontFamily.Monospace
             )

@@ -27,7 +27,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import kotlinx.coroutines.launch
 
 private enum class ReportIssueModalRoute {
@@ -44,6 +44,7 @@ fun ReportIssueButton(
     val diagnosticsObservable = LocalDiagnosticsObservable.current
     val errorHandler = LocalErrorHandler.current
     val coroutineScope = rememberCoroutineScope()
+    val theme = LocalTheme.current
     var isPending by remember {
         mutableStateOf(false)
     }
@@ -90,15 +91,15 @@ fun ReportIssueButton(
         enabled = !isPending,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.Spacing.large, vertical = Theme.Spacing.small),
+            .padding(horizontal = theme.spacing.large, vertical = theme.spacing.small),
         onClick = {
             modalRoute = ReportIssueModalRoute.Comment
         }
     ) {
         if (isPending) {
             CircularProgressIndicator(
-                modifier = Modifier.size(Theme.Progress.smallSize),
-                strokeWidth = Theme.Progress.thinStroke,
+                modifier = Modifier.size(theme.progress.smallSize),
+                strokeWidth = theme.progress.thinStroke,
                 color = MaterialTheme.colorScheme.onPrimary
             )
         } else {

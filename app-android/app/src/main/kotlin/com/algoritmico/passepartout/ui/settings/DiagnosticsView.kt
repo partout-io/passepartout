@@ -20,7 +20,7 @@ import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
-import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
@@ -36,9 +36,10 @@ fun DiagnosticsView(
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )
+    val theme = LocalTheme.current
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = Theme.Spacing.small)
+        contentPadding = PaddingValues(vertical = theme.spacing.small)
     ) {
         if (isBeta) {
             item {
