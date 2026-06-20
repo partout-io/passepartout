@@ -6,12 +6,8 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,6 +25,8 @@ import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.theme.LocalTheme
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.theme.ThemeProgressViewStyle
 import kotlinx.coroutines.launch
 
 private enum class ReportIssueModalRoute {
@@ -98,10 +96,7 @@ fun ReportIssueButton(
         }
     ) {
         if (isPending) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            ThemeProgressView(style = ThemeProgressViewStyle.inlineButton)
         } else {
             Text(title)
         }

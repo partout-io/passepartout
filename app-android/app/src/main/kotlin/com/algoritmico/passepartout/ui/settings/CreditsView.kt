@@ -6,16 +6,13 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +36,8 @@ import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.theme.ThemeProgressViewStyle
 import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
 import com.algoritmico.passepartout.ui.theme.themeListSection
 import kotlinx.coroutines.Dispatchers
@@ -232,14 +231,12 @@ private fun LicenseView(
         }
         if (content == null) {
             item {
-                Row(
+                ThemeProgressView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = theme.spacing.xxLarge),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                    style = ThemeProgressViewStyle.centered
+                )
             }
         } else {
             items(content.lines()) { line ->

@@ -6,15 +6,12 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.business.extensions.blogURL
 import com.algoritmico.passepartout.business.extensions.disclaimerURL
 import com.algoritmico.passepartout.business.extensions.privacyPolicyURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
-import com.algoritmico.passepartout.ui.LocalErrorHandler
-import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.ThemeExternalLinkRow
 import com.algoritmico.passepartout.ui.theme.ThemeList
-import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @Composable
@@ -28,7 +25,7 @@ fun LinksView(
     ThemeList(modifier = modifier) {
         themeListSection(header = "Support") {
             item {
-                ExternalLinkRow(
+                ThemeExternalLinkRow(
                     title = "Open discussion",
                     url = constants.github.discussionsURL
                 )
@@ -36,13 +33,13 @@ fun LinksView(
         }
         themeListSection(header = "Web") {
             item {
-                ExternalLinkRow(
+                ThemeExternalLinkRow(
                     title = "Home page",
                     url = websites.homeURL
                 )
             }
             item {
-                ExternalLinkRow(
+                ThemeExternalLinkRow(
                     title = "Blog",
                     url = websites.blogURL
                 )
@@ -50,32 +47,17 @@ fun LinksView(
         }
         themeListSection {
             item {
-                ExternalLinkRow(
+                ThemeExternalLinkRow(
                     title = "Disclaimer",
                     url = websites.disclaimerURL
                 )
             }
             item {
-                ExternalLinkRow(
+                ThemeExternalLinkRow(
                     title = "Privacy policy",
                     url = websites.privacyPolicyURL
                 )
             }
         }
     }
-}
-
-@Composable
-private fun ExternalLinkRow(
-    title: String,
-    url: String
-) {
-    val uriHandler = LocalUriHandler.current
-    val errorHandler = LocalErrorHandler.current
-    ThemeNavigatingButton(
-        title = title,
-        onClick = {
-            uriHandler.safeOpenUri(url, errorHandler)
-        }
-    )
 }
