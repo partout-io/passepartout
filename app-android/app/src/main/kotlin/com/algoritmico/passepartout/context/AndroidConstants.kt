@@ -21,6 +21,7 @@ data class AndroidConstants(
     data class Diagnostics(
         val logcatTimeoutSeconds: Int = 3,
         val logcatViewHours: Long = 6L,
+        val logcatLevel: String = "I",
         val logcatDestroyTimeoutMillis: Long = 500L,
         val exitReasonsFilename: String = "exit-reasons.txt",
         val exitReasonsLimit: Int = 8,

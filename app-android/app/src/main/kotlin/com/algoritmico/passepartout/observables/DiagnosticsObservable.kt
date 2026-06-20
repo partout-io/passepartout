@@ -154,7 +154,7 @@ class DiagnosticsObservable(
             "-v",
             "time"
         ) + tags.map {
-            "$it:I" // INFO
+            "$it:${diagnosticsConstants.logcatLevel}"
         } + "*:S"
     }
 
