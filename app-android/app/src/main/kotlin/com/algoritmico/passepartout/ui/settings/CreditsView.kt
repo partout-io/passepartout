@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
@@ -45,8 +46,6 @@ import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.Locale
 
-private const val TAG = "CreditsView"
-
 @Composable
 fun CreditsView(
     modifier: Modifier = Modifier
@@ -56,7 +55,7 @@ fun CreditsView(
         runCatchingNonFatal {
             context.credits()
         }.getOrElse {
-            AppLog.w(TAG, "Unable to load credits", it)
+            AppLog.w(Tags.APP, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }

@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import com.algoritmico.passepartout.context.AppLog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,18 +25,18 @@ import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
+import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.models.ChangelogEntry
+import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalVersionObservable
-import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
 import com.algoritmico.passepartout.ui.theme.ThemeListDivider
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
-
-private const val TAG = "ChangelogView"
 
 @Composable
 fun ChangelogView(
@@ -59,7 +58,7 @@ fun ChangelogView(
         entries = runCatchingNonFatal {
             versionObservable.fetchChangelog(versionNumber)
         }.getOrElse {
-            AppLog.w(TAG, "Unable to load changelog", it)
+            AppLog.w(Tags.APP, "Unable to load changelog", it)
             emptyList()
         }
         isLoading = false
