@@ -7,8 +7,10 @@ package com.algoritmico.passepartout.ui.app
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,19 +22,25 @@ import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 
 @Composable
-fun ProfileListView(
+fun ProfileGridView(
     modifier: Modifier,
     state: ProfileContainerState,
     actions: ProfileContainerActions = ProfileContainerActions()
 ) {
     val theme = LocalTheme.current
 
-    LazyColumn(
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = theme.grid.minCellWidth),
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(theme.spacing.large),
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.medium),
         verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)
     ) {
-        item {
+        item(
+            span = {
+                GridItemSpan(maxLineSpan)
+            }
+        ) {
             Text(
                 text = "My Profiles",
                 style = MaterialTheme.typography.titleLarge
@@ -57,15 +65,15 @@ fun ProfileListView(
     }
 }
 
-@Preview(widthDp = 393, heightDp = 852)
+@Preview(widthDp = 840, heightDp = 852)
 @Composable
-private fun ProfileListViewPreview() {
+private fun ProfileGridViewPreview() {
     MaterialTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            ProfileListView(
+            ProfileGridView(
                 modifier = Modifier,
                 state = ProfileContainerState(
                     headers = PreviewProfileHeaders,

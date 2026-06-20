@@ -23,6 +23,8 @@ data class Theme(
     val lightColorScheme: ColorScheme = DefaultLightColorScheme,
     val darkColorScheme: ColorScheme = DefaultDarkColorScheme,
     val spacing: ThemeSpacing = ThemeSpacing(),
+    val layout: ThemeLayout = ThemeLayout(),
+    val grid: ThemeGrid = ThemeGrid(),
     val animation: ThemeAnimation = ThemeAnimation(),
     val weight: ThemeWeight = ThemeWeight(),
     val colors: ThemeColors = ThemeColors(),
@@ -65,6 +67,16 @@ data class ThemeSpacing(
     val large: Dp = 16.dp,
     val xLarge: Dp = 20.dp,
     val xxLarge: Dp = 24.dp
+)
+
+@Immutable
+data class ThemeLayout(
+    val tabletMinWidth: Dp = 600.dp
+)
+
+@Immutable
+data class ThemeGrid(
+    val minCellWidth: Dp = 320.dp
 )
 
 @Immutable

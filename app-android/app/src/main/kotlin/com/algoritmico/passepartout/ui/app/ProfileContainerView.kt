@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -227,7 +228,7 @@ fun ProfileContainerView(
         return
     }
 
-    ProfileListView(
+    ProfileStyleView(
         modifier = modifier,
         state = ProfileContainerState(
             headers = headers,
@@ -258,6 +259,31 @@ fun ProfileContainerView(
             onProfileContextualAction = onProfileContextualAction
         )
     )
+}
+
+@Composable
+private fun ProfileStyleView(
+    modifier: Modifier,
+    state: ProfileContainerState,
+    actions: ProfileContainerActions
+) {
+    val theme = LocalTheme.current
+
+    BoxWithConstraints(modifier = modifier) {
+        if (maxWidth >= theme.layout.tabletMinWidth) {
+            ProfileGridView(
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                actions = actions
+            )
+        } else {
+            ProfileListView(
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                actions = actions
+            )
+        }
+    }
 }
 
 @Composable
