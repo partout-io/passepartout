@@ -56,8 +56,8 @@ fun Theme.imageVector(
 private fun Theme.profileImportFileImageVector(): ImageVector {
     return ImageVector.Builder(
         name = "ProfileImportFile",
-        defaultWidth = icon.size,
-        defaultHeight = icon.size,
+        defaultWidth = Icons.Filled.Add.defaultWidth,
+        defaultHeight = Icons.Filled.Add.defaultHeight,
         viewportWidth = 24f,
         viewportHeight = 24f
     ).apply {

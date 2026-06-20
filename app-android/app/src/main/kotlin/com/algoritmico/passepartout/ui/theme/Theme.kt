@@ -23,8 +23,6 @@ data class Theme(
     val lightColorScheme: ColorScheme = DefaultLightColorScheme,
     val darkColorScheme: ColorScheme = DefaultDarkColorScheme,
     val spacing: ThemeSpacing = ThemeSpacing(),
-    val icon: ThemeIcon = ThemeIcon(),
-    val progress: ThemeProgress = ThemeProgress(),
     val weight: ThemeWeight = ThemeWeight(),
     val colors: ThemeColors = ThemeColors(),
     val alpha: ThemeAlpha = ThemeAlpha()
@@ -66,17 +64,6 @@ data class ThemeSpacing(
     val large: Dp = 16.dp,
     val xLarge: Dp = 20.dp,
     val xxLarge: Dp = 24.dp
-)
-
-@Immutable
-data class ThemeIcon(
-    val size: Dp = 24.dp
-)
-
-@Immutable
-data class ThemeProgress(
-    val smallSize: Dp = 18.dp,
-    val thinStroke: Dp = 2.dp
 )
 
 @Immutable
