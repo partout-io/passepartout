@@ -4,23 +4,13 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,19 +18,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.faqURL
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
-import com.algoritmico.passepartout.ui.theme.ListItemTrailingText
+import com.algoritmico.passepartout.ui.theme.ThemeNavigationAnimatedContent
+import com.algoritmico.passepartout.ui.theme.ThemeImage
+import com.algoritmico.passepartout.ui.theme.ThemeImageName
+import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
+import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +58,7 @@ fun SettingsContentView(
                                 onClick = onBack
                             ) {
                                 Icon(
-                                    imageVector = BackIcon,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Back"
                                 )
                             }
@@ -81,8 +69,8 @@ fun SettingsContentView(
                             IconButton(
                                 onClick = onDismissRequest
                             ) {
-                                Icon(
-                                    imageVector = CloseIcon,
+                                ThemeImage(
+                                    name = ThemeImageName.close,
                                     contentDescription = "Close"
                                 )
                             }
@@ -91,23 +79,10 @@ fun SettingsContentView(
                 )
             }
         ) { innerPadding ->
-            AnimatedContent(
+            ThemeNavigationAnimatedContent(
                 modifier = Modifier.padding(innerPadding),
                 targetState = navigationRoute,
-                transitionSpec = {
-                    val direction = if (targetState.routeIndex > initialState.routeIndex) {
-                        AnimatedContentTransitionScope.SlideDirection.Left
-                    } else {
-                        AnimatedContentTransitionScope.SlideDirection.Right
-                    }
-                    slideIntoContainer(
-                        towards = direction,
-                        animationSpec = tween()
-                    ) togetherWith slideOutOfContainer(
-                        towards = direction,
-                        animationSpec = tween()
-                    ) using SizeTransform(clip = false)
-                },
+                routeIndex = { it.routeIndex },
                 label = "Settings navigation"
             ) { route ->
                 if (route == null) {
@@ -131,162 +106,41 @@ private fun SettingsListView(
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
-        item {
-            SettingsSection {
+    ThemeList {
+        themeListSection {
+            item {
                 linkContent(SettingsCoordinatorRoute.Preferences)
+            }
+            item {
                 linkContent(SettingsCoordinatorRoute.Version)
+            }
+            item {
                 versionUpdateContent()
             }
         }
-        item {
-            SettingsSection(header = "About") {
+        themeListSection(header = "About") {
+            item {
                 linkContent(SettingsCoordinatorRoute.Links)
+            }
+            item {
                 linkContent(SettingsCoordinatorRoute.Credits)
             }
         }
-        item {
-            SettingsSection(header = "Troubleshooting") {
-                SettingsLinkRow(
+        themeListSection(header = "Troubleshooting") {
+            item {
+                ThemeNavigatingButton(
                     title = "FAQ",
                     onClick = {
                         uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL, errorHandler)
                     }
                 )
+            }
+            item {
                 linkContent(SettingsCoordinatorRoute.Diagnostics)
             }
         }
     }
 }
 
-@Composable
-private fun SettingsSection(
-    header: String? = null,
-    content: @Composable () -> Unit
-) {
-    Column {
-        if (header != null) {
-            Text(
-                text = header,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 20.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        content()
-        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
-    }
-}
-
-@Composable
-fun SettingsLinkRow(
-    title: String,
-    trailingText: String? = null,
-    onClick: () -> Unit
-) {
-    ListItem(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        headlineContent = {
-            Text(title)
-        },
-        trailingContent = {
-            if (trailingText != null) {
-                ListItemTrailingText(trailingText)
-            } else {
-                Icon(
-                    imageVector = ChevronRightIcon,
-                    contentDescription = null
-                )
-            }
-        }
-    )
-}
-
 private val SettingsCoordinatorRoute?.routeIndex: Int
     get() = this?.index ?: -1
-
-private val CloseIcon: ImageVector
-    get() = ImageVector.Builder(
-        name = "Close",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f
-    ).apply {
-        path(
-            fill = SolidColor(Color.Black),
-            pathFillType = PathFillType.NonZero
-        ) {
-            moveTo(18.3f, 5.71f)
-            lineTo(16.89f, 4.29f)
-            lineTo(12f, 9.17f)
-            lineTo(7.11f, 4.29f)
-            lineTo(5.7f, 5.71f)
-            lineTo(10.59f, 10.59f)
-            lineTo(5.7f, 15.48f)
-            lineTo(7.11f, 16.9f)
-            lineTo(12f, 12f)
-            lineTo(16.89f, 16.9f)
-            lineTo(18.3f, 15.48f)
-            lineTo(13.41f, 10.59f)
-            close()
-        }
-    }.build()
-
-private val BackIcon: ImageVector
-    get() = ImageVector.Builder(
-        name = "Back",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f
-    ).apply {
-        path(
-            fill = SolidColor(Color.Black),
-            pathFillType = PathFillType.NonZero
-        ) {
-            moveTo(20f, 11f)
-            horizontalLineTo(7.83f)
-            lineTo(13.42f, 5.41f)
-            lineTo(12f, 4f)
-            lineTo(4f, 12f)
-            lineTo(12f, 20f)
-            lineTo(13.41f, 18.59f)
-            lineTo(7.83f, 13f)
-            horizontalLineTo(20f)
-            close()
-        }
-    }.build()
-
-private val ChevronRightIcon: ImageVector
-    get() = ImageVector.Builder(
-        name = "ChevronRight",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f
-    ).apply {
-        path(
-            fill = SolidColor(Color.Black),
-            pathFillType = PathFillType.NonZero
-        ) {
-            moveTo(10f, 6f)
-            lineTo(8.59f, 7.41f)
-            lineTo(13.17f, 12f)
-            lineTo(8.59f, 16.59f)
-            lineTo(10f, 18f)
-            lineTo(16f, 12f)
-            close()
-        }
-    }.build()

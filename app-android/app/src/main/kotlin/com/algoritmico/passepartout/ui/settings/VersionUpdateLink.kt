@@ -9,9 +9,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.LocalVersionObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalVersionObservable
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 
 @Composable
 fun VersionUpdateLink() {
@@ -21,7 +22,7 @@ fun VersionUpdateLink() {
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
 
-    SettingsLinkRow(
+    ThemeNavigatingButton(
         title = "Update to ${latestRelease.version.versionString}",
         onClick = {
             uriHandler.safeOpenUri(latestRelease.url, errorHandler)

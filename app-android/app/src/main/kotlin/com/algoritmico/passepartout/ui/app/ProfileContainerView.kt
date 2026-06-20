@@ -8,28 +8,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,33 +28,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.observables.ErrorHandler
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.LocalProfileObservable
-import com.algoritmico.passepartout.observables.LocalTunnelObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalProfileObservable
+import com.algoritmico.passepartout.ui.LocalTunnelObservable
 import com.algoritmico.passepartout.observables.TunnelObservableException
 import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
-import com.algoritmico.passepartout.ui.extensions.statusText
-import com.algoritmico.passepartout.ui.extensions.transferText
+import com.algoritmico.passepartout.ui.theme.LocalTheme
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileContainerView(
     modifier: Modifier = Modifier,
-    contextualProfileIds: List<String>,
-    onContextualProfileSelected: (String) -> Unit,
-    onContextualProfileAction: (String) -> Unit,
+    style: ProfileContainerStyle,
+    contextualSelection: ProfileContextualSelection = ProfileContextualSelection(),
     onImportProfile: () -> Unit
 ) {
     val profileObservable = LocalProfileObservable.current
@@ -193,15 +173,15 @@ fun ProfileContainerView(
     }
 
     val onProfileSelected: (String) -> Unit = { profileId ->
-        if (contextualProfileIds.isNotEmpty()) {
-            onContextualProfileSelected(profileId)
+        if (contextualSelection.isActive) {
+            contextualSelection.selectProfile(profileId)
         } else {
             selectProfile(profileId)
         }
     }
     val onProfileContextualAction: (String) -> Unit = { profileId ->
-        if (profileId !in contextualProfileIds) {
-            onContextualProfileAction(profileId)
+        if (!contextualSelection.contains(profileId)) {
+            contextualSelection.performProfileAction(profileId)
         }
         selectProfile(profileId)
     }
@@ -248,152 +228,60 @@ fun ProfileContainerView(
         return
     }
 
-    MobileProfilesView(
+    ProfileStyleView(
         modifier = modifier,
-        headers = headers,
-        contextualProfileIds = contextualProfileIds,
-        isProfileEnabled = ::isProfileEnabled,
-        profileStatus = ::profileStatus,
-        profileTransfer = ::profileTransfer,
-        profileLastErrorCode = ::profileLastErrorCode,
-        onProfileSelected = onProfileSelected,
-        onProfileToggle = { profileId, enabled ->
-            requestProfileConnection(profileId, enabled)
-        },
-        onProfileContextualAction = onProfileContextualAction
-    )
-}
-
-@Composable
-private fun MobileProfilesView(
-    modifier: Modifier,
-    headers: List<AppProfileHeader>,
-    contextualProfileIds: List<String>,
-    isProfileEnabled: (String) -> Boolean,
-    profileStatus: (String) -> AppProfileStatus,
-    profileTransfer: (String) -> ProfileTransfer?,
-    profileLastErrorCode: (String) -> String?,
-    onProfileSelected: (String) -> Unit,
-    onProfileToggle: (String, Boolean) -> Unit,
-    onProfileContextualAction: (String) -> Unit
-) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            Text(
-                text = "My Profiles",
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-        items(
-            items = headers,
-            key = { it.id }
-        ) { header ->
-            ProfileRow(
-                header = header,
-                isEnabled = isProfileEnabled(header.id),
-                status = profileStatus(header.id),
-                transfer = profileTransfer(header.id),
-                lastErrorCode = profileLastErrorCode(header.id),
-                isSelected = contextualProfileIds.isNotEmpty() && header.id in contextualProfileIds,
-                onProfileSelected = onProfileSelected,
-                onProfileToggle = onProfileToggle,
-                onProfileContextualAction = onProfileContextualAction
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun ProfileRow(
-    header: AppProfileHeader,
-    isEnabled: Boolean,
-    status: AppProfileStatus,
-    transfer: ProfileTransfer?,
-    lastErrorCode: String?,
-    isSelected: Boolean,
-    onProfileSelected: (String) -> Unit,
-    onProfileToggle: (String, Boolean) -> Unit,
-    onProfileContextualAction: (String) -> Unit
-) {
-    val showsTransfer = lastErrorCode == null && status == AppProfileStatus.connected && transfer != null
-    val statusDescription = lastErrorCode ?: status.statusText()
-    val transferDescription = transfer?.transferText()
-    val statusDescriptionColor = if (lastErrorCode != null) {
-        ProfileStatusErrorColor
-    } else {
-        statusColor(status)
-    }
-    val animatedStatusDescriptionColor by animateColorAsState(
-        targetValue = statusDescriptionColor,
-        label = "Profile status color"
-    )
-    val containerColor = if (isSelected) {
-        MaterialTheme.colorScheme.secondaryContainer
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-
-    OutlinedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = {
-                    onProfileSelected(header.id)
-                },
-                onLongClick = {
-                    onProfileContextualAction(header.id)
+        style = style,
+        state = ProfileContainerState(
+            headers = headers,
+            contextualSelection = contextualSelection,
+            enabledProfileIds = headers
+                .map { it.id }
+                .filter(::isProfileEnabled)
+                .toSet(),
+            statuses = headers.associate {
+                it.id to profileStatus(it.id)
+            },
+            transfers = headers.mapNotNull {
+                profileTransfer(it.id)?.let { transfer ->
+                    it.id to transfer
                 }
-            ),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = containerColor
+            }.toMap(),
+            lastErrorCodes = headers.mapNotNull {
+                profileLastErrorCode(it.id)?.let { lastErrorCode ->
+                    it.id to lastErrorCode
+                }
+            }.toMap()
+        ),
+        actions = ProfileContainerActions(
+            onProfileSelected = onProfileSelected,
+            onProfileToggle = { profileId, enabled ->
+                requestProfileConnection(profileId, enabled)
+            },
+            onProfileContextualAction = onProfileContextualAction
         )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = header.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Crossfade(
-                    targetState = showsTransfer,
-                    label = "Profile transfer visibility"
-                ) { isShowingTransfer ->
-                    Text(
-                        text = if (isShowingTransfer) {
-                            transferDescription ?: statusDescription
-                        } else {
-                            statusDescription
-                        },
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Light,
-                        color = animatedStatusDescriptionColor
-                    )
-                }
-            }
+    )
+}
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Switch(
-                checked = isEnabled,
-                enabled = status.canToggle(),
-                onCheckedChange = { isEnabled ->
-                    onProfileSelected(header.id)
-                    onProfileToggle(header.id, isEnabled)
-                }
+@Composable
+private fun ProfileStyleView(
+    modifier: Modifier,
+    style: ProfileContainerStyle,
+    state: ProfileContainerState,
+    actions: ProfileContainerActions
+) {
+    when (style) {
+        ProfileContainerStyle.list -> {
+            ProfileListView(
+                modifier = modifier.fillMaxSize(),
+                state = state,
+                actions = actions
+            )
+        }
+        ProfileContainerStyle.grid -> {
+            ProfileGridView(
+                modifier = modifier.fillMaxSize(),
+                state = state,
+                actions = actions
             )
         }
     }
@@ -403,12 +291,7 @@ private fun ProfileRow(
 private fun LoadingProfilesView(
     modifier: Modifier
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
+    ThemeProgressView(modifier = modifier)
 }
 
 @Composable
@@ -416,10 +299,12 @@ private fun EmptyProfilesView(
     modifier: Modifier,
     onImportProfile: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(theme.spacing.xxLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -427,25 +312,17 @@ private fun EmptyProfilesView(
             text = "No profiles imported yet.",
             style = MaterialTheme.typography.headlineSmall
         )
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(theme.spacing.medium))
         Text(
             text = "Import a profile file to get started.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(theme.spacing.xLarge))
         TextButton(onClick = onImportProfile) {
             Text("Import profile")
         }
     }
-}
-
-@Composable
-private fun statusColor(status: AppProfileStatus): Color = when (status) {
-    AppProfileStatus.connected -> ProfileStatusActiveColor
-    AppProfileStatus.connecting,
-    AppProfileStatus.disconnecting -> ProfileStatusPendingColor
-    AppProfileStatus.disconnected -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
 }
 
 private fun openVpnSettings(context: Context, errorHandler: ErrorHandler) {
@@ -482,16 +359,3 @@ private data class RequestedConnection(
         }
     }
 }
-
-private fun AppProfileStatus.canToggle(): Boolean {
-    return when (this) {
-        AppProfileStatus.disconnecting -> false
-        AppProfileStatus.connecting,
-        AppProfileStatus.disconnected,
-        AppProfileStatus.connected -> true
-    }
-}
-
-private val ProfileStatusActiveColor = Color(0xFF00AA00)
-private val ProfileStatusPendingColor = Color(0xFFFF9800)
-private val ProfileStatusErrorColor = Color(0xFFD32F2F)

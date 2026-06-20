@@ -4,20 +4,15 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,20 +27,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
-import com.algoritmico.passepartout.ui.theme.ListItemTrailingText
+import com.algoritmico.passepartout.ui.theme.LocalTheme
+import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.theme.ThemeProgressViewStyle
+import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
+import com.algoritmico.passepartout.ui.theme.themeListSection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.Locale
-
-private const val TAG = "CreditsView"
 
 @Composable
 fun CreditsView(
@@ -56,7 +54,7 @@ fun CreditsView(
         runCatchingNonFatal {
             context.credits()
         }.getOrElse {
-            AppLog.w(TAG, "Unable to load credits", it)
+            AppLog.w(Tags.APP, "Unable to load credits", it)
             Credits(emptyList(), emptyList(), emptyMap())
         }
     }
@@ -120,92 +118,62 @@ private fun CreditsListView(
         credits.translations.keys.sortedBy { it.localizedLanguageName() }
     }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
+    ThemeList(modifier = modifier) {
         if (licenses.isNotEmpty()) {
-            item {
-                CreditsSectionHeader("Licenses")
-            }
-            items(
-                items = licenses,
-                key = { it.name }
-            ) { license ->
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onLicense(license)
+            themeListSection(header = "Licenses") {
+                items(
+                    items = licenses,
+                    key = { it.name }
+                ) { license ->
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onLicense(license)
+                            },
+                        headlineContent = {
+                            Text(license.name)
                         },
-                    headlineContent = {
-                        Text(license.name)
-                    },
-                    trailingContent = {
-                        ListItemTrailingText(license.licenseName)
-                    }
-                )
-            }
-            item {
-                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                        trailingContent = {
+                            ThemeTrailingValue(license.licenseName)
+                        }
+                    )
+                }
             }
         }
         if (notices.isNotEmpty()) {
-            item {
-                CreditsSectionHeader("Notices")
-            }
-            items(
-                items = notices,
-                key = { it.name }
-            ) { notice ->
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onNotice(notice)
-                        },
-                    headlineContent = {
-                        Text(notice.name)
-                    }
-                )
-            }
-            item {
-                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+            themeListSection(header = "Notices") {
+                items(
+                    items = notices,
+                    key = { it.name }
+                ) { notice ->
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onNotice(notice)
+                            },
+                        headlineContent = {
+                            Text(notice.name)
+                        }
+                    )
+                }
             }
         }
         if (languages.isNotEmpty()) {
-            item {
-                CreditsSectionHeader("Translations")
-            }
-            items(
-                items = languages,
-                key = { it }
-            ) { code ->
-                TranslationRow(
-                    language = code.localizedLanguageName(),
-                    authors = credits.translations[code].orEmpty()
-                )
+            themeListSection(header = "Translations") {
+                items(
+                    items = languages,
+                    key = { it }
+                ) { code ->
+                    TranslationRow(
+                        language = code.localizedLanguageName(),
+                        authors = credits.translations[code].orEmpty()
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-private fun CreditsSectionHeader(
-    title: String
-) {
-    Text(
-        text = title,
-        modifier = Modifier.padding(
-            start = 16.dp,
-            top = 20.dp,
-            end = 16.dp,
-            bottom = 8.dp
-        ),
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.SemiBold
-    )
 }
 
 @Composable
@@ -222,7 +190,7 @@ private fun TranslationRow(
                 horizontalAlignment = Alignment.End
             ) {
                 authors.forEach { author ->
-                    ListItemTrailingText(author)
+                    ThemeTrailingValue(author)
                 }
             }
         }
@@ -236,6 +204,8 @@ private fun LicenseView(
     content: String?,
     onContent: (String) -> Unit
 ) {
+    val theme = LocalTheme.current
+
     LaunchedEffect(license.licenseURL, content) {
         if (content == null) {
             val loadedContent = withContext(Dispatchers.IO) {
@@ -251,7 +221,7 @@ private fun LicenseView(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(theme.spacing.large)
     ) {
         item {
             Text(
@@ -261,14 +231,12 @@ private fun LicenseView(
         }
         if (content == null) {
             item {
-                Row(
+                ThemeProgressView(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                        .padding(top = theme.spacing.xxLarge),
+                    style = ThemeProgressViewStyle.centered
+                )
             }
         } else {
             items(content.lines()) { line ->
@@ -288,10 +256,12 @@ private fun NoticeView(
     modifier: Modifier,
     notice: CreditsNoticesInner
 ) {
+    val theme = LocalTheme.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(theme.spacing.large)
     ) {
         Text(
             text = notice.name,
@@ -299,7 +269,7 @@ private fun NoticeView(
         )
         Text(
             text = notice.message,
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = theme.spacing.large),
             style = MaterialTheme.typography.bodyLarge
         )
     }

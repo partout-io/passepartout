@@ -4,34 +4,23 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.business.extensions.default
-import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
-import kotlinx.coroutines.launch
+import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
+import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
+import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @Composable
 fun DiagnosticsView(
@@ -44,13 +33,10 @@ fun DiagnosticsView(
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
+    ThemeList(modifier = modifier) {
         if (isBeta) {
-            item {
-                DiagnosticsSection(header = "Beta") {
+            themeListSection(header = "Beta") {
+                item {
                     ListItem(
                         headlineContent = {
                             Text("This is a beta build")
@@ -59,15 +45,17 @@ fun DiagnosticsView(
                 }
             }
         }
-        item {
-            DiagnosticsSection(header = "Live log") {
-                SettingsLinkRow(
+        themeListSection(header = "Live log") {
+            item {
+                ThemeNavigatingButton(
                     title = "App",
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.AppLog)
                     }
                 )
-                SettingsLinkRow(
+            }
+            item {
+                ThemeNavigatingButton(
                     title = "Tunnel",
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.TunnelLog)
@@ -75,81 +63,23 @@ fun DiagnosticsView(
                 )
             }
         }
-        item {
-            DiagnosticsSection(header = "Preferences") {
-                LogsPrivateDataRow(
-                    isChecked = preferences.logsPrivateData,
+        themeListSection(header = "Preferences") {
+            item {
+                ThemeSwitchRow(
+                    title = "Include private data",
+                    checked = preferences.logsPrivateData,
                     onCheckedChange = { isChecked ->
                         userPreferencesObservable.updateLogsPrivateData(isChecked)
                     }
                 )
             }
         }
-        item {
-            DiagnosticsSection {
+        themeListSection {
+            item {
                 ReportIssueButton()
             }
         }
     }
-}
-
-@Composable
-private fun DiagnosticsSection(
-    header: String? = null,
-    content: @Composable () -> Unit = {}
-) {
-    Column {
-        if (header != null) {
-            Text(
-                text = header,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 20.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        content()
-        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
-    }
-}
-
-@Composable
-private fun LogsPrivateDataRow(
-    isChecked: Boolean,
-    onCheckedChange: suspend (Boolean) -> Unit
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val errorHandler = LocalErrorHandler.current
-
-    fun update(isChecked: Boolean) {
-        coroutineScope.launch {
-            runCatchingNonFatal {
-                onCheckedChange(isChecked)
-            }.onFailure {
-                errorHandler.report(it)
-            }
-        }
-    }
-
-    ListItem(
-        headlineContent = {
-            Text("Include private data")
-        },
-        trailingContent = {
-            Switch(
-                checked = isChecked,
-                onCheckedChange = ::update
-            )
-        },
-        modifier = Modifier.clickable {
-            update(!isChecked)
-        }
-    )
 }
 
 private suspend fun UserPreferencesObservable.updateLogsPrivateData(

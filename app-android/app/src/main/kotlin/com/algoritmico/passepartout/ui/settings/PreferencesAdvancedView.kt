@@ -4,20 +4,12 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,8 +20,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.disable
@@ -43,10 +33,17 @@ import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalConfigObservable
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalConfigObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.observables.ConfigObservable
+import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
+import com.algoritmico.passepartout.ui.theme.themeListSection
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -64,100 +61,75 @@ fun PreferencesAdvancedView(
     val canOverride = isBeta || appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
     val errorHandler = LocalErrorHandler.current
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
+    fun updateExperimentalPreferences(
+        transform: (ExperimentalPreferences) -> ExperimentalPreferences
     ) {
-        if (canOverride) {
-            item {
-                AdvancedSection(
-                    footer = "Override remote configuration for this device."
-                ) {
-                    AdvancedFlags.forEach { flag ->
-                        ConfigPreferencePickerRow(
-                            flag = flag,
-                            isActive = configState.isActive(flag),
-                            preference = preferences.experimental.preference(forFlag = flag),
-                            onPreferenceChange = { preference ->
-                                coroutineScope.launch {
-                                    runCatchingNonFatal {
-                                        userPreferencesObservable.updateExperimentalPreferences {
-                                            it.setPreference(preference, forFlag = flag)
-                                        }
-                                    }.onFailure {
-                                        errorHandler.report(it)
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
+        userPreferencesObservable.updateExperimentalPreferencesSafely(
+            coroutineScope = coroutineScope,
+            errorHandler = errorHandler,
+            transform = transform
+        )
+    }
+
+    AdvancedPreferencesContent(
+        modifier = modifier,
+        canOverride = canOverride,
+        configState = configState,
+        preferences = preferences.experimental,
+        onPreferenceChange = { flag, preference ->
+            updateExperimentalPreferences {
+                it.setPreference(preference, forFlag = flag)
             }
-        } else {
-            item {
-                AdvancedSection(
-                    header = "Allow",
-                    footer = "Disable a feature to opt this device out when it is enabled remotely."
-                ) {
-                    AdvancedFlags.forEach { flag ->
-                        ConfigFlagAllowedRow(
-                            flag = flag,
-                            isActive = configState.isActive(flag),
-                            isAllowed = preferences.experimental.isAllowed(flag),
-                            onAllowedChange = { isAllowed ->
-                                coroutineScope.launch {
-                                    runCatchingNonFatal {
-                                        userPreferencesObservable.updateExperimentalPreferences {
-                                            it.setAllowed(flag, isAllowed)
-                                        }
-                                    }.onFailure {
-                                        errorHandler.report(it)
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
+        },
+        onAllowedChange = { flag, isAllowed ->
+            userPreferencesObservable.updateExperimentalPreferences {
+                it.setAllowed(flag, isAllowed)
             }
         }
-    }
+    )
 }
 
 @Composable
-private fun AdvancedSection(
-    header: String? = null,
-    footer: String? = null,
-    content: @Composable () -> Unit
+private fun AdvancedPreferencesContent(
+    modifier: Modifier,
+    canOverride: Boolean,
+    configState: ConfigObservable.State,
+    preferences: ExperimentalPreferences,
+    onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
+    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
-    Column {
-        if (header != null) {
-            Text(
-                text = header,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 20.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        content()
-        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
-        if (footer != null) {
-            Text(
-                text = footer,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 8.dp,
-                    end = 16.dp,
-                    bottom = 12.dp
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+    ThemeList(modifier = modifier) {
+        if (canOverride) {
+            themeListSection(
+                footer = "Override remote configuration for this device."
+            ) {
+                items(AdvancedFlags) { flag ->
+                    ConfigPreferencePickerRow(
+                        flag = flag,
+                        isActive = configState.isActive(flag),
+                        preference = preferences.preference(forFlag = flag),
+                        onPreferenceChange = {
+                            onPreferenceChange(flag, it)
+                        }
+                    )
+                }
+            }
+        } else {
+            themeListSection(
+                header = "Allow",
+                footer = "Disable a feature to opt this device out when it is enabled remotely."
+            ) {
+                items(AdvancedFlags) { flag ->
+                    ConfigFlagAllowedRow(
+                        flag = flag,
+                        isActive = configState.isActive(flag),
+                        isAllowed = preferences.isAllowed(flag),
+                        onAllowedChange = {
+                            onAllowedChange(flag, it)
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -167,23 +139,14 @@ private fun ConfigFlagAllowedRow(
     flag: ConfigFlag,
     isActive: Boolean,
     isAllowed: Boolean,
-    onAllowedChange: (Boolean) -> Unit
+    onAllowedChange: suspend (Boolean) -> Unit
 ) {
-    ListItem(
-        headlineContent = {
-            Text(flag.localizedDescription)
-        },
-        supportingContent = {
-            Text(flag.activeDescription(isActive))
-        },
-        trailingContent = {
-            Switch(
-                checked = isAllowed,
-                onCheckedChange = onAllowedChange
-            )
-        },
-        modifier = Modifier.clickable {
-            onAllowedChange(!isAllowed)
+    ThemeSwitchRow(
+        title = flag.localizedDescription,
+        supportingText = flag.activeDescription(isActive),
+        checked = isAllowed,
+        onCheckedChange = {
+            onAllowedChange(it)
         }
     )
 }
@@ -296,3 +259,17 @@ private val ConfigFlagPreference.localizedDescription: String
             ConfigFlagPreference.Disable -> "Disable"
         }
     }
+
+private fun UserPreferencesObservable.updateExperimentalPreferencesSafely(
+    coroutineScope: CoroutineScope,
+    errorHandler: ErrorHandler,
+    transform: (ExperimentalPreferences) -> ExperimentalPreferences
+) {
+    coroutineScope.launch {
+        runCatchingNonFatal {
+            updateExperimentalPreferences(transform)
+        }.onFailure {
+            errorHandler.report(it)
+        }
+    }
+}

@@ -14,8 +14,8 @@
     <supports-screens
         android:smallScreens="true"
         android:normalScreens="true"
-        android:largeScreens="false"
-        android:xlargeScreens="false" />
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
 
     <application
         android:allowBackup="true"
@@ -27,6 +27,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:screenOrientation="fullUser"
             android:theme="@style/Theme.Passepartout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

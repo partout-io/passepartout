@@ -6,11 +6,8 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,11 +20,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.theme.LocalTheme
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.theme.ThemeProgressViewStyle
 import kotlinx.coroutines.launch
 
 private enum class ReportIssueModalRoute {
@@ -44,6 +43,7 @@ fun ReportIssueButton(
     val diagnosticsObservable = LocalDiagnosticsObservable.current
     val errorHandler = LocalErrorHandler.current
     val coroutineScope = rememberCoroutineScope()
+    val theme = LocalTheme.current
     var isPending by remember {
         mutableStateOf(false)
     }
@@ -90,17 +90,13 @@ fun ReportIssueButton(
         enabled = !isPending,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = theme.spacing.large, vertical = theme.spacing.small),
         onClick = {
             modalRoute = ReportIssueModalRoute.Comment
         }
     ) {
         if (isPending) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
-                strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            ThemeProgressView(style = ThemeProgressViewStyle.inlineButton)
         } else {
             Text(title)
         }
