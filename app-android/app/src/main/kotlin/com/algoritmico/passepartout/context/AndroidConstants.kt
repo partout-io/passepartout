@@ -25,8 +25,6 @@ data class AndroidConstants(
         val exitReasonsFilename: String = "exit-reasons.txt",
         val exitReasonsLimit: Int = 8,
         val issueCacheDirectory: String = "issue",
-        val issueLogsClipLabel: String = "Issue logs",
-        val issueEmailChooserTitle: String = "Report issue",
         val issueEmailMimeType: String = "message/rfc822"
     ) {
         val logcatTimeoutMillis: Long
@@ -62,8 +60,7 @@ data class AndroidConstants(
             "application/octet-stream",
             "text/*",
             "*/*"
-        ),
-        val defaultProfileName: String = "Imported profile"
+        )
     )
 
     data class Storage(

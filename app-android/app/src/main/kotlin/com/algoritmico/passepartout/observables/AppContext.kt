@@ -2,6 +2,7 @@ package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
@@ -128,7 +129,7 @@ class AppContext(
             applicationContext,
             coroutineScope,
             profileManager,
-            androidConstants.profileImport,
+            applicationContext.getString(R.string.placeholders_profile_imported_name),
             errorHandler,
             onImportSuccess = ::onApplicationActive
         )

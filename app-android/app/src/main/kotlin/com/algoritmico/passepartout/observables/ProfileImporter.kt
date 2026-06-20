@@ -7,7 +7,6 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
@@ -28,7 +27,7 @@ class ProfileImporter(
     context: Context,
     private val coroutineScope: CoroutineScope,
     private val profileManager: ProfileManager,
-    private val profileImportConstants: AndroidConstants.ProfileImport,
+    private val fallbackProfileName: String,
     private val errorHandler: ErrorHandler,
     private val onImportSuccess: () -> Unit = {}
 ) {
@@ -36,7 +35,7 @@ class ProfileImporter(
 
     fun importProfile(uri: Uri) {
         coroutineScope.launch {
-            val profileName = displayName(uri) ?: profileImportConstants.defaultProfileName
+            val profileName = displayName(uri) ?: fallbackProfileName
             runCatchingNonFatal {
                 val profileText = readProfileText(uri)
                 profileManager.importText(profileText, profileName)

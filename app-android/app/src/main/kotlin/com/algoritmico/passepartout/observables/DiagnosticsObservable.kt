@@ -23,6 +23,7 @@ import com.algoritmico.passepartout.context.androidSystemInformation
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.Issue
 import com.algoritmico.passepartout.models.IssueAttachment
+import com.algoritmico.passepartout.ui.Strings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -187,7 +188,7 @@ private fun Context.openIssueEmail(
             clipData = attachments.toClipData(this@openIssueEmail, diagnosticsConstants)
         }
     }
-    startActivity(Intent.createChooser(intent, diagnosticsConstants.issueEmailChooserTitle))
+    startActivity(Intent.createChooser(intent, Strings.Unlocalized.Issues.emailChooserTitle))
 }
 
 private fun Issue.attachmentUris(
@@ -221,7 +222,7 @@ private fun List<Uri>.toClipData(
     diagnosticsConstants: AndroidConstants.Diagnostics
 ): ClipData? {
     val first = firstOrNull() ?: return null
-    return ClipData.newUri(context.contentResolver, diagnosticsConstants.issueLogsClipLabel, first).apply {
+    return ClipData.newUri(context.contentResolver, Strings.Unlocalized.Issues.logsClipLabel, first).apply {
         drop(1).forEach {
             addItem(ClipData.Item(it))
         }
