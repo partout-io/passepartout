@@ -10,14 +10,12 @@ import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -34,7 +32,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
@@ -159,31 +156,6 @@ private fun SettingsListView(
                 linkContent(SettingsCoordinatorRoute.Diagnostics)
             }
         }
-    }
-}
-
-@Composable
-private fun SettingsSection(
-    header: String? = null,
-    content: @Composable () -> Unit
-) {
-    Column {
-        if (header != null) {
-            Text(
-                text = header,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 20.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        content()
-        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
     }
 }
 

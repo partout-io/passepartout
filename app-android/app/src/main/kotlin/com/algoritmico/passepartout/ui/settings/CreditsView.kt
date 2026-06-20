@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.credits
@@ -126,7 +125,7 @@ private fun CreditsListView(
     ) {
         if (licenses.isNotEmpty()) {
             item {
-                CreditsSectionHeader("Licenses")
+                SettingsSectionHeader("Licenses")
             }
             items(
                 items = licenses,
@@ -152,7 +151,7 @@ private fun CreditsListView(
         }
         if (notices.isNotEmpty()) {
             item {
-                CreditsSectionHeader("Notices")
+                SettingsSectionHeader("Notices")
             }
             items(
                 items = notices,
@@ -175,7 +174,7 @@ private fun CreditsListView(
         }
         if (languages.isNotEmpty()) {
             item {
-                CreditsSectionHeader("Translations")
+                SettingsSectionHeader("Translations")
             }
             items(
                 items = languages,
@@ -188,24 +187,6 @@ private fun CreditsListView(
             }
         }
     }
-}
-
-@Composable
-private fun CreditsSectionHeader(
-    title: String
-) {
-    Text(
-        text = title,
-        modifier = Modifier.padding(
-            start = 16.dp,
-            top = 20.dp,
-            end = 16.dp,
-            bottom = 8.dp
-        ),
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.SemiBold
-    )
 }
 
 @Composable

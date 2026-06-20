@@ -42,7 +42,6 @@ import com.algoritmico.passepartout.observables.LocalProfileObservable
 import com.algoritmico.passepartout.ui.settings.SettingsCoordinator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppCoordinator(
     logTag: String,
@@ -117,10 +116,8 @@ fun AppCoordinator(
             }
         )
     }
-
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppCoordinatorScaffold(
     title: String,
@@ -138,61 +135,21 @@ private fun AppCoordinatorScaffold(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    if (isContextualMode) {
-                        Text("$contextualProfileCount selected")
-                    } else {
-                        Text(title)
-                    }
-                },
-                navigationIcon = {
-                    if (isContextualMode) {
-                        IconButton(
-                            onClick = onClearContextualMode
-                        ) {
-                            Icon(
-                                imageVector = CloseIcon,
-                                contentDescription = "Cancel"
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    if (isContextualMode) {
-                        IconButton(
-                            onClick = onDeleteProfiles
-                        ) {
-                            Icon(
-                                imageVector = DeleteIcon,
-                                contentDescription = "Delete profiles"
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            onClick = onSettings
-                        ) {
-                            Icon(
-                                imageVector = SettingsIcon,
-                                contentDescription = "Settings"
-                            )
-                        }
-                    }
-                }
+            AppCoordinatorTopBar(
+                title = title,
+                contextualProfileCount = contextualProfileCount,
+                onClearContextualMode = onClearContextualMode,
+                onDeleteProfiles = onDeleteProfiles,
+                onSettings = onSettings
             )
         },
         floatingActionButton = {
             if (!isContextualMode) {
-                FloatingActionButton(
+                AddProfileButton(
                     onClick = {
                         isAddSheetPresented = true
                     }
-                ) {
-                    Icon(
-                        imageVector = AddIcon,
-                        contentDescription = "Add profile"
-                    )
-                }
+                )
             }
         }
     ) { innerPadding ->
@@ -204,30 +161,135 @@ private fun AppCoordinatorScaffold(
     }
 
     if (isAddSheetPresented) {
-        ModalBottomSheet(
+        ImportProfileSheet(
             onDismissRequest = {
                 isAddSheetPresented = false
+            },
+            onImportProfile = {
+                isAddSheetPresented = false
+                onImportProfile()
             }
-        ) {
-            ListItem(
-                headlineContent = {
-                    Text("Import file")
-                },
-                leadingContent = {
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AppCoordinatorTopBar(
+    title: String,
+    contextualProfileCount: Int,
+    onClearContextualMode: () -> Unit,
+    onDeleteProfiles: () -> Unit,
+    onSettings: () -> Unit
+) {
+    val isContextualMode = contextualProfileCount > 0
+
+    TopAppBar(
+        title = {
+            AppCoordinatorTitle(
+                title = title,
+                contextualProfileCount = contextualProfileCount
+            )
+        },
+        navigationIcon = {
+            if (isContextualMode) {
+                IconButton(
+                    onClick = onClearContextualMode
+                ) {
                     Icon(
-                        imageVector = ImportFileIcon,
-                        contentDescription = null
+                        imageVector = CloseIcon,
+                        contentDescription = "Cancel"
                     )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        isAddSheetPresented = false
-                        onImportProfile()
-                    }
-                    .padding(bottom = 24.dp)
+                }
+            }
+        },
+        actions = {
+            AppCoordinatorActions(
+                isContextualMode = isContextualMode,
+                onDeleteProfiles = onDeleteProfiles,
+                onSettings = onSettings
             )
         }
+    )
+}
+
+@Composable
+private fun AppCoordinatorTitle(
+    title: String,
+    contextualProfileCount: Int
+) {
+    if (contextualProfileCount > 0) {
+        Text("$contextualProfileCount selected")
+    } else {
+        Text(title)
+    }
+}
+
+@Composable
+private fun AppCoordinatorActions(
+    isContextualMode: Boolean,
+    onDeleteProfiles: () -> Unit,
+    onSettings: () -> Unit
+) {
+    if (isContextualMode) {
+        IconButton(
+            onClick = onDeleteProfiles
+        ) {
+            Icon(
+                imageVector = DeleteIcon,
+                contentDescription = "Delete profiles"
+            )
+        }
+    } else {
+        IconButton(
+            onClick = onSettings
+        ) {
+            Icon(
+                imageVector = SettingsIcon,
+                contentDescription = "Settings"
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddProfileButton(
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = onClick
+    ) {
+        Icon(
+            imageVector = AddIcon,
+            contentDescription = "Add profile"
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ImportProfileSheet(
+    onDismissRequest: () -> Unit,
+    onImportProfile: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest
+    ) {
+        ListItem(
+            headlineContent = {
+                Text("Import file")
+            },
+            leadingContent = {
+                Icon(
+                    imageVector = ImportFileIcon,
+                    contentDescription = null
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onImportProfile)
+                .padding(bottom = 24.dp)
+        )
     }
 }
 

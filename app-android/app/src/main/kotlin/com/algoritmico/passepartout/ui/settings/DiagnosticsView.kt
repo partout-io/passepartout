@@ -5,14 +5,10 @@
 package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.business.extensions.default
@@ -50,7 +45,7 @@ fun DiagnosticsView(
     ) {
         if (isBeta) {
             item {
-                DiagnosticsSection(header = "Beta") {
+                SettingsSection(header = "Beta") {
                     ListItem(
                         headlineContent = {
                             Text("This is a beta build")
@@ -60,7 +55,7 @@ fun DiagnosticsView(
             }
         }
         item {
-            DiagnosticsSection(header = "Live log") {
+            SettingsSection(header = "Live log") {
                 SettingsLinkRow(
                     title = "App",
                     onClick = {
@@ -76,7 +71,7 @@ fun DiagnosticsView(
             }
         }
         item {
-            DiagnosticsSection(header = "Preferences") {
+            SettingsSection(header = "Preferences") {
                 LogsPrivateDataRow(
                     isChecked = preferences.logsPrivateData,
                     onCheckedChange = { isChecked ->
@@ -86,35 +81,10 @@ fun DiagnosticsView(
             }
         }
         item {
-            DiagnosticsSection {
+            SettingsSection {
                 ReportIssueButton()
             }
         }
-    }
-}
-
-@Composable
-private fun DiagnosticsSection(
-    header: String? = null,
-    content: @Composable () -> Unit = {}
-) {
-    Column {
-        if (header != null) {
-            Text(
-                text = header,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 20.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        content()
-        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
     }
 }
 

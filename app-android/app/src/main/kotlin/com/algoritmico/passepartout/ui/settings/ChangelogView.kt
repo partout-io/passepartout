@@ -7,17 +7,14 @@ package com.algoritmico.passepartout.ui.settings
 import com.algoritmico.passepartout.context.AppLog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,10 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
@@ -67,35 +62,15 @@ fun ChangelogView(
     }
 
     when {
-        isLoading -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        entries.isEmpty() -> {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No content",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        else -> {
-            ChangelogListView(
-                modifier = modifier,
-                versionString = appConfiguration.bundle.versionString,
-                entries = entries
-            )
-        }
+        isLoading -> SettingsProgressView(modifier = modifier)
+        entries.isEmpty() -> SettingsEmptyContentView(
+            modifier = modifier.padding(24.dp)
+        )
+        else -> ChangelogListView(
+            modifier = modifier,
+            versionString = appConfiguration.bundle.versionString,
+            entries = entries
+        )
     }
 }
 
@@ -115,18 +90,7 @@ private fun ChangelogListView(
         verticalArrangement = Arrangement.Top
     ) {
         item {
-            Text(
-                text = versionString,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 20.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
-            )
+            SettingsSectionHeader(versionString)
         }
         items(
             items = entries,
