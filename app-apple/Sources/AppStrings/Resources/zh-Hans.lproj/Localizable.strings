@@ -427,7 +427,7 @@
 "views.settings.title" = "关于";
 "views.tv.connection_profiles.header.import" = "或者，你可以在“配置文件”标签页找到其他选项。";
 "views.tv.connection_profiles.header.share" = "在你的 iOS 或 macOS 设备上打开 %@ 并启用某个配置文件的“%@”开关以在此处显示。";
-"views.tv.profiles.detail.profiles" = "长按以显示配置文件的可用操作。"
+"views.tv.profiles.detail.profiles" = "长按以显示配置文件的可用操作。";
 "views.tv.profiles.import_local" = "导入本地配置文件";
 "views.tv.web_receiver.qr" = "使用相机扫描二维码以打开网页，上传您的配置文件。确保您连接到同一网络。";
 "views.tv.web_receiver.toggle" = "切换以通过网页浏览器将本地配置文件导入电视。";
