@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
@@ -60,6 +62,7 @@ import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeCrossfade
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 import com.algoritmico.passepartout.ui.theme.animateThemeColorAsState
+import io.partout.models.ModuleType
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
@@ -84,6 +87,39 @@ class ProfileContextualSelection(
         onProfileAction(profileId)
     }
 }
+
+@Stable
+class ProfileListState(
+    val headers: List<AppProfileHeader> = emptyList(),
+    val contextualSelection: ProfileContextualSelection = ProfileContextualSelection(),
+    private val enabledProfileIds: Set<String> = emptySet(),
+    private val statuses: Map<String, AppProfileStatus> = emptyMap(),
+    private val transfers: Map<String, ProfileTransfer> = emptyMap(),
+    private val lastErrorCodes: Map<String, String> = emptyMap()
+) {
+    fun isProfileEnabled(profileId: String): Boolean {
+        return profileId in enabledProfileIds
+    }
+
+    fun profileStatus(profileId: String): AppProfileStatus {
+        return statuses[profileId] ?: AppProfileStatus.disconnected
+    }
+
+    fun profileTransfer(profileId: String): ProfileTransfer? {
+        return transfers[profileId]
+    }
+
+    fun profileLastErrorCode(profileId: String): String? {
+        return lastErrorCodes[profileId]
+    }
+}
+
+@Stable
+class ProfileListActions(
+    val onProfileSelected: (String) -> Unit = {},
+    val onProfileToggle: (String, Boolean) -> Unit = { _, _ -> },
+    val onProfileContextualAction: (String) -> Unit = {}
+)
 
 @Composable
 fun ProfileContainerView(
@@ -269,32 +305,42 @@ fun ProfileContainerView(
 
     MobileProfilesView(
         modifier = modifier,
-        headers = headers,
-        contextualSelection = contextualSelection,
-        isProfileEnabled = ::isProfileEnabled,
-        profileStatus = ::profileStatus,
-        profileTransfer = ::profileTransfer,
-        profileLastErrorCode = ::profileLastErrorCode,
-        onProfileSelected = onProfileSelected,
-        onProfileToggle = { profileId, enabled ->
-            requestProfileConnection(profileId, enabled)
-        },
-        onProfileContextualAction = onProfileContextualAction
+        state = ProfileListState(
+            headers = headers,
+            contextualSelection = contextualSelection,
+            enabledProfileIds = headers
+                .map { it.id }
+                .filter(::isProfileEnabled)
+                .toSet(),
+            statuses = headers.associate {
+                it.id to profileStatus(it.id)
+            },
+            transfers = headers.mapNotNull {
+                profileTransfer(it.id)?.let { transfer ->
+                    it.id to transfer
+                }
+            }.toMap(),
+            lastErrorCodes = headers.mapNotNull {
+                profileLastErrorCode(it.id)?.let { lastErrorCode ->
+                    it.id to lastErrorCode
+                }
+            }.toMap()
+        ),
+        actions = ProfileListActions(
+            onProfileSelected = onProfileSelected,
+            onProfileToggle = { profileId, enabled ->
+                requestProfileConnection(profileId, enabled)
+            },
+            onProfileContextualAction = onProfileContextualAction
+        )
     )
 }
 
 @Composable
 private fun MobileProfilesView(
     modifier: Modifier,
-    headers: List<AppProfileHeader>,
-    contextualSelection: ProfileContextualSelection,
-    isProfileEnabled: (String) -> Boolean,
-    profileStatus: (String) -> AppProfileStatus,
-    profileTransfer: (String) -> ProfileTransfer?,
-    profileLastErrorCode: (String) -> String?,
-    onProfileSelected: (String) -> Unit,
-    onProfileToggle: (String, Boolean) -> Unit,
-    onProfileContextualAction: (String) -> Unit
+    state: ProfileListState,
+    actions: ProfileListActions = ProfileListActions()
 ) {
     val theme = LocalTheme.current
 
@@ -310,19 +356,19 @@ private fun MobileProfilesView(
             )
         }
         items(
-            items = headers,
+            items = state.headers,
             key = { it.id }
         ) { header ->
             ProfileRow(
                 header = header,
-                isEnabled = isProfileEnabled(header.id),
-                status = profileStatus(header.id),
-                transfer = profileTransfer(header.id),
-                lastErrorCode = profileLastErrorCode(header.id),
-                isSelected = contextualSelection.isActive && contextualSelection.contains(header.id),
-                onProfileSelected = onProfileSelected,
-                onProfileToggle = onProfileToggle,
-                onProfileContextualAction = onProfileContextualAction
+                isEnabled = state.isProfileEnabled(header.id),
+                status = state.profileStatus(header.id),
+                transfer = state.profileTransfer(header.id),
+                lastErrorCode = state.profileLastErrorCode(header.id),
+                isSelected = state.contextualSelection.isActive && state.contextualSelection.contains(header.id),
+                onProfileSelected = actions.onProfileSelected,
+                onProfileToggle = actions.onProfileToggle,
+                onProfileContextualAction = actions.onProfileContextualAction
             )
         }
     }
@@ -457,6 +503,77 @@ private fun EmptyProfilesView(
             Text("Import profile")
         }
     }
+}
+
+@Preview(widthDp = 393, heightDp = 852)
+@Composable
+private fun MobileProfilesViewPreview() {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            MobileProfilesView(
+                modifier = Modifier,
+                state = ProfileListState(
+                    headers = PreviewProfileHeaders,
+                    contextualSelection = ProfileContextualSelection(
+                        profileIds = listOf("office")
+                    ),
+                    enabledProfileIds = setOf("home", "office"),
+                    statuses = mapOf(
+                        "home" to AppProfileStatus.connected,
+                        "office" to AppProfileStatus.connecting,
+                        "broken" to AppProfileStatus.disconnected
+                    ),
+                    transfers = mapOf(
+                        "home" to ProfileTransfer(
+                            received = 42_000_000L,
+                            sent = 8_000_000L
+                        )
+                    ),
+                    lastErrorCodes = mapOf(
+                        "broken" to "TLS handshake failed"
+                    )
+                )
+            )
+        }
+    }
+}
+
+private val PreviewProfileHeaders = listOf(
+    previewProfileHeader(
+        id = "home",
+        name = "Home VPN",
+        moduleType = ModuleType.WireGuard
+    ),
+    previewProfileHeader(
+        id = "office",
+        name = "Office",
+        moduleType = ModuleType.OpenVPN
+    ),
+    previewProfileHeader(
+        id = "broken",
+        name = "Staging",
+        moduleType = ModuleType.OpenVPN
+    )
+)
+
+private fun previewProfileHeader(
+    id: String,
+    name: String,
+    moduleType: ModuleType
+): AppProfileHeader {
+    return AppProfileHeader(
+        id = id,
+        name = name,
+        moduleTypes = listOf(moduleType),
+        secondaryModuleTypes = emptyList(),
+        fingerprint = id,
+        sharingFlags = emptyList(),
+        requiredFeatures = emptyList(),
+        primaryModuleType = moduleType
+    )
 }
 
 @Composable
