@@ -75,7 +75,7 @@ data class ThemeGrid(
 
 @Immutable
 data class ThemeAnimation(
-    val isEnabled: Boolean = true
+    val isEnabled: Boolean = false
 )
 
 @Immutable
