@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,12 +63,32 @@ import com.algoritmico.passepartout.ui.theme.animateThemeColorAsState
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
+@Stable
+class ProfileContextualSelection(
+    val profileIds: List<String> = emptyList(),
+    private val onProfileSelected: (String) -> Unit = {},
+    private val onProfileAction: (String) -> Unit = {}
+) {
+    val isActive: Boolean
+        get() = profileIds.isNotEmpty()
+
+    fun contains(profileId: String): Boolean {
+        return profileId in profileIds
+    }
+
+    fun selectProfile(profileId: String) {
+        onProfileSelected(profileId)
+    }
+
+    fun performProfileAction(profileId: String) {
+        onProfileAction(profileId)
+    }
+}
+
 @Composable
 fun ProfileContainerView(
     modifier: Modifier = Modifier,
-    contextualProfileIds: List<String>,
-    onContextualProfileSelected: (String) -> Unit,
-    onContextualProfileAction: (String) -> Unit,
+    contextualSelection: ProfileContextualSelection = ProfileContextualSelection(),
     onImportProfile: () -> Unit
 ) {
     val profileObservable = LocalProfileObservable.current
@@ -191,15 +212,15 @@ fun ProfileContainerView(
     }
 
     val onProfileSelected: (String) -> Unit = { profileId ->
-        if (contextualProfileIds.isNotEmpty()) {
-            onContextualProfileSelected(profileId)
+        if (contextualSelection.isActive) {
+            contextualSelection.selectProfile(profileId)
         } else {
             selectProfile(profileId)
         }
     }
     val onProfileContextualAction: (String) -> Unit = { profileId ->
-        if (profileId !in contextualProfileIds) {
-            onContextualProfileAction(profileId)
+        if (!contextualSelection.contains(profileId)) {
+            contextualSelection.performProfileAction(profileId)
         }
         selectProfile(profileId)
     }
@@ -249,7 +270,7 @@ fun ProfileContainerView(
     MobileProfilesView(
         modifier = modifier,
         headers = headers,
-        contextualProfileIds = contextualProfileIds,
+        contextualSelection = contextualSelection,
         isProfileEnabled = ::isProfileEnabled,
         profileStatus = ::profileStatus,
         profileTransfer = ::profileTransfer,
@@ -266,7 +287,7 @@ fun ProfileContainerView(
 private fun MobileProfilesView(
     modifier: Modifier,
     headers: List<AppProfileHeader>,
-    contextualProfileIds: List<String>,
+    contextualSelection: ProfileContextualSelection,
     isProfileEnabled: (String) -> Boolean,
     profileStatus: (String) -> AppProfileStatus,
     profileTransfer: (String) -> ProfileTransfer?,
@@ -298,7 +319,7 @@ private fun MobileProfilesView(
                 status = profileStatus(header.id),
                 transfer = profileTransfer(header.id),
                 lastErrorCode = profileLastErrorCode(header.id),
-                isSelected = contextualProfileIds.isNotEmpty() && header.id in contextualProfileIds,
+                isSelected = contextualSelection.isActive && contextualSelection.contains(header.id),
                 onProfileSelected = onProfileSelected,
                 onProfileToggle = onProfileToggle,
                 onProfileContextualAction = onProfileContextualAction
