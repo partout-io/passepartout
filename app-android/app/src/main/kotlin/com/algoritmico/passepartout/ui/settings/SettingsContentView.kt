@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,17 +25,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.PathFillType
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.LocalTheme
-import com.algoritmico.passepartout.ui.theme.Theme
 import com.algoritmico.passepartout.ui.theme.ThemeImage
 import com.algoritmico.passepartout.ui.theme.ThemeImageName
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
@@ -50,8 +47,6 @@ fun SettingsContentView(
     onBack: () -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    val theme = LocalTheme.current
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -69,7 +64,7 @@ fun SettingsContentView(
                                 onClick = onBack
                             ) {
                                 Icon(
-                                    imageVector = backIcon(theme),
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Back"
                                 )
                             }
@@ -164,31 +159,3 @@ private fun SettingsListView(
 
 private val SettingsCoordinatorRoute?.routeIndex: Int
     get() = this?.index ?: -1
-
-private fun backIcon(
-    theme: Theme
-): ImageVector {
-    return ImageVector.Builder(
-        name = "Back",
-        defaultWidth = theme.icon.size,
-        defaultHeight = theme.icon.size,
-        viewportWidth = 24f,
-        viewportHeight = 24f
-    ).apply {
-        path(
-            fill = SolidColor(theme.colors.icon),
-            pathFillType = PathFillType.NonZero
-        ) {
-            moveTo(20f, 11f)
-            horizontalLineTo(7.83f)
-            lineTo(13.42f, 5.41f)
-            lineTo(12f, 4f)
-            lineTo(4f, 12f)
-            lineTo(12f, 20f)
-            lineTo(13.41f, 18.59f)
-            lineTo(7.83f, 13f)
-            horizontalLineTo(20f)
-            close()
-        }
-    }.build()
-}

@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)
