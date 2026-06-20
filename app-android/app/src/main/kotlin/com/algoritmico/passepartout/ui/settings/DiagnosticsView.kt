@@ -4,9 +4,6 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,10 +17,10 @@ import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
-import com.algoritmico.passepartout.ui.theme.LocalTheme
-import com.algoritmico.passepartout.ui.theme.ThemeListSection
+import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
+import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @Composable
 fun DiagnosticsView(
@@ -36,14 +33,10 @@ fun DiagnosticsView(
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )
-    val theme = LocalTheme.current
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = theme.spacing.small)
-    ) {
+    ThemeList(modifier = modifier) {
         if (isBeta) {
-            item {
-                ThemeListSection(header = "Beta") {
+            themeListSection(header = "Beta") {
+                item {
                     ListItem(
                         headlineContent = {
                             Text("This is a beta build")
@@ -52,14 +45,16 @@ fun DiagnosticsView(
                 }
             }
         }
-        item {
-            ThemeListSection(header = "Live log") {
+        themeListSection(header = "Live log") {
+            item {
                 ThemeNavigatingButton(
                     title = "App",
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.AppLog)
                     }
                 )
+            }
+            item {
                 ThemeNavigatingButton(
                     title = "Tunnel",
                     onClick = {
@@ -68,8 +63,8 @@ fun DiagnosticsView(
                 )
             }
         }
-        item {
-            ThemeListSection(header = "Preferences") {
+        themeListSection(header = "Preferences") {
+            item {
                 ThemeSwitchRow(
                     title = "Include private data",
                     checked = preferences.logsPrivateData,
@@ -79,8 +74,8 @@ fun DiagnosticsView(
                 )
             }
         }
-        item {
-            ThemeListSection {
+        themeListSection {
+            item {
                 ReportIssueButton()
             }
         }

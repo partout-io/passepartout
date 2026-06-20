@@ -4,9 +4,6 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -16,9 +13,9 @@ import com.algoritmico.passepartout.business.extensions.privacyPolicyURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
-import com.algoritmico.passepartout.ui.theme.LocalTheme
-import com.algoritmico.passepartout.ui.theme.ThemeListSection
+import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
+import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @Composable
 fun LinksView(
@@ -27,38 +24,38 @@ fun LinksView(
     val appConfiguration = LocalAppConfiguration.current
     val constants = appConfiguration.constants
     val websites = constants.websites
-    val theme = LocalTheme.current
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = theme.spacing.small)
-    ) {
-        item {
-            ThemeListSection(header = "Support") {
+    ThemeList(modifier = modifier) {
+        themeListSection(header = "Support") {
+            item {
                 ExternalLinkRow(
                     title = "Open discussion",
                     url = constants.github.discussionsURL
                 )
             }
         }
-        item {
-            ThemeListSection(header = "Web") {
+        themeListSection(header = "Web") {
+            item {
                 ExternalLinkRow(
                     title = "Home page",
                     url = websites.homeURL
                 )
+            }
+            item {
                 ExternalLinkRow(
                     title = "Blog",
                     url = websites.blogURL
                 )
             }
         }
-        item {
-            ThemeListSection {
+        themeListSection {
+            item {
                 ExternalLinkRow(
                     title = "Disclaimer",
                     url = websites.disclaimerURL
                 )
+            }
+            item {
                 ExternalLinkRow(
                     title = "Privacy policy",
                     url = websites.privacyPolicyURL

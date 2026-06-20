@@ -5,10 +5,8 @@
 package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ListItem
@@ -42,9 +40,9 @@ import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
-import com.algoritmico.passepartout.ui.theme.LocalTheme
-import com.algoritmico.passepartout.ui.theme.ThemeListSection
+import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
+import com.algoritmico.passepartout.ui.theme.themeListSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -100,71 +98,38 @@ private fun AdvancedPreferencesContent(
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
     onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
-    val theme = LocalTheme.current
-
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = theme.spacing.small)
-    ) {
-        item {
-            if (canOverride) {
-                ConfigOverrideSection(
-                    configState = configState,
-                    preferences = preferences,
-                    onPreferenceChange = onPreferenceChange
-                )
-            } else {
-                ConfigAllowSection(
-                    configState = configState,
-                    preferences = preferences,
-                    onAllowedChange = onAllowedChange
-                )
+    ThemeList(modifier = modifier) {
+        if (canOverride) {
+            themeListSection(
+                footer = "Override remote configuration for this device."
+            ) {
+                items(AdvancedFlags) { flag ->
+                    ConfigPreferencePickerRow(
+                        flag = flag,
+                        isActive = configState.isActive(flag),
+                        preference = preferences.preference(forFlag = flag),
+                        onPreferenceChange = {
+                            onPreferenceChange(flag, it)
+                        }
+                    )
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun ConfigOverrideSection(
-    configState: ConfigObservable.State,
-    preferences: ExperimentalPreferences,
-    onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit
-) {
-    ThemeListSection(
-        footer = "Override remote configuration for this device."
-    ) {
-        AdvancedFlags.forEach { flag ->
-            ConfigPreferencePickerRow(
-                flag = flag,
-                isActive = configState.isActive(flag),
-                preference = preferences.preference(forFlag = flag),
-                onPreferenceChange = {
-                    onPreferenceChange(flag, it)
+        } else {
+            themeListSection(
+                header = "Allow",
+                footer = "Disable a feature to opt this device out when it is enabled remotely."
+            ) {
+                items(AdvancedFlags) { flag ->
+                    ConfigFlagAllowedRow(
+                        flag = flag,
+                        isActive = configState.isActive(flag),
+                        isAllowed = preferences.isAllowed(flag),
+                        onAllowedChange = {
+                            onAllowedChange(flag, it)
+                        }
+                    )
                 }
-            )
-        }
-    }
-}
-
-@Composable
-private fun ConfigAllowSection(
-    configState: ConfigObservable.State,
-    preferences: ExperimentalPreferences,
-    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
-) {
-    ThemeListSection(
-        header = "Allow",
-        footer = "Disable a feature to opt this device out when it is enabled remotely."
-    ) {
-        AdvancedFlags.forEach { flag ->
-            ConfigFlagAllowedRow(
-                flag = flag,
-                isActive = configState.isActive(flag),
-                isAllowed = preferences.isAllowed(flag),
-                onAllowedChange = {
-                    onAllowedChange(flag, it)
-                }
-            )
+            }
         }
     }
 }

@@ -5,12 +5,8 @@
 package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -34,9 +30,9 @@ import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalVersionObservable
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
-import com.algoritmico.passepartout.ui.theme.ThemeListDivider
-import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
+import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @Composable
 fun ChangelogView(
@@ -87,42 +83,32 @@ private fun ChangelogListView(
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
-    val theme = LocalTheme.current
-
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = theme.spacing.small),
-        verticalArrangement = Arrangement.Top
-    ) {
-        item {
-            ThemeListSectionHeader(versionString)
-        }
-        items(
-            items = entries,
-            key = { it.id }
-        ) { entry ->
-            val issueURL = entry.issue?.let {
-                appConfiguration.constants.github.urlForIssue(it)
-            }
-            ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(
-                        if (issueURL != null) {
-                            Modifier.clickable {
-                                uriHandler.safeOpenUri(issueURL, errorHandler)
-                            }
-                        } else {
-                            Modifier
-                        }
-                    ),
-                headlineContent = {
-                    Text(entry.comment)
+    ThemeList(modifier = modifier) {
+        themeListSection(header = versionString) {
+            items(
+                items = entries,
+                key = { it.id }
+            ) { entry ->
+                val issueURL = entry.issue?.let {
+                    appConfiguration.constants.github.urlForIssue(it)
                 }
-            )
-        }
-        item {
-            ThemeListDivider()
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(
+                            if (issueURL != null) {
+                                Modifier.clickable {
+                                    uriHandler.safeOpenUri(issueURL, errorHandler)
+                                }
+                            } else {
+                                Modifier
+                            }
+                        ),
+                    headlineContent = {
+                        Text(entry.comment)
+                    }
+                )
+            }
         }
     }
 }

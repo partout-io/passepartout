@@ -9,10 +9,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,11 +28,11 @@ import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
-import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeImage
 import com.algoritmico.passepartout.ui.theme.ThemeImageName
-import com.algoritmico.passepartout.ui.theme.ThemeListSection
+import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
+import com.algoritmico.passepartout.ui.theme.themeListSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,35 +120,39 @@ private fun SettingsListView(
     linkContent: @Composable (SettingsCoordinatorRoute) -> Unit,
     versionUpdateContent: @Composable () -> Unit
 ) {
-    val theme = LocalTheme.current
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = theme.spacing.small)
-    ) {
-        item {
-            ThemeListSection {
+    ThemeList {
+        themeListSection {
+            item {
                 linkContent(SettingsCoordinatorRoute.Preferences)
+            }
+            item {
                 linkContent(SettingsCoordinatorRoute.Version)
+            }
+            item {
                 versionUpdateContent()
             }
         }
-        item {
-            ThemeListSection(header = "About") {
+        themeListSection(header = "About") {
+            item {
                 linkContent(SettingsCoordinatorRoute.Links)
+            }
+            item {
                 linkContent(SettingsCoordinatorRoute.Credits)
             }
         }
-        item {
-            ThemeListSection(header = "Troubleshooting") {
+        themeListSection(header = "Troubleshooting") {
+            item {
                 ThemeNavigatingButton(
                     title = "FAQ",
                     onClick = {
                         uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL, errorHandler)
                     }
                 )
+            }
+            item {
                 linkContent(SettingsCoordinatorRoute.Diagnostics)
             }
         }

@@ -38,9 +38,9 @@ import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
 import com.algoritmico.passepartout.ui.theme.LocalTheme
-import com.algoritmico.passepartout.ui.theme.ThemeListDivider
-import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
+import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
+import com.algoritmico.passepartout.ui.theme.themeListSection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -118,73 +118,60 @@ private fun CreditsListView(
     val languages = remember(credits) {
         credits.translations.keys.sortedBy { it.localizedLanguageName() }
     }
-    val theme = LocalTheme.current
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = theme.spacing.small)
-    ) {
+    ThemeList(modifier = modifier) {
         if (licenses.isNotEmpty()) {
-            item {
-                ThemeListSectionHeader("Licenses")
-            }
-            items(
-                items = licenses,
-                key = { it.name }
-            ) { license ->
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onLicense(license)
+            themeListSection(header = "Licenses") {
+                items(
+                    items = licenses,
+                    key = { it.name }
+                ) { license ->
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onLicense(license)
+                            },
+                        headlineContent = {
+                            Text(license.name)
                         },
-                    headlineContent = {
-                        Text(license.name)
-                    },
-                    trailingContent = {
-                        ThemeTrailingValue(license.licenseName)
-                    }
-                )
-            }
-            item {
-                ThemeListDivider()
+                        trailingContent = {
+                            ThemeTrailingValue(license.licenseName)
+                        }
+                    )
+                }
             }
         }
         if (notices.isNotEmpty()) {
-            item {
-                ThemeListSectionHeader("Notices")
-            }
-            items(
-                items = notices,
-                key = { it.name }
-            ) { notice ->
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onNotice(notice)
-                        },
-                    headlineContent = {
-                        Text(notice.name)
-                    }
-                )
-            }
-            item {
-                ThemeListDivider()
+            themeListSection(header = "Notices") {
+                items(
+                    items = notices,
+                    key = { it.name }
+                ) { notice ->
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onNotice(notice)
+                            },
+                        headlineContent = {
+                            Text(notice.name)
+                        }
+                    )
+                }
             }
         }
         if (languages.isNotEmpty()) {
-            item {
-                ThemeListSectionHeader("Translations")
-            }
-            items(
-                items = languages,
-                key = { it }
-            ) { code ->
-                TranslationRow(
-                    language = code.localizedLanguageName(),
-                    authors = credits.translations[code].orEmpty()
-                )
+            themeListSection(header = "Translations") {
+                items(
+                    items = languages,
+                    key = { it }
+                ) { code ->
+                    TranslationRow(
+                        language = code.localizedLanguageName(),
+                        authors = credits.translations[code].orEmpty()
+                    )
+                }
             }
         }
     }

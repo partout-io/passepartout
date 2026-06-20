@@ -4,8 +4,12 @@
 
 package com.algoritmico.passepartout.ui.theme
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,31 +17,50 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ThemeListSection(
+fun ThemeList(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues? = null,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    content: LazyListScope.() -> Unit
+) {
+    val theme = LocalTheme.current
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = contentPadding ?: PaddingValues(vertical = theme.spacing.small),
+        verticalArrangement = verticalArrangement,
+        content = content
+    )
+}
+
+fun LazyListScope.themeListSection(
     header: String? = null,
     footer: String? = null,
-    content: @Composable () -> Unit = {}
+    content: LazyListScope.() -> Unit = {}
 ) {
-    Column {
-        if (header != null) {
+    if (header != null) {
+        item {
             ThemeListSectionHeader(header)
         }
-        content()
+    }
+    content()
+    item {
         ThemeListDivider()
-        if (footer != null) {
+    }
+    if (footer != null) {
+        item {
             ThemeListSectionFooter(footer)
         }
     }
 }
 
 @Composable
-fun ThemeListDivider() {
+private fun ThemeListDivider() {
     val theme = LocalTheme.current
     HorizontalDivider(modifier = Modifier.padding(start = theme.spacing.large))
 }
 
 @Composable
-fun ThemeListSectionHeader(
+private fun ThemeListSectionHeader(
     title: String
 ) {
     val theme = LocalTheme.current
