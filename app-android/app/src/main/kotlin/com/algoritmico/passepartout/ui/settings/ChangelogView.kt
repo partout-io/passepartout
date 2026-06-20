@@ -27,9 +27,9 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.models.ChangelogEntry
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.LocalVersionObservable
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalVersionObservable
 import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage

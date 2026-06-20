@@ -18,7 +18,7 @@ import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
-import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeListSection

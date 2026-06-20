@@ -35,10 +35,10 @@ import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalConfigObservable
-import com.algoritmico.passepartout.observables.LocalErrorHandler
-import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalConfigObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.UserPreferencesObservable

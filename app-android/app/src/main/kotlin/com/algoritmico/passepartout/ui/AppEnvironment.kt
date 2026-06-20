@@ -2,10 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.observables
+package com.algoritmico.passepartout.ui
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.observables.ConfigObservable
+import com.algoritmico.passepartout.observables.DiagnosticsObservable
+import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.observables.ProfileObservable
+import com.algoritmico.passepartout.observables.TunnelObservable
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.observables.VersionObservable
 
 val LocalAppConfiguration = staticCompositionLocalOf<AppConfiguration> {
     error("No AppConfiguration provided")

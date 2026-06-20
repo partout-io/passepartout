@@ -24,9 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import kotlinx.coroutines.launch
 

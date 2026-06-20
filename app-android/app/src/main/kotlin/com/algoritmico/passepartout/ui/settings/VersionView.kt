@@ -29,7 +29,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeLogo
 

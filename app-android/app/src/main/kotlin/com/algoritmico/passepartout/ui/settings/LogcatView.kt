@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.LocalConstants
-import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalDiagnosticsObservable
+import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView

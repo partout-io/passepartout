@@ -14,7 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalErrorHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 

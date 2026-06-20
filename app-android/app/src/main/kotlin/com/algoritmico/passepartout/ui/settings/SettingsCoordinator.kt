@@ -22,7 +22,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.context.Tags
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 

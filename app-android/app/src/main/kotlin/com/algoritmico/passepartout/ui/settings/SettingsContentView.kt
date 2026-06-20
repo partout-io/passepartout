@@ -29,11 +29,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.business.extensions.faqURL
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.Theme
+import com.algoritmico.passepartout.ui.theme.ThemeImage
+import com.algoritmico.passepartout.ui.theme.ThemeImageName
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 
@@ -78,8 +80,8 @@ fun SettingsContentView(
                             IconButton(
                                 onClick = onDismissRequest
                             ) {
-                                Icon(
-                                    imageVector = closeIcon(theme),
+                                ThemeImage(
+                                    name = ThemeImageName.close,
                                     contentDescription = "Close"
                                 )
                             }
@@ -162,37 +164,6 @@ private fun SettingsListView(
 
 private val SettingsCoordinatorRoute?.routeIndex: Int
     get() = this?.index ?: -1
-
-private fun closeIcon(
-    theme: Theme
-): ImageVector {
-    return ImageVector.Builder(
-        name = "Close",
-        defaultWidth = theme.icon.size,
-        defaultHeight = theme.icon.size,
-        viewportWidth = 24f,
-        viewportHeight = 24f
-    ).apply {
-        path(
-            fill = SolidColor(theme.colors.icon),
-            pathFillType = PathFillType.NonZero
-        ) {
-            moveTo(18.3f, 5.71f)
-            lineTo(16.89f, 4.29f)
-            lineTo(12f, 9.17f)
-            lineTo(7.11f, 4.29f)
-            lineTo(5.7f, 5.71f)
-            lineTo(10.59f, 10.59f)
-            lineTo(5.7f, 15.48f)
-            lineTo(7.11f, 16.9f)
-            lineTo(12f, 12f)
-            lineTo(16.89f, 16.9f)
-            lineTo(18.3f, 15.48f)
-            lineTo(13.41f, 10.59f)
-            close()
-        }
-    }.build()
-}
 
 private fun backIcon(
     theme: Theme

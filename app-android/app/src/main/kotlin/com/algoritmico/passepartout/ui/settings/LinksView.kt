@@ -13,8 +13,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import com.algoritmico.passepartout.business.extensions.blogURL
 import com.algoritmico.passepartout.business.extensions.disclaimerURL
 import com.algoritmico.passepartout.business.extensions.privacyPolicyURL
-import com.algoritmico.passepartout.observables.LocalAppConfiguration
-import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.observables.safeOpenUri
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeListSection
