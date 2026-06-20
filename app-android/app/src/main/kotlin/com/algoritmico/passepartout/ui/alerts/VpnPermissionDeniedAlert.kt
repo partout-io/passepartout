@@ -8,6 +8,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 
 @Composable
 fun VpnPermissionDeniedAlert(
@@ -17,19 +19,19 @@ fun VpnPermissionDeniedAlert(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("VPN permission required")
+            Text(stringResource(R.string.android_alerts_vpn_permission_title))
         },
         text = {
-            Text("Passepartout needs VPN permission to start a connection.")
+            Text(stringResource(R.string.android_alerts_vpn_permission_message))
         },
         confirmButton = {
             TextButton(onClick = onOpenSettings) {
-                Text("Open VPN settings")
+                Text(stringResource(R.string.android_alerts_vpn_permission_open_settings))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(stringResource(R.string.global_nouns_ok))
             }
         }
     )

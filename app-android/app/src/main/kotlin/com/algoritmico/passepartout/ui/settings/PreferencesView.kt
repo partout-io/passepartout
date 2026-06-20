@@ -6,6 +6,8 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
@@ -21,8 +23,8 @@ fun PreferencesView(
         themeListSection {
             item {
                 ThemeSwitchRow(
-                    title = "DNS fallback",
-                    supportingText = "Fall back to CloudFlare servers when the VPN does not provide DNS settings.",
+                    title = stringResource(R.string.views_preferences_dns_falls_back),
+                    supportingText = stringResource(R.string.views_preferences_dns_falls_back_footer),
                     checkedFlow = userPreferencesObservable.dnsFallback,
                     onCheckedChange = {
                         userPreferencesObservable.toggleDnsFallback()

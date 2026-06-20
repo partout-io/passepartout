@@ -34,7 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.observables.ErrorHandler
@@ -314,7 +316,7 @@ private fun AppCoordinatorTopBar(
                 ) {
                     ThemeImage(
                         name = ThemeImageName.close,
-                        contentDescription = "Cancel"
+                        contentDescription = stringResource(R.string.global_actions_cancel)
                     )
                 }
             }
@@ -338,7 +340,7 @@ private fun AppCoordinatorTitle(
     contextualProfileCount: Int
 ) {
     if (contextualProfileCount > 0) {
-        Text("$contextualProfileCount selected")
+        Text(stringResource(R.string.android_profiles_selection_count, contextualProfileCount))
     } else {
         Text(title)
     }
@@ -359,7 +361,7 @@ private fun AppCoordinatorActions(
         ) {
             ThemeImage(
                 name = ThemeImageName.contextRemove,
-                contentDescription = "Delete profiles"
+                contentDescription = stringResource(R.string.android_profiles_actions_delete_content_description)
             )
         }
     } else {
@@ -368,7 +370,7 @@ private fun AppCoordinatorActions(
         ) {
             ThemeImage(
                 name = ThemeImageName.settings,
-                contentDescription = "Settings"
+                contentDescription = stringResource(R.string.views_settings_title)
             )
         }
         if (isProfileContainerStylePickerVisible) {
@@ -403,7 +405,7 @@ private fun ProfileContainerStylePicker(
             ) {
                 ThemeImage(
                     name = style.imageName,
-                    contentDescription = style.contentDescription
+                    contentDescription = style.contentDescription()
                 )
             }
         }
@@ -419,7 +421,7 @@ private fun AddProfileButton(
     ) {
         ThemeImage(
             name = ThemeImageName.add,
-            contentDescription = "Add profile"
+            contentDescription = stringResource(R.string.android_profiles_actions_add_content_description)
         )
     }
 }
@@ -437,7 +439,7 @@ private fun ImportProfileSheet(
     ) {
         ListItem(
             headlineContent = {
-                Text("Import file")
+                Text(stringResource(R.string.views_app_toolbar_import_file))
             },
             leadingContent = {
                 ThemeImage(
@@ -472,13 +474,13 @@ private val ProfileContainerStyle.imageName: ThemeImageName
         }
     }
 
-private val ProfileContainerStyle.contentDescription: String
-    get() {
-        return when (this) {
-            ProfileContainerStyle.list -> "List profiles"
-            ProfileContainerStyle.grid -> "Grid profiles"
-        }
+@Composable
+private fun ProfileContainerStyle.contentDescription(): String {
+    return when (this) {
+        ProfileContainerStyle.list -> stringResource(R.string.android_profiles_layout_list_content_description)
+        ProfileContainerStyle.grid -> stringResource(R.string.android_profiles_layout_grid_content_description)
     }
+}
 
 @Preview(showBackground = true, widthDp = 393, heightDp = 852)
 @Composable

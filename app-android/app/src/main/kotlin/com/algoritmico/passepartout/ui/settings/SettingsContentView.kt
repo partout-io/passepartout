@@ -19,6 +19,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.faqURL
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalErrorHandler
@@ -34,7 +36,7 @@ import com.algoritmico.passepartout.ui.theme.themeListSection
 @Composable
 fun SettingsContentView(
     navigationRoute: SettingsCoordinatorRoute?,
-    title: (SettingsCoordinatorRoute?) -> String,
+    title: @Composable (SettingsCoordinatorRoute?) -> String,
     linkContent: @Composable (SettingsCoordinatorRoute) -> Unit,
     versionUpdateContent: @Composable () -> Unit,
     settingsDestination: @Composable (SettingsCoordinatorRoute?) -> Unit,
@@ -59,7 +61,7 @@ fun SettingsContentView(
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back"
+                                    contentDescription = stringResource(R.string.android_global_actions_back)
                                 )
                             }
                         }
@@ -71,7 +73,7 @@ fun SettingsContentView(
                             ) {
                                 ThemeImage(
                                     name = ThemeImageName.close,
-                                    contentDescription = "Close"
+                                    contentDescription = stringResource(R.string.android_global_actions_close)
                                 )
                             }
                         }
@@ -106,6 +108,8 @@ private fun SettingsListView(
     val appConfiguration = LocalAppConfiguration.current
     val uriHandler = LocalUriHandler.current
     val errorHandler = LocalErrorHandler.current
+    val aboutHeader = stringResource(R.string.global_nouns_about)
+    val troubleshootingHeader = stringResource(R.string.global_nouns_troubleshooting)
     ThemeList {
         themeListSection {
             item {
@@ -118,7 +122,7 @@ private fun SettingsListView(
                 versionUpdateContent()
             }
         }
-        themeListSection(header = "About") {
+        themeListSection(header = aboutHeader) {
             item {
                 linkContent(SettingsCoordinatorRoute.Links)
             }
@@ -126,10 +130,10 @@ private fun SettingsListView(
                 linkContent(SettingsCoordinatorRoute.Credits)
             }
         }
-        themeListSection(header = "Troubleshooting") {
+        themeListSection(header = troubleshootingHeader) {
             item {
                 ThemeNavigatingButton(
-                    title = "FAQ",
+                    title = stringResource(R.string.android_settings_faq),
                     onClick = {
                         uriHandler.safeOpenUri(appConfiguration.constants.websites.faqURL, errorHandler)
                     }

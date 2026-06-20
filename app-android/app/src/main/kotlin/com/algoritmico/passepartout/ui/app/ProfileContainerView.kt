@@ -29,6 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
@@ -309,18 +311,18 @@ private fun EmptyProfilesView(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "No profiles imported yet.",
+            text = stringResource(R.string.android_profiles_empty_title),
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.size(theme.spacing.medium))
         Text(
-            text = "Import a profile file to get started.",
+            text = stringResource(R.string.android_profiles_empty_message),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.size(theme.spacing.xLarge))
         TextButton(onClick = onImportProfile) {
-            Text("Import profile")
+            Text(stringResource(R.string.android_profiles_empty_import))
         }
     }
 }

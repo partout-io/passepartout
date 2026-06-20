@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.urlForIssue
 import com.algoritmico.passepartout.business.extensions.versionString
@@ -63,7 +65,7 @@ fun ChangelogView(
     when {
         isLoading -> ThemeProgressView(modifier = modifier)
         entries.isEmpty() -> ThemeEmptyMessage(
-            text = "No content",
+            text = stringResource(R.string.global_nouns_no_content),
             modifier = modifier.padding(theme.spacing.xxLarge)
         )
         else -> ChangelogListView(

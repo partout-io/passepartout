@@ -66,7 +66,7 @@ fun PassepartoutApp(
             ) {
                 AppCoordinator(
                     logTag,
-                    title = "Passepartout",
+                    title = appConfiguration.bundle.displayName,
                     onImportProfile = onImportProfile
                 )
             }

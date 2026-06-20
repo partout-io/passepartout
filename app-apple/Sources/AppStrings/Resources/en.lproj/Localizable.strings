@@ -493,6 +493,39 @@
 "theme.confirmation.message" = "Are you sure you want to proceed with this operation?";
 "theme.lock_screen.reason" = "%@ is locked";
 
+// MARK: Android
+
+"android.global.actions.back" = "Back";
+"android.global.actions.close" = "Close";
+"android.global.nouns.error" = "Error";
+
+"android.alerts.interactive_unsupported.title" = "Interactive profile";
+"android.alerts.interactive_unsupported.message" = "%@ requires input that is not supported by this app version.";
+"android.alerts.openvpn_credentials.title" = "OpenVPN credentials";
+"android.alerts.openvpn_credentials.otp" = "OTP";
+"android.alerts.vpn_permission.title" = "VPN permission required";
+"android.alerts.vpn_permission.message" = "Passepartout needs VPN permission to start a connection.";
+"android.alerts.vpn_permission.open_settings" = "Open VPN settings";
+
+"android.profiles.empty.title" = "No profiles imported yet.";
+"android.profiles.empty.message" = "Import a profile file to get started.";
+"android.profiles.empty.import" = "Import profile";
+"android.profiles.selection.count" = "%d selected";
+"android.profiles.actions.add.content_description" = "Add profile";
+"android.profiles.actions.delete.content_description" = "Delete profiles";
+"android.profiles.layout.list.content_description" = "List profiles";
+"android.profiles.layout.grid.content_description" = "Grid profiles";
+
+"android.settings.sections.beta" = "Beta";
+"android.settings.beta_build" = "This is a beta build";
+"android.settings.faq" = "FAQ";
+"android.settings.changelog" = "Changelog";
+
+"android.errors.profile_importer.binary" = "Importing a binary file.";
+"android.errors.profile_importer.failure" = "Unable to import profile.";
+"android.errors.profile_importer.empty" = "Unable to read profile content.";
+"android.errors.credits.license" = "Unable to load license: %@";
+
 // MARK: - Errors
 
 // MARK: Errors (WireGuard)

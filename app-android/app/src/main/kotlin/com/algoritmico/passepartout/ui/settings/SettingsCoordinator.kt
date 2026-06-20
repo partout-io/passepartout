@@ -18,8 +18,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
@@ -53,7 +55,7 @@ fun SettingsCoordinator(
     ) {
         SettingsContentView(
             navigationRoute = navigationRoute,
-            title = ::title,
+            title = { route -> title(route) },
             linkContent = { route ->
                 LinkView(
                     route = route,
@@ -126,7 +128,7 @@ private fun PushDestination(
             LogcatView(tags = Tags.serviceTags)
         }
         SettingsCoordinatorRoute.Version -> VersionView()
-        null -> PlaceholderDestination("No selection")
+        null -> PlaceholderDestination(stringResource(R.string.global_nouns_no_selection))
     }
 }
 
@@ -150,23 +152,25 @@ private fun PlaceholderDestination(
     }
 }
 
+@Composable
 private fun title(route: SettingsCoordinatorRoute?): String {
     return when (route) {
-        SettingsCoordinatorRoute.AppLog -> "App"
-        SettingsCoordinatorRoute.Credits -> "Credits"
-        SettingsCoordinatorRoute.Diagnostics -> "Diagnostics"
-        SettingsCoordinatorRoute.Links -> "Links"
-        SettingsCoordinatorRoute.Preferences -> "Preferences"
-        SettingsCoordinatorRoute.PreferencesAdvanced -> "Advanced"
-        SettingsCoordinatorRoute.TunnelLog -> "Tunnel"
-        SettingsCoordinatorRoute.Version -> "Passepartout"
-        null -> "Settings"
+        SettingsCoordinatorRoute.AppLog -> stringResource(R.string.views_diagnostics_rows_app)
+        SettingsCoordinatorRoute.Credits -> stringResource(R.string.views_settings_credits_title)
+        SettingsCoordinatorRoute.Diagnostics -> stringResource(R.string.views_diagnostics_title)
+        SettingsCoordinatorRoute.Links -> stringResource(R.string.views_settings_links_title)
+        SettingsCoordinatorRoute.Preferences -> stringResource(R.string.global_nouns_preferences)
+        SettingsCoordinatorRoute.PreferencesAdvanced -> stringResource(R.string.global_nouns_advanced)
+        SettingsCoordinatorRoute.TunnelLog -> stringResource(R.string.views_diagnostics_rows_tunnel)
+        SettingsCoordinatorRoute.Version -> stringResource(R.string.app_name)
+        null -> stringResource(R.string.views_settings_title)
     }
 }
 
+@Composable
 private fun linkTitle(route: SettingsCoordinatorRoute): String {
     return when (route) {
-        SettingsCoordinatorRoute.Version -> "Version"
+        SettingsCoordinatorRoute.Version -> stringResource(R.string.global_nouns_version)
         else -> title(route)
     }
 }

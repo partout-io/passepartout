@@ -28,6 +28,108 @@ public enum Strings {
       }
     }
   }
+  public enum Android {
+    public enum Alerts {
+      public enum InteractiveUnsupported {
+        /// %@ requires input that is not supported by this app version.
+        public static func message(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "android.alerts.interactive_unsupported.message", String(describing: p1), fallback: "%@ requires input that is not supported by this app version.")
+        }
+        /// Interactive profile
+        public static let title = Strings.tr("Localizable", "android.alerts.interactive_unsupported.title", fallback: "Interactive profile")
+      }
+      public enum OpenvpnCredentials {
+        /// OTP
+        public static let otp = Strings.tr("Localizable", "android.alerts.openvpn_credentials.otp", fallback: "OTP")
+        /// OpenVPN credentials
+        public static let title = Strings.tr("Localizable", "android.alerts.openvpn_credentials.title", fallback: "OpenVPN credentials")
+      }
+      public enum VpnPermission {
+        /// Passepartout needs VPN permission to start a connection.
+        public static let message = Strings.tr("Localizable", "android.alerts.vpn_permission.message", fallback: "Passepartout needs VPN permission to start a connection.")
+        /// Open VPN settings
+        public static let openSettings = Strings.tr("Localizable", "android.alerts.vpn_permission.open_settings", fallback: "Open VPN settings")
+        /// VPN permission required
+        public static let title = Strings.tr("Localizable", "android.alerts.vpn_permission.title", fallback: "VPN permission required")
+      }
+    }
+    public enum Errors {
+      public enum Credits {
+        /// Unable to load license: %@
+        public static func license(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "android.errors.credits.license", String(describing: p1), fallback: "Unable to load license: %@")
+        }
+      }
+      public enum ProfileImporter {
+        /// Importing a binary file.
+        public static let binary = Strings.tr("Localizable", "android.errors.profile_importer.binary", fallback: "Importing a binary file.")
+        /// Unable to read profile content.
+        public static let empty = Strings.tr("Localizable", "android.errors.profile_importer.empty", fallback: "Unable to read profile content.")
+        /// Unable to import profile.
+        public static let failure = Strings.tr("Localizable", "android.errors.profile_importer.failure", fallback: "Unable to import profile.")
+      }
+    }
+    public enum Global {
+      public enum Actions {
+        /// Back
+        public static let back = Strings.tr("Localizable", "android.global.actions.back", fallback: "Back")
+        /// Close
+        public static let close = Strings.tr("Localizable", "android.global.actions.close", fallback: "Close")
+      }
+      public enum Nouns {
+        /// Error
+        public static let error = Strings.tr("Localizable", "android.global.nouns.error", fallback: "Error")
+      }
+    }
+    public enum Profiles {
+      public enum Actions {
+        public enum Add {
+          /// Add profile
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.actions.add.content_description", fallback: "Add profile")
+        }
+        public enum Delete {
+          /// Delete profiles
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.actions.delete.content_description", fallback: "Delete profiles")
+        }
+      }
+      public enum Empty {
+        /// Import profile
+        public static let `import` = Strings.tr("Localizable", "android.profiles.empty.import", fallback: "Import profile")
+        /// Import a profile file to get started.
+        public static let message = Strings.tr("Localizable", "android.profiles.empty.message", fallback: "Import a profile file to get started.")
+        /// No profiles imported yet.
+        public static let title = Strings.tr("Localizable", "android.profiles.empty.title", fallback: "No profiles imported yet.")
+      }
+      public enum Layout {
+        public enum Grid {
+          /// Grid profiles
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.layout.grid.content_description", fallback: "Grid profiles")
+        }
+        public enum List {
+          /// List profiles
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.layout.list.content_description", fallback: "List profiles")
+        }
+      }
+      public enum Selection {
+        /// %d selected
+        public static func count(_ p1: Int) -> String {
+          return Strings.tr("Localizable", "android.profiles.selection.count", p1, fallback: "%d selected")
+        }
+      }
+    }
+    public enum Settings {
+      /// This is a beta build
+      public static let betaBuild = Strings.tr("Localizable", "android.settings.beta_build", fallback: "This is a beta build")
+      /// Changelog
+      public static let changelog = Strings.tr("Localizable", "android.settings.changelog", fallback: "Changelog")
+      /// FAQ
+      public static let faq = Strings.tr("Localizable", "android.settings.faq", fallback: "FAQ")
+      public enum Sections {
+        /// Beta
+        public static let beta = Strings.tr("Localizable", "android.settings.sections.beta", fallback: "Beta")
+      }
+    }
+  }
   public enum Entities {
     public enum Dns {
       /// Domains

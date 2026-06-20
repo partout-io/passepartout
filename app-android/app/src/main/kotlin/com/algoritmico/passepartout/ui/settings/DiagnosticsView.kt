@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
@@ -33,22 +35,25 @@ fun DiagnosticsView(
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
     )
+    val betaHeader = stringResource(R.string.android_settings_sections_beta)
+    val liveLogHeader = stringResource(R.string.views_diagnostics_sections_live)
+    val preferencesHeader = stringResource(R.string.global_nouns_preferences)
     ThemeList(modifier = modifier) {
         if (isBeta) {
-            themeListSection(header = "Beta") {
+            themeListSection(header = betaHeader) {
                 item {
                     ListItem(
                         headlineContent = {
-                            Text("This is a beta build")
+                            Text(stringResource(R.string.android_settings_beta_build))
                         }
                     )
                 }
             }
         }
-        themeListSection(header = "Live log") {
+        themeListSection(header = liveLogHeader) {
             item {
                 ThemeNavigatingButton(
-                    title = "App",
+                    title = stringResource(R.string.views_diagnostics_rows_app),
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.AppLog)
                     }
@@ -56,17 +61,17 @@ fun DiagnosticsView(
             }
             item {
                 ThemeNavigatingButton(
-                    title = "Tunnel",
+                    title = stringResource(R.string.views_diagnostics_rows_tunnel),
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.TunnelLog)
                     }
                 )
             }
         }
-        themeListSection(header = "Preferences") {
+        themeListSection(header = preferencesHeader) {
             item {
                 ThemeSwitchRow(
-                    title = "Include private data",
+                    title = stringResource(R.string.views_diagnostics_rows_include_private_data),
                     checked = preferences.logsPrivateData,
                     onCheckedChange = { isChecked ->
                         userPreferencesObservable.updateLogsPrivateData(isChecked)
