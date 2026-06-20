@@ -9,10 +9,12 @@ cd $translations_output_path
 base_file="en.lproj/Localizable.strings"
 base_entries_file="base.tmp"
 keys_file="keys.tmp"
+required_keys_file="required_keys.tmp"
 
 # Extract all keys and English entries from the base file
 grep '^"' "$base_file" >"$base_entries_file"
 sed -n 's/^"\(.*\)"[[:space:]]*=.*/"\1"/p' "$base_entries_file" >"$keys_file"
+grep -v '^"android\.' "$keys_file" >"$required_keys_file"
 
 # Process all other localization files
 for dir in *.lproj; do
@@ -28,11 +30,12 @@ for dir in *.lproj; do
 
             # Exit if there are missing keys after printing them
             sed -n 's/^"\(.*\)"[[:space:]]*=.*/"\1"/p' "$target_file" >"$target_file.excluded"
-            grep -F -v -f "$target_file.excluded" "$keys_file" >"$target_file.missing"
+            grep -F -v -f "$target_file.excluded" "$required_keys_file" >"$target_file.missing"
             if [[ -s "$target_file.missing" ]]; then
                 grep -F -f "$target_file.missing" "$base_entries_file"
                 rm "$base_entries_file"
                 rm "$keys_file"
+                rm "$required_keys_file"
                 rm "$target_file.excluded"
                 rm "$target_file.missing"
                 echo "Stopped."
@@ -47,4 +50,5 @@ done
 
 rm "$base_entries_file"
 rm "$keys_file"
+rm "$required_keys_file"
 echo "Localization files cleaned."
