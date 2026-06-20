@@ -27,6 +27,8 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.LocalConstants
 import com.algoritmico.passepartout.observables.LocalDiagnosticsObservable
 import com.algoritmico.passepartout.observables.LocalErrorHandler
+import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 
 @Composable
 fun LogcatView(
@@ -61,8 +63,11 @@ fun LogcatView(
     }
 
     when (val currentLines = lines) {
-        null -> SettingsProgressView(modifier = modifier)
-        emptyList<String>() -> SettingsEmptyContentView(modifier = modifier)
+        null -> ThemeProgressView(modifier = modifier)
+        emptyList<String>() -> ThemeEmptyMessage(
+            text = "No content",
+            modifier = modifier
+        )
         else -> LogcatListView(
             modifier = modifier,
             lines = currentLines,

@@ -38,7 +38,8 @@ import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
-import com.algoritmico.passepartout.ui.theme.ListItemTrailingText
+import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
+import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -125,7 +126,7 @@ private fun CreditsListView(
     ) {
         if (licenses.isNotEmpty()) {
             item {
-                SettingsSectionHeader("Licenses")
+                ThemeListSectionHeader("Licenses")
             }
             items(
                 items = licenses,
@@ -141,7 +142,7 @@ private fun CreditsListView(
                         Text(license.name)
                     },
                     trailingContent = {
-                        ListItemTrailingText(license.licenseName)
+                        ThemeTrailingValue(license.licenseName)
                     }
                 )
             }
@@ -151,7 +152,7 @@ private fun CreditsListView(
         }
         if (notices.isNotEmpty()) {
             item {
-                SettingsSectionHeader("Notices")
+                ThemeListSectionHeader("Notices")
             }
             items(
                 items = notices,
@@ -174,7 +175,7 @@ private fun CreditsListView(
         }
         if (languages.isNotEmpty()) {
             item {
-                SettingsSectionHeader("Translations")
+                ThemeListSectionHeader("Translations")
             }
             items(
                 items = languages,
@@ -203,7 +204,7 @@ private fun TranslationRow(
                 horizontalAlignment = Alignment.End
             ) {
                 authors.forEach { author ->
-                    ListItemTrailingText(author)
+                    ThemeTrailingValue(author)
                 }
             }
         }

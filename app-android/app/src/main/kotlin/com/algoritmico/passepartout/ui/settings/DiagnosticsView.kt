@@ -4,12 +4,10 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +24,9 @@ import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.theme.ThemeListSection
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
+import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -45,7 +46,7 @@ fun DiagnosticsView(
     ) {
         if (isBeta) {
             item {
-                SettingsSection(header = "Beta") {
+                ThemeListSection(header = "Beta") {
                     ListItem(
                         headlineContent = {
                             Text("This is a beta build")
@@ -55,14 +56,14 @@ fun DiagnosticsView(
             }
         }
         item {
-            SettingsSection(header = "Live log") {
-                SettingsLinkRow(
+            ThemeListSection(header = "Live log") {
+                ThemeNavigatingButton(
                     title = "App",
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.AppLog)
                     }
                 )
-                SettingsLinkRow(
+                ThemeNavigatingButton(
                     title = "Tunnel",
                     onClick = {
                         onLiveLog(SettingsCoordinatorRoute.TunnelLog)
@@ -71,7 +72,7 @@ fun DiagnosticsView(
             }
         }
         item {
-            SettingsSection(header = "Preferences") {
+            ThemeListSection(header = "Preferences") {
                 LogsPrivateDataRow(
                     isChecked = preferences.logsPrivateData,
                     onCheckedChange = { isChecked ->
@@ -81,7 +82,7 @@ fun DiagnosticsView(
             }
         }
         item {
-            SettingsSection {
+            ThemeListSection {
                 ReportIssueButton()
             }
         }
@@ -106,19 +107,10 @@ private fun LogsPrivateDataRow(
         }
     }
 
-    ListItem(
-        headlineContent = {
-            Text("Include private data")
-        },
-        trailingContent = {
-            Switch(
-                checked = isChecked,
-                onCheckedChange = ::update
-            )
-        },
-        modifier = Modifier.clickable {
-            update(!isChecked)
-        }
+    ThemeSwitchRow(
+        title = "Include private data",
+        checked = isChecked,
+        onCheckedChange = ::update
     )
 }
 

@@ -33,6 +33,9 @@ import com.algoritmico.passepartout.observables.LocalAppConfiguration
 import com.algoritmico.passepartout.observables.LocalErrorHandler
 import com.algoritmico.passepartout.observables.LocalVersionObservable
 import com.algoritmico.passepartout.observables.safeOpenUri
+import com.algoritmico.passepartout.ui.theme.ThemeEmptyMessage
+import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
+import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 
 private const val TAG = "ChangelogView"
 
@@ -62,8 +65,9 @@ fun ChangelogView(
     }
 
     when {
-        isLoading -> SettingsProgressView(modifier = modifier)
-        entries.isEmpty() -> SettingsEmptyContentView(
+        isLoading -> ThemeProgressView(modifier = modifier)
+        entries.isEmpty() -> ThemeEmptyMessage(
+            text = "No content",
             modifier = modifier.padding(24.dp)
         )
         else -> ChangelogListView(
@@ -90,7 +94,7 @@ private fun ChangelogListView(
         verticalArrangement = Arrangement.Top
     ) {
         item {
-            SettingsSectionHeader(versionString)
+            ThemeListSectionHeader(versionString)
         }
         items(
             items = entries,

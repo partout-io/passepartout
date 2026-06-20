@@ -24,6 +24,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.context.Tags
 import com.algoritmico.passepartout.observables.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 
 @Composable
 fun SettingsCoordinator(
@@ -84,7 +85,7 @@ private fun LinkView(
     onRoute: (SettingsCoordinatorRoute) -> Unit
 ) {
     val appConfiguration = LocalAppConfiguration.current
-    SettingsLinkRow(
+    ThemeNavigatingButton(
         title = linkTitle(route),
         trailingText = if (route == SettingsCoordinatorRoute.Version) {
             appConfiguration.bundle.versionString

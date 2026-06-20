@@ -2,42 +2,38 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui.settings
+package com.algoritmico.passepartout.ui.theme
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun SettingsSection(
+fun ThemeListSection(
     header: String? = null,
     footer: String? = null,
     content: @Composable () -> Unit = {}
 ) {
     Column {
         if (header != null) {
-            SettingsSectionHeader(header)
+            ThemeListSectionHeader(header)
         }
         content()
         HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
         if (footer != null) {
-            SettingsSectionFooter(footer)
+            ThemeListSectionFooter(footer)
         }
     }
 }
 
 @Composable
-internal fun SettingsSectionHeader(
+fun ThemeListSectionHeader(
     title: String
 ) {
     Text(
@@ -55,36 +51,7 @@ internal fun SettingsSectionHeader(
 }
 
 @Composable
-internal fun SettingsProgressView(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-internal fun SettingsEmptyContentView(
-    modifier: Modifier = Modifier,
-    text: String = "No content"
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-private fun SettingsSectionFooter(
+private fun ThemeListSectionFooter(
     text: String
 ) {
     Text(

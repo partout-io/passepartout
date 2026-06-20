@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,6 +43,8 @@ import com.algoritmico.passepartout.observables.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.ui.theme.ThemeListSection
+import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -128,7 +128,7 @@ private fun ConfigOverrideSection(
     preferences: ExperimentalPreferences,
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit
 ) {
-    SettingsSection(
+    ThemeListSection(
         footer = "Override remote configuration for this device."
     ) {
         AdvancedFlags.forEach { flag ->
@@ -150,7 +150,7 @@ private fun ConfigAllowSection(
     preferences: ExperimentalPreferences,
     onAllowedChange: (ConfigFlag, Boolean) -> Unit
 ) {
-    SettingsSection(
+    ThemeListSection(
         header = "Allow",
         footer = "Disable a feature to opt this device out when it is enabled remotely."
     ) {
@@ -174,22 +174,11 @@ private fun ConfigFlagAllowedRow(
     isAllowed: Boolean,
     onAllowedChange: (Boolean) -> Unit
 ) {
-    ListItem(
-        headlineContent = {
-            Text(flag.localizedDescription)
-        },
-        supportingContent = {
-            Text(flag.activeDescription(isActive))
-        },
-        trailingContent = {
-            Switch(
-                checked = isAllowed,
-                onCheckedChange = onAllowedChange
-            )
-        },
-        modifier = Modifier.clickable {
-            onAllowedChange(!isAllowed)
-        }
+    ThemeSwitchRow(
+        title = flag.localizedDescription,
+        supportingText = flag.activeDescription(isActive),
+        checked = isAllowed,
+        onCheckedChange = onAllowedChange
     )
 }
 
