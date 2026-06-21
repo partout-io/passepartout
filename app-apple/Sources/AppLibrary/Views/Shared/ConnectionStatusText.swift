@@ -70,7 +70,7 @@ private struct ConnectionStatusDynamicText: View {
 private extension ConnectionStatusDynamicText {
     var statusDescription: String {
         if let lastErrorCode = tunnel.lastErrorCode(for: profileId) {
-            if let appErrorCode = ABI.AppErrorCode(rawValue: lastErrorCode) {
+            if let appErrorCode = ABI.AppErrorCode.fromLastErrorCode(lastErrorCode) {
                 return appErrorCode.localizedDescription(style: .connectionStatus)
             } else if let partoutErrorCode = PartoutError.Code(rawValue: lastErrorCode) {
                 return partoutErrorCode.localizedDescription(style: .connectionStatus)
