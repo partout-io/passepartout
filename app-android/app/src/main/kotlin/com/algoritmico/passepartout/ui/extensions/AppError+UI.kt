@@ -20,10 +20,6 @@ fun AppError.localizedMessage(): String {
     val detail = cause?.localizedMessage
     return when (code) {
         AppErrorCode.binaryFile -> stringResource(R.string.errors_app_import_binary)
-        AppErrorCode.corruptProviderModule -> stringResource(
-            R.string.errors_app_corrupt_provider_module,
-            detail ?: "?"
-        )
         AppErrorCode.couldNotLaunch -> detail ?: stringResource(R.string.errors_app_other)
         AppErrorCode.emptyProducts -> stringResource(R.string.errors_app_empty_products)
         AppErrorCode.emptyProfileName -> stringResource(R.string.errors_app_empty_profile_name)
@@ -41,7 +37,6 @@ fun AppError.localizedMessage(): String {
             stringResource(R.string.global_nouns_unknown),
             detail ?: "?"
         )
-        AppErrorCode.missingProviderEntity -> stringResource(R.string.errors_app_missing_provider_entity)
         AppErrorCode.moduleRequiresConnection -> stringResource(
             R.string.errors_app_module_requires_connection,
             stringResource(R.string.global_nouns_unknown),
@@ -73,6 +68,10 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.verificationReceiptIsLoading,
         AppErrorCode.verificationRequiredFeatures,
         AppErrorCode.webUploader -> detail ?: stringResource(R.string.errors_app_other)
+        AppErrorCode.corruptProviderModule,
+        AppErrorCode.missingProviderEntity,
+        AppErrorCode.missingProviderOption,
+        AppErrorCode.multipleTunnels -> error("Unimplemented")
     }
 }
 

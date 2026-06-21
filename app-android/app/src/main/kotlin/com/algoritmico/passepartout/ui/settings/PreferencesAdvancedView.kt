@@ -210,8 +210,7 @@ private fun ConfigPreferencePickerRow(
 
 private val AdvancedFlags = listOf(
     ConfigFlag.newProfileEncoding,
-    ConfigFlag.ovpnV3,
-    ConfigFlag.wgCrossV2
+    ConfigFlag.ovpnV3
 )
 
 private enum class ConfigFlagPreference {
