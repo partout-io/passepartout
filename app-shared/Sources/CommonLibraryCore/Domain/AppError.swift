@@ -146,5 +146,3 @@ extension ABI {
         }
     }
 }
-
-// FIXME: ###, Use AppError but encode raw String value in environment, client will get lastErrorCode to parse as AppError.Code first, then PartoutError.Code. Define ineligibleProfile and multipleTunnels in OpenAPI

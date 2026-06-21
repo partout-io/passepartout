@@ -39,7 +39,6 @@ extension AppABI {
         let configManager = appConfiguration.newConfigManager(
             withTestBundle: false,
             isBeta: {
-                // FIXME: ###, Check cross beta flag
                 false
             },
             fetcher: {
@@ -61,7 +60,6 @@ extension AppABI {
         let profileRepository = try appConfiguration.newFileProfileRepository(path: profilesDir)
         let profileManager = ProfileManager(repository: profileRepository)
 
-        // FIXME: ###, Dummy
         let iapManager = IAPManager()
         let versionChecker = VersionChecker()
         let webReceiverManager = WebReceiverManager()
