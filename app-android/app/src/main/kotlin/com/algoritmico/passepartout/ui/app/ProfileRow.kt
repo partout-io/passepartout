@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.ProfileTransfer
+import com.algoritmico.passepartout.ui.extensions.localizedStatusFromPartoutErrorCode
 import com.algoritmico.passepartout.ui.extensions.statusText
 import com.algoritmico.passepartout.ui.extensions.transferText
 import com.algoritmico.passepartout.ui.theme.LocalTheme
@@ -47,7 +48,7 @@ fun ProfileRow(
 ) {
     val theme = LocalTheme.current
     val showsTransfer = lastErrorCode == null && status == AppProfileStatus.connected && transfer != null
-    val statusDescription = lastErrorCode ?: status.statusText()
+    val statusDescription = lastErrorCode?.localizedStatusFromPartoutErrorCode() ?: status.statusText()
     val transferDescription = transfer?.transferText()
     val statusDescriptionColor = if (lastErrorCode != null) {
         theme.colors.error

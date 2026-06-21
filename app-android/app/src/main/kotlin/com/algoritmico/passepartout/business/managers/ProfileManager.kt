@@ -4,12 +4,12 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AndroidConstants
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -18,7 +18,6 @@ import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.models.ProfileEventSave
-import io.partout.abi.PartoutException
 import io.partout.abi.PartoutResult
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
@@ -35,7 +34,6 @@ interface ProfileRepository {
 
 sealed class ProfileManagerException: Exception() {
     data class NotFound(val profileId: String): ProfileManagerException()
-    data class ABI(val json: String?): ProfileManagerException()
 }
 
 class ProfileManager(
@@ -64,15 +62,10 @@ class ProfileManager(
             PartoutResult.await { completion ->
                 library.partoutImportProfile(text, name, completion)
             }
-        }.getOrElse {
-            when (it) {
-                is PartoutException -> throw ProfileManagerException.ABI(it.payload)
-                else -> throw it
-            }
-        }
-        val json = result.payload
+        }.getOrThrow()
+        val json = result.json
         if (json == null) {
-            throw ProfileManagerException.ABI(null)
+            error("partoutImportProfile() succeeded without payload")
         }
         val profile = JSON.decode<TaggedProfile>(json)
         val previous = profiles[profile.id]

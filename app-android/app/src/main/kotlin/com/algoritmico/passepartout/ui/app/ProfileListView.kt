@@ -20,6 +20,7 @@ import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.ui.theme.LocalTheme
+import io.partout.models.PartoutErrorCode
 
 @Composable
 fun ProfileListView(
@@ -87,7 +88,7 @@ private fun ProfileListViewPreview() {
                         )
                     ),
                     lastErrorCodes = mapOf(
-                        "broken" to "TLS handshake failed"
+                        "broken" to PartoutErrorCode.openVPNCompressionMismatch.value
                     )
                 )
             )

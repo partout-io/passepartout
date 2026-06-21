@@ -22,8 +22,8 @@ import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
 import com.algoritmico.passepartout.context.logPreamble

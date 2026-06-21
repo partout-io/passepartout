@@ -7,10 +7,10 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.context.AppLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +44,11 @@ class ProfileImporter(
                 onImportSuccess()
             }.onFailure {
                 AppLog.e(logTag, "Unable to import profile ($profileName)", it)
-                errorHandler.report(ProfileImporterException.Failure(it))
+                if (it is ProfileImporterException) {
+                    errorHandler.report(it)
+                } else {
+                    errorHandler.report(ProfileImporterException.Failure(it))
+                }
             }
         }
     }
@@ -53,7 +57,7 @@ class ProfileImporter(
         val bytes = runCatchingNonFatal {
             contentResolver.openInputStream(uri)?.use { it.readBytes() }
         }.getOrElse {
-            throw ProfileImporterException.Failure(it)
+            throw it
         }
         if (bytes == null) {
             throw ProfileImporterException.Null
