@@ -13,6 +13,5 @@ public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case forcesRelaxedVerification = "forcesRelaxedVerification"
     case newProfileEncoding = "newProfileEncoding"
     case ovpnV3 = "ovpnV3"
-    case wgCrossV2 = "wgCrossV2"
     case unknown = "unknown"
 }
