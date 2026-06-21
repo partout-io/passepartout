@@ -79,38 +79,37 @@ fun AppError.localizedMessage(): String {
 data class LocalizedConnectionStatusError(
     private val lastErrorCode: String
 ) {
+    val localizedDescriptionResource: Int
+        get() = AppErrorCode.fromLastErrorCode(lastErrorCode)?.localizedStatusResource
+            ?: PartoutErrorCode.decode(lastErrorCode)?.localizedStatusResource
+            ?: R.string.errors_tunnel_generic
+
     // Map error code in the ProfileRow lastErrorCode status text
     @Composable
     fun localizedDescription(): String {
-        return AppErrorCode.fromLastErrorCode(lastErrorCode)?.localizedStatus()
-            ?: PartoutErrorCode.decode(lastErrorCode)?.localizedStatus()
-            ?: stringResource(R.string.errors_tunnel_generic)
+        return stringResource(localizedDescriptionResource)
     }
 }
 
-@Composable
-private fun AppErrorCode.localizedStatus(): String? {
-    return when (this) {
-        AppErrorCode.ineligibleProfile -> stringResource(R.string.errors_app_ineligible)
+private val AppErrorCode.localizedStatusResource: Int?
+    get() = when (this) {
+        AppErrorCode.ineligibleProfile -> R.string.errors_app_ineligible
         else -> null
     }
-}
 
-@Composable
-private fun PartoutErrorCode.localizedStatus(): String? {
-    return when (this) {
-        PartoutErrorCode.authentication -> stringResource(R.string.errors_tunnel_auth)
-        PartoutErrorCode.crypto -> stringResource(R.string.errors_tunnel_encryption)
-        PartoutErrorCode.dnsFailure -> stringResource(R.string.errors_tunnel_dns)
-        PartoutErrorCode.timeout -> stringResource(R.string.global_nouns_timeout)
-        PartoutErrorCode.openVPNCompressionMismatch -> stringResource(R.string.errors_tunnel_compression)
-        PartoutErrorCode.openVPNNoRouting -> stringResource(R.string.errors_tunnel_routing)
-        PartoutErrorCode.openVPNRecoverableAuthentication -> stringResource(R.string.entities_tunnel_status_activating)
-        PartoutErrorCode.openVPNServerShutdown -> stringResource(R.string.errors_tunnel_shutdown)
-        PartoutErrorCode.openVPNTLSFailure -> stringResource(R.string.errors_tunnel_tls)
+private val PartoutErrorCode.localizedStatusResource: Int?
+    get() = when (this) {
+        PartoutErrorCode.authentication -> R.string.errors_tunnel_auth
+        PartoutErrorCode.crypto -> R.string.errors_tunnel_encryption
+        PartoutErrorCode.dnsFailure -> R.string.errors_tunnel_dns
+        PartoutErrorCode.timeout -> R.string.global_nouns_timeout
+        PartoutErrorCode.openVPNCompressionMismatch -> R.string.errors_tunnel_compression
+        PartoutErrorCode.openVPNNoRouting -> R.string.errors_tunnel_routing
+        PartoutErrorCode.openVPNRecoverableAuthentication -> R.string.entities_tunnel_status_activating
+        PartoutErrorCode.openVPNServerShutdown -> R.string.errors_tunnel_shutdown
+        PartoutErrorCode.openVPNTLSFailure -> R.string.errors_tunnel_tls
         else -> null
     }
-}
 
 private fun String.appending(optional: String?, separator: String): String {
     return listOfNotNull(this, optional)
