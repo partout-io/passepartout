@@ -93,7 +93,7 @@ private extension Registry {
             }
             return try resolver.resolved(from: providerModule)
         } catch {
-            throw error as? PartoutError ?? PartoutError(.Providers.corruptModule, error)
+            throw error as? PartoutError ?? PartoutProviderError.corruptModule(error)
         }
     }
 
@@ -118,7 +118,7 @@ private extension Registry {
                 }
             } catch {
                 switch (error as? PartoutError)?.code {
-                case .incompleteModule, .invalidField, .WireGuard.emptyPeers:
+                case .incompleteModule, .invalidField, .wireGuardEmptyPeers:
                     return
                 default:
                     fatalError("\(moduleType): empty module is not buildable: \(error)")

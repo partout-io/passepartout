@@ -131,8 +131,12 @@ extension ABI.AppError: Encodable {
             return .malformedModule
         case .missingProviderEntity:
             return .missingProviderEntity
+        case .missingProviderOption:
+            return .missingProviderOption
         case .moduleRequiresConnection:
             return .moduleRequiresConnection
+        case .multipleTunnels:
+            return .multipleTunnels
         case .noActiveModules:
             return .noActiveModules
         case .notFound:

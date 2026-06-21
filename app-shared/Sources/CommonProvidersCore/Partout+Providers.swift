@@ -8,15 +8,13 @@ extension LoggerCategory {
     public static let providers = LoggerCategory(rawValue: "providers")
 }
 
-extension PartoutError.Code {
-    public enum Providers {
-        /// A provider module is corrupt.
-        public static let corruptModule = PartoutError.Code("Providers.corruptModule")
+public enum PartoutProviderError: Error {
+    /// A provider module is corrupt.
+    case corruptModule(_ error: Error)
 
-        /// A provider was chosen but the target entity is missing.
-        public static let missingEntity = PartoutError.Code("Providers.missingEntity")
+    /// A provider was chosen but the target entity is missing.
+    case missingEntity
 
-        /// A provider was chosen but a required option is missing.
-        public static let missingOption = PartoutError.Code("Providers.missingOption")
-    }
+    /// A provider was chosen but a required option is missing.
+    case missingOption(_ option: String? = nil)
 }

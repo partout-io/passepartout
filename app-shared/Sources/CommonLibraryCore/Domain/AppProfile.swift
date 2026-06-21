@@ -60,7 +60,7 @@ extension ABI {
         public let tunnelStatus: TunnelStatus
         public let onDemand: Bool
         public private(set) var transfer: ABI.ProfileTransfer?
-        public private(set) var lastErrorCode: PartoutError.Code?
+        public private(set) var lastErrorCode: String?
 
         public init(
             id: Profile.ID,

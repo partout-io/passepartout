@@ -83,7 +83,7 @@ public final class TunnelABI: TunnelABIProtocol {
             guard let iap else {
                 // Just ensure that the profile does not require any paid feature
                 guard originalProfile.features.isEmpty else {
-                    throw PartoutError(.App.ineligibleProfile)
+                    throw ABI.AppError.ineligibleProfile(originalProfile.features)
                 }
                 return
             }
@@ -169,7 +169,7 @@ private extension TunnelABI {
         guard let daemon else { return }
         // TODO: #218, keep this until supported
         guard Self.activeTunnels.isEmpty else {
-            throw PartoutError(.App.multipleTunnels)
+            throw ABI.AppError.multipleTunnels
         }
         pspLog(.abi, .info, "Track context: \(daemon.profile.id)")
         Self.activeTunnels.insert(daemon.profile.id)

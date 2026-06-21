@@ -265,7 +265,9 @@ components:
       - invalidField
       - malformedModule
       - missingProviderEntity
+      - missingProviderOption
       - moduleRequiresConnection
+      - multipleTunnels
       - noActiveModules
       - notFound
       - openVPNPassphraseRequired
@@ -299,7 +301,9 @@ components:
       - invalidField
       - malformedModule
       - missingProviderEntity
+      - missingProviderOption
       - moduleRequiresConnection
+      - multipleTunnels
       - noActiveModules
       - notFound
       - openVPNPassphraseRequired

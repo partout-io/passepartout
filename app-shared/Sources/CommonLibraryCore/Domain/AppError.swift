@@ -34,7 +34,11 @@ extension ABI {
 
         case missingProviderEntity
 
+        case missingProviderOption(String?)
+
         case moduleRequiresConnection(any Module)
+
+        case multipleTunnels
 
         case noActiveModules
 
@@ -75,6 +79,15 @@ extension ABI {
         public init(_ error: Error) {
             if let spError = error as? AppError {
                 self = spError
+            } else if let providerError = error as? PartoutProviderError {
+                switch providerError {
+                case .corruptModule(let reason):
+                    self = .corruptProviderModule(reason: reason)
+                case .missingEntity:
+                    self = .missingProviderEntity
+                case .missingOption(let option):
+                    self = .missingProviderOption(option)
+                }
             } else if let partoutError = error as? PartoutError {
                 // Specialize some codes
                 switch partoutError.code {
@@ -97,9 +110,9 @@ extension ABI {
                     self = .invalidField(stringKey: stringKey)
                 case .noActiveModules:
                     self = .noActiveModules
-                case .OpenVPN.passphraseRequired:
+                case .openVPNPassphraseRequired:
                     self = .openVPNPassphraseRequired
-                case .OpenVPN.unsupportedCompression:
+                case .openVPNUnsupportedCompression:
                     let option = partoutError.userInfo as? String
                     self = .openVPNUnsupportedCompression(option: option)
                 case .parsing:
@@ -116,18 +129,13 @@ extension ABI {
                         message = nil
                     }
                     self = .importError(message: message)
-                case .Providers.corruptModule:
-                    let reason = partoutError.reason
-                    self = .corruptProviderModule(reason: reason)
-                case .Providers.missingEntity:
-                    self = .missingProviderEntity
                 case .timeout:
                     self = .timeout
                 case .unhandled:
                     self = .other(partoutError.reason)
                 case .unknownImportedModule:
                     self = .importError()
-                case .WireGuard.emptyPeers:
+                case .wireGuardEmptyPeers:
                     self = .wireGuardEmptyPeers
                 default:
                     self = .partout(partoutError)
@@ -139,10 +147,4 @@ extension ABI {
     }
 }
 
-extension PartoutError.Code {
-    public enum App {
-        public static let ineligibleProfile = PartoutError.Code("App.ineligibleProfile")
-
-        public static let multipleTunnels = PartoutError.Code("App.multipleTunnels")
-    }
-}
+// FIXME: ###, Use AppError but encode raw String value in environment, client will get lastErrorCode to parse as AppError.Code first, then PartoutError.Code. Define ineligibleProfile and multipleTunnels in OpenAPI

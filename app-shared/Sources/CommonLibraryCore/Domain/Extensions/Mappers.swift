@@ -40,7 +40,7 @@ extension ABI.AppTunnelInfo: OpenAPIEncodable {
             status: status,
             onDemand: onDemand,
             transfer: transfer,
-            lastErrorCode: lastErrorCode?.rawValue
+            lastErrorCode: lastErrorCode
         )
     }
 }
