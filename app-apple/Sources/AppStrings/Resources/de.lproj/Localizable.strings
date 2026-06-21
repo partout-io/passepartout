@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "DNS fehlgeschlagen";
 "errors.tunnel.encryption" = "Verschlüsselung fehlgeschlagen";
 "errors.tunnel.generic" = "Fehlgeschlagen";
-"errors.tunnel.ineligible" = "Kauf erforderlich";
+"errors.app.ineligible" = "Kauf erforderlich";
 "errors.tunnel.routing" = "Routing fehlt";
 "errors.tunnel.shutdown" = "Server heruntergefahren";
 "errors.tunnel.tls" = "TLS fehlgeschlagen";

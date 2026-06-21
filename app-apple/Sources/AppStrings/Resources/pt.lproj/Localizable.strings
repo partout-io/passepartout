@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "Falha no DNS";
 "errors.tunnel.encryption" = "Falha na criptografia";
 "errors.tunnel.generic" = "Falha";
-"errors.tunnel.ineligible" = "Compra necessária";
+"errors.app.ineligible" = "Compra necessária";
 "errors.tunnel.routing" = "Roteamento ausente";
 "errors.tunnel.shutdown" = "Servidor desligado";
 "errors.tunnel.tls" = "Falha no TLS";

@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Не удалось импортировать профили.</string>
     <string name="errors_app_incompatible_modules">Некоторые активные модули несовместимы, попробуйте активировать только один.</string>
     <string name="errors_app_incomplete_module">Пожалуйста, завершите настройку модуля %1$s.</string>
+    <string name="errors_app_ineligible">Требуется покупка</string>
     <string name="errors_app_invalid_fields">Некорректные поля.</string>
     <string name="errors_app_malformed_module">Модуль %1$s поврежден. %2$s</string>
     <string name="errors_app_missing_provider_entity">На провайдере не выбран сервер.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">Ошибка DNS</string>
     <string name="errors_tunnel_encryption">Ошибка шифрования</string>
     <string name="errors_tunnel_generic">Ошибка</string>
-    <string name="errors_tunnel_ineligible">Требуется покупка</string>
     <string name="errors_tunnel_routing">Маршрутизация отсутствует</string>
     <string name="errors_tunnel_shutdown">Сервер отключен</string>
     <string name="errors_tunnel_tls">Ошибка TLS</string>

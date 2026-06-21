@@ -446,6 +446,7 @@
 "errors.app.import.generic" = "Unable to import profiles.";
 "errors.app.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
 "errors.app.incomplete_module" = "Please finish the configuration of the %@ module.";
+"errors.app.ineligible" = "Purchase required";
 "errors.app.invalid_fields" = "Invalid fields.";
 "errors.app.malformed_module" = "Module %@ is malformed. %@";
 "errors.app.missing_provider_entity" = "No server selected in provider.";
@@ -466,7 +467,6 @@
 "errors.tunnel.dns" = "DNS failed";
 "errors.tunnel.encryption" = "Encryption failed";
 "errors.tunnel.generic" = "Failed";
-"errors.tunnel.ineligible" = "Purchase required";
 "errors.tunnel.routing" = "Missing routing";
 "errors.tunnel.shutdown" = "Server shutdown";
 "errors.tunnel.tls" = "TLS failed";

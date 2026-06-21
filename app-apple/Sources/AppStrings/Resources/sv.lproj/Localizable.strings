@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "DNS misslyckades";
 "errors.tunnel.encryption" = "Kryptering misslyckades";
 "errors.tunnel.generic" = "Misslyckades";
-"errors.tunnel.ineligible" = "Köp krävs";
+"errors.app.ineligible" = "Köp krävs";
 "errors.tunnel.routing" = "Routning saknas";
 "errors.tunnel.shutdown" = "Server avstängd";
 "errors.tunnel.tls" = "TLS misslyckades";

@@ -170,6 +170,8 @@ public enum Strings {
       public static func incompleteModule(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.app.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
       }
+      /// Purchase required
+      public static let ineligible = Strings.tr("Localizable", "errors.app.ineligible", fallback: "Purchase required")
       /// Invalid fields.
       public static let invalidFields = Strings.tr("Localizable", "errors.app.invalid_fields", fallback: "Invalid fields.")
       /// Module %@ is malformed. %@
@@ -272,8 +274,6 @@ public enum Strings {
       public static let encryption = Strings.tr("Localizable", "errors.tunnel.encryption", fallback: "Encryption failed")
       /// Failed
       public static let generic = Strings.tr("Localizable", "errors.tunnel.generic", fallback: "Failed")
-      /// Purchase required
-      public static let ineligible = Strings.tr("Localizable", "errors.tunnel.ineligible", fallback: "Purchase required")
       /// Missing routing
       public static let routing = Strings.tr("Localizable", "errors.tunnel.routing", fallback: "Missing routing")
       /// Server shutdown

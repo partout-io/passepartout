@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">无法导入配置文件。</string>
     <string name="errors_app_incompatible_modules">某些激活的模块不兼容，请尝试仅激活一个模块。</string>
     <string name="errors_app_incomplete_module">请完成 %1$s 模块的配置。</string>
+    <string name="errors_app_ineligible">需要购买</string>
     <string name="errors_app_invalid_fields">字段无效。</string>
     <string name="errors_app_malformed_module">模块 %1$s 格式错误。%2$s</string>
     <string name="errors_app_missing_provider_entity">未在提供商中选择服务器。</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">DNS 失败</string>
     <string name="errors_tunnel_encryption">加密失败</string>
     <string name="errors_tunnel_generic">失败</string>
-    <string name="errors_tunnel_ineligible">需要购买</string>
     <string name="errors_tunnel_routing">缺少路由</string>
     <string name="errors_tunnel_shutdown">服务器关闭</string>
     <string name="errors_tunnel_tls">TLS 失败</string>

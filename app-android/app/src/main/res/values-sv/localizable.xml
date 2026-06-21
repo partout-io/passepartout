@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Kan inte importera profiler.</string>
     <string name="errors_app_incompatible_modules">Vissa aktiva moduler är inkompatibla, försök att endast aktivera en.</string>
     <string name="errors_app_incomplete_module">Vänligen slutför konfigurationen av %1$s-modulen.</string>
+    <string name="errors_app_ineligible">Köp krävs</string>
     <string name="errors_app_invalid_fields">Ogiltiga fält.</string>
     <string name="errors_app_malformed_module">Modulen %1$s är felaktig. %2$s</string>
     <string name="errors_app_missing_provider_entity">Ingen server vald hos leverantören.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">DNS misslyckades</string>
     <string name="errors_tunnel_encryption">Kryptering misslyckades</string>
     <string name="errors_tunnel_generic">Misslyckades</string>
-    <string name="errors_tunnel_ineligible">Köp krävs</string>
     <string name="errors_tunnel_routing">Routning saknas</string>
     <string name="errors_tunnel_shutdown">Server avstängd</string>
     <string name="errors_tunnel_tls">TLS misslyckades</string>

@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "DNS fallito";
 "errors.tunnel.encryption" = "Crittografia fallita";
 "errors.tunnel.generic" = "Operazione fallita";
-"errors.tunnel.ineligible" = "Acquisto richiesto";
+"errors.app.ineligible" = "Acquisto richiesto";
 "errors.tunnel.routing" = "Routing mancante";
 "errors.tunnel.shutdown" = "Spegnimento del server";
 "errors.tunnel.tls" = "TLS fallito";

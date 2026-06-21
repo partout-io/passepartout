@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Impossibile importare i profili.</string>
     <string name="errors_app_incompatible_modules">Alcuni moduli attivi sono incompatibili, prova ad attivare solo uno di essi.</string>
     <string name="errors_app_incomplete_module">Completa la configurazione del modulo %1$s.</string>
+    <string name="errors_app_ineligible">Acquisto richiesto</string>
     <string name="errors_app_invalid_fields">Campi non validi.</string>
     <string name="errors_app_malformed_module">Il modulo %1$s è malformato. %2$s</string>
     <string name="errors_app_missing_provider_entity">Nessun server selezionato nel provider.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">DNS fallito</string>
     <string name="errors_tunnel_encryption">Crittografia fallita</string>
     <string name="errors_tunnel_generic">Operazione fallita</string>
-    <string name="errors_tunnel_ineligible">Acquisto richiesto</string>
     <string name="errors_tunnel_routing">Routing mancante</string>
     <string name="errors_tunnel_shutdown">Spegnimento del server</string>
     <string name="errors_tunnel_tls">TLS fallito</string>

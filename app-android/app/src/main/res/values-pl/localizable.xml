@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Nie można zaimportować profili.</string>
     <string name="errors_app_incompatible_modules">Niektóre aktywne moduły są niekompatybilne. Spróbuj aktywować tylko jeden.</string>
     <string name="errors_app_incomplete_module">Proszę dokończyć konfigurację modułu %1$s.</string>
+    <string name="errors_app_ineligible">Wymagana zakup</string>
     <string name="errors_app_invalid_fields">Nieprawidłowe pola.</string>
     <string name="errors_app_malformed_module">Moduł %1$s jest uszkodzony. %2$s</string>
     <string name="errors_app_missing_provider_entity">Nie wybrano serwera w dostawcy.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">Błąd DNS</string>
     <string name="errors_tunnel_encryption">Błąd szyfrowania</string>
     <string name="errors_tunnel_generic">Niepowodzenie</string>
-    <string name="errors_tunnel_ineligible">Wymagana zakup</string>
     <string name="errors_tunnel_routing">Brak trasowania</string>
     <string name="errors_tunnel_shutdown">Serwer zamknięty</string>
     <string name="errors_tunnel_tls">Błąd TLS</string>
