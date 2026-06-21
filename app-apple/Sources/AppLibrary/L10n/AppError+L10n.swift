@@ -16,32 +16,11 @@ extension ABI.AppError: StyledLocalizableEntity {
     public func localizedDescription(style: Style) -> String {
         switch style {
         case .errorHandler:
-            return localizedDescription
+            return forErrorHandler ?? Strings.Errors.App.other
         }
     }
-}
 
-extension ABI.AppErrorCode: StyledLocalizableEntity {
-    public enum Style {
-        case connectionStatus
-    }
-
-    public func localizedDescription(style: Style) -> String {
-        switch style {
-        case .connectionStatus:
-            let V = Strings.Errors.App.self
-            switch self {
-            case .ineligibleProfile:
-                return V.ineligible
-            default:
-                return V.other
-            }
-        }
-    }
-}
-
-extension ABI.AppError: @retroactive LocalizedError {
-    public var errorDescription: String? {
+    private var forErrorHandler: String? {
         let V = Strings.Errors.App.self
         switch self {
         case .binaryFile:
@@ -81,7 +60,7 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .missingProviderEntity:
             return V.missingProviderEntity
         case .missingProviderOption:
-            // Should not happen
+            // Should not happen, thrown by WireGuard providers (disabled)
             return nil
         case .moduleRequiresConnection(let module):
             return V.moduleRequiresConnection(
@@ -91,7 +70,7 @@ extension ABI.AppError: @retroactive LocalizedError {
                     .joined(separator: ", ")
             )
         case .multipleTunnels:
-            // Should not happen
+            // Should never happen in app (thrown by TunnelABI)
             return nil
         case .noActiveModules:
             return V.noActiveModules
@@ -139,6 +118,31 @@ extension ABI.AppError: @retroactive LocalizedError {
         case .wireGuardEmptyPeers:
             return V.Wireguard.emptyPeers
         }
+    }
+}
+
+extension ABI.AppErrorCode: StyledLocalizableEntity {
+    public enum Style {
+        case connectionStatus
+    }
+
+    public func localizedDescription(style: Style) -> String {
+        switch style {
+        case .connectionStatus:
+            let V = Strings.Errors.App.self
+            switch self {
+            case .ineligibleProfile:
+                return V.ineligible
+            default:
+                return V.other
+            }
+        }
+    }
+}
+
+extension ABI.AppError: @retroactive LocalizedError {
+    public var errorDescription: String? {
+        forErrorHandler
     }
 }
 
