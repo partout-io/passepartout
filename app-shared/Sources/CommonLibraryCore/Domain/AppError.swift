@@ -146,3 +146,93 @@ extension ABI {
         }
     }
 }
+
+extension ABI.AppError {
+    public var code: ABI.AppErrorCode {
+        switch self {
+        case .binaryFile:
+            return .binaryFile
+        case .corruptProviderModule:
+            return .corruptProviderModule
+        case .couldNotLaunch:
+            return .couldNotLaunch
+        case .emptyProducts:
+            return .emptyProducts
+        case .emptyProfileName:
+            return .emptyProfileName
+        case .encoding:
+            return .encoding
+        case .importError:
+            return .importError
+        case .incompatibleModules:
+            return .incompatibleModules
+        case .incompleteModule:
+            return .incompleteModule
+        case .ineligibleProfile:
+            return .ineligibleProfile
+        case .interactiveLogin:
+            return .interactiveLogin
+        case .invalidField:
+            return .invalidField
+        case .malformedModule:
+            return .malformedModule
+        case .missingProviderEntity:
+            return .missingProviderEntity
+        case .missingProviderOption:
+            return .missingProviderOption
+        case .moduleRequiresConnection:
+            return .moduleRequiresConnection
+        case .multipleTunnels:
+            return .multipleTunnels
+        case .noActiveModules:
+            return .noActiveModules
+        case .notFound:
+            return .notFound
+        case .openVPNPassphraseRequired:
+            return .openVPNPassphraseRequired
+        case .openVPNUnsupportedCompression:
+            return .openVPNUnsupportedCompression
+        case .other:
+            return .other
+        case .partout:
+            return .partout
+        case .permissionDenied:
+            return .permissionDenied
+        case .rateLimit:
+            return .rateLimit
+        case .systemExtension:
+            return .systemExtension
+        case .timeout:
+            return .timeout
+        case .unexpectedResponse:
+            return .unexpectedResponse
+        case .urlRequestFailed:
+            return .urlRequestFailed
+        case .urlRequestUnavailable:
+            return .urlRequestUnavailable
+        case .verificationReceiptIsLoading:
+            return .verificationReceiptIsLoading
+        case .verificationRequiredFeatures:
+            return .verificationRequiredFeatures
+        case .webReceiver:
+            return .webReceiver
+        case .webUploader:
+            return .webUploader
+        case .wireGuardEmptyPeers:
+            return .wireGuardEmptyPeers
+        }
+    }
+}
+
+extension ABI.AppErrorCode {
+    public static func fromLastErrorCode(_ string: String) -> Self? {
+        let comps = string.split(separator: ".")
+        guard comps.count == 2 else { return nil }
+        guard comps[0] == "App" else { return nil }
+        return Self.init(rawValue: String(comps[1]))
+    }
+
+    public var toLastErrorCode: String {
+        "App.\(rawValue)"
+    }
+}
