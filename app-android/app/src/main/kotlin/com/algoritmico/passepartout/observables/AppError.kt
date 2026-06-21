@@ -53,3 +53,13 @@ private val PartoutException.asAppErrorFromPayload: AppError
             else -> AppError(AppErrorCode.partout, this)
         }
     }
+
+fun AppErrorCode.Companion.fromLastErrorCode(string: String): AppErrorCode? {
+    val comps = string.split(".")
+    if (comps.count() != 2) { return null }
+    if (comps[0] != "App") { return null }
+    return AppErrorCode.decode(comps[1])
+}
+
+val AppErrorCode.toLastErrorCode: String
+    get() = "App.$value"

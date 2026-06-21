@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
+import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.models.PartoutErrorCode
 
 // Map AppError.Code for ErrorHandler
@@ -73,11 +74,25 @@ fun AppError.localizedMessage(): String {
     }
 }
 
-// Map PartoutError.Code in the profile lastErrorCode text
+// Map error code in the ProfileRow lastErrorCode status text
 @Composable
-fun String.localizedStatusFromPartoutErrorCode(): String {
-    val code = PartoutErrorCode.decode(this)
-    return when (code) {
+fun String.localizedStatusFromErrorCode(): String {
+    return AppErrorCode.fromLastErrorCode(this)?.localizedStatus()
+        ?: PartoutErrorCode.decode(this)?.localizedStatus()
+        ?: stringResource(R.string.errors_tunnel_generic)
+}
+
+@Composable
+private fun AppErrorCode.localizedStatus(): String? {
+    return when (this) {
+        AppErrorCode.ineligibleProfile -> stringResource(R.string.errors_app_ineligible)
+        else -> null
+    }
+}
+
+@Composable
+private fun PartoutErrorCode.localizedStatus(): String? {
+    return when (this) {
         PartoutErrorCode.authentication -> stringResource(R.string.errors_tunnel_auth)
         PartoutErrorCode.crypto -> stringResource(R.string.errors_tunnel_encryption)
         PartoutErrorCode.dnsFailure -> stringResource(R.string.errors_tunnel_dns)
@@ -87,14 +102,7 @@ fun String.localizedStatusFromPartoutErrorCode(): String {
         PartoutErrorCode.openVPNRecoverableAuthentication -> stringResource(R.string.entities_tunnel_status_activating)
         PartoutErrorCode.openVPNServerShutdown -> stringResource(R.string.errors_tunnel_shutdown)
         PartoutErrorCode.openVPNTLSFailure -> stringResource(R.string.errors_tunnel_tls)
-        else -> {
-            // Custom app error codes from service
-//            when (this) {
-//                "App.ineligibleProfile" -> stringResource(R.string.errors_tunnel_ineligible)
-//                else -> stringResource(R.string.errors_tunnel_generic)
-//            }
-            stringResource(R.string.errors_tunnel_generic)
-        }
+        else -> null
     }
 }
 
