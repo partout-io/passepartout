@@ -11,7 +11,7 @@ extension ErrorHandler {
             defaultTitle: Strings.Unlocalized.appName,
             dismissTitle: Strings.Global.Nouns.ok,
             errorDescription: {
-                ABI.AppError($0).localizedDescription
+                ABI.AppError($0).localizedDescription(style: .errorHandler)
             },
             beforeAlert: {
                 pspLog(.core, .error, "Error handler being presented: \($0)")

@@ -6,9 +6,40 @@ import AppStrings
 import CommonLibrary
 import Foundation
 
-// MARK: ErrorHandler
+// MARK: App errors
 
-// Typically displayed in ErrorHandler
+extension ABI.AppError: StyledLocalizableEntity {
+    public enum Style {
+        case errorHandler
+    }
+
+    public func localizedDescription(style: Style) -> String {
+        switch style {
+        case .errorHandler:
+            return localizedDescription
+        }
+    }
+}
+
+extension ABI.AppErrorCode: StyledLocalizableEntity {
+    public enum Style {
+        case connectionStatus
+    }
+
+    public func localizedDescription(style: Style) -> String {
+        switch style {
+        case .connectionStatus:
+            let V = Strings.Errors.App.self
+            switch self {
+            case .ineligibleProfile:
+                return V.ineligible
+            default:
+                return V.other
+            }
+        }
+    }
+}
+
 extension ABI.AppError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let V = Strings.Errors.App.self
@@ -132,37 +163,16 @@ private extension Error {
     }
 }
 
-// MARK: - Tunnel errors
-
-// Displayed in ConnectionStatusText
-
-extension ABI.AppErrorCode: StyledLocalizableEntity {
-    public enum Style {
-        case tunnel
-    }
-
-    public func localizedDescription(style: Style) -> String {
-        switch style {
-        case .tunnel:
-            let V = Strings.Errors.App.self
-            switch self {
-            case .ineligibleProfile:
-                return V.ineligible
-            default:
-                return V.other
-            }
-        }
-    }
-}
+// MARK: - Partout errors
 
 extension PartoutError.Code: StyledLocalizableEntity {
     public enum Style {
-        case tunnel
+        case connectionStatus
     }
 
     public func localizedDescription(style: Style) -> String {
         switch style {
-        case .tunnel:
+        case .connectionStatus:
             let V = Strings.Errors.Tunnel.self
             switch self {
             case .authentication:
