@@ -5,7 +5,6 @@
 package com.algoritmico.passepartout.business.managers
 
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AndroidConstants
@@ -18,7 +17,6 @@ import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.models.ProfileEventSave
-import io.partout.abi.PartoutResult
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
 import io.partout.models.ModuleType
@@ -58,16 +56,9 @@ class ProfileManager(
     }
 
     suspend fun importText(text: String, name: String?) {
-        val result = runCatchingNonFatal {
-            PartoutResult.await { completion ->
-                library.partoutImportProfile(text, name, completion)
-            }
+        val profile = runCatchingNonFatal {
+            library.importProfile(text, name)
         }.getOrThrow()
-        val json = result.json
-        if (json == null) {
-            error("partoutImportProfile() succeeded without payload")
-        }
-        val profile = JSON.decode<TaggedProfile>(json)
         val previous = profiles[profile.id]
         repository.saveProfile(profile)
         profiles = profiles + (profile.id to profile)

@@ -4,11 +4,14 @@
 
 package com.algoritmico.passepartout
 
+import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.defaultAndroidConstants
 import io.partout.NativeTunnelControllerJNI
 import io.partout.abi.PartoutCompletionCallback
+import io.partout.abi.PartoutResult
+import io.partout.models.TaggedProfile
 
 interface PassepartoutWrapperProtocol {
     fun partoutInit(tag: String, logsPrivateData: Boolean)
@@ -32,6 +35,22 @@ interface PassepartoutWrapperProtocol {
 }
 
 class PassepartoutWrapper: PassepartoutWrapperProtocol {
+    //region Convenience overloads
+    suspend fun importProfile(text: String, name: String?): TaggedProfile {
+        val result = runCatchingNonFatal {
+            PartoutResult.await { completion ->
+                partoutImportProfile(text, name, completion)
+            }
+        }.getOrThrow()
+        val json = result.json
+        if (json == null) {
+            error("partoutImportProfile() succeeded without payload")
+        }
+        return JSON.decode<TaggedProfile>(json)
+    }
+    //endregion
+
+    //region ABI
     override external fun partoutInit(tag: String, logsPrivateData: Boolean)
     override external fun partoutVersion(): String
     override external fun partoutImportProfile(
@@ -50,6 +69,7 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
     override external fun partoutDaemonStop(
         completion: PartoutCompletionCallback
     )
+    //endregion
 
     companion object {
         init {
