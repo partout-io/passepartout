@@ -4,12 +4,11 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.PassepartoutWrapper
-import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.fingerprint
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AndroidConstants
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.AppProfileHeader
 import com.algoritmico.passepartout.models.Event
@@ -18,8 +17,6 @@ import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.models.ProfileEventSave
-import io.partout.abi.PartoutException
-import io.partout.abi.PartoutResult
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
 import io.partout.models.ModuleType
@@ -35,7 +32,6 @@ interface ProfileRepository {
 
 sealed class ProfileManagerException: Exception() {
     data class NotFound(val profileId: String): ProfileManagerException()
-    data class ABI(val json: String?): ProfileManagerException()
 }
 
 class ProfileManager(
@@ -60,21 +56,9 @@ class ProfileManager(
     }
 
     suspend fun importText(text: String, name: String?) {
-        val result = runCatchingNonFatal {
-            PartoutResult.await { completion ->
-                library.partoutImportProfile(text, name, completion)
-            }
-        }.getOrElse {
-            when (it) {
-                is PartoutException -> throw ProfileManagerException.ABI(it.payload)
-                else -> throw it
-            }
-        }
-        val json = result.payload
-        if (json == null) {
-            throw ProfileManagerException.ABI(null)
-        }
-        val profile = JSON.decode<TaggedProfile>(json)
+        val profile = runCatchingNonFatal {
+            library.importProfile(text, name)
+        }.getOrThrow()
         val previous = profiles[profile.id]
         repository.saveProfile(profile)
         profiles = profiles + (profile.id to profile)

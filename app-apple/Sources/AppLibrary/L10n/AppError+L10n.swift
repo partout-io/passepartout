@@ -6,6 +6,27 @@ import AppStrings
 import CommonLibrary
 import Foundation
 
+public struct LocalizedConnectionStatusError: LocalizableEntity {
+    private let lastErrorCode: String
+
+    public init(lastErrorCode: String) {
+        self.lastErrorCode = lastErrorCode
+    }
+
+    public var localizedDescription: String {
+        if let appDescription = ABI.AppErrorCode
+            .fromLastErrorCode(lastErrorCode)?
+            .localizedDescription(optionalStyle: .connectionStatus) {
+            return appDescription
+        }
+        if let partoutDescription = PartoutError.Code(rawValue: lastErrorCode)?
+            .localizedDescription(optionalStyle: .connectionStatus) {
+            return partoutDescription
+        }
+        return Strings.Errors.Tunnel.generic
+    }
+}
+
 // MARK: App errors
 
 extension ABI.AppError: StyledLocalizableEntity {
@@ -121,12 +142,12 @@ extension ABI.AppError: StyledLocalizableEntity {
     }
 }
 
-extension ABI.AppErrorCode: StyledLocalizableEntity {
+extension ABI.AppErrorCode: StyledOptionalLocalizableEntity {
     public enum Style {
         case connectionStatus
     }
 
-    public func localizedDescription(style: Style) -> String {
+    public func localizedDescription(optionalStyle style: Style) -> String? {
         switch style {
         case .connectionStatus:
             let V = Strings.Errors.App.self
@@ -134,7 +155,7 @@ extension ABI.AppErrorCode: StyledLocalizableEntity {
             case .ineligibleProfile:
                 return V.ineligible
             default:
-                return V.other
+                return nil
             }
         }
     }
@@ -169,12 +190,12 @@ private extension Error {
 
 // MARK: - Partout errors
 
-extension PartoutError.Code: StyledLocalizableEntity {
+extension PartoutError.Code: StyledOptionalLocalizableEntity {
     public enum Style {
         case connectionStatus
     }
 
-    public func localizedDescription(style: Style) -> String {
+    public func localizedDescription(optionalStyle style: Style) -> String? {
         switch style {
         case .connectionStatus:
             let V = Strings.Errors.Tunnel.self
@@ -198,7 +219,7 @@ extension PartoutError.Code: StyledLocalizableEntity {
             case .openVPNTLSFailure:
                 return V.tls
             default:
-                return V.generic
+                return nil
             }
         }
     }
