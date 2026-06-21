@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "DNS mislukt";
 "errors.tunnel.encryption" = "Encryptie mislukt";
 "errors.tunnel.generic" = "Mislukt";
-"errors.tunnel.ineligible" = "Aankoop vereist";
+"errors.app.ineligible" = "Aankoop vereist";
 "errors.tunnel.routing" = "Routering ontbreekt";
 "errors.tunnel.shutdown" = "Server uitgeschakeld";
 "errors.tunnel.tls" = "TLS mislukt";

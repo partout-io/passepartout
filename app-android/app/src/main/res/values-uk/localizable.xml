@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Не вдалося імпортувати профілі.</string>
     <string name="errors_app_incompatible_modules">Деякі активні модулі несумісні, спробуйте активувати лише один.</string>
     <string name="errors_app_incomplete_module">Будь ласка, завершіть налаштування модуля %1$s.</string>
+    <string name="errors_app_ineligible">Потрібна покупка</string>
     <string name="errors_app_invalid_fields">Некоректні поля.</string>
     <string name="errors_app_malformed_module">Модуль %1$s некоректний. %2$s</string>
     <string name="errors_app_missing_provider_entity">Не вибрано сервер у постачальника.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">Помилка DNS</string>
     <string name="errors_tunnel_encryption">Помилка шифрування</string>
     <string name="errors_tunnel_generic">Не вдалося</string>
-    <string name="errors_tunnel_ineligible">Потрібна покупка</string>
     <string name="errors_tunnel_routing">Маршрутизація відсутня</string>
     <string name="errors_tunnel_shutdown">Сервер вимкнено</string>
     <string name="errors_tunnel_tls">Помилка TLS</string>

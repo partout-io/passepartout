@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Impossible d\'importer les profils.</string>
     <string name="errors_app_incompatible_modules">Certains modules actifs sont incompatibles, essayez d\'en activer un seul.</string>
     <string name="errors_app_incomplete_module">Veuillez terminer la configuration du module %1$s.</string>
+    <string name="errors_app_ineligible">Achat requis</string>
     <string name="errors_app_invalid_fields">Champs invalides.</string>
     <string name="errors_app_malformed_module">Le module %1$s est mal formé. %2$s</string>
     <string name="errors_app_missing_provider_entity">Aucun serveur sélectionné chez le fournisseur.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">Échec du DNS</string>
     <string name="errors_tunnel_encryption">Échec du chiffrement</string>
     <string name="errors_tunnel_generic">Échec de l\'opération</string>
-    <string name="errors_tunnel_ineligible">Achat requis</string>
     <string name="errors_tunnel_routing">Routage manquant</string>
     <string name="errors_tunnel_shutdown">Arrêt du serveur</string>
     <string name="errors_tunnel_tls">Échec du TLS</string>

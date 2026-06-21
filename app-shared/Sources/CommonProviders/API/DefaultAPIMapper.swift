@@ -51,10 +51,10 @@ public final class DefaultAPIMapper: APIMapper {
             throw PartoutError(.authentication)
         }
         guard let storage: WireGuardProviderStorage = try module.options(for: .WireGuard) else {
-            throw PartoutError(.Providers.missingOption)
+            throw PartoutProviderError.missingOption()
         }
         guard storage.sessions?[deviceId] != nil else {
-            throw PartoutError(.Providers.missingOption)
+            throw PartoutProviderError.missingOption()
         }
 
         let library = try await scriptLibrary(at: .provider(module.providerId))

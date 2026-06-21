@@ -31,7 +31,7 @@ extension ProviderModule {
         userInfo: T.UserInfo?
     ) throws -> Module where T: ProviderTemplateCompiler & Decodable {
         guard let entity else {
-            throw PartoutError(.Providers.missingEntity)
+            throw PartoutProviderError.missingEntity
         }
         let template = try entity.preset.template(ofType: templateType)
         let options: T.Options? = try options(for: providerModuleType)

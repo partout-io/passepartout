@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Δεν ήταν δυνατή η εισαγωγή προφίλ.</string>
     <string name="errors_app_incompatible_modules">Μερικές ενεργές μονάδες είναι ασύμβατες, δοκιμάστε να ενεργοποιήσετε μόνο μία.</string>
     <string name="errors_app_incomplete_module">Ολοκληρώστε τη ρύθμιση του %1$s module.</string>
+    <string name="errors_app_ineligible">Απαιτείται αγορά</string>
     <string name="errors_app_invalid_fields">Μη έγκυρα πεδία.</string>
     <string name="errors_app_malformed_module">Το μονάδα %1$s είναι εσφαλμένη. %2$s</string>
     <string name="errors_app_missing_provider_entity">Δεν επιλέχθηκε διακομιστής στον πάροχο.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">Το DNS απέτυχε</string>
     <string name="errors_tunnel_encryption">Η κρυπτογράφηση απέτυχε</string>
     <string name="errors_tunnel_generic">Απέτυχε</string>
-    <string name="errors_tunnel_ineligible">Απαιτείται αγορά</string>
     <string name="errors_tunnel_routing">Η δρομολόγηση λείπει</string>
     <string name="errors_tunnel_shutdown">Ο διακομιστής τερματίστηκε</string>
     <string name="errors_tunnel_tls">Το TLS απέτυχε</string>

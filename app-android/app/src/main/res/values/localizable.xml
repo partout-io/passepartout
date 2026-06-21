@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Unable to import profiles.</string>
     <string name="errors_app_incompatible_modules">Some active modules are incompatible, try to only activate one of them.</string>
     <string name="errors_app_incomplete_module">Please finish the configuration of the %1$s module.</string>
+    <string name="errors_app_ineligible">Purchase required</string>
     <string name="errors_app_invalid_fields">Invalid fields.</string>
     <string name="errors_app_malformed_module">Module %1$s is malformed. %2$s</string>
     <string name="errors_app_missing_provider_entity">No server selected in provider.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">DNS failed</string>
     <string name="errors_tunnel_encryption">Encryption failed</string>
     <string name="errors_tunnel_generic">Failed</string>
-    <string name="errors_tunnel_ineligible">Purchase required</string>
     <string name="errors_tunnel_routing">Missing routing</string>
     <string name="errors_tunnel_shutdown">Server shutdown</string>
     <string name="errors_tunnel_tls">TLS failed</string>

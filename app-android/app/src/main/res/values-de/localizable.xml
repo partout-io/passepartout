@@ -377,6 +377,7 @@
     <string name="errors_app_import_generic">Profile konnten nicht importiert werden.</string>
     <string name="errors_app_incompatible_modules">Einige aktive Module sind inkompatibel, versuche, nur eines von ihnen zu aktivieren.</string>
     <string name="errors_app_incomplete_module">Bitte schließen Sie die Konfiguration des %1$s-Moduls ab.</string>
+    <string name="errors_app_ineligible">Kauf erforderlich</string>
     <string name="errors_app_invalid_fields">Ungültige Felder.</string>
     <string name="errors_app_malformed_module">Modul %1$s ist fehlerhaft. %2$s</string>
     <string name="errors_app_missing_provider_entity">Kein Server beim Anbieter ausgewählt.</string>
@@ -396,7 +397,6 @@
     <string name="errors_tunnel_dns">DNS fehlgeschlagen</string>
     <string name="errors_tunnel_encryption">Verschlüsselung fehlgeschlagen</string>
     <string name="errors_tunnel_generic">Fehlgeschlagen</string>
-    <string name="errors_tunnel_ineligible">Kauf erforderlich</string>
     <string name="errors_tunnel_routing">Routing fehlt</string>
     <string name="errors_tunnel_shutdown">Server heruntergefahren</string>
     <string name="errors_tunnel_tls">TLS fehlgeschlagen</string>

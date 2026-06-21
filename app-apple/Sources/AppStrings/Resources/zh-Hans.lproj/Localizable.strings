@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "DNS 失败";
 "errors.tunnel.encryption" = "加密失败";
 "errors.tunnel.generic" = "失败";
-"errors.tunnel.ineligible" = "需要购买";
+"errors.app.ineligible" = "需要购买";
 "errors.tunnel.routing" = "缺少路由";
 "errors.tunnel.shutdown" = "服务器关闭";
 "errors.tunnel.tls" = "TLS 失败";

@@ -29,21 +29,21 @@ extension WireGuardProviderTemplate: ProviderTemplateCompiler {
     ) throws -> WireGuardModule {
         // Template preconditions
         guard let anyPort = ports.randomElement() else {
-            throw PartoutError(.Providers.missingOption, "ports")
+            throw PartoutProviderError.missingOption("ports")
         }
         // Module preconditions
         guard let deviceId = userInfo?.deviceId else {
-            throw PartoutError(.Providers.missingOption, "userInfo.deviceId")
+            throw PartoutProviderError.missingOption("userInfo.deviceId")
         }
         guard let session = options?.sessions?[deviceId] else {
-            throw PartoutError(.Providers.missingOption, "session")
+            throw PartoutProviderError.missingOption("session")
         }
         guard let peer = session.peer else {
-            throw PartoutError(.Providers.missingOption, "session.peer")
+            throw PartoutProviderError.missingOption("session.peer")
         }
         // Server preconditions
         guard let serverPublicKey = entity.server.userInfo?["wgPublicKey"] as? String else {
-            throw PartoutError(.Providers.missingOption, "entity.server.wgPublicKey")
+            throw PartoutProviderError.missingOption("entity.server.wgPublicKey")
         }
         let serverPreSharedKey = entity.server.userInfo?["wgPreSharedKey"] as? String
 
@@ -54,7 +54,7 @@ extension WireGuardProviderTemplate: ProviderTemplateCompiler {
             Address(rawValue: $0)
         } ?? nil
         guard let anyAddress else {
-            throw PartoutError(.Providers.missingOption, "entity.server.allAddresses")
+            throw PartoutProviderError.missingOption("entity.server.allAddresses")
         }
 
         // Local interface from session

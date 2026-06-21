@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "Το DNS απέτυχε";
 "errors.tunnel.encryption" = "Η κρυπτογράφηση απέτυχε";
 "errors.tunnel.generic" = "Απέτυχε";
-"errors.tunnel.ineligible" = "Απαιτείται αγορά";
+"errors.app.ineligible" = "Απαιτείται αγορά";
 "errors.tunnel.routing" = "Η δρομολόγηση λείπει";
 "errors.tunnel.shutdown" = "Ο διακομιστής τερματίστηκε";
 "errors.tunnel.tls" = "Το TLS απέτυχε";

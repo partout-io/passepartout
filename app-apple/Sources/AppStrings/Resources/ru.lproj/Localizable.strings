@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "Ошибка DNS";
 "errors.tunnel.encryption" = "Ошибка шифрования";
 "errors.tunnel.generic" = "Ошибка";
-"errors.tunnel.ineligible" = "Требуется покупка";
+"errors.app.ineligible" = "Требуется покупка";
 "errors.tunnel.routing" = "Маршрутизация отсутствует";
 "errors.tunnel.shutdown" = "Сервер отключен";
 "errors.tunnel.tls" = "Ошибка TLS";

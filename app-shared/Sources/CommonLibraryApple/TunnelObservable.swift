@@ -144,7 +144,7 @@ extension TunnelObservable {
         activeProfiles[profileId]?.transfer
     }
 
-    public func lastErrorCode(for profileId: Profile.ID) -> PartoutError.Code? {
+    public func lastErrorCode(for profileId: Profile.ID) -> String? {
         activeProfiles[profileId]?.lastErrorCode
     }
 

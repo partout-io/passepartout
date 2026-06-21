@@ -67,7 +67,7 @@
 "errors.tunnel.dns" = "Échec du DNS";
 "errors.tunnel.encryption" = "Échec du chiffrement";
 "errors.tunnel.generic" = "Échec de l'opération";
-"errors.tunnel.ineligible" = "Achat requis";
+"errors.app.ineligible" = "Achat requis";
 "errors.tunnel.routing" = "Routage manquant";
 "errors.tunnel.shutdown" = "Arrêt du serveur";
 "errors.tunnel.tls" = "Échec du TLS";
