@@ -76,12 +76,16 @@ fun AppError.localizedMessage(): String {
     }
 }
 
-// Map error code in the ProfileRow lastErrorCode status text
-@Composable
-fun String.localizedStatusFromErrorCode(): String {
-    return AppErrorCode.fromLastErrorCode(this)?.localizedStatus()
-        ?: PartoutErrorCode.decode(this)?.localizedStatus()
-        ?: stringResource(R.string.errors_tunnel_generic)
+data class LocalizedConnectionStatusError(
+    private val lastErrorCode: String
+) {
+    // Map error code in the ProfileRow lastErrorCode status text
+    @Composable
+    fun localizedDescription(): String {
+        return AppErrorCode.fromLastErrorCode(lastErrorCode)?.localizedStatus()
+            ?: PartoutErrorCode.decode(lastErrorCode)?.localizedStatus()
+            ?: stringResource(R.string.errors_tunnel_generic)
+    }
 }
 
 @Composable
