@@ -228,7 +228,7 @@ extension ABI.AppErrorCode {
     public static func fromLastErrorCode(_ string: String) -> Self? {
         let comps = string.split(separator: ".")
         guard comps.count == 2 else { return nil }
-        guard comps[0] == "App." else { return nil }
+        guard comps[0] == "App" else { return nil }
         return Self.init(rawValue: String(comps[1]))
     }
 
