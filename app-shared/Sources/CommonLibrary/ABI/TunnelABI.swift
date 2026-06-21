@@ -214,8 +214,8 @@ private extension TunnelABI {
                     }
                 }
 
-                let error = PartoutError(.App.ineligibleProfile)
-                environment.setEnvironmentValue(error.code, forKey: TunnelEnvironmentKeys.lastErrorCode)
+                let errorCode: ABI.AppErrorCode = .ineligibleProfile
+                environment.setEnvironmentValue(errorCode.rawValue, forKey: TunnelEnvironmentKeys.lastErrorCode)
                 pspLog(.iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
 
                 // Hold on failure to prevent on-demand reconnection
