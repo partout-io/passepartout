@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: allowsRelaxedVerification,appNotWorking,forcesRelaxedVerification,newProfileEncoding,ovpnV3,wgCrossV2,unknown
+ * Values: allowsRelaxedVerification,appNotWorking,forcesRelaxedVerification,newProfileEncoding,ovpnV3,unknown
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
@@ -42,9 +42,6 @@ enum class ConfigFlag(val value: kotlin.String) {
 
     @SerialName(value = "ovpnV3")
     ovpnV3("ovpnV3"),
-
-    @SerialName(value = "wgCrossV2")
-    wgCrossV2("wgCrossV2"),
 
     @SerialName(value = "unknown")
     unknown("unknown");

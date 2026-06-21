@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,moduleRequiresConnection,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
+ * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,missingProviderOption,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
  */
 @Serializable
 enum class AppErrorCode(val value: kotlin.String) {
@@ -70,8 +70,14 @@ enum class AppErrorCode(val value: kotlin.String) {
     @SerialName(value = "missingProviderEntity")
     missingProviderEntity("missingProviderEntity"),
 
+    @SerialName(value = "missingProviderOption")
+    missingProviderOption("missingProviderOption"),
+
     @SerialName(value = "moduleRequiresConnection")
     moduleRequiresConnection("moduleRequiresConnection"),
+
+    @SerialName(value = "multipleTunnels")
+    multipleTunnels("multipleTunnels"),
 
     @SerialName(value = "noActiveModules")
     noActiveModules("noActiveModules"),
@@ -153,4 +159,5 @@ enum class AppErrorCode(val value: kotlin.String) {
         }
     }
 }
+
 

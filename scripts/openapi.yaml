@@ -563,7 +563,6 @@ components:
       - forcesRelaxedVerification
       - newProfileEncoding
       - ovpnV3
-      - wgCrossV2
       - unknown
       enum:
       - allowsRelaxedVerification
@@ -571,7 +570,6 @@ components:
       - forcesRelaxedVerification
       - newProfileEncoding
       - ovpnV3
-      - wgCrossV2
       - unknown
     ConfigBundle.Config:
       type: object

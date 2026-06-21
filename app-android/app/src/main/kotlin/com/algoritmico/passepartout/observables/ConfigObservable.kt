@@ -79,8 +79,7 @@ class ConfigObservable(
 
     private companion object {
         val ExperimentalFeatureFlags = setOf(
-            ConfigFlag.ovpnV3,
-            ConfigFlag.wgCrossV2
+            ConfigFlag.ovpnV3
         )
     }
 
