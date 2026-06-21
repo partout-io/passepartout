@@ -7,9 +7,11 @@ package com.algoritmico.passepartout.ui.extensions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.observables.fromLastErrorCode
+import io.partout.abi.PartoutException
 import io.partout.models.PartoutErrorCode
 
 // Map AppError.Code for ErrorHandler
@@ -53,7 +55,7 @@ fun AppError.localizedMessage(): String {
             .appending(detail, separator = " ")
         AppErrorCode.partout -> stringResource(
             R.string.errors_app_partout,
-            detail ?: "?"
+            cause?.partoutDescription ?: detail ?: "?"
         )
         AppErrorCode.permissionDenied -> stringResource(R.string.errors_app_permission_denied)
         AppErrorCode.timeout -> stringResource(R.string.errors_app_timeout)
@@ -111,3 +113,11 @@ private fun String.appending(optional: String?, separator: String): String {
         .filter { it.isNotBlank() }
         .joinToString(separator = separator)
 }
+
+private val Throwable.partoutDescription: String?
+    get() = when (this) {
+        is PartoutException -> payload?.let {
+            "${it.code.value}, userInfo=${JSON.encode(it.userInfo)}"
+        } ?: code.toString()
+        else -> null
+    }
