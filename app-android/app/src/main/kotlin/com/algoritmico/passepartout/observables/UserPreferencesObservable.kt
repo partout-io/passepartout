@@ -12,7 +12,6 @@ import androidx.datastore.preferences.core.edit
 import com.algoritmico.passepartout.business.extensions.appPreferences
 import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.business.extensions.toggleDnsFallback
 import com.algoritmico.passepartout.business.extensions.update
 import com.algoritmico.passepartout.business.extensions.updateExperimentalPreferences
 import com.algoritmico.passepartout.models.AppPreferenceKey
@@ -24,7 +23,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import java.io.Closeable
 
@@ -62,12 +60,11 @@ class UserPreferencesObservable(
     //endregion
 
     //region Editing
-    val dnsFallback: Flow<Boolean> = preferences.map { it.dnsFallsBack }
-
-    suspend fun toggleDnsFallback() {
-        editSafely {
-            val newValue = it.toggleDnsFallback()
-            snapshot = snapshot.copy(dnsFallsBack = newValue)
+    suspend fun updateDnsFallback(isEnabled: Boolean) {
+        updatePreferences(
+            fields = listOf(AppPreferenceKey.dnsFallsBack)
+        ) {
+            it.copy(dnsFallsBack = isEnabled)
         }
     }
 
