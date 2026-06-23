@@ -17,9 +17,11 @@ import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
 import io.partout.models.TunnelSnapshot
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class PassepartoutVpnService: VpnService() {
     private val androidConstants = defaultAndroidConstants
@@ -99,15 +101,15 @@ class PassepartoutVpnService: VpnService() {
         }
 
         override suspend fun stop() = withContext(Dispatchers.IO) {
-            val result = CompletableDeferred<Unit>()
-            library.partoutDaemonStop { code, payload ->
-                if (code != 0) {
-                    result.completeExceptionally(PartoutException(code, payload))
-                    return@partoutDaemonStop
+            suspendCancellableCoroutine { continuation ->
+                library.partoutDaemonStop { code, payload ->
+                    if (code != 0) {
+                        continuation.resumeWithException(PartoutException(code, payload))
+                        return@partoutDaemonStop
+                    }
+                    continuation.resume(Unit)
                 }
-                result.complete(Unit)
             }
-            result.await()
         }
 
         override suspend fun readLastProfile(): String {
