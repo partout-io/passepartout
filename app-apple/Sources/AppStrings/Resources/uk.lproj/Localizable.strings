@@ -1,6 +1,8 @@
 "alerts.import.passphrase.message" = "Введіть пароль для '%@'.";
 "alerts.import.passphrase.ok" = "Розшифрувати";
 "alerts.providers.missing_server.message" = "Не вибрано сервер постачальника. Будь ласка, виберіть сервер призначення на вашому пристрої iOS/macOS.";
+"android.vpn_service.channel.description" = "Сповіщення для служби VPN переднього плану";
+"android.vpn_service.status.stopped" = "Зупинено";
 "entities.dns_protocol.cleartext" = "Відкритий текст";
 "entities.dns_protocol.https" = "Через HTTPS";
 "entities.dns_protocol.tls" = "Через TLS";

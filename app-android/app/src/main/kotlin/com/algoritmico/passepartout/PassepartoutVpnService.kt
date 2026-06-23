@@ -34,6 +34,7 @@ import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
+import io.partout.models.TunnelStatus
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -256,8 +257,8 @@ class PassepartoutVpnService: VpnService() {
             channelId,
             NotificationManagerCompat.IMPORTANCE_LOW // low importance to avoid sound
         )
-            .setName("Passepartout VPN")
-            .setDescription("Notification for the VPN foreground service")
+            .setName(getString(R.string.app_name))
+            .setDescription(getString(R.string.android_vpn_service_channel_description))
             .setShowBadge(false)
             .build()
 
@@ -270,7 +271,7 @@ class PassepartoutVpnService: VpnService() {
         val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification_vpn)
             .setContentTitle(title)
-            .setSubText(if (isServiceStopped) "stopped" else snapshot?.status?.toString())
+            .setSubText(notificationSubText(snapshot, isServiceStopped))
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOnlyAlertOnce(true)
@@ -278,7 +279,13 @@ class PassepartoutVpnService: VpnService() {
             .setAutoCancel(false)
             .addAction(
                 R.drawable.ic_notification_vpn,
-                if (isServiceStopped) "Connect" else "Disconnect",
+                getString(
+                    if (isServiceStopped) {
+                        R.string.global_actions_connect
+                    } else {
+                        R.string.global_actions_disconnect
+                    }
+                ),
                 if (isServiceStopped) connectPendingIntent() else disconnectPendingIntent()
             )
 
@@ -290,6 +297,26 @@ class PassepartoutVpnService: VpnService() {
         }
 
         return builder.build()
+    }
+
+    private fun notificationSubText(
+        snapshot: TunnelSnapshot?,
+        isServiceStopped: Boolean
+    ): String? {
+        if (isServiceStopped) {
+            return getString(R.string.android_vpn_service_status_stopped)
+        }
+        return snapshot?.status?.let(::tunnelStatusText)
+    }
+
+    private fun tunnelStatusText(status: TunnelStatus): String {
+        val resId = when (status) {
+            TunnelStatus.inactive -> R.string.entities_tunnel_status_inactive
+            TunnelStatus.activating -> R.string.entities_tunnel_status_activating
+            TunnelStatus.active -> R.string.entities_tunnel_status_active
+            TunnelStatus.deactivating -> R.string.entities_tunnel_status_deactivating
+        }
+        return getString(resId)
     }
 
     private fun updateNotification(snapshot: TunnelSnapshot) {

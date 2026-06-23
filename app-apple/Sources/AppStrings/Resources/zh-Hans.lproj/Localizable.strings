@@ -1,6 +1,8 @@
 "alerts.import.passphrase.message" = "输入 \"%@\" 的密码短语。";
 "alerts.import.passphrase.ok" = "解密";
 "alerts.providers.missing_server.message" = "未选择提供商服务器。请在您的 iOS/macOS 设备上选择目标服务器。";
+"android.vpn_service.channel.description" = "VPN 前台服务通知";
+"android.vpn_service.status.stopped" = "已停止";
 "entities.dns_protocol.cleartext" = "明文";
 "entities.dns_protocol.https" = "HTTPS";
 "entities.dns_protocol.tls" = "TLS";

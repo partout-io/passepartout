@@ -83,6 +83,16 @@ public enum Strings {
         }
       }
     }
+    public enum VpnService {
+      public enum Channel {
+        /// Notification for the VPN foreground service
+        public static let description = Strings.tr("Localizable", "android.vpn_service.channel.description", fallback: "Notification for the VPN foreground service")
+      }
+      public enum Status {
+        /// Stopped
+        public static let stopped = Strings.tr("Localizable", "android.vpn_service.status.stopped", fallback: "Stopped")
+      }
+    }
   }
   public enum Entities {
     public enum Dns {

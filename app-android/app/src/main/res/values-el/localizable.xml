@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Ακύρωση</string>
     <string name="theme_confirmation_message">Είστε βέβαιοι ότι θέλετε να συνεχίσετε με αυτήν τη λειτουργία;</string>
     <string name="theme_lock_screen_reason">Το %1$s είναι κλειδωμένο</string>
+    <string name="android_vpn_service_channel_description">Ειδοποίηση για την υπηρεσία VPN στο προσκήνιο</string>
+    <string name="android_vpn_service_status_stopped">Διακόπηκε</string>
     <string name="errors_wireguard_interface_title">Μη έγκυρη διεπαφή</string>
     <string name="errors_wireguard_interface_messagenamerequired">Απαιτείται όνομα διεπαφής</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Απαιτείται ιδιωτικό κλειδί διεπαφής</string>

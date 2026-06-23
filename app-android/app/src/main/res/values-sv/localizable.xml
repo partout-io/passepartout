@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Avbryt</string>
     <string name="theme_confirmation_message">Är du säker på att du vill fortsätta med denna åtgärd?</string>
     <string name="theme_lock_screen_reason">%1$s är låst</string>
+    <string name="android_vpn_service_channel_description">Avisering för VPN-förgrundstjänsten</string>
+    <string name="android_vpn_service_status_stopped">Stoppad</string>
     <string name="errors_wireguard_interface_title">Ogiltigt gränssnitt</string>
     <string name="errors_wireguard_interface_messagenamerequired">Gränssnittsnamn krävs</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Gränssnittets privata nyckel krävs</string>

@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Annulla</string>
     <string name="theme_confirmation_message">Sei sicuro di voler procedere con questa operazione?</string>
     <string name="theme_lock_screen_reason">%1$s è bloccato</string>
+    <string name="android_vpn_service_channel_description">Notifica per il servizio VPN in primo piano</string>
+    <string name="android_vpn_service_status_stopped">Interrotto</string>
     <string name="errors_wireguard_interface_title">Interfaccia non valida</string>
     <string name="errors_wireguard_interface_messagenamerequired">È richiesto il nome dell\'interfaccia</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">È richiesta la chiave privata dell\'interfaccia</string>

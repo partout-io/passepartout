@@ -1,6 +1,8 @@
 "alerts.import.passphrase.message" = "Voer het wachtwoord in voor '%@'.";
 "alerts.import.passphrase.ok" = "Ontsleutelen";
 "alerts.providers.missing_server.message" = "Geen provider-server geselecteerd. Selecteer een doellocatieserver op je iOS-/macOS-apparaat.";
+"android.vpn_service.channel.description" = "Melding voor de VPN-voorgrondservice";
+"android.vpn_service.status.stopped" = "Gestopt";
 "entities.dns_protocol.cleartext" = "Onversleuteld";
 "entities.dns_protocol.https" = "Over HTTPS";
 "entities.dns_protocol.tls" = "Over TLS";

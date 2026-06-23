@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Cancel</string>
     <string name="theme_confirmation_message">Are you sure you want to proceed with this operation?</string>
     <string name="theme_lock_screen_reason">%1$s is locked</string>
+    <string name="android_vpn_service_channel_description">Notification for the VPN foreground service</string>
+    <string name="android_vpn_service_status_stopped">Stopped</string>
     <string name="android_alerts_interactive_unsupported_title">Interactive profile</string>
     <string name="android_alerts_interactive_unsupported_message">%1$s requires input that is not supported by this app version.</string>
     <string name="android_alerts_vpn_permission_title">VPN permission required</string>

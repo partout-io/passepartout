@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">取消</string>
     <string name="theme_confirmation_message">您确定要继续此操作吗？</string>
     <string name="theme_lock_screen_reason">%1$s 已锁定</string>
+    <string name="android_vpn_service_channel_description">VPN 前台服务通知</string>
+    <string name="android_vpn_service_status_stopped">已停止</string>
     <string name="errors_wireguard_interface_title">无效的接口</string>
     <string name="errors_wireguard_interface_messagenamerequired">接口名称是必需的</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">接口的私钥是必需的</string>

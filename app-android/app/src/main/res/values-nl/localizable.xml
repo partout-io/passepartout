@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Annuleren</string>
     <string name="theme_confirmation_message">Weet je zeker dat je wilt doorgaan met deze bewerking?</string>
     <string name="theme_lock_screen_reason">%1$s is vergrendeld</string>
+    <string name="android_vpn_service_channel_description">Melding voor de VPN-voorgrondservice</string>
+    <string name="android_vpn_service_status_stopped">Gestopt</string>
     <string name="errors_wireguard_interface_title">Ongeldige interface</string>
     <string name="errors_wireguard_interface_messagenamerequired">Interfacenaam is vereist</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Privésleutel van de interface is vereist</string>
