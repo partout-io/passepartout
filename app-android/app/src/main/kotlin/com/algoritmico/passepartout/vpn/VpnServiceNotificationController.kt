@@ -40,13 +40,9 @@ class VpnServiceNotificationController(
     @Volatile
     private var currentProfileName: String? = null
 
-    @Volatile
-    private var shouldKeepStoppedNotification = false
-
     private val sampleFormatter = SampleFormatter()
 
     fun prepareStart(profileJSON: String?) {
-        shouldKeepStoppedNotification = false
         profileJSON?.let {
             sampleFormatter.reset()
             updateProfileName(it)
@@ -94,42 +90,15 @@ class VpnServiceNotificationController(
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onServiceStopped(wasRevoked: Boolean) {
-        if (wasRevoked) {
-            shouldKeepStoppedNotification = false
-            dismiss()
-            reset()
-            return
-        }
-        postStopped()
-    }
-
-    fun onDestroy() {
-        if (!shouldKeepStoppedNotification) {
-            dismiss()
-        }
+        dismiss()
         reset()
     }
 
-    private fun postStopped() {
-        shouldKeepStoppedNotification = true
-        sampleFormatter.reset()
-        ServiceCompat.stopForeground(service, ServiceCompat.STOP_FOREGROUND_DETACH)
-
-        val notificationManager = NotificationManagerCompat.from(service)
-        if (!canPostNotifications(notificationManager)) {
-            AppLog.w(logTag, "Skip stopped VPN notification, notifications are disabled")
-            return
-        }
-        val notification = createNotification(
-            snapshot = null,
-            isServiceStopped = true
-        )
-        try {
-            notificationManager.notify(VPN_NOTIFICATION_ID, notification)
-        } catch (it: SecurityException) {
-            AppLog.w(logTag, "Unable to show stopped VPN notification", it)
-        }
+    fun onDestroy() {
+        dismiss()
+        reset()
     }
 
     private fun dismiss() {
@@ -139,10 +108,7 @@ class VpnServiceNotificationController(
             .cancel(VPN_NOTIFICATION_ID)
     }
 
-    private fun createNotification(
-        snapshot: TunnelSnapshot?,
-        isServiceStopped: Boolean = false
-    ): Notification {
+    private fun createNotification(snapshot: TunnelSnapshot?): Notification {
         val channel = NotificationChannelCompat.Builder(
             VPN_CHANNEL_ID,
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -161,22 +127,16 @@ class VpnServiceNotificationController(
         val builder = NotificationCompat.Builder(service, VPN_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification_vpn)
             .setContentTitle(title)
-            .setSubText(notificationSubText(snapshot, isServiceStopped))
+            .setSubText(notificationSubText(snapshot))
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOnlyAlertOnce(true)
-            .setOngoing(!isServiceStopped)
+            .setOngoing(true)
             .setAutoCancel(false)
             .addAction(
                 R.drawable.ic_notification_vpn,
-                service.getString(
-                    if (isServiceStopped) {
-                        R.string.global_actions_connect
-                    } else {
-                        R.string.global_actions_disconnect
-                    }
-                ),
-                if (isServiceStopped) connectPendingIntent() else disconnectPendingIntent()
+                service.getString(R.string.global_actions_disconnect),
+                disconnectPendingIntent()
             )
 
         val content = snapshot?.let(sampleFormatter::activeText)
@@ -189,13 +149,7 @@ class VpnServiceNotificationController(
         return builder.build()
     }
 
-    private fun notificationSubText(
-        snapshot: TunnelSnapshot?,
-        isServiceStopped: Boolean
-    ): String? {
-        if (isServiceStopped) {
-            return service.getString(R.string.android_vpn_service_status_stopped)
-        }
+    private fun notificationSubText(snapshot: TunnelSnapshot?): String? {
         return snapshot?.status?.let(::tunnelStatusText)
     }
 
@@ -207,16 +161,6 @@ class VpnServiceNotificationController(
             TunnelStatus.deactivating -> R.string.entities_tunnel_status_deactivating
         }
         return service.getString(resId)
-    }
-
-    private fun connectPendingIntent(): PendingIntent {
-        val intent = Intent(service, serviceClass)
-        return PendingIntent.getService(
-            service,
-            VPN_CONNECT_REQUEST_CODE,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
     }
 
     private fun disconnectPendingIntent(): PendingIntent {
@@ -255,14 +199,12 @@ class VpnServiceNotificationController(
 
     private fun reset() {
         currentProfileName = null
-        shouldKeepStoppedNotification = false
         sampleFormatter.reset()
     }
 
     companion object {
         private const val VPN_CHANNEL_ID = "vpn_service_channel_1"
         private const val VPN_NOTIFICATION_ID = 1
-        private const val VPN_CONNECT_REQUEST_CODE = 1000
         private const val VPN_DISCONNECT_REQUEST_CODE = 1001
     }
 }
