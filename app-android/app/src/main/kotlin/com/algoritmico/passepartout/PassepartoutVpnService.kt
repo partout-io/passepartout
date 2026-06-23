@@ -149,6 +149,11 @@ class PassepartoutVpnService: VpnService() {
             AppLog.e(logTag, "Unable to start service in foreground", it)
             return START_NOT_STICKY
         }
+        if (VpnService.prepare(applicationContext) != null) {
+            AppLog.w(logTag, "VPN permission was revoked before start")
+            runtime.onRevoke()
+            return START_NOT_STICKY
+        }
         return runtime.onStartCommand(intent, flags, startId)
     }
 
