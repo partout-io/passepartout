@@ -77,7 +77,8 @@ extension TunnelABI {
         if preferences.isFlagEnabled(.ovpnV3) {
             factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
         } else {
-            let options = NEInterfaceFactory.Options()
+            var options = NEInterfaceFactory.Options()
+            options.withSafeValueObserver = preferences.isFlagEnabled(.neSafeValueObserver)
             factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
         }
         let reachability = NEObservablePath(ctx)

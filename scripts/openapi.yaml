@@ -561,6 +561,7 @@ components:
       - allowsRelaxedVerification
       - appNotWorking
       - forcesRelaxedVerification
+      - neSafeValueObserver
       - newProfileEncoding
       - ovpnV3
       - unknown
@@ -568,6 +569,7 @@ components:
       - allowsRelaxedVerification
       - appNotWorking
       - forcesRelaxedVerification
+      - neSafeValueObserver
       - newProfileEncoding
       - ovpnV3
       - unknown
