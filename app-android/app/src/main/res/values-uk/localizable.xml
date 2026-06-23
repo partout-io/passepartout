@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Скасувати</string>
     <string name="theme_confirmation_message">Ви впевнені, що хочете продовжити виконання цієї операції?</string>
     <string name="theme_lock_screen_reason">%1$s заблоковано</string>
+    <string name="android_vpn_service_channel_description">Сповіщення для служби VPN переднього плану</string>
+    <string name="android_vpn_service_status_stopped">Зупинено</string>
     <string name="errors_wireguard_interface_title">Некоректний інтерфейс</string>
     <string name="errors_wireguard_interface_messagenamerequired">Потрібно вказати назву інтерфейсу</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Потрібен приватний ключ інтерфейсу</string>

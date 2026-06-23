@@ -1,6 +1,8 @@
 "alerts.import.passphrase.message" = "Ange lösenfras för '%@'.";
 "alerts.import.passphrase.ok" = "Dekryptera";
 "alerts.providers.missing_server.message" = "Ingen leverantörsserver vald. Välj en målserver på din iOS/macOS-enhet.";
+"android.vpn_service.channel.description" = "Avisering för VPN-förgrundstjänsten";
+"android.vpn_service.status.stopped" = "Stoppad";
 "entities.dns_protocol.cleartext" = "Okrypterat";
 "entities.dns_protocol.https" = "Via HTTPS";
 "entities.dns_protocol.tls" = "Via TLS";

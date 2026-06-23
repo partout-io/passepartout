@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Annuler</string>
     <string name="theme_confirmation_message">Êtes-vous sûr de vouloir procéder avec cette opération ?</string>
     <string name="theme_lock_screen_reason">%1$s est verrouillé</string>
+    <string name="android_vpn_service_channel_description">Notification du service VPN de premier plan</string>
+    <string name="android_vpn_service_status_stopped">Arrêté</string>
     <string name="errors_wireguard_interface_title">Interface invalide</string>
     <string name="errors_wireguard_interface_messagenamerequired">Le nom de l\'interface est requis</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">La clé privée de l\'interface est requise</string>

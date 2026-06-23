@@ -499,6 +499,9 @@
 
 // MARK: Android
 
+"android.vpn_service.channel.description" = "Notification for the VPN foreground service";
+"android.vpn_service.status.stopped" = "Stopped";
+
 "android.alerts.interactive_unsupported.title" = "Interactive profile";
 "android.alerts.interactive_unsupported.message" = "%@ requires input that is not supported by this app version.";
 "android.alerts.vpn_permission.title" = "VPN permission required";

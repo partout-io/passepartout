@@ -1,6 +1,8 @@
 "alerts.import.passphrase.message" = "Εισάγετε το μυστικό κλειδί για '%@'.";
 "alerts.import.passphrase.ok" = "Αποκρυπτογράφηση";
 "alerts.providers.missing_server.message" = "Δεν έχει επιλεγεί διακομιστής παρόχου. Επιλέξτε έναν διακομιστή προορισμού στη συσκευή σας iOS/macOS.";
+"android.vpn_service.channel.description" = "Ειδοποίηση για την υπηρεσία VPN στο προσκήνιο";
+"android.vpn_service.status.stopped" = "Διακόπηκε";
 "entities.dns_protocol.cleartext" = "Απλό κείμενο";
 "entities.dns_protocol.https" = "Μέσω HTTPS";
 "entities.dns_protocol.tls" = "Μέσω TLS";

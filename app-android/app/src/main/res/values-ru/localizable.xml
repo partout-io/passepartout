@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Отменить</string>
     <string name="theme_confirmation_message">Вы уверены, что хотите продолжить выполнение этой операции?</string>
     <string name="theme_lock_screen_reason">%1$s заблокировано</string>
+    <string name="android_vpn_service_channel_description">Уведомление для службы VPN переднего плана</string>
+    <string name="android_vpn_service_status_stopped">Остановлено</string>
     <string name="errors_wireguard_interface_title">Недопустимый интерфейс</string>
     <string name="errors_wireguard_interface_messagenamerequired">Требуется имя интерфейса</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Требуется закрытый ключ интерфейса</string>

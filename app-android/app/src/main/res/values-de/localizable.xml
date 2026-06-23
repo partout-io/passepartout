@@ -422,6 +422,8 @@
     <string name="theme_confirmation_cancel">Abbrechen</string>
     <string name="theme_confirmation_message">Bist du sicher, dass du mit dieser Aktion fortfahren möchtest?</string>
     <string name="theme_lock_screen_reason">%1$s ist gesperrt</string>
+    <string name="android_vpn_service_channel_description">Benachrichtigung für den VPN-Vordergrunddienst</string>
+    <string name="android_vpn_service_status_stopped">Gestoppt</string>
     <string name="errors_wireguard_interface_title">Ungültige Schnittstelle</string>
     <string name="errors_wireguard_interface_messagenamerequired">Schnittstellenname ist erforderlich</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Privater Schlüssel der Schnittstelle ist erforderlich</string>

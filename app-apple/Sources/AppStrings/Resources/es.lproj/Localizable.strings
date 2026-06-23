@@ -1,6 +1,8 @@
 "alerts.import.passphrase.message" = "Introduce la passphrase para '%@'.";
 "alerts.import.passphrase.ok" = "Desencriptar";
 "alerts.providers.missing_server.message" = "No se ha seleccionado servidor de proveedor. Por favor, selecciona un servidor de destino en tu dispositivo iOS/macOS.";
+"android.vpn_service.channel.description" = "Notificación para el servicio VPN en primer plano";
+"android.vpn_service.status.stopped" = "Detenido";
 "entities.dns_protocol.cleartext" = "En texto claro";
 "entities.dns_protocol.https" = "Sobre HTTPS";
 "entities.dns_protocol.tls" = "Sobre TLS";
