@@ -12,15 +12,20 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
+import android.os.SystemClock
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.business.extensions.DataSample
+import com.algoritmico.passepartout.business.extensions.DataSpeed
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.business.extensions.speedSince
 import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.ui.extensions.formatDataUnit
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
@@ -38,12 +43,12 @@ class VpnServiceNotificationController(
     @Volatile
     private var shouldKeepStoppedNotification = false
 
-    private val notificationTransfer = NotificationTransferFormatter()
+    private val sampleFormatter = SampleFormatter()
 
     fun prepareStart(profileJSON: String?) {
         shouldKeepStoppedNotification = false
         profileJSON?.let {
-            notificationTransfer.reset()
+            sampleFormatter.reset()
             updateProfileName(it)
         }
     }
@@ -108,7 +113,7 @@ class VpnServiceNotificationController(
 
     private fun postStopped() {
         shouldKeepStoppedNotification = true
-        notificationTransfer.reset()
+        sampleFormatter.reset()
         ServiceCompat.stopForeground(service, ServiceCompat.STOP_FOREGROUND_DETACH)
 
         val notificationManager = NotificationManagerCompat.from(service)
@@ -174,7 +179,7 @@ class VpnServiceNotificationController(
                 if (isServiceStopped) connectPendingIntent() else disconnectPendingIntent()
             )
 
-        val content = snapshot?.let(notificationTransfer::activeText)
+        val content = snapshot?.let(sampleFormatter::activeText)
         if (content != null) {
             builder
                 .setContentText(content)
@@ -251,7 +256,7 @@ class VpnServiceNotificationController(
     private fun reset() {
         currentProfileName = null
         shouldKeepStoppedNotification = false
-        notificationTransfer.reset()
+        sampleFormatter.reset()
     }
 
     companion object {
@@ -260,4 +265,38 @@ class VpnServiceNotificationController(
         private const val VPN_CONNECT_REQUEST_CODE = 1000
         private const val VPN_DISCONNECT_REQUEST_CODE = 1001
     }
+}
+
+private class SampleFormatter {
+    private var lastSample: DataSample? = null
+
+    @Synchronized
+    fun reset() {
+        lastSample = null
+    }
+
+    @Synchronized
+    fun activeText(snapshot: TunnelSnapshot): String? {
+        if (snapshot.status != TunnelStatus.active) {
+            lastSample = null
+            return null
+        }
+        val dataCount = snapshot.environment?.dataCount ?: return null
+        val now = SystemClock.elapsedRealtime()
+        val speed = dataCount.speedSince(
+            previous = lastSample,
+            id = snapshot.id,
+            elapsedRealtimeMillis = now
+        )
+        lastSample = DataSample(
+            id = snapshot.id,
+            dataCount = dataCount,
+            elapsedRealtimeMillis = now
+        )
+        return speed.notificationText()
+    }
+}
+
+private fun DataSpeed.notificationText(): String {
+    return "↓ ${received.formatDataUnit()}/s ↑ ${sent.formatDataUnit()}/s"
 }

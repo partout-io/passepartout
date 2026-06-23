@@ -13,7 +13,7 @@ import io.partout.abi.PartoutCompletionCallback
 import io.partout.abi.PartoutResult
 import io.partout.models.TaggedProfile
 
-interface PassepartoutWrapperProtocol {
+private interface PassepartoutWrapperProtocol {
     fun partoutInit(tag: String, logsPrivateData: Boolean)
     fun partoutVersion(): String
     fun partoutImportProfile(
