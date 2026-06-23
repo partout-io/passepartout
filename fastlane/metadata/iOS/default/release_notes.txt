@@ -1,1 +1,2 @@
-* Refactor minor things
+* NE: Fix random crashes on connection establishment (#1878)
+* WireGuard: Drop legacy implementation (#1877)
