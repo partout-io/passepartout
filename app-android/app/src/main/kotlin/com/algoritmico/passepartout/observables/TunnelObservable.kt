@@ -60,7 +60,7 @@ class TunnelObservable(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
 
-    private val _state = MutableStateFlow(State())
+    private val _state = MutableStateFlow(tunnel.state.value.toState())
     val state: StateFlow<State> = _state.asStateFlow()
     private var pendingConnectContinuation: CancellableContinuation<Unit>? = null
 
@@ -155,9 +155,7 @@ class TunnelObservable(
 
     private fun onTunnelState(tunnelState: PartoutTunnel.State) {
         _state.update {
-            it.copy(activeProfiles = tunnelState.snapshots.mapValues {
-                it.value.toAppTunnelInfo()
-            })
+            it.copy(activeProfiles = tunnelState.toState().activeProfiles)
         }
     }
 
@@ -195,6 +193,14 @@ class TunnelObservable(
                 )
             },
             lastErrorCode = environment?.lastErrorCode
+        )
+    }
+
+    private fun PartoutTunnel.State.toState(): State {
+        return State(
+            activeProfiles = snapshots.mapValues {
+                it.value.toAppTunnelInfo()
+            }
         )
     }
 

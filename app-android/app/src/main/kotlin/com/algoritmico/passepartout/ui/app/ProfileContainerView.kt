@@ -84,12 +84,14 @@ fun ProfileContainerView(
     }
 
     fun isProfileEnabled(profileId: String): Boolean {
-        return activeProfiles[profileId]?.isEnabled ?: false
+        return requestedConnection?.isEnabledFor(profileId)
+            ?: activeProfiles[profileId]?.isEnabled
+            ?: false
     }
 
     fun profileStatus(profileId: String): AppProfileStatus {
-        return activeProfiles[profileId]?.status
-            ?: requestedConnection?.statusFor(profileId)
+        return requestedConnection?.statusFor(profileId)
+            ?: activeProfiles[profileId]?.status
             ?: AppProfileStatus.disconnected
     }
 
@@ -155,11 +157,7 @@ fun ProfileContainerView(
         val hadActiveProfiles = previousActiveProfiles.isNotEmpty()
         val request = requestedConnection
         if (request != null) {
-            if (activeProfiles.containsKey(request.profileId)) {
-                requestedConnection = null
-            } else if (!request.enabled && activeProfiles.isEmpty()) {
-                requestedConnection = null
-            } else if (request.enabled && activeProfiles.isEmpty() && !hadActiveProfiles) {
+            if (request.isReflectedBy(activeProfiles, hadActiveProfiles)) {
                 requestedConnection = null
             }
         } else if (activeProfiles.isNotEmpty() && selectedProfileId !in activeProfiles.keys) {
@@ -344,6 +342,13 @@ private data class RequestedConnection(
     val profileId: String,
     val enabled: Boolean
 ) {
+    fun isEnabledFor(candidateId: String): Boolean? {
+        if (candidateId != profileId) {
+            return null
+        }
+        return enabled
+    }
+
     fun statusFor(candidateId: String): AppProfileStatus? {
         if (candidateId != profileId) {
             return null
@@ -352,6 +357,18 @@ private data class RequestedConnection(
             AppProfileStatus.connecting
         } else {
             AppProfileStatus.disconnecting
+        }
+    }
+
+    fun isReflectedBy(
+        activeProfiles: Map<String, AppTunnelInfo>,
+        hadActiveProfiles: Boolean
+    ): Boolean {
+        val activeProfile = activeProfiles[profileId]
+        return if (enabled) {
+            activeProfile != null || (activeProfiles.isEmpty() && !hadActiveProfiles)
+        } else {
+            activeProfile?.isEnabled != true
         }
     }
 }
