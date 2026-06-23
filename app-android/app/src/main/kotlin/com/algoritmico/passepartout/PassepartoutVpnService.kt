@@ -152,7 +152,11 @@ class PassepartoutVpnService: VpnService() {
             updateNotification(snapshot)
         }
 
-        override fun onServiceStopped() {
+        override fun onServiceStopped(wasRevoked: Boolean) {
+            if (wasRevoked) {
+                dismissNotification()
+                return
+            }
             postStoppedNotification()
         }
 
