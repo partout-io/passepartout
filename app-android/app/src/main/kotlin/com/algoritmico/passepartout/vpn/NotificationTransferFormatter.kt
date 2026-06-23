@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-package com.algoritmico.passepartout.ui.extensions
+package com.algoritmico.passepartout.vpn
 
 import android.os.SystemClock
 import com.algoritmico.passepartout.business.extensions.DataSample
 import com.algoritmico.passepartout.business.extensions.DataSpeed
 import com.algoritmico.passepartout.business.extensions.speedSince
+import com.algoritmico.passepartout.ui.extensions.formatDataUnit
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
 
