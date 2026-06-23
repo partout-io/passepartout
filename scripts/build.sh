@@ -37,7 +37,7 @@ cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 if [[ $(uname -s) == "Linux" ]]; then
     source $cwd/env-linux.sh
     if [[ $gen_build == 1 ]]; then
-        cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/linux.toolchain.cmake")
+        cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$cmake_toolchains_path/swift-linux.toolchain.cmake")
     fi
 fi
 
