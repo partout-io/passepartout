@@ -40,11 +40,14 @@ class VpnServiceNotificationController(
     @Volatile
     private var currentProfileName: String? = null
 
+    @Volatile
+    private var lastNotificationContent: NotificationContent? = null
+
     private val sampleFormatter = SampleFormatter()
 
     fun prepareStart(profileJSON: String?) {
         profileJSON?.let {
-            sampleFormatter.reset()
+            resetNotificationState()
             updateProfileName(it)
         }
     }
@@ -63,12 +66,14 @@ class VpnServiceNotificationController(
         if (!canPostNotifications()) {
             AppLog.w(logTag, "Starting service in foreground with notifications disabled")
         }
+        val content = notificationContent(snapshot = null)
         ServiceCompat.startForeground(
             service,
             VPN_NOTIFICATION_ID,
-            createNotification(snapshot = null),
+            createNotification(content),
             vpnForegroundServiceType
         )
+        lastNotificationContent = content
     }
 
     fun update(snapshot: TunnelSnapshot) {
@@ -82,9 +87,17 @@ class VpnServiceNotificationController(
             }
             return
         }
-        val notification = createNotification(snapshot)
+        val content = notificationContent(snapshot)
+        if (content == lastNotificationContent) {
+            if (logsSnapshots) {
+                AppLog.d(logTag, "Skip unchanged VPN notification")
+            }
+            return
+        }
+        val notification = createNotification(content)
         try {
             notificationManager.notify(VPN_NOTIFICATION_ID, notification)
+            lastNotificationContent = content
         } catch (it: SecurityException) {
             AppLog.w(logTag, "Unable to update VPN notification", it)
         }
@@ -108,7 +121,7 @@ class VpnServiceNotificationController(
             .cancel(VPN_NOTIFICATION_ID)
     }
 
-    private fun createNotification(snapshot: TunnelSnapshot?): Notification {
+    private fun createNotification(content: NotificationContent): Notification {
         val channel = NotificationChannelCompat.Builder(
             VPN_CHANNEL_ID,
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -122,12 +135,10 @@ class VpnServiceNotificationController(
             .from(service)
             .createNotificationChannel(channel)
 
-        val title = currentProfileName ?: service.getString(R.string.app_name)
-
         val builder = NotificationCompat.Builder(service, VPN_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification_vpn)
-            .setContentTitle(title)
-            .setSubText(notificationSubText(snapshot))
+            .setContentTitle(content.title)
+            .setSubText(content.subText)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOnlyAlertOnce(true)
@@ -139,14 +150,22 @@ class VpnServiceNotificationController(
                 disconnectPendingIntent()
             )
 
-        val content = snapshot?.let(sampleFormatter::activeText)
-        if (content != null) {
+        val contentText = content.contentText
+        if (contentText != null) {
             builder
-                .setContentText(content)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(content))
+                .setContentText(contentText)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
         }
 
         return builder.build()
+    }
+
+    private fun notificationContent(snapshot: TunnelSnapshot?): NotificationContent {
+        return NotificationContent(
+            title = currentProfileName ?: service.getString(R.string.app_name),
+            subText = notificationSubText(snapshot),
+            contentText = snapshot?.let(sampleFormatter::activeText)
+        )
     }
 
     private fun notificationSubText(snapshot: TunnelSnapshot?): String? {
@@ -199,6 +218,11 @@ class VpnServiceNotificationController(
 
     private fun reset() {
         currentProfileName = null
+        resetNotificationState()
+    }
+
+    private fun resetNotificationState() {
+        lastNotificationContent = null
         sampleFormatter.reset()
     }
 
@@ -208,6 +232,12 @@ class VpnServiceNotificationController(
         private const val VPN_DISCONNECT_REQUEST_CODE = 1001
     }
 }
+
+private data class NotificationContent(
+    val title: String,
+    val subText: String?,
+    val contentText: String?
+)
 
 private class SampleFormatter {
     private var lastSample: DataSample? = null
