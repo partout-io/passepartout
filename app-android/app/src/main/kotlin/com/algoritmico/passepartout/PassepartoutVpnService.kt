@@ -7,8 +7,10 @@ package com.algoritmico.passepartout
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.appConstants
 import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
@@ -74,6 +76,15 @@ class PassepartoutVpnService: VpnService() {
             AppLog.d(logTag, "Bundle: $bundle")
             notifications.updateProfileName(profileJSON)
 
+            // Try constant min delta
+            val minDataCountDelta = runCatchingNonFatal {
+                val constants = applicationContext.appConstants(androidConstants.assets)
+                constants.tunnel.minDataCountDelta ?: 0L
+            }.getOrElse {
+                AppLog.w(logTag, "Unable to load tunnel constants, using defaults", it)
+                DEFAULT_MIN_DATA_COUNT_DELTA
+            }
+
             // Try preferences from intent, otherwise load last persisted
             val preferences = store.readPreferences(
                 intent?.getStringExtra(EXTRA_TUNNEL_PREFERENCES)
@@ -93,7 +104,7 @@ class PassepartoutVpnService: VpnService() {
                 controller,
                 dnsFallsBack,
                 logsSnapshots,
-                0L
+                minDataCountDelta
             )
             if (code != 0) {
                 throw PartoutException(code, null)
@@ -176,5 +187,6 @@ class PassepartoutVpnService: VpnService() {
 
     companion object {
         const val EXTRA_TUNNEL_PREFERENCES = "com.algoritmico.passepartout.extra.TUNNEL_PREFERENCES"
+        private const val DEFAULT_MIN_DATA_COUNT_DELTA = 1024L
     }
 }
