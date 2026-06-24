@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.models.AppProfileStatus
@@ -56,8 +56,8 @@ fun ProfileContainerView(
 ) {
     val profileObservable = LocalProfileObservable.current
     val tunnelObservable = LocalTunnelObservable.current
-    val profileState by profileObservable.state.collectAsState()
-    val tunnelState by tunnelObservable.state.collectAsState()
+    val profileState by profileObservable.state.collectAsStateWithLifecycle()
+    val tunnelState by tunnelObservable.state.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val headers = profileState.filteredHeaders
