@@ -19,6 +19,12 @@ if [[ $# -gt 0 ]]; then
     usage
 fi
 
+generate_partout_models() {
+    pushd partout
+    scripts/build.sh -gen-models
+    popd
+}
+
 generate_swift_models() {
     infile=scripts/openapi.yaml
     models_dir=`realpath app-shared/Sources/CommonLibraryCore/Domain`
@@ -99,9 +105,6 @@ generate_kotlin_models() {
     # Enter package
     pushd partout
 
-    # Generate Partout models
-    scripts/build.sh -gen-models
-
     # Generate Passepartout models
     echo "Generate kotlin models..."
     scripts/gen-models.sh \
@@ -117,13 +120,16 @@ generate_kotlin_models() {
 
 case $mode in
     all)
-        generate_kotlin_models
+        generate_partout_models
         generate_swift_models
+        generate_kotlin_models
         ;;
     swift)
+        generate_partout_models
         generate_swift_models
         ;;
     kotlin)
+        generate_partout_models
         generate_kotlin_models
         ;;
     -*|--*|*)
