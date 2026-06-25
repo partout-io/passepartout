@@ -73,7 +73,7 @@ extension AppABI {
         )
 
         // Ensure that all module builders can be rendered in the profile editor
-        ModuleType.allCases.forEach { moduleType in
+        ModuleType.knownTypes.forEach { moduleType in
             assertModule(moduleType, registry)
         }
 

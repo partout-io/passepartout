@@ -4,22 +4,19 @@
 
 import Partout
 
-extension ModuleType: @retroactive CaseIterable {
-    public static let allCases: [ModuleType] = {
-        var list: [ModuleType] = [
-            .OpenVPN,
-            .WireGuard,
-            .DNS,
-            .HTTPProxy,
-            .IP,
-            .OnDemand
-        ]
-        list.append(.Provider)
-        return list
-    }()
+extension ModuleType {
+    public static let knownTypes: [ModuleType] = [
+        .OpenVPN,
+        .WireGuard,
+        .DNS,
+        .HTTPProxy,
+        .IP,
+        .OnDemand,
+        .Provider
+    ]
 
     public static var connectionTypes: [ModuleType] {
-        ModuleType.allCases.filter(\.isConnection)
+        ModuleType.knownTypes.filter(\.isConnection)
     }
 }
 

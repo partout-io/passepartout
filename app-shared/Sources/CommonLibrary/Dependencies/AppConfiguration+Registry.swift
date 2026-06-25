@@ -98,7 +98,7 @@ private extension Registry {
     }
 
     func assertMissingImplementations() {
-        ModuleType.allCases.forEach { moduleType in
+        ModuleType.knownTypes.forEach { moduleType in
             let builder = newModule(ofType: moduleType)
             do {
                 // ModuleBuilder -> Module
