@@ -52,7 +52,7 @@ jobs:
             ${{ runner.os }}-openapi-generator-
       - name: Verify generated Swift ABI is up to date
         run: |
-          scripts/gen-models-swift.sh
+          scripts/gen-models.sh
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
             exit 1
