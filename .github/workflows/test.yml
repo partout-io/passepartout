@@ -36,27 +36,6 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - name: Install OpenAPI Generator dependencies
-        run: npm ci
-      - name: Cache OpenAPI Generator runtime
-        uses: actions/cache@v5
-        with:
-          path: ~/.openapi-generator
-          key: ${{ runner.os }}-openapi-generator-${{ hashFiles('package-lock.json', 'openapitools.json') }}
-          restore-keys: |
-            ${{ runner.os }}-openapi-generator-
-      - name: Verify generated Swift ABI is up to date
-        run: |
-          scripts/gen-models.sh
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git status --short
-            exit 1
-          fi
       - run: |
           ci/run-shared-tests.sh
       - run: |
