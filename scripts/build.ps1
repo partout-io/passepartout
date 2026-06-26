@@ -11,8 +11,6 @@ $swift_arch = switch ($env:PROCESSOR_ARCHITECTURE) {
 
 $swift_root = "$env:USERPROFILE/AppData/Local/Programs/Swift"
 $swift_version = "6.3.1"
-$env:SWIFT_SDK = "$swift_root/Platforms/$swift_version/Windows.platform/Developer/SDKs/Windows.sdk/usr/lib/swift/windows/$swift_arch"
-$env:SWIFT_RUNTIME = "$swift_root/Runtimes/$swift_version/usr/bin"
 
 try {
     # Create build folder if it doesn't exist
@@ -25,7 +23,11 @@ try {
 
     # Run CMake
     #cmake -G "Visual Studio 17 2022" -DBUILD_APP=ON ..
-    cmake -G "Ninja" -DCMAKE_BUILD_TYPE="$build_type" -DCMAKE_CONFIGURATION_TYPES="$build_type" -DBUILD_APP=ON ..
+    cmake -G "Ninja" -DCMAKE_BUILD_TYPE="$build_type" `
+        -DCMAKE_CONFIGURATION_TYPES="$build_type" `
+        -DSWIFT_ROOT="$swift_root" `
+        -DSWIFT_VERSION="$swift_version" `
+        -DBUILD_APP=OFF ..
 
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
