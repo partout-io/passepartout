@@ -1,3 +1,63 @@
+# wx configuration is highly inconsistent across platforms
+if(APPLE)
+    find_program(WX_CONFIG_EXECUTABLE
+        NAMES wx-config
+        HINTS /opt/homebrew/bin /usr/local/bin
+    )
+
+    if(NOT WX_CONFIG_EXECUTABLE)
+        message(FATAL_ERROR "wxWidgets not found. Install it with: brew install wxwidgets")
+    endif()
+
+    execute_process(
+        COMMAND ${WX_CONFIG_EXECUTABLE} --version
+        OUTPUT_VARIABLE WX_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE WX_VERSION_RESULT
+    )
+    if(NOT WX_VERSION_RESULT EQUAL 0)
+        message(FATAL_ERROR "Unable to query wxWidgets version with ${WX_CONFIG_EXECUTABLE}")
+    endif()
+    message(STATUS "Using wxWidgets ${WX_VERSION}: ${WX_CONFIG_EXECUTABLE}")
+
+    execute_process(
+        COMMAND ${WX_CONFIG_EXECUTABLE} --cxxflags
+        OUTPUT_VARIABLE WX_CXXFLAGS
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE WX_CXXFLAGS_RESULT
+    )
+    if(NOT WX_CXXFLAGS_RESULT EQUAL 0)
+        message(FATAL_ERROR "Unable to query wxWidgets compiler flags with ${WX_CONFIG_EXECUTABLE}")
+    endif()
+    separate_arguments(WX_CXXFLAGS UNIX_COMMAND "${WX_CXXFLAGS}")
+    target_compile_options(passepartout PRIVATE ${WX_CXXFLAGS})
+
+    execute_process(
+        COMMAND ${WX_CONFIG_EXECUTABLE} --libs core,net,base
+        OUTPUT_VARIABLE WX_LIBS
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE WX_LIBS_RESULT
+    )
+    if(NOT WX_LIBS_RESULT EQUAL 0)
+        message(FATAL_ERROR "Unable to query wxWidgets linker flags with ${WX_CONFIG_EXECUTABLE}")
+    endif()
+    separate_arguments(WX_LIBS UNIX_COMMAND "${WX_LIBS}")
+
+    set(WX_LINK_LIBRARIES)
+    while(WX_LIBS)
+        list(POP_FRONT WX_LIBS WX_LIB)
+        if(WX_LIB STREQUAL "-framework")
+            list(POP_FRONT WX_LIBS WX_FRAMEWORK)
+            list(APPEND WX_LINK_LIBRARIES "-framework ${WX_FRAMEWORK}")
+        else()
+            list(APPEND WX_LINK_LIBRARIES "${WX_LIB}")
+        endif()
+    endwhile()
+    target_link_libraries(passepartout PRIVATE ${WX_LINK_LIBRARIES})
+
+    return()
+endif()
+
 # Configure wxWidgets external project
 if(WIN32)
     set(WX_GENERATOR "Visual Studio 17 2022")
@@ -36,35 +96,7 @@ if(LINUX)
     target_link_libraries(passepartout PRIVATE stdc++ m)
 endif()
 
-# wx configuration is highly inconsistent across platforms
-if(APPLE)
-    target_include_directories(passepartout PRIVATE
-        ${OUTPUT_DIR}/wx/include/wx-3.3
-        ${OUTPUT_DIR}/wx/lib/wx/include/osx_cocoa-unicode-static-3.3
-    )
-    target_compile_options(passepartout PRIVATE
-        -D__WXMAC__
-        -D__WXOSX__
-        -D__WXOSX_COCOA__
-    )
-    target_link_libraries(passepartout PRIVATE
-        wx_osx_cocoau_core-3.3
-        wx_baseu_net-3.3
-        wx_baseu-3.3
-        wxpng-3.3
-    )
-    target_link_libraries(passepartout PRIVATE
-        "-framework Cocoa"
-        "-framework Carbon"
-        "-framework QuartzCore"
-        "-framework CoreFoundation"
-        "-framework CoreGraphics"
-        "-framework CoreServices"
-        "-framework IOKit"
-        iconv
-        z
-    )
-elseif(LINUX)
+if(LINUX)
     # Look up GTK+ 3.0 first
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
