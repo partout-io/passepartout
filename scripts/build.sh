@@ -25,6 +25,14 @@ while [[ $# -gt 0 ]]; do
             build_app=1
             shift
             ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+        *)
+            positional_args+=("$1")
+            shift
+            ;;
     esac
 done
 set -- "${positional_args[@]}"
