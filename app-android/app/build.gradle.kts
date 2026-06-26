@@ -25,6 +25,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments += listOf("-DSWIFT_VERSION=6.3.1")
+                arguments += listOf("-DANDROID_STL=c++_shared")
             }
         }
     }
