@@ -35,8 +35,8 @@ fi
 cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 
 if [[ $(uname -s) == "Linux" ]]; then
-    source $cwd/env-linux.sh
     if [[ $gen_build == 1 ]]; then
+        cmake_opts+=("-DSWIFT_VERSION=$cmake_swift_version")
         cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$cmake_toolchains_path/swift-linux.toolchain.cmake")
     fi
 fi
