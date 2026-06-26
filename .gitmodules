@@ -4,6 +4,3 @@
 [submodule "app-cross/wx"]
 	path = app-cross/wx
 	url = https://github.com/wxWidgets/wxWidgets
-[submodule "swift-cmake-toolchains"]
-	path = swift-cmake-toolchains
-	url = git@github.com:keeshux/swift-cmake-toolchains.git

@@ -108,6 +108,8 @@ add_custom_command(
 
 # Distribute Partout with dependencies
 partout_add_distribution_target(partout-post ALL
+    SWIFT_ROOT "${SWIFT_ROOT}"
+    SWIFT_VERSION "${SWIFT_VERSION}"
     OUTPUT_DIR "${OUTPUT_DIR}"
     DIST_DIR "${DIST_DIR}"
 )

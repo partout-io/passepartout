@@ -22,6 +22,12 @@ android {
             //noinspection ChromeOsAbiSupport
             abiFilters += listOf("arm64-v8a")
         }
+        externalNativeBuild {
+            cmake {
+                arguments += listOf("-DSWIFT_VERSION=6.3.1")
+                arguments += listOf("-DANDROID_STL=c++_shared")
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
