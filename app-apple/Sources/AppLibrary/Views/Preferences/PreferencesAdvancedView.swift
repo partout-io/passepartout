@@ -40,7 +40,7 @@ private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
         .neSafeValueObserver,
         .newProfileEncoding,
-        .ovpnV3,
+        .ovpnV3
     ]
 
     var canOverride: Bool {
