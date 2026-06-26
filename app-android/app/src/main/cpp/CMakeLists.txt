@@ -11,7 +11,7 @@ add_library(passepartout_wrapper SHARED "")
 
 # Include Swift/CMake helpers
 set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")
-include("${PROJECT_ROOT}/partout/cmake/swift/swift-macros.cmake")
+include("${PROJECT_ROOT}/cmake/swift-macros.cmake")
 
 # Set up Partout
 set(PARTOUT_ROOT ${PROJECT_ROOT}/partout)
