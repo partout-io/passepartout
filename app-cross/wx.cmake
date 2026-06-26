@@ -1,12 +1,13 @@
 # wx configuration is highly inconsistent across platforms
-if(APPLE)
-    find_program(WX_CONFIG_EXECUTABLE
-        NAMES wx-config
-        HINTS /opt/homebrew/bin /usr/local/bin
-    )
+function(target_link_wx_config TARGET_NAME INSTALL_HINT)
+    set(WX_FIND_PROGRAM_ARGS NAMES wx-config)
+    if(ARGN)
+        list(APPEND WX_FIND_PROGRAM_ARGS HINTS ${ARGN})
+    endif()
+    find_program(WX_CONFIG_EXECUTABLE ${WX_FIND_PROGRAM_ARGS})
 
     if(NOT WX_CONFIG_EXECUTABLE)
-        message(FATAL_ERROR "wxWidgets not found. Install it with: brew install wxwidgets")
+        message(FATAL_ERROR "${INSTALL_HINT}")
     endif()
 
     execute_process(
@@ -17,6 +18,9 @@ if(APPLE)
     )
     if(NOT WX_VERSION_RESULT EQUAL 0)
         message(FATAL_ERROR "Unable to query wxWidgets version with ${WX_CONFIG_EXECUTABLE}")
+    endif()
+    if(NOT WX_VERSION MATCHES "^3\\.")
+        message(FATAL_ERROR "Unsupported wxWidgets ${WX_VERSION}. Install a wxWidgets 3.x development package.")
     endif()
     message(STATUS "Using wxWidgets ${WX_VERSION}: ${WX_CONFIG_EXECUTABLE}")
 
@@ -30,7 +34,7 @@ if(APPLE)
         message(FATAL_ERROR "Unable to query wxWidgets compiler flags with ${WX_CONFIG_EXECUTABLE}")
     endif()
     separate_arguments(WX_CXXFLAGS UNIX_COMMAND "${WX_CXXFLAGS}")
-    target_compile_options(passepartout PRIVATE ${WX_CXXFLAGS})
+    target_compile_options(${TARGET_NAME} PRIVATE ${WX_CXXFLAGS})
 
     execute_process(
         COMMAND ${WX_CONFIG_EXECUTABLE} --libs core,net,base
@@ -53,7 +57,31 @@ if(APPLE)
             list(APPEND WX_LINK_LIBRARIES "${WX_LIB}")
         endif()
     endwhile()
-    target_link_libraries(passepartout PRIVATE ${WX_LINK_LIBRARIES})
+    target_link_libraries(${TARGET_NAME} PRIVATE ${WX_LINK_LIBRARIES})
+endfunction()
+
+if(APPLE)
+    target_link_wx_config(
+        passepartout
+        "wxWidgets not found. Install it with: brew install wxwidgets"
+        /opt/homebrew/bin
+        /usr/local/bin
+    )
+
+    return()
+endif()
+
+if(LINUX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK3 QUIET IMPORTED_TARGET gtk+-3.0)
+    if(NOT GTK3_FOUND)
+        message(FATAL_ERROR "GTK 3 not found. Install the GTK 3 development package, e.g. libgtk-3-dev/libgtk3-dev.")
+    endif()
+    target_link_wx_config(
+        passepartout
+        "wxWidgets not found. Install a wxGTK 3.x development package, e.g. libwxgtk3.2-dev."
+    )
+    target_link_libraries(passepartout PRIVATE PkgConfig::GTK3 stdc++ m)
 
     return()
 endif()
@@ -91,40 +119,7 @@ target_compile_options(passepartout PRIVATE
 target_link_directories(passepartout PRIVATE
     ${OUTPUT_DIR}/wx/lib
 )
-# Linux seems to complain about this
-if(LINUX)
-    target_link_libraries(passepartout PRIVATE stdc++ m)
-endif()
-
-if(LINUX)
-    # Look up GTK+ 3.0 first
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-    include_directories(${GTK3_INCLUDE_DIRS})
-    link_directories(${GTK3_LIBRARY_DIRS})
-    add_definitions(${GTK3_CFLAGS_OTHER})
-
-    target_include_directories(passepartout PRIVATE
-        ${OUTPUT_DIR}/wx/include/wx-3.3
-        ${OUTPUT_DIR}/wx/lib/wx/include/gtk3-unicode-static-3.3
-    )
-    target_compile_options(passepartout PRIVATE
-        -D__WXGTK__
-    )
-    target_link_directories(passepartout PRIVATE
-        ${OUTPUT_DIR}/wx/lib
-    )
-    # Link order is crucial here
-    target_link_libraries(passepartout PRIVATE
-        wx_gtk3u_core-3.3
-        wx_baseu_net-3.3
-        wx_baseu-3.3
-        ${GTK3_LIBRARIES}
-        png
-        xkbcommon
-        X11
-    )
-elseif(WIN32)
+if(WIN32)
     target_include_directories(passepartout PRIVATE
         ${OUTPUT_DIR}/wx/include
         ${OUTPUT_DIR}/wx/include/msvc
