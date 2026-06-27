@@ -2,20 +2,17 @@
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
+set(PP_BUILD_USE_MBEDTLS OFF)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
+if(WIN32)
+    set(PP_BUILD_VENDOR_SOURCE bundled)
+endif()
+
 add_subdirectory(../partout partout)
 
 # Include file lists
 include("passepartout.cmake")
-set(APP_DIR ${DIST_DIR})
-
-# Strip executables except on Windows
-if(WIN32)
-    set(STRIP rem)
-else()
-    set(STRIP ${CMAKE_STRIP})
-endif()
 
 # Define app target
 if(BUILD_APP)
@@ -55,16 +52,8 @@ if(BUILD_APP)
         set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
     endif()
 
-    # Distribute
-    add_custom_command(
-        TARGET passepartout
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:passepartout>"
-            "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
-        COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
-        VERBATIM
+    install(TARGETS passepartout
+        RUNTIME DESTINATION .
     )
 endif()
 
@@ -95,25 +84,31 @@ elseif(LINUX)
         SKIP_BUILD_RPATH OFF
     )
 endif()
-add_custom_command(
-    TARGET passepartout-tunnel
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:passepartout-tunnel>"
-        "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
-    COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
-    VERBATIM
+install(TARGETS passepartout-tunnel
+    RUNTIME DESTINATION .
 )
 
-# Distribute Partout with dependencies
-partout_add_distribution_target(partout-post ALL
-    SWIFT_ROOT "${SWIFT_ROOT}"
-    SWIFT_VERSION "${SWIFT_VERSION}"
-    OUTPUT_DIR "${OUTPUT_DIR}"
-    DIST_DIR "${DIST_DIR}"
-)
-add_dependencies(passepartout-tunnel partout-post)
-if(BUILD_APP)
-    add_dependencies(passepartout partout-post)
+install(CODE [[
+    file(GLOB_RECURSE PARTOUT_DEVELOPMENT_OUTPUTS
+        LIST_DIRECTORIES false
+        "${CMAKE_INSTALL_PREFIX}/*.h"
+        "${CMAKE_INSTALL_PREFIX}/*.lib"
+    )
+    if(PARTOUT_DEVELOPMENT_OUTPUTS)
+        file(REMOVE ${PARTOUT_DEVELOPMENT_OUTPUTS})
+    endif()
+    file(REMOVE_RECURSE
+        "${CMAKE_INSTALL_PREFIX}/include"
+        "${CMAKE_INSTALL_PREFIX}/cmake"
+    )
+]])
+
+if(WIN32)
+    install(CODE
+        "set(SWIFT_ROOT [==[${SWIFT_ROOT}]==])
+set(SWIFT_VERSION [==[${SWIFT_VERSION}]==])
+include([==[${CMAKE_CURRENT_SOURCE_DIR}/../cmake/swift-macros.cmake]==])
+swift_copy_windows_runtime(\"\${CMAKE_INSTALL_PREFIX}\")"
+    )
 endif()
+

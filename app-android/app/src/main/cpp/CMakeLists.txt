@@ -29,13 +29,17 @@ set(PARTOUT_LIBRARIES
 
 # Add the external Swift library
 add_swift_library(partout ${PARTOUT_ROOT}
+    NO_INSTALL
+    INCLUDE_DIR ${PARTOUT_ROOT}/Sources/Partout_C/include
     BUILD_BYPRODUCTS ${PARTOUT_LIBRARIES}
     CMAKE_ARGS
         -DPP_BUILD_OUTPUT=${PARTOUT_OUTPUT}
         -DPP_BUILD_LIBRARY=ON
         -DPP_BUILD_USE_OPENSSL=ON
+        -DPP_BUILD_USE_MBEDTLS=OFF
         -DPP_BUILD_USE_OPENVPN=ON
         -DPP_BUILD_USE_WIREGUARD=ON
+        -DPP_BUILD_VENDOR_SOURCE=bundled
 )
 
 # Merge with wrapper
