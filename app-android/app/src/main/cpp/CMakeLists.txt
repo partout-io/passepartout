@@ -14,6 +14,7 @@ set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")
 include("${PROJECT_ROOT}/cmake/swift-macros.cmake")
 
 # Set up Partout
+set(PARTOUT_PREBUILT_URL https://github.com/partout-io/prebuilts/releases/download/0.3.0)
 set(PARTOUT_ROOT ${PROJECT_ROOT}/partout)
 set(PARTOUT_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(PARTOUT_LIBRARY ${PARTOUT_OUTPUT}/partout/libpartout.so)
@@ -29,6 +30,8 @@ set(PARTOUT_LIBRARIES
 
 # Add the external Swift library
 add_swift_library(partout ${PARTOUT_ROOT}
+    NO_INSTALL
+    INCLUDE_DIR ${PARTOUT_ROOT}/Sources/Partout_C/include
     BUILD_BYPRODUCTS ${PARTOUT_LIBRARIES}
     CMAKE_ARGS
         -DPP_BUILD_OUTPUT=${PARTOUT_OUTPUT}
@@ -36,6 +39,7 @@ add_swift_library(partout ${PARTOUT_ROOT}
         -DPP_BUILD_USE_OPENSSL=ON
         -DPP_BUILD_USE_OPENVPN=ON
         -DPP_BUILD_USE_WIREGUARD=ON
+        -DPP_BUILD_VENDOR_PREBUILT_URL=${PARTOUT_PREBUILT_URL}
 )
 
 # Merge with wrapper

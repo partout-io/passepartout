@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.28)
 if(POLICY CMP0157)
     cmake_policy(SET CMP0157 NEW)
 endif()
+if(POLICY CMP0177)
+    cmake_policy(SET CMP0177 NEW)
+    set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
+endif()
 project(Passepartout LANGUAGES Swift C CXX)
 include(ExternalProject)
 
@@ -13,13 +17,9 @@ if(NOT DEFINED OUTPUT_DIR)
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" ARCH_NAME)
     set(OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/${PLATFORM_NAME}-${ARCH_NAME}")
 endif()
-if(NOT DEFINED DIST_DIR)
-    set(DIST_DIR "${OUTPUT_DIR}/dist")
-endif()
 
 # Options
 message(STATUS "Option OUTPUT_DIR = ${OUTPUT_DIR}")
-message(STATUS "Option DIST_DIR = ${DIST_DIR}")
 message(STATUS "Option BUILD_APP = ${BUILD_APP}")
 
 # Build cross-platform apps
