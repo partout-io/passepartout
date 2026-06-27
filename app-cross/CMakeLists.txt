@@ -6,7 +6,7 @@ set(PP_BUILD_USE_MBEDTLS OFF)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 if(WIN32)
-    set(PP_BUILD_VENDOR_PREBUILT_URL https://github.com/partout-io/prebuilts/releases/download/0.3.0)
+    set(PP_BUILD_VENDOR_SOURCE bundled)
 endif()
 
 add_subdirectory(../partout partout)
