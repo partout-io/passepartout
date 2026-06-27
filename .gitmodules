@@ -3,4 +3,4 @@
 	url = https://github.com/partout-io/partout
 [submodule "cmake"]
 	path = cmake
-	url = git@github.com:keeshux/swift-cmake-toolchains.git
+	url = https://github.com/keeshux/swift-cmake-toolchains
