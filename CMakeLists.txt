@@ -1,15 +1,18 @@
 cmake_minimum_required(VERSION 3.28)
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
 if(POLICY CMP0157)
     cmake_policy(SET CMP0157 NEW)
 endif()
-if(POLICY CMP0177)
-    cmake_policy(SET CMP0177 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
-endif()
-project(Passepartout LANGUAGES Swift C CXX)
+project(PassepartoutProject LANGUAGES Swift C CXX)
 include(ExternalProject)
 
 option(BUILD_APP "Build app executable" 0)
+
+if(MSVC AND NOT CMAKE_MSVC_RUNTIME_LIBRARY)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+endif()
 
 # Configure output location
 if(NOT DEFINED OUTPUT_DIR)

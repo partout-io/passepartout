@@ -1,0 +1,54 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "windows-base",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+        "PP_BUILD_VENDOR_PREBUILT_URL": "https://github.com/partout-io/prebuilts/releases/download/0.3.3",
+        "CMAKE_INSTALL_LIBDIR": ".",
+        "CMAKE_INSTALL_BINDIR": ".",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
+        "SWIFT_ROOT": "$penv{USERPROFILE}/AppData/Local/Programs/Swift",
+        "SWIFT_VERSION": "6.3.1",
+        "BUILD_APP": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "arm64",
+      "displayName": "arm64",
+      "description": "Target Windows (64-bit) with the Visual Studio development environment.",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      }
+    }
+  ],
+  "buildPresets": [
+      {
+        "name": "arm64-debug",
+        "displayName": "arm64 Debug",
+        "configurePreset": "arm64",
+        "configuration": "Debug"
+      },
+      {
+        "name": "arm64-release",
+        "displayName": "arm64 Release",
+        "configurePreset": "arm64",
+        "configuration": "Release"
+      }
+  ]
+}
