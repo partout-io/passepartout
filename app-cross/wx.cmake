@@ -1,6 +1,6 @@
 set(PASSEPARTOUT_WX_PREBUILT_DIR "" CACHE PATH "Path to an extracted wxWidgets Windows prebuilt.")
 set(PASSEPARTOUT_WX_PREBUILT_BASE_URL
-    "http://github.com/partout-io/prebuilts/releases/latest/download"
+    "https://github.com/partout-io/prebuilts/releases/latest/download"
     CACHE STRING
     "Base URL for wxWidgets Windows prebuilts."
 )
