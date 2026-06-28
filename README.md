@@ -6,7 +6,6 @@
 [![Release](https://github.com/partout-io/passepartout/actions/workflows/release.yml/badge.svg?branch=)](https://github.com/partout-io/passepartout/actions/workflows/release.yml)
 
 [![Discuss on GitHub](https://img.shields.io/badge/discuss-GitHub-lightgray.svg)][about-github-discussions]
-[![Join Reddit](https://img.shields.io/badge/support-Reddit-orange.svg)][about-reddit]
 [![Join TestFlight](https://img.shields.io/badge/beta-Testflight-blue.svg)][about-testflight]
 
 Passepartout is your go-to app for VPN and privacy.
