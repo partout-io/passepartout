@@ -2,53 +2,75 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "windows-base",
-      "description": "Target Windows with the Visual Studio development environment.",
+      "name": "base",
       "hidden": true,
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+        "BUILD_APP": "ON"
+      }
+    },
+    {
+      "name": "macos-clang",
+      "displayName": "macOS clang",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "windows-arm64",
+      "displayName": "Windows arm64 clang-cl",
+      "inherits": "base",
+      "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl.exe",
         "CMAKE_CXX_COMPILER": "clang-cl.exe",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
-        "PP_BUILD_VENDOR_PREBUILT_URL": "https://github.com/partout-io/prebuilts/releases/download/0.3.3",
+        "PP_BUILD_VENDOR_PREBUILT_URL": "https://github.com/partout-io/prebuilts/releases/download/0.4.0",
         "CMAKE_INSTALL_LIBDIR": ".",
         "CMAKE_INSTALL_BINDIR": ".",
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
         "SWIFT_ROOT": "$penv{USERPROFILE}/AppData/Local/Programs/Swift",
-        "SWIFT_VERSION": "6.3.1",
-        "BUILD_APP": "ON"
+        "SWIFT_VERSION": "6.3.1"
+      },
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
       },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       }
-    },
-    {
-      "name": "arm64",
-      "displayName": "arm64",
-      "description": "Target Windows (64-bit) with the Visual Studio development environment.",
-      "inherits": "windows-base",
-      "architecture": {
-        "value": "arm64",
-        "strategy": "external"
-      }
     }
   ],
   "buildPresets": [
-      {
-        "name": "arm64-debug",
-        "displayName": "arm64 Debug",
-        "configurePreset": "arm64",
-        "configuration": "Debug"
-      },
-      {
-        "name": "arm64-release",
-        "displayName": "arm64 Release",
-        "configurePreset": "arm64",
-        "configuration": "Release"
-      }
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-clang",
+      "configuration": "Debug"
+    },
+    {
+      "name": "macos-release",
+      "configurePreset": "macos-clang",
+      "configuration": "Release"
+    },
+    {
+      "name": "windows-arm64-debug",
+      "configurePreset": "windows-arm64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-arm64-release",
+      "configurePreset": "windows-arm64",
+      "configuration": "Release"
+    }
   ]
 }
