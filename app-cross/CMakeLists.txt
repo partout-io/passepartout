@@ -20,7 +20,7 @@ set(PP_BUILD_USE_WIREGUARD ON)
 add_subdirectory(../partout partout)
 
 # Include file lists
-include("passepartout.cmake")
+include("files.cmake")
 
 # Define app target
 if(BUILD_APP)
