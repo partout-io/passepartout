@@ -1,2 +1,1 @@
-* NE: Fix random crashes on connection establishment (#1878)
-* WireGuard: Drop legacy implementation (#1877)
+WireGuard: Fix regression in IPv6 endpoints
