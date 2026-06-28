@@ -10,7 +10,7 @@
 
 Passepartout is your go-to app for VPN and privacy.
 
-Passepartout runs on [iPhone, iPad, Mac, and Apple TV][appstore].
+Passepartout runs on [iPhone, iPad, Mac, and Apple TV][appstore]. Soon on Android and Windows.
 
 ## Features
 
@@ -49,7 +49,7 @@ Download the app codebase locally:
 
 ```
 $ git clone https://github.com/partout-io/passepartout
-$ git submodule update --init app-cross/partout
+$ git submodule update --init partout
 ```
 
 then find the Xcode project in `app-apple`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
@@ -111,11 +111,11 @@ This product includes software developed by the OpenSSL Project for use in the O
 
 ### OpenVPN
 
-© Copyright 2025 OpenVPN | OpenVPN is a registered trademark of OpenVPN, Inc.
+© Copyright 2026 OpenVPN | OpenVPN is a registered trademark of OpenVPN, Inc.
 
 ### WireGuard
 
-© Copyright 2015-2025 Jason A. Donenfeld. All Rights Reserved. "WireGuard" and the "WireGuard" logo are registered trademarks of Jason A. Donenfeld.
+© Copyright 2015-2026 Jason A. Donenfeld. All Rights Reserved. "WireGuard" and the "WireGuard" logo are registered trademarks of Jason A. Donenfeld.
 
 ### Community
 
