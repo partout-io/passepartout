@@ -39,6 +39,7 @@ if(BUILD_APP)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
+    target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
 
     if(APPLE)
         # Mangle macOS @rpath
