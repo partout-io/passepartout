@@ -108,16 +108,7 @@ function(target_link_windows_wxwidgets TARGET_NAME)
         __WXMSW__
         UNICODE
         _UNICODE
-        wxDEBUG_LEVEL=0
     )
-    if(MSVC)
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            MSVC_RUNTIME_LIBRARY "MultiThreadedDLL"
-        )
-        target_compile_definitions(${TARGET_NAME} PRIVATE
-            _ITERATOR_DEBUG_LEVEL=0
-        )
-    endif()
     target_link_directories(${TARGET_NAME} PRIVATE "${WX_LIB_DIR}")
     target_link_libraries(${TARGET_NAME} PRIVATE
         wxmsw33u_core
