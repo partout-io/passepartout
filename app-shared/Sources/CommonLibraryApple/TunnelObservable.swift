@@ -161,8 +161,14 @@ extension TunnelObservable {
 
 extension TunnelObservable {
     public func observeObjects() {
+        guard subscriptions.isEmpty else { return }
         let tunnelEvents = tunnel.snapshotsStream.removeDuplicates()
         let tunnelSubscription = Task { [weak self] in
+            do {
+                try await self?.tunnel.prepare(purge: false)
+            } catch {
+                pspLog(.core, .fault, "Unable to prepare tunnel: \(error)")
+            }
             for await snapshots in tunnelEvents {
                 guard let self else { return }
                 guard !Task.isCancelled else { break }
