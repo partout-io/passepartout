@@ -1,3 +1,14 @@
+cmake_minimum_required(VERSION 3.28)
+if(POLICY CMP0177)
+    cmake_policy(SET CMP0177 NEW)
+    set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
+endif()
+project(Passepartout)
+
+if(NOT OUTPUT_DIR)
+    set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
 # Depend on Partout
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
@@ -5,14 +16,11 @@ set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS OFF)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
-if(WIN32)
-    set(PP_BUILD_VENDOR_SOURCE bundled)
-endif()
 
 add_subdirectory(../partout partout)
 
 # Include file lists
-include("passepartout.cmake")
+include("files.cmake")
 
 # Define app target
 if(BUILD_APP)
@@ -31,6 +39,7 @@ if(BUILD_APP)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
+    target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
 
     if(APPLE)
         # Mangle macOS @rpath

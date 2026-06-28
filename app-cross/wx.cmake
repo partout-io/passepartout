@@ -1,6 +1,6 @@
 set(PASSEPARTOUT_WX_PREBUILT_DIR "" CACHE PATH "Path to an extracted wxWidgets Windows prebuilt.")
 set(PASSEPARTOUT_WX_PREBUILT_BASE_URL
-    "http://github.com/partout-io/prebuilts/releases/latest/download"
+    "https://github.com/partout-io/prebuilts/releases/latest/download"
     CACHE STRING
     "Base URL for wxWidgets Windows prebuilts."
 )
@@ -40,14 +40,24 @@ function(get_windows_wxwidgets_arch OUT_VAR)
         set(WX_PLATFORM "${CMAKE_GENERATOR_PLATFORM}")
     elseif(CMAKE_VS_PLATFORM_NAME)
         set(WX_PLATFORM "${CMAKE_VS_PLATFORM_NAME}")
+    elseif(CMAKE_CXX_COMPILER_ARCHITECTURE_ID)
+        set(WX_PLATFORM "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+    elseif(CMAKE_C_COMPILER_ARCHITECTURE_ID)
+        set(WX_PLATFORM "${CMAKE_C_COMPILER_ARCHITECTURE_ID}")
+    elseif(CMAKE_CXX_COMPILER_TARGET)
+        set(WX_PLATFORM "${CMAKE_CXX_COMPILER_TARGET}")
+    elseif(CMAKE_C_COMPILER_TARGET)
+        set(WX_PLATFORM "${CMAKE_C_COMPILER_TARGET}")
+    elseif(DEFINED ENV{VSCMD_ARG_TGT_ARCH})
+        set(WX_PLATFORM "$ENV{VSCMD_ARG_TGT_ARCH}")
     else()
         set(WX_PLATFORM "${CMAKE_SYSTEM_PROCESSOR}")
     endif()
     string(TOLOWER "${WX_PLATFORM}" WX_PLATFORM)
 
-    if(WX_PLATFORM STREQUAL "amd64" OR WX_PLATFORM STREQUAL "x86_64" OR WX_PLATFORM STREQUAL "x64")
+    if(WX_PLATFORM MATCHES "^(amd64|x86_64|x64)(-|$)")
         set(${OUT_VAR} "x64" PARENT_SCOPE)
-    elseif(WX_PLATFORM STREQUAL "arm64" OR WX_PLATFORM STREQUAL "aarch64")
+    elseif(WX_PLATFORM MATCHES "^(arm64|aarch64)(-|$)")
         set(${OUT_VAR} "arm64" PARENT_SCOPE)
     else()
         message(FATAL_ERROR "Unsupported wxWidgets Windows prebuilt architecture: ${WX_PLATFORM}")
@@ -98,7 +108,6 @@ function(target_link_windows_wxwidgets TARGET_NAME)
         __WXMSW__
         UNICODE
         _UNICODE
-        wxDEBUG_LEVEL=0
     )
     target_link_directories(${TARGET_NAME} PRIVATE "${WX_LIB_DIR}")
     target_link_libraries(${TARGET_NAME} PRIVATE
