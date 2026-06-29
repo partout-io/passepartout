@@ -1,1 +1,1 @@
-* WireGuard: Fix regression in IPv6 endpoints
+* Improve software design
