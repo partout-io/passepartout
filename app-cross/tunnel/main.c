@@ -43,20 +43,28 @@ int main(int argc, char *argv[]) {
         goto failure;
     }
 
+    /* Initialize library (for logging). */
+    const partout_init_args init_args = {
+        .log_tag = NULL,
+        .logs_private_data = false
+    };
+    partout_init(&init_args);
+
     /* Current directory. */
     // FIXME: #209/notes, Cross UI, hardcoded values
     const char *cache_dir = ".";
 //    const char *cache_dir = mkdtemp("psp");
     const char *preferences = "{\"deviceId\":\"abcdef\"}";
 
-    partout_daemon_start_args args = { 0 };
-    args.cache_dir = cache_dir;
-    args.profile = profile;
-    args.is_daemon = true;
-    args.bindings = NULL;
+    const partout_daemon_start_args start_args = {
+        .cache_dir = cache_dir,
+        .profile = profile,
+        .is_daemon = true,
+        .bindings = NULL
+    };
 
     /* Will block indefinitely. */
-    const int result = partout_daemon_start(&args);
+    const int result = partout_daemon_start(&start_args);
 
     free(bundle);
     free(constants);
