@@ -9,6 +9,8 @@
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+        "CMAKE_INSTALL_BINDIR": ".",
+        "CMAKE_INSTALL_LIBDIR": ".",
         "BUILD_APP": "ON"
       }
     },
@@ -18,7 +20,7 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
+        "CMAKE_CXX_COMPILER": "clang++",
       },
       "condition": {
         "type": "equals",
@@ -33,12 +35,10 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl.exe",
         "CMAKE_CXX_COMPILER": "clang-cl.exe",
-        "PP_BUILD_VENDOR_PREBUILT_URL": "https://github.com/partout-io/prebuilts/releases/download/0.4.0",
-        "CMAKE_INSTALL_LIBDIR": ".",
-        "CMAKE_INSTALL_BINDIR": ".",
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
         "SWIFT_ROOT": "$penv{USERPROFILE}/AppData/Local/Programs/Swift",
-        "SWIFT_VERSION": "6.3.1"
+        "SWIFT_VERSION": "6.3.1",
+        "PP_BUILD_VENDOR_PREBUILT_URL": "https://github.com/partout-io/prebuilts/releases/download/0.4.0"
       },
       "architecture": {
         "value": "arm64",
