@@ -10,7 +10,7 @@
 
 Passepartout (French: /pas.paʁ.tu/) is your go-to app for VPN and privacy.
 
-Passepartout runs on [iPhone, iPad, Mac, and Apple TV][appstore]. Soon on Android and Windows.
+Passepartout is backed by [Partout][partout] and runs on [iPhone, iPad, Mac, and Apple TV][appstore]. Soon on Android and Windows.
 
 ## Features
 
@@ -153,6 +153,7 @@ Twitter: [@keeshux][about-twitter]
 
 Website: [passepartoutvpn.app][web-home] ([FAQ][web-faq])
 
+[partout]: https://partout.io/
 [appstore]: https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8
 
 [openvpn]: https://openvpn.net/index.php/open-source/overview.html
