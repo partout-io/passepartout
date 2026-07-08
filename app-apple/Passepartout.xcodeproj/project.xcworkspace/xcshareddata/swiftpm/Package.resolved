@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/partout-io/wg-go-apple",
       "state" : {
-        "revision" : "dfd5cc1f8840686297a4c3ec3e88b6a1adf87331",
-        "version" : "0.0.20260530"
+        "revision" : "03459caffb7281e77cecfdac893b2b36f6599d0f",
+        "version" : "0.0.20260703"
       }
     }
   ],
