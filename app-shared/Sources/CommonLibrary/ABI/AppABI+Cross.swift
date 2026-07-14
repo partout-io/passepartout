@@ -13,7 +13,8 @@ extension AppABI {
         appConstantsData: Data,
         preferencesData: Data?,
         profilesDir: String,
-        cachesURL: URL
+        cachesURL: URL,
+        configFilePath: String? = nil
     ) throws -> AppABI {
         let bundle = try ABI.decode(ABI.AppBundle.self, from: appBundleData)
         let constants = try ABI.decode(ABI.AppConstants.self, from: appConstantsData)
@@ -64,10 +65,20 @@ extension AppABI {
         let versionChecker = VersionChecker()
         let webReceiverManager = WebReceiverManager()
 
+        // File-based configuration (host provides the path per platform)
+        let configFileApplier = configFilePath.flatMap {
+            AppABI.makeConfigFileApplier(
+                configFilePath: $0,
+                preferences: preferences,
+                profileManager: profileManager
+            )
+        }
+
         let abi = AppABI(
             apiManager: nil,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
+            configFileApplier: configFileApplier,
             configManager: configManager,
             extensionInstaller: nil,
             iapManager: iapManager,
