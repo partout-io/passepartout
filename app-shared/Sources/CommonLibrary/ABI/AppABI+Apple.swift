@@ -308,10 +308,19 @@ extension AppABI {
             }
         }
 
+        // MARK: File-based configuration
+
+        let configFileApplier = makeConfigFileApplier(
+            configFilePath: ConfigFileApplier.defaultConfigPath(),
+            preferences: preferences,
+            profileManager: profileManager
+        )
+
         let abi = AppABI(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
+            configFileApplier: configFileApplier,
             configManager: configManager,
             extensionInstaller: sysexManager,
             iapManager: iapManager,
