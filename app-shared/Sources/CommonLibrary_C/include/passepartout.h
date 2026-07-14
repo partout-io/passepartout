@@ -68,6 +68,8 @@ typedef struct {
     const char *preferences;
     const char *profiles_dir;
     const char *cache_dir;
+    /* Optional path to a declarative config file; NULL to disable. */
+    const char *config_path;
     psp_app_bindings bindings;
 } psp_app_init_args;
 
