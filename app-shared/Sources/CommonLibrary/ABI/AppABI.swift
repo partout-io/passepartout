@@ -422,6 +422,14 @@ extension AppABI {
                 // .forces combinations in ConfigManager. At most, it's left as is
                 $0.constrainRelaxedVerification(to: configManager)
             }
+
+            if let configFileApplier {
+                do {
+                    try await configFileApplier.loadAndApply()
+                } catch {
+                    pspLog(.core, .error, "File config: error applying: \(error)")
+                }
+            }
         }
     }
 }
