@@ -60,3 +60,25 @@ extension ConfigFileApplier {
         }
     }
 }
+
+// MARK: - FileWatcher
+
+final class FileWatcher: @unchecked Sendable {
+    private let source: DispatchSourceFileSystemObject
+
+    init(source: DispatchSourceFileSystemObject) {
+        self.source = source
+    }
+
+    deinit {
+        cancel()
+    }
+
+    func resume() {
+        source.resume()
+    }
+
+    func cancel() {
+        source.cancel()
+    }
+}
