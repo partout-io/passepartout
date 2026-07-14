@@ -36,6 +36,9 @@ public final class AppABI: Sendable {
     // Purchases handler
     private let onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)?
     nonisolated(unsafe) private let bindings: psp_app_bindings?
+    // File-based configuration (nil unless a config file is present). Watched
+    // live on Apple; applied at launch on all platforms.
+    private var configFileApplier: ConfigFileApplier?
 
     // Internal state
     private var launchTask: Task<Void, Error>?
@@ -48,6 +51,7 @@ public final class AppABI: Sendable {
         apiManager: APIManager?,
         appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
+        configFileApplier: ConfigFileApplier? = nil,
         configManager: ConfigManager,
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
@@ -62,6 +66,7 @@ public final class AppABI: Sendable {
         bindings: psp_app_bindings?
     ) {
         self.appConfiguration = appConfiguration
+        self.configFileApplier = configFileApplier
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
@@ -93,6 +98,10 @@ public final class AppABI: Sendable {
         registry = AppABIRegistry(registry: partoutRegistry)
         version = AppABIVersion(appConfiguration: appConfiguration, bindings: bindings)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
+
+#if canImport(CommonLibraryApple)
+        configFileApplier?.startWatching()
+#endif
 
 #if PSP_CROSS
         // Do not commit the local preferences, emit update event
