@@ -1,1 +1,2 @@
-* Improve software design
+* OpenVPN: Make I/O failures recoverable
+* WireGuard: Update wg-go
