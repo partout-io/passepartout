@@ -28,9 +28,12 @@ jobs:
       - name: Run Apple tests
         run: |
           ci/run-apple-tests.sh
-      - name: Run Partout tests
+      - name: Run Partout tests (Swift)
         run: |
-          ci/run-partout-tests.sh
+          ci/run-partout-swift-tests.sh
+      - name: Run Partout tests (Zig)
+        run: |
+          ci/run-partout-zig-tests.sh
       - name: Run API tests
         working-directory: ./api
         run: |
