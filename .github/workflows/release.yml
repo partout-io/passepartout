@@ -26,6 +26,7 @@ jobs:
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+      - uses: mlugg/setup-zig@v2
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}
