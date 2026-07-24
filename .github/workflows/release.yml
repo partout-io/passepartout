@@ -206,7 +206,7 @@ jobs:
           git tag -as "$tag" -m "$tag"
           git push origin "$tag"
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{ env.APP_VERSION }}
           tag_name: "v${{ env.APP_VERSION }}"
