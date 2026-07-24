@@ -64,7 +64,7 @@ extension TunnelABI {
             provider: neProvider,
             profile: processedProfile,
             options: {
-                var options = NETunnelController.Options()
+                var options = TunnelControllerOptions()
                 if preferences[\.dnsFallsBack] {
                     options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
                 }

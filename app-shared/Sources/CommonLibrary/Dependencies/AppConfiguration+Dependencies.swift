@@ -257,7 +257,7 @@ extension ABI.AppConfiguration {
 }
 
 private extension ABI.AppBundle {
-    static let log = SimpleLogDestination(tag: nil)
+    static let log = SimpleLogDestination()
 
     var appGroupURL: URL {
         let groupId = bundleString(for: .groupId)
@@ -299,7 +299,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            SimpleLogDestination(tag: nil).append(.fault, "Unable to create group caches directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create group caches directory: \(error)")
         }
         return url
     }
@@ -309,7 +309,7 @@ private extension URL {
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         } catch {
-            SimpleLogDestination(tag: nil).append(.fault, "Unable to create group documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create group documents directory: \(error)")
         }
         return url
     }
