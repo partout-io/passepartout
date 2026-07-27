@@ -11,6 +11,7 @@ public enum DeclarativeConfigError: LocalizedError, Sendable {
     case unsupportedFormat(String)
     case parseFailure(String, Error)
     case invalidProfile(String, Error)
+    case invalidProfiles([String])
 
     public var errorDescription: String? {
         switch self {
@@ -22,6 +23,8 @@ public enum DeclarativeConfigError: LocalizedError, Sendable {
             "Unable to parse config file \(path): \(error.localizedDescription)"
         case .invalidProfile(let name, let error):
             "Invalid profile '\(name)': \(error.localizedDescription)"
+        case .invalidProfiles(let names):
+            "Unable to apply profiles: \(names.joined(separator: ", "))"
         }
     }
 }

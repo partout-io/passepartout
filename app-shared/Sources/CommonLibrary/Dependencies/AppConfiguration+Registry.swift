@@ -53,21 +53,28 @@ extension ABI.AppConfiguration {
                 let flags = configBlock()
                 return !flags.contains(.newProfileEncoding)
             },
-            customModuleHandler: {
-                switch $0.innerType {
-                case .Provider:
-                    do {
-                        let data = try ABI.encode($0.json)
-                        return try ABI.decode(ProviderModule.self, from: data)
-                    } catch {
-                        pspLog(.profiles, .error, "Unable to decode ProviderModule: \(error)")
-                        return $0
-                    }
-                default:
+            customModuleHandler: Self.customModuleHandler
+        )
+    }
+
+    // Resolves type-erased custom modules to their concrete counterparts. Shared
+    // between the coding registry and the file-based config applier so that both
+    // decode profiles identically. Pure (no instance state), hence static.
+    public static var customModuleHandler: TaggedProfile.CustomModuleHandler {
+        {
+            switch $0.innerType {
+            case .Provider:
+                do {
+                    let data = try ABI.encode($0.json)
+                    return try ABI.decode(ProviderModule.self, from: data)
+                } catch {
+                    pspLog(.profiles, .error, "Unable to decode ProviderModule: \(error)")
                     return $0
                 }
+            default:
+                return $0
             }
-        )
+        }
     }
 }
 

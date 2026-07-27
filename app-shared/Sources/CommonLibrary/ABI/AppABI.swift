@@ -98,18 +98,6 @@ public final class AppABI: Sendable {
         registry = AppABIRegistry(registry: partoutRegistry)
         version = AppABIVersion(appConfiguration: appConfiguration, bindings: bindings)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
-
-#if canImport(CommonLibraryApple)
-        configFileApplier?.startWatching()
-#endif
-
-#if PSP_CROSS
-        // Do not commit the local preferences, emit update event
-        // and let the consumer perform the actual commit
-        preferences.onRequest = { [weak self] in
-            self?.emitShouldUpdatePreferencesEvent($0, fields: $1)
-        }
-#endif
     }
 
     deinit {
