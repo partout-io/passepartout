@@ -36,8 +36,9 @@ public final class AppABI: Sendable {
     // Purchases handler
     private let onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)?
     nonisolated(unsafe) private let bindings: psp_app_bindings?
-    // File-based configuration (nil unless a config file is present). Watched
-    // live on Apple; applied at launch on all platforms.
+    // File-based configuration (nil unless a config file path was provided).
+    // Applied from onApplicationActive() on every platform: the Apple app calls
+    // it on launch/foreground, the cross factory calls it once after building.
     private var configFileApplier: ConfigFileApplier?
 
     // Internal state
@@ -191,6 +192,17 @@ extension AppABI {
 }
 
 // MARK: - Actions
+
+extension AppABI {
+    // Consumer commits preferences into the library. Used by the cross-platform
+    // C ABI (psp_app_preferences_set); on Apple the store commits directly.
+    public func setPreferences(_ new: ABI.AppPreferences) {
+        pspLog(.abi, .debug, "Commit preferences: \(new)")
+        preferences.overwrite {
+            $0 = new
+        }
+    }
+}
 
 private struct AppABIEncoder: AppABIEncoderProtocol {
     let appEncoder: AppEncoder
@@ -394,12 +406,17 @@ extension AppABI {
             // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
             try await onForeground()
 
+            // Apply the file-based config after onForeground() (which runs the
+            // launch task, so profiles are loaded and dedup works, and ABI events
+            // are already registered) but before deriving preferences from the
+            // GitHub-sourced ConfigManager, so the remote config always
+            // constrains the file-provided values (and not the other way around).
+            await applyFileConfig()
+
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            preferences.request(changesTo: [
-                .configFlags, .newProfileEncoding, .relaxedVerification
-            ]) {
+            preferences.overwrite {
                 // Propagate active config flags to tunnel via preferences
                 $0.configFlags = Array(configManager.activeFlags)
 
@@ -407,17 +424,23 @@ extension AppABI {
                 $0.newProfileEncoding = configManager.isActive(.newProfileEncoding)
 
                 // Constrain .relaxedVerification preference to .allows and
-                // .forces combinations in ConfigManager. At most, it's left as is
+                // .forces combinations in ConfigManager. At most, it's left as
+                // is. Runs after the file config so remote config wins.
                 $0.constrainRelaxedVerification(to: configManager)
             }
+        }
+    }
+}
 
-            if let configFileApplier {
-                do {
-                    try await configFileApplier.loadAndApply()
-                } catch {
-                    pspLog(.core, .error, "File config: error applying: \(error)")
-                }
-            }
+private extension AppABI {
+    // Loads and applies the declarative file config, if any. Errors are logged
+    // and swallowed: a malformed config file must not prevent app startup.
+    func applyFileConfig() async {
+        guard let configFileApplier else { return }
+        do {
+            try await configFileApplier.loadAndApply()
+        } catch {
+            pspLog(.core, .error, "File config: error applying: \(error)")
         }
     }
 }

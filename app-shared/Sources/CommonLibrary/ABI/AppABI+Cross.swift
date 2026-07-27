@@ -113,6 +113,12 @@ extension AppABI {
         )
         abi.registerEvents(eventHandler)
 
+        // The host drives the initial launch and each foreground via the
+        // psp_app_on_foreground C entry point (AppABI_C.swift), mirroring the
+        // Apple app's onApplicationActive() calls — so the factory does not
+        // trigger it here (doing so would double-run the launch task and
+        // re-apply the file config once the host calls in).
+
         return abi
     }
 }

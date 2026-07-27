@@ -10,6 +10,14 @@
 #include <string.h>
 #include "passepartout.h"
 
+/* Implemented by the linked Partout library (partout.h). Forward-declared here
+ * to avoid pulling Partout's headers into this shim; resolved at link time. */
+extern const char *partout_version(void);
+
+const char *psp_partout_version(void) {
+    return partout_version();
+}
+
 static char *psp_strdup(const char *value) {
 #ifdef _WIN32
     return _strdup(value);

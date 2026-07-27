@@ -15,6 +15,12 @@ let package = Package(
         .library(
             name: "CommonLibrary",
             targets: ["CommonLibrary"]
+        ),
+        // Exposes the C ABI header (passepartout.h) so cross-platform hosts
+        // (e.g. app-cross) can call the psp_* entry points from C/C++.
+        .library(
+            name: "CommonLibrary_C",
+            targets: ["CommonLibrary_C"]
         )
     ],
     dependencies: [

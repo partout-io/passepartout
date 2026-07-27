@@ -11,6 +11,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Common functions. */
 const char *psp_partout_version(void);
 void psp_log(const char *msg);
@@ -68,7 +72,8 @@ typedef struct {
     const char *preferences;
     const char *profiles_dir;
     const char *cache_dir;
-    /* Optional path to a declarative config file; NULL to disable. */
+    /* Path to a declarative config file. NULL selects the default location
+     * (~/.config/passepartout.json); a non-NULL value overrides it. */
     const char *config_path;
     psp_app_bindings bindings;
 } psp_app_init_args;
@@ -101,5 +106,9 @@ typedef struct {
 /* Daemon functions. */
 int psp_tunnel_start(const psp_tunnel_start_args *args);
 void psp_tunnel_stop(psp_completion completion);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

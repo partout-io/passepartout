@@ -13,7 +13,8 @@ let package = Package(
         .macOS(.v14)
     ],
     dependencies: [
-        .package(path: "../partout")
+        .package(path: "../partout"),
+        .package(path: "../app-shared")
     ],
     targets: [
         .target(
@@ -25,7 +26,9 @@ let package = Package(
             name: "passepartout",
             dependencies: [
                 "partout",
-                "passepartout-shared"
+                "passepartout-shared",
+                .product(name: "CommonLibrary", package: "app-shared"),
+                .product(name: "CommonLibrary_C", package: "app-shared")
             ],
             path: "app",
             cxxSettings: [
@@ -60,7 +63,9 @@ let package = Package(
             name: "passepartout-tunnel",
             dependencies: [
                 "partout",
-                "passepartout-shared"
+                "passepartout-shared",
+                .product(name: "CommonLibrary", package: "app-shared"),
+                .product(name: "CommonLibrary_C", package: "app-shared")
             ],
             path: "tunnel",
             cSettings: [.define("USE_SWIFTPM")]
