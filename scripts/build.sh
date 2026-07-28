@@ -50,13 +50,6 @@ cmake_opts+=("-DOUTPUT_DIR=$output_dir")
 cmake_opts+=("-DCMAKE_INSTALL_LIBDIR=.")
 cmake_opts+=("-DCMAKE_INSTALL_BINDIR=.")
 
-if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $gen_build == 1 ]]; then
-        cmake_opts+=("-DSWIFT_VERSION=$cmake_swift_version")
-        cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$cmake_toolchains_path/swift-linux.toolchain.cmake")
-    fi
-fi
-
 if [[ $build_app == 1 ]]; then
     cmake_opts+=("-DBUILD_APP=ON")
 fi
