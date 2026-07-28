@@ -5,7 +5,7 @@ endif()
 if(POLICY CMP0157)
     cmake_policy(SET CMP0157 NEW)
 endif()
-project(PassepartoutProject LANGUAGES Swift C CXX)
+project(PassepartoutProject LANGUAGES C CXX)
 include(ExternalProject)
 
 option(BUILD_APP "Build app executable" 0)
