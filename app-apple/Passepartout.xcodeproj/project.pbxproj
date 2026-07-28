@@ -33,6 +33,9 @@
 		0EC332CA2B8A1808000B9C2F /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EC332C92B8A1808000B9C2F /* NetworkExtension.framework */; };
 		0EC418D22CF86B7400AC6F2F /* ProfileMenuScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC418D12CF86B7400AC6F2F /* ProfileMenuScreen.swift */; platformFilters = (ios, macos, ); };
 		0EC797422B9378E000C093B7 /* AppContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC797402B9378E000C093B7 /* AppContext+Production.swift */; };
+		0ECB46C2300E5B8600C16EE2 /* AppPartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0ECB46C1300E5B8600C16EE2 /* AppPartoutRuntime */; };
+		0ECB46C4300E5B8C00C16EE2 /* AppPartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0ECB46C3300E5B8C00C16EE2 /* AppPartoutRuntime */; };
+		0ECB46C6300E5B9400C16EE2 /* AppPartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0ECB46C5300E5B9400C16EE2 /* AppPartoutRuntime */; };
 		0ED0CBD12ED0843500B5E96E /* AppAccessibility in Frameworks */ = {isa = PBXBuildFile; productRef = 0ED0CBD02ED0843500B5E96E /* AppAccessibility */; };
 		0ED0CBD32ED0849200B5E96E /* AppLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0ED0CBD22ED0849200B5E96E /* AppLibrary */; };
 		0ED61CF82CD0418C008FE259 /* App+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED61CF72CD0418C008FE259 /* App+macOS.swift */; platformFilters = (macos, ); };
@@ -185,6 +188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EE9F4A32ECF28DD008D5837 /* TunnelLibrary in Frameworks */,
+				0ECB46C4300E5B8C00C16EE2 /* AppPartoutRuntime in Frameworks */,
 				0EC332CA2B8A1808000B9C2F /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,6 +199,7 @@
 			files = (
 				0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */,
 				0EE9F49F2ECF28C4008D5837 /* AppLibraryMain in Frameworks */,
+				0ECB46C6300E5B9400C16EE2 /* AppPartoutRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +215,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */,
+				0ECB46C2300E5B8600C16EE2 /* AppPartoutRuntime in Frameworks */,
 				0EE662B52DC2BDDF00A4BB37 /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -434,6 +440,7 @@
 			packageProductDependencies = (
 				0EE9F49E2ECF28C4008D5837 /* AppLibraryMain */,
 				0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */,
+				0ECB46C5300E5B9400C16EE2 /* AppPartoutRuntime */,
 			);
 			productName = Passepartout;
 			productReference = 0E06D18F2B87629100176E1D /* Passepartout.app */;
@@ -511,6 +518,7 @@
 			name = PassepartoutTunnel;
 			packageProductDependencies = (
 				0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */,
+				0ECB46C3300E5B8C00C16EE2 /* AppPartoutRuntime */,
 			);
 			productName = Tunnel;
 			productReference = 0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */;
@@ -549,6 +557,7 @@
 			name = PassepartoutTunnelMac;
 			packageProductDependencies = (
 				0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */,
+				0ECB46C1300E5B8600C16EE2 /* AppPartoutRuntime */,
 			);
 			productName = Tunnel;
 			productReference = 0EE662B42DC2BDDE00A4BB37 /* com.algoritmico.mac.Passepartout.Tunnel.systemextension */;
@@ -1651,6 +1660,21 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0ECB46C1300E5B8600C16EE2 /* AppPartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = AppPartoutRuntime;
+		};
+		0ECB46C3300E5B8C00C16EE2 /* AppPartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = AppPartoutRuntime;
+		};
+		0ECB46C5300E5B9400C16EE2 /* AppPartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = AppPartoutRuntime;
+		};
 		0ED0CBD02ED0843500B5E96E /* AppAccessibility */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;

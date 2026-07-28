@@ -15,4 +15,5 @@ public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case newProfileEncoding = "newProfileEncoding"
     case ovpnV3 = "ovpnV3"
     case unknown = "unknown"
+    case zigRuntime = "zigRuntime"
 }

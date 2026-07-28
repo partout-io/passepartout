@@ -1,4 +1,7 @@
 {
+    "zigRuntime": {
+        "rate": 100
+    },
     "ovpnV3": {
         "rate": 100
     },

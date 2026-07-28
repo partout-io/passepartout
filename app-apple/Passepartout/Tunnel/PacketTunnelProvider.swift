@@ -6,9 +6,11 @@ import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
 import Partout
+import PartoutRuntime
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var abi: TunnelABIProtocol?
+    private var runtime: PartoutProviderRuntime?
 
     override func startTunnel(options: [String: NSObject]? = nil, completionHandler: @escaping @Sendable (Error?) -> Void) {
         let distributionTarget: ABI.DistributionTarget
@@ -34,7 +36,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter?.localMapper
         )
-        pspLog(.core, .notice, "Partout \(PartoutConstants.version)")
+        pspLog(.core, .notice, "Partout \(PartoutConstants.version) (Swift)")
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[TunnelObservable.Options.isManualKey] == true as NSNumber
@@ -63,7 +65,66 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             return persistedPreferences
         }())
 
+        if preferences.isFlagEnabled(.zigRuntime) {
+            pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
+
+            let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
+            guard let defaults = UserDefaults(suiteName: appGroup) else {
+                fatalError("No access to App Group: \(appGroup)")
+            }
+            // TODO: #218, cachesURL must be per-profile
+            let cachesURL = FileManager.default.temporaryDirectory
+            let registry = appConfiguration.newRegistryForTunnel(
+                preferences: preferences,
+                cachesURL: cachesURL
+            )
+            let decoder = appConfiguration.newNEProtocolCoder(.global, coder: registry)
+            do {
+                let runtime = try PartoutProviderRuntime(
+                    provider: self,
+                    decoder: decoder,
+                    options: .init(
+                        dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
+                        logsSnapshots: false,
+                        minDataCountDelta: 0
+                    ),
+                    defaults: defaults,
+                    logsPrivateData: preferences[\.logsPrivateData],
+                    logger: { level, message in
+                        guard let level = ABI.AppLogLevel(partoutCLevel: level),
+                              let message else { return }
+                        pspLog(.abi, level, String(cString: message))
+                    }
+                )
+                self.runtime = runtime
+
+                // Update the logger now that we have a context
+                _ = pspLogRegister(
+                    for: .tunnelProfile(runtime.profile.id),
+                    with: appConfiguration,
+                    preferences: preferences,
+                    localURL: appConfiguration.urlForTunnelLog,
+                    localMapper: logFormatter?.localMapper
+                )
+
+                Task { @MainActor in
+                    do {
+                        try await runtime.startTunnel()
+                        completionHandler(nil)
+                    } catch {
+                        pspLogFlush()
+                        completionHandler(error)
+                    }
+                }
+            } catch {
+                pspLogFlush()
+                completionHandler(error)
+            }
+            return
+        }
+
         // Defer to ABI
+        pspLog(.core, .info, "Using Swift runtime")
         Task { @MainActor in
             do {
                 // TODO: #218, cachesURL must be per-profile
@@ -85,12 +146,23 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     }
 
     override func stopTunnel(with reason: NEProviderStopReason) async {
+        if let runtime {
+            await runtime.stopTunnel(with: reason)
+            pspLogFlush()
+            return
+        }
         guard let abi else { return }
         pspLog(.core, .notice, "Stop PTP, reason: \(String(describing: reason))")
         await abi.stop()
     }
 
     override func cancelTunnelWithError(_ error: Error?) {
+        if let runtime {
+            runtime.cancelTunnelWithError(error)
+            pspLogFlush()
+            super.cancelTunnelWithError(error)
+            return
+        }
         guard let abi else { return }
         pspLog(.core, .info, "Cancel PTP, error: \(String(describing: error))")
         abi.cancel(error)
@@ -98,16 +170,25 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     }
 
     override func handleAppMessage(_ messageData: Data) async -> Data? {
+        if let runtime {
+            return await runtime.handleAppMessage(messageData)
+        }
         guard let abi else { return nil }
         pspLog(.core, .debug, "Handle PTP message")
         return await abi.sendMessage(messageData)
     }
 
 //    override func wake() {
-//        fwd?.wake()
+//        if let runtime {
+//            runtime.wake()
+//            return
+//        }
 //    }
 //
 //    override func sleep() async {
-//        await fwd?.sleep()
+//        if let runtime {
+//            await runtime.sleep()
+//            return
+//        }
 //    }
 }

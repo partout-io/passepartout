@@ -219,6 +219,26 @@ private extension PartoutLogger.Builder {
 
 // MARK: - Mappers
 
+extension ABI.AppLogLevel {
+    // As seen in PPLogLevel
+    public init?(partoutCLevel: Int32) {
+        switch partoutCLevel {
+        case 0: // PPLogLevelFault,
+            self = .fault
+        case 1: // PPLogLevelError,
+            self = .error
+        case 2: // PPLogLevelNotice,
+            self = .notice
+        case 3: // PPLogLevelInfo,
+            self = .info
+        case 4: // PPLogLevelDebug
+            self = .debug
+        default:
+            return nil
+        }
+    }
+}
+
 private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {
         switch self {
