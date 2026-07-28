@@ -18,6 +18,7 @@ import com.algoritmico.passepartout.vpn.VpnServiceStore
 import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.abi.PartoutException
+import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -54,7 +55,14 @@ class PassepartoutVpnService: VpnService() {
             jniLogTag = jniLogTag,
             service = this,
             engine = engine,
-            logsSnapshots = logsSnapshots
+            options = TunnelControllerOptions(
+                // XXX: Hardcode CloudFlare for now
+                // FIXME: ###, Should honor dnsFallsBack preference
+//                val dnsFallsBack = preferences?.dnsFallsBack ?: true
+                listOf("1.1.1.1", "1.0.0.1"),
+                logsSnapshots,
+                0L
+            )
         )
     }
 
@@ -97,13 +105,10 @@ class PassepartoutVpnService: VpnService() {
             library.partoutInit(androidConstants.tags.servicePartout, logsPrivateData)
 
             // This call retains the controller strongly
-            val dnsFallsBack = preferences?.dnsFallsBack ?: true
             val code = library.partoutDaemonStart(
                 profileJSON,
                 cacheDir.absolutePath,
                 controller,
-                dnsFallsBack,
-                logsSnapshots,
                 minDataCountDelta
             )
             if (code != 0) {
@@ -113,13 +118,8 @@ class PassepartoutVpnService: VpnService() {
 
         override suspend fun stop() = withContext(Dispatchers.IO) {
             suspendCancellableCoroutine { continuation ->
-                library.partoutDaemonStop { code, payload ->
-                    if (code != 0) {
-                        continuation.resumeWithException(PartoutException(code, payload))
-                        return@partoutDaemonStop
-                    }
-                    continuation.resume(Unit)
-                }
+                library.partoutDaemonStop()
+                continuation.resume(Unit)
             }
         }
 

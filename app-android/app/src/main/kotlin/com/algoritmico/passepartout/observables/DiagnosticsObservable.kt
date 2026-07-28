@@ -268,7 +268,7 @@ private fun ApplicationExitInfo.toDiagnosticsText(index: Int): String {
     return buildString {
         appendLine("#${index + 1}")
         appendLine("timestamp: ${exitReasonTimestampFormatter.format(Date(timestamp))}")
-        appendLine("process: ${processName ?: "unknown"}")
+        appendLine("process: ${processName}")
         appendLine("pid: $pid")
         appendLine("reason: ${reason.exitReasonDescription()} ($reason)")
         appendLine("status: $status")

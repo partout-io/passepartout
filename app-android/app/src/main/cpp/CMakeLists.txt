@@ -6,44 +6,49 @@ cmake_minimum_required(VERSION 3.28)
 project(Passepartout LANGUAGES C)
 set(CMAKE_C_FLAGS "-W -Wall -Werror -pedantic")
 
+# Global constants
+set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")
+set(USE_OPENSSL ON)
+set(USE_MBEDTLS OFF)
+
 # Define wrapper
 add_library(passepartout_wrapper SHARED "")
 
-# Include Swift/CMake helpers
-set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")
-include("${PROJECT_ROOT}/cmake/swift-macros.cmake")
-
-# Set up Partout
+# Set up Partout folders
 set(PARTOUT_ROOT ${PROJECT_ROOT}/partout)
 set(PARTOUT_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-set(PARTOUT_LIBRARY ${PARTOUT_OUTPUT}/partout/libpartout.so)
-set(PARTOUT_VENDOR_LIBRARIES
-    ${PARTOUT_OUTPUT}/openssl/lib/libcrypto.so
-    ${PARTOUT_OUTPUT}/openssl/lib/libssl.so
-    ${PARTOUT_OUTPUT}/wg-go/lib/libwg-go.so
-)
-set(PARTOUT_LIBRARIES
-    ${PARTOUT_LIBRARY}
-    ${PARTOUT_VENDOR_LIBRARIES}
-)
 
-# Add the external Swift library
-add_swift_library(partout ${PARTOUT_ROOT}
-    NO_INSTALL
-    INCLUDE_DIR ${PARTOUT_ROOT}/Sources/Partout_C/include
-    BUILD_BYPRODUCTS ${PARTOUT_LIBRARIES}
-    CMAKE_ARGS
-        -DPP_BUILD_OUTPUT=${PARTOUT_OUTPUT}
-        -DPP_BUILD_LIBRARY=ON
-        -DPP_BUILD_USE_OPENSSL=ON
-        -DPP_BUILD_USE_MBEDTLS=OFF
-        -DPP_BUILD_USE_OPENVPN=ON
-        -DPP_BUILD_USE_WIREGUARD=ON
-        -DPP_BUILD_VENDOR_SOURCE=bundled
+# Configure Partout
+set(PP_BUILD_OUTPUT "${PARTOUT_OUTPUT}")
+set(PP_BUILD_LIBRARY ON)
+set(PP_BUILD_USE_OPENVPN ON)
+set(PP_BUILD_USE_WIREGUARD ON)
+set(PP_BUILD_USE_OPENSSL ${USE_OPENSSL})
+set(PP_BUILD_USE_MBEDTLS ${USE_MBEDTLS})
+set(PP_BUILD_VENDOR_SOURCE bundled)
+
+# Configure build outputs
+set(PARTOUT_LIBRARY ${PARTOUT_OUTPUT}/partout/libpartout.so)
+set(PARTOUT_VENDOR_LIBRARIES "")
+list(APPEND PARTOUT_VENDOR_LIBRARIES
+        ${PARTOUT_OUTPUT}/wg-go/lib/libwg-go.so
 )
+if(USE_OPENSSL)
+    list(APPEND PARTOUT_VENDOR_LIBRARIES
+            ${PARTOUT_OUTPUT}/openssl/lib/libcrypto.so
+            ${PARTOUT_OUTPUT}/openssl/lib/libssl.so
+    )
+endif()
+
+# Include subproject
+add_subdirectory("${PARTOUT_ROOT}" partout)
 
 # Merge with wrapper
-target_link_libraries(passepartout_wrapper PRIVATE partout)
+target_link_libraries(passepartout_wrapper PRIVATE partout android log)
+set(PARTOUT_LIBRARIES
+        ${PARTOUT_LIBRARY}
+        ${PARTOUT_VENDOR_LIBRARIES}
+)
 add_custom_command(TARGET passepartout_wrapper POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PARTOUT_LIBRARIES}

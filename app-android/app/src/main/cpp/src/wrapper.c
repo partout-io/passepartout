@@ -6,11 +6,34 @@
 
 #include <jni.h>
 #include <stdlib.h>
+#include <android/log.h>
 #include "partout.h"
 #include "helpers.h"
 
 #define PARTOUT_JNI_CB(e, c) PARTOUT_CB(abi_completion_proxy, abi_handler_create(e, c))
 static void daemon_bindings_free(partout_daemon_bindings *b);
+
+static void partout_log(int level, const char *message) {
+    int android_level = 0;
+    switch (level) {
+        case PartoutLogLevelDebug:
+            android_level = ANDROID_LOG_VERBOSE;
+            break;
+        case PartoutLogLevelInfo:
+            android_level = ANDROID_LOG_DEBUG;
+            break;
+        case PartoutLogLevelNotice:
+            android_level = ANDROID_LOG_INFO;
+            break;
+        case PartoutLogLevelError:
+            android_level = ANDROID_LOG_WARN;
+            break;
+        case PartoutLogLevelFault:
+            android_level = ANDROID_LOG_FATAL;
+            break;
+    }
+    __android_log_print(android_level, "Partout", "%s", message);
+}
 
 JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(
@@ -22,8 +45,8 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutInit(
     (void)thiz;
     partout_init_args args = { 0 };
     const char *cTag = (*env)->GetStringUTFChars(env, tag, NULL);
-    args.log_tag = cTag;
     args.logs_private_data = logs_private_data;
+    args.logger = partout_log;
     partout_init(&args);
     (*env)->ReleaseStringUTFChars(env, tag, cTag);
 }
@@ -35,20 +58,23 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutVersion(JNIEnv *env
     return jmsg;
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jstring JNICALL
 Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutImportProfile(
         JNIEnv *env,
         jobject thiz,
         jstring text,
-        jstring name,
-        jobject completion
+        jstring name
 ) {
     (void)thiz;
     const char *cText = (*env)->GetStringUTFChars(env, text, NULL);
     const char *cName = name ? (*env)->GetStringUTFChars(env, name, NULL) : NULL;
-    partout_import_profile(cText, cName, PARTOUT_JNI_CB(env, completion));
+    char *json = partout_import_profile(cText, cName);
     (*env)->ReleaseStringUTFChars(env, text, cText);
     if (cName) (*env)->ReleaseStringUTFChars(env, name, cName);
+
+    jstring jJSON = json ? (*env)->NewStringUTF(env, json) : NULL;
+    free(json);
+    return jJSON;
 }
 
 JNIEXPORT jint JNICALL
@@ -58,8 +84,6 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
         jstring profile,
         jstring cacheDir,
         jobject controller,
-        jboolean dnsFallsBack,
-        jboolean logsSnapshots,
         jlong minDataCountDelta
 ) {
     (void) thiz;
@@ -68,19 +92,12 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
 
     partout_daemon_bindings bindings = {0};
     bindings.controller = (*env)->NewGlobalRef(env, controller);
-    bindings.free = daemon_bindings_free;
+    bindings.release = daemon_bindings_free;
 
     partout_daemon_start_args args = {0};
-    args.cache_dir = cCacheDir;
     args.profile = cProfile;
-    args.is_daemon = false;
-    args.options.logs_snapshots = logsSnapshots;
-    if (dnsFallsBack) {
-        // XXX: Hardcoded CloudFlare for now
-        static const char *servers[] = { "1.1.1.1", "1.0.0.1" };
-        args.options.dns_fallback = servers;
-        args.options.dns_fallback_len = sizeof(servers) / sizeof(const char *);
-    }
+    args.options.is_daemon = false;
+    args.options.cache_dir = cCacheDir;
     args.options.min_data_count_delta = minDataCountDelta;
     args.bindings = &bindings;
     const jint result = partout_daemon_start(&args);
@@ -93,11 +110,11 @@ Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStart(
 JNIEXPORT void JNICALL
 Java_com_algoritmico_passepartout_PassepartoutWrapper_partoutDaemonStop(
         JNIEnv *env,
-        jobject thiz,
-        jobject completion
+        jobject thiz
 ) {
+    (void)env;
     (void)thiz;
-    partout_daemon_stop(PARTOUT_JNI_CB(env, completion));
+    partout_daemon_stop();
 }
 
 void daemon_bindings_free(partout_daemon_bindings *b) {

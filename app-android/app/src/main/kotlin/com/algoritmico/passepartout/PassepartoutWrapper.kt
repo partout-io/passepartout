@@ -9,7 +9,6 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.defaultAndroidConstants
 import io.partout.NativeTunnelControllerJNI
-import io.partout.abi.PartoutCompletionCallback
 import io.partout.abi.PartoutResult
 import io.partout.models.TaggedProfile
 
@@ -18,20 +17,15 @@ interface PassepartoutWrapperProtocol {
     fun partoutVersion(): String
     fun partoutImportProfile(
         text: String,
-        name: String?,
-        completion: PartoutCompletionCallback
-    )
+        name: String?
+    ): String?
     fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
         controller: NativeTunnelControllerJNI,
-        dnsFallsBack: Boolean,
-        logsSnapshots: Boolean,
         minDataCountDelta: Long
     ): Int
-    fun partoutDaemonStop(
-        completion: PartoutCompletionCallback
-    )
+    fun partoutDaemonStop()
 }
 
 class PassepartoutWrapper: PassepartoutWrapperProtocol {
@@ -39,7 +33,9 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
     suspend fun importProfile(text: String, name: String?): TaggedProfile {
         val result = runCatchingNonFatal {
             PartoutResult.await { completion ->
-                partoutImportProfile(text, name, completion)
+                val json = partoutImportProfile(text, name)
+                val code = if (json != null) 0 else -1
+                completion.onComplete(code, json)
             }
         }.getOrThrow()
         val json = result.json
@@ -55,20 +51,15 @@ class PassepartoutWrapper: PassepartoutWrapperProtocol {
     override external fun partoutVersion(): String
     override external fun partoutImportProfile(
         text: String,
-        name: String?,
-        completion: PartoutCompletionCallback
-    )
+        name: String?
+    ): String?
     override external fun partoutDaemonStart(
         profile: String,
         cacheDir: String,
         controller: NativeTunnelControllerJNI,
-        dnsFallsBack: Boolean,
-        logsSnapshots: Boolean,
         minDataCountDelta: Long
     ): Int
-    override external fun partoutDaemonStop(
-        completion: PartoutCompletionCallback
-    )
+    override external fun partoutDaemonStop()
     //endregion
 
     companion object {

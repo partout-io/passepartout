@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    kotlin("plugin.serialization") version "1.9.0"
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -11,22 +10,16 @@ android {
 
     defaultConfig {
         applicationId = "com.algoritmico.passepartout"
-        minSdk = 28
+        minSdk = 24
         targetSdk = 36
-        versionCode = 4110
-        versionName = "3.9.3"
+        versionCode = 4111
+        versionName = "3.9.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             //noinspection ChromeOsAbiSupport
             abiFilters += listOf("arm64-v8a")
-        }
-        externalNativeBuild {
-            cmake {
-                arguments += listOf("-DSWIFT_VERSION=6.3.1")
-                arguments += listOf("-DANDROID_STL=c++_shared")
-            }
         }
     }
     compileOptions {
@@ -59,13 +52,13 @@ android {
     }
     sourceSets {
         getByName("main") {
-            java.srcDirs("src/main/kotlin")
+            kotlin.directories += "src/main/kotlin"
         }
         getByName("test") {
-            java.srcDirs("src/test/kotlin")
+            kotlin.directories += "src/test/kotlin"
         }
         getByName("androidTest") {
-            java.srcDirs("src/androidTest/kotlin")
+            kotlin.directories += "src/androidTest/kotlin"
         }
     }
     buildToolsVersion = "36.0.0"
