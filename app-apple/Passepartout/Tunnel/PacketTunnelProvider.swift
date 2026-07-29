@@ -85,11 +85,11 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 //                    decoder: decoder,
 //                    options: .init(
 //                        dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
-//                        logsSnapshots: false,
-//                        minDataCountDelta: 0
+//                        logsSnapshots: false
 //                    ),
 //                    defaults: defaults,
 //                    logsPrivateData: preferences[\.logsPrivateData],
+//                    minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
 //                    logger: { level, message in
 //                        guard let level = ABI.AppLogLevel(partoutCLevel: level),
 //                              let message else { return }
