@@ -92,18 +92,18 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-        .target(
-            name: "AppPartoutRuntime",
-            dependencies: [
-                "PartoutNative",
-                .product(name: "PartoutRuntime", package: "partout")
-            ],
-            path: "Sources/Empty/AppPartoutRuntime"
-        ),
-        .binaryTarget(
-            name: "PartoutNative",
-            path: "PartoutNative.xcframework"
-        ),
+//        .target(
+//            name: "AppPartoutRuntime",
+//            dependencies: [
+//                "PartoutNative",
+//                .product(name: "PartoutRuntime", package: "partout")
+//            ],
+//            path: "Sources/Empty/AppPartoutRuntime"
+//        ),
+//        .binaryTarget(
+//            name: "PartoutNative",
+//            path: "PartoutNative.xcframework"
+//        ),
         .testTarget(
             name: "AppLibraryTests",
             dependencies: ["AppLibrary"]
