@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include "partout.h"
 
+static void stdio_logger(int level, const char *message) {
+    printf("%s\n", message);
+}
+
 int main(int argc, char *argv[]) {
     char *bundle = NULL;
     char *constants = NULL;
@@ -45,7 +49,8 @@ int main(int argc, char *argv[]) {
 
     /* Initialize library (for logging). */
     const partout_init_args init_args = {
-        .logs_private_data = false
+        .logs_private_data = false,
+        .logger = stdio_logger
     };
     partout_init(&init_args);
 
@@ -63,6 +68,9 @@ int main(int argc, char *argv[]) {
 
     /* Will block indefinitely. */
     const int result = partout_daemon_start(&start_args);
+    if (result != PartoutCompletionCodeOK) {
+        printf("Failed: %d\n", result);
+    }
 
     free(bundle);
     free(constants);
