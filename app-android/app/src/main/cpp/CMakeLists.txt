@@ -44,6 +44,7 @@ endif()
 add_subdirectory("${PARTOUT_ROOT}" partout)
 
 # Merge with wrapper
+target_sources(passepartout_wrapper PRIVATE jvm.c)
 target_link_libraries(passepartout_wrapper PRIVATE partout android log)
 set(PARTOUT_LIBRARIES
         ${PARTOUT_LIBRARY}
@@ -53,13 +54,4 @@ add_custom_command(TARGET passepartout_wrapper POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PARTOUT_LIBRARIES}
         "$<TARGET_FILE_DIR:passepartout_wrapper>"
-)
-
-# Add wrapper glue
-target_sources(passepartout_wrapper PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/wrapper.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers.c
-)
-target_include_directories(passepartout_wrapper PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

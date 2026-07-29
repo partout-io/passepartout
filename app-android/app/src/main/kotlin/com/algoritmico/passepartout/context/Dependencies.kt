@@ -9,7 +9,6 @@ import android.content.Intent
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.betaConfigURL
 import com.algoritmico.passepartout.business.extensions.configURL
 import com.algoritmico.passepartout.business.extensions.urlForChangelog
@@ -24,6 +23,7 @@ import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.Event
 import io.partout.PartoutTunnel
+import io.partout.PartoutWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -56,7 +56,7 @@ fun AppConfiguration.newConfigManager(
 fun AppConfiguration.newProfileManager(
     logTag: String,
     applicationContext: Context,
-    library: PassepartoutWrapper,
+    library: PartoutWrapper,
     eventConstants: AndroidConstants.Events
 ): ProfileManager {
     val localName = constants.containers.local.lowercase()

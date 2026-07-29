@@ -3,16 +3,15 @@ package com.algoritmico.passepartout.observables
 import android.content.Context
 import android.content.Intent
 import com.algoritmico.passepartout.R
-import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
 import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
+import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.context.newConfigManager
 import com.algoritmico.passepartout.context.newProfileManager
@@ -36,7 +35,7 @@ class AppContext(
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
-    private val library = PassepartoutWrapper()
+    private val library = androidConstants.wrapper()
 
     // Internal logic
     private val configManager: ConfigManager

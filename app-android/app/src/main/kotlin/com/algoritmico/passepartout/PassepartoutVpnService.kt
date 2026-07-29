@@ -17,6 +17,7 @@ import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
 import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
+import io.partout.PartoutWrapper
 import io.partout.abi.PartoutException
 import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
@@ -24,7 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 class PassepartoutVpnService: VpnService() {
     private val androidConstants = defaultAndroidConstants
@@ -67,7 +67,7 @@ class PassepartoutVpnService: VpnService() {
     }
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
-        private val library = PassepartoutWrapper()
+        private val library = androidConstants.wrapper()
 
         override suspend fun start(
             intent: Intent?,
