@@ -15,7 +15,7 @@ data class AndroidConstants(
     val tags: Tags = Tags(),
     val tunnel: Tunnel = Tunnel()
 ) {
-    fun wrapper(): PartoutWrapper {
+    fun newWrapper(): PartoutWrapper {
         return PartoutWrapper("passepartout_wrapper")
     }
 

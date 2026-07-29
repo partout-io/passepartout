@@ -41,6 +41,7 @@ fun Context.appBundle(): AppBundle {
     // These come from "build.gradle.kts"
     val appInfo = packageInfo()
     val versionNumber = appInfo.versionName.orEmpty()
+    // FIXME: Requires API 28
     val buildNumber = appInfo.longVersionCode
         .coerceAtMost(Int.MAX_VALUE.toLong())
         .toInt()

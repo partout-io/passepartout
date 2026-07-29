@@ -47,23 +47,21 @@ class PassepartoutVpnService: VpnService() {
             logTag = logTag,
             jniLogTag = jniLogTag,
             service = this,
-            wrapper = androidConstants.wrapper(),
+            wrapper = androidConstants.newWrapper(),
             engine = engine
         )
     }
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
-        private val library = androidConstants.wrapper()
-
         override suspend fun prepareStart(
+            version: String,
             intent: Intent?,
             profileJSON: String
         ): PartoutVpnServiceRuntime.StartOptions {
             applicationContext.logPreamble(logTag)
 
             AppLog.i(logTag, "Started service")
-            val partoutVersion = library.partoutVersion()
-            AppLog.i(logTag, "Partout $partoutVersion")
+            AppLog.i(logTag, "Partout $version")
 
             val bundle = applicationContext.appBundle()
             AppLog.d(logTag, "Bundle: $bundle")

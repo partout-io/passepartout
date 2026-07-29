@@ -35,7 +35,7 @@ class AppContext(
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
-    private val library = androidConstants.wrapper()
+    private val library = androidConstants.newWrapper()
 
     // Internal logic
     private val configManager: ConfigManager
