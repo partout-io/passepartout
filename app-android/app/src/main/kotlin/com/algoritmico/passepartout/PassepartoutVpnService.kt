@@ -15,16 +15,9 @@ import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
-import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
-import io.partout.PartoutWrapper
-import io.partout.abi.PartoutException
 import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
 
 class PassepartoutVpnService: VpnService() {
     private val androidConstants = defaultAndroidConstants
@@ -54,26 +47,18 @@ class PassepartoutVpnService: VpnService() {
             logTag = logTag,
             jniLogTag = jniLogTag,
             service = this,
-            engine = engine,
-            options = TunnelControllerOptions(
-                // XXX: Hardcode CloudFlare for now
-                // FIXME: ###, Should honor dnsFallsBack preference
-//                val dnsFallsBack = preferences?.dnsFallsBack ?: true
-                listOf("1.1.1.1", "1.0.0.1"),
-                logsSnapshots,
-                0L
-            )
+            wrapper = androidConstants.wrapper(),
+            engine = engine
         )
     }
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
         private val library = androidConstants.wrapper()
 
-        override suspend fun start(
+        override suspend fun prepareStart(
             intent: Intent?,
-            controller: NativeTunnelControllerJNI,
             profileJSON: String
-        ) = withContext(Dispatchers.IO) {
+        ): PartoutVpnServiceRuntime.StartOptions {
             applicationContext.logPreamble(logTag)
 
             AppLog.i(logTag, "Started service")
@@ -102,25 +87,20 @@ class PassepartoutVpnService: VpnService() {
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
-            library.partoutInit(androidConstants.tags.servicePartout, logsPrivateData)
 
-            // This call retains the controller strongly
-            val code = library.partoutDaemonStart(
-                profileJSON,
-                cacheDir.absolutePath,
-                controller,
-                minDataCountDelta
+            // XXX: Hardcode CloudFlare for now
+            val dnsFallsBack = preferences?.dnsFallsBack ?: true
+            val dnsFallbackServers = if (dnsFallsBack) listOf("1.1.1.1", "1.0.0.1") else emptyList()
+
+            val controllerOptions = TunnelControllerOptions(
+                dnsFallbackServers,
+                logsSnapshots
             )
-            if (code != 0) {
-                throw PartoutException(code, null)
-            }
-        }
-
-        override suspend fun stop() = withContext(Dispatchers.IO) {
-            suspendCancellableCoroutine { continuation ->
-                library.partoutDaemonStop()
-                continuation.resume(Unit)
-            }
+            return PartoutVpnServiceRuntime.StartOptions(
+                logsPrivateData,
+                minDataCountDelta,
+                controllerOptions
+            )
         }
 
         override suspend fun readLastProfile(): String {
