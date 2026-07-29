@@ -15,15 +15,9 @@ import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
-import io.partout.NativeTunnelControllerJNI
 import io.partout.PartoutVpnServiceRuntime
-import io.partout.abi.PartoutException
+import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 class PassepartoutVpnService: VpnService() {
     private val androidConstants = defaultAndroidConstants
@@ -53,24 +47,21 @@ class PassepartoutVpnService: VpnService() {
             logTag = logTag,
             jniLogTag = jniLogTag,
             service = this,
-            engine = engine,
-            logsSnapshots = logsSnapshots
+            wrapper = androidConstants.newWrapper(),
+            engine = engine
         )
     }
 
     private val engine = object : PartoutVpnServiceRuntime.Engine {
-        private val library = PassepartoutWrapper()
-
-        override suspend fun start(
+        override suspend fun prepareStart(
+            version: String,
             intent: Intent?,
-            controller: NativeTunnelControllerJNI,
             profileJSON: String
-        ) = withContext(Dispatchers.IO) {
+        ): PartoutVpnServiceRuntime.StartOptions {
             applicationContext.logPreamble(logTag)
 
             AppLog.i(logTag, "Started service")
-            val partoutVersion = library.partoutVersion()
-            AppLog.i(logTag, "Partout $partoutVersion")
+            AppLog.i(logTag, "Partout $version")
 
             val bundle = applicationContext.appBundle()
             AppLog.d(logTag, "Bundle: $bundle")
@@ -94,33 +85,20 @@ class PassepartoutVpnService: VpnService() {
             // Initialize the library with the intent preferences
 //            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
-            library.partoutInit(androidConstants.tags.servicePartout, logsPrivateData)
 
-            // This call retains the controller strongly
+            // XXX: Hardcode CloudFlare for now
             val dnsFallsBack = preferences?.dnsFallsBack ?: true
-            val code = library.partoutDaemonStart(
-                profileJSON,
-                cacheDir.absolutePath,
-                controller,
-                dnsFallsBack,
-                logsSnapshots,
-                minDataCountDelta
-            )
-            if (code != 0) {
-                throw PartoutException(code, null)
-            }
-        }
+            val dnsFallbackServers = if (dnsFallsBack) listOf("1.1.1.1", "1.0.0.1") else emptyList()
 
-        override suspend fun stop() = withContext(Dispatchers.IO) {
-            suspendCancellableCoroutine { continuation ->
-                library.partoutDaemonStop { code, payload ->
-                    if (code != 0) {
-                        continuation.resumeWithException(PartoutException(code, payload))
-                        return@partoutDaemonStop
-                    }
-                    continuation.resume(Unit)
-                }
-            }
+            val controllerOptions = TunnelControllerOptions(
+                dnsFallbackServers,
+                logsSnapshots
+            )
+            return PartoutVpnServiceRuntime.StartOptions(
+                logsPrivateData,
+                minDataCountDelta,
+                controllerOptions
+            )
         }
 
         override suspend fun readLastProfile(): String {
@@ -160,7 +138,7 @@ class PassepartoutVpnService: VpnService() {
             AppLog.e(logTag, "Unable to start service in foreground", it)
             return START_NOT_STICKY
         }
-        if (VpnService.prepare(applicationContext) != null) {
+        if (prepare(applicationContext) != null) {
             AppLog.w(logTag, "VPN permission was revoked before start")
             runtime.onRevoke()
             return START_NOT_STICKY

@@ -111,13 +111,3 @@ install(CODE [[
         "${CMAKE_INSTALL_PREFIX}/cmake"
     )
 ]])
-
-if(WIN32)
-    install(CODE
-        "set(SWIFT_ROOT [==[${SWIFT_ROOT}]==])
-set(SWIFT_VERSION [==[${SWIFT_VERSION}]==])
-include([==[${CMAKE_CURRENT_SOURCE_DIR}/../cmake/swift-macros.cmake]==])
-swift_copy_windows_runtime(\"\${CMAKE_INSTALL_PREFIX}\")"
-    )
-endif()
-

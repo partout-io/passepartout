@@ -33,9 +33,14 @@ let package = Package(
         .library(
             name: "TunnelLibrary",
             targets: ["AppResources"]
+//        ),
+//        .library(
+//            name: "AppPartoutRuntime",
+//            targets: ["AppPartoutRuntime"]
         )
     ],
     dependencies: [
+        .package(path: "../partout"),
         .package(path: "../app-shared")
     ],
     targets: [
@@ -87,6 +92,18 @@ let package = Package(
                 .process("Resources")
             ]
         ),
+//        .target(
+//            name: "AppPartoutRuntime",
+//            dependencies: [
+//                "PartoutNative",
+//                .product(name: "PartoutRuntime", package: "partout")
+//            ],
+//            path: "Sources/Empty/AppPartoutRuntime"
+//        ),
+//        .binaryTarget(
+//            name: "PartoutNative",
+//            path: "PartoutNative.xcframework"
+//        ),
         .testTarget(
             name: "AppLibraryTests",
             dependencies: ["AppLibrary"]

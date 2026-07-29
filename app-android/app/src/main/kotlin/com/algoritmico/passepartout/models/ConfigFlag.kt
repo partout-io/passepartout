@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: allowsRelaxedVerification,appNotWorking,forcesRelaxedVerification,neSafeValueObserver,newProfileEncoding,ovpnV3,unknown
+ * Values: allowsRelaxedVerification,appNotWorking,forcesRelaxedVerification,neSafeValueObserver,newProfileEncoding,ovpnV3,unknown,zigRuntime
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
@@ -55,7 +55,10 @@ enum class ConfigFlag(val value: kotlin.String) {
     ovpnV3("ovpnV3"),
 
     @SerialName(value = "unknown")
-    unknown("unknown");
+    unknown("unknown"),
+
+    @SerialName(value = "zigRuntime")
+    zigRuntime("zigRuntime");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.business.managers
 
-import com.algoritmico.passepartout.PassepartoutWrapper
 import com.algoritmico.passepartout.business.extensions.fingerprint
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AndroidConstants
@@ -17,6 +16,7 @@ import com.algoritmico.passepartout.models.ProfileEventLocalProfiles
 import com.algoritmico.passepartout.models.ProfileEventReady
 import com.algoritmico.passepartout.models.ProfileEventRefresh
 import com.algoritmico.passepartout.models.ProfileEventSave
+import io.partout.PartoutWrapper
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
 import io.partout.models.ModuleType
@@ -36,7 +36,7 @@ sealed class ProfileManagerException: Exception() {
 
 class ProfileManager(
     private val logTag: String,
-    private val library: PassepartoutWrapper,
+    private val library: PartoutWrapper,
     private val repository: ProfileRepository,
     eventConstants: AndroidConstants.Events
 ) {

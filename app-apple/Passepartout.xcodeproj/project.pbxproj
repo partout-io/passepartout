@@ -434,6 +434,7 @@
 			packageProductDependencies = (
 				0EE9F49E2ECF28C4008D5837 /* AppLibraryMain */,
 				0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */,
+				0ECB46C5300E5B9400C16EE2 /* AppPartoutRuntime */,
 			);
 			productName = Passepartout;
 			productReference = 0E06D18F2B87629100176E1D /* Passepartout.app */;
@@ -511,6 +512,7 @@
 			name = PassepartoutTunnel;
 			packageProductDependencies = (
 				0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */,
+				0ECB46C3300E5B8C00C16EE2 /* AppPartoutRuntime */,
 			);
 			productName = Tunnel;
 			productReference = 0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */;
@@ -549,6 +551,7 @@
 			name = PassepartoutTunnelMac;
 			packageProductDependencies = (
 				0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */,
+				0ECB46C1300E5B8600C16EE2 /* AppPartoutRuntime */,
 			);
 			productName = Tunnel;
 			productReference = 0EE662B42DC2BDDE00A4BB37 /* com.algoritmico.mac.Passepartout.Tunnel.systemextension */;
@@ -562,7 +565,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					0E06D18E2B87629100176E1D = {
 						CreatedOnToolsVersion = 15.2;
@@ -1651,6 +1654,21 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0ECB46C1300E5B8600C16EE2 /* AppPartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = AppPartoutRuntime;
+		};
+		0ECB46C3300E5B8C00C16EE2 /* AppPartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = AppPartoutRuntime;
+		};
+		0ECB46C5300E5B9400C16EE2 /* AppPartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = AppPartoutRuntime;
+		};
 		0ED0CBD02ED0843500B5E96E /* AppAccessibility */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;

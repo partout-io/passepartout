@@ -4,6 +4,8 @@
 
 package com.algoritmico.passepartout.context
 
+import io.partout.PartoutWrapper
+
 data class AndroidConstants(
     val assets: Assets = Assets(),
     val diagnostics: Diagnostics = Diagnostics(),
@@ -13,6 +15,10 @@ data class AndroidConstants(
     val tags: Tags = Tags(),
     val tunnel: Tunnel = Tunnel()
 ) {
+    fun newWrapper(): PartoutWrapper {
+        return PartoutWrapper("passepartout_wrapper")
+    }
+
     data class Assets(
         val constantsFilename: String = "constants.json",
         val creditsFilename: String = "credits.json"

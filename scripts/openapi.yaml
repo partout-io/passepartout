@@ -565,6 +565,7 @@ components:
       - newProfileEncoding
       - ovpnV3
       - unknown
+      - zigRuntime
       enum:
       - allowsRelaxedVerification
       - appNotWorking
@@ -573,6 +574,7 @@ components:
       - newProfileEncoding
       - ovpnV3
       - unknown
+      - zigRuntime
     ConfigBundle.Config:
       type: object
       additionalProperties: false

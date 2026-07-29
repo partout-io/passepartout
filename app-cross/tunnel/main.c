@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include "partout.h"
 
+static void stdio_logger(int level, const char *message) {
+    printf("%s\n", message);
+}
+
 int main(int argc, char *argv[]) {
     char *bundle = NULL;
     char *constants = NULL;
@@ -45,26 +49,28 @@ int main(int argc, char *argv[]) {
 
     /* Initialize library (for logging). */
     const partout_init_args init_args = {
-        .log_tag = NULL,
-        .logs_private_data = false
+        .logs_private_data = false,
+        .logger = stdio_logger
     };
     partout_init(&init_args);
 
     /* Current directory. */
     // FIXME: #209/notes, Cross UI, hardcoded values
-    const char *cache_dir = ".";
-//    const char *cache_dir = mkdtemp("psp");
     const char *preferences = "{\"deviceId\":\"abcdef\"}";
 
     const partout_daemon_start_args start_args = {
-        .cache_dir = cache_dir,
         .profile = profile,
-        .is_daemon = true,
+        .options = {
+            .is_daemon = true
+        },
         .bindings = NULL
     };
 
     /* Will block indefinitely. */
     const int result = partout_daemon_start(&start_args);
+    if (result != PartoutCompletionCodeOK) {
+        printf("Failed: %d\n", result);
+    }
 
     free(bundle);
     free(constants);
