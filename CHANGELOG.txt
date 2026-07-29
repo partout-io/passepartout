@@ -1,2 +1,1 @@
-* OpenVPN: Make I/O failures recoverable
-* WireGuard: Update wg-go
+* Partout: Integrate Zig-based runtimes (#1898)
