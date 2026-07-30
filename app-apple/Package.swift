@@ -179,14 +179,10 @@ package.targets.append(contentsOf: [
                 .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 "partout"
             ]
-            list.append("CommonLibrary_C")
             list.append("CommonProviders")
             return list
         }(),
         swiftSettings: swiftSettings
-    ),
-    .target(
-        name: "CommonLibrary_C"
     ),
     .testTarget(
         name: "CommonLibraryTests",

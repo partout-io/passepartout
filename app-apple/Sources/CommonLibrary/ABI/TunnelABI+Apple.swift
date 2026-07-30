@@ -128,8 +128,7 @@ extension TunnelABI {
             daemon: daemon,
             environment: environment,
             iap: iap,
-            originalProfile: originalProfile,
-            bindings: nil
+            originalProfile: originalProfile
         )
     }
 }

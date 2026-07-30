@@ -79,8 +79,7 @@ extension AppContext {
             profileManager: profileManager,
             registry: registry,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager,
-            bindings: nil
+            webReceiverManager: webReceiverManager
         )
         return AppContext(
             abi: abi,

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary_C
 import Partout
 
 public final class TunnelABI: TunnelABIProtocol {
@@ -29,7 +28,6 @@ public final class TunnelABI: TunnelABIProtocol {
     private let environment: TunnelEnvironment
     private let iap: IAP?
     private let originalProfile: Profile
-    nonisolated(unsafe) private let bindings: psp_tunnel_bindings?
 
     private var verifierSubscription: Task<Void, Error>?
 
@@ -37,14 +35,12 @@ public final class TunnelABI: TunnelABIProtocol {
         daemon: ConnectionDaemon,
         environment: TunnelEnvironment,
         iap: IAP?,
-        originalProfile: Profile,
-        bindings: psp_tunnel_bindings?
+        originalProfile: Profile
     ) {
         self.daemon = daemon
         self.environment = environment
         self.iap = iap
         self.originalProfile = originalProfile
-        self.bindings = bindings
 
         // Disable if skips purchases
         if let iap {
@@ -54,9 +50,6 @@ public final class TunnelABI: TunnelABIProtocol {
 
     deinit {
         pspLog(.abi, .debug, "Deinit TunnelABI")
-        if var bindings {
-            bindings.free?(&bindings)
-        }
     }
 
     public func start(isInteractive: Bool) async throws {

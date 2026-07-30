@@ -54,11 +54,7 @@ extension AppABI {
                 await betaChecker.isBeta()
             },
             fetcher: {
-                try await appConfiguration.newRequest(
-                    for: $0,
-                    cached: false,
-                    bindings: nil
-                )
+                try await appConfiguration.newRequest(for: $0, cached: false)
             }
         )
 
@@ -224,11 +220,7 @@ extension AppABI {
                 }
             }(),
             fetcher: {
-                try await appConfiguration.newRequest(
-                    for: $0,
-                    cached: true,
-                    bindings: nil
-                )
+                try await appConfiguration.newRequest(for: $0, cached: true)
             }
         )
 
@@ -322,8 +314,7 @@ extension AppABI {
             registry: registry,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            onEligibleFeaturesBlock: onEligibleFeaturesBlock,
-            bindings: nil
+            onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
         return Result(abi: abi, tunnelObservable: tunnelObservable)
     }

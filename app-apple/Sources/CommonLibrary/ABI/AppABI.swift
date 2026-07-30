@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary_C
 import Partout
 
 @BusinessActor
@@ -35,7 +34,6 @@ public final class AppABI: Sendable {
     private let webReceiverManager: WebReceiverManager
     // Purchases handler
     private let onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)?
-    nonisolated(unsafe) private let bindings: psp_app_bindings?
 
     // Internal state
     private var launchTask: Task<Void, Error>?
@@ -58,8 +56,7 @@ public final class AppABI: Sendable {
         registry partoutRegistry: CodingRegistry,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil,
-        bindings: psp_app_bindings?
+        onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         self.appConfiguration = appConfiguration
         self.configManager = configManager
@@ -75,7 +72,6 @@ public final class AppABI: Sendable {
         self.apiManager = apiManager ?? APIManager()
         self.preferencesManager = preferencesManager ?? PreferencesManager()
 #endif
-        self.bindings = bindings
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
@@ -91,7 +87,7 @@ public final class AppABI: Sendable {
             registry: partoutRegistry
         )
         registry = AppABIRegistry(registry: partoutRegistry)
-        version = AppABIVersion(appConfiguration: appConfiguration, bindings: bindings)
+        version = AppABIVersion(appConfiguration: appConfiguration)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
 
 #if PSP_CROSS
@@ -106,9 +102,6 @@ public final class AppABI: Sendable {
     deinit {
         pspLog(.abi, .debug, "Deinit AppABI")
         subscriptions.forEach { $0.cancel() }
-        if var bindings {
-            bindings.free?(&bindings)
-        }
     }
 }
 
@@ -331,7 +324,6 @@ private struct AppABIRegistry: AppABIRegistryProtocol {
 
 private struct AppABIVersion: AppABIVersionProtocol {
     let appConfiguration: ABI.AppConfiguration
-    nonisolated(unsafe)let bindings: psp_app_bindings?
 
     func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
         pspLog(.core, .info, "CHANGELOG: Load for version \(version)")
@@ -340,8 +332,7 @@ private struct AppABIVersion: AppABIVersionProtocol {
         do {
             let data = try await appConfiguration.newRequest(
                 for: url,
-                cached: false,
-                bindings: bindings
+                cached: false
             )
             guard let text = String(data: data, encoding: .utf8) else {
                 throw ABI.AppError.notFound
