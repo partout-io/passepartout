@@ -104,9 +104,6 @@ public final class TunnelContext: TunnelContextProtocol {
         } catch {
             pspLog(.abi, .fault, "Unable to start tunnel: \(error)")
             flushLogs()
-            untrackContext()
-            await backend.stop()
-            self.backend = nil
             throw error
         }
     }
