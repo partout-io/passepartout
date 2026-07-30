@@ -6,7 +6,9 @@ import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
 import Partout
+// FIXME: ###, Move this import to TunnelLibrary
 // import PartoutRuntime
+import TunnelLibrary
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var abi: TunnelABIProtocol?

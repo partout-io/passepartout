@@ -32,7 +32,7 @@ let package = Package(
         ),
         .library(
             name: "TunnelLibrary",
-            targets: ["AppResources"]
+            targets: ["TunnelLibrary"]
         )
 //        .library(
 //            name: "AppPartoutRuntime",
@@ -85,6 +85,10 @@ let package = Package(
             resources: [
                 .process("Resources")
             ]
+        ),
+        .target(
+            name: "TunnelLibrary",
+            dependencies: ["AppResources"]
         ),
 //        .target(
 //            name: "AppPartoutRuntime",

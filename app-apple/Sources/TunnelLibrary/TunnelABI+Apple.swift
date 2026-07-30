@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #if canImport(CommonLibraryApple)
+import CommonLibrary
 import NetworkExtension
 import Partout
 
