@@ -225,7 +225,9 @@ extension WireGuardView.ConfigurationView {
                 var peer = Peer()
                 peer.publicKey = $1.publicKey
                 peer.preSharedKey = $1.preSharedKey ?? ""
-                peer.endpoint = $1.endpoint ?? ""
+                peer.endpoint = $1.endpoint.map {
+                    Endpoint(rawValue: $0)?.wgRepresentation ?? $0
+                } ?? ""
                 peer.allowedIPs = $1.allowedIPs.joined(separator: separator)
                 peer.keepAlive = $1.keepAlive?.description ?? ""
                 $0[$1.publicKey] = peer
