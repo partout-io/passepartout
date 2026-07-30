@@ -53,7 +53,7 @@ struct OnboardingObservableTests {
 
     @Test
     func givenLast_whenAdvance_thenDoesNotAdvance() {
-        let sut = OnboardingObservable(initialStep: .doneV3_5_18)
+        let sut = OnboardingObservable(initialStep: .doneV3_9_5)
         #expect(sut.step == .last)
         sut.advance()
         #expect(sut.step == .doneV3_9_5)
