@@ -38,8 +38,6 @@ import kotlinx.serialization.Contextual
  * @param experimental 
  * @param extensiveLogging 
  * @param logsPrivateData 
- * @param newProfileEncoding 
- * @param relaxedVerification 
  * @param skipsPurchases 
  * @param deviceId 
  * @param lastCheckedVersionTimestamp 64-bit millis since UNIX epoch.
@@ -64,12 +62,6 @@ data class AppPreferences (
 
     @SerialName(value = "logsPrivateData")
     val logsPrivateData: kotlin.Boolean,
-
-    @SerialName(value = "newProfileEncoding")
-    val newProfileEncoding: kotlin.Boolean,
-
-    @SerialName(value = "relaxedVerification")
-    val relaxedVerification: kotlin.Boolean,
 
     @SerialName(value = "skipsPurchases")
     val skipsPurchases: kotlin.Boolean,

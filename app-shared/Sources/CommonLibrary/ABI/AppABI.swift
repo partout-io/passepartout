@@ -401,17 +401,10 @@ extension AppABI {
             await versionChecker.checkLatestRelease()
 
             preferences.request(changesTo: [
-                .configFlags, .newProfileEncoding, .relaxedVerification
+                .configFlags
             ]) {
                 // Propagate active config flags to tunnel via preferences
                 $0.configFlags = Array(configManager.activeFlags)
-
-                // Imply some hidden preferences from config flags
-                $0.newProfileEncoding = configManager.isActive(.newProfileEncoding)
-
-                // Constrain .relaxedVerification preference to .allows and
-                // .forces combinations in ConfigManager. At most, it's left as is
-                $0.constrainRelaxedVerification(to: configManager)
             }
         }
     }
@@ -607,10 +600,6 @@ private extension AppABI {
     }
 
     var shouldInvalidateReceipt: Bool {
-        // Always invalidate if "old" verification strategy
-        guard preferences[\.relaxedVerification] else {
-            return true
-        }
         // Receipt never loaded, force load
         guard let didLoadReceiptDate else {
             return true

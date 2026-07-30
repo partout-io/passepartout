@@ -384,7 +384,6 @@
 "views.preferences.modern_crypto" = "现代加密技术";
 "views.preferences.pins_active_profile.footer" = "还会在顶部显示活动配置文件，以便快速访问。";
 "views.preferences.pins_active_profile" = "固定活动配置文件";
-"views.preferences.relaxed_verification" = "替代验证";
 "views.preferences.system_appearance" = "外观";
 "views.profile.alerts.purchase.buttons.ok" = "仍然保存";
 "views.profile.buttons.export" = "导出配置文件";

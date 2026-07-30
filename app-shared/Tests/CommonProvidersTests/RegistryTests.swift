@@ -10,8 +10,7 @@ struct RegistryTests {
     @Test(arguments: [true, false])
     func givenKnownHandlers_whenSerializeProfile_thenIsDeserialized(legacy: Bool) throws {
         let sut = CodingRegistry(
-            registry: Registry(withKnown: true),
-            withLegacyEncoding: { legacy }
+            registry: Registry(withKnown: true)
         )
 
         var ovpnBuilder = OpenVPN.Configuration.Builder()

@@ -19,11 +19,9 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
     public var lastCheckedVersion: String?
     public var lastUsedProfileUUID: String?
     public var logsPrivateData: Bool
-    public var newProfileEncoding: Bool
-    public var relaxedVerification: Bool
     public var skipsPurchases: Bool
 
-    public init(configFlags: [OpenAPIConfigFlag], deviceId: String? = nil, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, newProfileEncoding: Bool, relaxedVerification: Bool, skipsPurchases: Bool) {
+    public init(configFlags: [OpenAPIConfigFlag], deviceId: String? = nil, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, skipsPurchases: Bool) {
         self.configFlags = configFlags
         self.deviceId = deviceId
         self.dnsFallsBack = dnsFallsBack
@@ -33,8 +31,6 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
         self.lastCheckedVersion = lastCheckedVersion
         self.lastUsedProfileUUID = lastUsedProfileUUID
         self.logsPrivateData = logsPrivateData
-        self.newProfileEncoding = newProfileEncoding
-        self.relaxedVerification = relaxedVerification
         self.skipsPurchases = skipsPurchases
     }
 
@@ -48,8 +44,6 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
         case lastCheckedVersion
         case lastUsedProfileUUID
         case logsPrivateData
-        case newProfileEncoding
-        case relaxedVerification
         case skipsPurchases
     }
 
@@ -66,8 +60,6 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
         try container.encodeIfPresent(lastCheckedVersion, forKey: .lastCheckedVersion)
         try container.encodeIfPresent(lastUsedProfileUUID, forKey: .lastUsedProfileUUID)
         try container.encode(logsPrivateData, forKey: .logsPrivateData)
-        try container.encode(newProfileEncoding, forKey: .newProfileEncoding)
-        try container.encode(relaxedVerification, forKey: .relaxedVerification)
         try container.encode(skipsPurchases, forKey: .skipsPurchases)
     }
 }

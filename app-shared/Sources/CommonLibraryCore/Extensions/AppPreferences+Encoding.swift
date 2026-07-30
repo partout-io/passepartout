@@ -21,8 +21,6 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
             lastCheckedVersion: nil,
             lastUsedProfileUUID: nil,
             logsPrivateData: false,
-            newProfileEncoding: false,
-            relaxedVerification: false,
             skipsPurchases: false
         )
         ABI.AppPreferenceKey.allCases.forEach {
@@ -54,10 +52,6 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
             lastUsedProfileId = nil
         case .logsPrivateData:
             logsPrivateData = false
-        case .newProfileEncoding:
-            newProfileEncoding = false
-        case .relaxedVerification:
-            relaxedVerification = false
         case .skipsPurchases:
             skipsPurchases = false
         }
@@ -95,10 +89,6 @@ extension ABI.AppPreferencesProtocol {
             lastUsedProfileId = preferences.lastUsedProfileId
         case .logsPrivateData:
             logsPrivateData = preferences.logsPrivateData
-        case .newProfileEncoding:
-            newProfileEncoding = preferences.newProfileEncoding
-        case .relaxedVerification:
-            relaxedVerification = preferences.relaxedVerification
         case .skipsPurchases:
             skipsPurchases = preferences.skipsPurchases
         }
@@ -142,10 +132,6 @@ extension ABI.AppPreferences {
             lastUsedProfileUUID = try container.decodeIfPresent(String.self, forKey: .lastUsedProfileUUID)
         case .logsPrivateData:
             logsPrivateData = try container.decodeIfPresent(Bool.self, forKey: .logsPrivateData) ?? def.logsPrivateData
-        case .newProfileEncoding:
-            newProfileEncoding = try container.decodeIfPresent(Bool.self, forKey: .newProfileEncoding) ?? def.newProfileEncoding
-        case .relaxedVerification:
-            relaxedVerification = try container.decodeIfPresent(Bool.self, forKey: .relaxedVerification) ?? def.relaxedVerification
         case .skipsPurchases:
             skipsPurchases = try container.decodeIfPresent(Bool.self, forKey: .skipsPurchases) ?? def.skipsPurchases
         }

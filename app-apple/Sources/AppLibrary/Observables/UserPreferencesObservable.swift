@@ -35,7 +35,6 @@ public final class UserPreferencesObservable {
         profilesLayout = ui.string(forUIPreference: .profilesLayout).flatMap {
             ProfilesLayout(rawValue: $0)
         } ?? .list
-        relaxedVerification = abi[\.relaxedVerification]
         systemAppearance = ui.string(forUIPreference: .systemAppearance).flatMap {
             SystemAppearance(rawValue: $0)
         }
@@ -114,14 +113,6 @@ public final class UserPreferencesObservable {
     public var profilesLayout: ProfilesLayout {
         didSet {
             ui.set(profilesLayout.rawValue, forUIPreference: .profilesLayout)
-        }
-    }
-
-    public var relaxedVerification: Bool {
-        didSet {
-            abi.overwrite {
-                $0.relaxedVerification = relaxedVerification
-            }
         }
     }
 

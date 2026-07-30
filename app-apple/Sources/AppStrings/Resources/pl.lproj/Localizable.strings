@@ -384,7 +384,6 @@
 "views.preferences.modern_crypto" = "Nowoczesna kryptografia";
 "views.preferences.pins_active_profile.footer" = "Wyświetla także aktywny profil na górze dla szybkiego dostępu.";
 "views.preferences.pins_active_profile" = "Przypnij aktywny profil";
-"views.preferences.relaxed_verification" = "Alternatywna weryfikacja";
 "views.preferences.system_appearance" = "Wygląd";
 "views.profile.alerts.purchase.buttons.ok" = "Zapisz mimo to";
 "views.profile.buttons.export" = "Eksportuj profil";

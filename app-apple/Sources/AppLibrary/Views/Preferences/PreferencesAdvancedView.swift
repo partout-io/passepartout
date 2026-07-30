@@ -38,8 +38,6 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .neSafeValueObserver,
-        .newProfileEncoding,
         .ovpnV3,
         .zigRuntime
     ]

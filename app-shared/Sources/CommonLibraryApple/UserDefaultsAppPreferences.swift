@@ -104,24 +104,6 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
         }
     }
 
-    public var newProfileEncoding: Bool {
-        get {
-            defaults.bool(forAppPreference: .newProfileEncoding, fallback: fallback.newProfileEncoding)
-        }
-        set {
-            defaults.set(newValue, forAppPreference: .newProfileEncoding)
-        }
-    }
-
-    public var relaxedVerification: Bool {
-        get {
-            defaults.bool(forAppPreference: .relaxedVerification, fallback: fallback.relaxedVerification)
-        }
-        set {
-            defaults.set(newValue, forAppPreference: .relaxedVerification)
-        }
-    }
-
     public var skipsPurchases: Bool {
         get {
             defaults.bool(forAppPreference: .skipsPurchases, fallback: fallback.skipsPurchases)
@@ -141,8 +123,6 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
         lastCheckedVersion = other.lastCheckedVersion
         lastUsedProfileId = other.lastUsedProfileId
         logsPrivateData = other.logsPrivateData
-        newProfileEncoding = other.newProfileEncoding
-        relaxedVerification = other.relaxedVerification
         skipsPurchases = other.skipsPurchases
     }
 }

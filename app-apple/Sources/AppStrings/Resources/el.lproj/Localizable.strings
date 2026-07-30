@@ -384,7 +384,6 @@
 "views.preferences.modern_crypto" = "Σύγχρονη κρυπτογραφία";
 "views.preferences.pins_active_profile.footer" = "Εμφανίζει επίσης το ενεργό προφίλ στην κορυφή για γρήγορη πρόσβαση.";
 "views.preferences.pins_active_profile" = "Καρφίτσωμα ενεργού προφίλ";
-"views.preferences.relaxed_verification" = "Εναλλακτική επαλήθευση";
 "views.preferences.system_appearance" = "Εμφάνιση";
 "views.profile.alerts.purchase.buttons.ok" = "Αποθήκευση ούτως ή άλλως";
 "views.profile.buttons.export" = "Εξαγωγή προφίλ";

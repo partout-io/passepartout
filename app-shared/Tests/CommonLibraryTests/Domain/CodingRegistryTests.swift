@@ -11,8 +11,7 @@ struct CodingRegistryTests {
     @Test
     func givenBinaryFile_whenImportProfile_thenThrowsBinaryFile() throws {
         let sut = CodingRegistry(
-            registry: Registry(withKnown: true),
-            withLegacyEncoding: { false }
+            registry: Registry(withKnown: true)
         )
         let url = URL.temporaryDirectory
             .appending(component: UUID().uuidString)

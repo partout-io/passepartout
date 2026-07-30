@@ -384,7 +384,6 @@
 "views.preferences.modern_crypto" = "Modern kryptografi";
 "views.preferences.pins_active_profile.footer" = "Visar även den aktiva profilen överst för snabb åtkomst.";
 "views.preferences.pins_active_profile" = "Fäst aktiv profil";
-"views.preferences.relaxed_verification" = "Alternativ verifiering";
 "views.preferences.system_appearance" = "Utseende";
 "views.profile.alerts.purchase.buttons.ok" = "Spara ändå";
 "views.profile.buttons.export" = "Exportera profil";
