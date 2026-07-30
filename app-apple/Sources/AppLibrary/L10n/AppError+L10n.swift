@@ -161,7 +161,7 @@ extension ABI.AppErrorCode: StyledOptionalLocalizableEntity {
     }
 }
 
-extension ABI.AppError: @retroactive LocalizedError {
+extension ABI.AppError: LocalizedError {
     public var errorDescription: String? {
         forErrorHandler
     }
