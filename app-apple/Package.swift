@@ -96,7 +96,10 @@ let package = Package(
         ),
         .testTarget(
             name: "AppLibraryTests",
-            dependencies: ["AppLibrary"]
+            dependencies: [
+                "AppLibrary",
+                "AppResources"
+            ]
         ),
         .testTarget(
             name: "AppLibraryMainTests",
