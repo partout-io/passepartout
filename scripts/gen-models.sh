@@ -27,7 +27,7 @@ generate_partout_models() {
 
 generate_swift_models() {
     infile=scripts/openapi.yaml
-    models_dir=`realpath app-shared/Sources/CommonLibraryCore/Domain`
+    models_dir=`realpath app-apple/Sources/CommonLibraryCore/Domain`
     models_tmp=$models_dir/tmp
     models_out=$models_tmp/Sources/OpenAPIClient/Models
     models_gen=$models_dir/Codegen
