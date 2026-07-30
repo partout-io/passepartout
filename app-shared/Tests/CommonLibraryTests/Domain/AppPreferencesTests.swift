@@ -42,9 +42,9 @@ struct AppPreferencesTests {
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.ovpnV3, .newProfileEncoding]
+        sut.configFlags = [.ovpnV3, .zigRuntime]
         sut.experimental.ignoredConfigFlags = [.appNotWorking, .ovpnV3]
-        #expect(sut.isFlagEnabled(.newProfileEncoding))
+        #expect(sut.isFlagEnabled(.zigRuntime))
         #expect(!sut.isFlagEnabled(.ovpnV3))
         #expect(!sut.isFlagEnabled(.appNotWorking))
     }
@@ -61,21 +61,21 @@ struct AppPreferencesTests {
     func givenExperimental_whenEnableFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
         sut.configFlags = [.ovpnV3]
-        sut.experimental.enabledConfigFlags = [.forcesRelaxedVerification]
+        sut.experimental.enabledConfigFlags = [.zigRuntime]
 
         #expect(sut.isFlagEnabled(.ovpnV3))
-        #expect(sut.isFlagEnabled(.forcesRelaxedVerification))
-        #expect(sut.enabledFlags() == [.ovpnV3, .forcesRelaxedVerification])
+        #expect(sut.isFlagEnabled(.zigRuntime))
+        #expect(sut.enabledFlags() == [.ovpnV3, .zigRuntime])
     }
 
     @Test
     func givenExperimental_whenEnableAndIgnoreSameFlag_thenIgnoreWins() {
         var sut: ABI.AppPreferences = .default()
         sut.configFlags = [.ovpnV3]
-        sut.experimental.ignoredConfigFlags = [.forcesRelaxedVerification]
-        sut.experimental.enabledConfigFlags = [.forcesRelaxedVerification]
+        sut.experimental.ignoredConfigFlags = [.zigRuntime]
+        sut.experimental.enabledConfigFlags = [.zigRuntime]
 
-        #expect(!sut.isFlagEnabled(.forcesRelaxedVerification))
+        #expect(!sut.isFlagEnabled(.zigRuntime))
         #expect(sut.enabledFlags() == [.ovpnV3])
     }
 }
@@ -83,11 +83,11 @@ struct AppPreferencesTests {
 private extension AppPreferencesTests {
     static func preferences() -> ABI.AppPreferences {
         var preferences: ABI.AppPreferences = .default()
-        preferences.configFlags = [.ovpnV3, .newProfileEncoding]
+        preferences.configFlags = [.ovpnV3, .zigRuntime]
         preferences.deviceId = "DeviceID"
         preferences.dnsFallsBack = false
         preferences.experimental.ignoredConfigFlags = [.appNotWorking]
-        preferences.experimental.enabledConfigFlags = [.forcesRelaxedVerification]
+        preferences.experimental.enabledConfigFlags = [.unknown]
         preferences.extensiveLogging = true
         preferences.lastCheckedVersionDate = Date(timeIntervalSince1970: 1_746_626_400.123)
         preferences.lastCheckedVersion = "4.10.20"
