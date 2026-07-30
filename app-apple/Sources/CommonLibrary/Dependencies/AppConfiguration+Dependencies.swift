@@ -304,6 +304,28 @@ private extension URL {
     }
 }
 
+#else
+
+private extension URL {
+    var forCaches: URL {
+        do {
+            return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        } catch {
+            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            return URL(fileURLWithPath: NSTemporaryDirectory())
+        }
+    }
+
+    var forDocuments: URL {
+        do {
+            return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        } catch {
+            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            return URL(fileURLWithPath: NSTemporaryDirectory())
+        }
+    }
+}
+
 #endif
 
 private extension BundleConfiguration {
