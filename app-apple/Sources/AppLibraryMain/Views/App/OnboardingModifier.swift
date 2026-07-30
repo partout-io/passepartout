@@ -53,10 +53,8 @@ struct OnboardingModifier: ViewModifier {
 private extension OnboardingModifier {
     func alertTitle(for item: OnboardingStep?) -> String {
         switch item {
-        case .migrateV3_2_3, .migrateV3_5_15:
-            return Strings.Global.Nouns.migration
-        case .dropLZOCompression:
-            return Strings.Global.Nouns.compression
+        case .discontinueProviders:
+            return Strings.Global.Nouns.providers
         default:
             return ""
         }
@@ -65,11 +63,7 @@ private extension OnboardingModifier {
     @ViewBuilder
     func alertActions(for item: OnboardingStep) -> some View {
         switch item {
-        case .migrateV3_2_3:
-            Button(Strings.Global.Nouns.ok, action: resetProvidersCache)
-        case .migrateV3_5_15:
-            Button(Strings.Global.Nouns.ok, action: migrateProfilesToJSON)
-        case .dropLZOCompression:
+        case .discontinueProviders:
             Button(Strings.Global.Nouns.ok, action: advance)
         default:
             EmptyView()
@@ -79,39 +73,10 @@ private extension OnboardingModifier {
     @ViewBuilder
     func alertMessage(for item: OnboardingStep) -> some View {
         switch item {
-        case .migrateV3_2_3:
-            Text([
-                Strings.Onboarding.Migrate323.message,
-                Strings.Onboarding.Migrate.message
-            ].joined(separator: " "))
-        case .migrateV3_5_15:
-            Text([
-                Strings.Onboarding.Migrate3515.message,
-                Strings.Onboarding.Migrate.message
-            ].joined(separator: " "))
-        case .dropLZOCompression:
-            Text(Strings.Onboarding.DropLzo.message)
+        case .discontinueProviders:
+            Text(Strings.Onboarding.Migrate395Providers.message)
         default:
             EmptyView()
-        }
-    }
-}
-
-private extension OnboardingModifier {
-
-    // 3.2.3
-    func resetProvidersCache() {
-        Task {
-            await apiManager.resetCacheForAllProviders()
-            advance()
-        }
-    }
-
-    // 3.5.15
-    func migrateProfilesToJSON() {
-        Task {
-            await profileObservable.saveAll()
-            advance()
         }
     }
 }
@@ -130,7 +95,7 @@ private extension OnboardingModifier {
 
     func performCurrentStep() {
         switch onboardingObservable.step {
-        case .migrateV3_2_3, .migrateV3_5_15, .dropLZOCompression:
+        case .discontinueProviders:
             isAlertPresented = true
         default:
             if onboardingObservable.step < .last {

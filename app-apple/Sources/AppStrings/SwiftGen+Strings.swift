@@ -590,6 +590,8 @@ public enum Strings {
       public static let `protocol` = Strings.tr("Localizable", "global.nouns.protocol", fallback: "Protocol")
       /// Provider
       public static let provider = Strings.tr("Localizable", "global.nouns.provider", fallback: "Provider")
+      /// Providers
+      public static let providers = Strings.tr("Localizable", "global.nouns.providers", fallback: "Providers")
       /// Public key
       public static let publicKey = Strings.tr("Localizable", "global.nouns.public_key", fallback: "Public key")
       /// Purchases
@@ -879,10 +881,6 @@ public enum Strings {
     }
   }
   public enum Onboarding {
-    public enum DropLzo {
-      /// Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.
-      public static let message = Strings.tr("Localizable", "onboarding.drop_lzo.message", fallback: "Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.")
-    }
     public enum Migrate {
       /// Make sure to upgrade all your devices to the latest version to use the new profiles.
       public static let message = Strings.tr("Localizable", "onboarding.migrate.message", fallback: "Make sure to upgrade all your devices to the latest version to use the new profiles.")
@@ -894,6 +892,10 @@ public enum Strings {
     public enum Migrate3515 {
       /// Version 3.5.15 changed the way profiles are stored.
       public static let message = Strings.tr("Localizable", "onboarding.migrate_3_5_15.message", fallback: "Version 3.5.15 changed the way profiles are stored.")
+    }
+    public enum Migrate395Providers {
+      /// Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_9_5_providers.message", fallback: "Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.")
     }
   }
   public enum Placeholders {
