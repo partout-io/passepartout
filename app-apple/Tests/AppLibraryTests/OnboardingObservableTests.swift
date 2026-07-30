@@ -56,6 +56,6 @@ struct OnboardingObservableTests {
         let sut = OnboardingObservable(initialStep: .doneV3_5_18)
         #expect(sut.step == .last)
         sut.advance()
-        #expect(sut.step == .doneV3_5_18)
+        #expect(sut.step == .doneV3_9_5)
     }
 }
