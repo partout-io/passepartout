@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "#$SRCROOT/scripts/prebuild-zig-xcframework.sh&#10;">
+               scriptText = "$SRCROOT/scripts/prebuild-zig-xcframework.sh&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
