@@ -8,6 +8,8 @@ included:
   - Passepartout/UITests
   - Sources
   - Tests
+excluded:
+  - Sources/CommonLibraryCore/Domain/Codegen
 analyzer_rules:
   - unused_declaration
   - unused_import
