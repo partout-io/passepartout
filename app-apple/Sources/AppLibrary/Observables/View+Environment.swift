@@ -7,7 +7,7 @@ import SwiftUI
 
 @MainActor
 extension View {
-    public func withEnvironment(from context: any AppContextProtocol, theme: Theme) -> some View {
+    public func withEnvironment(from context: AppContextProtocol, theme: Theme) -> some View {
         self
             .environment(theme)
             // Constants

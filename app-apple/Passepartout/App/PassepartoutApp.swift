@@ -39,7 +39,7 @@ extension PassepartoutApp {
         context.appConfiguration.bundle.displayName
     }
 
-    var context: any AppContextProtocol {
+    var context: AppContextProtocol {
         appDelegate.context
     }
 

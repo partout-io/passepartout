@@ -9,7 +9,7 @@ import SwiftUI
 
 @MainActor
 final class AppDelegate: NSObject {
-    let context: any AppContextProtocol = {
+    let context: AppContextProtocol = {
         if AppCommandLine.contains(.uiTesting) {
             pspLog(.core, .info, "UI tests: mock AppContext")
             return AppContext.forUITesting()

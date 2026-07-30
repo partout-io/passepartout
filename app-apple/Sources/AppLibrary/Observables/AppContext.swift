@@ -113,7 +113,7 @@ public final class AppContext {
     }
 
     deinit {
-        pspLog(.core, .debug, "Deinit AppContextV2")
+        pspLog(.core, .debug, "Deinit AppContext")
         subscriptions.forEach { $0.cancel() }
     }
 }
