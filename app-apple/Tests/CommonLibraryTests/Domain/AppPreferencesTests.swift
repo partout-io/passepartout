@@ -51,7 +51,7 @@ struct AppPreferencesTests {
 
     @Test
     func givenExperimental_whenDecodeWithoutEnabledFlags_thenUsesEmptySet() throws {
-        let data = Data(#"{"ignoredConfigFlags":["ovpnV3"]}"#)
+        let data = Data(#"{"ignoredConfigFlags":["ovpnV3"]}"#.utf8)
         let sut = try ABI.decode(ABI.ExperimentalPreferences.self, from: data)
         #expect(sut.ignoredConfigFlags == [.ovpnV3])
         #expect(sut.enabledConfigFlags.isEmpty)
