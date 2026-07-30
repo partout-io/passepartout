@@ -36,8 +36,6 @@ struct AppPreferencesTests {
         #expect(sut.lastCheckedVersion == expected.lastCheckedVersion)
         #expect(sut.lastUsedProfileId == expected.lastUsedProfileId)
         #expect(sut.logsPrivateData == expected.logsPrivateData)
-        #expect(sut.newProfileEncoding == expected.newProfileEncoding)
-        #expect(sut.relaxedVerification == expected.relaxedVerification)
         #expect(sut.skipsPurchases == expected.skipsPurchases)
     }
 
@@ -95,8 +93,6 @@ private extension AppPreferencesTests {
         preferences.lastCheckedVersion = "4.10.20"
         preferences.lastUsedProfileId = Profile.ID(uuidString: "00000000-0000-0000-0000-000000000001")!
         preferences.logsPrivateData = true
-        preferences.newProfileEncoding = true
-        preferences.relaxedVerification = true
         preferences.skipsPurchases = true
         return preferences
     }

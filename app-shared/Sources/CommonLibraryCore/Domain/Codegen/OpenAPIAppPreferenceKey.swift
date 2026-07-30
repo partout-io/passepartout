@@ -17,7 +17,5 @@ public enum OpenAPIAppPreferenceKey: String, Sendable, Codable, CaseIterable {
     case lastCheckedVersionDate = "lastCheckedVersionDate"
     case lastUsedProfileId = "lastUsedProfileId"
     case logsPrivateData = "logsPrivateData"
-    case newProfileEncoding = "newProfileEncoding"
-    case relaxedVerification = "relaxedVerification"
     case skipsPurchases = "skipsPurchases"
 }

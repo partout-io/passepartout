@@ -15,8 +15,6 @@ extension ABI {
         var lastCheckedVersionDate: Date? { get set }
         var lastUsedProfileId: Profile.ID? { get set }
         var logsPrivateData: Bool { get set }
-        var newProfileEncoding: Bool { get set }
-        var relaxedVerification: Bool { get set }
         var skipsPurchases: Bool { get set }
     }
 
@@ -34,8 +32,6 @@ extension ABI {
         public static let lastCheckedVersion = Self(.lastCheckedVersion)
         public static let lastCheckedVersionDate = Self(.lastCheckedVersionDate)
         public static let lastUsedProfileId = Self(.lastUsedProfileId)
-        public static let newProfileEncoding = Self(.newProfileEncoding)
-        public static let relaxedVerification = Self(.relaxedVerification)
     }
 }
 

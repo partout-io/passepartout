@@ -384,7 +384,6 @@
 "views.preferences.modern_crypto" = "Современная криптография";
 "views.preferences.pins_active_profile.footer" = "Также отображает активный профиль сверху для быстрого доступа.";
 "views.preferences.pins_active_profile" = "Закрепить активный профиль";
-"views.preferences.relaxed_verification" = "Альтернативная проверка";
 "views.preferences.system_appearance" = "Внешний вид";
 "views.profile.alerts.purchase.buttons.ok" = "Сохранить в любом случае";
 "views.profile.buttons.export" = "Экспортировать профиль";

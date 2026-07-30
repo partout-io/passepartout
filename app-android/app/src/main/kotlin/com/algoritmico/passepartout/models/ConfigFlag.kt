@@ -31,25 +31,13 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: allowsRelaxedVerification,appNotWorking,forcesRelaxedVerification,neSafeValueObserver,newProfileEncoding,ovpnV3,unknown,zigRuntime
+ * Values: appNotWorking,ovpnV3,unknown,zigRuntime
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
 
-    @SerialName(value = "allowsRelaxedVerification")
-    allowsRelaxedVerification("allowsRelaxedVerification"),
-
     @SerialName(value = "appNotWorking")
     appNotWorking("appNotWorking"),
-
-    @SerialName(value = "forcesRelaxedVerification")
-    forcesRelaxedVerification("forcesRelaxedVerification"),
-
-    @SerialName(value = "neSafeValueObserver")
-    neSafeValueObserver("neSafeValueObserver"),
-
-    @SerialName(value = "newProfileEncoding")
-    newProfileEncoding("newProfileEncoding"),
 
     @SerialName(value = "ovpnV3")
     ovpnV3("ovpnV3"),

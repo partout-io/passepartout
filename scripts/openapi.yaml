@@ -354,8 +354,6 @@ components:
       - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
       - skipsPurchases
       enum:
       - deviceId
@@ -367,8 +365,6 @@ components:
       - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
       - skipsPurchases
     AppPreferences:
       type: object
@@ -394,10 +390,6 @@ components:
           type: string
         logsPrivateData:
           type: boolean
-        newProfileEncoding:
-          type: boolean
-        relaxedVerification:
-          type: boolean
         skipsPurchases:
           type: boolean
       required:
@@ -406,8 +398,6 @@ components:
       - experimental
       - extensiveLogging
       - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
       - skipsPurchases
     AppProfileHeader:
       type: object
@@ -558,20 +548,12 @@ components:
     ConfigFlag:
       type: string
       x-enum-varnames:
-      - allowsRelaxedVerification
       - appNotWorking
-      - forcesRelaxedVerification
-      - neSafeValueObserver
-      - newProfileEncoding
       - ovpnV3
       - unknown
       - zigRuntime
       enum:
-      - allowsRelaxedVerification
       - appNotWorking
-      - forcesRelaxedVerification
-      - neSafeValueObserver
-      - newProfileEncoding
       - ovpnV3
       - unknown
       - zigRuntime

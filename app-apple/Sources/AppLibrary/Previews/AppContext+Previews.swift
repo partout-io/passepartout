@@ -13,8 +13,7 @@ extension AppContext {
         )
         let logFormatter = DummyLogFormatter()
         let registry = CodingRegistry(
-            registry: Registry(withKnown: true),
-            withLegacyEncoding: { false }
+            registry: Registry(withKnown: true)
         )
         let preferences = AppPreferencesStore()
         let defaults = UserDefaults()

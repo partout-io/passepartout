@@ -77,8 +77,7 @@ extension TunnelABI {
         if preferences.isFlagEnabled(.ovpnV3) {
             factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
         } else {
-            var options = NEInterfaceFactory.Options()
-            options.withSafeValueObserver = preferences.isFlagEnabled(.neSafeValueObserver)
+            let options = NEInterfaceFactory.Options()
             factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
         }
         let reachability = NEObservablePath(ctx)
@@ -117,13 +116,12 @@ extension TunnelABI {
         let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
-        let usesRelaxedVerification = preferences[\.relaxedVerification]
         // Assemble
         let iap = TunnelABI.IAP(
             manager: iapManager,
             skipsPurchases: skipsPurchases,
             verificationParameters: verificationParameters,
-            usesRelaxedVerification: usesRelaxedVerification
+            usesRelaxedVerification: true
         )
 
         return TunnelABI(
