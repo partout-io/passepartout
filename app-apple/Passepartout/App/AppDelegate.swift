@@ -9,12 +9,16 @@ import SwiftUI
 
 @MainActor
 final class AppDelegate: NSObject {
-    let context: AppContext = {
+    let context: any AppContextProtocol = {
         if AppCommandLine.contains(.uiTesting) {
             pspLog(.core, .info, "UI tests: mock AppContext")
-            return .forUITesting()
+            return AppContext.forUITesting()
         }
-        return .forProduction()
+        if AppCommandLine.contains(.legacyAppContext) {
+            pspLog(.core, .info, "Using LegacyAppContext")
+            return LegacyAppContext.forProduction()
+        }
+        return AppContext.forProduction()
     }()
 
 #if os(macOS)
