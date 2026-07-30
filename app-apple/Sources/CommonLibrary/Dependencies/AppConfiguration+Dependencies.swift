@@ -4,8 +4,6 @@
 
 import Partout
 
-// MARK: Shared
-
 extension ABI.AppConfiguration {
     public var appLogPath: String {
         constants.log.filenames.app
@@ -161,8 +159,6 @@ extension ABI.AppConfiguration {
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
 }
-
-// MARK: - Apple
 
 extension ABI.AppBundle {
     public enum BuildTarget: Sendable {
@@ -327,7 +323,7 @@ private extension BundleConfiguration {
     }
 }
 
-// MARK: Dependencies
+// MARK: - Dependencies
 
 extension ABI.AppConfiguration {
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
