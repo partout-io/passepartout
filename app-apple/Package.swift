@@ -33,15 +33,11 @@ let package = Package(
         .library(
             name: "TunnelLibrary",
             targets: ["AppResources"]
-//        ),
+        )
 //        .library(
 //            name: "AppPartoutRuntime",
 //            targets: ["AppPartoutRuntime"]
-        )
-    ],
-    dependencies: [
-        .package(path: "../partout"),
-        .package(path: "../app-shared")
+//        )
     ],
     targets: [
         .target(
@@ -79,9 +75,7 @@ let package = Package(
         ),
         .target(
             name: "AppResources",
-            dependencies: [
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
+            dependencies: ["CommonLibrary"],
             resources: [
                 .process("Resources")
             ]
@@ -114,3 +108,136 @@ let package = Package(
         )
     ]
 )
+
+// MARK: - CommonLibrary*
+
+let swiftSettings: [SwiftSetting] = [
+    .define("PSP_ABI", .when(platforms: [.android, .linux, .macOS, .windows])),
+    .define("PSP_CROSS", .when(platforms: [.android, .linux, .windows]))
+]
+
+package.products.append(
+    .library(
+        name: "CommonLibrary",
+        targets: ["CommonLibrary"]
+    )
+)
+
+package.dependencies.append(contentsOf: [
+    .package(path: "../partout"),
+    .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
+])
+
+package.targets.append(contentsOf: [
+    .target(
+        name: "CommonData",
+        dependencies: ["CommonLibraryCore"]
+    ),
+    .target(
+        name: "CommonDataPreferences",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Preferences.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonDataProfiles",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Profiles.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonDataProviders",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Providers.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonLibrary",
+        dependencies: [
+            "CommonLibraryCore",
+            .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
+        ],
+        swiftSettings: swiftSettings
+    ),
+    .target(
+        name: "CommonLibraryApple",
+        dependencies: [
+            "CommonDataPreferences",
+            "CommonDataProfiles",
+            "CommonDataProviders",
+            "CommonLibraryCore"
+        ]
+    ),
+    .target(
+        name: "CommonLibraryCore",
+        dependencies: {
+            var list: [Target.Dependency] = [
+                .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                "partout"
+            ]
+            list.append("CommonLibrary_C")
+            list.append("CommonProviders")
+            return list
+        }(),
+        swiftSettings: swiftSettings
+    ),
+    .target(
+        name: "CommonLibrary_C"
+    ),
+    .testTarget(
+        name: "CommonLibraryTests",
+        dependencies: ["CommonLibrary"],
+        resources: [
+            .process("Resources")
+        ],
+        swiftSettings: swiftSettings
+    )
+])
+
+// MARK: Providers
+
+package.products.append(
+    .library(
+        name: "CommonProviders",
+        targets: ["CommonProviders"]
+    )
+)
+package.targets.append(contentsOf: [
+    .target(
+        name: "CommonProviders",
+        dependencies: ["CommonProvidersAPI"],
+        swiftSettings: swiftSettings
+    ),
+    .target(
+        name: "CommonProvidersAPI",
+        dependencies: ["CommonProvidersCore"],
+        resources: [
+            .copy("JSON")
+        ],
+        swiftSettings: swiftSettings
+    ),
+    .target(
+        name: "CommonProvidersCore",
+        dependencies: ["partout"],
+        swiftSettings: swiftSettings
+    )
+])
+#if canImport(Darwin)
+package.targets.append(contentsOf: [
+    .testTarget(
+        name: "CommonProvidersTests",
+        dependencies: ["CommonProviders"],
+        resources: [
+            .copy("Resources")
+        ]
+    ),
+    .testTarget(
+        name: "CommonProvidersAPITests",
+        dependencies: ["CommonProvidersAPI"]
+    )
+])
+#endif
