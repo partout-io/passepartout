@@ -6,7 +6,7 @@ import AppAccessibility
 import CommonLibrary
 
 @MainActor
-public final class AppContextV2 {
+public final class AppContext {
     public let appConfiguration: ABI.AppConfiguration
 
     // Manager-backed observables
@@ -56,16 +56,16 @@ public final class AppContextV2 {
         appConfiguration: ABI.AppConfiguration,
         appEncoder: AppEncoder,
         configManager: ConfigManager,
+        defaults: UserDefaults,
         extensionInstaller: ExtensionInstaller?,
         iapManager: IAPManager,
         preferences: AppPreferencesStore,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
         registry: CodingRegistry,
+        tunnelObservable: TunnelObservable,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
-        defaults: UserDefaults,
-        tunnelObservable: TunnelObservable,
         onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         self.apiManager = apiManager
@@ -77,9 +77,9 @@ public final class AppContextV2 {
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
         self.registry = registry
+        self.tunnelObservable = tunnelObservable
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
-        self.tunnelObservable = tunnelObservable
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
         subscriptions = []
 
@@ -120,7 +120,7 @@ public final class AppContextV2 {
 
 // MARK: - Application lifecycle
 
-extension AppContextV2 {
+extension AppContext {
     public func onApplicationActive() {
         Task {
             // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
@@ -141,7 +141,7 @@ extension AppContextV2 {
 
 // MARK: - Manager events
 
-private extension AppContextV2 {
+private extension AppContext {
     func observeManagerEvents() {
         let configEvents = configManager.didChange.subscribe()
         let iapEvents = iapManager.didChange.subscribe()
@@ -223,7 +223,7 @@ private extension AppContextV2 {
 
 // MARK: - Internal lifecycle
 
-private extension AppContextV2 {
+private extension AppContext {
     func onLaunch() async throws {
         pspLog(.core, .notice, "Application did launch")
 

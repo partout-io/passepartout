@@ -7,8 +7,8 @@ import AppLibrary
 import AppResources
 import CommonLibrary
 
-extension AppContext {
-    static func forProduction() -> AppContext {
+extension LegacyAppContext {
+    static func forProduction() -> LegacyAppContext {
         let distributionTarget: ABI.DistributionTarget
 #if PP_BUILD_MAC
         distributionTarget = .developerID
@@ -40,7 +40,7 @@ extension AppContext {
             withUITesting: AppCommandLine.contains(.uiTesting),
             withFakeIAPs: AppCommandLine.contains(.fakeIAP)
         )
-        return AppContext(
+        return LegacyAppContext(
             abi: result.abi,
             appConfiguration: appConfiguration,
             preferences: preferences,

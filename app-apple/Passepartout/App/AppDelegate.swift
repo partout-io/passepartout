@@ -25,7 +25,7 @@ final class AppDelegate: NSObject {
 
     func configure(with uiConfiguring: AppLibraryConfiguring?) {
         context.userPreferences.applyAppearance()
-        uiConfiguring?.configure(with: context)
+        uiConfiguring?.configure()
         debugLocalStoreStats()
     }
 }

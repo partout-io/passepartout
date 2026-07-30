@@ -21,7 +21,6 @@ extension AppContext {
         let defaults = UserDefaults()
         let appEncoder = AppEncoder(coder: registry)
 
-        let logFormatter = DummyLogFormatter()
         pspLogRegister(
             for: .app,
             with: appConfiguration,
@@ -79,28 +78,28 @@ extension AppContext {
         let webReceiverManager = WebReceiverManager()
         let versionChecker = VersionChecker()
 
-        let abi = AppABI(
+        return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
+            defaults: defaults,
             extensionInstaller: nil,
             iapManager: iapManager,
-            logFormatter: logFormatter,
             preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
+            tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager,
-            bindings: nil
+            webReceiverManager: webReceiverManager
         )
-        return AppContext(
-            abi: abi,
-            appConfiguration: appConfiguration,
-            preferences: preferences,
-            defaults: defaults,
-            tunnelObservable: tunnelObservable
-        )
+//        return AppContext(
+//            abi: abi,
+//            appConfiguration: appConfiguration,
+//            preferences: preferences,
+//            defaults: defaults,
+//            tunnelObservable: tunnelObservable
+//        )
     }
 }

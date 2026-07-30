@@ -8,5 +8,5 @@ import CommonLibrary
 
 @MainActor
 public protocol AppLibraryConfiguring {
-    func configure(with context: AppContext)
+    func configure()
 }

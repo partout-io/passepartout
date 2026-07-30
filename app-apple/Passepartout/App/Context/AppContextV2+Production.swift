@@ -13,8 +13,8 @@ import CommonLibrary
 import CoreData
 import Partout
 
-extension AppContextV2 {
-    static func forProductionV2() -> AppContextV2 {
+extension AppContext {
+    static func forProduction() -> AppContext {
         let distributionTarget: ABI.DistributionTarget
 #if PP_BUILD_MAC
         distributionTarget = .developerID
@@ -302,21 +302,21 @@ extension AppContextV2 {
             }
         }
 
-        return AppContextV2(
+        return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
+            defaults: defaults,
             extensionInstaller: sysexManager,
             iapManager: iapManager,
             preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
+            tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            defaults: defaults,
-            tunnelObservable: tunnelObservable,
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
     }

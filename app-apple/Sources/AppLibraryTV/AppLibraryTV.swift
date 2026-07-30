@@ -8,6 +8,6 @@ public final class AppLibraryTV: AppLibraryConfiguring {
     public init() {
     }
 
-    public func configure(with context: AppContext) {
+    public func configure() {
     }
 }

@@ -6,7 +6,7 @@ import AppAccessibility
 import CommonLibrary
 
 @MainActor
-public final class AppContext {
+public final class LegacyAppContext {
     private let abi: AppABI
     public let appConfiguration: ABI.AppConfiguration
 
@@ -70,13 +70,13 @@ public final class AppContext {
     }
 }
 
-extension AppContext {
+extension LegacyAppContext {
     public func onApplicationActive() {
         abi.onApplicationActive()
     }
 }
 
-private extension AppContext {
+private extension LegacyAppContext {
     static nonisolated func abiCallback(
         ctx: UnsafeMutableRawPointer?,
         event mainEvent: ABI.Event
@@ -84,7 +84,7 @@ private extension AppContext {
         guard let opaqueContext = ctx else {
             fatalError("Missing AppContext from ctx. Bad arguments to abi.registerEvents?")
         }
-        let appContext = Unmanaged<AppContext>.fromOpaque(opaqueContext).takeUnretainedValue()
+        let appContext = Unmanaged<LegacyAppContext>.fromOpaque(opaqueContext).takeUnretainedValue()
         Task { @MainActor in
             switch mainEvent {
             case .config(let event):
