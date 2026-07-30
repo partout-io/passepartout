@@ -6,16 +6,17 @@
 import CommonLibrary
 import NetworkExtension
 import Partout
+import TunnelLibrary
 
-extension TunnelABI {
-    public static func forNetworkExtension(
+extension TunnelContext {
+    public static func forProduction(
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore,
         startPreferences: ABI.AppPreferencesProtocol?,
         // TODO: #218, cachesURL must be per-profile
         cachesURL: URL,
         neProvider: NEPacketTunnelProvider
-    ) async throws -> TunnelABI {
+    ) async throws -> TunnelContext {
         let logFormatter = appConfiguration.newLogFormatter()
 
         // Create global registry
@@ -118,14 +119,14 @@ extension TunnelABI {
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         // Relax verification strategy based on AppPreference
         // Assemble
-        let iap = TunnelABI.IAP(
+        let iap = TunnelContext.IAP(
             manager: iapManager,
             skipsPurchases: skipsPurchases,
             verificationParameters: verificationParameters,
             usesRelaxedVerification: true
         )
 
-        return TunnelABI(
+        return TunnelContext(
             daemon: daemon,
             environment: environment,
             iap: iap,

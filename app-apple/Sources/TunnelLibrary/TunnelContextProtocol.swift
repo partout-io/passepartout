@@ -6,14 +6,14 @@ import CommonLibrary
 import Partout
 
 @BusinessActor
-public protocol TunnelABIProtocol: Sendable {
+public protocol TunnelContextProtocol: Sendable {
     func start(isInteractive: Bool) async throws
     func stop() async
     func sendMessage(_ messageData: Data) async -> Data?
     nonisolated func cancel(_ error: Error?)
 }
 
-extension TunnelABIProtocol {
+extension TunnelContextProtocol {
     public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
         pspLog(category, level, message)
     }

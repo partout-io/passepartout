@@ -91,7 +91,7 @@ extension ABI.AppError: StyledLocalizableEntity {
                     .joined(separator: ", ")
             )
         case .multipleTunnels:
-            // Should never happen in app (thrown by TunnelABI)
+            // Should never happen in app (thrown by TunnelContext)
             return nil
         case .noActiveModules:
             return V.noActiveModules

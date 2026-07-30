@@ -5,7 +5,7 @@
 import CommonLibrary
 import Partout
 
-public final class TunnelABI: TunnelABIProtocol {
+public final class TunnelContext: TunnelContextProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
         let skipsPurchases: Bool
@@ -50,7 +50,7 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     deinit {
-        pspLog(.abi, .debug, "Deinit TunnelABI")
+        pspLog(.abi, .debug, "Deinit TunnelContext")
     }
 
     public func start(isInteractive: Bool) async throws {
@@ -152,7 +152,7 @@ public final class TunnelABI: TunnelABIProtocol {
 
 // MARK: - Tracking and Logging
 
-private extension TunnelABI {
+private extension TunnelContext {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
             pspLog(.abi, .info, "Active tunnels: \(activeTunnels)")
@@ -178,7 +178,7 @@ private extension TunnelABI {
 
 // MARK: - Receipt verification
 
-private extension TunnelABI {
+private extension TunnelContext {
     func verifyEligibility(
         of profile: Profile,
         iapManager: IAPManager,
