@@ -111,11 +111,6 @@ let package = Package(
 
 // MARK: - CommonLibrary*
 
-let swiftSettings: [SwiftSetting] = [
-    .define("PSP_ABI", .when(platforms: [.android, .linux, .macOS, .windows])),
-    .define("PSP_CROSS", .when(platforms: [.android, .linux, .windows]))
-]
-
 package.products.append(
     .library(
         name: "CommonLibrary",
@@ -159,8 +154,7 @@ package.targets.append(contentsOf: [
         dependencies: [
             "CommonLibraryCore",
             .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
-        ],
-        swiftSettings: swiftSettings
+        ]
     ),
     .target(
         name: "CommonLibraryApple",
@@ -181,16 +175,14 @@ package.targets.append(contentsOf: [
             ]
             list.append("CommonProviders")
             return list
-        }(),
-        swiftSettings: swiftSettings
+        }()
     ),
     .testTarget(
         name: "CommonLibraryTests",
         dependencies: ["CommonLibrary"],
         resources: [
             .process("Resources")
-        ],
-        swiftSettings: swiftSettings
+        ]
     )
 ])
 
@@ -205,21 +197,18 @@ package.products.append(
 package.targets.append(contentsOf: [
     .target(
         name: "CommonProviders",
-        dependencies: ["CommonProvidersAPI"],
-        swiftSettings: swiftSettings
+        dependencies: ["CommonProvidersAPI"]
     ),
     .target(
         name: "CommonProvidersAPI",
         dependencies: ["CommonProvidersCore"],
         resources: [
             .copy("JSON")
-        ],
-        swiftSettings: swiftSettings
+        ]
     ),
     .target(
         name: "CommonProvidersCore",
-        dependencies: ["partout"],
-        swiftSettings: swiftSettings
+        dependencies: ["partout"]
     )
 ])
 #if canImport(Darwin)

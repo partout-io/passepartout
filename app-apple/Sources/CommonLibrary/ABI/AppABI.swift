@@ -13,13 +13,12 @@ public final class AppABI: Sendable {
     public nonisolated let registry: AppABIRegistryProtocol
     public nonisolated let version: AppABIVersionProtocol
     public nonisolated let webReceiver: AppABIWebReceiverProtocol
-#if !PSP_CROSS
+
     // Legacy managers not migrated to ABI, exposed as is
     @available(*, deprecated, message: "#1679")
     public nonisolated let apiManager: APIManager
     @available(*, deprecated, message: "#1679")
     public nonisolated let preferencesManager: PreferencesManager
-#endif
 
     // Constants and storage
     private let appConfiguration: ABI.AppConfiguration
@@ -68,10 +67,9 @@ public final class AppABI: Sendable {
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
-#if !PSP_CROSS
+        // Deprecated
         self.apiManager = apiManager ?? APIManager()
         self.preferencesManager = preferencesManager ?? PreferencesManager()
-#endif
         subscriptions = []
 
         let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
@@ -89,14 +87,6 @@ public final class AppABI: Sendable {
         registry = AppABIRegistry(registry: partoutRegistry)
         version = AppABIVersion(appConfiguration: appConfiguration)
         webReceiver = AppABIWebReceiver(webReceiverManager: webReceiverManager)
-
-#if PSP_CROSS
-        // Do not commit the local preferences, emit update event
-        // and let the consumer perform the actual commit
-        preferences.onRequest = { [weak self] in
-            self?.emitShouldUpdatePreferencesEvent($0, fields: $1)
-        }
-#endif
     }
 
     deinit {
@@ -466,14 +456,12 @@ private extension AppABI {
                 }
             }
         })
-#if !PSP_CROSS
         do {
             pspLog(.abi, .info, "\tFetch providers index...")
             try await apiManager.fetchIndex()
         } catch {
             pspLog(.abi, .error, "\tUnable to fetch providers index: \(error)")
         }
-#endif
     }
 
     func onForeground() async throws {

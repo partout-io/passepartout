@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if !USE_CMAKE
 import Partout
 
 extension API {
@@ -10,4 +9,3 @@ extension API {
         Bundle.module.url(forResource: "JSON/v\(version)", withExtension: nil)
     }
 }
-#endif

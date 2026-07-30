@@ -39,15 +39,11 @@ extension ABI.AppConfiguration {
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> ConfigManager {
         let configURL: URL
-#if !PSP_CROSS
         if withTestBundle {
             configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
         } else {
             configURL = constants.websites.configURL
         }
-#else
-        configURL = constants.websites.configURL
-#endif
         let betaConfigURL = constants.websites.betaConfigURL
         return ConfigManager(
             strategy: GitHubConfigStrategy(

@@ -23,11 +23,10 @@ extension ABI.AppConfiguration {
                 configBlock: configBlock
             ).build()
         ]
+        // Deprecated
         var providerResolvers: [ProviderModuleResolver] = []
-#if !PSP_CROSS
         providerResolvers.append(OpenVPNProviderResolver())
         providerResolvers.append(WireGuardProviderResolver(deviceId: deviceId))
-#endif
         let mappedResolvers = providerResolvers
             .reduce(into: [:]) {
                 $0[$1.moduleType] = $1
