@@ -306,12 +306,13 @@ private extension URL {
 
 #else
 
+// XXX: This is weird, behavior is static but signatures are non-static
 private extension URL {
     var forCaches: URL {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create user caches directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
