@@ -4,14 +4,8 @@
 
 import CommonLibrary
 import Partout
-import PartoutRuntime
 
 public final class TunnelContext: TunnelContextProtocol {
-    public enum Backend {
-        case native(PartoutProviderRuntime)
-        case legacy(ConnectionDaemon)
-    }
-
     public struct IAP: Sendable {
         let manager: IAPManager
         let skipsPurchases: Bool
@@ -31,7 +25,7 @@ public final class TunnelContext: TunnelContextProtocol {
         }
     }
 
-    private var backend: Backend?
+    private var backend: TunnelBackendProtocol?
     private let environment: TunnelEnvironment
     private let iap: IAP?
     private let originalProfile: Profile
@@ -39,7 +33,7 @@ public final class TunnelContext: TunnelContextProtocol {
     private var verifierSubscription: Task<Void, Error>?
 
     public init(
-        backend: Backend,
+        backend: TunnelBackendProtocol,
         environment: TunnelEnvironment,
         iap: IAP?,
         originalProfile: Profile
@@ -69,14 +63,7 @@ public final class TunnelContext: TunnelContextProtocol {
                 pspLog(.abi, .info, "Tunnel is on hold")
                 guard isInteractive else {
                     pspLog(.abi, .error, "Tunnel was started non-interactively, hang here")
-                    switch backend {
-                    case .native(let runtime):
-                        await runtime.holdTunnel()
-                    case .legacy(let daemon):
-                        await daemon.hold()
-                    default:
-                        assertionFailure("No backend")
-                    }
+                    await backend.hold()
                     return
                 }
                 pspLog(.abi, .info, "Tunnel was started interactively, clear hold flag")
@@ -84,14 +71,7 @@ public final class TunnelContext: TunnelContextProtocol {
             }
 
             // Start the tunnel
-            switch backend {
-            case .native(let runtime):
-                try await runtime.startTunnel()
-            case .legacy(let daemon):
-                try await daemon.start()
-            default:
-                assertionFailure("No backend")
-            }
+            try await backend.start()
 
             // Do not run the verification loop if IAPs are not supported
             guard let iap else {
@@ -125,59 +105,38 @@ public final class TunnelContext: TunnelContextProtocol {
             pspLog(.abi, .fault, "Unable to start tunnel: \(error)")
             flushLogs()
             untrackContext()
-            switch backend {
-            case .native(let runtime):
-                await runtime.stopTunnel()
-            case .legacy(let daemon):
-                await daemon.stop()
-            default:
-                break
-            }
+            await backend.stop()
             self.backend = nil
             throw error
         }
     }
 
     public func stop() async {
+        guard let backend else { return }
         verifierSubscription?.cancel()
         verifierSubscription = nil
-        switch backend {
-        case .native(let runtime):
-            await runtime.stopTunnel()
-        case .legacy(let daemon):
-            await daemon.stop()
-        default:
-            return
-        }
+        await backend.stop()
         flushLogs()
         untrackContext()
         self.backend = nil
     }
 
     public func sendMessage(_ messageData: Data) async -> Data? {
+        guard let backend else { return nil }
         pspLog(.abi, .debug, "Handle tunnel message")
         do {
             let input = try ABI.decode(Message.Input.self, from: messageData)
-            let encodedOutput: Data?
-            switch backend {
-            case .native(let runtime):
-                encodedOutput = try await runtime.handleAppMessage(messageData)
-            case .legacy(let daemon):
-                let output = try await daemon.sendMessage(input)
-                encodedOutput = try ABI.encode(output)
-            default:
-                assertionFailure("No backend")
-                encodedOutput = nil
-            }
+            let encodedOutput = try await backend.sendMessage(messageData)
             switch input {
             case .environment:
                 break
             default:
-                pspLog(.abi, .info, "Message handled and response encoded (\(encodedOutput?.asSensitiveBytes(.init(originalProfile.id))))")
+                let outputDescription = encodedOutput?.asSensitiveBytes(.init(originalProfile.id)) ?? "nil"
+                pspLog(.abi, .info, "Message handled and response encoded (\(outputDescription))")
             }
             return encodedOutput
         } catch {
-            pspLog(.abi, .error, "Unable to decode message: \(messageData)")
+            pspLog(.abi, .error, "Unable to handle message: \(error)")
             return nil
         }
     }
@@ -205,7 +164,7 @@ private extension TunnelContext {
     }
 
     func trackContext() throws {
-        guard let backend else { return }
+        guard backend != nil else { return }
         // TODO: #218, keep this until supported
         guard Self.activeTunnels.isEmpty else {
             throw ABI.AppError.multipleTunnels
@@ -215,7 +174,7 @@ private extension TunnelContext {
     }
 
     func untrackContext() {
-        guard let backend else { return }
+        guard backend != nil else { return }
         pspLog(.abi, .info, "Untrack context: \(originalProfile.id)")
         Self.activeTunnels.remove(originalProfile.id)
     }
@@ -259,14 +218,7 @@ private extension TunnelContext {
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
-                switch backend {
-                case .native(let runtime):
-                    await runtime.holdTunnel()
-                case .legacy(let daemon):
-                    await daemon.hold()
-                default:
-                    assertionFailure("No backend")
-                }
+                await backend.hold()
                 return
             }
 

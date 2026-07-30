@@ -18,7 +18,7 @@ extension TunnelContext {
         cachesURL: URL,
         neProvider: NEPacketTunnelProvider
     ) async throws -> TunnelContext {
-        let backend: TunnelContext.Backend
+        let backend: TunnelBackendProtocol
         let originalProfile: Profile
         let processedProfile: Profile
 
@@ -54,7 +54,7 @@ extension TunnelContext {
 //                    pspLog(.abi, level, String(cString: message))
 //                }
 //            )
-//            backend = .native(runtime)
+//            backend = runtime
 //        } else {
             pspLog(.core, .info, "Using Swift runtime")
 
@@ -140,7 +140,7 @@ extension TunnelContext {
                 cancelsUnrecoverable: false // Prevents on-demand reconnection
             )
             let daemon = try SimpleConnectionDaemon(params: params)
-            backend = .legacy(daemon)
+            backend = daemon
 //        }
 
         // Create IAPManager for receipt verification
