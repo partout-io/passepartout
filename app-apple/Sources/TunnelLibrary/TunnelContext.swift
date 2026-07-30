@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary_C
+import CommonLibrary
 import Partout
 
-public final class TunnelABI: TunnelABIProtocol {
+public final class TunnelContext: TunnelContextProtocol {
     public struct IAP: Sendable {
         let manager: IAPManager
         let skipsPurchases: Bool
@@ -25,26 +25,23 @@ public final class TunnelABI: TunnelABIProtocol {
         }
     }
 
-    private var daemon: ConnectionDaemon?
+    private var backend: TunnelBackendProtocol?
     private let environment: TunnelEnvironment
     private let iap: IAP?
     private let originalProfile: Profile
-    nonisolated(unsafe) private let bindings: psp_tunnel_bindings?
 
     private var verifierSubscription: Task<Void, Error>?
 
     public init(
-        daemon: ConnectionDaemon,
+        backend: TunnelBackendProtocol,
         environment: TunnelEnvironment,
         iap: IAP?,
-        originalProfile: Profile,
-        bindings: psp_tunnel_bindings?
+        originalProfile: Profile
     ) {
-        self.daemon = daemon
+        self.backend = backend
         self.environment = environment
         self.iap = iap
         self.originalProfile = originalProfile
-        self.bindings = bindings
 
         // Disable if skips purchases
         if let iap {
@@ -53,14 +50,11 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     deinit {
-        pspLog(.abi, .debug, "Deinit TunnelABI")
-        if var bindings {
-            bindings.free?(&bindings)
-        }
+        pspLog(.abi, .debug, "Deinit TunnelContext")
     }
 
     public func start(isInteractive: Bool) async throws {
-        guard let daemon else { return }
+        guard let backend else { return }
         try trackContext()
 
         do {
@@ -69,7 +63,7 @@ public final class TunnelABI: TunnelABIProtocol {
                 pspLog(.abi, .info, "Tunnel is on hold")
                 guard isInteractive else {
                     pspLog(.abi, .error, "Tunnel was started non-interactively, hang here")
-                    await daemon.hold()
+                    await backend.hold()
                     return
                 }
                 pspLog(.abi, .info, "Tunnel was started interactively, clear hold flag")
@@ -77,7 +71,7 @@ public final class TunnelABI: TunnelABIProtocol {
             }
 
             // Start the tunnel
-            try await daemon.start()
+            try await backend.start()
 
             // Do not run the verification loop if IAPs are not supported
             guard let iap else {
@@ -115,30 +109,31 @@ public final class TunnelABI: TunnelABIProtocol {
     }
 
     public func stop() async {
-        guard let daemon else { return }
+        guard let backend else { return }
         verifierSubscription?.cancel()
-        await daemon.stop()
+        verifierSubscription = nil
+        await backend.stop()
         flushLogs()
         untrackContext()
-        self.daemon = nil
+        self.backend = nil
     }
 
     public func sendMessage(_ messageData: Data) async -> Data? {
-        guard let daemon else { return nil }
+        guard let backend else { return nil }
         pspLog(.abi, .debug, "Handle tunnel message")
         do {
             let input = try ABI.decode(Message.Input.self, from: messageData)
-            let output = try await daemon.sendMessage(input)
-            let encodedOutput = try ABI.encode(output)
+            let encodedOutput = try await backend.sendMessage(messageData)
             switch input {
             case .environment:
                 break
             default:
-                pspLog(.abi, .info, "Message handled and response encoded (\(encodedOutput.asSensitiveBytes(.init(originalProfile.id))))")
+                let outputDescription = encodedOutput?.asSensitiveBytes(.init(originalProfile.id)) ?? "nil"
+                pspLog(.abi, .info, "Message handled and response encoded (\(outputDescription))")
             }
             return encodedOutput
         } catch {
-            pspLog(.abi, .error, "Unable to decode message: \(messageData)")
+            pspLog(.abi, .error, "Unable to handle message: \(error)")
             return nil
         }
     }
@@ -158,7 +153,7 @@ public final class TunnelABI: TunnelABIProtocol {
 
 // MARK: - Tracking and Logging
 
-private extension TunnelABI {
+private extension TunnelContext {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
             pspLog(.abi, .info, "Active tunnels: \(activeTunnels)")
@@ -166,25 +161,25 @@ private extension TunnelABI {
     }
 
     func trackContext() throws {
-        guard let daemon else { return }
+        guard backend != nil else { return }
         // TODO: #218, keep this until supported
         guard Self.activeTunnels.isEmpty else {
             throw ABI.AppError.multipleTunnels
         }
-        pspLog(.abi, .info, "Track context: \(daemon.profile.id)")
-        Self.activeTunnels.insert(daemon.profile.id)
+        pspLog(.abi, .info, "Track context: \(originalProfile.id)")
+        Self.activeTunnels.insert(originalProfile.id)
     }
 
     func untrackContext() {
-        guard let daemon else { return }
-        pspLog(.abi, .info, "Untrack context: \(daemon.profile.id)")
-        Self.activeTunnels.remove(daemon.profile.id)
+        guard backend != nil else { return }
+        pspLog(.abi, .info, "Untrack context: \(originalProfile.id)")
+        Self.activeTunnels.remove(originalProfile.id)
     }
 }
 
 // MARK: - Receipt verification
 
-private extension TunnelABI {
+private extension TunnelContext {
     func verifyEligibility(
         of profile: Profile,
         iapManager: IAPManager,
@@ -194,7 +189,7 @@ private extension TunnelABI {
     ) async {
         var attempts = params.attempts
         while true {
-            guard let daemon else { return }
+            guard let backend else { return }
             guard !Task.isCancelled else { return }
             do {
                 pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
@@ -220,7 +215,7 @@ private extension TunnelABI {
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
-                await daemon.hold()
+                await backend.hold()
                 return
             }
 

@@ -9,22 +9,22 @@ import Observation
 // Fully non-isolated, no @MainActor here
 @Observable
 public final class AppEncoderObservable {
-    private let abi: AppABIEncoderProtocol
+    private let appEncoder: AppEncoder
 
-    public init(abi: AppABIEncoderProtocol) {
-        self.abi = abi
+    public init(appEncoder: AppEncoder) {
+        self.appEncoder = appEncoder
     }
 
     public nonisolated func json(fromProfile profile: Profile) throws -> String {
-        try abi.json(fromProfile: profile)
+        try appEncoder.string(fromProfile: profile)
     }
 
     public nonisolated func defaultFilename(for profile: Profile) -> String {
-        abi.defaultFilename(for: profile.name)
+        appEncoder.defaultFilename(for: profile.name)
     }
 
     public nonisolated func writeToURL(_ profile: Profile) throws -> URL {
-        let path = try abi.writeToFile(profile)
+        let path = try appEncoder.writeToFile(profile)
         // Make sure to convert to URL to share actual file content
         return URL(fileURLWithPath: path)
     }

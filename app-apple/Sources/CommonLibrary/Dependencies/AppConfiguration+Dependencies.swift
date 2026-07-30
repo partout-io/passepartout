@@ -2,10 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import CommonLibrary_C
 import Partout
-
-// MARK: Shared
 
 extension ABI.AppConfiguration {
     public var appLogPath: String {
@@ -40,15 +37,11 @@ extension ABI.AppConfiguration {
         fetcher: @escaping @Sendable (URL) async throws -> Data
     ) -> ConfigManager {
         let configURL: URL
-#if !PSP_CROSS
         if withTestBundle {
             configURL = Bundle.main.url(forResource: "test-bundle", withExtension: "json")!
         } else {
             configURL = constants.websites.configURL
         }
-#else
-        configURL = constants.websites.configURL
-#endif
         let betaConfigURL = constants.websites.betaConfigURL
         return ConfigManager(
             strategy: GitHubConfigStrategy(
@@ -166,10 +159,6 @@ extension ABI.AppConfiguration {
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
 }
-
-// MARK: - Apple
-
-#if canImport(CommonLibraryApple)
 
 extension ABI.AppBundle {
     public enum BuildTarget: Sendable {
@@ -317,12 +306,13 @@ private extension URL {
 
 #else
 
+// XXX: This is weird, behavior is static but signatures are non-static
 private extension URL {
     var forCaches: URL {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            SimpleLogDestination().append(.fault, "Unable to create user caches directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -356,7 +346,7 @@ private extension BundleConfiguration {
     }
 }
 
-// MARK: Dependencies
+// MARK: - Dependencies
 
 extension ABI.AppConfiguration {
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
@@ -426,11 +416,7 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRequest(
-        for url: URL,
-        cached: Bool,
-        bindings: psp_app_bindings?
-    ) async throws -> Data {
+    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
         try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
             .data(for: url, cached: cached)
     }
@@ -470,31 +456,3 @@ extension ABI.AppConfiguration {
     }
 #endif
 }
-
-#else
-
-// MARK: - Non-Apple
-
-extension ABI.AppConfiguration {
-    public func newLogFormatter() -> LogFormatter? {
-        nil
-    }
-
-    public func newRequest(
-        for url: URL,
-        cached: Bool,
-        bindings: psp_app_bindings?
-    ) async throws -> Data {
-        guard let bindings else {
-            throw ABI.AppError.urlRequestUnavailable
-        }
-        return try await NativeURLFetcher(
-            ctx: bindings.request_ctx,
-            callback: bindings.request_cb,
-            timeout: constants.url.timeoutInterval
-        )
-        .data(for: url, cached: cached)
-    }
-}
-
-#endif

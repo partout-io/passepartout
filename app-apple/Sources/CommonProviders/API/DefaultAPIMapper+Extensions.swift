@@ -4,7 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
 extension DefaultAPIMapper {
     public convenience init(
         baseURL: URL,
@@ -24,4 +23,3 @@ extension DefaultAPIMapper {
         }
     }
 }
-#endif

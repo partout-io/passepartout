@@ -8,7 +8,7 @@ import Observation
 
 @MainActor @Observable
 public final class WebReceiverObservable {
-    private let abi: AppABIWebReceiverProtocol
+    private let webReceiverManager: WebReceiverManager
     public private(set) var website: ABI.WebsiteWithPasscode?
     public let uploadFailure: PassthroughStream<String>
 
@@ -16,8 +16,8 @@ public final class WebReceiverObservable {
         website != nil
     }
 
-    public init(abi: AppABIWebReceiverProtocol) {
-        self.abi = abi
+    public init(webReceiverManager: WebReceiverManager) {
+        self.webReceiverManager = webReceiverManager
         website = nil
         uploadFailure = PassthroughStream()
     }
@@ -27,11 +27,11 @@ public final class WebReceiverObservable {
 
 extension WebReceiverObservable {
     public func start() throws {
-        try abi.start()
+        try webReceiverManager.start()
     }
 
     public func stop() {
-        abi.stop()
+        webReceiverManager.stop()
     }
 }
 

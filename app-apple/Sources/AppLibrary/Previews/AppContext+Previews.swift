@@ -11,7 +11,6 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let logFormatter = DummyLogFormatter()
         let registry = CodingRegistry(
             registry: Registry(withKnown: true)
         )
@@ -66,28 +65,21 @@ extension AppContext {
             try await profileManager.observeRemote(repository: InMemoryProfileRepository())
         }
 
-        let abi = AppABI(
+        return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
             appEncoder: appEncoder,
             configManager: configManager,
+            defaults: defaults,
             extensionInstaller: nil,
             iapManager: iapManager,
-            logFormatter: logFormatter,
             preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
             registry: registry,
+            tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager,
-            bindings: nil
-        )
-        return AppContext(
-            abi: abi,
-            appConfiguration: appConfiguration,
-            preferences: preferences,
-            defaults: defaults,
-            tunnelObservable: tunnelObservable
+            webReceiverManager: webReceiverManager
         )
     }()
 }

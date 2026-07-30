@@ -7,7 +7,8 @@ import Observation
 
 @MainActor @Observable
 public final class IAPObservable {
-    private let abi: AppABIIAPProtocol
+    private let iapManager: IAPManager
+    private let supportsIAP: Bool
 
     public private(set) var isEnabled: Bool
     public private(set) var isLoadingReceipt: Bool
@@ -19,8 +20,9 @@ public final class IAPObservable {
     public private(set) var isEligibleForFeedback: Bool
     private var subscription: Task<Void, Never>?
 
-    public init(abi: AppABIIAPProtocol) {
-        self.abi = abi
+    public init(iapManager: IAPManager, supportsIAP: Bool) {
+        self.iapManager = iapManager
+        self.supportsIAP = supportsIAP
         isEnabled = true
         isLoadingReceipt = true
         isBeta = false
@@ -35,23 +37,23 @@ public final class IAPObservable {
 
 extension IAPObservable {
     public func enable(_ isEnabled: Bool) {
-        abi.enable(isEnabled)
+        iapManager.isEnabled = supportsIAP && isEnabled
     }
 
     public func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
-        try await abi.purchase(storeProduct)
+        try await iapManager.purchase(storeProduct)
     }
 
     public func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
-        try abi.verify(profile, extra: extra)
+        try iapManager.verify(profile, extra: extra)
     }
 
     public func reloadReceipt() async {
-        await abi.reloadReceipt()
+        await iapManager.reloadReceipt()
     }
 
     public func restorePurchases() async throws {
-        try await abi.restorePurchases()
+        try await iapManager.restorePurchases()
     }
 }
 
@@ -62,15 +64,15 @@ extension IAPObservable {
         for features: Set<ABI.AppFeature>,
         hints: Set<ABI.StoreProductHint>? = nil
     ) -> Set<ABI.AppProduct> {
-        abi.suggestedProducts(for: features, hints: hints)
+        iapManager.suggestedProducts(for: features, hints: hints)
     }
 
     public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
-        try await abi.purchasableProducts(for: products)
+        try await iapManager.fetchPurchasableProducts(for: products)
     }
 
     public var verificationDelayMinutes: Int {
-        abi.verificationDelayMinutes
+        iapManager.verificationDelayMinutes
     }
 
     public func isEligible(for feature: ABI.AppFeature) -> Bool {

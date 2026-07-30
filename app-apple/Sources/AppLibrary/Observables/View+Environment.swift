@@ -7,7 +7,7 @@ import SwiftUI
 
 @MainActor
 extension View {
-    public func withEnvironment(from context: AppContext, theme: Theme) -> some View {
+    public func withEnvironment(from context: AppContextProtocol, theme: Theme) -> some View {
         self
             .environment(theme)
             // Constants
@@ -34,6 +34,6 @@ extension View {
 //            // FIXME: #1683, Previews
 //            try? await ProfileObservable.forPreviews.observeLocal()
 //        }
-        withEnvironment(from: .forPreviews, theme: Theme())
+        withEnvironment(from: AppContext.forPreviews, theme: Theme())
     }
 }

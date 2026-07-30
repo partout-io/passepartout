@@ -4,7 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
 public final class DefaultAPIMapper: APIMapper {
     private let baseURL: URL
 
@@ -207,4 +206,3 @@ private struct ScriptResult<T>: Decodable where T: Decodable {
 
     let error: String?
 }
-#endif

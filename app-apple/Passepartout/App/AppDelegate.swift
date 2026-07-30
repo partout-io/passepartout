@@ -9,12 +9,12 @@ import SwiftUI
 
 @MainActor
 final class AppDelegate: NSObject {
-    let context: AppContext = {
+    let context: AppContextProtocol = {
         if AppCommandLine.contains(.uiTesting) {
             pspLog(.core, .info, "UI tests: mock AppContext")
-            return .forUITesting()
+            return AppContext.forUITesting()
         }
-        return .forProduction()
+        return AppContext.forProduction()
     }()
 
 #if os(macOS)
@@ -25,7 +25,7 @@ final class AppDelegate: NSObject {
 
     func configure(with uiConfiguring: AppLibraryConfiguring?) {
         context.userPreferences.applyAppearance()
-        uiConfiguring?.configure(with: context)
+        uiConfiguring?.configure()
         debugLocalStoreStats()
     }
 }

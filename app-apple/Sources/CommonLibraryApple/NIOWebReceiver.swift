@@ -4,9 +4,9 @@
 
 #if os(tvOS)
 
-import Partout
 import NIO
 import NIOHTTP1
+import Partout
 
 public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
     private let html: String

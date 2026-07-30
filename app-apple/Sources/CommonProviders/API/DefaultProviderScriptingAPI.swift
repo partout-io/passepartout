@@ -4,7 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
 public final class DefaultProviderScriptingAPI {
     private let timeout: TimeInterval
 
@@ -354,4 +353,3 @@ extension ProviderScriptResult: @unchecked Sendable {
         error?.hasPrefix(Self.apiPrefix) == true
     }
 }
-#endif

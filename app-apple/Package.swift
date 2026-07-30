@@ -32,12 +32,8 @@ let package = Package(
         ),
         .library(
             name: "TunnelLibrary",
-            targets: ["AppResources"]
+            targets: ["TunnelLibrary"]
         )
-//        .library(
-//            name: "AppPartoutRuntime",
-//            targets: ["AppPartoutRuntime"]
-//        )
     ],
     targets: [
         .target(
@@ -86,21 +82,24 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-//        .target(
-//            name: "AppPartoutRuntime",
-//            dependencies: [
-//                "PartoutNative",
-//                .product(name: "PartoutRuntime", package: "partout")
-//            ],
-//            path: "Sources/Empty/AppPartoutRuntime"
-//        ),
 //        .binaryTarget(
 //            name: "PartoutNative",
 //            path: "PartoutNative.xcframework"
 //        ),
+        .target(
+            name: "TunnelLibrary",
+            dependencies: [
+                "AppResources"
+//                "PartoutNative",
+//                .product(name: "PartoutRuntime", package: "partout")
+            ]
+        ),
         .testTarget(
             name: "AppLibraryTests",
-            dependencies: ["AppLibrary"]
+            dependencies: [
+                "AppLibrary",
+                "AppResources"
+            ]
         ),
         .testTarget(
             name: "AppLibraryMainTests",
@@ -110,11 +109,6 @@ let package = Package(
 )
 
 // MARK: - CommonLibrary*
-
-let swiftSettings: [SwiftSetting] = [
-    .define("PSP_ABI", .when(platforms: [.android, .linux, .macOS, .windows])),
-    .define("PSP_CROSS", .when(platforms: [.android, .linux, .windows]))
-]
 
 package.products.append(
     .library(
@@ -159,8 +153,7 @@ package.targets.append(contentsOf: [
         dependencies: [
             "CommonLibraryCore",
             .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
-        ],
-        swiftSettings: swiftSettings
+        ]
     ),
     .target(
         name: "CommonLibraryApple",
@@ -179,22 +172,16 @@ package.targets.append(contentsOf: [
                 .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 "partout"
             ]
-            list.append("CommonLibrary_C")
             list.append("CommonProviders")
             return list
-        }(),
-        swiftSettings: swiftSettings
-    ),
-    .target(
-        name: "CommonLibrary_C"
+        }()
     ),
     .testTarget(
         name: "CommonLibraryTests",
         dependencies: ["CommonLibrary"],
         resources: [
             .process("Resources")
-        ],
-        swiftSettings: swiftSettings
+        ]
     )
 ])
 
@@ -209,21 +196,18 @@ package.products.append(
 package.targets.append(contentsOf: [
     .target(
         name: "CommonProviders",
-        dependencies: ["CommonProvidersAPI"],
-        swiftSettings: swiftSettings
+        dependencies: ["CommonProvidersAPI"]
     ),
     .target(
         name: "CommonProvidersAPI",
         dependencies: ["CommonProvidersCore"],
         resources: [
             .copy("JSON")
-        ],
-        swiftSettings: swiftSettings
+        ]
     ),
     .target(
         name: "CommonProvidersCore",
-        dependencies: ["partout"],
-        swiftSettings: swiftSettings
+        dependencies: ["partout"]
     )
 ])
 #if canImport(Darwin)

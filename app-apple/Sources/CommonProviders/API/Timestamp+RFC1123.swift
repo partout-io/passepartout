@@ -4,7 +4,6 @@
 
 import Partout
 
-#if !PSP_CROSS
 private let rfc1123: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -27,4 +26,3 @@ extension String {
             .map(\.timestamp)
     }
 }
-#endif

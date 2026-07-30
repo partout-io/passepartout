@@ -11,7 +11,7 @@ public final class AppLibraryMain: AppLibraryConfiguring {
     public init() {
     }
 
-    public func configure(with context: AppContext) {
+    public func configure() {
         // For debugging
 //        Tips.showAllTipsForTesting()
         if AppCommandLine.contains(.uiTesting) {
