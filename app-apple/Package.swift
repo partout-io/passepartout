@@ -82,16 +82,16 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-        .binaryTarget(
-            name: "PartoutNative",
-            path: "PartoutNative.xcframework"
-        ),
+//        .binaryTarget(
+//            name: "PartoutNative",
+//            path: "PartoutNative.xcframework"
+//        ),
         .target(
             name: "TunnelLibrary",
             dependencies: [
-                "AppResources",
-                "PartoutNative",
-                .product(name: "PartoutRuntime", package: "partout")
+                "AppResources"
+//                "PartoutNative",
+//                .product(name: "PartoutRuntime", package: "partout")
             ]
         ),
         .testTarget(
