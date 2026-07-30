@@ -14,10 +14,6 @@ final class AppDelegate: NSObject {
             pspLog(.core, .info, "UI tests: mock AppContext")
             return AppContext.forUITesting()
         }
-        if AppCommandLine.contains(.legacyAppContext) {
-            pspLog(.core, .info, "Using LegacyAppContext")
-            return LegacyAppContext.forProduction()
-        }
         return AppContext.forProduction()
     }()
 

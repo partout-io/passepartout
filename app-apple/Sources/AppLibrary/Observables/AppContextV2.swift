@@ -105,7 +105,7 @@ public final class AppContext {
 
         // View concerns
         appFormatter = AppFormatter(constants: appConfiguration.constants)
-        userPreferences = UserPreferencesObservable(abi: preferences, ui: defaults)
+        userPreferences = UserPreferencesObservable(preferences: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
 
         observeManagerEvents()

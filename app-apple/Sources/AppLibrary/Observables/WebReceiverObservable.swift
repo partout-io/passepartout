@@ -8,12 +8,7 @@ import Observation
 
 @MainActor @Observable
 public final class WebReceiverObservable {
-    private enum Backend {
-        case abi(AppABIWebReceiverProtocol)
-        case manager(WebReceiverManager)
-    }
-
-    private let backend: Backend
+    private let webReceiverManager: WebReceiverManager
     public private(set) var website: ABI.WebsiteWithPasscode?
     public let uploadFailure: PassthroughStream<String>
 
@@ -21,14 +16,8 @@ public final class WebReceiverObservable {
         website != nil
     }
 
-    public init(abi: AppABIWebReceiverProtocol) {
-        backend = .abi(abi)
-        website = nil
-        uploadFailure = PassthroughStream()
-    }
-
     public init(webReceiverManager: WebReceiverManager) {
-        backend = .manager(webReceiverManager)
+        self.webReceiverManager = webReceiverManager
         website = nil
         uploadFailure = PassthroughStream()
     }
@@ -38,21 +27,11 @@ public final class WebReceiverObservable {
 
 extension WebReceiverObservable {
     public func start() throws {
-        switch backend {
-        case .abi(let abi):
-            try abi.start()
-        case .manager(let webReceiverManager):
-            try webReceiverManager.start()
-        }
+        try webReceiverManager.start()
     }
 
     public func stop() {
-        switch backend {
-        case .abi(let abi):
-            abi.stop()
-        case .manager(let webReceiverManager):
-            webReceiverManager.stop()
-        }
+        webReceiverManager.stop()
     }
 }
 

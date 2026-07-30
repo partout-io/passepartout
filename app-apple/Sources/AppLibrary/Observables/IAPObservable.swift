@@ -7,12 +7,8 @@ import Observation
 
 @MainActor @Observable
 public final class IAPObservable {
-    private enum Backend {
-        case abi(AppABIIAPProtocol)
-        case manager(IAPManager, supportsIAP: Bool)
-    }
-
-    private let backend: Backend
+    private let iapManager: IAPManager
+    private let supportsIAP: Bool
 
     public private(set) var isEnabled: Bool
     public private(set) var isLoadingReceipt: Bool
@@ -24,19 +20,9 @@ public final class IAPObservable {
     public private(set) var isEligibleForFeedback: Bool
     private var subscription: Task<Void, Never>?
 
-    public init(abi: AppABIIAPProtocol) {
-        backend = .abi(abi)
-        isEnabled = true
-        isLoadingReceipt = true
-        isBeta = false
-        purchasedProducts = []
-        eligibleFeatures = []
-        isEligibleForComplete = false
-        isEligibleForFeedback = false
-    }
-
     public init(iapManager: IAPManager, supportsIAP: Bool) {
-        backend = .manager(iapManager, supportsIAP: supportsIAP)
+        self.iapManager = iapManager
+        self.supportsIAP = supportsIAP
         isEnabled = true
         isLoadingReceipt = true
         isBeta = false
@@ -51,48 +37,23 @@ public final class IAPObservable {
 
 extension IAPObservable {
     public func enable(_ isEnabled: Bool) {
-        switch backend {
-        case .abi(let abi):
-            abi.enable(isEnabled)
-        case .manager(let iapManager, let supportsIAP):
-            iapManager.isEnabled = supportsIAP && isEnabled
-        }
+        iapManager.isEnabled = supportsIAP && isEnabled
     }
 
     public func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {
-        switch backend {
-        case .abi(let abi):
-            return try await abi.purchase(storeProduct)
-        case .manager(let iapManager, _):
-            return try await iapManager.purchase(storeProduct)
-        }
+        try await iapManager.purchase(storeProduct)
     }
 
     public func verify(_ profile: Profile, extra: Set<ABI.AppFeature>?) throws {
-        switch backend {
-        case .abi(let abi):
-            try abi.verify(profile, extra: extra)
-        case .manager(let iapManager, _):
-            try iapManager.verify(profile, extra: extra)
-        }
+        try iapManager.verify(profile, extra: extra)
     }
 
     public func reloadReceipt() async {
-        switch backend {
-        case .abi(let abi):
-            await abi.reloadReceipt()
-        case .manager(let iapManager, _):
-            await iapManager.reloadReceipt()
-        }
+        await iapManager.reloadReceipt()
     }
 
     public func restorePurchases() async throws {
-        switch backend {
-        case .abi(let abi):
-            try await abi.restorePurchases()
-        case .manager(let iapManager, _):
-            try await iapManager.restorePurchases()
-        }
+        try await iapManager.restorePurchases()
     }
 }
 
@@ -103,30 +64,15 @@ extension IAPObservable {
         for features: Set<ABI.AppFeature>,
         hints: Set<ABI.StoreProductHint>? = nil
     ) -> Set<ABI.AppProduct> {
-        switch backend {
-        case .abi(let abi):
-            return abi.suggestedProducts(for: features, hints: hints)
-        case .manager(let iapManager, _):
-            return iapManager.suggestedProducts(for: features, hints: hints)
-        }
+        iapManager.suggestedProducts(for: features, hints: hints)
     }
 
     public func purchasableProducts(for products: [ABI.AppProduct]) async throws -> [ABI.StoreProduct] {
-        switch backend {
-        case .abi(let abi):
-            return try await abi.purchasableProducts(for: products)
-        case .manager(let iapManager, _):
-            return try await iapManager.fetchPurchasableProducts(for: products)
-        }
+        try await iapManager.fetchPurchasableProducts(for: products)
     }
 
     public var verificationDelayMinutes: Int {
-        switch backend {
-        case .abi(let abi):
-            return abi.verificationDelayMinutes
-        case .manager(let iapManager, _):
-            return iapManager.verificationDelayMinutes
-        }
+        iapManager.verificationDelayMinutes
     }
 
     public func isEligible(for feature: ABI.AppFeature) -> Bool {

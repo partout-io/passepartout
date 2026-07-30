@@ -36,6 +36,3 @@ public protocol AppContextProtocol: AnyObject {
 
 extension AppContext: AppContextProtocol {
 }
-
-extension LegacyAppContext: AppContextProtocol {
-}

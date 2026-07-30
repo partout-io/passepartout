@@ -9,12 +9,8 @@ import Observation
 
 @MainActor @Observable
 public final class ProfileObservable {
-    private enum Backend {
-        case abi(AppABIProfileProtocol)
-        case manager(ProfileManager, registry: CodingRegistry)
-    }
-
-    private let backend: Backend
+    private let profileManager: ProfileManager
+    private let registry: CodingRegistry
 
     private var allHeaders: [Profile.ID: ABI.AppProfileHeader] {
         didSet {
@@ -27,23 +23,13 @@ public final class ProfileObservable {
     private let searchSubject: CurrentValueSubject<String, Never>
     private var searchSubscription: AnyCancellable?
 
-    public init(abi: AppABIProfileProtocol, searchDebounce: Int = 200) {
-        backend = .abi(abi)
-        allHeaders = [:]
-        filteredHeaders = []
-        isReady = false
-        isRemoteImportingEnabled = false
-        searchSubject = CurrentValueSubject("")
-
-        observeEvents(searchDebounce: searchDebounce)
-    }
-
     public init(
         profileManager: ProfileManager,
         registry: CodingRegistry,
         searchDebounce: Int = 200
     ) {
-        backend = .manager(profileManager, registry: registry)
+        self.profileManager = profileManager
+        self.registry = registry
         allHeaders = [:]
         filteredHeaders = []
         isReady = false
@@ -64,56 +50,31 @@ extension ProfileObservable {
             builder.attributes.isAvailableForTV = true
             copy = try builder.build()
         }
-        switch backend {
-        case .abi(let abi):
-            try await abi.save(copy, remotelyShared: sharingFlag != nil)
-        case .manager(let profileManager, _):
-            try await profileManager.save(
-                copy,
-                isLocal: true,
-                remotelyShared: sharingFlag != nil
-            )
-        }
+        try await profileManager.save(
+            copy,
+            isLocal: true,
+            remotelyShared: sharingFlag != nil
+        )
     }
 
     public func saveAll() async {
-        switch backend {
-        case .abi(let abi):
-            await abi.saveAll()
-        case .manager(let profileManager, _):
-            await profileManager.resaveAllProfiles()
-        }
+        await profileManager.resaveAllProfiles()
     }
 
     public func `import`(_ input: ABI.ProfileImporterInput, passphrase: String? = nil) async throws {
-        switch backend {
-        case .abi(let abi):
-            switch input {
-            case .contents(let filename, let data):
-                try await abi.importText(data, filename: filename, passphrase: passphrase)
-            case .file(let url):
-                try await abi.importFile(url.filePath(), passphrase: passphrase)
-            }
-        case .manager(let profileManager, let registry):
-            let profile = try registry.importedProfile(
-                from: input,
-                passphrase: passphrase
-            )
-            try await profileManager.save(
-                profile,
-                isLocal: true,
-                remotelyShared: nil
-            )
-        }
+        let profile = try registry.importedProfile(
+            from: input,
+            passphrase: passphrase
+        )
+        try await profileManager.save(
+            profile,
+            isLocal: true,
+            remotelyShared: nil
+        )
     }
 
     public func duplicate(profileWithId profileId: Profile.ID) async throws {
-        switch backend {
-        case .abi(let abi):
-            try await abi.duplicate(profileId)
-        case .manager(let profileManager, _):
-            try await profileManager.duplicate(profileWithId: profileId)
-        }
+        try await profileManager.duplicate(profileWithId: profileId)
     }
 
     public func search(byName name: String) {
@@ -121,30 +82,15 @@ extension ProfileObservable {
     }
 
     public func remove(withId profileId: Profile.ID) async {
-        switch backend {
-        case .abi(let abi):
-            await abi.remove(profileId)
-        case .manager(let profileManager, _):
-            await profileManager.remove(withId: profileId)
-        }
+        await profileManager.remove(withId: profileId)
     }
 
     public func remove(withIds profileIds: [Profile.ID]) async {
-        switch backend {
-        case .abi(let abi):
-            await abi.remove(profileIds)
-        case .manager(let profileManager, _):
-            await profileManager.remove(withIds: profileIds)
-        }
+        await profileManager.remove(withIds: profileIds)
     }
 
     public func removeRemotelyShared() async throws {
-        switch backend {
-        case .abi(let abi):
-            try await abi.removeAllRemote()
-        case .manager(let profileManager, _):
-            try await profileManager.eraseRemotelySharedProfiles()
-        }
+        try await profileManager.eraseRemotelySharedProfiles()
     }
 
     public func removeAll() async {
@@ -166,12 +112,7 @@ extension ProfileObservable {
 
     // Use full profiles for actions (manually pulled)
     public func profile(withId profileId: Profile.ID) -> Profile? {
-        switch backend {
-        case .abi(let abi):
-            return abi.profile(withId: profileId)
-        case .manager(let profileManager, _):
-            return profileManager.profile(withId: profileId)
-        }
+        profileManager.profile(withId: profileId)
     }
 
     public func firstUniqueName(from name: String) -> String {
@@ -220,7 +161,7 @@ extension ProfileObservable {
 
 private extension ProfileObservable {
     func observeEvents(searchDebounce: Int) {
-        // No need for observeLocal/observeRemote, done by AppContext/ABI
+        // No need for observeLocal/observeRemote, done by AppContext
         searchSubscription = searchSubject
             .debounce(for: .milliseconds(searchDebounce), scheduler: DispatchQueue.main)
             .sink { [weak self] in

@@ -81,13 +81,6 @@ extension AppContext {
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager
         )
-//        return AppContext(
-//            abi: abi,
-//            appConfiguration: appConfiguration,
-//            preferences: preferences,
-//            defaults: defaults,
-//            tunnelObservable: tunnelObservable
-//        )
     }()
 }
 

@@ -5,9 +5,15 @@
 import Partout
 
 @BusinessActor
-public protocol TunnelABIProtocol: AppABILoggerProtocol, Sendable {
+public protocol TunnelABIProtocol: Sendable {
     func start(isInteractive: Bool) async throws
     func stop() async
     func sendMessage(_ messageData: Data) async -> Data?
     nonisolated func cancel(_ error: Error?)
+}
+
+extension TunnelABIProtocol {
+    public nonisolated func log(_ category: ABI.AppLogCategory, _ level: ABI.AppLogLevel, _ message: String) {
+        pspLog(category, level, message)
+    }
 }
