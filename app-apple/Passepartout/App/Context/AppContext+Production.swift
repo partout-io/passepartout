@@ -14,7 +14,7 @@ import CoreData
 import Partout
 
 extension AppContext {
-    static func forProduction() -> AppContext {
+    static func forProduction(bundleIdentifier: String) -> AppContext {
         let distributionTarget: ABI.DistributionTarget
 #if PP_BUILD_MAC
         distributionTarget = .developerID
