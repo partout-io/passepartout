@@ -346,11 +346,13 @@ extension ABI.AppConfiguration {
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if bundle.distributionTarget.supportsAppGroups {
             return newTunnelEnvironment(profileId: profileId)
-        } else {
-            guard let neStrategy = strategy as? NETunnelStrategy else {
-                fatalError("NETunnelEnvironment requires NETunnelStrategy")
+        } else if let fetcher = strategy as? EnvironmentFetcher {
+            return NETunnelEnvironment(profileId: profileId) { [weak fetcher] in
+                guard let fetcher else { return StaticTunnelEnvironment(profileId: $0, values: [:]) }
+                return try await fetcher.fetchEnvironment(profileId: $0)
             }
-            return NETunnelEnvironment(strategy: neStrategy, profileId: profileId)
+        } else {
+            fatalError("NETunnelEnvironment requires EnvironmentFetcher")
         }
     }
 
@@ -481,4 +483,32 @@ extension ABI.AppConfiguration {
         }
     }
 #endif
+}
+
+private protocol EnvironmentFetcher: AnyObject, Sendable {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment
+}
+
+extension NETunnelStrategy: EnvironmentFetcher {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment {
+        let output = try await sendMessage(.environment(), to: profileId)
+        switch output {
+        case .environment(let env):
+            return env
+        default:
+            throw PartoutError(.unhandled)
+        }
+    }
+}
+
+extension LegacyNETunnelStrategy: EnvironmentFetcher {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment {
+        let output = try await sendMessage(.environment(), to: profileId)
+        switch output {
+        case .environment(let env):
+            return env
+        default:
+            throw PartoutError(.unhandled)
+        }
+    }
 }
