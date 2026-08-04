@@ -345,8 +345,9 @@ components:
     AppPreferenceKey:
       type: string
       x-enum-varnames:
-      - deviceId
       - configFlags
+      - deviceId
+      - didMigrateDeveloperIDManagers
       - dnsFallsBack
       - experimental
       - extensiveLogging
@@ -356,8 +357,9 @@ components:
       - logsPrivateData
       - skipsPurchases
       enum:
-      - deviceId
       - configFlags
+      - deviceId
+      - didMigrateDeveloperIDManagers
       - dnsFallsBack
       - experimental
       - extensiveLogging
@@ -376,6 +378,8 @@ components:
             "$ref": "#/components/schemas/ConfigFlag"
         deviceId:
           type: string
+        didMigrateDeveloperIDManagers:
+          type: boolean
         dnsFallsBack:
           type: boolean
         experimental:
@@ -394,6 +398,7 @@ components:
           type: boolean
       required:
       - configFlags
+      - didMigrateDeveloperIDManagers
       - dnsFallsBack
       - experimental
       - extensiveLogging

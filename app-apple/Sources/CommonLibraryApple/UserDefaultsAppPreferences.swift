@@ -35,6 +35,15 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
         }
     }
 
+    public var didMigrateDeveloperIDManagers: Bool {
+        get {
+            defaults.bool(forAppPreference: .didMigrateDeveloperIDManagers, fallback: false)
+        }
+        set {
+            defaults.set(newValue, forAppPreference: .didMigrateDeveloperIDManagers)
+        }
+    }
+
     public var dnsFallsBack: Bool {
         get {
             defaults.bool(forAppPreference: .dnsFallsBack, fallback: fallback.dnsFallsBack)
@@ -116,6 +125,7 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
     public func copy(_ other: ABI.AppPreferencesProtocol) {
         configFlags = other.configFlags
         deviceId = other.deviceId
+        didMigrateDeveloperIDManagers = other.didMigrateDeveloperIDManagers
         dnsFallsBack = other.dnsFallsBack
         experimental = other.experimental
         extensiveLogging = other.extensiveLogging

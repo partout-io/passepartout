@@ -173,9 +173,30 @@ extension AppContext {
             coder: registry,
             keychain: keychain
         )
+
+        let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
+        let migrator = NETunnelProfileMigrator(
+            tunnelBundleIdentifier: tunnelIdentifier,
+            keychain: keychain,
+            profileCoder: registry,
+            protocolCoder: protocolCoder,
+            label: appConfiguration.newKeychainTitle(),
+            isComplete: {
+                preferences[\.didMigrateDeveloperIDManagers]
+            },
+            markComplete: {
+                preferences.overwrite {
+                    $0.didMigrateDeveloperIDManagers = true
+                }
+            }
+        )
+
         let mainProfileRepository = KeychainProfileRepository(
             keychain: keychain,
             coder: registry,
+            bootstrap: distributionTarget == .developerID ? { @Sendable in
+                await migrator.run()
+            } : nil,
             label: appConfiguration.newKeychainTitle()
         )
         let tunnelStrategy = appConfiguration.newNETunnelStrategy(

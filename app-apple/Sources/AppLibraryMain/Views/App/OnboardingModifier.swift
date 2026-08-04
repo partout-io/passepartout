@@ -6,14 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct OnboardingModifier: ViewModifier {
-    @EnvironmentObject
-    private var apiManager: APIManager
-
     @Environment(OnboardingObservable.self)
     private var onboardingObservable
-
-    @Environment(ProfileObservable.self)
-    private var profileObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -23,6 +17,8 @@ struct OnboardingModifier: ViewModifier {
 
     @Binding
     var modalRoute: AppCoordinator.ModalRoute?
+
+    let errorHandler: ErrorHandler
 
     @State
     private var isAlertPresented = false

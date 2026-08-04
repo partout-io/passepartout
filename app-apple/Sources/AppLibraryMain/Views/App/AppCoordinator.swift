@@ -74,7 +74,8 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
                 .toolbar(content: toolbarContent)
         }
         .modifier(OnboardingModifier(
-            modalRoute: $modalRoute
+            modalRoute: $modalRoute,
+            errorHandler: errorHandler
         ))
         .modifier(DynamicPaywallModifier(
             paywallReason: $paywallReason,

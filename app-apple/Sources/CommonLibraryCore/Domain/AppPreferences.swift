@@ -8,6 +8,7 @@ extension ABI {
     public protocol AppPreferencesProtocol: Sendable {
         var configFlags: [ConfigFlag] { get set }
         var deviceId: String? { get set }
+        var didMigrateDeveloperIDManagers: Bool { get set }
         var dnsFallsBack: Bool { get set }
         var experimental: ExperimentalPreferences { get set }
         var extensiveLogging: Bool { get set }
@@ -29,6 +30,7 @@ extension ABI {
 
         public static let configFlags = Self(.configFlags)
         public static let deviceId = Self(.deviceId)
+        public static let didMigrateDeveloperIDManagers = Self(.didMigrateDeveloperIDManagers)
         public static let lastCheckedVersion = Self(.lastCheckedVersion)
         public static let lastCheckedVersionDate = Self(.lastCheckedVersionDate)
         public static let lastUsedProfileId = Self(.lastUsedProfileId)
