@@ -83,12 +83,8 @@ public final class KeychainProfileRepository: ProfileRepository {
     public func removeProfiles(withIds profileIds: [Profile.ID]) async throws {
         var removedIds: Set<Profile.ID> = []
         profileIds.forEach {
-            do {
-                try keychain.removePassword(for: $0.uuidString)
-                removedIds.insert($0)
-            } catch {
-                pspLog(.core, .error, "Unable to remove profile \($0) from keychain: \(error)")
-            }
+            keychain.removePassword(for: $0.uuidString)
+            removedIds.insert($0)
         }
         var allProfiles = profilesSubject.value
         // Only skip profiles that were actually removed
