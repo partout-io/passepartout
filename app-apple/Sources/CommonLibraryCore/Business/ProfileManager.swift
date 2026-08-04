@@ -102,6 +102,10 @@ extension ProfileManager {
         self.isRemoteImportingEnabled = isRemoteImportingEnabled
     }
 
+    public func refreshLocalProfiles() async throws {
+        try await repository.fetchProfiles()
+    }
+
     public func save(_ originalProfile: Profile, isLocal: Bool = false, remotelyShared: Bool? = nil) async throws {
         let profile: Profile
         if isLocal {

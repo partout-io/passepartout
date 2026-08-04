@@ -313,6 +313,13 @@ private extension AppContext {
                 await iapManager.reloadReceipt()
                 didLoadReceiptDate = Date()
             }
+
+            // Re-fetch local profiles to sync with external changes
+            do {
+                try await profileManager.refreshLocalProfiles()
+            } catch {
+                pspLog(.core, .error, "Unable to refresh local profiles: \(error)")
+            }
         }
         await pendingTask?.value
         pendingTask = nil
@@ -381,10 +388,12 @@ private extension AppContext {
                 do {
                     try await onLaunch()
                 } catch {
+                    pspLog(.core, .fault, "Unable to launch: \(error)")
                     launchTask = nil // Redo the launch task.
                     throw ABI.AppError.couldNotLaunch(reason: error)
                 }
             }
+            // FIXME: ###, Shouldn't this be returned by launchTask?
             didLaunch = true
         }
 
