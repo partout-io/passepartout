@@ -1,1 +1,5 @@
-* Partout: Integrate Zig-based runtimes (#1898)
+* Improve profiles performance and multi-user behavior (#1908)
+* Skip redundant profile updates (#1688)
+* Update app icon for Liquid Glass (#1907)
+* WireGuard: Fix editor regression in IPv6 endpoints (#1902)
+* Onboarding: Alert about discontinuing providers
