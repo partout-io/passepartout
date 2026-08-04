@@ -126,7 +126,7 @@ extension AppContext {
                 }
             )
         } else {
-            let fakeHelper = appConfiguration.newInAppFakeHelperV2()
+            let fakeHelper = FakeInAppHelper()
             iapHelper = fakeHelper
             iapReceiptReader = fakeHelper.receiptReader
         }
@@ -159,7 +159,7 @@ extension AppContext {
         )
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
-        let mainProfileRepository = appConfiguration.newBackupProfileRepositoryV2(
+        let mainProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -195,7 +195,7 @@ extension AppContext {
             mainProfileRepository = neRepository
             tunnelStrategy = legacyStrategy
         }
-        let backupProfileRepository = appConfiguration.newBackupProfileRepositoryV2(
+        let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -281,7 +281,7 @@ extension AppContext {
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
-                let isCloudKitEnabled = AppCommandLine.contains(.uiTesting) || appConfiguration.isCloudKitEnabledV2
+                let isCloudKitEnabled = AppCommandLine.contains(.uiTesting) || appConfiguration.isCloudKitEnabled
                 pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
@@ -349,7 +349,7 @@ extension AppContext {
 }
 
 private extension ABI.AppConfiguration {
-    var isCloudKitEnabledV2: Bool {
+    var isCloudKitEnabled: Bool {
 #if os(tvOS)
         true
 #else
@@ -357,7 +357,7 @@ private extension ABI.AppConfiguration {
 #endif
     }
 
-    func newBackupProfileRepositoryV2(
+    func newBackupProfileRepository(
         encoder: AppEncoder,
         model: NSManagedObjectModel,
         name: String,
@@ -378,9 +378,5 @@ private extension ABI.AppConfiguration {
                 return .ignore
             }
         )
-    }
-
-    func newInAppFakeHelperV2() -> FakeInAppHelper {
-        FakeInAppHelper()
     }
 }
