@@ -42,11 +42,6 @@ struct OnboardingModifier: ViewModifier {
                     advance()
                 }
             }
-            .onChange(of: isAlertPresented) {
-                if !$1 {
-                    advance()
-                }
-            }
     }
 }
 
