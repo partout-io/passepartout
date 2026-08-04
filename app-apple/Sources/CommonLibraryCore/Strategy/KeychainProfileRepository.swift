@@ -31,7 +31,6 @@ public final class KeychainProfileRepository: ProfileRepository {
         eventsSubject = PassthroughStream()
     }
 
-    // FIXME: ###, Failures here might break AppContext.onLaunch() irreparably with .couldNotLaunch, should double check
     public func fetchProfiles() async throws -> [Profile] {
         let profiles = try keychain
             .allPasswordReferences()
