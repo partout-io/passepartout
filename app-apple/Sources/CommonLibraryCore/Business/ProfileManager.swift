@@ -102,7 +102,8 @@ extension ProfileManager {
         self.isRemoteImportingEnabled = isRemoteImportingEnabled
     }
 
-    public func refreshLocalProfiles() async throws {
+    @discardableResult
+    public func refreshLocalProfiles() async throws -> [Profile] {
         try await repository.fetchProfiles()
     }
 
