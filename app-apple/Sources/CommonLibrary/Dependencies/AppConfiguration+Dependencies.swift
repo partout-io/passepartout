@@ -437,7 +437,7 @@ extension ABI.AppConfiguration {
             source: source,
             coder: protocolCoder,
             fingerprint: {
-                ($0.attributes.fingerprint ?? UUID())?.uuidString
+                ($0.attributes.fingerprint ?? $0.id)?.uuidString
             }
         )
     }
