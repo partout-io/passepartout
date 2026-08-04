@@ -56,12 +56,6 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newFileProfileRepository(path: String) throws -> ProfileRepository {
-        try FileProfileRepository(
-           directoryURL: URL(filePath: path, directoryHint: .isDirectory)
-       )
-    }
-
     public func newIAPManager(
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
@@ -380,6 +374,12 @@ extension ABI.AppConfiguration {
         StoreKitReceiptReader(modeBlock: modeBlock)
     }
 
+    public func newKeychainTitle() -> @Sendable (Profile) -> String {
+        {
+            String(format: constants.tunnel.profileTitleFormat, $0.name)
+        }
+    }
+
     public func newLogFormatter() -> LogFormatter? {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
@@ -387,31 +387,57 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newNEProtocolCoder(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NEProtocolCoder {
+    public func newNEProtocolCoder(
+        _ ctx: PartoutLoggerContext,
+        coder: ProfileCoder,
+        legacy: Bool
+    ) -> NEProtocolCoder {
         let tunnelIdentifier = bundle.bundleString(for: .tunnelId)
         if bundle.distributionTarget.supportsAppGroups {
             return KeychainNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: tunnelIdentifier,
                 coder: coder,
-                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId))
+                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId)),
+                legacyOptions: legacy ? .init(title: newKeychainTitle()) : nil
             )
         } else {
             return ProviderNEProtocolCoder(
                 ctx,
                 tunnelBundleIdentifier: tunnelIdentifier,
-                coder: coder
+                coder: coder,
+                uid: Int(getuid())
             )
         }
     }
 
-    public func newNETunnelStrategy(_ ctx: PartoutLoggerContext, coder: ProfileCoder) -> NETunnelStrategy {
-        NETunnelStrategy(
+    public func legacyNETunnelStrategy(
+        _ ctx: PartoutLoggerContext,
+        coder: ProfileCoder
+    ) -> LegacyNETunnelStrategy {
+        let bundleIdentifier = bundle.bundleString(for: .tunnelId)
+        let protocolCoder = newNEProtocolCoder(ctx, coder: coder, legacy: true)
+        return LegacyNETunnelStrategy(
             ctx,
-            bundleIdentifier: bundle.bundleString(for: .tunnelId),
-            coder: newNEProtocolCoder(ctx, coder: coder),
-            title: {
-                String(format: constants.tunnel.profileTitleFormat, $0.name)
+            bundleIdentifier: bundleIdentifier,
+            coder: protocolCoder
+        )
+    }
+
+    public func newNETunnelStrategy(
+        _ ctx: PartoutLoggerContext,
+        coder: ProfileCoder,
+        source: AsyncStream<ProfilesEvent>
+    ) -> NETunnelStrategy {
+        let bundleIdentifier = bundle.bundleString(for: .tunnelId)
+        let protocolCoder = newNEProtocolCoder(ctx, coder: coder, legacy: false)
+        return NETunnelStrategy(
+            ctx,
+            bundleIdentifier: bundleIdentifier,
+            source: source,
+            coder: protocolCoder,
+            fingerprint: {
+                ($0.attributes.fingerprint ?? $0.id)?.uuidString
             }
         )
     }

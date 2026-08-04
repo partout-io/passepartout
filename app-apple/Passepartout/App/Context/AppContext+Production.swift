@@ -167,8 +167,34 @@ extension AppContext {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let tunnelStrategy = appConfiguration.newNETunnelStrategy(ctx, coder: registry)
-        let mainProfileRepository = NEProfileRepository(repository: tunnelStrategy)
+        let mainProfileRepository: ProfileRepository
+        let tunnelStrategy: TunnelObservableStrategy
+        if distributionTarget.supportsAppGroups {
+            let keychain = AppleKeychain(
+                ctx,
+                group: appConfiguration.bundle.bundleString(for: .keychainGroupId)
+            )
+            let keychainRepository = KeychainProfileRepository(
+                keychain: keychain,
+                coder: registry,
+                label: appConfiguration.newKeychainTitle()
+            )
+            let newStrategy = appConfiguration.newNETunnelStrategy(
+                ctx,
+                coder: registry,
+                source: keychainRepository.eventsPublisher
+            )
+            mainProfileRepository = keychainRepository
+            tunnelStrategy = newStrategy
+        } else {
+            let legacyStrategy = appConfiguration.legacyNETunnelStrategy(
+                ctx,
+                coder: registry
+            )
+            let neRepository = NEProfileRepository(repository: legacyStrategy)
+            mainProfileRepository = neRepository
+            tunnelStrategy = legacyStrategy
+        }
         let backupProfileRepository = appConfiguration.newBackupProfileRepositoryV2(
             encoder: appEncoder,
             model: cdRemoteModel,

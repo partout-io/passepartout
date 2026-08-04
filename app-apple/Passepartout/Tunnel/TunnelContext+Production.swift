@@ -66,7 +66,7 @@ extension TunnelContext {
 
             // Decode profile from NE provider
             do {
-                let decoder = appConfiguration.newNEProtocolCoder(.global, coder: registry)
+                let decoder = appConfiguration.newNEProtocolCoder(.global, coder: registry, legacy: false)
                 originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
                 let resolvedProfile = try registry.resolvedProfile(originalProfile)
                 let processor = appConfiguration.newTunnelProcessor()
