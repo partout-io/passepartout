@@ -224,7 +224,6 @@ private extension AppContext {
 // MARK: - Internal lifecycle
 
 private extension AppContext {
-    // FIXME: #1909, Any failure here will break AppContext.onLaunch() irreparably with .couldNotLaunch. Double check that the launch task is reattempted after a new foreground event.
     func onLaunch() async throws {
         pspLog(.core, .notice, "Application did launch")
 
