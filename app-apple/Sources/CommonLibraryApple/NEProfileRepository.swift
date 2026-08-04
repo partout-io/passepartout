@@ -11,6 +11,8 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
     private let profilesSubject: CurrentValueStream<[Profile]>
 
+    private let publicationMutex = SemaphoreMutex()
+
     private var managersSubscription: Task<Void, Never>?
 
     public init(repository: NETunnelManagerRepository) {
@@ -35,15 +37,8 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
     public func fetchProfiles() async throws -> [Profile] {
         let managers = try await repository.fetch()
-        let profiles = managers.compactMap {
-            do {
-                return try repository.profile(from: $0)
-            } catch {
-                pspLog(.profiles, .error, "Unable to decode profile from NE manager '\($0.localizedDescription ?? "")': \(error)")
-                return nil
-            }
-        }
-        profilesSubject.send(profiles)
+        let profiles = decodedProfiles(from: managers)
+        publishIfChanged(profiles)
         return profiles
     }
 
@@ -71,8 +66,29 @@ public final class NEProfileRepository: ProfileRepository, @unchecked Sendable {
 
 private extension NEProfileRepository {
     func onUpdatedManagers(_ managers: [Profile.ID: NETunnelProviderManager]) {
+        let profiles = decodedProfiles(from: managers.values)
+        publishIfChanged(profiles)
+    }
+
+    func publishIfChanged(_ profiles: [Profile]) {
+        publicationMutex.with {
+            let previous = profilesSubject.value.reduce(into: [:]) {
+                $0[$1.id] = $1
+            }
+            let updated = profiles.reduce(into: [:]) {
+                $0[$1.id] = $1
+            }
+            guard updated != previous else {
+                pspLog(.profiles, .info, "Decoded profiles did not change, skip repository update")
+                return
+            }
+            profilesSubject.send(profiles)
+        }
+    }
+
+    func decodedProfiles(from managers: any Collection<NETunnelProviderManager>) -> [Profile] {
         var decodingTime = 0.0
-        let profiles = managers.values.compactMap {
+        let profiles = managers.compactMap {
             do {
                 let startDate = Date()
                 let profile = try repository.profile(from: $0)
@@ -85,6 +101,6 @@ private extension NEProfileRepository {
             }
         }
         pspLog(.profiles, .info, "Decoded \(managers.count) managers to \(profiles.count) profiles in \(decodingTime) seconds")
-        profilesSubject.send(profiles)
+        return profiles
     }
 }
