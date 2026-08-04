@@ -12,6 +12,8 @@ public enum OnboardingStep: String, RawRepresentable, CaseIterable {
     case doneV3_5_15
     case dropLZOCompression
     case doneV3_5_18
+    case discontinueProviders
+    case doneV3_9_5
 }
 
 extension OnboardingStep {

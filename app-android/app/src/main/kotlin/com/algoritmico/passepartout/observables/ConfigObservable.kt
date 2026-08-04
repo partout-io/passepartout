@@ -4,14 +4,14 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.abi.models.ConfigEventRefresh
-import com.algoritmico.passepartout.abi.models.ConfigFlag
-import com.algoritmico.passepartout.abi.models.Event
+import com.algoritmico.passepartout.business.managers.ConfigManager
+import com.algoritmico.passepartout.models.ConfigEventRefresh
+import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.models.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,7 @@ import kotlinx.serialization.json.JsonObject
 import java.io.Closeable
 
 class ConfigObservable(
-    events: Flow<Event>,
+    manager: ConfigManager,
     coroutineScope: CoroutineScope
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -33,18 +33,17 @@ class ConfigObservable(
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
-        events
+        manager.events
             .onEach(::onUpdate)
             .launchIn(scope)
     }
 
     private fun onUpdate(event: Event) {
-        if (event is ConfigEventRefresh) {
-            _state.value = State(
-                activeFlags = event.flags.toSet(),
-                allData = event.data.configData()
-            )
-        }
+        if (event !is ConfigEventRefresh) { return }
+        _state.value = State(
+            activeFlags = event.flags.toSet(),
+            allData = event.data.configData()
+        )
     }
 
     fun isActive(flag: ConfigFlag): Boolean {
@@ -80,8 +79,7 @@ class ConfigObservable(
 
     private companion object {
         val ExperimentalFeatureFlags = setOf(
-            ConfigFlag.ovpnV3,
-            ConfigFlag.wgCrossV2
+            ConfigFlag.ovpnV3
         )
     }
 

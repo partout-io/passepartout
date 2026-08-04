@@ -17,20 +17,21 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
+      - uses: mlugg/setup-zig@v2
       - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: api/package-lock.json
-      - name: Run shared tests
-        run: |
-          ci/run-shared-tests.sh
       - name: Run Apple tests
         run: |
           ci/run-apple-tests.sh
-      - name: Run Partout tests
+      - name: Run Partout tests (Swift)
         run: |
-          ci/run-partout-tests.sh
+          ci/run-partout-swift-tests.sh
+      - name: Run Partout tests (Zig)
+        run: |
+          ci/run-partout-zig-tests.sh
       - name: Run API tests
         working-directory: ./api
         run: |

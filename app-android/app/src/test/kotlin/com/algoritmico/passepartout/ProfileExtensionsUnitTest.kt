@@ -1,8 +1,12 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
 package com.algoritmico.passepartout
 
-import com.algoritmico.passepartout.extensions.interactiveOpenVPNModule
-import com.algoritmico.passepartout.extensions.isInteractive
-import com.algoritmico.passepartout.extensions.withInteractiveOpenVPNCredentials
+import io.partout.extensions.interactiveModule
+import io.partout.extensions.isInteractive
+import io.partout.extensions.withInteractiveOpenVPNCredentials
 import io.partout.models.OpenVPNConfiguration
 import io.partout.models.OpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
@@ -34,7 +38,7 @@ class ProfileExtensionsUnitTest {
             username = "username",
             password = ""
         )
-        val module = updated.interactiveOpenVPNModule
+        val module = updated.interactiveOpenVPNModule()
 
         assertNotNull(module)
         assertTrue(updated.isInteractive)
@@ -68,7 +72,7 @@ class ProfileExtensionsUnitTest {
             password = "ignored-password",
             otp = "123456"
         )
-        val credentials = updated.interactiveOpenVPNModule?.credentials
+        val credentials = updated.interactiveOpenVPNModule()?.credentials
 
         assertEquals("saved-username", credentials?.username)
         assertEquals("saved-password123456", credentials?.password)
@@ -99,7 +103,7 @@ class ProfileExtensionsUnitTest {
             password = "ignored-password",
             otp = "123456"
         )
-        val credentials = updated.interactiveOpenVPNModule?.credentials
+        val credentials = updated.interactiveOpenVPNModule()?.credentials
 
         assertEquals("saved-username", credentials?.username)
         assertEquals("SCRV1:c2F2ZWQtcGFzc3dvcmQ=:MTIzNDU2", credentials?.password)
@@ -137,6 +141,12 @@ class ProfileExtensionsUnitTest {
         modules = listOf(TaggedModuleOpenVPN(module)),
         name = "Profile"
     )
+
+    private fun TaggedProfile.interactiveOpenVPNModule(): OpenVPNModule? {
+        val tagged = interactiveModule
+        require(tagged is TaggedModuleOpenVPN)
+        return tagged.value
+    }
 
     private companion object {
         const val MODULE_ID = "module-id"

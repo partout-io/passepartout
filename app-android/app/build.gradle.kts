@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    kotlin("plugin.serialization") version "1.9.0"
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -11,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.algoritmico.passepartout"
-        minSdk = 28
+        minSdk = 24
         targetSdk = 36
-        versionCode = 4100
-        versionName = "3.9.0"
+        versionCode = 4116
+        versionName = "3.9.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -53,14 +52,7 @@ android {
     }
     sourceSets {
         getByName("main") {
-            java.srcDirs("src/main/kotlin")
-            jniLibs.srcDirs("src/main/cpp/libs")
-        }
-        getByName("test") {
-            java.srcDirs("src/test/kotlin")
-        }
-        getByName("androidTest") {
-            java.srcDirs("src/androidTest/kotlin")
+            kotlin.directories += "../../partout/cross/android"
         }
     }
     buildToolsVersion = "36.0.0"
@@ -72,6 +64,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)

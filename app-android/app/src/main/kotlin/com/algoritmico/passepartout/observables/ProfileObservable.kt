@@ -4,38 +4,35 @@
 
 package com.algoritmico.passepartout.observables
 
-import com.algoritmico.passepartout.Globals
-import com.algoritmico.passepartout.abi.AppABIProfileProtocol
-import com.algoritmico.passepartout.abi.models.AppFeature
-import com.algoritmico.passepartout.abi.models.AppProfileHeader
-import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.abi.models.ProfileEventChangeRemoteImporting
-import com.algoritmico.passepartout.abi.models.ProfileEventReady
-import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.models.ProfileSharingFlag
+import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.models.AppFeature
+import com.algoritmico.passepartout.models.AppProfileHeader
+import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ProfileEventChangeRemoteImporting
+import com.algoritmico.passepartout.models.ProfileEventReady
+import com.algoritmico.passepartout.models.ProfileEventRefresh
+import com.algoritmico.passepartout.models.ProfileSharingFlag
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.Closeable
 
+@OptIn(FlowPreview::class)
 class ProfileObservable(
-    private val logTag: String,
-    private val abi: AppABIProfileProtocol,
-    events: Flow<Event>,
+    private val manager: ProfileManager,
     coroutineScope: CoroutineScope,
+    errorHandler: ErrorHandler,
     searchDebounceMillis: Long = 200L
 ) : Closeable {
     private val scope = CoroutineScope(
@@ -45,9 +42,6 @@ class ProfileObservable(
     private var allHeaders: Map<String, AppProfileHeader> = emptyMap()
     private val _state = MutableStateFlow(State())
     private val searchRequests = MutableStateFlow("")
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY)
-
-    val events: SharedFlow<Event> = _events.asSharedFlow()
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
@@ -56,9 +50,13 @@ class ProfileObservable(
             .onEach(::reloadHeaders)
             .launchIn(scope)
 
-        events
+        manager.events
             .onEach(::onUpdate)
             .launchIn(scope)
+
+        scope.launch {
+            manager.loadInitialProfiles(errorHandler::report)
+        }
     }
 
     fun search(name: String) {
@@ -68,26 +66,22 @@ class ProfileObservable(
         searchRequests.value = name
     }
 
-    fun onUpdate(event: Event) {
-        _events.tryEmit(event)
+    private fun onUpdate(event: Event) {
         when (event) {
             is ProfileEventReady -> {
                 _state.update {
                     it.copy(isReady = true)
                 }
             }
-
             is ProfileEventRefresh -> {
                 allHeaders = event.headers
                 reloadHeaders(search = state.value.search)
             }
-
             is ProfileEventChangeRemoteImporting -> {
                 _state.update {
                     it.copy(isRemoteImportingEnabled = event.isImporting)
                 }
             }
-
             else -> {
                 // Other app domains are intentionally ignored here.
             }
@@ -98,20 +92,20 @@ class ProfileObservable(
         return allHeaders[profileId]
     }
 
-    suspend fun profile(profileId: String): TaggedProfile? {
-        return abi.profile(profileId)
+    fun profile(profileId: String): TaggedProfile? {
+        return manager.profile(profileId)
     }
 
     suspend fun importText(text: String, filename: String) {
-        abi.importText(text, filename)
+        manager.importText(text, filename)
     }
 
     suspend fun remove(profileId: String) {
-        abi.remove(profileId)
+        manager.remove(profileId)
     }
 
     suspend fun remove(profileIds: Collection<String>) {
-        abi.remove(profileIds)
+        manager.remove(profileIds)
     }
 
     suspend fun removeAll() {

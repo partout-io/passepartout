@@ -1,4 +1,0 @@
-module CommonLibrary_C {
-    header "passepartout.h"
-    export *
-}

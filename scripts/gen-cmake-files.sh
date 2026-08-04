@@ -1,8 +1,8 @@
 #!/bin/bash
 LC_ALL=C
-passepartout=passepartout.cmake
+filelist=files.cmake
 pushd app-cross
-cat >${passepartout} <<EOF
+cat >${filelist} <<EOF
 set(APP_SOURCES
 $(find app -name "*.cc" | sort)
 )

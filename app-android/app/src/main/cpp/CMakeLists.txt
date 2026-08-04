@@ -1,78 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Davide De Rosa
+#
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.28)
-project(Passepartout)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+project(Passepartout LANGUAGES C)
+set(CMAKE_C_FLAGS "-W -Wall -Werror -pedantic")
 
-set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
+# Global constants
+set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")
+set(USE_OPENSSL ON)
+set(USE_MBEDTLS OFF)
 
-# Define NDK toolchain environment
-set(ENV_ANDROID
-    SWIFT_ANDROID_ABI=${ANDROID_ABI}
-    SWIFT_ANDROID_ARCH=aarch64
-    SWIFT_ANDROID_API_LEVEL=28
-    SWIFT_ANDROID_VERSION=6.3.1
-)
+# Define wrapper
+add_library(passepartout_wrapper SHARED "")
 
-# Build app-cross dependency with given environment
-include(ExternalProject)
-set(JNI_LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI})
-set(LIBPASSEPARTOUT_DIST ${CMAKE_CURRENT_SOURCE_DIR}/dist)
-set(LIBPASSEPARTOUT_INCLUDE ${PROJECT_ROOT}/app-cross/Sources/CommonLibrary_C/include)
-set(LIBPASSEPARTOUT_SOS
-    ${LIBPASSEPARTOUT_DIST}/libcrypto.so
-    ${LIBPASSEPARTOUT_DIST}/libpassepartout.so
-    ${LIBPASSEPARTOUT_DIST}/libssl.so
-    ${LIBPASSEPARTOUT_DIST}/libwg-go.so
-)
-set(LIBPASSEPARTOUT_NDK_TRIPLE aarch64-linux-android)
-set(LIBPASSEPARTOUT_CXX_SHARED_SO ${ANDROID_TOOLCHAIN_ROOT}/sysroot/usr/lib/${LIBPASSEPARTOUT_NDK_TRIPLE}/libc++_shared.so)
-ExternalProject_Add(libpassepartout
-    SOURCE_DIR ${PROJECT_ROOT}
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env ${ENV_ANDROID}
-        ${CMAKE_COMMAND}
-        -G Ninja
-        -DCMAKE_TOOLCHAIN_FILE=${PROJECT_ROOT}/app-cross/partout/toolchains/android.toolchain.cmake
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DOUTPUT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/bin
-        -DDIST_DIR=${LIBPASSEPARTOUT_DIST}
-        -S <SOURCE_DIR>
-        -B <BINARY_DIR>
-    BUILD_COMMAND ${CMAKE_COMMAND} -E env ${ENV_ANDROID}
-        ${CMAKE_COMMAND} --build <BINARY_DIR>
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E make_directory ${JNI_LIBS_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${LIBPASSEPARTOUT_SOS}
-            ${LIBPASSEPARTOUT_CXX_SHARED_SO}
-            ${JNI_LIBS_DIR}
-    BUILD_ALWAYS TRUE
-    BUILD_BYPRODUCTS
-        ${LIBPASSEPARTOUT_SOS}
-)
+# Set up Partout folders
+set(PARTOUT_ROOT ${PROJECT_ROOT}/partout)
+set(PARTOUT_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-# Native wrapper for JNI (.so)
-add_library(passepartout_wrapper SHARED
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/wrapper.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers.c
-)
-add_dependencies(passepartout_wrapper libpassepartout)
-target_include_directories(passepartout_wrapper PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${LIBPASSEPARTOUT_INCLUDE}
-)
+# Configure Partout
+set(PP_BUILD_OUTPUT "${PARTOUT_OUTPUT}")
+set(PP_BUILD_LIBRARY ON)
+set(PP_BUILD_USE_OPENVPN ON)
+set(PP_BUILD_USE_WIREGUARD ON)
+set(PP_BUILD_USE_OPENSSL ${USE_OPENSSL})
+set(PP_BUILD_USE_MBEDTLS ${USE_MBEDTLS})
+set(PP_BUILD_VENDOR_SOURCE bundled)
 
-# Import libpassepartout and deps
-foreach(SO_FILE IN LISTS LIBPASSEPARTOUT_SOS)
-    get_filename_component(SO_NAME ${SO_FILE} NAME_WE)
-    string(REGEX REPLACE "^lib" "" LIB_NAME ${SO_NAME})
-    string(MAKE_C_IDENTIFIER ${LIB_NAME} LIB_TARGET_SUFFIX)
-    set(LIB_TARGET libpassepartout_${LIB_TARGET_SUFFIX})
-    add_library(${LIB_TARGET} SHARED IMPORTED)
-    set_target_properties(${LIB_TARGET} PROPERTIES
-        IMPORTED_LOCATION ${SO_FILE}
-        IMPORTED_NO_SONAME 1
+# Configure build outputs
+set(PARTOUT_LIBRARY ${PARTOUT_OUTPUT}/partout/libpartout.so)
+set(PARTOUT_VENDOR_LIBRARIES "")
+list(APPEND PARTOUT_VENDOR_LIBRARIES
+        ${PARTOUT_OUTPUT}/wg-go/lib/libwg-go.so
+)
+if(USE_OPENSSL)
+    list(APPEND PARTOUT_VENDOR_LIBRARIES
+            ${PARTOUT_OUTPUT}/openssl/lib/libcrypto.so
+            ${PARTOUT_OUTPUT}/openssl/lib/libssl.so
     )
-    list(APPEND LIBPASSEPARTOUT_IMPORTED_LIBS ${LIB_TARGET})
-endforeach()
-target_link_libraries(passepartout_wrapper PRIVATE
-    ${LIBPASSEPARTOUT_IMPORTED_LIBS}
+endif()
+
+# Include subproject
+add_subdirectory("${PARTOUT_ROOT}" partout)
+
+# Merge with wrapper
+target_sources(passepartout_wrapper PRIVATE jvm.c)
+target_link_libraries(passepartout_wrapper PRIVATE partout android log)
+set(PARTOUT_LIBRARIES
+        ${PARTOUT_LIBRARY}
+        ${PARTOUT_VENDOR_LIBRARIES}
+)
+add_custom_command(TARGET passepartout_wrapper POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PARTOUT_LIBRARIES}
+        "$<TARGET_FILE_DIR:passepartout_wrapper>"
 )

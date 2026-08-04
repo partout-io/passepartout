@@ -8,11 +8,11 @@ import SwiftUI
 
 @MainActor @Observable
 public final class UserPreferencesObservable {
-    private let abi: AppPreferencesStore
+    private let preferences: AppPreferencesStore
     private let ui: UserDefaults
 
-    public init(abi: AppPreferencesStore, ui: UserDefaults) {
-        self.abi = abi
+    public init(preferences: AppPreferencesStore, ui: UserDefaults) {
+        self.preferences = preferences
         self.ui = ui
 
         // Fallbacks
@@ -20,13 +20,13 @@ public final class UserPreferencesObservable {
             UIPreference.pinsActiveProfile.key: true
         ])
 
-        dnsFallsBack = abi[\.dnsFallsBack]
-        experimental = abi[\.experimental]
-        extensiveLogging = abi[\.extensiveLogging]
+        dnsFallsBack = preferences[\.dnsFallsBack]
+        experimental = preferences[\.experimental]
+        extensiveLogging = preferences[\.extensiveLogging]
         keepsInMenu = ui.bool(forUIPreference: .keepsInMenu)
         lastInfrastructureRefresh = ui.object(forUIPreference: .lastInfrastructureRefresh) as? [String: TimeInterval]
         locksInBackground = ui.bool(forUIPreference: .locksInBackground)
-        logsPrivateData = abi[\.logsPrivateData]
+        logsPrivateData = preferences[\.logsPrivateData]
         onboardingStep = ui.string(forUIPreference: .onboardingStep).flatMap {
             OnboardingStep(rawValue: $0)
         }
@@ -35,7 +35,6 @@ public final class UserPreferencesObservable {
         profilesLayout = ui.string(forUIPreference: .profilesLayout).flatMap {
             ProfilesLayout(rawValue: $0)
         } ?? .list
-        relaxedVerification = abi[\.relaxedVerification]
         systemAppearance = ui.string(forUIPreference: .systemAppearance).flatMap {
             SystemAppearance(rawValue: $0)
         }
@@ -45,7 +44,7 @@ public final class UserPreferencesObservable {
 
     public var dnsFallsBack: Bool {
         didSet {
-            abi.overwrite {
+            preferences.overwrite {
                 $0.dnsFallsBack = dnsFallsBack
             }
         }
@@ -53,7 +52,7 @@ public final class UserPreferencesObservable {
 
     public var experimental: ABI.ExperimentalPreferences {
         didSet {
-            abi.overwrite {
+            preferences.overwrite {
                 $0.experimental = experimental
             }
         }
@@ -61,7 +60,7 @@ public final class UserPreferencesObservable {
 
     public var extensiveLogging: Bool {
         didSet {
-            abi.overwrite {
+            preferences.overwrite {
                 $0.extensiveLogging = extensiveLogging
             }
         }
@@ -87,7 +86,7 @@ public final class UserPreferencesObservable {
 
     public var logsPrivateData: Bool {
         didSet {
-            abi.overwrite {
+            preferences.overwrite {
                 $0.logsPrivateData = logsPrivateData
             }
         }
@@ -117,14 +116,6 @@ public final class UserPreferencesObservable {
         }
     }
 
-    public var relaxedVerification: Bool {
-        didSet {
-            abi.overwrite {
-                $0.relaxedVerification = relaxedVerification
-            }
-        }
-    }
-
     public var systemAppearance: SystemAppearance? {
         didSet {
             ui.set(systemAppearance?.rawValue, forUIPreference: .systemAppearance)
@@ -139,7 +130,7 @@ extension UserPreferencesObservable {
     public func onUpdate(_ event: ABI.Event) {
         switch event {
         case .iap(.status(let status)):
-            abi.overwrite {
+            preferences.overwrite {
                 $0.skipsPurchases = !status.isEnabled
             }
         default:

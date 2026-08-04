@@ -5,17 +5,20 @@
 package com.algoritmico.passepartout.observables
 
 import android.content.Intent
-import android.util.Log
-import com.algoritmico.passepartout.Globals
+import com.algoritmico.passepartout.context.AppLog
+import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.abi.models.AppPreferences
-import com.algoritmico.passepartout.abi.models.AppProfileStatus
-import com.algoritmico.passepartout.abi.models.AppTunnelInfo
-import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.abi.models.ProfileEventRefresh
-import com.algoritmico.passepartout.abi.models.ProfileTransfer
-import com.algoritmico.passepartout.extensions.isInteractive
+import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.appPreferences
+import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.models.AppPreferences
+import com.algoritmico.passepartout.models.AppProfileStatus
+import com.algoritmico.passepartout.models.AppTunnelInfo
+import com.algoritmico.passepartout.models.Event
+import com.algoritmico.passepartout.models.ProfileEventDelete
+import com.algoritmico.passepartout.models.ProfileTransfer
 import io.partout.PartoutTunnel
+import io.partout.extensions.isInteractive
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
@@ -38,18 +41,26 @@ import java.io.Closeable
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+sealed class TunnelObservableException: Exception() {
+    data object Generic: TunnelObservableException()
+    data class Interactive(val profile: TaggedProfile): TunnelObservableException()
+    data object VpnPermissionDenied: TunnelObservableException()
+}
+
 class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
-    events: Flow<Event>,
-    preferences: Flow<AppPreferences>,
+    profileManager: ProfileManager,
+    storeFlow: Flow<Preferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
+    private val preferences: Flow<AppPreferences> = storeFlow.appPreferences(logTag)
+
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
     )
 
-    private val _state = MutableStateFlow(State())
+    private val _state = MutableStateFlow(tunnel.state.value.toState())
     val state: StateFlow<State> = _state.asStateFlow()
     private var pendingConnectContinuation: CancellableContinuation<Unit>? = null
 
@@ -58,15 +69,16 @@ class TunnelObservable(
             .onEach(::onTunnelState)
             .launchIn(scope)
 
-        events
+        profileManager.events
             .onEach(::onUpdate)
             .launchIn(scope)
     }
 
     suspend fun connect(profile: TaggedProfile, force: Boolean = false) {
         if (!force && profile.isInteractive) {
-            throw InteractiveException(profile)
+            throw TunnelObservableException.Interactive(profile)
         }
+        AppLog.d(logTag, "Connect profile ${profile.id}")
         suspendCancellableCoroutine { continuation ->
             pendingConnectContinuation = continuation
             continuation.invokeOnCancellation {
@@ -80,7 +92,7 @@ class TunnelObservable(
                     pendingConnectContinuation = null
                 }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    continuation.resumeWithException(TunnelException)
+                    continuation.resumeWithException(TunnelObservableException.Generic)
                     return@callback
                 }
                 continuation.resume(Unit)
@@ -91,28 +103,30 @@ class TunnelObservable(
     private val onConnectIntent: (Intent) -> Unit = { intent ->
         val json = runBlocking {
             val prefs = preferences.first()
-            Globals.json.encodeToString(prefs)
+            JSON.encode(prefs)
         }
         intent.putExtra(PassepartoutVpnService.EXTRA_TUNNEL_PREFERENCES, json)
     }
 
-    suspend fun disconnect(profileId: String) =
+    suspend fun disconnect(profileId: String) {
+        AppLog.d(logTag, "Disconnect profile $profileId")
         suspendCancellableCoroutine { continuation ->
             tunnel.disconnect(profileId) callback@ { status ->
                 if (!continuation.isActive) {
                     return@callback
                 }
                 if (status != PartoutTunnel.ERROR_NONE) {
-                    continuation.resumeWithException(TunnelException)
+                    continuation.resumeWithException(TunnelObservableException.Generic)
                     return@callback
                 }
                 continuation.resume(Unit)
             }
         }
+    }
 
     suspend fun getEnvironmentValue(name: String): String? {
         val json = tunnel.requestEnvironmentValue(name)
-        Log.i(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
+        AppLog.d(logTag, "TunnelObservable.getEnvironmentValue($name) = $json")
         return json
     }
 
@@ -121,14 +135,14 @@ class TunnelObservable(
             tunnel.onVpnPermissionResult(true)
             return
         }
-
+        AppLog.d(logTag, "VPN permission denied")
         _state.update {
             it.copy(isVpnPermissionDenied = true)
         }
         pendingConnectContinuation?.let { continuation ->
             pendingConnectContinuation = null
             if (continuation.isActive) {
-                continuation.resumeWithException(VpnPermissionDeniedException())
+                continuation.resumeWithException(TunnelObservableException.VpnPermissionDenied)
             }
         }
     }
@@ -141,27 +155,15 @@ class TunnelObservable(
 
     private fun onTunnelState(tunnelState: PartoutTunnel.State) {
         _state.update {
-            it.copy(activeProfiles = tunnelState.snapshots.mapValues {
-                it.value.toAppTunnelInfo()
-            })
+            it.copy(activeProfiles = tunnelState.toState().activeProfiles)
         }
     }
 
     private fun onUpdate(event: Event) {
-        if (event !is ProfileEventRefresh) { return }
-        // Iterate through active tunnels
-        state.value.activeProfiles.forEach {
-            val info = it.value
-            // Ignore profiles that were not deleted
-            if (info.id in event.headers) {
-                return@forEach
-            }
-            // Ignore deletion of inactive profiles
-            if (!info.status.isActive) {
-                return@forEach
-            }
-            Log.i(logTag, "Disconnect from removed profile ${info.id}")
-            tunnel.disconnect(info.id) { _ -> }
+        if (event !is ProfileEventDelete) { return }
+        event.ids.forEach {
+            AppLog.i(logTag, "Disconnect from removed profile $it")
+            tunnel.disconnect(it, forget = true) { _ -> }
         }
     }
 
@@ -174,10 +176,6 @@ class TunnelObservable(
         val activeProfiles: Map<String, AppTunnelInfo> = emptyMap(),
         val isVpnPermissionDenied: Boolean = false
     )
-
-    data object TunnelException: Exception()
-    class InteractiveException(val profile: TaggedProfile): Exception()
-    private class VpnPermissionDeniedException: Exception()
 
     private val AppProfileStatus.isActive: Boolean
         get() = this == AppProfileStatus.connecting || this == AppProfileStatus.connected
@@ -195,6 +193,14 @@ class TunnelObservable(
                 )
             },
             lastErrorCode = environment?.lastErrorCode
+        )
+    }
+
+    private fun PartoutTunnel.State.toState(): State {
+        return State(
+            activeProfiles = snapshots.mapValues {
+                it.value.toAppTunnelInfo()
+            }
         )
     }
 

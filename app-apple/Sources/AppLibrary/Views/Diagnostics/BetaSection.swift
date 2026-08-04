@@ -10,9 +10,9 @@ public struct BetaSection: View {
 
     public var body: some View {
         Group {
-            Text("This is a beta build")
+            Text(Strings.Unlocalized.betaBuild)
         }
-        .themeSection(header: "Beta")
+        .themeSection(header: Strings.Unlocalized.beta)
     }
 }
 

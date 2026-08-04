@@ -32,11 +32,8 @@ let package = Package(
         ),
         .library(
             name: "TunnelLibrary",
-            targets: ["AppResources"]
+            targets: ["TunnelLibrary"]
         )
-    ],
-    dependencies: [
-        .package(path: "../app-shared")
     ],
     targets: [
         .target(
@@ -74,9 +71,7 @@ let package = Package(
         ),
         .target(
             name: "AppResources",
-            dependencies: [
-                .product(name: "CommonLibrary", package: "app-shared")
-            ],
+            dependencies: ["CommonLibrary"],
             resources: [
                 .process("Resources")
             ]
@@ -87,9 +82,24 @@ let package = Package(
                 .process("Resources")
             ]
         ),
+//        .binaryTarget(
+//            name: "PartoutNative",
+//            path: "PartoutNative.xcframework"
+//        ),
+        .target(
+            name: "TunnelLibrary",
+            dependencies: [
+                "AppResources"
+//                "PartoutNative",
+//                .product(name: "PartoutRuntime", package: "partout")
+            ]
+        ),
         .testTarget(
             name: "AppLibraryTests",
-            dependencies: ["AppLibrary"]
+            dependencies: [
+                "AppLibrary",
+                "AppResources"
+            ]
         ),
         .testTarget(
             name: "AppLibraryMainTests",
@@ -97,3 +107,121 @@ let package = Package(
         )
     ]
 )
+
+// MARK: - CommonLibrary*
+
+package.products.append(
+    .library(
+        name: "CommonLibrary",
+        targets: ["CommonLibrary"]
+    )
+)
+
+package.dependencies.append(contentsOf: [
+    .package(path: "../partout"),
+    .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
+])
+
+package.targets.append(contentsOf: [
+    .target(
+        name: "CommonData",
+        dependencies: ["CommonLibraryCore"]
+    ),
+    .target(
+        name: "CommonDataPreferences",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Preferences.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonDataProfiles",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Profiles.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonDataProviders",
+        dependencies: ["CommonData"],
+        resources: [
+            .process("Providers.xcdatamodeld")
+        ]
+    ),
+    .target(
+        name: "CommonLibrary",
+        dependencies: [
+            "CommonLibraryCore",
+            .target(name: "CommonLibraryApple", condition: .when(platforms: [.iOS, .macOS, .tvOS]))
+        ]
+    ),
+    .target(
+        name: "CommonLibraryApple",
+        dependencies: [
+            "CommonDataPreferences",
+            "CommonDataProfiles",
+            "CommonDataProviders",
+            "CommonLibraryCore"
+        ]
+    ),
+    .target(
+        name: "CommonLibraryCore",
+        dependencies: {
+            var list: [Target.Dependency] = [
+                .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                "partout"
+            ]
+            list.append("CommonProviders")
+            return list
+        }()
+    ),
+    .testTarget(
+        name: "CommonLibraryTests",
+        dependencies: ["CommonLibrary"],
+        resources: [
+            .process("Resources")
+        ]
+    )
+])
+
+// MARK: Providers
+
+package.products.append(
+    .library(
+        name: "CommonProviders",
+        targets: ["CommonProviders"]
+    )
+)
+package.targets.append(contentsOf: [
+    .target(
+        name: "CommonProviders",
+        dependencies: ["CommonProvidersAPI"]
+    ),
+    .target(
+        name: "CommonProvidersAPI",
+        dependencies: ["CommonProvidersCore"],
+        resources: [
+            .copy("JSON")
+        ]
+    ),
+    .target(
+        name: "CommonProvidersCore",
+        dependencies: ["partout"]
+    )
+])
+#if canImport(Darwin)
+package.targets.append(contentsOf: [
+    .testTarget(
+        name: "CommonProvidersTests",
+        dependencies: ["CommonProviders"],
+        resources: [
+            .copy("Resources")
+        ]
+    ),
+    .testTarget(
+        name: "CommonProvidersAPITests",
+        dependencies: ["CommonProvidersAPI"]
+    )
+])
+#endif

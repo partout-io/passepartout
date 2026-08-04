@@ -1,2 +1,2 @@
 #!/bin/bash
-cd app-apple && swift test
+cd app-apple && FOR_TESTING=1 swift test

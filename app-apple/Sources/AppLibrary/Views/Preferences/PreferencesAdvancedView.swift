@@ -38,9 +38,8 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .newProfileEncoding,
         .ovpnV3,
-        .wgCrossV2
+        .zigRuntime
     ]
 
     var canOverride: Bool {

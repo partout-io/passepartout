@@ -1,154 +1,191 @@
-// SPDX-FileCopyrightText: 2026 Davide De Rosa
-//
-// SPDX-License-Identifier: GPL-3.0
-
 package com.algoritmico.passepartout.observables
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import com.algoritmico.passepartout.Globals
-import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.abi.AppABIKeyStore
-import com.algoritmico.passepartout.abi.AppABIProfile
-import com.algoritmico.passepartout.abi.AppABIVersion
-import com.algoritmico.passepartout.abi.PassepartoutWrapper
-import com.algoritmico.passepartout.abi.helpers.ABIEventDispatcher
-import com.algoritmico.passepartout.abi.helpers.ABIURLFetcher
-import com.algoritmico.passepartout.abi.models.AppConstants
-import com.algoritmico.passepartout.abi.models.AppConfiguration
-import com.algoritmico.passepartout.abi.models.Event
-import com.algoritmico.passepartout.appBundle
-import com.algoritmico.passepartout.readAsset
-import io.partout.PartoutTunnel
+import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.business.managers.ConfigManager
+import com.algoritmico.passepartout.business.managers.ProfileManager
+import com.algoritmico.passepartout.business.managers.VersionChecker
+import com.algoritmico.passepartout.context.AndroidConstants
+import com.algoritmico.passepartout.context.AppLog
+import com.algoritmico.passepartout.context.appBundle
+import com.algoritmico.passepartout.context.appConstants
+import com.algoritmico.passepartout.context.defaultAndroidConstants
+import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
+import com.algoritmico.passepartout.context.newConfigManager
+import com.algoritmico.passepartout.context.newProfileManager
+import com.algoritmico.passepartout.context.newTunnel
+import com.algoritmico.passepartout.context.newVersionChecker
+import com.algoritmico.passepartout.context.userPreferencesStore
+import com.algoritmico.passepartout.models.AppConfiguration
+import com.algoritmico.passepartout.models.AppPreferenceKey
+import com.algoritmico.passepartout.models.ConfigFlag
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import java.io.Closeable
-import java.io.File
 
 class AppContext(
+    private val logTag: String,
     context: Context,
-    coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
+    val androidConstants: AndroidConstants = defaultAndroidConstants,
     requestVpnPermission: (Intent) -> Unit
 ) : Closeable {
     private val applicationContext = context.applicationContext
-    private val library = PassepartoutWrapper()
-    private val eventDispatcher: ABIEventDispatcher = ABIEventDispatcher
-    private var eventSubscription: Closeable? = eventDispatcher.register(::handleEvent)
+    private val library = androidConstants.newWrapper()
 
-    private val appEvents = MutableSharedFlow<Event>(
-        replay = Globals.EVENT_REPLAY,
-        extraBufferCapacity = Globals.EVENT_BUFFER_CAPACITY
-    )
+    // Internal logic
+    private val configManager: ConfigManager
+    private val profileManager: ProfileManager
+    private val versionChecker: VersionChecker
+    private var applicationActiveJob: Job? = null
 
+    // Expose to Compose
+    val appConfiguration: AppConfiguration
+    val configObservable: ConfigObservable
+    val diagnosticsObservable: DiagnosticsObservable
+    val errorHandler: ErrorHandler
+    val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
     val userPreferencesObservable: UserPreferencesObservable
-    val configObservable: ConfigObservable
-    val iapObservable: IAPObservable
     val versionObservable: VersionObservable
-    val appConfiguration: AppConfiguration
 
     init {
+        AppLog.i(logTag, "Started app")
         val partoutVersion = library.partoutVersion()
-        Log.i(Globals.TAG_APP, ">>> Partout $partoutVersion")
-        Log.e(Globals.TAG_APP, ">>> Started app")
+        AppLog.i(logTag, "Partout $partoutVersion")
 
+        // User preferences
+        val userPreferencesStore = applicationContext.userPreferencesStore
         userPreferencesObservable = UserPreferencesObservable(
-            Globals.TAG_APP,
-            AppABIKeyStore(library),
-            appEvents,
+            logTag,
             coroutineScope,
-            applicationContext.userPreferencesStore
+            userPreferencesStore
         )
-        val preferences = userPreferencesObservable.preferencesJSON()
-        Log.i(Globals.TAG_APP, ">>> Preferences: $preferences")
+        val preferences = userPreferencesObservable.currentPreferences
+        AppLog.i(logTag, "Preferences: $preferences")
+        library.partoutInit(androidConstants.tags.appPartout, preferences.logsPrivateData)
 
+        // Static app configuration
         val bundle = applicationContext.appBundle()
-        val bundleJSON = Globals.json.encodeToString(bundle)
-        Log.e(Globals.TAG_APP, ">>> Bundle: $bundleJSON")
-
-        val constants = applicationContext.readAsset(Globals.CONSTANTS_FILENAME)
+        AppLog.d(logTag, "Bundle: $bundle")
+        val constants = applicationContext.appConstants(androidConstants.assets)
+        AppLog.d(logTag, "Constants: $constants")
         appConfiguration = AppConfiguration(
             bundle = bundle,
-            constants = Globals.json.decodeFromString<AppConstants>(constants)
+            constants = constants
         )
-        versionObservable = VersionObservable(
-            AppABIVersion(library),
-            appEvents,
-            coroutineScope
-        )
-        configObservable = ConfigObservable(
-            appEvents,
-            coroutineScope
-        )
-        iapObservable = IAPObservable(applicationContext)
-        val profilesDirectory = File(applicationContext.noBackupFilesDir, Globals.PROFILES_DIRECTORY)
-            .apply {
-                mkdirs()
-            }
-        val cacheDirectory = applicationContext.cacheDir
-        val code = library.appInit(
-            bundleJSON,
-            constants,
-            preferences,
-            profilesDirectory.absolutePath,
-            cacheDirectory.absolutePath,
-            ABIURLFetcher,
-            eventDispatcher
-        )
-        if (code != 0) {
-            close()
-            throw RuntimeException("Unable to init app (code=$code)")
-        }
 
-        profileObservable = ProfileObservable(
-            Globals.TAG_APP,
-            AppABIProfile(library),
-            appEvents,
-            coroutineScope
-        )
-        val tunnel = PartoutTunnel(
-            Globals.TAG_APP,
+        // Beta?
+        val isBeta = context.isBetaSuggestedByAndroidAPI
+
+        // Managers
+        val tunnel = appConfiguration.newTunnel(
+            logTag,
             applicationContext,
-            PassepartoutVpnService::class.java,
-            isForeground = Globals.TUNNEL_IS_FOREGROUND,
+            androidConstants.tunnel,
             requestVpnPermission
         )
+        configManager = appConfiguration.newConfigManager(
+            logTag,
+            isBeta,
+            androidConstants.events
+        )
+        profileManager = appConfiguration.newProfileManager(
+            logTag,
+            applicationContext,
+            library,
+            androidConstants.events
+        )
+        versionChecker = appConfiguration.newVersionChecker(
+            logTag,
+            userPreferencesStore,
+            coroutineScope,
+            androidConstants.events
+        )
+
+        // Observables from managers
+        errorHandler = ErrorHandler(androidConstants.tags.app)
+        configObservable = ConfigObservable(
+            configManager,
+            coroutineScope
+        )
+        diagnosticsObservable = DiagnosticsObservable(
+            tags = androidConstants.tags,
+            diagnosticsConstants = androidConstants.diagnostics
+        )
+        profileObservable = ProfileObservable(
+            profileManager,
+            coroutineScope,
+            errorHandler
+        )
+        profileImporter = ProfileImporter(
+            logTag,
+            applicationContext,
+            coroutineScope,
+            profileManager,
+            applicationContext.getString(R.string.placeholders_profile_imported_name),
+            errorHandler,
+            onImportSuccess = ::onApplicationActive
+        )
         tunnelObservable = TunnelObservable(
-            Globals.TAG_APP,
+            logTag,
             tunnel,
-            appEvents,
-            userPreferencesObservable.preferences,
+            profileManager,
+            userPreferencesStore.data,
+            coroutineScope
+        )
+        versionObservable = VersionObservable(
+            versionChecker,
             coroutineScope
         )
     }
 
     fun onApplicationActive() {
-        library.appOnForeground()
-    }
-
-    private fun handleEvent(event: Event) {
-        Log.i(Globals.TAG_APP, ">>> AppContext: $event")
-        appEvents.tryEmit(event)
+        // FIXME: ###, AppContext, LifecycleManager.onApplicationActive()
+//        library.appOnForeground()
+        if (applicationActiveJob?.isActive == true) {
+            return
+        }
+        applicationActiveJob = coroutineScope.launch {
+            supervisorScope {
+                launch {
+                    runCatchingNonFatal {
+                        if (!configManager.refreshBundle()) {
+                            return@runCatchingNonFatal
+                        }
+                        val flags = configManager.activeFlags
+                        persistConfigFlags(flags)
+                    }.onFailure {
+                        AppLog.w(logTag, "Unable to update config flags", it)
+                        configManager.resetTTL()
+                    }
+                }
+                launch {
+                    versionChecker.checkLatestRelease()
+                }
+            }
+        }
     }
 
     override fun close() {
-        eventSubscription?.close()
-        eventSubscription = null
-        userPreferencesObservable.close()
         configObservable.close()
-        iapObservable.close()
-        versionObservable.close()
         profileObservable.close()
         tunnelObservable.close()
-        library.appDeinit { _, _ -> }
+        userPreferencesObservable.close()
+        versionObservable.close()
+        versionChecker.close()
+    }
+
+    private suspend fun persistConfigFlags(flags: Set<ConfigFlag>) {
+        userPreferencesObservable.updatePreferences(
+            fields = listOf(AppPreferenceKey.configFlags)
+        ) {
+            it.copy(configFlags = flags.toList())
+        }
     }
 }
-
-private val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
-    Globals.PREFERENCES_STORE_NAME
-)

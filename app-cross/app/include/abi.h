@@ -5,7 +5,7 @@
  */
 
 #pragma once
-#include <wx/wx.h>
+#include <wx/event.h>
 
 wxDECLARE_EVENT(wxEVT_ABI_EVENT, wxCommandEvent);
 void onABIEvent(void *ctx, const char *event_json);

@@ -28,6 +28,72 @@ public enum Strings {
       }
     }
   }
+  public enum Android {
+    public enum Alerts {
+      public enum InteractiveUnsupported {
+        /// %@ requires input that is not supported by this app version.
+        public static func message(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "android.alerts.interactive_unsupported.message", String(describing: p1), fallback: "%@ requires input that is not supported by this app version.")
+        }
+        /// Interactive profile
+        public static let title = Strings.tr("Localizable", "android.alerts.interactive_unsupported.title", fallback: "Interactive profile")
+      }
+      public enum VpnPermission {
+        /// %@ needs VPN permission to start a connection.
+        public static func message(_ p1: Any) -> String {
+          return Strings.tr("Localizable", "android.alerts.vpn_permission.message", String(describing: p1), fallback: "%@ needs VPN permission to start a connection.")
+        }
+        /// Open VPN settings
+        public static let openSettings = Strings.tr("Localizable", "android.alerts.vpn_permission.open_settings", fallback: "Open VPN settings")
+        /// VPN permission required
+        public static let title = Strings.tr("Localizable", "android.alerts.vpn_permission.title", fallback: "VPN permission required")
+      }
+    }
+    public enum Errors {
+      public enum ProfileImporter {
+        /// Unable to read profile content.
+        public static let empty = Strings.tr("Localizable", "android.errors.profile_importer.empty", fallback: "Unable to read profile content.")
+      }
+    }
+    public enum Profiles {
+      public enum Actions {
+        public enum Add {
+          /// Add profile
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.actions.add.content_description", fallback: "Add profile")
+        }
+        public enum Delete {
+          /// Delete profiles
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.actions.delete.content_description", fallback: "Delete profiles")
+        }
+      }
+      public enum Layout {
+        public enum Grid {
+          /// Grid profiles
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.layout.grid.content_description", fallback: "Grid profiles")
+        }
+        public enum List {
+          /// List profiles
+          public static let contentDescription = Strings.tr("Localizable", "android.profiles.layout.list.content_description", fallback: "List profiles")
+        }
+      }
+      public enum Selection {
+        /// %d selected
+        public static func count(_ p1: Int) -> String {
+          return Strings.tr("Localizable", "android.profiles.selection.count", p1, fallback: "%d selected")
+        }
+      }
+    }
+    public enum VpnService {
+      public enum Channel {
+        /// Notification for the VPN foreground service
+        public static let description = Strings.tr("Localizable", "android.vpn_service.channel.description", fallback: "Notification for the VPN foreground service")
+      }
+      public enum Status {
+        /// Stopped
+        public static let stopped = Strings.tr("Localizable", "android.vpn_service.status.stopped", fallback: "Stopped")
+      }
+    }
+  }
   public enum Entities {
     public enum Dns {
       /// Domains
@@ -108,14 +174,14 @@ public enum Strings {
       public static let emptyProducts = Strings.tr("Localizable", "errors.app.empty_products", fallback: "Unable to fetch products, please retry later.")
       /// Profile name is empty.
       public static let emptyProfileName = Strings.tr("Localizable", "errors.app.empty_profile_name", fallback: "Profile name is empty.")
-      /// Unable to import profiles.
-      public static let `import` = Strings.tr("Localizable", "errors.app.import", fallback: "Unable to import profiles.")
       /// Some active modules are incompatible, try to only activate one of them.
       public static let incompatibleModules = Strings.tr("Localizable", "errors.app.incompatible_modules", fallback: "Some active modules are incompatible, try to only activate one of them.")
       /// Please finish the configuration of the %@ module.
       public static func incompleteModule(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.app.incomplete_module", String(describing: p1), fallback: "Please finish the configuration of the %@ module.")
       }
+      /// Purchase required
+      public static let ineligible = Strings.tr("Localizable", "errors.app.ineligible", fallback: "Purchase required")
       /// Invalid fields.
       public static let invalidFields = Strings.tr("Localizable", "errors.app.invalid_fields", fallback: "Invalid fields.")
       /// Module %@ is malformed. %@
@@ -146,6 +212,12 @@ public enum Strings {
       public static let tunnel = Strings.tr("Localizable", "errors.app.tunnel", fallback: "Unable to execute operation.")
       /// Unable to start the import. Make sure that your TV is properly connected to the local network.
       public static let webReceiver = Strings.tr("Localizable", "errors.app.web_receiver", fallback: "Unable to start the import. Make sure that your TV is properly connected to the local network.")
+      public enum Import {
+        /// Importing a binary file.
+        public static let binary = Strings.tr("Localizable", "errors.app.import.binary", fallback: "Importing a binary file.")
+        /// Unable to import profiles.
+        public static let generic = Strings.tr("Localizable", "errors.app.import.generic", fallback: "Unable to import profiles.")
+      }
       public enum Openvpn {
         /// OpenVPN compression is unsafe and no longer supported.
         public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
@@ -212,8 +284,6 @@ public enum Strings {
       public static let encryption = Strings.tr("Localizable", "errors.tunnel.encryption", fallback: "Encryption failed")
       /// Failed
       public static let generic = Strings.tr("Localizable", "errors.tunnel.generic", fallback: "Failed")
-      /// Purchase required
-      public static let ineligible = Strings.tr("Localizable", "errors.tunnel.ineligible", fallback: "Purchase required")
       /// Missing routing
       public static let routing = Strings.tr("Localizable", "errors.tunnel.routing", fallback: "Missing routing")
       /// Server shutdown
@@ -348,8 +418,12 @@ public enum Strings {
       public static let add = Strings.tr("Localizable", "global.actions.add", fallback: "Add")
       /// Allow
       public static let allow = Strings.tr("Localizable", "global.actions.allow", fallback: "Allow")
+      /// Back
+      public static let back = Strings.tr("Localizable", "global.actions.back", fallback: "Back")
       /// Cancel
       public static let cancel = Strings.tr("Localizable", "global.actions.cancel", fallback: "Cancel")
+      /// Close
+      public static let close = Strings.tr("Localizable", "global.actions.close", fallback: "Close")
       /// Connect
       public static let connect = Strings.tr("Localizable", "global.actions.connect", fallback: "Connect")
       /// Delete
@@ -442,6 +516,8 @@ public enum Strings {
       }
       /// 1 Entry
       public static let entriesOne = Strings.tr("Localizable", "global.nouns.entries_one", fallback: "1 Entry")
+      /// Error
+      public static let error = Strings.tr("Localizable", "global.nouns.error", fallback: "Error")
       /// Features
       public static let features = Strings.tr("Localizable", "global.nouns.features", fallback: "Features")
       /// Filters
@@ -514,6 +590,8 @@ public enum Strings {
       public static let `protocol` = Strings.tr("Localizable", "global.nouns.protocol", fallback: "Protocol")
       /// Provider
       public static let provider = Strings.tr("Localizable", "global.nouns.provider", fallback: "Provider")
+      /// Providers
+      public static let providers = Strings.tr("Localizable", "global.nouns.providers", fallback: "Providers")
       /// Public key
       public static let publicKey = Strings.tr("Localizable", "global.nouns.public_key", fallback: "Public key")
       /// Purchases
@@ -803,10 +881,6 @@ public enum Strings {
     }
   }
   public enum Onboarding {
-    public enum DropLzo {
-      /// Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.
-      public static let message = Strings.tr("Localizable", "onboarding.drop_lzo.message", fallback: "Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.")
-    }
     public enum Migrate {
       /// Make sure to upgrade all your devices to the latest version to use the new profiles.
       public static let message = Strings.tr("Localizable", "onboarding.migrate.message", fallback: "Make sure to upgrade all your devices to the latest version to use the new profiles.")
@@ -818,6 +892,10 @@ public enum Strings {
     public enum Migrate3515 {
       /// Version 3.5.15 changed the way profiles are stored.
       public static let message = Strings.tr("Localizable", "onboarding.migrate_3_5_15.message", fallback: "Version 3.5.15 changed the way profiles are stored.")
+    }
+    public enum Migrate395Providers {
+      /// Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_9_5_providers.message", fallback: "Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.")
     }
   }
   public enum Placeholders {
@@ -1110,8 +1188,6 @@ public enum Strings {
       public static let modernCrypto = Strings.tr("Localizable", "views.preferences.modern_crypto", fallback: "Modern cryptography")
       /// Pin active profile
       public static let pinsActiveProfile = Strings.tr("Localizable", "views.preferences.pins_active_profile", fallback: "Pin active profile")
-      /// Alternative verification
-      public static let relaxedVerification = Strings.tr("Localizable", "views.preferences.relaxed_verification", fallback: "Alternative verification")
       /// Appearance
       public static let systemAppearance = Strings.tr("Localizable", "views.preferences.system_appearance", fallback: "Appearance")
       public enum Advanced {

@@ -1,1 +1,1 @@
-* Update Partout with cross-platform event loop (#1853)
+* Partout: Integrate Zig-based runtimes (#1898)

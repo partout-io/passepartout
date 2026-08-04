@@ -44,22 +44,19 @@ extension ReportIssueButton {
             ))
             service.recipients = [issue.to(cfg: appConfiguration)]
             service.subject = issue.subject
-            service.perform(withItems: issue.items(cfg: appConfiguration))
+            service.perform(withItems: issue.items())
         }
     }
 }
 
 private extension ABI.Issue {
-    func items(cfg: ABI.AppConfiguration) -> [Any] {
+    func items() -> [Any] {
         var list: [Any] = []
         list.append(body)
-        if let appLog,
-           let url = appLog.toTemporaryURL(withFilename: cfg.appLogPath) {
-            list.append(url)
-        }
-        if let tunnelLog,
-           let url = tunnelLog.toTemporaryURL(withFilename: cfg.tunnelLogPath) {
-            list.append(url)
+        attachments.forEach {
+            if let url = $0.content.toTemporaryURL(withFilename: $0.filename) {
+                list.append(url)
+            }
         }
         return list
     }

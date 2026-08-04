@@ -70,7 +70,8 @@ private struct ConnectionStatusDynamicText: View {
 private extension ConnectionStatusDynamicText {
     var statusDescription: String {
         if let lastErrorCode = tunnel.lastErrorCode(for: profileId) {
-            return lastErrorCode.localizedDescription(style: .tunnel)
+            let statusError = LocalizedConnectionStatusError(lastErrorCode: lastErrorCode)
+            return statusError.localizedDescription
         }
         let status = tunnel.status(for: profileId)
         switch status {

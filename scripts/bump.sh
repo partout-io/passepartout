@@ -51,6 +51,22 @@ set -- "${positional_args[@]}" # restore positional parameters
 set -e
 
 cwd=`dirname $0`
+apple_xcconfig_path="app-apple/Passepartout/Config.xcconfig"
+android_gradle_path="app-android/app/build.gradle.kts"
+
+if [[ -z "$opt_build" ]]; then
+    apple_build=`app-apple/ci/xcconfig-get.sh "$apple_xcconfig_path" CURRENT_PROJECT_VERSION`
+    android_build=`sed -n -E "s/^[[:space:]]*versionCode = ([0-9]+)[[:space:]]*$/\1/p" "$android_gradle_path"`
+    if [[ -z "$android_build" ]]; then
+        echo "Android versionCode not found in $android_gradle_path"
+        exit 1
+    fi
+    current_build="$apple_build"
+    if [[ "$android_build" -gt "$current_build" ]]; then
+        current_build="$android_build"
+    fi
+    opt_build=$((current_build + 1))
+fi
 
 if [[ -n $opt_dry_run ]]; then
     echo "version = $opt_version"
@@ -92,10 +108,6 @@ fi
 pushd "app-apple"
 
 source "scripts/env.sh"
-if [[ -z "$opt_build" ]]; then
-    current_build=`ci/xcconfig-get.sh "$xcconfig_path" CURRENT_PROJECT_VERSION`
-    opt_build=$((current_build + 1))
-fi
 echo "Set build number to $opt_build..."
 ci/xcconfig-set.sh "$xcconfig_path" CURRENT_PROJECT_VERSION "$opt_build"
 if [[ -n "$opt_version" ]]; then
@@ -105,6 +117,16 @@ fi
 git add "$xcconfig_path"
 
 popd
+
+# Android
+
+echo "Set Android build number to $opt_build..."
+app-android/ci/gradle-set.sh "$android_gradle_path" versionCode "$opt_build"
+if [[ -n "$opt_version" ]]; then
+    echo "Set Android version number to $opt_version..."
+    app-android/ci/gradle-set.sh "$android_gradle_path" versionName "$opt_version"
+fi
+git add "$android_gradle_path"
 
 # Cross
 

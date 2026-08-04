@@ -67,12 +67,15 @@ components:
               format: uri
             configTTL:
               type: number
+            betaTTLFactor:
+              type: number
           required:
           - homeURL
           - eulaURL
           - appStoreDownloadURL
           - macDownloadURL
           - configTTL
+          - betaTTLFactor
         github:
           type: object
           properties:
@@ -214,6 +217,7 @@ components:
           - formatter
           - sinceLast
           - options
+          - filenames
       required:
       - deviceIdLength
       - containers
@@ -247,6 +251,7 @@ components:
     AppErrorCode:
       type: string
       x-enum-varnames:
+      - binaryFile
       - corruptProviderModule
       - couldNotLaunch
       - emptyProducts
@@ -260,7 +265,9 @@ components:
       - invalidField
       - malformedModule
       - missingProviderEntity
+      - missingProviderOption
       - moduleRequiresConnection
+      - multipleTunnels
       - noActiveModules
       - notFound
       - openVPNPassphraseRequired
@@ -280,6 +287,7 @@ components:
       - webUploader
       - wireGuardEmptyPeers
       enum:
+      - binaryFile
       - corruptProviderModule
       - couldNotLaunch
       - emptyProducts
@@ -293,7 +301,9 @@ components:
       - invalidField
       - malformedModule
       - missingProviderEntity
+      - missingProviderOption
       - moduleRequiresConnection
+      - multipleTunnels
       - noActiveModules
       - notFound
       - openVPNPassphraseRequired
@@ -344,8 +354,6 @@ components:
       - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
       - skipsPurchases
       enum:
       - deviceId
@@ -357,8 +365,6 @@ components:
       - lastCheckedVersionDate
       - lastUsedProfileId
       - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
       - skipsPurchases
     AppPreferences:
       type: object
@@ -384,10 +390,6 @@ components:
           type: string
         logsPrivateData:
           type: boolean
-        newProfileEncoding:
-          type: boolean
-        relaxedVerification:
-          type: boolean
         skipsPurchases:
           type: boolean
       required:
@@ -396,8 +398,6 @@ components:
       - experimental
       - extensiveLogging
       - logsPrivateData
-      - newProfileEncoding
-      - relaxedVerification
       - skipsPurchases
     AppProfileHeader:
       type: object
@@ -493,8 +493,8 @@ components:
           IAPEventNewReceipt: "#/components/schemas/IAPEventNewReceipt"
           IAPEventStatus: "#/components/schemas/IAPEventStatus"
           MixedEventShouldReconnect: "#/components/schemas/MixedEventShouldReconnect"
-          MixedEventShouldUpdatePreferences: "#/components/schemas/MixedEventShouldUpdatePreferences"
           ProfileEventChangeRemoteImporting: "#/components/schemas/ProfileEventChangeRemoteImporting"
+          ProfileEventDelete: "#/components/schemas/ProfileEventDelete"
           ProfileEventLocalProfiles: "#/components/schemas/ProfileEventLocalProfiles"
           ProfileEventReady: "#/components/schemas/ProfileEventReady"
           ProfileEventRefresh: "#/components/schemas/ProfileEventRefresh"
@@ -548,21 +548,38 @@ components:
     ConfigFlag:
       type: string
       x-enum-varnames:
-      - allowsRelaxedVerification
       - appNotWorking
-      - forcesRelaxedVerification
-      - newProfileEncoding
       - ovpnV3
-      - wgCrossV2
       - unknown
+      - zigRuntime
       enum:
-      - allowsRelaxedVerification
       - appNotWorking
-      - forcesRelaxedVerification
-      - newProfileEncoding
       - ovpnV3
-      - wgCrossV2
       - unknown
+      - zigRuntime
+    ConfigBundle.Config:
+      type: object
+      additionalProperties: false
+      properties:
+        rate:
+          type: integer
+        platforms:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ConfigBundle.Platform"
+        minBuild:
+          type: integer
+        data:
+          type: object
+      required:
+      - rate
+    ConfigBundle.Platform:
+      x-enum-varnames:
+      - android
+      - apple
+      enum:
+      - android
+      - apple
     ConnectionStatus:
       type: object
     Credits:
@@ -702,6 +719,52 @@ components:
       required:
       - type
       - isEnabled
+    Issue:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        appLine:
+          type: string
+        purchasedProducts:
+          type: array
+          items:
+            type: string
+        providerLastUpdates:
+          type: object
+          additionalProperties:
+            "$ref": "#/components/schemas/Timestamp"
+        attachments:
+          type: array
+          items:
+            "$ref": "#/components/schemas/IssueAttachment"
+        osLine:
+          type: string
+        deviceLine:
+          type: string
+      required:
+      - id
+      - comment
+      - purchasedProducts
+      - providerLastUpdates
+      - attachments
+      - osLine
+    IssueAttachment:
+      type: object
+      additionalProperties: false
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          format: byte
+      required:
+      - filename
+      - content
     LocalLoggerOptions:
       type: object
       properties:
@@ -750,41 +813,8 @@ components:
       required:
       - type
       - profile
-    MixedEventShouldUpdatePreferences:
-      type: object
-      additionalProperties: false
-      allOf:
-      - "$ref": "#/components/schemas/Event"
-      properties:
-        type:
-          const: MixedEventShouldUpdatePreferences
-          type: string
-        preferences:
-          "$ref": "#/components/schemas/AppPreferences"
-        fields:
-          type: array
-          items:
-            "$ref": "#/components/schemas/AppPreferenceKey"
-      required:
-      - type
-      - preferences
-      - fields
     ModuleType:
-      type: string
-      x-enum-varnames:
-      - DNS
-      - HTTPProxy
-      - IP
-      - OnDemand
-      - OpenVPN
-      - WireGuard
-      enum:
-      - DNS
-      - HTTPProxy
-      - IP
-      - OnDemand
-      - OpenVPN
-      - WireGuard
+      type: object
     OriginalPurchase:
       type: object
       additionalProperties: false
@@ -810,6 +840,22 @@ components:
       required:
       - type
       - isImporting
+    ProfileEventDelete:
+      type: object
+      additionalProperties: false
+      allOf:
+      - "$ref": "#/components/schemas/Event"
+      properties:
+        type:
+          const: ProfileEventDelete
+          type: string
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+      - type
+      - ids
     ProfileEventLocalProfiles:
       type: object
       additionalProperties: false

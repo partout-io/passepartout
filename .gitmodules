@@ -1,6 +1,3 @@
 [submodule "partout"]
 	path = partout
 	url = https://github.com/partout-io/partout
-[submodule "app-cross/wx"]
-	path = app-cross/wx
-	url = https://github.com/wxWidgets/wxWidgets

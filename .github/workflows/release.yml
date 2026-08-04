@@ -26,6 +26,7 @@ jobs:
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+      - uses: mlugg/setup-zig@v2
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}
@@ -40,9 +41,12 @@ jobs:
       - name: Run Apple tests
         run: |
           ci/run-apple-tests.sh
-      - name: Run Partout tests
+      - name: Run Partout tests (Swift)
         run: |
-          ci/run-partout-tests.sh
+          ci/run-partout-swift-tests.sh
+      - name: Run Partout tests (Zig)
+        run: |
+          ci/run-partout-zig-tests.sh
     outputs:
       version: ${{ steps.app_version.outputs.version }}
       build: ${{ steps.app_version.outputs.build }}
@@ -50,8 +54,9 @@ jobs:
     name: Upload to App Store Connect
     runs-on: macos-26
     needs: validate_codebase
+    continue-on-error: true
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         platform: ["iOS", "macOS", "tvOS"]
     steps:
@@ -206,7 +211,7 @@ jobs:
           git tag -as "$tag" -m "$tag"
           git push origin "$tag"
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{ env.APP_VERSION }}
           tag_name: "v${{ env.APP_VERSION }}"

@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:app-cross}",
+            "name": "Debug passepartout-tunnel",
+            "target": "passepartout-tunnel",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug passepartout-tunnel"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:app-cross}",
+            "name": "Release passepartout-tunnel",
+            "target": "passepartout-tunnel",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release passepartout-tunnel"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:app-cross}",
+            "name": "Debug passepartout",
+            "target": "passepartout",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug passepartout"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:app-cross}",
+            "name": "Release passepartout",
+            "target": "passepartout",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release passepartout"
+        }
+    ]
+}

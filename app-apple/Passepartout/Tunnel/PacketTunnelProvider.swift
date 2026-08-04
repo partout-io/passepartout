@@ -5,9 +5,11 @@
 import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
+import Partout
+import TunnelLibrary
 
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
-    private var abi: TunnelABIProtocol?
+    private var context: TunnelContextProtocol?
 
     override func startTunnel(options: [String: NSObject]? = nil, completionHandler: @escaping @Sendable (Error?) -> Void) {
         let distributionTarget: ABI.DistributionTarget
@@ -33,6 +35,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter?.localMapper
         )
+        pspLog(.core, .notice, "Partout \(PartoutConstants.version) (Swift)")
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[TunnelObservable.Options.isManualKey] == true as NSNumber
@@ -61,20 +64,20 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             return persistedPreferences
         }())
 
-        // Defer to ABI
+        // Create the tunnel context
         Task { @MainActor in
             do {
                 // TODO: #218, cachesURL must be per-profile
                 let cachesURL = FileManager.default.temporaryDirectory
-                abi = try await TunnelABI.forNetworkExtension(
+                context = try await TunnelContext.forProduction(
                     appConfiguration: appConfiguration,
                     preferences: preferences,
                     startPreferences: startPreferences,
                     cachesURL: cachesURL,
                     neProvider: self
                 )
-                abi?.log(.core, .notice, "Start PTP")
-                try await abi?.start(isInteractive: isInteractive)
+                context?.log(.core, .notice, "Start PTP")
+                try await context?.start(isInteractive: isInteractive)
                 completionHandler(nil)
             } catch {
                 completionHandler(error)
@@ -83,29 +86,35 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     }
 
     override func stopTunnel(with reason: NEProviderStopReason) async {
-        guard let abi else { return }
+        guard let context else { return }
         pspLog(.core, .notice, "Stop PTP, reason: \(String(describing: reason))")
-        await abi.stop()
+        await context.stop()
     }
 
     override func cancelTunnelWithError(_ error: Error?) {
-        guard let abi else { return }
+        guard let context else { return }
         pspLog(.core, .info, "Cancel PTP, error: \(String(describing: error))")
-        abi.cancel(error)
+        context.cancel(error)
         super.cancelTunnelWithError(error)
     }
 
     override func handleAppMessage(_ messageData: Data) async -> Data? {
-        guard let abi else { return nil }
+        guard let context else { return nil }
         pspLog(.core, .debug, "Handle PTP message")
-        return await abi.sendMessage(messageData)
+        return await context.sendMessage(messageData)
     }
 
 //    override func wake() {
-//        fwd?.wake()
+//        if let runtime {
+//            runtime.wake()
+//            return
+//        }
 //    }
 //
 //    override func sleep() async {
-//        await fwd?.sleep()
+//        if let runtime {
+//            await runtime.sleep()
+//            return
+//        }
 //    }
 }

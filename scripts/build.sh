@@ -2,11 +2,11 @@
 cwd=`dirname $0`
 source $cwd/env.sh
 set -e
-build_dir=.cmake
-bin_dir=bin
+root_dir="$(cd "$(dirname "$0")"/.. && pwd)"
+build_dir="$root_dir/.cmake"
+bin_dir="bin"
 
-root_dir="$(dirname "$0")"/..
-pushd $root_dir
+pushd "$root_dir"
 
 positional_args=()
 cmake_opts=()
@@ -25,6 +25,14 @@ while [[ $# -gt 0 ]]; do
             build_app=1
             shift
             ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+        *)
+            positional_args+=("$1")
+            shift
+            ;;
     esac
 done
 set -- "${positional_args[@]}"
@@ -32,33 +40,35 @@ set -- "${positional_args[@]}"
 if [[ -z $build_type ]]; then
     build_type=Debug
 fi
-cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
+platform_name=$(uname -s | tr '[:upper:]' '[:lower:]')
+arch_name=$(uname -m | tr '[:upper:]' '[:lower:]')
+output_dir="$root_dir/$bin_dir/$platform_name-$arch_name"
+dist_dir="$root_dir/dist"
 
-if [[ $(uname -s) == "Linux" ]]; then
-    source $cwd/env-linux.sh
-    if [[ $gen_build == 1 ]]; then
-        cmake_opts+=("-DCMAKE_TOOLCHAIN_FILE=$partout_toolchains_path/linux.toolchain.cmake")
-    fi
-fi
+cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
+cmake_opts+=("-DOUTPUT_DIR=$output_dir")
+cmake_opts+=("-DCMAKE_INSTALL_LIBDIR=.")
+cmake_opts+=("-DCMAKE_INSTALL_BINDIR=.")
 
 if [[ $build_app == 1 ]]; then
     cmake_opts+=("-DBUILD_APP=ON")
 fi
 
-if [[ ! -d $build_dir ]]; then
-    mkdir $build_dir
+if [[ ! -d "$build_dir" ]]; then
+    mkdir "$build_dir"
 fi
-if [[ ! -d $bin_dir ]]; then
-    mkdir $bin_dir
+if [[ ! -d "$bin_dir" ]]; then
+    mkdir "$bin_dir"
 fi
 if [[ $gen_build == 1 ]]; then
     scripts/gen-cmake-files.sh
-    pushd $build_dir
+    pushd "$build_dir"
     cmake -G Ninja "${cmake_opts[@]}" ..
 else
-    pushd $build_dir
+    pushd "$build_dir"
 fi
-cmake --build .
+cmake --build . --config "$build_type"
+cmake --install . --config "$build_type" --prefix "$dist_dir" --strip
 popd
 
 popd

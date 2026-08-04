@@ -1,24 +1,26 @@
-set(CMAKE_C_FLAGS "-Wall -W -pedantic")
-set(CMAKE_CXX_FLAGS "-Wall -W -pedantic")
+cmake_minimum_required(VERSION 3.28)
+if(POLICY CMP0177)
+    cmake_policy(SET CMP0177 NEW)
+    set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
+endif()
+project(Passepartout)
+
+if(NOT OUTPUT_DIR)
+    set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 # Depend on Partout
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
+set(PP_BUILD_USE_MBEDTLS OFF)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
+
 add_subdirectory(../partout partout)
 
 # Include file lists
-include("passepartout.cmake")
-set(APP_DIR ${DIST_DIR})
-
-# Strip executables except on Windows
-if(WIN32)
-    set(STRIP rem)
-else()
-    set(STRIP ${CMAKE_STRIP})
-endif()
+include("files.cmake")
 
 # Define app target
 if(BUILD_APP)
@@ -37,6 +39,7 @@ if(BUILD_APP)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
+    target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
 
     if(APPLE)
         # Mangle macOS @rpath
@@ -58,16 +61,8 @@ if(BUILD_APP)
         set_target_properties(passepartout PROPERTIES WIN32_EXECUTABLE ON)
     endif()
 
-    # Distribute
-    add_custom_command(
-        TARGET passepartout
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:passepartout>"
-            "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
-        COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout>"
-        VERBATIM
+    install(TARGETS passepartout
+        RUNTIME DESTINATION .
     )
 endif()
 
@@ -98,23 +93,21 @@ elseif(LINUX)
         SKIP_BUILD_RPATH OFF
     )
 endif()
-add_custom_command(
-    TARGET passepartout-tunnel
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:passepartout-tunnel>"
-        "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
-    COMMAND ${STRIP} "${APP_DIR}/$<TARGET_FILE_NAME:passepartout-tunnel>"
-    VERBATIM
+install(TARGETS passepartout-tunnel
+    RUNTIME DESTINATION .
 )
 
-# Distribute Partout with dependencies
-partout_add_distribution_target(partout-post ALL
-    OUTPUT_DIR "${OUTPUT_DIR}"
-    DIST_DIR "${DIST_DIR}"
-)
-add_dependencies(passepartout-tunnel partout-post)
-if(BUILD_APP)
-    add_dependencies(passepartout partout-post)
-endif()
+install(CODE [[
+    file(GLOB_RECURSE PARTOUT_DEVELOPMENT_OUTPUTS
+        LIST_DIRECTORIES false
+        "${CMAKE_INSTALL_PREFIX}/*.h"
+        "${CMAKE_INSTALL_PREFIX}/*.lib"
+    )
+    if(PARTOUT_DEVELOPMENT_OUTPUTS)
+        file(REMOVE ${PARTOUT_DEVELOPMENT_OUTPUTS})
+    endif()
+    file(REMOVE_RECURSE
+        "${CMAKE_INSTALL_PREFIX}/include"
+        "${CMAKE_INSTALL_PREFIX}/cmake"
+    )
+]])

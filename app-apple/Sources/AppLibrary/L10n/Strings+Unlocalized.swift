@@ -51,7 +51,7 @@ extension Strings {
         }
 
         public enum Issues {
-            public static let subject = "\(appName) - Report issue"
+            public static let subject = "\(appName)/Apple - Report issue"
 
             public static let attachmentMimeType = "text/plain"
         }
@@ -61,6 +61,10 @@ extension Strings {
         public static let appleTV = "Apple TV"
 
         public static let authorName = "Davide De Rosa (keeshux)"
+
+        public static let beta = "Beta"
+
+        public static let betaBuild = "This is a beta build"
 
         public static let ca = "CA"
 

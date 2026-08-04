@@ -6,12 +6,11 @@
 [![Release](https://github.com/partout-io/passepartout/actions/workflows/release.yml/badge.svg?branch=)](https://github.com/partout-io/passepartout/actions/workflows/release.yml)
 
 [![Discuss on GitHub](https://img.shields.io/badge/discuss-GitHub-lightgray.svg)][about-github-discussions]
-[![Join Reddit](https://img.shields.io/badge/support-Reddit-orange.svg)][about-reddit]
 [![Join TestFlight](https://img.shields.io/badge/beta-Testflight-blue.svg)][about-testflight]
 
-Passepartout is your go-to app for VPN and privacy.
+Passepartout (French: /pas.paʁ.tu/) is your go-to app for VPN and privacy.
 
-Passepartout runs on [iPhone, iPad, Mac, and Apple TV][appstore].
+Passepartout is backed by [Partout][partout] and runs on [iPhone, iPad, Mac, and Apple TV][appstore]. Soon on Android and Windows.
 
 ## Features
 
@@ -50,7 +49,7 @@ Download the app codebase locally:
 
 ```
 $ git clone https://github.com/partout-io/passepartout
-$ git submodule update --init app-cross/partout
+$ git submodule update --init partout
 ```
 
 then find the Xcode project in `app-apple`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
@@ -112,11 +111,11 @@ This product includes software developed by the OpenSSL Project for use in the O
 
 ### OpenVPN
 
-© Copyright 2025 OpenVPN | OpenVPN is a registered trademark of OpenVPN, Inc.
+© Copyright 2026 OpenVPN | OpenVPN is a registered trademark of OpenVPN, Inc.
 
 ### WireGuard
 
-© Copyright 2015-2025 Jason A. Donenfeld. All Rights Reserved. "WireGuard" and the "WireGuard" logo are registered trademarks of Jason A. Donenfeld.
+© Copyright 2015-2026 Jason A. Donenfeld. All Rights Reserved. "WireGuard" and the "WireGuard" logo are registered trademarks of Jason A. Donenfeld.
 
 ### Community
 
@@ -154,6 +153,7 @@ Twitter: [@keeshux][about-twitter]
 
 Website: [passepartoutvpn.app][web-home] ([FAQ][web-faq])
 
+[partout]: https://partout.io/
 [appstore]: https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8
 
 [openvpn]: https://openvpn.net/index.php/open-source/overview.html

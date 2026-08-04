@@ -99,7 +99,6 @@
 "views.preferences.enables_iap.footer" = "Enable support for paid features. Disable this if you do not have an Apple ID.";
 "views.preferences.modern_crypto" = "Modern cryptography";
 "views.preferences.modern_crypto.footer" = "Use modern and faster implementations of cryptographic algorithms, though potentially unstable.";
-"views.preferences.relaxed_verification" = "Alternative verification";
 "views.preferences.erase_icloud" = "Erase profiles from iCloud";
 "views.preferences.erase_icloud.footer" = "To erase all profiles from the iCloud store securely, do so on all your synced devices. This will not affect local profiles.";
 
@@ -253,10 +252,10 @@
 
 // MARK: Views (Onboarding)
 
+"onboarding.migrate.message" = "Make sure to upgrade all your devices to the latest version to use the new profiles.";
 "onboarding.migrate_3_2_3.message" = "Version 3.2.3 changed the way providers are stored.";
 "onboarding.migrate_3_5_15.message" = "Version 3.5.15 changed the way profiles are stored.";
-"onboarding.migrate.message" = "Make sure to upgrade all your devices to the latest version to use the new profiles.";
-"onboarding.drop_lzo.message" = "Due to security concerns (specifically the VORACLE vulnerability), OpenVPN deprecated compression support years ago. Starting in December 2025, Passepartout will also remove support for LZO compression. If your OpenVPN connection stops working, please make sure that compression is disabled on your server. Most public VPN providers have already done this, so you are unlikely to be affected.";
+"onboarding.migrate_3_9_5_providers.message" = "Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.";
 
 // MARK: - Entities
 
@@ -316,7 +315,9 @@
 
 "global.actions.add" = "Add";
 "global.actions.allow" = "Allow";
+"global.actions.back" = "Back";
 "global.actions.cancel" = "Cancel";
+"global.actions.close" = "Close";
 "global.actions.connect" = "Connect";
 "global.actions.delete" = "Delete";
 "global.actions.disable" = "Disable";
@@ -366,6 +367,7 @@
 "global.nouns.endpoint" = "Endpoint";
 "global.nouns.entries_n" = "%d Entries";
 "global.nouns.entries_one" = "1 Entry";
+"global.nouns.error" = "Error";
 "global.nouns.features" = "Features";
 "global.nouns.filters" = "Filters";
 "global.nouns.folder" = "Folder";
@@ -401,6 +403,7 @@
 "global.nouns.profiles" = "Profiles";
 "global.nouns.protocol" = "Protocol";
 "global.nouns.provider" = "Provider";
+"global.nouns.providers" = "Providers";
 "global.nouns.public_key" = "Public key";
 "global.nouns.purchases" = "Purchases";
 "global.nouns.region" = "Region";
@@ -439,9 +442,11 @@
 "errors.app.duplicate" = "Unable to duplicate profile '%@'.";
 "errors.app.empty_products" = "Unable to fetch products, please retry later.";
 "errors.app.empty_profile_name" = "Profile name is empty.";
-"errors.app.import" = "Unable to import profiles.";
+"errors.app.import.binary" = "Importing a binary file.";
+"errors.app.import.generic" = "Unable to import profiles.";
 "errors.app.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
 "errors.app.incomplete_module" = "Please finish the configuration of the %@ module.";
+"errors.app.ineligible" = "Purchase required";
 "errors.app.invalid_fields" = "Invalid fields.";
 "errors.app.malformed_module" = "Module %@ is malformed. %@";
 "errors.app.missing_provider_entity" = "No server selected in provider.";
@@ -462,7 +467,6 @@
 "errors.tunnel.dns" = "DNS failed";
 "errors.tunnel.encryption" = "Encryption failed";
 "errors.tunnel.generic" = "Failed";
-"errors.tunnel.ineligible" = "Purchase required";
 "errors.tunnel.routing" = "Missing routing";
 "errors.tunnel.shutdown" = "Server shutdown";
 "errors.tunnel.tls" = "TLS failed";
@@ -492,6 +496,25 @@
 "theme.confirmation.cancel" = "Cancel";
 "theme.confirmation.message" = "Are you sure you want to proceed with this operation?";
 "theme.lock_screen.reason" = "%@ is locked";
+
+// MARK: Android
+
+"android.vpn_service.channel.description" = "Notification for the VPN foreground service";
+"android.vpn_service.status.stopped" = "Stopped";
+
+"android.alerts.interactive_unsupported.title" = "Interactive profile";
+"android.alerts.interactive_unsupported.message" = "%@ requires input that is not supported by this app version.";
+"android.alerts.vpn_permission.title" = "VPN permission required";
+"android.alerts.vpn_permission.message" = "%@ needs VPN permission to start a connection.";
+"android.alerts.vpn_permission.open_settings" = "Open VPN settings";
+
+"android.profiles.selection.count" = "%d selected";
+"android.profiles.actions.add.content_description" = "Add profile";
+"android.profiles.actions.delete.content_description" = "Delete profiles";
+"android.profiles.layout.list.content_description" = "List profiles";
+"android.profiles.layout.grid.content_description" = "Grid profiles";
+
+"android.errors.profile_importer.empty" = "Unable to read profile content.";
 
 // MARK: - Errors
 

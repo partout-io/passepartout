@@ -32,7 +32,6 @@
 		0EC066D12C7DC47600D88A94 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EC066D02C7DC47600D88A94 /* LaunchScreen.storyboard */; platformFilter = ios; };
 		0EC332CA2B8A1808000B9C2F /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EC332C92B8A1808000B9C2F /* NetworkExtension.framework */; };
 		0EC418D22CF86B7400AC6F2F /* ProfileMenuScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC418D12CF86B7400AC6F2F /* ProfileMenuScreen.swift */; platformFilters = (ios, macos, ); };
-		0EC797422B9378E000C093B7 /* AppContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC797402B9378E000C093B7 /* AppContext+Production.swift */; };
 		0ED0CBD12ED0843500B5E96E /* AppAccessibility in Frameworks */ = {isa = PBXBuildFile; productRef = 0ED0CBD02ED0843500B5E96E /* AppAccessibility */; };
 		0ED0CBD32ED0849200B5E96E /* AppLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0ED0CBD22ED0849200B5E96E /* AppLibrary */; };
 		0ED61CF82CD0418C008FE259 /* App+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED61CF72CD0418C008FE259 /* App+macOS.swift */; platformFilters = (macos, ); };
@@ -48,6 +47,9 @@
 		0EF74A8C2E2D92CC00AF7614 /* test-bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 0EF74A772E2D774600AF7614 /* test-bundle.json */; };
 		0EF9E1002CF4811000F4A7DA /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */; };
 		CE1AB4932F8A1CF70055BB33 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = CE1AB4922F8A1CF70055BB33 /* AppIcon.icon */; };
+		A1B2C3D4E5F60718293A4B5D /* AppContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* AppContext+Production.swift */; };
+		A1B2C3D4E5F60718293A4B6D /* TunnelContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B6C /* TunnelContext+Production.swift */; };
+		A1B2C3D4E5F60718293A4B6E /* TunnelContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B6C /* TunnelContext+Production.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,7 +143,6 @@
 		0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PassepartoutTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EC332C92B8A1808000B9C2F /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		0EC418D12CF86B7400AC6F2F /* ProfileMenuScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileMenuScreen.swift; sourceTree = "<group>"; };
-		0EC797402B9378E000C093B7 /* AppContext+Production.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+Production.swift"; sourceTree = "<group>"; };
 		0ECD96172DC2738B009BD9F8 /* Config.mac.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.mac.xcconfig; sourceTree = "<group>"; };
 		0ECD965E2DC292FB009BD9F8 /* AppMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppMac.entitlements; sourceTree = "<group>"; };
 		0ED1EFDA2C33059600CBD9BD /* App.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = App.plist; sourceTree = "<group>"; };
@@ -156,6 +157,8 @@
 		0EF74A772E2D774600AF7614 /* test-bundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-bundle.json"; sourceTree = "<group>"; };
 		0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		CE1AB4922F8A1CF70055BB33 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* AppContext+Production.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+Production.swift"; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B6C /* TunnelContext+Production.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TunnelContext+Production.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -321,6 +324,7 @@
 				0E7E3D662B9345FD002BBDB4 /* Tunnel.entitlements */,
 				0E2306102DC2BF6B002D70D7 /* main.swift */,
 				0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */,
+				A1B2C3D4E5F60718293A4B6C /* TunnelContext+Production.swift */,
 			);
 			path = Tunnel;
 			sourceTree = "<group>";
@@ -341,7 +345,7 @@
 			isa = PBXGroup;
 			children = (
 				0EF74A772E2D774600AF7614 /* test-bundle.json */,
-				0EC797402B9378E000C093B7 /* AppContext+Production.swift */,
+				A1B2C3D4E5F60718293A4B5C /* AppContext+Production.swift */,
 				0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */,
 				0E6EEEE22CF8CABA0076E2B0 /* ProfileManager+Testing.swift */,
 			);
@@ -565,7 +569,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					0E06D18E2B87629100176E1D = {
 						CreatedOnToolsVersion = 15.2;
@@ -743,7 +747,7 @@
 				0E7C3CCD2C9AF44600B72E69 /* AppDelegate.swift in Sources */,
 				0ED61CFA2CD04192008FE259 /* App+iOS.swift in Sources */,
 				0E7E3D6B2B9345FD002BBDB4 /* PassepartoutApp.swift in Sources */,
-				0EC797422B9378E000C093B7 /* AppContext+Production.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5D /* AppContext+Production.swift in Sources */,
 				0EE8D7E12CD112C200F6600C /* App+tvOS.swift in Sources */,
 				0E6EEEE32CF8CABA0076E2B0 /* AppContext+Testing.swift in Sources */,
 				0E6EEEE42CF8CABA0076E2B0 /* ProfileManager+Testing.swift in Sources */,
@@ -791,6 +795,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E94EE582B93554B00588243 /* PacketTunnelProvider.swift in Sources */,
+				A1B2C3D4E5F60718293A4B6E /* TunnelContext+Production.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -808,6 +813,7 @@
 			files = (
 				0E2306142DC2BF6B002D70D7 /* main.swift in Sources */,
 				0E2306162DC2C00B002D70D7 /* PacketTunnelProvider.swift in Sources */,
+				A1B2C3D4E5F60718293A4B6D /* TunnelContext+Production.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

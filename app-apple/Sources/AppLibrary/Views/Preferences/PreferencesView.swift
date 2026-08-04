@@ -51,9 +51,6 @@ public struct PreferencesView: View {
             if appConfiguration.bundle.distributionTarget.supportsIAP {
                 enablesPurchasesSection
             }
-            if showsRelaxedVerification {
-                relaxedVerificationSection
-            }
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
@@ -117,10 +114,6 @@ private extension PreferencesView {
         .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
     }
 
-    var relaxedVerificationSection: some View {
-        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: userPreferences.binding(\.relaxedVerification))
-    }
-
     var eraseCloudKitSection: some View {
         Button(Strings.Views.Preferences.eraseIcloud, role: .destructive) {
             isConfirmingEraseiCloud = true
@@ -178,30 +171,17 @@ public struct PreferencesView: View {
     }
 
     public var body: some View {
-        if showsRelaxedVerification {
-            Group {
-                relaxedVerificationToggle
-            }
-            .themeSection(header: Strings.Global.Nouns.preferences)
-        }
-    }
-}
-
-private extension PreferencesView {
-    var relaxedVerificationToggle: some View {
-        Toggle(Strings.Views.Preferences.relaxedVerification, isOn: userPreferences.binding(\.relaxedVerification))
+//        if showsRelaxedVerification {
+//            Group {
+//                relaxedVerificationToggle
+//            }
+//            .themeSection(header: Strings.Global.Nouns.preferences)
+//        }
+        EmptyView()
     }
 }
 
 #endif
-
-private extension PreferencesView {
-    var showsRelaxedVerification: Bool {
-        appConfiguration.bundle.distributionTarget.supportsIAP &&
-            configObservable.isActive(.allowsRelaxedVerification) &&
-            !configObservable.isActive(.forcesRelaxedVerification)
-    }
-}
 
 #Preview {
     PreferencesView(profileObservable: .forPreviews)
