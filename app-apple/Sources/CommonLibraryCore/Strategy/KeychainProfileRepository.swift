@@ -83,7 +83,7 @@ public final class KeychainProfileRepository: ProfileRepository {
     public func removeProfiles(withIds profileIds: [Profile.ID]) async throws {
         var removedIds: Set<Profile.ID> = []
         profileIds.forEach {
-            keychain.removePassword(for: $0.uuidString)
+            guard keychain.removePassword(for: $0.uuidString) else { return }
             removedIds.insert($0)
         }
         var allProfiles = profilesSubject.value
@@ -92,7 +92,7 @@ public final class KeychainProfileRepository: ProfileRepository {
             removedIds.contains($0.id)
         }
         profilesSubject.send(allProfiles)
-        eventsSubject.send(.changes(profileIds.map {
+        eventsSubject.send(.changes(removedIds.map {
             .remove($0)
         }))
     }
