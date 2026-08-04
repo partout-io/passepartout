@@ -31,7 +31,7 @@
               "value" : "automatic"
             }
           ],
-          "glass" : true,
+          "glass": false,
           "image-name" : "AppIcon.svg",
           "name" : "AppIcon",
           "position" : {
