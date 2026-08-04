@@ -167,34 +167,22 @@ extension AppContext {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let mainProfileRepository: ProfileRepository
-        let tunnelStrategy: TunnelObservableStrategy
-        if distributionTarget.supportsAppGroups {
-            let keychain = AppleKeychain(
-                ctx,
-                group: appConfiguration.bundle.bundleString(for: .keychainGroupId)
-            )
-            let keychainRepository = KeychainProfileRepository(
-                keychain: keychain,
-                coder: registry,
-                label: appConfiguration.newKeychainTitle()
-            )
-            let newStrategy = appConfiguration.newNETunnelStrategy(
-                ctx,
-                coder: registry,
-                source: keychainRepository.eventsPublisher
-            )
-            mainProfileRepository = keychainRepository
-            tunnelStrategy = newStrategy
-        } else {
-            let legacyStrategy = appConfiguration.legacyNETunnelStrategy(
-                ctx,
-                coder: registry
-            )
-            let neRepository = NEProfileRepository(repository: legacyStrategy)
-            mainProfileRepository = neRepository
-            tunnelStrategy = legacyStrategy
-        }
+        let keychain = appConfiguration.newKeychain(ctx, bundleIdentifier: bundleIdentifier)
+        let protocolCoder = appConfiguration.newNEProtocolCoder(
+            ctx,
+            coder: registry,
+            keychain: keychain
+        )
+        let mainProfileRepository = KeychainProfileRepository(
+            keychain: keychain,
+            coder: registry,
+            label: appConfiguration.newKeychainTitle()
+        )
+        let tunnelStrategy = appConfiguration.newNETunnelStrategy(
+            ctx,
+            coder: protocolCoder,
+            source: mainProfileRepository.eventsPublisher
+        )
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
