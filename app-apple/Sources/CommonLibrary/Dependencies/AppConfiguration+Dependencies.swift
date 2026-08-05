@@ -348,8 +348,7 @@ extension ABI.AppConfiguration {
             return newTunnelEnvironment(profileId: profileId)
         } else if let fetcher = strategy as? EnvironmentFetcher {
             return NETunnelEnvironment(profileId: profileId) { [weak fetcher] in
-                guard let fetcher else { return StaticTunnelEnvironment(profileId: $0, values: [:]) }
-                return try await fetcher.fetchEnvironment(profileId: $0)
+                try await fetcher?.fetchEnvironment(profileId: $0)
             }
         } else {
             fatalError("NETunnelEnvironment requires EnvironmentFetcher")
