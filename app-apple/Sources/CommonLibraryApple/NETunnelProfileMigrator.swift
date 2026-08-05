@@ -112,8 +112,8 @@ public actor NETunnelProfileMigrator {
             return false
         }
         do {
-            _ = try profileCoder.profile(fromString: existingJSON)
-            return true
+            let profile = try profileCoder.profile(fromString: existingJSON)
+            return profile.id == profileId
         } catch {
             // Recover a corrupt entry from the manager copy.
             return false
