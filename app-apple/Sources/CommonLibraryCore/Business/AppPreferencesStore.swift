@@ -27,9 +27,7 @@ extension AppPreferencesStore {
             return deviceId
         }
         let newId = String.random(count: length)
-        request(changesTo: [.deviceId]) {
-            $0.deviceId = newId
-        }
+        backend.deviceId = newId
         pspLog(.core, .info, "Device ID (new): \(newId)")
         return newId
     }
@@ -41,19 +39,6 @@ extension AppPreferencesStore {
     public func overwrite(
         _ body: (inout any ABI.AppPreferencesProtocol) -> Void
     ) {
-        body(&backend)
-    }
-
-    public func request(
-        changesTo fields: Set<ABI.NonUserFacingAppPreferenceKey>,
-        _ body: (inout ABI.AppPreferencesProtocol) -> Void
-    ) {
-        if let onRequest {
-            var copy: ABI.AppPreferencesProtocol = backend.serialized()
-            body(&copy)
-            onRequest(copy.serialized(), fields)
-            return
-        }
         body(&backend)
     }
 

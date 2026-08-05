@@ -129,9 +129,7 @@ extension AppContext {
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
 
-            preferences.request(changesTo: [
-                .configFlags
-            ]) {
+            preferences.overwrite {
                 // Propagate active config flags to tunnel via preferences
                 $0.configFlags = Array(configManager.activeFlags)
             }

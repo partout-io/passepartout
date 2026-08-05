@@ -179,7 +179,7 @@ extension TunnelObservable {
                 )
                 // TODO: #218, keep "last used profile" until .multiple
                 if let first = snapshots.first {
-                    preferences?.request(changesTo: [.lastUsedProfileId]) {
+                    preferences?.overwrite {
                         $0.lastUsedProfileId = first.key
                     }
                 }
