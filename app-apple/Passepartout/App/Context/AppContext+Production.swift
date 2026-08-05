@@ -174,28 +174,35 @@ extension AppContext {
             keychain: keychain
         )
 
-        let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
-        let marker = MigrationMarker(defaults: defaults)
-        let migrator = NETunnelProfileMigrator(
-            tunnelBundleIdentifier: tunnelIdentifier,
-            keychain: keychain,
-            profileCoder: registry,
-            protocolCoder: protocolCoder,
-            label: appConfiguration.newKeychainTitle(),
-            isComplete: {
-                marker.isComplete(.didMigrateDeveloperIDManagers)
-            },
-            markComplete: {
-                marker.markComplete(.didMigrateDeveloperIDManagers)
+        // Plan a one-off migration for Developer ID profiles
+        let profilesBootstrap: KeychainProfileRepository.Bootstrap?
+        if distributionTarget == .developerID {
+            let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
+            let marker = MigrationMarker(defaults: defaults)
+            let migrator = NEManagerToKeychainMigrator(
+                tunnelBundleIdentifier: tunnelIdentifier,
+                keychain: keychain,
+                profileCoder: registry,
+                protocolCoder: protocolCoder,
+                label: appConfiguration.newKeychainTitle(),
+                isComplete: {
+                    marker.isComplete(.didMigrateDeveloperIDManagers)
+                },
+                markComplete: {
+                    marker.markComplete(.didMigrateDeveloperIDManagers)
+                }
+            )
+            profilesBootstrap = { @Sendable in
+                await migrator.run()
             }
-        )
+        } else {
+            profilesBootstrap = nil
+        }
 
         let mainProfileRepository = KeychainProfileRepository(
             keychain: keychain,
             coder: registry,
-            bootstrap: distributionTarget == .developerID ? { @Sendable in
-                await migrator.run()
-            } : nil,
+            bootstrap: profilesBootstrap,
             label: appConfiguration.newKeychainTitle()
         )
         let tunnelStrategy = appConfiguration.newNETunnelStrategy(

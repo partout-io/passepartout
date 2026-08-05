@@ -5,7 +5,7 @@
 @preconcurrency import NetworkExtension
 import Partout
 
-public actor NETunnelProfileMigrator {
+public actor NEManagerToKeychainMigrator {
     public typealias LoadManagers =
         @Sendable () async throws -> [NETunnelProviderManager]
 
