@@ -11,7 +11,6 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
         var preferences = ABI.AppPreferences(
             configFlags: [],
             deviceId: nil,
-            didMigrateDeveloperIDManagers: false,
             dnsFallsBack: true,
             experimental: ABI.ExperimentalPreferences(
                 ignoredConfigFlags: [],
@@ -36,8 +35,6 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
             configFlags = []
         case .deviceId:
             deviceId = nil
-        case .didMigrateDeveloperIDManagers:
-            didMigrateDeveloperIDManagers = false
         case .dnsFallsBack:
             dnsFallsBack = true
         case .experimental:
@@ -78,8 +75,6 @@ extension ABI.AppPreferencesProtocol {
             configFlags = preferences.configFlags
         case .deviceId:
             deviceId = preferences.deviceId
-        case .didMigrateDeveloperIDManagers:
-            didMigrateDeveloperIDManagers = preferences.didMigrateDeveloperIDManagers
         case .dnsFallsBack:
             dnsFallsBack = preferences.dnsFallsBack
         case .experimental:
@@ -123,8 +118,6 @@ extension ABI.AppPreferences {
             configFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .configFlags) ?? def.configFlags
         case .deviceId:
             deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
-        case .didMigrateDeveloperIDManagers:
-            didMigrateDeveloperIDManagers = try container.decodeIfPresent(Bool.self, forKey: .didMigrateDeveloperIDManagers) ?? false
         case .dnsFallsBack:
             dnsFallsBack = try container.decodeIfPresent(Bool.self, forKey: .dnsFallsBack) ?? def.dnsFallsBack
         case .experimental:

@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: configFlags,deviceId,didMigrateDeveloperIDManagers,dnsFallsBack,experimental,extensiveLogging,lastCheckedVersion,lastCheckedVersionDate,lastUsedProfileId,logsPrivateData,skipsPurchases
+ * Values: configFlags,deviceId,dnsFallsBack,experimental,extensiveLogging,lastCheckedVersion,lastCheckedVersionDate,lastUsedProfileId,logsPrivateData,skipsPurchases
  */
 @Serializable
 enum class AppPreferenceKey(val value: kotlin.String) {
@@ -41,9 +41,6 @@ enum class AppPreferenceKey(val value: kotlin.String) {
 
     @SerialName(value = "deviceId")
     deviceId("deviceId"),
-
-    @SerialName(value = "didMigrateDeveloperIDManagers")
-    didMigrateDeveloperIDManagers("didMigrateDeveloperIDManagers"),
 
     @SerialName(value = "dnsFallsBack")
     dnsFallsBack("dnsFallsBack"),

@@ -347,7 +347,6 @@ components:
       x-enum-varnames:
       - configFlags
       - deviceId
-      - didMigrateDeveloperIDManagers
       - dnsFallsBack
       - experimental
       - extensiveLogging
@@ -359,7 +358,6 @@ components:
       enum:
       - configFlags
       - deviceId
-      - didMigrateDeveloperIDManagers
       - dnsFallsBack
       - experimental
       - extensiveLogging
@@ -378,8 +376,6 @@ components:
             "$ref": "#/components/schemas/ConfigFlag"
         deviceId:
           type: string
-        didMigrateDeveloperIDManagers:
-          type: boolean
         dnsFallsBack:
           type: boolean
         experimental:
@@ -398,7 +394,6 @@ components:
           type: boolean
       required:
       - configFlags
-      - didMigrateDeveloperIDManagers
       - dnsFallsBack
       - experimental
       - extensiveLogging

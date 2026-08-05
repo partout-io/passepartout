@@ -11,7 +11,6 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
 
     public var configFlags: [OpenAPIConfigFlag]
     public var deviceId: String?
-    public var didMigrateDeveloperIDManagers: Bool
     public var dnsFallsBack: Bool
     public var experimental: OpenAPIExperimentalPreferences
     public var extensiveLogging: Bool
@@ -22,10 +21,9 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
     public var logsPrivateData: Bool
     public var skipsPurchases: Bool
 
-    public init(configFlags: [OpenAPIConfigFlag], deviceId: String? = nil, didMigrateDeveloperIDManagers: Bool, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, skipsPurchases: Bool) {
+    public init(configFlags: [OpenAPIConfigFlag], deviceId: String? = nil, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, skipsPurchases: Bool) {
         self.configFlags = configFlags
         self.deviceId = deviceId
-        self.didMigrateDeveloperIDManagers = didMigrateDeveloperIDManagers
         self.dnsFallsBack = dnsFallsBack
         self.experimental = experimental
         self.extensiveLogging = extensiveLogging
@@ -39,7 +37,6 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case configFlags
         case deviceId
-        case didMigrateDeveloperIDManagers
         case dnsFallsBack
         case experimental
         case extensiveLogging
@@ -56,7 +53,6 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(configFlags, forKey: .configFlags)
         try container.encodeIfPresent(deviceId, forKey: .deviceId)
-        try container.encode(didMigrateDeveloperIDManagers, forKey: .didMigrateDeveloperIDManagers)
         try container.encode(dnsFallsBack, forKey: .dnsFallsBack)
         try container.encode(experimental, forKey: .experimental)
         try container.encode(extensiveLogging, forKey: .extensiveLogging)

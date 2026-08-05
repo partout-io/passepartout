@@ -175,6 +175,7 @@ extension AppContext {
         )
 
         let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
+        let marker = MigrationMarker(defaults: defaults)
         let migrator = NETunnelProfileMigrator(
             tunnelBundleIdentifier: tunnelIdentifier,
             keychain: keychain,
@@ -182,12 +183,10 @@ extension AppContext {
             protocolCoder: protocolCoder,
             label: appConfiguration.newKeychainTitle(),
             isComplete: {
-                preferences[\.didMigrateDeveloperIDManagers]
+                marker.isComplete(.didMigrateDeveloperIDManagers)
             },
             markComplete: {
-                preferences.overwrite {
-                    $0.didMigrateDeveloperIDManagers = true
-                }
+                marker.markComplete(.didMigrateDeveloperIDManagers)
             }
         )
 
