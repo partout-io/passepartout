@@ -61,7 +61,7 @@ public actor NEManagerToKeychainMigrator {
         for manager in managers {
             guard let proto = manager.protocolConfiguration as? NETunnelProviderProtocol,
                   proto.providerBundleIdentifier == tunnelBundleIdentifier,
-                  let profileJSON = proto.providerConfiguration?["Profile"] as? String else {
+                  let profileJSON = proto.providerConfiguration?[ProviderNEProtocolCoder.profileKey] as? String else {
                 continue
             }
 
