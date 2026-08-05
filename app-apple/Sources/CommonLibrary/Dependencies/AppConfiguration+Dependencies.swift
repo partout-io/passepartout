@@ -481,15 +481,17 @@ extension ABI.AppConfiguration {
 }
 
 private protocol EnvironmentFetcher: AnyObject, Sendable {
-    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment?
 }
 
 extension NETunnelStrategy: EnvironmentFetcher {
-    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment? {
         let output = try await sendMessage(.environment(), to: profileId)
         switch output {
         case .environment(let env):
             return env
+        case nil:
+            return nil
         default:
             throw PartoutError(.unhandled)
         }
@@ -497,11 +499,13 @@ extension NETunnelStrategy: EnvironmentFetcher {
 }
 
 extension LegacyNETunnelStrategy: EnvironmentFetcher {
-    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment? {
         let output = try await sendMessage(.environment(), to: profileId)
         switch output {
         case .environment(let env):
             return env
+        case nil:
+            return nil
         default:
             throw PartoutError(.unhandled)
         }
