@@ -345,8 +345,8 @@ components:
     AppPreferenceKey:
       type: string
       x-enum-varnames:
-      - deviceId
       - configFlags
+      - deviceId
       - dnsFallsBack
       - experimental
       - extensiveLogging
@@ -356,8 +356,8 @@ components:
       - logsPrivateData
       - skipsPurchases
       enum:
-      - deviceId
       - configFlags
+      - deviceId
       - dnsFallsBack
       - experimental
       - extensiveLogging

@@ -14,7 +14,7 @@ import CoreData
 import Partout
 
 extension AppContext {
-    static func forProduction() -> AppContext {
+    static func forProduction(bundleIdentifier: String) -> AppContext {
         let distributionTarget: ABI.DistributionTarget
 #if PP_BUILD_MAC
         distributionTarget = .developerID
@@ -126,7 +126,7 @@ extension AppContext {
                 }
             )
         } else {
-            let fakeHelper = appConfiguration.newInAppFakeHelperV2()
+            let fakeHelper = FakeInAppHelper()
             iapHelper = fakeHelper
             iapReceiptReader = fakeHelper.receiptReader
         }
@@ -159,7 +159,7 @@ extension AppContext {
         )
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
-        let mainProfileRepository = appConfiguration.newBackupProfileRepositoryV2(
+        let mainProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -167,35 +167,50 @@ extension AppContext {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let mainProfileRepository: ProfileRepository
-        let tunnelStrategy: TunnelObservableStrategy
-        if distributionTarget.supportsAppGroups {
-            let keychain = AppleKeychain(
-                ctx,
-                group: appConfiguration.bundle.bundleString(for: .keychainGroupId)
-            )
-            let keychainRepository = KeychainProfileRepository(
+        let keychain = appConfiguration.newKeychain(ctx, bundleIdentifier: bundleIdentifier)
+        let protocolCoder = appConfiguration.newNEProtocolCoder(
+            ctx,
+            coder: registry,
+            keychain: keychain
+        )
+
+        // Plan a one-off migration for Developer ID profiles
+        let profilesBootstrap: KeychainProfileRepository.Bootstrap?
+        if distributionTarget == .developerID {
+            let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
+            let marker = MigrationMarker(defaults: defaults)
+            let migrator = NEManagerToKeychainMigrator(
+                tunnelBundleIdentifier: tunnelIdentifier,
                 keychain: keychain,
-                coder: registry,
-                label: appConfiguration.newKeychainTitle()
+                profileCoder: registry,
+                protocolCoder: protocolCoder,
+                label: appConfiguration.newKeychainTitle(),
+                isComplete: {
+                    marker.isComplete(.didMigrateDeveloperIDManagers)
+                },
+                markComplete: {
+                    marker.markComplete(.didMigrateDeveloperIDManagers)
+                }
             )
-            let newStrategy = appConfiguration.newNETunnelStrategy(
-                ctx,
-                coder: registry,
-                source: keychainRepository.eventsPublisher
-            )
-            mainProfileRepository = keychainRepository
-            tunnelStrategy = newStrategy
+            profilesBootstrap = { @Sendable in
+                await migrator.run()
+            }
         } else {
-            let legacyStrategy = appConfiguration.legacyNETunnelStrategy(
-                ctx,
-                coder: registry
-            )
-            let neRepository = NEProfileRepository(repository: legacyStrategy)
-            mainProfileRepository = neRepository
-            tunnelStrategy = legacyStrategy
+            profilesBootstrap = nil
         }
-        let backupProfileRepository = appConfiguration.newBackupProfileRepositoryV2(
+
+        let mainProfileRepository = KeychainProfileRepository(
+            keychain: keychain,
+            coder: registry,
+            bootstrap: profilesBootstrap,
+            label: appConfiguration.newKeychainTitle()
+        )
+        let tunnelStrategy = appConfiguration.newNETunnelStrategy(
+            ctx,
+            coder: protocolCoder,
+            source: mainProfileRepository.eventsPublisher
+        )
+        let backupProfileRepository = appConfiguration.newBackupProfileRepository(
             encoder: appEncoder,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
@@ -281,7 +296,7 @@ extension AppContext {
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
-                let isCloudKitEnabled = AppCommandLine.contains(.uiTesting) || appConfiguration.isCloudKitEnabledV2
+                let isCloudKitEnabled = AppCommandLine.contains(.uiTesting) || appConfiguration.isCloudKitEnabled
                 pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
@@ -349,7 +364,7 @@ extension AppContext {
 }
 
 private extension ABI.AppConfiguration {
-    var isCloudKitEnabledV2: Bool {
+    var isCloudKitEnabled: Bool {
 #if os(tvOS)
         true
 #else
@@ -357,7 +372,7 @@ private extension ABI.AppConfiguration {
 #endif
     }
 
-    func newBackupProfileRepositoryV2(
+    func newBackupProfileRepository(
         encoder: AppEncoder,
         model: NSManagedObjectModel,
         name: String,
@@ -378,9 +393,5 @@ private extension ABI.AppConfiguration {
                 return .ignore
             }
         )
-    }
-
-    func newInAppFakeHelperV2() -> FakeInAppHelper {
-        FakeInAppHelper()
     }
 }

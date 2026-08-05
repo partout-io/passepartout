@@ -14,7 +14,10 @@ final class AppDelegate: NSObject {
             pspLog(.core, .info, "UI tests: mock AppContext")
             return AppContext.forUITesting()
         }
-        return AppContext.forProduction()
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
+            fatalError("Nil .bundleIdentifier?")
+        }
+        return AppContext.forProduction(bundleIdentifier: bundleIdentifier)
     }()
 
 #if os(macOS)

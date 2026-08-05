@@ -22,6 +22,10 @@ extension TunnelContext {
         let originalProfile: Profile
         let processedProfile: Profile
 
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
+            fatalError("Nil .bundleIdentifier?")
+        }
+
 //        if preferences.isFlagEnabled(.zigRuntime) {
 //            pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
 //
@@ -66,7 +70,15 @@ extension TunnelContext {
 
             // Decode profile from NE provider
             do {
-                let decoder = appConfiguration.newNEProtocolCoder(.global, coder: registry, legacy: false)
+                let keychain = appConfiguration.newKeychain(
+                    .global,
+                    bundleIdentifier: bundleIdentifier
+                )
+                let decoder = appConfiguration.newNEProtocolCoder(
+                    .global,
+                    coder: registry,
+                    keychain: keychain
+                )
                 originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
                 let resolvedProfile = try registry.resolvedProfile(originalProfile)
                 let processor = appConfiguration.newTunnelProcessor()

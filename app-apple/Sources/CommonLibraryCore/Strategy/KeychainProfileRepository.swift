@@ -5,8 +5,11 @@
 import Partout
 
 public final class KeychainProfileRepository: ProfileRepository {
+    public typealias Bootstrap = @Sendable () async -> Void
+
     private let keychain: Keychain
     private let coder: ProfileCoder
+    private let bootstrap: Bootstrap?
     private let label: @Sendable (Profile) -> String
     private let profilesSubject: CurrentValueStream<[Profile]>
     private let eventsSubject: PassthroughStream<ProfilesEvent>
@@ -22,16 +25,20 @@ public final class KeychainProfileRepository: ProfileRepository {
     public init(
         keychain: Keychain,
         coder: ProfileCoder,
+        bootstrap: Bootstrap? = nil,
         label: @escaping @Sendable (Profile) -> String
     ) {
         self.keychain = keychain
         self.coder = coder
+        self.bootstrap = bootstrap
         self.label = label
         profilesSubject = CurrentValueStream([])
         eventsSubject = PassthroughStream()
     }
 
     public func fetchProfiles() async throws -> [Profile] {
+        await bootstrap?()
+
         let profiles = try keychain
             .allPasswordReferences()
             .compactMap {

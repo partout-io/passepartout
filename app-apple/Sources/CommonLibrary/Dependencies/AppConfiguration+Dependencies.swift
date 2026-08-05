@@ -346,11 +346,12 @@ extension ABI.AppConfiguration {
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if bundle.distributionTarget.supportsAppGroups {
             return newTunnelEnvironment(profileId: profileId)
-        } else {
-            guard let neStrategy = strategy as? NETunnelStrategy else {
-                fatalError("NETunnelEnvironment requires NETunnelStrategy")
+        } else if let fetcher = strategy as? EnvironmentFetcher {
+            return NETunnelEnvironment(profileId: profileId) { [weak fetcher] in
+                try await fetcher?.fetchEnvironment(profileId: $0)
             }
-            return NETunnelEnvironment(strategy: neStrategy, profileId: profileId)
+        } else {
+            fatalError("NETunnelEnvironment requires EnvironmentFetcher")
         }
     }
 
@@ -374,6 +375,16 @@ extension ABI.AppConfiguration {
         StoreKitReceiptReader(modeBlock: modeBlock)
     }
 
+    public func newKeychain(_ ctx: PartoutLoggerContext, bundleIdentifier: String) -> Keychain {
+        let keychain: Keychain
+        if bundle.distributionTarget.supportsAppGroups {
+            let appGroup = bundle.bundleString(for: .keychainGroupId)
+            return AppleKeychain(ctx, group: appGroup)
+        } else {
+            return AppleKeychain(ctx, service: bundleIdentifier)
+        }
+    }
+
     public func newKeychainTitle() -> @Sendable (Profile) -> String {
         {
             String(format: constants.tunnel.profileTitleFormat, $0.name)
@@ -390,7 +401,7 @@ extension ABI.AppConfiguration {
     public func newNEProtocolCoder(
         _ ctx: PartoutLoggerContext,
         coder: ProfileCoder,
-        legacy: Bool
+        keychain: Keychain
     ) -> NEProtocolCoder {
         let tunnelIdentifier = bundle.bundleString(for: .tunnelId)
         if bundle.distributionTarget.supportsAppGroups {
@@ -398,8 +409,7 @@ extension ABI.AppConfiguration {
                 ctx,
                 tunnelBundleIdentifier: tunnelIdentifier,
                 coder: coder,
-                keychain: AppleKeychain(ctx, group: bundle.bundleString(for: .keychainGroupId)),
-                legacyOptions: legacy ? .init(title: newKeychainTitle()) : nil
+                keychain: keychain
             )
         } else {
             return ProviderNEProtocolCoder(
@@ -411,31 +421,17 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func legacyNETunnelStrategy(
-        _ ctx: PartoutLoggerContext,
-        coder: ProfileCoder
-    ) -> LegacyNETunnelStrategy {
-        let bundleIdentifier = bundle.bundleString(for: .tunnelId)
-        let protocolCoder = newNEProtocolCoder(ctx, coder: coder, legacy: true)
-        return LegacyNETunnelStrategy(
-            ctx,
-            bundleIdentifier: bundleIdentifier,
-            coder: protocolCoder
-        )
-    }
-
     public func newNETunnelStrategy(
         _ ctx: PartoutLoggerContext,
-        coder: ProfileCoder,
+        coder: NEProtocolCoder,
         source: AsyncStream<ProfilesEvent>
     ) -> NETunnelStrategy {
         let bundleIdentifier = bundle.bundleString(for: .tunnelId)
-        let protocolCoder = newNEProtocolCoder(ctx, coder: coder, legacy: false)
         return NETunnelStrategy(
             ctx,
             bundleIdentifier: bundleIdentifier,
             source: source,
-            coder: protocolCoder,
+            coder: coder,
             fingerprint: {
                 ($0.attributes.fingerprint ?? $0.id)?.uuidString
             }
@@ -481,4 +477,36 @@ extension ABI.AppConfiguration {
         }
     }
 #endif
+}
+
+private protocol EnvironmentFetcher: AnyObject, Sendable {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment?
+}
+
+extension NETunnelStrategy: EnvironmentFetcher {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment? {
+        let output = try await sendMessage(.environment(), to: profileId)
+        switch output {
+        case .environment(let env):
+            return env
+        case nil:
+            return nil
+        default:
+            throw PartoutError(.unhandled)
+        }
+    }
+}
+
+extension LegacyNETunnelStrategy: EnvironmentFetcher {
+    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment? {
+        let output = try await sendMessage(.environment(), to: profileId)
+        switch output {
+        case .environment(let env):
+            return env
+        case nil:
+            return nil
+        default:
+            throw PartoutError(.unhandled)
+        }
+    }
 }
