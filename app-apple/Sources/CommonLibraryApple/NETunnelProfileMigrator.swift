@@ -17,6 +17,7 @@ public actor NETunnelProfileMigrator {
     private let loadManagers: LoadManagers
     private let isComplete: @Sendable () -> Bool
     private let markComplete: @Sendable () -> Void
+    private var didAttempt = false
 
     public init(
         tunnelBundleIdentifier: String,
@@ -41,9 +42,10 @@ public actor NETunnelProfileMigrator {
     }
 
     public func run() async {
-        guard !isComplete() else {
+        guard !didAttempt, !isComplete() else {
             return
         }
+        didAttempt = true
 
         let managers: [NETunnelProviderManager]
         do {
