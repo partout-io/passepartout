@@ -110,18 +110,3 @@ endif()
 install(TARGETS passepartout-tunnel
     RUNTIME DESTINATION .
 )
-
-install(CODE [[
-    file(GLOB_RECURSE PARTOUT_DEVELOPMENT_OUTPUTS
-        LIST_DIRECTORIES false
-        "${CMAKE_INSTALL_PREFIX}/*.h"
-        "${CMAKE_INSTALL_PREFIX}/*.lib"
-    )
-    if(PARTOUT_DEVELOPMENT_OUTPUTS)
-        file(REMOVE ${PARTOUT_DEVELOPMENT_OUTPUTS})
-    endif()
-    file(REMOVE_RECURSE
-        "${CMAKE_INSTALL_PREFIX}/include"
-        "${CMAKE_INSTALL_PREFIX}/cmake"
-    )
-]])
