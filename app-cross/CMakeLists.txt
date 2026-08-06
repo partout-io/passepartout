@@ -24,6 +24,17 @@ set(PP_BUILD_USE_WIREGUARD ON)
 
 add_subdirectory(../partout partout)
 
+function(target_link_partout target)
+    add_dependencies(${target} partout)
+    target_include_directories(${target} PRIVATE "${PP_BUILD_PREFIX}/include")
+    target_link_directories(${target} PRIVATE "${PP_BUILD_PREFIX}/lib")
+    if(WIN32)
+        target_link_libraries(${target} PRIVATE partout.lib)
+    else()
+        target_link_libraries(${target} PRIVATE -lpartout)
+    endif()
+endfunction()
+
 # Include file lists
 include("files.cmake")
 
@@ -37,10 +48,9 @@ if(BUILD_APP)
     )
     target_sources(passepartout PRIVATE ${APP_SOURCES})
     target_include_directories(passepartout PRIVATE
-        ${OUTPUT_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/app/include
     )
-    target_link_libraries(passepartout PRIVATE partout)
+    target_link_partout(passepartout)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
@@ -80,10 +90,9 @@ set_target_properties(passepartout-tunnel PROPERTIES
 )
 target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
 target_include_directories(passepartout-tunnel PRIVATE
-    ${OUTPUT_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
 )
-target_link_libraries(passepartout-tunnel PRIVATE partout)
+target_link_partout(passepartout-tunnel)
 if(APPLE)
     set_target_properties(passepartout-tunnel PROPERTIES
         MACOSX_RPATH ON
