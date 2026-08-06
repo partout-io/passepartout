@@ -1,6 +1,7 @@
 $cwd = Get-Location
 $root_dir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$build_dir = ".cmake"
+$source_dir = Join-Path $root_dir "app-cross"
+$build_dir = Join-Path $source_dir ".cmake"
 $bin_dir = "bin"
 $configuration = "Release"
 $generator = "Ninja Multi-Config"
@@ -66,7 +67,7 @@ try {
     } else {
         $cmake_opts += "-DCMAKE_BUILD_TYPE=$configuration"
     }
-    cmake @cmake_opts ..
+    cmake @cmake_opts $source_dir
 
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

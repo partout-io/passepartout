@@ -3,7 +3,7 @@ cwd=`dirname $0`
 source $cwd/env.sh
 set -e
 root_dir="$(cd "$(dirname "$0")"/.. && pwd)"
-build_dir="$root_dir/.cmake"
+build_dir="$root_dir/app-cross/.cmake"
 bin_dir="bin"
 
 pushd "$root_dir"
@@ -63,7 +63,7 @@ fi
 if [[ $gen_build == 1 ]]; then
     scripts/gen-cmake-files.sh
     pushd "$build_dir"
-    cmake -G Ninja "${cmake_opts[@]}" ..
+    cmake -G Ninja "${cmake_opts[@]}" "$root_dir/app-cross"
 else
     pushd "$build_dir"
 fi
