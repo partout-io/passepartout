@@ -29,12 +29,12 @@ while [[ $# -gt 0 ]]; do
             build_app=1
             shift
             ;;
-        -vendors)
+        -prebuilts)
             if [[ -z ${2:-} || $2 == -* ]]; then
-                echo "-vendors requires a URL"
+                echo "-prebuilts requires a version"
                 exit 1
             fi
-            vendors_url=$2
+            prebuilts_url=https://github.com/partout-io/prebuilts/releases/download/$2
             shift
             shift
             ;;
@@ -68,8 +68,8 @@ if [[ $build_app == 1 ]]; then
 else
     cmake_opts+=("-DBUILD_APP=OFF")
 fi
-if [[ -n $vendors_url ]]; then
-    cmake_opts+=("-DPP_BUILD_VENDOR_PREBUILT_URL=$vendors_url")
+if [[ -n $prebuilts_url ]]; then
+    cmake_opts+=("-DPP_BUILD_VENDOR_PREBUILT_URL=$prebuilts_url")
 fi
 
 if [[ ! -d "$build_dir" ]]; then
