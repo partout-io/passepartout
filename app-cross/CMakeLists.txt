@@ -3,7 +3,13 @@ if(POLICY CMP0177)
     cmake_policy(SET CMP0177 NEW)
     set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
 endif()
-project(Passepartout)
+project(Passepartout LANGUAGES C CXX)
+
+option(BUILD_APP "Build app executable" OFF)
+
+if(MSVC AND NOT CMAKE_MSVC_RUNTIME_LIBRARY)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+endif()
 
 if(NOT OUTPUT_DIR)
     set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -11,13 +17,28 @@ endif()
 
 # Depend on Partout
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
-set(PP_BUILD_LIBRARY ON)
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS OFF)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 
 add_subdirectory(../partout partout)
+
+function(target_link_partout target)
+    add_dependencies(${target} partout)
+    target_include_directories(${target} PRIVATE "${PP_BUILD_PREFIX}/include")
+    target_link_directories(${target} PRIVATE "${PP_BUILD_PREFIX}/lib")
+    if(WIN32)
+        target_link_libraries(${target} PRIVATE partout.lib)
+    else()
+        target_link_libraries(${target} PRIVATE -lpartout)
+    endif()
+    if(LINUX)
+        target_link_options(${target} PRIVATE
+            "LINKER:-rpath-link,${PP_BUILD_OUTPUT}/wg-go/lib"
+        )
+    endif()
+endfunction()
 
 # Include file lists
 include("files.cmake")
@@ -32,10 +53,9 @@ if(BUILD_APP)
     )
     target_sources(passepartout PRIVATE ${APP_SOURCES})
     target_include_directories(passepartout PRIVATE
-        ${OUTPUT_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/app/include
     )
-    target_link_libraries(passepartout PRIVATE partout)
+    target_link_partout(passepartout)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
@@ -75,10 +95,9 @@ set_target_properties(passepartout-tunnel PROPERTIES
 )
 target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
 target_include_directories(passepartout-tunnel PRIVATE
-    ${OUTPUT_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
 )
-target_link_libraries(passepartout-tunnel PRIVATE partout)
+target_link_partout(passepartout-tunnel)
 if(APPLE)
     set_target_properties(passepartout-tunnel PROPERTIES
         MACOSX_RPATH ON
@@ -96,18 +115,3 @@ endif()
 install(TARGETS passepartout-tunnel
     RUNTIME DESTINATION .
 )
-
-install(CODE [[
-    file(GLOB_RECURSE PARTOUT_DEVELOPMENT_OUTPUTS
-        LIST_DIRECTORIES false
-        "${CMAKE_INSTALL_PREFIX}/*.h"
-        "${CMAKE_INSTALL_PREFIX}/*.lib"
-    )
-    if(PARTOUT_DEVELOPMENT_OUTPUTS)
-        file(REMOVE ${PARTOUT_DEVELOPMENT_OUTPUTS})
-    endif()
-    file(REMOVE_RECURSE
-        "${CMAKE_INSTALL_PREFIX}/include"
-        "${CMAKE_INSTALL_PREFIX}/cmake"
-    )
-]])
