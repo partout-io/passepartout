@@ -33,6 +33,11 @@ function(target_link_partout target)
     else()
         target_link_libraries(${target} PRIVATE -lpartout)
     endif()
+    if(LINUX)
+        target_link_options(${target} PRIVATE
+            "LINKER:-rpath-link,${PP_BUILD_OUTPUT}/wg-go/lib"
+        )
+    endif()
 endfunction()
 
 # Include file lists
