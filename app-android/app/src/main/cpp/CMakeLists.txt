@@ -13,12 +13,11 @@ set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS OFF)
-set(PP_BUILD_VENDOR_SOURCE bundled)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../partout" partout)
 
 add_dependencies(passepartout_wrapper partout)
-target_include_directories(passepartout_wrapper PRIVATE "${PP_BUILD_PREFIX}/include")
-target_link_directories(passepartout_wrapper PRIVATE "${PP_BUILD_PREFIX}/lib")
+target_include_directories(passepartout_wrapper PRIVATE "${PP_BUILD_OUTPUT}/partout/include")
+target_link_directories(passepartout_wrapper PRIVATE "${PP_BUILD_OUTPUT}/partout/lib")
 target_link_libraries(passepartout_wrapper PRIVATE
     -lpartout
     android
@@ -26,7 +25,7 @@ target_link_libraries(passepartout_wrapper PRIVATE
 )
 add_custom_command(TARGET passepartout_wrapper POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "${PP_BUILD_PREFIX}/lib/libpartout.so"
+        "${PP_BUILD_OUTPUT}/partout/lib/libpartout.so"
         "${PP_BUILD_OUTPUT}/wg-go/lib/libwg-go.so"
         "${PP_BUILD_OUTPUT}/openssl/lib/libcrypto.so"
         "${PP_BUILD_OUTPUT}/openssl/lib/libssl.so"
