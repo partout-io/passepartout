@@ -17,12 +17,25 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -config)
+            if [[ -z ${2:-} || $2 == -* ]]; then
+                echo "-config requires a value"
+                exit 1
+            fi
             build_type=$2
             shift
             shift
             ;;
         -app)
             build_app=1
+            shift
+            ;;
+        -vendors)
+            if [[ -z ${2:-} || $2 == -* ]]; then
+                echo "-vendors requires a URL"
+                exit 1
+            fi
+            vendors_url=$2
+            shift
             shift
             ;;
         -*|--*)
@@ -52,6 +65,11 @@ cmake_opts+=("-DCMAKE_INSTALL_BINDIR=.")
 
 if [[ $build_app == 1 ]]; then
     cmake_opts+=("-DBUILD_APP=ON")
+else
+    cmake_opts+=("-DBUILD_APP=OFF")
+fi
+if [[ -n $vendors_url ]]; then
+    cmake_opts+=("-DPP_BUILD_VENDOR_PREBUILT_URL=$vendors_url")
 fi
 
 if [[ ! -d "$build_dir" ]]; then
