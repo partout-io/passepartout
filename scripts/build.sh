@@ -3,7 +3,7 @@ cwd=`dirname $0`
 source $cwd/env.sh
 set -e
 root_dir="$(cd "$(dirname "$0")"/.. && pwd)"
-build_dir="$root_dir/app-cross/.cmake"
+build_dir="$root_dir/.cmake"
 bin_dir="bin"
 
 pushd "$root_dir"
