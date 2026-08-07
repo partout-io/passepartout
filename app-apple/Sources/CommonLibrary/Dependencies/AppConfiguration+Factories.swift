@@ -98,13 +98,33 @@ extension ABI.AppConfiguration {
         StoreKitReceiptReader(modeBlock: modeBlock)
     }
 
-    public func makeKeychain(_ ctx: PartoutLoggerContext, bundleIdentifier: String) -> Keychain {
+    public func makeKeychainAndNECoder(
+        _ ctx: PartoutLoggerContext,
+        bundleIdentifier: String,
+        coder: ProfileCoder
+    ) -> (keychain: Keychain, neCoder: NEProtocolCoder) {
+        let keychain: Keychain
+        let neCoder: NEProtocolCoder
+        let tunnelIdentifier = bundle.bundleString(for: .tunnelId)
         if bundle.distributionTarget.supportsAppGroups {
             let appGroup = bundle.bundleString(for: .keychainGroupId)
-            return AppleKeychain(ctx, group: appGroup)
+            keychain = AppleKeychain(ctx, group: appGroup)
+            neCoder = KeychainNEProtocolCoder(
+                ctx,
+                tunnelBundleIdentifier: tunnelIdentifier,
+                coder: coder,
+                keychain: keychain
+            )
         } else {
-            return AppleKeychain(ctx, service: bundleIdentifier)
+            keychain = AppleKeychain(ctx, service: bundleIdentifier)
+            neCoder = ProviderNEProtocolCoder(
+                ctx,
+                tunnelBundleIdentifier: tunnelIdentifier,
+                coder: coder,
+                uid: Int(getuid())
+            )
         }
+        return (keychain, neCoder)
     }
 
     public func makeKeychainTitle() -> @Sendable (Profile) -> String {
@@ -118,29 +138,6 @@ extension ABI.AppConfiguration {
             dateFormat: constants.log.formatter.timestamp,
             messageFormat: constants.log.formatter.message
         )
-    }
-
-    public func makeNEProtocolCoder(
-        _ ctx: PartoutLoggerContext,
-        coder: ProfileCoder,
-        keychain: Keychain
-    ) -> NEProtocolCoder {
-        let tunnelIdentifier = bundle.bundleString(for: .tunnelId)
-        if bundle.distributionTarget.supportsAppGroups {
-            return KeychainNEProtocolCoder(
-                ctx,
-                tunnelBundleIdentifier: tunnelIdentifier,
-                coder: coder,
-                keychain: keychain
-            )
-        } else {
-            return ProviderNEProtocolCoder(
-                ctx,
-                tunnelBundleIdentifier: tunnelIdentifier,
-                coder: coder,
-                uid: Int(getuid())
-            )
-        }
     }
 
     public func makeNETunnelStrategy(

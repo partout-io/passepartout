@@ -167,23 +167,22 @@ extension AppContext {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let keychain = appConfiguration.makeKeychain(ctx, bundleIdentifier: bundleIdentifier)
-        let protocolCoder = appConfiguration.makeNEProtocolCoder(
+        let codingPair = appConfiguration.makeKeychainAndNECoder(
             ctx,
-            coder: registry,
-            keychain: keychain
+            bundleIdentifier: bundleIdentifier,
+            coder: registry
         )
+        let profilesBootstrap: KeychainProfileRepository.Bootstrap?
 
         // Plan a one-off migration for Developer ID profiles
-        let profilesBootstrap: KeychainProfileRepository.Bootstrap?
         if distributionTarget == .developerID {
             let tunnelIdentifier = appConfiguration.bundle.bundleString(for: .tunnelId)
             let marker = MigrationMarker(defaults: defaults)
             let migrator = NEManagerToKeychainMigrator(
                 tunnelBundleIdentifier: tunnelIdentifier,
-                keychain: keychain,
+                keychain: codingPair.keychain,
                 profileCoder: registry,
-                protocolCoder: protocolCoder,
+                protocolCoder: codingPair.neCoder,
                 label: appConfiguration.makeKeychainTitle(),
                 isComplete: {
                     marker.isComplete(.didMigrateDeveloperIDManagers)
@@ -200,14 +199,14 @@ extension AppContext {
         }
 
         let mainProfileRepository = KeychainProfileRepository(
-            keychain: keychain,
+            keychain: codingPair.keychain,
             coder: registry,
             bootstrap: profilesBootstrap,
             label: appConfiguration.makeKeychainTitle()
         )
         let tunnelStrategy = appConfiguration.makeNETunnelStrategy(
             ctx,
-            coder: protocolCoder,
+            coder: codingPair.neCoder,
             source: mainProfileRepository.eventsPublisher
         )
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(

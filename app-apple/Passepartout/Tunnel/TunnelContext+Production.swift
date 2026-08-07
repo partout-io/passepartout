@@ -18,10 +18,6 @@ extension TunnelContext {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
             fatalError("Nil .bundleIdentifier?")
         }
-        let keychain = appConfiguration.makeKeychain(
-            .global,
-            bundleIdentifier: bundleIdentifier
-        )
         // TODO: #218, cachesURL must be per-profile
         let cachesURL = FileManager.default.temporaryDirectory
 
@@ -31,9 +27,9 @@ extension TunnelContext {
                 do {
                     return try newZigRuntime(
                         neProvider: neProvider,
+                        bundleIdentifier: bundleIdentifier,
                         appConfiguration: appConfiguration,
                         preferences: preferences,
-                        keychain: keychain,
                         cachesURL: cachesURL
                     )
                 } catch RuntimeError.undecodableProfile,
@@ -43,9 +39,9 @@ extension TunnelContext {
             }
             return try newSwiftRuntime(
                 neProvider: neProvider,
+                bundleIdentifier: bundleIdentifier,
                 appConfiguration: appConfiguration,
                 preferences: preferences,
-                keychain: keychain,
                 cachesURL: cachesURL
             )
         }()
@@ -93,9 +89,9 @@ private extension TunnelContext {
 
     static func newZigRuntime(
         neProvider: NEPacketTunnelProvider,
+        bundleIdentifier: String,
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore,
-        keychain: Keychain,
         cachesURL: URL
     ) throws -> ProductionRuntime {
         pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
@@ -106,12 +102,13 @@ private extension TunnelContext {
         }
         // Profile decoding requires no registry. Parse as TaggedProfile
         // and rethrow on failure.
-        let coder = TaggedProfileCoder()
-        let decoder = appConfiguration.makeNEProtocolCoder(
+        let codingPair = appConfiguration.makeKeychainAndNECoder(
             .global,
-            coder: coder,
-            keychain: keychain
+            bundleIdentifier: bundleIdentifier,
+            coder: TaggedProfileCoder()
         )
+        let decoder = codingPair.neCoder
+
         let profile: Profile
         do {
             profile = try Profile(withNEProvider: neProvider, decoder: decoder)
@@ -150,9 +147,9 @@ private extension TunnelContext {
 
     static func newSwiftRuntime(
         neProvider: NEPacketTunnelProvider,
+        bundleIdentifier: String,
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore,
-        keychain: Keychain,
         cachesURL: URL
     ) throws -> ProductionRuntime {
         pspLog(.core, .info, "Using Swift runtime")
@@ -162,16 +159,17 @@ private extension TunnelContext {
             preferences: preferences,
             cachesURL: cachesURL
         )
+        let codingPair = appConfiguration.makeKeychainAndNECoder(
+            .global,
+            bundleIdentifier: bundleIdentifier,
+            coder: registry
+        )
+        let decoder = codingPair.neCoder
 
         // Decode profile from NE provider
         let originalProfile: Profile
         let processedProfile: Profile
         do {
-            let decoder = appConfiguration.makeNEProtocolCoder(
-                .global,
-                coder: registry,
-                keychain: keychain
-            )
             originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
             let resolvedProfile = try registry.resolvedProfile(originalProfile)
             let processor = appConfiguration.makeTunnelProcessor()
