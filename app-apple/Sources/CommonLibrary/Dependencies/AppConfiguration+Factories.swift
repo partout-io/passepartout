@@ -290,18 +290,20 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func makeTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
-        let defaults: UserDefaults
+    public func makeTunnelDefaults() -> UserDefaults {
         if bundle.distributionTarget.supportsAppGroups {
             let appGroup = bundle.bundleString(for: .groupId)
             guard let groupDefaults = UserDefaults(suiteName: appGroup) else {
                 fatalError("No access to App Group: \(appGroup)")
             }
-            defaults = groupDefaults
+            return groupDefaults
         } else {
-            defaults = .standard
+            return .standard
         }
-        return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
+    }
+
+    public func makeTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+        UserDefaultsEnvironment(profileId: profileId, defaults: makeTunnelDefaults())
     }
 
     public func makeTunnelProcessor() -> PacketTunnelProcessor {

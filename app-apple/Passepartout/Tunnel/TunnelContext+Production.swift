@@ -94,10 +94,9 @@ private extension TunnelContext {
     ) throws -> ProductionRuntime {
         pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
 
-        let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
-        guard let defaults = UserDefaults(suiteName: appGroup) else {
-            fatalError("No access to App Group: \(appGroup)")
-        }
+        // This depends on distribution target
+        let defaults = appConfiguration.makeTunnelDefaults()
+
         // Profile decoding requires no registry. Parse as TaggedProfile
         // and rethrow on failure.
         let codingPair = appConfiguration.makeKeychainAndNECoder(
