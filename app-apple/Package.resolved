@@ -1,15 +1,6 @@
 {
-  "originHash" : "ef8827e048a7a302a7fb3b4264ca785ac6d864522a194ef758169826745c9f1e",
+  "originHash" : "b3e0b238a5229b4809716341606fce661e15fa67a41e29b666a891b81cb837ff",
   "pins" : [
-    {
-      "identity" : "openssl-apple",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/partout-io/openssl-apple",
-      "state" : {
-        "revision" : "4c152e7f49de4b0ae6e4059ba1425bd969ca4a84",
-        "version" : "3.6.300"
-      }
-    },
     {
       "identity" : "swift-atomics",
       "kind" : "remoteSourceControl",
@@ -44,15 +35,6 @@
       "state" : {
         "revision" : "50688cacbd41d547e9eb9f7a213542340b7c442b",
         "version" : "1.7.5"
-      }
-    },
-    {
-      "identity" : "wg-go-apple",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/partout-io/wg-go-apple",
-      "state" : {
-        "revision" : "9b3bfab802c88c33005cfcd4cf86eb3f05cb8010",
-        "version" : "0.0.20260725"
       }
     }
   ],

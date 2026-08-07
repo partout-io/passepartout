@@ -3,6 +3,11 @@
 
 import PackageDescription
 
+let partoutNative: Target = .partoutNative(
+    // .local
+    .remote("0.154.5", checksum: "aba03cf660ab321d6d8ac8c2fe37ac739c2e05eda6d744731e680a054be23192")
+)
+
 // The "*Wrapper" targets only exist for testing
 
 let package = Package(
@@ -82,18 +87,15 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-//        .binaryTarget(
-//            name: "PartoutNative",
-//            path: "PartoutNative.xcframework"
-//        ),
         .target(
             name: "TunnelLibrary",
             dependencies: [
-                "AppResources"
-//                "PartoutNative",
-//                .product(name: "PartoutRuntime", package: "partout")
+                "AppResources",
+                "PartoutNative",
+                .product(name: "PartoutRuntime", package: "partout")
             ]
         ),
+        partoutNative,
         .testTarget(
             name: "AppLibraryTests",
             dependencies: [
@@ -107,6 +109,30 @@ let package = Package(
         )
     ]
 )
+
+enum PartoutNativeTarget {
+    case local
+    case remote(_ version: String, checksum: String)
+}
+
+extension Target {
+    static func partoutNative(_ target: PartoutNativeTarget) -> Target {
+        let name = "PartoutNative"
+        switch target {
+        case .local:
+            return .binaryTarget(
+                name: name,
+                path: "\(name).xcframework"
+            )
+        case .remote(let version, let checksum):
+            return .binaryTarget(
+                name: name,
+                url: "https://github.com/partout-io/partout/releases/download/\(version)/\(name).xcframework.zip",
+                checksum: checksum
+            )
+        }
+    }
+}
 
 // MARK: - CommonLibrary*
 
