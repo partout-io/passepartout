@@ -39,7 +39,7 @@ extension AppContext {
             with: appConfiguration,
             preferences: preferences,
             localURL: appConfiguration.urlForAppLog,
-            localMapper: logFormatter?.localMapper
+            localMapper: logFormatter.localMapper
         )
         pspLog(.core, .notice, "Partout \(PartoutConstants.version)")
 

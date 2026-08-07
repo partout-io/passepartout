@@ -23,22 +23,22 @@ public final class TunnelContext: TunnelContextProtocol {
     }
 
     private var backend: TunnelBackendProtocol?
+    private let originalProfile: Profile
     private let environment: TunnelEnvironment
     private let iap: IAP?
-    private let originalProfile: Profile
 
     private var verifierSubscription: Task<Void, Error>?
 
     public init(
         backend: TunnelBackendProtocol,
+        originalProfile: Profile,
         environment: TunnelEnvironment,
-        iap: IAP?,
-        originalProfile: Profile
+        iap: IAP?
     ) {
         self.backend = backend
+        self.originalProfile = originalProfile
         self.environment = environment
         self.iap = iap
-        self.originalProfile = originalProfile
 
         // Disable if skips purchases
         if let iap {
@@ -186,6 +186,8 @@ private extension TunnelContext {
         while true {
             guard let backend else { return }
             guard !Task.isCancelled else { return }
+
+            // Perform periodic verification
             do {
                 pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
@@ -193,7 +195,7 @@ private extension TunnelContext {
             } catch {
                 // Mitigate the StoreKit inability to report errors, sometimes it
                 // would just return empty products, e.g. on network failure. In those
-                // cases, retry a few times before failing
+                // cases, retry a few times before failing.
                 if attempts > 0 {
                     attempts -= 1
                     let products = iapManager.purchasedProducts
@@ -212,6 +214,7 @@ private extension TunnelContext {
                 return
             }
 
+            // Retry in a while
             pspLog(.iap, .info, "Will verify profile again in \(params.interval) seconds...")
             try? await Task.sleep(interval: params.interval)
 

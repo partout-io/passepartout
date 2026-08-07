@@ -391,7 +391,7 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func newLogFormatter() -> LogFormatter? {
+    public func newLogFormatter() -> LogFormatter {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
             messageFormat: constants.log.formatter.message

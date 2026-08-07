@@ -11,18 +11,10 @@ import TunnelLibrary
 
 extension TunnelContext {
     public static func forProduction(
+        neProvider: NEPacketTunnelProvider,
         appConfiguration: ABI.AppConfiguration,
-        preferences: AppPreferencesStore,
-        startPreferences: ABI.AppPreferencesProtocol?,
-        // TODO: #218, cachesURL must be per-profile
-        cachesURL: URL,
-        neProvider: NEPacketTunnelProvider
+        preferences: AppPreferencesStore
     ) async throws -> TunnelContext {
-        let backend: TunnelBackendProtocol
-        let originalProfile: Profile
-        let processedProfile: Profile
-        let environment: TunnelEnvironment
-
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
             fatalError("Nil .bundleIdentifier?")
         }
@@ -30,134 +22,32 @@ extension TunnelContext {
             .global,
             bundleIdentifier: bundleIdentifier
         )
+        // TODO: #218, cachesURL must be per-profile
+        let cachesURL = FileManager.default.temporaryDirectory
 
-        if preferences.isFlagEnabled(.zigRuntime) {
-            pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
-
-            let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
-            guard let defaults = UserDefaults(suiteName: appGroup) else {
-                fatalError("No access to App Group: \(appGroup)")
+        // Pick runtime based on config flag
+        let runtime = try {
+            if preferences.isFlagEnabled(.zigRuntime) {
+                do {
+                    return try newZigRuntime(
+                        neProvider: neProvider,
+                        appConfiguration: appConfiguration,
+                        preferences: preferences,
+                        keychain: keychain,
+                        cachesURL: cachesURL
+                    )
+                } catch RuntimeError.unsupportedProviders {
+                    // Fall back to Swift
+                }
             }
-            // TODO: #218, cachesURL must be per-profile
-            let cachesURL = FileManager.default.temporaryDirectory
-            // FIXME: ###, Profile decoding requires no registry
-            let registry = appConfiguration.newRegistryForTunnel(
+            return try newSwiftRuntime(
+                neProvider: neProvider,
+                appConfiguration: appConfiguration,
                 preferences: preferences,
+                keychain: keychain,
                 cachesURL: cachesURL
             )
-            let decoder = appConfiguration.newNEProtocolCoder(
-                .global,
-                coder: registry,
-                keychain: keychain
-            )
-            let runtime = try PartoutProviderRuntime(
-                provider: neProvider,
-                decoder: decoder,
-                options: .init(
-                    dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
-                    logsSnapshots: false
-                ),
-                defaults: defaults,
-                logsPrivateData: preferences[\.logsPrivateData],
-                cacheDir: cachesURL.path(),
-                minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
-                logger: logger
-            )
-            originalProfile = runtime.profile
-            processedProfile = originalProfile
-            environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
-            backend = runtime
-        } else {
-            pspLog(.core, .info, "Using Swift runtime")
-
-            // Create global registry
-            let registry = appConfiguration.newRegistryForTunnel(
-                preferences: preferences,
-                cachesURL: cachesURL
-            )
-
-            // Decode profile from NE provider
-            do {
-                let decoder = appConfiguration.newNEProtocolCoder(
-                    .global,
-                    coder: registry,
-                    keychain: keychain
-                )
-                originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
-                let resolvedProfile = try registry.resolvedProfile(originalProfile)
-                let processor = appConfiguration.newTunnelProcessor()
-                processedProfile = try processor.willProcess(resolvedProfile)
-            } catch {
-                pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
-                throw error
-            }
-            environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
-
-            // Update the logger now that we have a context
-            assert(processedProfile.id == originalProfile.id)
-            let logFormatter = appConfiguration.newLogFormatter()
-            let ctx = pspLogRegister(
-                for: .tunnelProfile(processedProfile.id),
-                with: appConfiguration,
-                preferences: preferences,
-                localURL: appConfiguration.urlForTunnelLog,
-                localMapper: logFormatter?.localMapper
-            )
-
-            // Decode preferences and config flags
-            pspLog(ctx.profileId, .core, .info, "Tunnel profile initialized")
-            if let startPreferences {
-                pspLog(ctx.profileId, .core, .info, "\tDecoded preferences: \(startPreferences)")
-            } else {
-                pspLog(ctx.profileId, .core, .info, "\tExisting preferences: \(preferences)")
-            }
-            let configFlags = preferences[\.configFlags]
-            pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
-            pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences[\.experimental.ignoredConfigFlags])")
-            pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences[\.experimental.enabledConfigFlags])")
-
-            // Create TunnelController for connnection management
-            let neTunnelController = NETunnelController(
-                provider: neProvider,
-                profile: processedProfile,
-                options: {
-                    var options = TunnelControllerOptions()
-                    if preferences[\.dnsFallsBack] {
-                        options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
-                    }
-                    return options
-                }()
-            )
-
-            // Create daemon
-            let factory: NetworkInterfaceFactory
-            if preferences.isFlagEnabled(.ovpnV3) {
-                factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
-            } else {
-                let options = NEInterfaceFactory.Options()
-                factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
-            }
-            let reachability = NEObservablePath(ctx)
-            let connectionOptions = ConnectionParameters.Options()
-            let connectionParameters = ConnectionParameters(
-                profile: processedProfile,
-                controller: neTunnelController,
-                factory: factory,
-                reachability: reachability,
-                environment: environment,
-                options: connectionOptions
-            )
-            let messageHandler = DefaultMessageHandler(ctx, environment: environment)
-            let params = SimpleConnectionDaemon.Parameters(
-                connectionFactory: registry,
-                connectionParameters: connectionParameters,
-                messageHandler: messageHandler,
-                startsImmediately: true,
-                cancelsUnrecoverable: false // Prevents on-demand reconnection
-            )
-            let daemon = try SimpleConnectionDaemon(params: params)
-            backend = daemon
-        }
+        }()
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.newIAPManager(
@@ -180,10 +70,173 @@ extension TunnelContext {
         )
 
         return TunnelContext(
+            backend: runtime.backend,
+            originalProfile: runtime.originalProfile,
+            environment: runtime.environment,
+            iap: iap
+        )
+    }
+}
+
+private extension TunnelContext {
+    struct ProductionRuntime {
+        let backend: TunnelBackendProtocol
+        let originalProfile: Profile
+        let environment: TunnelEnvironment
+    }
+
+    enum RuntimeError: Error {
+        case unsupportedProviders
+    }
+
+    static func newZigRuntime(
+        neProvider: NEPacketTunnelProvider,
+        appConfiguration: ABI.AppConfiguration,
+        preferences: AppPreferencesStore,
+        keychain: Keychain,
+        cachesURL: URL
+    ) throws -> ProductionRuntime {
+        pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
+
+        let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
+        guard let defaults = UserDefaults(suiteName: appGroup) else {
+            fatalError("No access to App Group: \(appGroup)")
+        }
+        // XXX: Profile decoding requires no registry
+        let registry = appConfiguration.newRegistryForTunnel(
+            preferences: preferences,
+            cachesURL: cachesURL
+        )
+        let decoder = appConfiguration.newNEProtocolCoder(
+            .global,
+            coder: registry,
+            keychain: keychain
+        )
+        let backend = try PartoutProviderRuntime(
+            provider: neProvider,
+            decoder: decoder,
+            options: .init(
+                dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
+                logsSnapshots: false
+            ),
+            defaults: defaults,
+            logsPrivateData: preferences[\.logsPrivateData],
+            cacheDir: cachesURL.path(),
+            minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
+            logger: logger
+        )
+        let originalProfile = backend.profile
+
+        // Profiles with provider modules require the Swift runtime
+        guard originalProfile.activeProviderModule == nil else {
+            pspLog(originalProfile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
+            throw RuntimeError.unsupportedProviders
+        }
+
+        let environment = appConfiguration.newTunnelEnvironment(profileId: originalProfile.id)
+        return ProductionRuntime(
             backend: backend,
+            originalProfile: originalProfile,
+            environment: environment
+        )
+    }
+
+    static func newSwiftRuntime(
+        neProvider: NEPacketTunnelProvider,
+        appConfiguration: ABI.AppConfiguration,
+        preferences: AppPreferencesStore,
+        keychain: Keychain,
+        cachesURL: URL
+    ) throws -> ProductionRuntime {
+        pspLog(.core, .info, "Using Swift runtime")
+
+        // Create global registry
+        let registry = appConfiguration.newRegistryForTunnel(
+            preferences: preferences,
+            cachesURL: cachesURL
+        )
+
+        // Decode profile from NE provider
+        let originalProfile: Profile
+        let processedProfile: Profile
+        do {
+            let decoder = appConfiguration.newNEProtocolCoder(
+                .global,
+                coder: registry,
+                keychain: keychain
+            )
+            originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
+            let resolvedProfile = try registry.resolvedProfile(originalProfile)
+            let processor = appConfiguration.newTunnelProcessor()
+            processedProfile = try processor.willProcess(resolvedProfile)
+        } catch {
+            pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
+            throw error
+        }
+        let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
+
+        // Update the logger now that we have a context
+        assert(processedProfile.id == originalProfile.id)
+        let logFormatter = appConfiguration.newLogFormatter()
+        let ctx = pspLogRegister(
+            for: .tunnelProfile(processedProfile.id),
+            with: appConfiguration,
+            preferences: preferences,
+            localURL: appConfiguration.urlForTunnelLog,
+            localMapper: logFormatter.localMapper
+        )
+
+        // Decode preferences and config flags
+        pspLog(ctx.profileId, .core, .info, "Tunnel profile initialized")
+        let configFlags = preferences[\.configFlags]
+        pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
+        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences[\.experimental.ignoredConfigFlags])")
+        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences[\.experimental.enabledConfigFlags])")
+
+        // Create TunnelController for connnection management
+        let neTunnelController = NETunnelController(
+            provider: neProvider,
+            profile: processedProfile,
+            options: {
+                var options = TunnelControllerOptions()
+                if preferences[\.dnsFallsBack] {
+                    options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
+                }
+                return options
+            }()
+        )
+
+        // Create daemon
+        let factory: NetworkInterfaceFactory
+        if preferences.isFlagEnabled(.ovpnV3) {
+            factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
+        } else {
+            let options = NEInterfaceFactory.Options()
+            factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
+        }
+        let reachability = NEObservablePath(ctx)
+        let connectionOptions = ConnectionParameters.Options()
+        let connectionParameters = ConnectionParameters(
+            profile: processedProfile,
+            controller: neTunnelController,
+            factory: factory,
+            reachability: reachability,
             environment: environment,
-            iap: iap,
-            originalProfile: originalProfile
+            options: connectionOptions
+        )
+        let messageHandler = DefaultMessageHandler(ctx, environment: environment)
+        let params = SimpleConnectionDaemon.Parameters(
+            connectionFactory: registry,
+            connectionParameters: connectionParameters,
+            messageHandler: messageHandler,
+            startsImmediately: true,
+            cancelsUnrecoverable: false // Prevents on-demand reconnection
+        )
+        let backend = try SimpleConnectionDaemon(params: params)
+        return ProductionRuntime(
+            backend: backend,
+            originalProfile: originalProfile,
+            environment: environment
         )
     }
 }
