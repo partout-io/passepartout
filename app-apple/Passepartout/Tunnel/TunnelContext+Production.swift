@@ -111,7 +111,7 @@ private extension TunnelContext {
         do {
             profile = try Profile(withNEProvider: neProvider, decoder: decoder)
         } catch {
-            pspLog(.profiles, .error, "Unable to decode profile in Zig (legacy?): \(error)")
+            pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
             throw error
         }
 
@@ -243,7 +243,7 @@ private struct TaggedProfileCoder: ProfileCoder {
 
         // Profiles with custom (provider) modules require the Swift runtime
         return try profile.asProfile { _ in
-            pspLog(profile.id, .profiles, .error,
+            pspLog(profile.id, .profiles, .fault,
                    "Custom modules are not supported by Zig, falling back to Swift runtime")
             throw TunnelContext.RuntimeError.unsupportedProviders
         }
