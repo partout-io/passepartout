@@ -93,7 +93,6 @@ struct VersionCheckerTests {
 }
 
 private final class MockStrategy: VersionCheckerStrategy, @unchecked Sendable {
-
     // Only allow once
     var didHitRateLimit = false
 
@@ -103,11 +102,19 @@ private final class MockStrategy: VersionCheckerStrategy, @unchecked Sendable {
         }
         return ABI.SemanticVersion("4.10.20")!
     }
+
+    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        []
+    }
 }
 
 private final class RateLimitedStrategy: VersionCheckerStrategy {
     func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
         throw ABI.AppError.rateLimit
+    }
+
+    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        []
     }
 }
 

@@ -99,7 +99,6 @@ extension ABI.AppConfiguration {
     }
 
     public func makeKeychain(_ ctx: PartoutLoggerContext, bundleIdentifier: String) -> Keychain {
-        let keychain: Keychain
         if bundle.distributionTarget.supportsAppGroups {
             let appGroup = bundle.bundleString(for: .keychainGroupId)
             return AppleKeychain(ctx, group: appGroup)
