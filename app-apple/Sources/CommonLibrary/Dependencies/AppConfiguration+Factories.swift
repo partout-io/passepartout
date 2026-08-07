@@ -313,7 +313,7 @@ extension ABI.AppConfiguration {
     public func makeVersionChecker(
         preferences: AppPreferencesStore,
         downloadURL: URL,
-        fetcher: @escaping @Sendable (URL, Bool) async throws -> Data
+        fetcher: @escaping @Sendable (URL, _ cached: Bool) async throws -> Data
     ) -> VersionChecker {
         let versionStrategy = GitHubReleaseStrategy(
             releaseURL: constants.github.latestReleaseURL,
