@@ -32,8 +32,7 @@ extension TunnelContext {
                         preferences: preferences,
                         cachesURL: cachesURL
                     )
-                } catch RuntimeError.undecodableProfile,
-                        RuntimeError.unsupportedProviders {
+                } catch RuntimeError.unsupportedProviders {
                     // Fall back to Swift
                 }
             }
@@ -83,7 +82,6 @@ private extension TunnelContext {
     }
 
     enum RuntimeError: Error {
-        case undecodableProfile
         case unsupportedProviders
     }
 
@@ -114,8 +112,8 @@ private extension TunnelContext {
         do {
             profile = try Profile(withNEProvider: neProvider, decoder: decoder)
         } catch {
-            pspLog(.profiles, .error, "Unable to decode profile in Zig (legacy?), falling back to Swift runtime: \(error)")
-            throw RuntimeError.undecodableProfile
+            pspLog(.profiles, .error, "Unable to decode profile in Zig (legacy?): \(error)")
+            throw error
         }
 
         // Profiles with provider modules require the Swift runtime
