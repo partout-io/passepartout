@@ -1305,7 +1305,7 @@
 					"$(inherited)",
 					"$(BUILT_PRODUCTS_DIR)",
 				);
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Library/SystemExtensions/com.algoritmico.mac.Passepartout.Tunnel.systemextension/Contents/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Library/SystemExtensions/$(CFG_TUNNEL_ID).systemextension/Contents/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
