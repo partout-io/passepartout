@@ -36,6 +36,10 @@ let package = Package(
             targets: ["AppLibraryTV"]
         ),
         .library(
+            name: "PartoutNative",
+            targets: ["PartoutNative"]
+        ),
+        .library(
             name: "TunnelLibrary",
             targets: ["TunnelLibrary"]
         )

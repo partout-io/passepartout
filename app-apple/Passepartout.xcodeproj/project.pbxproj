@@ -44,6 +44,7 @@
 		0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */ = {isa = PBXBuildFile; platformFilters = (tvos, ); productRef = 0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */; };
 		0EE9F4A32ECF28DD008D5837 /* TunnelLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */; };
 		0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */; };
+		CE51B1E32F3E7D1100B1A001 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E22F3E7D1100B1A001 /* PartoutNative */; };
 		0EF74A8C2E2D92CC00AF7614 /* test-bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 0EF74A772E2D774600AF7614 /* test-bundle.json */; };
 		0EF9E1002CF4811000F4A7DA /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */; };
 		A1B2C3D4E5F60718293A4B5D /* AppContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* AppContext+Production.swift */; };
@@ -200,6 +201,7 @@
 			files = (
 				0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */,
 				0EE9F49F2ECF28C4008D5837 /* AppLibraryMain in Frameworks */,
+				CE51B1E32F3E7D1100B1A001 /* PartoutNative in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +442,7 @@
 			packageProductDependencies = (
 				0EE9F49E2ECF28C4008D5837 /* AppLibraryMain */,
 				0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */,
+				CE51B1E22F3E7D1100B1A001 /* PartoutNative */,
 			);
 			productName = Passepartout;
 			productReference = 0E06D18F2B87629100176E1D /* Passepartout.app */;
@@ -1678,6 +1681,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
 			productName = TunnelLibrary;
+		};
+		CE51B1E22F3E7D1100B1A001 /* PartoutNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = PartoutNative;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
