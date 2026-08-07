@@ -3,6 +3,11 @@
 
 import PackageDescription
 
+let partoutNative: Target = .partoutNative(
+//    .local
+    .remote("0.155.0", checksum: "b5105c3511f1e3fb29afccba995c91aaef9072e27207b1b8eac1e08e94071b99")
+)
+
 // The "*Wrapper" targets only exist for testing
 
 let package = Package(
@@ -29,6 +34,10 @@ let package = Package(
         .library(
             name: "AppLibraryTV",
             targets: ["AppLibraryTV"]
+        ),
+        .library(
+            name: "PartoutNative",
+            targets: ["PartoutNative"]
         ),
         .library(
             name: "TunnelLibrary",
@@ -82,18 +91,15 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-//        .binaryTarget(
-//            name: "PartoutNative",
-//            path: "PartoutNative.xcframework"
-//        ),
         .target(
             name: "TunnelLibrary",
             dependencies: [
-                "AppResources"
-//                "PartoutNative",
-//                .product(name: "PartoutRuntime", package: "partout")
+                "AppResources",
+                "PartoutNative",
+                .product(name: "PartoutRuntime", package: "partout")
             ]
         ),
+        partoutNative,
         .testTarget(
             name: "AppLibraryTests",
             dependencies: [
@@ -107,6 +113,30 @@ let package = Package(
         )
     ]
 )
+
+enum PartoutNativeTarget {
+    case local
+    case remote(_ version: String, checksum: String)
+}
+
+extension Target {
+    static func partoutNative(_ target: PartoutNativeTarget) -> Target {
+        let name = "PartoutNative"
+        switch target {
+        case .local:
+            return .binaryTarget(
+                name: name,
+                path: "\(name).xcframework"
+            )
+        case .remote(let version, let checksum):
+            return .binaryTarget(
+                name: name,
+                url: "https://github.com/partout-io/partout/releases/download/\(version)/\(name).xcframework.zip",
+                checksum: checksum
+            )
+        }
+    }
+}
 
 // MARK: - CommonLibrary*
 
