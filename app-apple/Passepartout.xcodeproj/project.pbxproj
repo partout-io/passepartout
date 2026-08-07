@@ -45,6 +45,7 @@
 		0EE9F4A32ECF28DD008D5837 /* TunnelLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */; };
 		0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */; };
 		CE51B1E32F3E7D1100B1A001 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E22F3E7D1100B1A001 /* PartoutNative */; };
+		CE51B1E72F3E7D1100B1A001 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E82F3E7D1100B1A001 /* PartoutNative */; };
 		0EF74A8C2E2D92CC00AF7614 /* test-bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 0EF74A772E2D774600AF7614 /* test-bundle.json */; };
 		0EF9E1002CF4811000F4A7DA /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */; };
 		A1B2C3D4E5F60718293A4B5D /* AppContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* AppContext+Production.swift */; };
@@ -216,6 +217,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE51B1E72F3E7D1100B1A001 /* PartoutNative in Frameworks */,
 				0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */,
 				0EE662B52DC2BDDF00A4BB37 /* NetworkExtension.framework in Frameworks */,
 			);
@@ -555,6 +557,7 @@
 			);
 			name = PassepartoutTunnelMac;
 			packageProductDependencies = (
+				CE51B1E82F3E7D1100B1A001 /* PartoutNative */,
 				0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */,
 			);
 			productName = Tunnel;
@@ -1285,6 +1288,7 @@
 				CODE_SIGN_ENTITLEMENTS = "$(CFG_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Manual;
 				ENABLE_PREVIEWS = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = PartoutNative.framework;
 				INFOPLIST_FILE = "$(CFG_INFO_PLIST)";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -1297,8 +1301,16 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = NO;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Library/SystemExtensions/com.algoritmico.mac.Passepartout.Tunnel.systemextension/Contents/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					PartoutNative,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(CFG_APP_ID)";
 				PRODUCT_NAME = "$(CFG_DISPLAY_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1398,7 +1410,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(CFG_TUNNEL_ID)";
@@ -1433,10 +1444,7 @@
 				INFOPLIST_FILE = "$(CFG_TUNNEL_INFO_PLIST)";
 				INFOPLIST_KEY_CFBundleDisplayName = "$(TARGET_NAME)";
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../../../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(CFG_TUNNEL_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1519,7 +1527,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(CFG_TUNNEL_ID)";
@@ -1547,7 +1554,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(CFG_TUNNEL_ID)";
@@ -1683,6 +1689,11 @@
 			productName = TunnelLibrary;
 		};
 		CE51B1E22F3E7D1100B1A001 /* PartoutNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = PartoutNative;
+		};
+		CE51B1E82F3E7D1100B1A001 /* PartoutNative */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
 			productName = PartoutNative;
