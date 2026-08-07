@@ -173,13 +173,10 @@ extension TunnelContext {
         await iapManager.fetchLevelIfNeeded()
         let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
-        // Relax verification strategy based on AppPreference
-        // Assemble
         let iap = TunnelContext.IAP(
             manager: iapManager,
             skipsPurchases: skipsPurchases,
-            verificationParameters: verificationParameters,
-            usesRelaxedVerification: true
+            verificationParameters: verificationParameters
         )
 
         return TunnelContext(

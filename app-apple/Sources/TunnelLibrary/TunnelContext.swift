@@ -10,18 +10,15 @@ public final class TunnelContext: TunnelContextProtocol {
         let manager: IAPManager
         let skipsPurchases: Bool
         let verificationParameters: ABI.AppConstants.TunnelVerificationParameters
-        let usesRelaxedVerification: Bool
 
         public init(
             manager: IAPManager,
             skipsPurchases: Bool,
-            verificationParameters: ABI.AppConstants.TunnelVerificationParameters,
-            usesRelaxedVerification: Bool
+            verificationParameters: ABI.AppConstants.TunnelVerificationParameters
         ) {
             self.manager = manager
             self.skipsPurchases = skipsPurchases
             self.verificationParameters = verificationParameters
-            self.usesRelaxedVerification = usesRelaxedVerification
         }
     }
 
@@ -84,7 +81,7 @@ public final class TunnelContext: TunnelContextProtocol {
 
             // Prepare for periodic receipt verification
             let params = iap.verificationParameters
-            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds (\(iap.usesRelaxedVerification ? "relaxed" : "strict"))")
+            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may
@@ -97,8 +94,7 @@ public final class TunnelContext: TunnelContextProtocol {
                     of: originalProfile,
                     iapManager: iap.manager,
                     environment: environment,
-                    params: params,
-                    isRelaxed: iap.usesRelaxedVerification
+                    params: params
                 )
             }
         } catch {
@@ -184,8 +180,7 @@ private extension TunnelContext {
         of profile: Profile,
         iapManager: IAPManager,
         environment: TunnelEnvironment,
-        params: ABI.AppConstants.TunnelVerificationParameters,
-        isRelaxed: Bool
+        params: ABI.AppConstants.TunnelVerificationParameters
     ) async {
         var attempts = params.attempts
         while true {
@@ -196,17 +191,15 @@ private extension TunnelContext {
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {
-                if isRelaxed {
-                    // Mitigate the StoreKit inability to report errors, sometimes it
-                    // would just return empty products, e.g. on network failure. In those
-                    // cases, retry a few times before failing
-                    if attempts > 0 {
-                        attempts -= 1
-                        let products = iapManager.purchasedProducts
-                        pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
-                        try? await Task.sleep(interval: params.retryInterval)
-                        continue
-                    }
+                // Mitigate the StoreKit inability to report errors, sometimes it
+                // would just return empty products, e.g. on network failure. In those
+                // cases, retry a few times before failing
+                if attempts > 0 {
+                    attempts -= 1
+                    let products = iapManager.purchasedProducts
+                    pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
+                    try? await Task.sleep(interval: params.retryInterval)
+                    continue
                 }
 
                 let errorCode: ABI.AppErrorCode = .ineligibleProfile
