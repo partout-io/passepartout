@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# CI uses the remote PartoutNative artifact declared in Package.swift.
+if [[ ${CI:-} == true ]]; then
+    exit 0
+fi
+
 set -euo pipefail
 
 fail() {

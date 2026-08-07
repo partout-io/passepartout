@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 cwd=`dirname $0`
 platform=$1
 developer_id=$2
@@ -25,3 +26,5 @@ xcodebuild archive \
     -scheme $scheme \
     -configuration $configuration \
     $arch_line
+
+"$cwd/xcode-assert-archive.sh" "$dst/$platform/$project_name.xcarchive" "$developer_id"

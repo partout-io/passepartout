@@ -2,7 +2,7 @@
 app_root="${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app"
 login_src="${BUILT_PRODUCTS_DIR}/PassepartoutLoginItem.app"
 appex_src="${BUILT_PRODUCTS_DIR}/PassepartoutTunnel.appex"
-sysex_src="${BUILT_PRODUCTS_DIR}/com.algoritmico.mac.Passepartout.Tunnel.systemextension"
+sysex_src="${BUILT_PRODUCTS_DIR}/${CFG_TUNNEL_ID}.systemextension"
 platform_mac="macosx"
 sysex_cfg="ReleaseMac"
 
