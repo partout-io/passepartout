@@ -115,12 +115,6 @@ private extension TunnelContext {
             throw error
         }
 
-        // Profiles with provider modules require the Swift runtime
-        guard profile.firstModule(ofType: CustomModule.self, ifActive: true) == nil else {
-            pspLog(profile.id, .profiles, .error, "Custom modules are not supported by Zig, falling back to Swift runtime")
-            throw RuntimeError.unsupportedProviders
-        }
-
         let backend = try PartoutProviderRuntime(
             provider: neProvider,
             profile: profile,
@@ -245,7 +239,14 @@ private extension TunnelContext {
 
 private struct TaggedProfileCoder: ProfileCoder {
     func profile(fromString string: String) throws -> Profile {
-        try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
+        let profile = try ABI.decodeJSON(TaggedProfile.self, from: string)
+
+        // Profiles with custom (provider) modules require the Swift runtime
+        return try profile.asProfile { _ in
+            pspLog(profile.id, .profiles, .error,
+                   "Custom modules are not supported by Zig, falling back to Swift runtime")
+            throw TunnelContext.RuntimeError.unsupportedProviders
+        }
     }
 
     func string(fromProfile profile: Profile) throws -> String {
