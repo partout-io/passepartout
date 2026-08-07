@@ -35,13 +35,13 @@ import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
+import com.algoritmico.passepartout.observables.ConfigObservable
+import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalConfigObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
-import com.algoritmico.passepartout.observables.ConfigObservable
-import com.algoritmico.passepartout.observables.ErrorHandler
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import com.algoritmico.passepartout.ui.theme.themeListSection
@@ -209,7 +209,6 @@ private fun ConfigPreferencePickerRow(
 }
 
 private val AdvancedFlags = listOf(
-    ConfigFlag.newProfileEncoding,
     ConfigFlag.ovpnV3
 )
 

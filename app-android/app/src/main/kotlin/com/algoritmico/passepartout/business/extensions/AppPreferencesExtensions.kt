@@ -4,7 +4,6 @@
 
 package com.algoritmico.passepartout.business.extensions
 
-import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -14,6 +13,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
@@ -62,8 +62,6 @@ val AppPreferences.Companion.default: AppPreferences
         experimental = ExperimentalPreferences(listOf(), listOf()),
         extensiveLogging = false,
         logsPrivateData = false,
-        newProfileEncoding = false,
-        relaxedVerification = false,
         skipsPurchases = false
     )
 
@@ -98,12 +96,6 @@ fun AppPreferences.update(fields: Collection<AppPreferenceKey>, new: AppPreferen
             AppPreferenceKey.logsPrivateData -> updated.copy(
                 logsPrivateData = new.logsPrivateData
             )
-            AppPreferenceKey.newProfileEncoding -> updated.copy(
-                newProfileEncoding = new.newProfileEncoding
-            )
-            AppPreferenceKey.relaxedVerification -> updated.copy(
-                relaxedVerification = new.relaxedVerification
-            )
             AppPreferenceKey.skipsPurchases -> updated.copy(
                 skipsPurchases = new.skipsPurchases
             )
@@ -128,10 +120,6 @@ fun Preferences.toAppPreferences(): AppPreferences {
             ?: default.extensiveLogging,
         logsPrivateData = this[K.LOGS_PRIVATE_DATA]
             ?: default.logsPrivateData,
-        newProfileEncoding = this[K.NEW_PROFILE_ENCODING]
-            ?: default.newProfileEncoding,
-        relaxedVerification = this[K.RELAXED_VERIFICATION]
-            ?: default.relaxedVerification,
         skipsPurchases = this[K.SKIPS_PURCHASES]
             ?: default.skipsPurchases,
         deviceId = this[K.DEVICE_ID],
@@ -230,12 +218,6 @@ fun MutablePreferences.update(fields: Collection<AppPreferenceKey>, new: AppPref
             AppPreferenceKey.logsPrivateData ->
                 this[K.LOGS_PRIVATE_DATA] = new.logsPrivateData
 
-            AppPreferenceKey.newProfileEncoding ->
-                this[K.NEW_PROFILE_ENCODING] = new.newProfileEncoding
-
-            AppPreferenceKey.relaxedVerification ->
-                this[K.RELAXED_VERIFICATION] = new.relaxedVerification
-
             AppPreferenceKey.skipsPurchases ->
                 this[K.SKIPS_PURCHASES] = new.skipsPurchases
         }
@@ -261,8 +243,6 @@ private object K {
         longPreferencesKey(AppPreferenceKey.lastCheckedVersionDate.name)
     val LAST_USED_PROFILE_ID = stringPreferencesKey(AppPreferenceKey.lastUsedProfileId.name)
     val LOGS_PRIVATE_DATA = booleanPreferencesKey(AppPreferenceKey.logsPrivateData.name)
-    val NEW_PROFILE_ENCODING = booleanPreferencesKey(AppPreferenceKey.newProfileEncoding.name)
-    val RELAXED_VERIFICATION = booleanPreferencesKey(AppPreferenceKey.relaxedVerification.name)
     val SKIPS_PURCHASES = booleanPreferencesKey(AppPreferenceKey.skipsPurchases.name)
 }
 
