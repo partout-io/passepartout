@@ -61,11 +61,7 @@ extension TunnelContext {
                 logsPrivateData: preferences[\.logsPrivateData],
                 cacheDir: cachesURL.path(),
                 minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
-                logger: { level, message in
-                    guard let level = ABI.AppLogLevel(partoutCLevel: level),
-                          let message else { return }
-                    pspLog(.abi, level, String(cString: message))
-                }
+                logger: logger
             )
             originalProfile = runtime.profile
             processedProfile = originalProfile
@@ -193,5 +189,14 @@ extension TunnelContext {
             originalProfile: originalProfile
         )
     }
+}
+
+private nonisolated func logger(
+    _ level: Int32,
+    _ message: UnsafePointer<CChar>?
+) {
+    guard let level = ABI.AppLogLevel(partoutCLevel: level),
+          let message else { return }
+    pspLog(.abi, level, String(cString: message))
 }
 #endif
