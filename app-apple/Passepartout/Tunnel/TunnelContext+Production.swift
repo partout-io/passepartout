@@ -109,12 +109,19 @@ private extension TunnelContext {
         )
         let decoder = codingPair.neCoder
 
+        // Validate decoded profile
         let profile: Profile
         do {
             profile = try Profile(withNEProvider: neProvider, decoder: decoder)
         } catch {
             pspLog(.profiles, .error, "Unable to decode profile in Zig (legacy?), falling back to Swift runtime: \(error)")
             throw RuntimeError.undecodableProfile
+        }
+
+        // Profiles with provider modules require the Swift runtime
+        guard profile.activeProviderModule == nil else {
+            pspLog(profile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
+            throw RuntimeError.unsupportedProviders
         }
 
         let backend = try PartoutProviderRuntime(
@@ -131,17 +138,10 @@ private extension TunnelContext {
             logger: logger
         )
 
-        // Profiles with provider modules require the Swift runtime
-        guard profile.activeProviderModule == nil else {
-            pspLog(profile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
-            throw RuntimeError.unsupportedProviders
-        }
-
-        let environment = appConfiguration.makeTunnelEnvironment(profileId: profile.id)
         return ProductionRuntime(
             backend: backend,
             originalProfile: profile,
-            environment: environment
+            environment: backend.environment
         )
     }
 
