@@ -36,7 +36,8 @@ extension TunnelContext {
                         keychain: keychain,
                         cachesURL: cachesURL
                     )
-                } catch RuntimeError.unsupportedProviders {
+                } catch RuntimeError.undecodableProfile,
+                        RuntimeError.unsupportedProviders {
                     // Fall back to Swift
                 }
             }
@@ -86,6 +87,7 @@ private extension TunnelContext {
     }
 
     enum RuntimeError: Error {
+        case undecodableProfile
         case unsupportedProviders
     }
 
@@ -102,19 +104,25 @@ private extension TunnelContext {
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
         }
-        // XXX: Profile decoding requires no registry
-        let registry = appConfiguration.newRegistryForTunnel(
-            preferences: preferences,
-            cachesURL: cachesURL
-        )
+        // Profile decoding requires no registry. Parse as TaggedProfile
+        // and rethrow on failure.
+        let coder = TaggedProfileCoder()
         let decoder = appConfiguration.newNEProtocolCoder(
             .global,
-            coder: registry,
+            coder: coder,
             keychain: keychain
         )
+        let profile: Profile
+        do {
+            profile = try Profile(withNEProvider: neProvider, decoder: decoder)
+        } catch {
+            pspLog(.profiles, .error, "Unable to decode profile in Zig (legacy?), falling back to Swift runtime: \(error)")
+            throw RuntimeError.undecodableProfile
+        }
+
         let backend = try PartoutProviderRuntime(
             provider: neProvider,
-            decoder: decoder,
+            profile: profile,
             options: .init(
                 dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
                 logsSnapshots: false
@@ -125,18 +133,17 @@ private extension TunnelContext {
             minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
             logger: logger
         )
-        let originalProfile = backend.profile
 
         // Profiles with provider modules require the Swift runtime
-        guard originalProfile.activeProviderModule == nil else {
-            pspLog(originalProfile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
+        guard profile.activeProviderModule == nil else {
+            pspLog(profile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
             throw RuntimeError.unsupportedProviders
         }
 
-        let environment = appConfiguration.newTunnelEnvironment(profileId: originalProfile.id)
+        let environment = appConfiguration.newTunnelEnvironment(profileId: profile.id)
         return ProductionRuntime(
             backend: backend,
-            originalProfile: originalProfile,
+            originalProfile: profile,
             environment: environment
         )
     }
@@ -238,6 +245,16 @@ private extension TunnelContext {
             originalProfile: originalProfile,
             environment: environment
         )
+    }
+}
+
+private struct TaggedProfileCoder: ProfileCoder {
+    func profile(fromString string: String) throws -> Profile {
+        try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
+    }
+
+    func string(fromProfile profile: Profile) throws -> String {
+        try ABI.encodeJSON(profile.asTaggedProfile)
     }
 }
 
