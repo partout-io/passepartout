@@ -89,4 +89,5 @@ done
 "$partout_dir/scripts/build-xcframework.sh" \
     "$SRCROOT/PartoutNative.xcframework" \
     "$artifacts_dir" \
-    "$@"
+    "$@" \
+    "--monolith"
