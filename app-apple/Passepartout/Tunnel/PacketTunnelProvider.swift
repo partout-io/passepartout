@@ -8,10 +8,12 @@ import CommonLibrary
 import Partout
 import TunnelLibrary
 
+extension NSObject: @retroactive @unchecked Sendable {}
+
 final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
     private var context: TunnelContextProtocol?
 
-    override func startTunnel(options: [String: NSObject]? = nil, completionHandler: @escaping @Sendable (Error?) -> Void) {
+    override func startTunnel(options: [String: NSObject]? = nil) async throws {
         let distributionTarget: ABI.DistributionTarget
 #if PP_BUILD_MAC
         distributionTarget = .developerID
@@ -33,7 +35,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             with: appConfiguration,
             preferences: AppPreferencesStore(),
             localURL: appConfiguration.urlForTunnelLog,
-            localMapper: logFormatter?.localMapper
+            localMapper: logFormatter.localMapper
         )
         pspLog(.core, .notice, "Partout \(PartoutConstants.version) (Swift)")
 
@@ -55,34 +57,23 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let preferences = AppPreferencesStore({
             let persistedPreferences = UserDefaultsAppPreferences(defaults: .standard)
             if let startPreferences {
+                pspLog(.core, .info, "PTP: Decoded preferences: \(startPreferences)")
                 persistedPreferences.copy(startPreferences)
-                pspLog(.core, .debug, "PTP: persistedPreferences: \(persistedPreferences)")
-                pspLog(.core, .debug, "PTP: startPreferences: \(startPreferences)")
                 assert(persistedPreferences.serialized() == startPreferences)
                 return startPreferences
             }
+            pspLog(.core, .info, "PTP: Existing preferences: \(persistedPreferences)")
             return persistedPreferences
         }())
 
         // Create the tunnel context
-        Task { @MainActor in
-            do {
-                // TODO: #218, cachesURL must be per-profile
-                let cachesURL = FileManager.default.temporaryDirectory
-                context = try await TunnelContext.forProduction(
-                    appConfiguration: appConfiguration,
-                    preferences: preferences,
-                    startPreferences: startPreferences,
-                    cachesURL: cachesURL,
-                    neProvider: self
-                )
-                context?.log(.core, .notice, "Start PTP")
-                try await context?.start(isInteractive: isInteractive)
-                completionHandler(nil)
-            } catch {
-                completionHandler(error)
-            }
-        }
+        context = try await TunnelContext.forProduction(
+            neProvider: self,
+            appConfiguration: appConfiguration,
+            preferences: preferences
+        )
+        context?.log(.core, .notice, "Start PTP")
+        try await context?.start(isInteractive: isInteractive)
     }
 
     override func stopTunnel(with reason: NEProviderStopReason) async {
