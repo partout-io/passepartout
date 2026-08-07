@@ -12,13 +12,13 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
 
     private let rateLimit: TimeInterval
 
-    private let fetcher: @Sendable (URL, Bool) async throws -> Data
+    private let fetcher: @Sendable (URL, _ cached: Bool) async throws -> Data
 
     public nonisolated init(
         releaseURL: URL,
         changelogURL: @escaping @Sendable (String) -> URL,
         rateLimit: TimeInterval,
-        fetcher: @escaping @Sendable (URL, Bool) async throws -> Data
+        fetcher: @escaping @Sendable (URL, _ cached: Bool) async throws -> Data
     ) {
         self.releaseURL = releaseURL
         self.changelogURL = changelogURL
