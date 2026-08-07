@@ -432,7 +432,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0E6C0A032BF4047100450362 /* PBXTargetDependency */,
 				0E757F252CD0D812006E13E1 /* PBXTargetDependency */,
 				0EC332D12B8A1808000B9C2F /* PBXTargetDependency */,
 				0EE662BE2DC2BDDF00A4BB37 /* PBXTargetDependency */,
@@ -513,7 +512,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0E6C0A052BF4047600450362 /* PBXTargetDependency */,
 			);
 			name = PassepartoutTunnel;
 			packageProductDependencies = (
@@ -551,7 +549,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0E23061D2DC2C2A8002D70D7 /* PBXTargetDependency */,
 			);
 			name = PassepartoutTunnelMac;
 			packageProductDependencies = (
@@ -820,19 +817,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0E23061D2DC2C2A8002D70D7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-		};
 		0E3FF4B32CE3AF6F00BFF640 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0E06D18E2B87629100176E1D /* Passepartout */;
 			targetProxy = 0ED0C0C92DA513430026DA9B /* PBXContainerItemProxy */;
-		};
-		0E6C0A032BF4047100450362 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-		};
-		0E6C0A052BF4047600450362 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
 		};
 		0E757F252CD0D812006E13E1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
