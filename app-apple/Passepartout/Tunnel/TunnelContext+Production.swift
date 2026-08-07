@@ -116,8 +116,8 @@ private extension TunnelContext {
         }
 
         // Profiles with provider modules require the Swift runtime
-        guard profile.activeProviderModule == nil else {
-            pspLog(profile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
+        guard profile.firstModule(ofType: CustomModule.self, ifActive: true) == nil else {
+            pspLog(profile.id, .profiles, .error, "Custom modules are not supported by Zig, falling back to Swift runtime")
             throw RuntimeError.unsupportedProviders
         }
 
