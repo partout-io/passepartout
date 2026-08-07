@@ -6,7 +6,7 @@
 import CommonLibrary
 import NetworkExtension
 import Partout
-// import PartoutRuntime
+import PartoutRuntime
 import TunnelLibrary
 
 extension TunnelContext {
@@ -21,45 +21,57 @@ extension TunnelContext {
         let backend: TunnelBackendProtocol
         let originalProfile: Profile
         let processedProfile: Profile
+        let environment: TunnelEnvironment
 
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
             fatalError("Nil .bundleIdentifier?")
         }
+        let keychain = appConfiguration.newKeychain(
+            .global,
+            bundleIdentifier: bundleIdentifier
+        )
 
-//        if preferences.isFlagEnabled(.zigRuntime) {
-//            pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
-//
-//            let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
-//            guard let defaults = UserDefaults(suiteName: appGroup) else {
-//                fatalError("No access to App Group: \(appGroup)")
-//            }
-//            // TODO: #218, cachesURL must be per-profile
-//            let cachesURL = FileManager.default.temporaryDirectory
-//            // FIXME: ###, Profile decoding requires no registry
-//            let registry = appConfiguration.newRegistryForTunnel(
-//                preferences: preferences,
-//                cachesURL: cachesURL
-//            )
-//            let decoder = appConfiguration.newNEProtocolCoder(.global, coder: registry)
-//            let runtime = try PartoutProviderRuntime(
-//                provider: neProvider,
-//                decoder: decoder,
-//                options: .init(
-//                    dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
-//                    logsSnapshots: false
-//                ),
-//                defaults: defaults,
-//                logsPrivateData: preferences[\.logsPrivateData],
-//                cacheDir: cachesURL.path(),
-//                minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
-//                logger: { level, message in
-//                    guard let level = ABI.AppLogLevel(partoutCLevel: level),
-//                          let message else { return }
-//                    pspLog(.abi, level, String(cString: message))
-//                }
-//            )
-//            backend = runtime
-//        } else {
+        if preferences.isFlagEnabled(.zigRuntime) {
+            pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
+
+            let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
+            guard let defaults = UserDefaults(suiteName: appGroup) else {
+                fatalError("No access to App Group: \(appGroup)")
+            }
+            // TODO: #218, cachesURL must be per-profile
+            let cachesURL = FileManager.default.temporaryDirectory
+            // FIXME: ###, Profile decoding requires no registry
+            let registry = appConfiguration.newRegistryForTunnel(
+                preferences: preferences,
+                cachesURL: cachesURL
+            )
+            let decoder = appConfiguration.newNEProtocolCoder(
+                .global,
+                coder: registry,
+                keychain: keychain
+            )
+            let runtime = try PartoutProviderRuntime(
+                provider: neProvider,
+                decoder: decoder,
+                options: .init(
+                    dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
+                    logsSnapshots: false
+                ),
+                defaults: defaults,
+                logsPrivateData: preferences[\.logsPrivateData],
+                cacheDir: cachesURL.path(),
+                minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
+                logger: { level, message in
+                    guard let level = ABI.AppLogLevel(partoutCLevel: level),
+                          let message else { return }
+                    pspLog(.abi, level, String(cString: message))
+                }
+            )
+            originalProfile = runtime.profile
+            processedProfile = originalProfile
+            environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
+            backend = runtime
+        } else {
             pspLog(.core, .info, "Using Swift runtime")
 
             // Create global registry
@@ -70,10 +82,6 @@ extension TunnelContext {
 
             // Decode profile from NE provider
             do {
-                let keychain = appConfiguration.newKeychain(
-                    .global,
-                    bundleIdentifier: bundleIdentifier
-                )
                 let decoder = appConfiguration.newNEProtocolCoder(
                     .global,
                     coder: registry,
@@ -87,6 +95,7 @@ extension TunnelContext {
                 pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
                 throw error
             }
+            environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
 
             // Update the logger now that we have a context
             assert(processedProfile.id == originalProfile.id)
@@ -133,7 +142,6 @@ extension TunnelContext {
                 factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
             }
             let reachability = NEObservablePath(ctx)
-            let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
             let connectionOptions = ConnectionParameters.Options()
             let connectionParameters = ConnectionParameters(
                 profile: processedProfile,
@@ -153,7 +161,7 @@ extension TunnelContext {
             )
             let daemon = try SimpleConnectionDaemon(params: params)
             backend = daemon
-//        }
+        }
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.newIAPManager(
