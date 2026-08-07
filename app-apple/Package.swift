@@ -4,8 +4,8 @@
 import PackageDescription
 
 let partoutNative: Target = .partoutNative(
-    // .local
-    .remote("0.154.5", checksum: "aba03cf660ab321d6d8ac8c2fe37ac739c2e05eda6d744731e680a054be23192")
+    .local
+//    .remote("0.154.5", checksum: "aba03cf660ab321d6d8ac8c2fe37ac739c2e05eda6d744731e680a054be23192")
 )
 
 // The "*Wrapper" targets only exist for testing

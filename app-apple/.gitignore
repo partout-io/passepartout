@@ -12,3 +12,4 @@ default.profraw
 .sqlite-*
 .dmg*
 PartoutNative.xcframework
+artifacts
