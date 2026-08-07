@@ -9,6 +9,18 @@ extension ABI.AppConfiguration {
         DefaultProfileProcessor(iapManager: iapManager)
     }
 
+    public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+        if bundle.distributionTarget.supportsAppGroups {
+            return newTunnelEnvironment(profileId: profileId)
+        } else if let fetcher = strategy as? EnvironmentFetcher {
+            return NETunnelEnvironment(profileId: profileId) { [weak fetcher] in
+                try await fetcher?.fetchEnvironment(profileId: $0)
+            }
+        } else {
+            fatalError("NETunnelEnvironment requires EnvironmentFetcher")
+        }
+    }
+
     public func newAppTunnelProcessor(
         apiManager: APIManager?,
         resolver: Resolver,
@@ -21,6 +33,10 @@ extension ABI.AppConfiguration {
             extensionInstaller: extensionInstaller,
             providerServerSorter: providerServerSorter
         )
+    }
+
+    public func newBetaChecker() -> BetaChecker {
+        TestFlightChecker()
     }
 
     public func newConfigManager(
@@ -64,101 +80,6 @@ extension ABI.AppConfiguration {
             },
             productsAtBuild: newProductsAtBuild
         )
-    }
-
-    @Sendable
-    public func newProductsAtBuild(purchase: ABI.OriginalPurchase) -> Set<ABI.AppProduct> {
-#if os(iOS)
-        if purchase.isUntil(.freemium) {
-            return [.Essentials.iOS]
-        } else if purchase.isUntil(.v2) {
-            return [.Features.networkSettings]
-        }
-        return []
-#elseif os(macOS)
-        if purchase.isUntil(.v2) {
-            return [.Features.networkSettings]
-        }
-        return []
-#else
-        return []
-#endif
-    }
-
-    public func newRegistryForApp(
-        deviceId: String,
-        preferences: AppPreferencesStore,
-        configManager: ConfigManager,
-        cachesURL: URL
-    ) -> CodingRegistry {
-        assert(deviceId == preferences[\.deviceId])
-        return newRegistry(
-            deviceId: deviceId,
-            cachesURL: cachesURL,
-            configBlock: { [weak configManager, weak preferences] in
-                guard let configManager, let preferences else { return [] }
-                return preferences.enabledFlags(of: configManager.activeFlags)
-            }
-        )
-    }
-
-    public func newRegistryForTunnel(
-        preferences: AppPreferencesStore,
-        cachesURL: URL
-    ) -> CodingRegistry {
-        assert(preferences[\.deviceId] != nil, "No Device ID found in preferences")
-        pspLog(.core, .info, "Device ID: \(preferences[\.deviceId] ?? "not set")")
-        return newRegistry(
-            deviceId: preferences[\.deviceId] ?? "MissingDeviceID",
-            cachesURL: cachesURL,
-            configBlock: {
-                preferences.enabledFlags()
-            }
-        )
-    }
-
-    public func newTunnelProcessor() -> PacketTunnelProcessor {
-        DefaultTunnelProcessor()
-    }
-
-    public func newVersionChecker(
-        preferences: AppPreferencesStore,
-        downloadURL: URL,
-        fetcher: @escaping @Sendable (URL) async throws -> Data
-    ) -> VersionChecker {
-        let versionStrategy = GitHubReleaseStrategy(
-            releaseURL: constants.github.latestReleaseURL,
-            rateLimit: constants.url.versionRateLimit,
-            fetcher: fetcher
-        )
-        return VersionChecker(
-            preferences: preferences,
-            strategy: versionStrategy,
-            currentVersion: bundle.versionNumber,
-            downloadURL: downloadURL
-        )
-    }
-
-    public func newWebPasscodeGenerator() -> String {
-        let length = constants.webReceiver.passcodeLength
-        let upperBound = Int(pow(10, Double(length)))
-        return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
-    }
-
-    public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
-        if bundle.distributionTarget.supportsAppGroups {
-            return newTunnelEnvironment(profileId: profileId)
-        } else if let fetcher = strategy as? EnvironmentFetcher {
-            return NETunnelEnvironment(profileId: profileId) { [weak fetcher] in
-                try await fetcher?.fetchEnvironment(profileId: $0)
-            }
-        } else {
-            fatalError("NETunnelEnvironment requires EnvironmentFetcher")
-        }
-    }
-
-    public func newBetaChecker() -> BetaChecker {
-        TestFlightChecker()
     }
 
     public func newInAppHelper() -> InAppHelper {
@@ -240,6 +161,25 @@ extension ABI.AppConfiguration {
         )
     }
 
+    @Sendable
+    public func newProductsAtBuild(purchase: ABI.OriginalPurchase) -> Set<ABI.AppProduct> {
+#if os(iOS)
+        if purchase.isUntil(.freemium) {
+            return [.Essentials.iOS]
+        } else if purchase.isUntil(.v2) {
+            return [.Features.networkSettings]
+        }
+        return []
+#elseif os(macOS)
+        if purchase.isUntil(.v2) {
+            return [.Features.networkSettings]
+        }
+        return []
+#else
+        return []
+#endif
+    }
+
     public func newRegistry(
         deviceId: String,
         cachesURL: URL,
@@ -300,6 +240,38 @@ extension ABI.AppConfiguration {
         )
     }
 
+    public func newRegistryForApp(
+        deviceId: String,
+        preferences: AppPreferencesStore,
+        configManager: ConfigManager,
+        cachesURL: URL
+    ) -> CodingRegistry {
+        assert(deviceId == preferences[\.deviceId])
+        return newRegistry(
+            deviceId: deviceId,
+            cachesURL: cachesURL,
+            configBlock: { [weak configManager, weak preferences] in
+                guard let configManager, let preferences else { return [] }
+                return preferences.enabledFlags(of: configManager.activeFlags)
+            }
+        )
+    }
+
+    public func newRegistryForTunnel(
+        preferences: AppPreferencesStore,
+        cachesURL: URL
+    ) -> CodingRegistry {
+        assert(preferences[\.deviceId] != nil, "No Device ID found in preferences")
+        pspLog(.core, .info, "Device ID: \(preferences[\.deviceId] ?? "not set")")
+        return newRegistry(
+            deviceId: preferences[\.deviceId] ?? "MissingDeviceID",
+            cachesURL: cachesURL,
+            configBlock: {
+                preferences.enabledFlags()
+            }
+        )
+    }
+
     public func newRequest(for url: URL, cached: Bool) async throws -> Data {
         try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
             .data(for: url, cached: cached)
@@ -322,6 +294,34 @@ extension ABI.AppConfiguration {
             fatalError("No access to App Group: \(appGroup)")
         }
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
+    }
+
+    public func newTunnelProcessor() -> PacketTunnelProcessor {
+        DefaultTunnelProcessor()
+    }
+
+    public func newVersionChecker(
+        preferences: AppPreferencesStore,
+        downloadURL: URL,
+        fetcher: @escaping @Sendable (URL) async throws -> Data
+    ) -> VersionChecker {
+        let versionStrategy = GitHubReleaseStrategy(
+            releaseURL: constants.github.latestReleaseURL,
+            rateLimit: constants.url.versionRateLimit,
+            fetcher: fetcher
+        )
+        return VersionChecker(
+            preferences: preferences,
+            strategy: versionStrategy,
+            currentVersion: bundle.versionNumber,
+            downloadURL: downloadURL
+        )
+    }
+
+    public func newWebPasscodeGenerator() -> String {
+        let length = constants.webReceiver.passcodeLength
+        let upperBound = Int(pow(10, Double(length)))
+        return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
 
 #if os(tvOS)
