@@ -110,6 +110,8 @@ private extension TunnelContext {
         let profile: Profile
         do {
             profile = try Profile(withNEProvider: neProvider, decoder: decoder)
+        } catch let error as RuntimeError {
+            throw error
         } catch {
             pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
             throw error
