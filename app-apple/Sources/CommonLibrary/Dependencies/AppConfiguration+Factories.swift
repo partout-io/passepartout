@@ -272,8 +272,14 @@ extension ABI.AppConfiguration {
     }
 
     public func makeRequest(for url: URL, cached: Bool) async throws -> Data {
-        try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
-            .data(for: url, cached: cached)
+        var request = URLRequest(url: url)
+        request.cachePolicy = cached ? .useProtocolCachePolicy : .reloadIgnoringCacheData
+        request.timeoutInterval = constants.url.timeoutInterval
+        do {
+            return try await URLSession.shared.data(for: request).0
+        } catch {
+            throw ABI.AppError.urlRequestFailed(reason: error)
+        }
     }
 
     public func makeSystemExtensionManager() -> SystemExtensionManager? {
