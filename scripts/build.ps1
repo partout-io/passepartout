@@ -28,12 +28,13 @@ while ($index -lt $args.Count) {
             $build_app = $true
             $index += 1
         }
-        "-vendors" {
+        "-prebuilts" {
             if (($index + 1) -ge $args.Count -or $args[$index + 1].StartsWith("-")) {
-                Write-Error "-vendors requires a URL"
+                Write-Error "-prebuilts requires a version"
                 exit 1
             }
-            $vendors_url = $args[$index + 1]
+            $version = $args[$index + 1]
+            $vendors_url = "https://github.com/partout-io/prebuilts/releases/download/$version"
             $index += 2
         }
         "-generator" {
