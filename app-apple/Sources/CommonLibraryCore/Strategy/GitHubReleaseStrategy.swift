@@ -8,16 +8,20 @@ import Partout
 public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     private let releaseURL: URL
 
+    private let changelogURL: @Sendable (String) -> URL
+
     private let rateLimit: TimeInterval
 
-    private let fetcher: @Sendable (URL) async throws -> Data
+    private let fetcher: @Sendable (URL, Bool) async throws -> Data
 
     public nonisolated init(
         releaseURL: URL,
+        changelogURL: @escaping @Sendable (String) -> URL,
         rateLimit: TimeInterval,
-        fetcher: @escaping @Sendable (URL) async throws -> Data
+        fetcher: @escaping @Sendable (URL, Bool) async throws -> Data
     ) {
         self.releaseURL = releaseURL
+        self.changelogURL = changelogURL
         self.rateLimit = rateLimit
         self.fetcher = fetcher
     }
@@ -30,7 +34,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
                 throw ABI.AppError.rateLimit
             }
         }
-        let data = try await fetcher(releaseURL)
+        let data = try await fetcher(releaseURL, true)
         let json = try ABI.decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
@@ -38,6 +42,28 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
             throw ABI.AppError.unexpectedResponse
         }
         return semNew
+    }
+
+    public func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        pspLog(.core, .info, "CHANGELOG: Load for version \(version)")
+        let url = changelogURL(version)
+        pspLog(.core, .info, "CHANGELOG: Fetching \(url)")
+        do {
+            let data = try await fetcher(url, false)
+            guard let text = String(data: data, encoding: .utf8) else {
+                throw ABI.AppError.notFound
+            }
+            pspLog(.core, .info, "CHANGELOG: Fetched \(data.count) bytes")
+            return text
+                .split(separator: "\n")
+                .enumerated()
+                .compactMap {
+                    ABI.ChangelogEntry($0.offset, line: String($0.element))
+                }
+        } catch {
+            pspLog(.core, .error, "CHANGELOG: Unable to fetch: \(error)")
+            throw error
+        }
     }
 }
 

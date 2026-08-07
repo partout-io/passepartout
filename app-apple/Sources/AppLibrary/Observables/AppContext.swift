@@ -98,7 +98,7 @@ public final class AppContext {
             registry: registry
         )
         registryObservable = RegistryObservable(registry: registry)
-        versionObservable = VersionObservable(appConfiguration: appConfiguration)
+        versionObservable = VersionObservable(versionChecker: versionChecker)
         webReceiverObservable = WebReceiverObservable(
             webReceiverManager: webReceiverManager
         )

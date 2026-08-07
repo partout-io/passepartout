@@ -266,7 +266,7 @@ extension AppContext {
                 }
             }(),
             fetcher: {
-                try await appConfiguration.makeRequest(for: $0, cached: true)
+                try await appConfiguration.makeRequest(for: $0, cached: $1)
             }
         )
 

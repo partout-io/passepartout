@@ -79,12 +79,20 @@ public final class VersionChecker {
         pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
         didChange.send(.new(.init(release: latestRelease)))
     }
+
+    public func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        try await strategy.fetchChangelog(of: version)
+    }
 }
 
 extension VersionChecker {
     private final class DummyStrategy: VersionCheckerStrategy {
         func latestVersion(since: Date) async throws -> ABI.SemanticVersion {
             ABI.SemanticVersion("255.255.255")!
+        }
+
+        func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+            []
         }
     }
 
