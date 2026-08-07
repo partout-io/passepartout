@@ -18,10 +18,6 @@ extension TunnelContext {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
             fatalError("Nil .bundleIdentifier?")
         }
-        let keychain = appConfiguration.newKeychain(
-            .global,
-            bundleIdentifier: bundleIdentifier
-        )
         // TODO: #218, cachesURL must be per-profile
         let cachesURL = FileManager.default.temporaryDirectory
 
@@ -31,35 +27,34 @@ extension TunnelContext {
                 do {
                     return try newZigRuntime(
                         neProvider: neProvider,
+                        bundleIdentifier: bundleIdentifier,
                         appConfiguration: appConfiguration,
                         preferences: preferences,
-                        keychain: keychain,
                         cachesURL: cachesURL
                     )
-                } catch RuntimeError.undecodableProfile,
-                        RuntimeError.unsupportedProviders {
+                } catch RuntimeError.unsupportedProviders {
                     // Fall back to Swift
                 }
             }
             return try newSwiftRuntime(
                 neProvider: neProvider,
+                bundleIdentifier: bundleIdentifier,
                 appConfiguration: appConfiguration,
                 preferences: preferences,
-                keychain: keychain,
                 cachesURL: cachesURL
             )
         }()
 
         // Create IAPManager for receipt verification
-        let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.newInAppHelper(),
+        let iapManager = appConfiguration.makeIAPManager(
+            inAppHelper: appConfiguration.makeInAppHelper(),
             receiptReader: SharedReceiptReader(
-                reader: appConfiguration.newInAppReceiptReader {
+                reader: appConfiguration.makeInAppReceiptReader {
                     // TODO: #1786, StoreKit receipt caching
                     .uncached
                 },
             ),
-            betaChecker: appConfiguration.newBetaChecker()
+            betaChecker: appConfiguration.makeBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
         let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
@@ -87,37 +82,39 @@ private extension TunnelContext {
     }
 
     enum RuntimeError: Error {
-        case undecodableProfile
         case unsupportedProviders
     }
 
     static func newZigRuntime(
         neProvider: NEPacketTunnelProvider,
+        bundleIdentifier: String,
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore,
-        keychain: Keychain,
         cachesURL: URL
     ) throws -> ProductionRuntime {
         pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
 
-        let appGroup = appConfiguration.bundle.bundleString(for: .groupId)
-        guard let defaults = UserDefaults(suiteName: appGroup) else {
-            fatalError("No access to App Group: \(appGroup)")
-        }
+        // This depends on distribution target
+        let defaults = appConfiguration.makeTunnelDefaults()
+
         // Profile decoding requires no registry. Parse as TaggedProfile
         // and rethrow on failure.
-        let coder = TaggedProfileCoder()
-        let decoder = appConfiguration.newNEProtocolCoder(
+        let codingPair = appConfiguration.makeKeychainAndNECoder(
             .global,
-            coder: coder,
-            keychain: keychain
+            bundleIdentifier: bundleIdentifier,
+            coder: TaggedProfileCoder()
         )
+        let decoder = codingPair.neCoder
+
+        // Validate decoded profile
         let profile: Profile
         do {
             profile = try Profile(withNEProvider: neProvider, decoder: decoder)
+        } catch let error as RuntimeError {
+            throw error
         } catch {
-            pspLog(.profiles, .error, "Unable to decode profile in Zig (legacy?), falling back to Swift runtime: \(error)")
-            throw RuntimeError.undecodableProfile
+            pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
+            throw error
         }
 
         let backend = try PartoutProviderRuntime(
@@ -134,57 +131,51 @@ private extension TunnelContext {
             logger: logger
         )
 
-        // Profiles with provider modules require the Swift runtime
-        guard profile.activeProviderModule == nil else {
-            pspLog(profile.id, .profiles, .error, "Providers are not supported by Zig, falling back to Swift runtime")
-            throw RuntimeError.unsupportedProviders
-        }
-
-        let environment = appConfiguration.newTunnelEnvironment(profileId: profile.id)
         return ProductionRuntime(
             backend: backend,
             originalProfile: profile,
-            environment: environment
+            environment: backend.environment
         )
     }
 
     static func newSwiftRuntime(
         neProvider: NEPacketTunnelProvider,
+        bundleIdentifier: String,
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore,
-        keychain: Keychain,
         cachesURL: URL
     ) throws -> ProductionRuntime {
         pspLog(.core, .info, "Using Swift runtime")
 
         // Create global registry
-        let registry = appConfiguration.newRegistryForTunnel(
+        let registry = appConfiguration.makeRegistryForTunnel(
             preferences: preferences,
             cachesURL: cachesURL
         )
+        let codingPair = appConfiguration.makeKeychainAndNECoder(
+            .global,
+            bundleIdentifier: bundleIdentifier,
+            coder: registry
+        )
+        let decoder = codingPair.neCoder
 
         // Decode profile from NE provider
         let originalProfile: Profile
         let processedProfile: Profile
         do {
-            let decoder = appConfiguration.newNEProtocolCoder(
-                .global,
-                coder: registry,
-                keychain: keychain
-            )
             originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
             let resolvedProfile = try registry.resolvedProfile(originalProfile)
-            let processor = appConfiguration.newTunnelProcessor()
+            let processor = appConfiguration.makeTunnelProcessor()
             processedProfile = try processor.willProcess(resolvedProfile)
         } catch {
             pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
             throw error
         }
-        let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
+        let environment = appConfiguration.makeTunnelEnvironment(profileId: processedProfile.id)
 
         // Update the logger now that we have a context
         assert(processedProfile.id == originalProfile.id)
-        let logFormatter = appConfiguration.newLogFormatter()
+        let logFormatter = appConfiguration.makeLogFormatter()
         let ctx = pspLogRegister(
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,
@@ -250,7 +241,14 @@ private extension TunnelContext {
 
 private struct TaggedProfileCoder: ProfileCoder {
     func profile(fromString string: String) throws -> Profile {
-        try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
+        let profile = try ABI.decodeJSON(TaggedProfile.self, from: string)
+
+        // Profiles with custom (provider) modules require the Swift runtime
+        return try profile.asProfile { _ in
+            pspLog(profile.id, .profiles, .fault,
+                   "Custom modules are not supported by Zig, falling back to Swift runtime")
+            throw TunnelContext.RuntimeError.unsupportedProviders
+        }
     }
 
     func string(fromProfile profile: Profile) throws -> String {

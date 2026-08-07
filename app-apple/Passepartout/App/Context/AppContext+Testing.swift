@@ -12,7 +12,7 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let registry = appConfiguration.newRegistry(
+        let registry = appConfiguration.makeRegistry(
             deviceId: "TestDeviceID",
             cachesURL: FileManager.default.temporaryDirectory,
             configBlock: { [] }
@@ -35,7 +35,7 @@ extension AppContext {
         )
         let iapManager = IAPManager(
             customUserLevel: .complete,
-            inAppHelper: appConfiguration.newInAppHelper(),
+            inAppHelper: appConfiguration.makeInAppHelper(),
             receiptReader: FakeInAppReceiptReader(),
             betaChecker: TestFlightChecker(),
             timeoutInterval: appConfiguration.constants.iap.productsTimeoutInterval,
@@ -46,7 +46,7 @@ extension AppContext {
                 []
             }
         )
-        let profileProcessor = appConfiguration.newAppProfileProcessor(
+        let profileProcessor = appConfiguration.makeAppProfileProcessor(
             iapManager: iapManager
         )
         let profileManager: ProfileManager = .forUITesting(
@@ -54,7 +54,7 @@ extension AppContext {
             processor: profileProcessor
         )
         profileManager.enableRemoteImporting(true)
-        let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
+        let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
             extensionInstaller: nil,
