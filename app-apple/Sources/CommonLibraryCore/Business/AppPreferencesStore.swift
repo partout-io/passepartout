@@ -3,17 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 public final class AppPreferencesStore: @unchecked Sendable {
-    public typealias RequestBlock = (ABI.AppPreferences, Set<ABI.NonUserFacingAppPreferenceKey>) -> Void
-
     private var backend: ABI.AppPreferencesProtocol
-    public var onRequest: RequestBlock?
 
     public init(
         _ backend: ABI.AppPreferencesProtocol = .default(),
-        onRequest: RequestBlock? = nil
     ) {
         self.backend = backend
-        self.onRequest = onRequest
     }
 }
 
