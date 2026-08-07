@@ -5,14 +5,6 @@
 import Partout
 
 extension ABI.AppConfiguration {
-    public var appLogPath: String {
-        constants.log.filenames.app
-    }
-
-    public var tunnelLogPath: String {
-        constants.log.filenames.tunnel
-    }
-
     public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
         DefaultProfileProcessor(iapManager: iapManager)
     }
@@ -152,197 +144,7 @@ extension ABI.AppConfiguration {
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
-}
 
-extension ABI.AppBundle {
-    public enum BuildTarget: Sendable {
-        case app
-        case tunnel
-    }
-
-    public enum BundleKey: String, CaseIterable, Decodable, Sendable {
-        // These cases are all strings
-        case appStoreId
-        case cloudKitId
-        case groupId
-        case iapBundlePrefix
-        case keychainGroupId
-        case loginItemId
-        case tunnelId
-        case userLevel
-
-        static func requiredKeys(for target: BuildTarget) -> Set<Self> {
-            switch target {
-            case .app: Set(allCases).subtracting([.userLevel])
-            case .tunnel: [.groupId, .keychainGroupId, .tunnelId]
-            }
-        }
-    }
-
-    public init(
-        distributionTarget: ABI.DistributionTarget,
-        buildTarget: BuildTarget,
-        bundle: BundleConfiguration
-    ) {
-        let displayName = bundle.displayName
-        let versionNumber = bundle.versionNumber
-        let buildNumber = bundle.buildNumber
-
-        // Ensure that all required keys are present (will crash on first missing)
-        let requiredBundleKeys = BundleKey.requiredKeys(for: buildTarget)
-        let bundleStrings = requiredBundleKeys.reduce(into: [:]) {
-            $0[$1.rawValue] = bundle.string(for: $1)
-        }
-
-        // Fetch user level manually
-        let customUserLevel = bundle.stringIfPresent(for: .userLevel).map {
-            ABI.AppUserLevel(rawValue: $0)
-        } ?? nil
-
-        self.init(
-            distributionTarget: distributionTarget,
-            displayName: displayName,
-            versionNumber: versionNumber,
-            buildNumber: buildNumber,
-            customUserLevel: customUserLevel,
-            bundleStrings: bundleStrings
-        )
-    }
-
-    public func bundleString(for key: ABI.AppBundle.BundleKey) -> String {
-        guard let value = bundleStrings?[key.rawValue] else {
-            fatalError("Missing bundle value in JSON for: \(key.rawValue)")
-        }
-        return value
-    }
-}
-
-extension ABI.AppConfiguration {
-    public var urlForAppLog: URL {
-        bundle.appLogsURL.appending(path: appLogPath)
-    }
-
-    public var urlForTunnelLog: URL {
-        bundle.tunnelLogsURL.appending(path: tunnelLogPath)
-    }
-
-    public var urlForReview: URL? {
-        let requiredKeys = ABI.AppBundle.BundleKey.requiredKeys(for: .app)
-        guard requiredKeys.contains(.appStoreId) else {
-            return nil
-        }
-        let appStoreId = bundle.bundleString(for: .appStoreId)
-        guard let url = URL(string: "https://apps.apple.com/app/id\(appStoreId)?action=write-review") else {
-            fatalError("Unable to build urlForReview")
-        }
-        return url
-    }
-}
-
-private extension ABI.AppBundle {
-    static let log = SimpleLogDestination()
-
-    var appGroupURL: URL {
-        let groupId = bundleString(for: .groupId)
-        guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else {
-            Self.log.append(.error, "Unable to access App Group container")
-            return FileManager.default.temporaryDirectory
-        }
-        return url
-    }
-
-    var appLogsURL: URL {
-        appGroupURL.forCaches
-    }
-
-    var tunnelLogsURL: URL {
-        let baseURL: URL
-        if distributionTarget.supportsAppGroups {
-            baseURL = appGroupURL.forCaches
-        } else {
-            let fm: FileManager = .default
-            baseURL = fm.temporaryDirectory
-            do {
-                try fm.createDirectory(at: baseURL, withIntermediateDirectories: true)
-            } catch {
-                Self.log.append(.error, "Unable to create temporary directory \(baseURL): \(error)")
-            }
-        }
-        return baseURL
-    }
-}
-
-// App Group container is not available on tvOS (#1007)
-
-#if !os(tvOS)
-
-private extension URL {
-    var forCaches: Self {
-        let url = appending(components: "Library", "Caches")
-        do {
-            try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        } catch {
-            SimpleLogDestination().append(.fault, "Unable to create group caches directory: \(error)")
-        }
-        return url
-    }
-
-    var forDocuments: Self {
-        let url = appending(components: "Library", "Documents")
-        do {
-            try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        } catch {
-            SimpleLogDestination().append(.fault, "Unable to create group documents directory: \(error)")
-        }
-        return url
-    }
-}
-
-#else
-
-// XXX: This is weird, behavior is static but signatures are non-static
-private extension URL {
-    var forCaches: URL {
-        do {
-            return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user caches directory: \(error)")
-            return URL(fileURLWithPath: NSTemporaryDirectory())
-        }
-    }
-
-    var forDocuments: URL {
-        do {
-            return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
-            return URL(fileURLWithPath: NSTemporaryDirectory())
-        }
-    }
-}
-
-#endif
-
-private extension BundleConfiguration {
-    func string(for key: ABI.AppBundle.BundleKey) -> String {
-        guard let value: String = value(forKey: key.rawValue) else {
-            fatalError("Missing main bundle key: \(key.rawValue)")
-        }
-        return value
-    }
-
-    func stringIfPresent(for key: ABI.AppBundle.BundleKey) -> String? {
-        value(forKey: key.rawValue)
-    }
-
-    func integerIfPresent(for key: ABI.AppBundle.BundleKey) -> Int? {
-        value(forKey: key.rawValue)
-    }
-}
-
-// MARK: - Dependencies
-
-extension ABI.AppConfiguration {
     public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if bundle.distributionTarget.supportsAppGroups {
             return newTunnelEnvironment(profileId: profileId)
@@ -438,6 +240,66 @@ extension ABI.AppConfiguration {
         )
     }
 
+    public func newRegistry(
+        deviceId: String,
+        cachesURL: URL,
+        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
+    ) -> CodingRegistry {
+        let customHandlers: [ModuleHandler] = [
+            ProviderModule.moduleHandler
+        ]
+        let allImplementations: [ModuleImplementation] = [
+            OpenVPNImplementationBuilder(
+                distributionTarget: bundle.distributionTarget,
+                cachesURL: cachesURL,
+                configBlock: configBlock
+            ).build(),
+            WireGuardImplementationBuilder(
+                configBlock: configBlock
+            ).build()
+        ]
+        // Deprecated
+        var providerResolvers: [ProviderModuleResolver] = []
+        providerResolvers.append(OpenVPNProviderResolver())
+        providerResolvers.append(WireGuardProviderResolver(deviceId: deviceId))
+        let mappedResolvers = providerResolvers
+            .reduce(into: [:]) {
+                $0[$1.moduleType] = $1
+            }
+
+        let registry = Registry(
+            withKnown: true,
+            customHandlers: customHandlers,
+            allImplementations: allImplementations,
+            resolvedModuleBlock: {
+                do {
+                    return try Registry.resolvedModule($0, in: $1, with: mappedResolvers)
+                } catch {
+                    pspLog($1?.id, .core, .error, "Unable to resolve module: \(error)")
+                    throw error
+                }
+            }
+        )
+        registry.assertMissingImplementations()
+        return CodingRegistry(
+            registry: registry,
+            customModuleHandler: {
+                switch $0.innerType {
+                case .Provider:
+                    do {
+                        let data = try ABI.encode($0.json)
+                        return try ABI.decode(ProviderModule.self, from: data)
+                    } catch {
+                        pspLog(.profiles, .error, "Unable to decode ProviderModule: \(error)")
+                        return $0
+                    }
+                default:
+                    return $0
+                }
+            }
+        )
+    }
+
     public func newRequest(for url: URL, cached: Bool) async throws -> Data {
         try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
             .data(for: url, cached: cached)
@@ -478,6 +340,67 @@ extension ABI.AppConfiguration {
     }
 #endif
 }
+
+// MARK: - Registry
+
+private extension Registry {
+    @Sendable
+    static func resolvedModule(
+        _ module: Module,
+        in profile: Profile?,
+        with resolvers: [ModuleType: ProviderModuleResolver]
+    ) throws -> Module {
+        do {
+            if let profile {
+                profile.assertSingleActiveProviderModule()
+                guard profile.isActiveModule(withId: module.id) else {
+                    return module
+                }
+            }
+            guard let providerModule = module as? ProviderModule else {
+                return module
+            }
+            guard let resolver = resolvers[providerModule.providerModuleType] else {
+                return module
+            }
+            return try resolver.resolved(from: providerModule)
+        } catch {
+            throw error as? PartoutError ?? PartoutProviderError.corruptModule(error)
+        }
+    }
+
+    func assertMissingImplementations() {
+        ModuleType.knownTypes.forEach { moduleType in
+            let builder = newModule(ofType: moduleType)
+            do {
+                // ModuleBuilder -> Module
+                let module = try builder.build()
+
+                // Module -> ModuleBuilder
+                guard let moduleBuilder = module.moduleBuilder() else {
+                    fatalError("\(moduleType): does not produce a ModuleBuilder")
+                }
+
+                // AppFeatureRequiring
+                guard builder is any AppFeatureRequiring else {
+                    fatalError("\(moduleType): #1 is not AppFeatureRequiring")
+                }
+                guard moduleBuilder is any AppFeatureRequiring else {
+                    fatalError("\(moduleType): #2 is not AppFeatureRequiring")
+                }
+            } catch {
+                switch (error as? PartoutError)?.code {
+                case .incompleteModule, .invalidField, .wireGuardEmptyPeers:
+                    return
+                default:
+                    fatalError("\(moduleType): empty module is not buildable: \(error)")
+                }
+            }
+        }
+    }
+}
+
+// MARK: - EnvironmentFetcher
 
 private protocol EnvironmentFetcher: AnyObject, Sendable {
     func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment?
