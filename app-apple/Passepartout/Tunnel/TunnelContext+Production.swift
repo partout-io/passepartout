@@ -18,7 +18,7 @@ extension TunnelContext {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
             fatalError("Nil .bundleIdentifier?")
         }
-        let keychain = appConfiguration.newKeychain(
+        let keychain = appConfiguration.makeKeychain(
             .global,
             bundleIdentifier: bundleIdentifier
         )
@@ -51,15 +51,15 @@ extension TunnelContext {
         }()
 
         // Create IAPManager for receipt verification
-        let iapManager = appConfiguration.newIAPManager(
-            inAppHelper: appConfiguration.newInAppHelper(),
+        let iapManager = appConfiguration.makeIAPManager(
+            inAppHelper: appConfiguration.makeInAppHelper(),
             receiptReader: SharedReceiptReader(
-                reader: appConfiguration.newInAppReceiptReader {
+                reader: appConfiguration.makeInAppReceiptReader {
                     // TODO: #1786, StoreKit receipt caching
                     .uncached
                 },
             ),
-            betaChecker: appConfiguration.newBetaChecker()
+            betaChecker: appConfiguration.makeBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
         let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
@@ -107,7 +107,7 @@ private extension TunnelContext {
         // Profile decoding requires no registry. Parse as TaggedProfile
         // and rethrow on failure.
         let coder = TaggedProfileCoder()
-        let decoder = appConfiguration.newNEProtocolCoder(
+        let decoder = appConfiguration.makeNEProtocolCoder(
             .global,
             coder: coder,
             keychain: keychain
@@ -140,7 +140,7 @@ private extension TunnelContext {
             throw RuntimeError.unsupportedProviders
         }
 
-        let environment = appConfiguration.newTunnelEnvironment(profileId: profile.id)
+        let environment = appConfiguration.makeTunnelEnvironment(profileId: profile.id)
         return ProductionRuntime(
             backend: backend,
             originalProfile: profile,
@@ -158,7 +158,7 @@ private extension TunnelContext {
         pspLog(.core, .info, "Using Swift runtime")
 
         // Create global registry
-        let registry = appConfiguration.newRegistryForTunnel(
+        let registry = appConfiguration.makeRegistryForTunnel(
             preferences: preferences,
             cachesURL: cachesURL
         )
@@ -167,24 +167,24 @@ private extension TunnelContext {
         let originalProfile: Profile
         let processedProfile: Profile
         do {
-            let decoder = appConfiguration.newNEProtocolCoder(
+            let decoder = appConfiguration.makeNEProtocolCoder(
                 .global,
                 coder: registry,
                 keychain: keychain
             )
             originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
             let resolvedProfile = try registry.resolvedProfile(originalProfile)
-            let processor = appConfiguration.newTunnelProcessor()
+            let processor = appConfiguration.makeTunnelProcessor()
             processedProfile = try processor.willProcess(resolvedProfile)
         } catch {
             pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
             throw error
         }
-        let environment = appConfiguration.newTunnelEnvironment(profileId: processedProfile.id)
+        let environment = appConfiguration.makeTunnelEnvironment(profileId: processedProfile.id)
 
         // Update the logger now that we have a context
         assert(processedProfile.id == originalProfile.id)
-        let logFormatter = appConfiguration.newLogFormatter()
+        let logFormatter = appConfiguration.makeLogFormatter()
         let ctx = pspLogRegister(
             for: .tunnelProfile(processedProfile.id),
             with: appConfiguration,

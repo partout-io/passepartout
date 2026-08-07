@@ -5,13 +5,13 @@
 import Partout
 
 extension ABI.AppConfiguration {
-    public func newAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
+    public func makeAppProfileProcessor(iapManager: IAPManager?) -> ProfileProcessor {
         DefaultProfileProcessor(iapManager: iapManager)
     }
 
-    public func newAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
+    public func makeAppTunnelEnvironment(strategy: TunnelStrategy, profileId: Profile.ID) -> TunnelEnvironmentReader {
         if bundle.distributionTarget.supportsAppGroups {
-            return newTunnelEnvironment(profileId: profileId)
+            return makeTunnelEnvironment(profileId: profileId)
         } else if let fetcher = strategy as? EnvironmentFetcher {
             return NETunnelEnvironment(profileId: profileId) { [weak fetcher] in
                 try await fetcher?.fetchEnvironment(profileId: $0)
@@ -21,7 +21,7 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func newAppTunnelProcessor(
+    public func makeAppTunnelProcessor(
         apiManager: APIManager?,
         resolver: Resolver,
         extensionInstaller: ExtensionInstaller?,
@@ -35,11 +35,11 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newBetaChecker() -> BetaChecker {
+    public func makeBetaChecker() -> BetaChecker {
         TestFlightChecker()
     }
 
-    public func newConfigManager(
+    public func makeConfigManager(
         withTestBundle: Bool,
         isBeta: @escaping @Sendable () async -> Bool,
         fetcher: @escaping @Sendable (URL) async throws -> Data
@@ -64,7 +64,7 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newIAPManager(
+    public func makeIAPManager(
         inAppHelper: InAppHelper,
         receiptReader: UserInAppReceiptReader,
         betaChecker: BetaChecker
@@ -78,11 +78,11 @@ extension ABI.AppConfiguration {
             verificationDelayMinutesBlock: {
                 constants.tunnel.verificationDelayMinutes(isBeta: $0)
             },
-            productsAtBuild: newProductsAtBuild
+            productsAtBuild: makeProductsAtBuild
         )
     }
 
-    public func newInAppHelper() -> InAppHelper {
+    public func makeInAppHelper() -> InAppHelper {
         StoreKitHelper(
             products: ABI.AppProduct.all,
             inAppIdentifier: {
@@ -92,13 +92,13 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newInAppReceiptReader(
+    public func makeInAppReceiptReader(
         modeBlock: @escaping @Sendable @BusinessActor () async -> StoreKitReceiptReader.Mode
     ) -> InAppReceiptReader {
         StoreKitReceiptReader(modeBlock: modeBlock)
     }
 
-    public func newKeychain(_ ctx: PartoutLoggerContext, bundleIdentifier: String) -> Keychain {
+    public func makeKeychain(_ ctx: PartoutLoggerContext, bundleIdentifier: String) -> Keychain {
         let keychain: Keychain
         if bundle.distributionTarget.supportsAppGroups {
             let appGroup = bundle.bundleString(for: .keychainGroupId)
@@ -108,20 +108,20 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func newKeychainTitle() -> @Sendable (Profile) -> String {
+    public func makeKeychainTitle() -> @Sendable (Profile) -> String {
         {
             String(format: constants.tunnel.profileTitleFormat, $0.name)
         }
     }
 
-    public func newLogFormatter() -> LogFormatter {
+    public func makeLogFormatter() -> LogFormatter {
         FoundationLogFormatter(
             dateFormat: constants.log.formatter.timestamp,
             messageFormat: constants.log.formatter.message
         )
     }
 
-    public func newNEProtocolCoder(
+    public func makeNEProtocolCoder(
         _ ctx: PartoutLoggerContext,
         coder: ProfileCoder,
         keychain: Keychain
@@ -144,7 +144,7 @@ extension ABI.AppConfiguration {
         }
     }
 
-    public func newNETunnelStrategy(
+    public func makeNETunnelStrategy(
         _ ctx: PartoutLoggerContext,
         coder: NEProtocolCoder,
         source: AsyncStream<ProfilesEvent>
@@ -162,7 +162,7 @@ extension ABI.AppConfiguration {
     }
 
     @Sendable
-    public func newProductsAtBuild(purchase: ABI.OriginalPurchase) -> Set<ABI.AppProduct> {
+    public func makeProductsAtBuild(purchase: ABI.OriginalPurchase) -> Set<ABI.AppProduct> {
 #if os(iOS)
         if purchase.isUntil(.freemium) {
             return [.Essentials.iOS]
@@ -180,7 +180,7 @@ extension ABI.AppConfiguration {
 #endif
     }
 
-    public func newRegistry(
+    public func makeRegistry(
         deviceId: String,
         cachesURL: URL,
         configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
@@ -240,14 +240,14 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRegistryForApp(
+    public func makeRegistryForApp(
         deviceId: String,
         preferences: AppPreferencesStore,
         configManager: ConfigManager,
         cachesURL: URL
     ) -> CodingRegistry {
         assert(deviceId == preferences[\.deviceId])
-        return newRegistry(
+        return makeRegistry(
             deviceId: deviceId,
             cachesURL: cachesURL,
             configBlock: { [weak configManager, weak preferences] in
@@ -257,13 +257,13 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRegistryForTunnel(
+    public func makeRegistryForTunnel(
         preferences: AppPreferencesStore,
         cachesURL: URL
     ) -> CodingRegistry {
         assert(preferences[\.deviceId] != nil, "No Device ID found in preferences")
         pspLog(.core, .info, "Device ID: \(preferences[\.deviceId] ?? "not set")")
-        return newRegistry(
+        return makeRegistry(
             deviceId: preferences[\.deviceId] ?? "MissingDeviceID",
             cachesURL: cachesURL,
             configBlock: {
@@ -272,12 +272,12 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newRequest(for url: URL, cached: Bool) async throws -> Data {
+    public func makeRequest(for url: URL, cached: Bool) async throws -> Data {
         try await FoundationURLFetcher(timeout: constants.url.timeoutInterval)
             .data(for: url, cached: cached)
     }
 
-    public func newSystemExtensionManager() -> SystemExtensionManager? {
+    public func makeSystemExtensionManager() -> SystemExtensionManager? {
         guard bundle.distributionTarget == .developerID else {
             return nil
         }
@@ -288,7 +288,7 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
+    public func makeTunnelEnvironment(profileId: Profile.ID) -> TunnelEnvironment {
         let appGroup = bundle.bundleString(for: .groupId)
         guard let defaults = UserDefaults(suiteName: appGroup) else {
             fatalError("No access to App Group: \(appGroup)")
@@ -296,11 +296,11 @@ extension ABI.AppConfiguration {
         return UserDefaultsEnvironment(profileId: profileId, defaults: defaults)
     }
 
-    public func newTunnelProcessor() -> PacketTunnelProcessor {
+    public func makeTunnelProcessor() -> PacketTunnelProcessor {
         DefaultTunnelProcessor()
     }
 
-    public func newVersionChecker(
+    public func makeVersionChecker(
         preferences: AppPreferencesStore,
         downloadURL: URL,
         fetcher: @escaping @Sendable (URL) async throws -> Data
@@ -318,14 +318,14 @@ extension ABI.AppConfiguration {
         )
     }
 
-    public func newWebPasscodeGenerator() -> String {
+    public func makeWebPasscodeGenerator() -> String {
         let length = constants.webReceiver.passcodeLength
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
 
 #if os(tvOS)
-    public func newWebReceiverManager(
+    public func makeWebReceiverManager(
         htmlPath: String,
         stringsBundle: Bundle
     ) -> WebReceiverManager {
@@ -335,7 +335,7 @@ extension ABI.AppConfiguration {
             port: constants.webReceiver.port
         )
         return WebReceiverManager(webReceiver: receiver) {
-            newWebPasscodeGenerator()
+            makeWebPasscodeGenerator()
         }
     }
 #endif

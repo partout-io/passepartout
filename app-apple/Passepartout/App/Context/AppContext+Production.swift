@@ -33,7 +33,7 @@ extension AppContext {
             length: appConfiguration.constants.deviceIdLength
         )
 
-        let logFormatter = appConfiguration.newLogFormatter()
+        let logFormatter = appConfiguration.makeLogFormatter()
         let ctx = pspLogRegister(
             for: .app,
             with: appConfiguration,
@@ -45,26 +45,26 @@ extension AppContext {
 
         // MARK: Config (GitHub)
 
-        let betaChecker = appConfiguration.newBetaChecker()
+        let betaChecker = appConfiguration.makeBetaChecker()
 #if DEBUG
         let withTestBundle = true
 #else
         let withTestBundle = false
 #endif
-        let configManager = appConfiguration.newConfigManager(
+        let configManager = appConfiguration.makeConfigManager(
             withTestBundle: withTestBundle,
             isBeta: {
                 await betaChecker.isBeta()
             },
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: false)
+                try await appConfiguration.makeRequest(for: $0, cached: false)
             }
         )
 
         // MARK: Registry
 
         let cachesURL = FileManager.default.temporaryDirectory
-        let registry = appConfiguration.newRegistryForApp(
+        let registry = appConfiguration.makeRegistryForApp(
             deviceId: deviceId,
             preferences: preferences,
             configManager: configManager,
@@ -118,9 +118,9 @@ extension AppContext {
         let iapHelper: InAppHelper
         let iapReceiptReader: UserInAppReceiptReader
         if !AppCommandLine.contains(.fakeIAP) {
-            iapHelper = appConfiguration.newInAppHelper()
+            iapHelper = appConfiguration.makeInAppHelper()
             iapReceiptReader = SharedReceiptReader(
-                reader: appConfiguration.newInAppReceiptReader {
+                reader: appConfiguration.makeInAppReceiptReader {
                     // TODO: #1786, StoreKit receipt caching
                     .uncached
                 }
@@ -130,7 +130,7 @@ extension AppContext {
             iapHelper = fakeHelper
             iapReceiptReader = fakeHelper.receiptReader
         }
-        let iapManager = appConfiguration.newIAPManager(
+        let iapManager = appConfiguration.makeIAPManager(
             inAppHelper: iapHelper,
             receiptReader: iapReceiptReader,
             betaChecker: betaChecker
@@ -147,9 +147,9 @@ extension AppContext {
 
         // MARK: Profiles and Tunnel (NE)
 
-        let sysexManager = appConfiguration.newSystemExtensionManager()
+        let sysexManager = appConfiguration.makeSystemExtensionManager()
         let appEncoder = AppEncoder(coder: registry)
-        let tunnelProcessor = appConfiguration.newAppTunnelProcessor(
+        let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
             apiManager: apiManager,
             resolver: registry,
             extensionInstaller: sysexManager,
@@ -167,8 +167,8 @@ extension AppContext {
         )
         let backupProfileRepository: ProfileRepository? = nil
 #else
-        let keychain = appConfiguration.newKeychain(ctx, bundleIdentifier: bundleIdentifier)
-        let protocolCoder = appConfiguration.newNEProtocolCoder(
+        let keychain = appConfiguration.makeKeychain(ctx, bundleIdentifier: bundleIdentifier)
+        let protocolCoder = appConfiguration.makeNEProtocolCoder(
             ctx,
             coder: registry,
             keychain: keychain
@@ -184,7 +184,7 @@ extension AppContext {
                 keychain: keychain,
                 profileCoder: registry,
                 protocolCoder: protocolCoder,
-                label: appConfiguration.newKeychainTitle(),
+                label: appConfiguration.makeKeychainTitle(),
                 isComplete: {
                     marker.isComplete(.didMigrateDeveloperIDManagers)
                 },
@@ -203,9 +203,9 @@ extension AppContext {
             keychain: keychain,
             coder: registry,
             bootstrap: profilesBootstrap,
-            label: appConfiguration.newKeychainTitle()
+            label: appConfiguration.makeKeychainTitle()
         )
-        let tunnelStrategy = appConfiguration.newNETunnelStrategy(
+        let tunnelStrategy = appConfiguration.makeNETunnelStrategy(
             ctx,
             coder: protocolCoder,
             source: mainProfileRepository.eventsPublisher
@@ -217,7 +217,7 @@ extension AppContext {
             observingResults: false
         )
 #endif
-        let profileProcessor = appConfiguration.newAppProfileProcessor(
+        let profileProcessor = appConfiguration.makeAppProfileProcessor(
             iapManager: iapManager
         )
         let profileManager = ProfileManager(
@@ -231,7 +231,7 @@ extension AppContext {
             strategy: tunnelStrategy,
             refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),
             environmentFactory: { @Sendable in
-                appConfiguration.newAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
+                appConfiguration.makeAppTunnelEnvironment(strategy: tunnelStrategy, profileId: $0)
             }
         )
 
@@ -253,7 +253,7 @@ extension AppContext {
 
         // MARK: Version (GitHub)
 
-        let versionChecker = appConfiguration.newVersionChecker(
+        let versionChecker = appConfiguration.makeVersionChecker(
             preferences: preferences,
             downloadURL: {
                 switch appConfiguration.bundle.distributionTarget {
@@ -266,7 +266,7 @@ extension AppContext {
                 }
             }(),
             fetcher: {
-                try await appConfiguration.newRequest(for: $0, cached: true)
+                try await appConfiguration.makeRequest(for: $0, cached: true)
             }
         )
 
@@ -275,7 +275,7 @@ extension AppContext {
         let webReceiverManager: WebReceiverManager
 #if os(tvOS)
         if let webHTMLPath = Resources.webUploaderPath {
-            webReceiverManager = appConfiguration.newWebReceiverManager(
+            webReceiverManager = appConfiguration.makeWebReceiverManager(
                 htmlPath: webHTMLPath,
                 stringsBundle: AppStrings.bundle
             )

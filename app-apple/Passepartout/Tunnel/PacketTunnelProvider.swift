@@ -24,7 +24,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             distributionTarget: distributionTarget,
             buildTarget: .tunnel
         )
-        let logFormatter = appConfiguration.newLogFormatter()
+        let logFormatter = appConfiguration.makeLogFormatter()
 
         // Register essential logger ASAP because the profile context
         // can only be defined after decoding the profile. We would

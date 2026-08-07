@@ -20,7 +20,7 @@ public final class VersionObservable {
         let url = appConfiguration.constants.github.urlForChangelog(ofVersion: version)
         pspLog(.core, .info, "CHANGELOG: Fetching \(url)")
         do {
-            let data = try await appConfiguration.newRequest(
+            let data = try await appConfiguration.makeRequest(
                 for: url,
                 cached: false
             )
