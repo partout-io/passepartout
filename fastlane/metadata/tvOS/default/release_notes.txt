@@ -1,1 +1,1 @@
-* Partout: Enable Zig runtime (#1913)
+* Core: Refactor context dependencies (#1915)
