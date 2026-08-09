@@ -1,5 +1,27 @@
 require "shellwords"
 require "fastlane_core/itunes_transporter"
+require "deliver/upload_metadata"
+
+# App Info is shared across platforms and can be unavailable while another
+# platform is in review. Deliver supports a missing App Info while uploading
+# version metadata, but retries the lookup for about 20 minutes first. Avoid
+# those retries during submission so release notes can still be uploaded.
+module SubmitReviewMetadataWithoutAppInfoRetry
+    def fetch_edit_app_info(app)
+        return super unless options[:submit_for_review]
+
+        app.fetch_edit_app_info
+    end
+
+    def updating_localized_app_info?(app, app_info)
+        return super unless options[:submit_for_review] && app_info.nil?
+
+        FastlaneCore::UI.important("Editable App Info unavailable; uploading version metadata only.")
+        false
+    end
+end
+
+Deliver::UploadMetadata.prepend(SubmitReviewMetadataWithoutAppInfoRetry)
 
 class ::FastlaneCore::AltoolTransporterExecutor
     private
