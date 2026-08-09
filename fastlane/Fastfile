@@ -54,6 +54,15 @@ lane :asc_screenshots do
     )
 end
 
+desc "Create the App Store version without uploading anything"
+lane :asc_version do
+    deliver(
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true
+    )
+end
+
 desc "Submit a build to App Review"
 lane :asc_review do |options|
     deliver(
