@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 2
     environment:
       name: api
-      url: https://github.com/passepartoutvpn/api
+      url: https://github.com/partout-io/passepartout-api
     defaults:
       run:
         working-directory: ./api
@@ -35,7 +35,7 @@ jobs:
         uses: tagus/git-deploy@v0.5.0
         with:
           changes: "api/src"
-          repository: git@github.com:passepartoutvpn/api.git
+          repository: git@github.com:partout-io/passepartout-api.git
           ssh_key: ${{ secrets.API_DEPLOY_KEY }}
           name: api
           email: providers@passepartoutvpn.app
