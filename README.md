@@ -2,19 +2,19 @@
 
 # [Passepartout][web-home]
 
-[![Unit Tests](https://github.com/partout-io/passepartout/actions/workflows/test.yml/badge.svg?branch=)](https://github.com/partout-io/passepartout/actions/workflows/test.yml)
-[![Release](https://github.com/partout-io/passepartout/actions/workflows/release.yml/badge.svg?branch=)](https://github.com/partout-io/passepartout/actions/workflows/release.yml)
+[![Unit Tests](https://github.com/partout-io/passepartout/actions/workflows/test.yml/badge.svg)](https://github.com/partout-io/passepartout/actions/workflows/test.yml)
+[![Release](https://github.com/partout-io/passepartout/actions/workflows/release.yml/badge.svg)](https://github.com/partout-io/passepartout/actions/workflows/release.yml)
 
 [![Discuss on GitHub](https://img.shields.io/badge/discuss-GitHub-lightgray.svg)][about-github-discussions]
-[![Join TestFlight](https://img.shields.io/badge/beta-Testflight-blue.svg)][about-testflight]
+[![Join TestFlight](https://img.shields.io/badge/beta-TestFlight-blue.svg)][about-testflight]
 
 Passepartout (French: /pas.paʁ.tu/) is your go-to app for VPN and privacy.
 
-Passepartout is backed by [Partout][partout] and runs on [iPhone, iPad, Mac, and Apple TV][appstore]. Soon on Android and Windows.
+Passepartout is backed by [Partout][partout] and runs on [iPhone, iPad, Mac, and Apple TV][appstore]. Android and Windows versions are coming soon.
 
 ## Features
 
-[OpenVPN®][openvpn] and [WireGuard®][wireguard] client for Apple platforms, the OpenVPN stack also implements the [Tunnelblick XOR patch][openvpn-xor-patch].
+Passepartout is an [OpenVPN®][openvpn] and [WireGuard®][wireguard] client for Apple platforms. The OpenVPN stack also implements the [Tunnelblick XOR patch][openvpn-xor-patch].
 
 Other features:
 
@@ -47,12 +47,13 @@ It's highly recommended that you use the Git and Ruby packages provided by [Home
 
 Download the app codebase locally:
 
-```
-$ git clone https://github.com/partout-io/passepartout
-$ git submodule update --init partout
+```shell
+git clone https://github.com/partout-io/passepartout
+cd passepartout
+git submodule update --init partout
 ```
 
-then find the Xcode project in `app-apple`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
+Then find the Xcode project in `app-apple`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
 
 To test the app on your Mac or iOS/tvOS Simulator:
 
@@ -61,9 +62,9 @@ To test the app on your Mac or iOS/tvOS Simulator:
 
 ### Binaries
 
-All the [GitHub Releases][github-releases] come with Mac .dmg images for arm64 and x86_64, though currently limited to free features only. It's recommended that you verify the GPG signatures with [my GPG key][gpg-key], which you can also fetch from the public keyservers:
+All the [GitHub Releases][github-releases] come with Mac .dmg images for arm64 and x86_64, though the binaries are currently limited to free features only. It's recommended that you verify the GPG signatures with [my GPG key][gpg-key], which you can also fetch from the public keyservers:
 
-```
+```shell
 gpg --recv-keys 28891B14B2635EA11F438034092E0218047A5650
 ```
 
@@ -75,6 +76,10 @@ You can install the Mac app with [Homebrew Cask][homebrew-cask] too:
 brew install passepartout
 ```
 
+## Usage
+
+You are encouraged to read carefully both the [disclaimer][web-disclaimer] and the [privacy policy][web-privacy] before using this software.
+
 ## License
 
 Copyright (c) 2026 Davide De Rosa. All rights reserved.
@@ -83,7 +88,7 @@ This project is licensed under the [GPLv3][license-content].
 
 ### Contributing
 
-By contributing to this project you are agreeing to the terms stated in the [Contributor License Agreement (CLA)][contrib-cla]. For more details please see [CONTRIBUTING][contrib-readme].
+By contributing to this project, you are agreeing to the terms stated in the [Contributor License Agreement (CLA)][contrib-cla]. For more details, please see [CONTRIBUTING][contrib-readme].
 
 ## Blog
 
@@ -141,17 +146,13 @@ The app is mostly translated with [ChatGPT][credits-chatgpt], but these are the 
 - Russian: Alexander Korobynikov
 - Spanish: [Davide De Rosa](https://github.com/keeshux) (author), Elena Vivó
 - Swedish: [Henry Gross-Hellsen](https://github.com/cowpod)
-- Ukranian: [Dmitry Chirkin](https://github.com/josser)
-
-## Usage
-
-You are encouraged to read carefully both the [disclaimer][web-disclaimer] and the [privacy policy][web-privacy] before using this software.
+- Ukrainian: [Dmitry Chirkin](https://github.com/josser)
 
 ## Contacts
 
 Twitter: [@keeshux][about-twitter]
 
-Website: [passepartoutvpn.app][web-home] ([FAQ][web-faq])
+Website: [partout.io/passepartout][web-home] ([FAQ][web-faq])
 
 [partout]: https://partout.io/
 [appstore]: https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8
@@ -181,17 +182,16 @@ Website: [passepartoutvpn.app][web-home] ([FAQ][web-faq])
 [credits-tmthecoder]: https://github.com/tmthecoder
 [credits-tmthecoder-xor]: https://github.com/partout-io/tunnelkit/pull/255
 [credits-url.c]: https://github.com/cozis/url.c
-[credits-uuidv4]: https://github.com/rxi/uuid4
 [credits-vaygr]: https://github.com/vaygr
 [credits-vaygr-cask]: https://github.com/Homebrew/homebrew-cask/pull/214696
 [credits-wintun]: https://github.com/wireguard/wintun
 [credits-wireguard-go]: https://github.com/wireguard/wireguard-go
 
-[web-home]: https://passepartoutvpn.app
-[web-blog]: https://passepartoutvpn.app/blog/
-[web-faq]: https://passepartoutvpn.app/faq/
-[web-disclaimer]: https://passepartoutvpn.app/disclaimer/
-[web-privacy]: https://passepartoutvpn.app/privacy/
+[web-home]: https://partout.io/passepartout
+[web-blog]: https://partout.io/passepartout/blog/
+[web-faq]: https://partout.io/passepartout/faq/
+[web-disclaimer]: https://partout.io/passepartout/disclaimer/
+[web-privacy]: https://partout.io/passepartout/privacy/
 
 [about-twitter]: https://twitter.com/keeshux
 [about-github-discussions]: https://github.com/orgs/partout-io/discussions
