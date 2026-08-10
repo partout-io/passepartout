@@ -28,4 +28,4 @@ Passepartout — это проект с открытым исходным код
 
 Условия использования (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Политика конфиденциальности: https://passepartoutvpn.app/privacy/
+Политика конфиденциальности: https://partout.io/passepartout/privacy/

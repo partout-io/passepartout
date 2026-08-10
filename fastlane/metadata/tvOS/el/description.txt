@@ -28,4 +28,4 @@ OPEN SOURCE & ΥΠΟΣΤΗΡΙΖΟΜΕΝΟ ΑΠΟ ΤΗΝ ΚΟΙΝΟΤΗΤΑ
 
 Όροι Χρήσης (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Πολιτική Απορρήτου: https://passepartoutvpn.app/privacy/
+Πολιτική Απορρήτου: https://partout.io/passepartout/privacy/

@@ -43,4 +43,4 @@ Passepartout è open source e in continua evoluzione grazie al contributo della 
 
 Termini di utilizzo (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Informativa sulla privacy: https://passepartoutvpn.app/privacy/
+Informativa sulla privacy: https://partout.io/passepartout/privacy/

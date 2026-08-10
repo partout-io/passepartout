@@ -5,7 +5,7 @@
 function getInfrastructure(module, headers, preferCache) {
     const providerId = "nordvpn";
     if (preferCache) {
-        const json = api.getJSON("https://passepartoutvpn.app/api-cache/v7/providers/nordvpn/fetch.json", headers);
+        const json = api.getJSON("https://partout.io/passepartout-api-cache/v7/providers/nordvpn/fetch.json", headers);
         if (json && json.response) {
             json.response.cache = json.cache;
         }

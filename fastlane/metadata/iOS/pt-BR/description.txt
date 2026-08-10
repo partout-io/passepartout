@@ -43,4 +43,4 @@ Passepartout é um projeto de código aberto e está em constante evolução gra
 
 Termos de Uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Política de Privacidade: https://passepartoutvpn.app/privacy/
+Política de Privacidade: https://partout.io/passepartout/privacy/

@@ -43,4 +43,4 @@ Passepartout ist Open Source und entwickelt sich ständig mit Hilfe seiner Commu
 
 Nutzungsbedingungen (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Datenschutzerklärung: https://passepartoutvpn.app/privacy/
+Datenschutzerklärung: https://partout.io/passepartout/privacy/

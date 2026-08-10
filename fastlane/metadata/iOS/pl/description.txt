@@ -43,4 +43,4 @@ Passepartout to projekt open source, który nieustannie się rozwija dzięki pom
 
 Warunki użytkowania (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Polityka prywatności: https://passepartoutvpn.app/privacy/
+Polityka prywatności: https://partout.io/passepartout/privacy/

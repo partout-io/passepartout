@@ -43,4 +43,4 @@ Passepartout är ett projekt med öppen källkod som ständigt utvecklas med hj�
 
 Användarvillkor (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
-Integritetspolicy: https://passepartoutvpn.app/privacy/
+Integritetspolicy: https://partout.io/passepartout/privacy/
