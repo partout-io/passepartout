@@ -7,6 +7,7 @@
         "preferences": "Preferences-v3"
     },
     "websites": {
+        "partoutURL": "https://partout.io",
         "homeURL": "https://partout.io/passepartout",
         "eulaURL": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
         "appStoreDownloadURL": "https://apps.apple.com/us/app/passepartout-vpn-client/id1433648537?mt=8",

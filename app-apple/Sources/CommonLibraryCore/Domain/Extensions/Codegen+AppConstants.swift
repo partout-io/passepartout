@@ -4,37 +4,41 @@
 
 import Partout
 
+// Partout
 extension OpenAPIAppConstantsWebsites {
+    public var blogURL: URL {
+        partoutURL.appending(path: "blog")
+    }
+
+    public var donateURL: URL {
+        partoutURL.appending(path: "donate")
+    }
+
     public var apiURL: URL {
-        homeURL.appending(path: "api")
+        partoutURL.appending(path: "passepartout-api")
+    }
+
+    public var configURL: URL {
+        partoutURL.appending(path: "passepartout-config/v1/bundle.json")
+    }
+
+    public var betaConfigURL: URL {
+        partoutURL.appending(path: "passepartout-config/v1/bundle-beta.json")
+    }
+}
+
+// Passepartout
+extension OpenAPIAppConstantsWebsites {
+    public var disclaimerURL: URL {
+        homeURL.appending(path: "disclaimer")
     }
 
     public var faqURL: URL {
         homeURL.appending(path: "faq")
     }
 
-    public var blogURL: URL {
-        homeURL.appending(path: "blog")
-    }
-
-    public var disclaimerURL: URL {
-        homeURL.appending(path: "disclaimer")
-    }
-
     public var privacyPolicyURL: URL {
         homeURL.appending(path: "privacy")
-    }
-
-    public var donateURL: URL {
-        homeURL.appending(path: "donate")
-    }
-
-    public var configURL: URL {
-        homeURL.appending(path: "config/v1/bundle.json")
-    }
-
-    public var betaConfigURL: URL {
-        homeURL.appending(path: "config/v1/bundle-beta.json")
     }
 }
 

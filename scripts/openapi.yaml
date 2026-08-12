@@ -53,6 +53,9 @@ components:
         websites:
           type: object
           properties:
+            partoutURL:
+              type: string
+              format: uri
             homeURL:
               type: string
               format: uri
@@ -70,6 +73,7 @@ components:
             betaTTLFactor:
               type: number
           required:
+          - partoutURL
           - homeURL
           - eulaURL
           - appStoreDownloadURL

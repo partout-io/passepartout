@@ -31,6 +31,7 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
+ * @param partoutURL 
  * @param homeURL 
  * @param eulaURL 
  * @param appStoreDownloadURL 
@@ -41,6 +42,9 @@ import kotlinx.serialization.Contextual
 @Serializable
 
 data class AppConstantsWebsites (
+
+    @SerialName(value = "partoutURL")
+    val partoutURL: kotlin.String,
 
     @SerialName(value = "homeURL")
     val homeURL: kotlin.String,

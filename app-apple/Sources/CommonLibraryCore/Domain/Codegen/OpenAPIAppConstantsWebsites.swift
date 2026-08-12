@@ -9,6 +9,7 @@ import Partout
 
 public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
 
+    public var partoutURL: URL
     public var homeURL: URL
     public var eulaURL: URL
     public var appStoreDownloadURL: URL
@@ -16,7 +17,8 @@ public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
     public var configTTL: Double
     public var betaTTLFactor: Double
 
-    public init(homeURL: URL, eulaURL: URL, appStoreDownloadURL: URL, macDownloadURL: URL, configTTL: Double, betaTTLFactor: Double) {
+    public init(partoutURL: URL, homeURL: URL, eulaURL: URL, appStoreDownloadURL: URL, macDownloadURL: URL, configTTL: Double, betaTTLFactor: Double) {
+        self.partoutURL = partoutURL
         self.homeURL = homeURL
         self.eulaURL = eulaURL
         self.appStoreDownloadURL = appStoreDownloadURL
@@ -26,6 +28,7 @@ public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case partoutURL
         case homeURL
         case eulaURL
         case appStoreDownloadURL
@@ -38,6 +41,7 @@ public struct OpenAPIAppConstantsWebsites: Sendable, Codable, Hashable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(partoutURL, forKey: .partoutURL)
         try container.encode(homeURL, forKey: .homeURL)
         try container.encode(eulaURL, forKey: .eulaURL)
         try container.encode(appStoreDownloadURL, forKey: .appStoreDownloadURL)

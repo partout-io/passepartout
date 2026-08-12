@@ -10,29 +10,30 @@ import com.algoritmico.passepartout.models.AppConstantsTunnel
 import com.algoritmico.passepartout.models.AppConstantsTunnelVerificationParameters
 import com.algoritmico.passepartout.models.AppConstantsWebsites
 
-val AppConstantsWebsites.apiURL: String
-    get() = homeURL.appendingPath("api")
+//region Partout
+val AppConstantsWebsites.blogURL: String
+    get() = partoutURL.appendingPath("blog")
+
+val AppConstantsWebsites.donateURL: String
+    get() = partoutURL.appendingPath("donate")
+
+val AppConstantsWebsites.configURL: String
+    get() = partoutURL.appendingPath("passepartout-config/v1/bundle.json")
+
+val AppConstantsWebsites.betaConfigURL: String
+    get() = partoutURL.appendingPath("passepartout-config/v1/bundle-beta.json")
+//endregion
+
+//region Passepartout
+val AppConstantsWebsites.disclaimerURL: String
+    get() = homeURL.appendingPath("disclaimer")
 
 val AppConstantsWebsites.faqURL: String
     get() = homeURL.appendingPath("faq")
 
-val AppConstantsWebsites.blogURL: String
-    get() = homeURL.appendingPath("blog")
-
-val AppConstantsWebsites.disclaimerURL: String
-    get() = homeURL.appendingPath("disclaimer")
-
 val AppConstantsWebsites.privacyPolicyURL: String
     get() = homeURL.appendingPath("privacy")
-
-val AppConstantsWebsites.donateURL: String
-    get() = homeURL.appendingPath("donate")
-
-val AppConstantsWebsites.configURL: String
-    get() = homeURL.appendingPath("config/v1/bundle.json")
-
-val AppConstantsWebsites.betaConfigURL: String
-    get() = homeURL.appendingPath("config/v1/bundle-beta.json")
+//endregion
 
 fun AppConstantsGithub.urlForIssue(issue: Int): String {
     return issuesURL.appendingPath(issue.toString())
