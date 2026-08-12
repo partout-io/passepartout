@@ -16,7 +16,7 @@
         "betaTTLFactor": 0.1
     },
     "github": {
-        "discussionsURL": "http://github.com/orgs/partout-io/discussions",
+        "discussionsURL": "https://github.com/orgs/partout-io/discussions",
         "issuesURL": "https://github.com/partout-io/passepartout/issues",
         "rawURL": "https://raw.githubusercontent.com/partout-io/passepartout",
         "latestReleaseURL": "https://api.github.com/repos/partout-io/passepartout/releases/latest"
