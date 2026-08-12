@@ -120,7 +120,7 @@ private final class MockStrategy: VersionCheckerStrategy, @unchecked Sendable {
     }
 
     func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
-        [ABI.ChangelogEntry(id: 0, comment: version)]
+        [ABI.ChangelogEntry(id: 0, comment: build)]
     }
 }
 
