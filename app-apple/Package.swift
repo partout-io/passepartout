@@ -3,11 +3,6 @@
 
 import PackageDescription
 
-let partoutNative: Target = .partoutNative(
-//    .local
-    .remote("0.155.2", checksum: "f09ddaf15ceda59129e33568c43592f852dae88246500a3d55d5e346199685e1")
-)
-
 // The "*Wrapper" targets only exist for testing
 
 let package = Package(
@@ -34,10 +29,6 @@ let package = Package(
         .library(
             name: "AppLibraryTV",
             targets: ["AppLibraryTV"]
-        ),
-        .library(
-            name: "PartoutNative",
-            targets: ["PartoutNative"]
         ),
         .library(
             name: "TunnelLibrary",
@@ -95,11 +86,9 @@ let package = Package(
             name: "TunnelLibrary",
             dependencies: [
                 "AppResources",
-                "PartoutNative",
-                .product(name: "PartoutRuntime", package: "partout")
+                .product(name: "partout", package: "partout")
             ]
         ),
-        partoutNative,
         .testTarget(
             name: "AppLibraryTests",
             dependencies: [
@@ -114,30 +103,6 @@ let package = Package(
     ]
 )
 
-enum PartoutNativeTarget {
-    case local
-    case remote(_ version: String, checksum: String)
-}
-
-extension Target {
-    static func partoutNative(_ target: PartoutNativeTarget) -> Target {
-        let name = "PartoutNative"
-        switch target {
-        case .local:
-            return .binaryTarget(
-                name: name,
-                path: "\(name).xcframework"
-            )
-        case .remote(let version, let checksum):
-            return .binaryTarget(
-                name: name,
-                url: "https://github.com/partout-io/partout/releases/download/\(version)/\(name).xcframework.zip",
-                checksum: checksum
-            )
-        }
-    }
-}
-
 // MARK: - CommonLibrary*
 
 package.products.append(
@@ -149,6 +114,7 @@ package.products.append(
 
 package.dependencies.append(contentsOf: [
     .package(path: "../partout"),
+    .package(path: "../partout/cross/apple-legacy"),
     .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
 ])
 
@@ -200,7 +166,7 @@ package.targets.append(contentsOf: [
             var list: [Target.Dependency] = [
                 .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
-                "partout"
+                .product(name: "partout-legacy", package: "apple-legacy")
             ]
             list.append("CommonProviders")
             return list
@@ -237,7 +203,9 @@ package.targets.append(contentsOf: [
     ),
     .target(
         name: "CommonProvidersCore",
-        dependencies: ["partout"]
+        dependencies: [
+            .product(name: "partout-legacy", package: "apple-legacy")
+        ]
     )
 ])
 #if canImport(Darwin)
