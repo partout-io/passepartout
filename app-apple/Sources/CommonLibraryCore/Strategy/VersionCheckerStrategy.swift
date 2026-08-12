@@ -6,5 +6,5 @@ import Partout
 
 public protocol VersionCheckerStrategy: Sendable {
     func latestVersion(since: Date) async throws -> ABI.SemanticVersion
-    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry]
+    func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry]
 }

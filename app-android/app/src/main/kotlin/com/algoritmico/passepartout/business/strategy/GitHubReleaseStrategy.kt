@@ -40,8 +40,8 @@ class GitHubReleaseStrategy(
         return semanticVersion
     }
 
-    override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
-        val url = changelogURL(version)
+    override suspend fun fetchChangelog(build: String): List<ChangelogEntry> {
+        val url = changelogURL(build)
         val text = fetcher(url).decodeToString()
         return text.split("\n")
             .filter { it.isNotEmpty() }

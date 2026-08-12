@@ -37,7 +37,7 @@ import java.io.Closeable
 
 interface VersionCheckerStrategy {
     suspend fun latestVersion(sinceTimestamp: Long?): SemanticVersion
-    suspend fun fetchChangelog(version: String): List<ChangelogEntry>
+    suspend fun fetchChangelog(build: String): List<ChangelogEntry>
 }
 
 sealed class VersionCheckerException: Exception() {
@@ -96,8 +96,8 @@ class VersionChecker(
         }.getOrThrow()
     }
 
-    suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
-        return strategy.fetchChangelog(version)
+    suspend fun fetchChangelog(build: String): List<ChangelogEntry> {
+        return strategy.fetchChangelog(build)
     }
 
     override fun close() {
@@ -167,7 +167,7 @@ private class DummyVersionCheckerStrategy : VersionCheckerStrategy {
         return SemanticVersion(255, 255, 255)
     }
 
-    override suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
+    override suspend fun fetchChangelog(build: String): List<ChangelogEntry> {
         return emptyList()
     }
 }

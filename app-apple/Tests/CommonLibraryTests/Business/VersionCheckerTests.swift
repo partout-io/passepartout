@@ -119,7 +119,7 @@ private final class MockStrategy: VersionCheckerStrategy, @unchecked Sendable {
         return ABI.SemanticVersion("4.10.20")!
     }
 
-    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+    func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
         [ABI.ChangelogEntry(id: 0, comment: version)]
     }
 }
@@ -129,7 +129,7 @@ private final class RateLimitedStrategy: VersionCheckerStrategy {
         throw ABI.AppError.rateLimit
     }
 
-    func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+    func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
         []
     }
 }

@@ -318,7 +318,7 @@ extension ABI.AppConfiguration {
         let versionStrategy = GitHubReleaseStrategy(
             releaseURL: constants.github.latestReleaseURL,
             changelogURL: {
-                constants.github.urlForChangelog(ofVersion: $0)
+                constants.github.urlForChangelog(ofBuild: $0)
             },
             rateLimit: constants.url.versionRateLimit,
             fetcher: fetcher

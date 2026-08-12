@@ -43,19 +43,19 @@ fun ChangelogView(
     val androidConstants = LocalAndroidConstants.current
     val appConfiguration = LocalAppConfiguration.current
     val versionObservable = LocalVersionObservable.current
-    val versionNumber = appConfiguration.bundle.versionNumber
-    var entries by remember(versionNumber) {
+    val buildNumber = appConfiguration.bundle.buildNumber.toString()
+    var entries by remember(buildNumber) {
         mutableStateOf(emptyList<ChangelogEntry>())
     }
-    var isLoading by remember(versionNumber) {
+    var isLoading by remember(buildNumber) {
         mutableStateOf(true)
     }
     val theme = LocalTheme.current
 
-    LaunchedEffect(versionNumber, versionObservable, androidConstants.tags.app) {
+    LaunchedEffect(buildNumber, versionObservable, androidConstants.tags.app) {
         isLoading = true
         entries = runCatchingNonFatal {
-            versionObservable.fetchChangelog(versionNumber)
+            versionObservable.fetchChangelog(buildNumber)
         }.getOrElse {
             AppLog.w(androidConstants.tags.app, "Unable to load changelog", it)
             emptyList()

@@ -45,8 +45,8 @@ class VersionObservable(
         }
     }
 
-    suspend fun fetchChangelog(version: String): List<ChangelogEntry> {
-        return manager.fetchChangelog(version)
+    suspend fun fetchChangelog(build: String): List<ChangelogEntry> {
+        return manager.fetchChangelog(build)
     }
 
     override fun close() {

@@ -15,8 +15,8 @@ public final class VersionObservable {
         latestRelease = nil
     }
 
-    public func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
-        try await versionChecker.fetchChangelog(of: version)
+    public func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
+        try await versionChecker.fetchChangelog(of: build)
     }
 
     func onUpdate(_ event: ABI.VersionEvent) {

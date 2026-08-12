@@ -8,7 +8,7 @@ import Partout
 public final class GitHubReleaseStrategy: VersionCheckerStrategy {
     private let releaseURL: URL
 
-    private let changelogURL: @Sendable (String) -> URL
+    private let changelogURL: @Sendable (_ build: String) -> URL
 
     private let rateLimit: TimeInterval
 
@@ -16,7 +16,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
 
     public nonisolated init(
         releaseURL: URL,
-        changelogURL: @escaping @Sendable (String) -> URL,
+        changelogURL: @escaping @Sendable (_ build: String) -> URL,
         rateLimit: TimeInterval,
         fetcher: @escaping @Sendable (URL, _ cached: Bool) async throws -> Data
     ) {
@@ -44,9 +44,9 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         return semNew
     }
 
-    public func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
-        pspLog(.core, .info, "CHANGELOG: Load for version \(version)")
-        let url = changelogURL(version)
+    public func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
+        pspLog(.core, .info, "CHANGELOG: Load for build \(build)")
+        let url = changelogURL(build)
         pspLog(.core, .info, "CHANGELOG: Fetching \(url)")
         do {
             let data = try await fetcher(url, false)

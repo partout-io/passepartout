@@ -51,13 +51,13 @@ private extension ChangelogView {
         appConfiguration.bundle.versionString
     }
 
-    var versionNumber: String {
-        appConfiguration.bundle.versionNumber
+    var buildNumber: String {
+        appConfiguration.bundle.buildNumber.description
     }
 
     func loadChangelog() async {
         do {
-            entries = try await versionObservable.fetchChangelog(of: versionNumber)
+            entries = try await versionObservable.fetchChangelog(of: buildNumber)
         } catch {
             pspLog(.core, .error, "CHANGELOG: Unable to load: \(error)")
         }

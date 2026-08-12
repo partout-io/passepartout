@@ -80,8 +80,8 @@ public final class VersionChecker {
         didChange.send(.new(.init(release: latestRelease)))
     }
 
-    public func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
-        try await strategy.fetchChangelog(of: version)
+    public func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
+        try await strategy.fetchChangelog(of: build)
     }
 }
 
@@ -91,7 +91,7 @@ extension VersionChecker {
             ABI.SemanticVersion("255.255.255")!
         }
 
-        func fetchChangelog(of version: String) async throws -> [ABI.ChangelogEntry] {
+        func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
             []
         }
     }

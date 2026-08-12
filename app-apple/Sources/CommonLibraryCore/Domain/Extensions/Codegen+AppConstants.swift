@@ -47,8 +47,8 @@ extension OpenAPIAppConstantsGithub {
         issuesURL.appending(path: issue.description)
     }
 
-    public func urlForChangelog(ofVersion version: String) -> URL {
-        rawURL.appending(path: "refs/tags/v\(version)/CHANGELOG.txt")
+    public func urlForChangelog(ofBuild build: String) -> URL {
+        rawURL.appending(path: "refs/tags/builds/\(build)/CHANGELOG.txt")
     }
 }
 
