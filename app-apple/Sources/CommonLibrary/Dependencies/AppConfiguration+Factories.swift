@@ -432,17 +432,3 @@ extension NETunnelStrategy: EnvironmentFetcher {
         }
     }
 }
-
-extension LegacyNETunnelStrategy: EnvironmentFetcher {
-    func fetchEnvironment(profileId: Profile.ID) async throws -> StaticTunnelEnvironment? {
-        let output = try await sendMessage(.environment(), to: profileId)
-        switch output {
-        case .environment(let env):
-            return env
-        case nil:
-            return nil
-        default:
-            throw PartoutError(.unhandled)
-        }
-    }
-}
