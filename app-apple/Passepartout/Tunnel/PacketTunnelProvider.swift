@@ -6,6 +6,7 @@ import AppResources
 import CommonLibrary
 @preconcurrency import NetworkExtension
 import Partout
+import PartoutRuntime
 import TunnelLibrary
 
 extension NSObject: @retroactive @unchecked Sendable {}
@@ -37,7 +38,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter.localMapper
         )
-        pspLog(.core, .notice, "Partout \(PartoutConstants.version) (Swift)")
+        pspLog(.core, .notice, "Partout \(PartoutRuntime.version) (Swift)")
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[TunnelObservable.Options.isManualKey] == true as NSNumber
