@@ -1,1 +1,1 @@
-* Core: Refactor context dependencies (#1915)
+* Core: Fix profile not saved before connecting (e.g. OTP) (#1920)
