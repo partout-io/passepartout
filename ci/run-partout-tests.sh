@@ -1,3 +1,3 @@
 #!/bin/bash
-cd partout/zig
+cd partout
 zig build test -Dopenvpn=true -Dwireguard=true

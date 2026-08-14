@@ -12,6 +12,7 @@ import CommonDataProviders
 import CommonLibrary
 import CoreData
 import Partout
+import PartoutRuntime
 
 extension AppContext {
     static func forProduction(bundleIdentifier: String) -> AppContext {
@@ -41,7 +42,7 @@ extension AppContext {
             localURL: appConfiguration.urlForAppLog,
             localMapper: logFormatter.localMapper
         )
-        pspLog(.core, .notice, "Partout \(PartoutConstants.version)")
+        pspLog(.core, .notice, "Partout \(PartoutRuntime.version)")
 
         // MARK: Config (GitHub)
 

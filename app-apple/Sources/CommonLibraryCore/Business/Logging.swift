@@ -179,13 +179,14 @@ private extension PartoutLogger.Builder {
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
         assertsMissingLoggingCategory = true
-        var list: [LoggerCategory] = LoggerCategory.partoutCategories + [
+        var list: [LoggerCategory] = LoggerCategory.allCases + [
             .App.abi,
             .App.core,
             .App.iap,
             .App.profiles,
             .App.web
-        ]
+        ] + [.openvpn, .wireguard] // Legacy
+        list.append(.runtime)
         list.append(.providers)
         setDefaultDestination(for: list, tag: parameters.tag)
 

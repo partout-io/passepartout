@@ -44,9 +44,9 @@ jobs:
       - name: Run Partout tests (Swift)
         run: |
           ci/run-partout-swift-tests.sh
-      - name: Run Partout tests (Zig)
+      - name: Run Partout tests
         run: |
-          ci/run-partout-zig-tests.sh
+          ci/run-partout-tests.sh
     outputs:
       version: ${{ steps.app_version.outputs.version }}
       build: ${{ steps.app_version.outputs.build }}
