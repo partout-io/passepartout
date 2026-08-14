@@ -17,7 +17,4 @@ esac
 
 partout_dir="$SRCROOT/../partout"
 
-exec "$partout_dir/scripts/build-xcframework.sh" \
-    "$partout_dir/PartoutNative.xcframework" \
-    "$SRCROOT/artifacts" \
-    "$@"
+cd "$partout_dir" && scripts/build-xcframework.sh
