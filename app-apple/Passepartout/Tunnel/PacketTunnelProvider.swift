@@ -38,7 +38,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter.localMapper
         )
-        pspLog(.core, .notice, "Partout \(PartoutRuntime.version) (Swift)")
+        pspLog(.core, .notice, "Partout version: \(PartoutRuntime.version)")
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[TunnelObservable.Options.isManualKey] == true as NSNumber
