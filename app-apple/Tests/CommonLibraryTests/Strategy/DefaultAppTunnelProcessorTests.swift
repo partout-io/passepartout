@@ -70,6 +70,22 @@ struct DefaultAppTunnelProcessorTests {
 
         #expect(repository.profiles == [profile])
     }
+
+    @Test
+    func givenProfile_whenInstalling_thenPersistsWithoutSaving() async throws {
+        let profile = try makeOpenVPNProfile(otp: nil)
+        let repository = RecordingProfileRepository()
+        let sut = makeProcessor(repository: repository)
+
+        _ = try await sut.willInstall(
+            profile,
+            connect: true,
+            force: true
+        )
+
+        #expect(await repository.persistedProfiles == [profile])
+        #expect(await repository.savedProfiles.isEmpty)
+    }
 }
 
 private extension DefaultAppTunnelProcessorTests {
@@ -168,6 +184,64 @@ private struct IdentityResolver: Resolver {
 
     func resolvedModule(_ module: Module, in profile: Profile?) throws -> Module {
         module
+    }
+}
+
+private actor RecordingProfileRepository: ProfileRepository {
+    private var profiles: [Profile] = []
+
+    private var profilesContinuation: AsyncStream<[Profile]>.Continuation?
+
+    private(set) var persistedProfiles: [Profile] = []
+
+    private(set) var savedProfiles: [Profile] = []
+
+    nonisolated var profilesPublisher: AsyncStream<[Profile]> {
+        AsyncStream { continuation in
+            Task {
+                await setProfilesContinuation(continuation)
+            }
+        }
+    }
+
+    func fetchProfiles() -> [Profile] {
+        profiles
+    }
+
+    func persistProfile(_ profile: Profile) {
+        persistedProfiles.append(profile)
+        upsert(profile)
+    }
+
+    func saveProfile(_ profile: Profile) {
+        savedProfiles.append(profile)
+        upsert(profile)
+    }
+
+    func removeProfiles(withIds profileIds: [Profile.ID]) {
+        profiles.removeAll {
+            profileIds.contains($0.id)
+        }
+        profilesContinuation?.yield(profiles)
+    }
+
+    func removeAllProfiles() {
+        profiles = []
+        profilesContinuation?.yield(profiles)
+    }
+
+    private func setProfilesContinuation(_ continuation: AsyncStream<[Profile]>.Continuation) {
+        profilesContinuation = continuation
+        continuation.yield(profiles)
+    }
+
+    private func upsert(_ profile: Profile) {
+        if let index = profiles.firstIndex(where: { $0.id == profile.id }) {
+            profiles[index] = profile
+        } else {
+            profiles.append(profile)
+        }
+        profilesContinuation?.yield(profiles)
     }
 }
 

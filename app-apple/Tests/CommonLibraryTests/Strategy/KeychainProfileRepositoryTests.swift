@@ -69,6 +69,36 @@ struct KeychainProfileRepositoryTests {
     }
 
     @Test
+    func persistUpdatesProfilesWithoutPublishingUpsert() async throws {
+        let persistedProfile = try makeProfile(name: "persisted")
+        let savedProfile = try makeProfile(name: "saved")
+        let coder = makeCoder()
+        let keychain = MockProfileKeychain()
+        let sut = makeRepository(keychain: keychain, coder: coder)
+        var profilesIterator = sut.profilesPublisher.makeAsyncIterator()
+        var eventsIterator = sut.eventsPublisher.makeAsyncIterator()
+
+        #expect(await profilesIterator.next()?.isEmpty == true)
+
+        try await sut.persistProfile(persistedProfile)
+        let published = try #require(await profilesIterator.next())
+
+        // A subsequent regular save must be the first tunnel source event.
+        try await sut.saveProfile(savedProfile)
+        let event = try #require(await eventsIterator.next())
+
+        #expect(published == [persistedProfile])
+        #expect(keychain.contains(username: persistedProfile.id.uuidString))
+        guard case .changes(let changes) = event,
+              changes.count == 1,
+              case .upsert(let upserted) = changes[0] else {
+            Issue.record("Expected one upsert event")
+            return
+        }
+        #expect(upserted == savedProfile)
+    }
+
+    @Test
     func removePublishesOnlyConfirmedRemovals() async throws {
         let removed = try makeProfile(name: "removed")
         let retained = try makeProfile(name: "retained")
