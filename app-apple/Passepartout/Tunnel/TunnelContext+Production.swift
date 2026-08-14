@@ -92,7 +92,7 @@ private extension TunnelContext {
         preferences: AppPreferencesStore,
         cachesURL: URL
     ) throws -> ProductionRuntime {
-        pspLog(.core, .info, "Using Zig runtime (\(PartoutProviderRuntime.version))")
+        pspLog(.core, .info, "Using Zig runtime")
 
         // This depends on distribution target
         let defaults = appConfiguration.makeTunnelDefaults()
