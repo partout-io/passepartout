@@ -62,7 +62,7 @@ public final class KeychainProfileRepository: ProfileRepository {
         return profiles
     }
 
-    public func saveProfile(_ profile: Profile) async throws {
+    public func persistProfile(_ profile: Profile) async throws {
         let string = try coder.string(fromProfile: profile)
         let fingerprint = profile.attributes.fingerprint?.uuidString
         try keychain.set(
@@ -81,6 +81,10 @@ public final class KeychainProfileRepository: ProfileRepository {
             allProfiles.append(profile)
         }
         profilesSubject.send(allProfiles)
+    }
+
+    public func saveProfile(_ profile: Profile) async throws {
+        try await persistProfile(profile)
         eventsSubject.send(.changes([
             .upsert(profile)
         ]))

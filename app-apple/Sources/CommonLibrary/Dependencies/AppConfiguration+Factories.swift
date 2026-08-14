@@ -22,12 +22,14 @@ extension ABI.AppConfiguration {
     }
 
     public func makeAppTunnelProcessor(
+        profileRepository: ProfileRepository,
         apiManager: APIManager?,
         resolver: Resolver,
         extensionInstaller: ExtensionInstaller?,
         providerServerSorter: @escaping ProviderServerParameters.Sorter
     ) -> AppTunnelProcessor {
         DefaultAppTunnelProcessor(
+            profileRepository: profileRepository,
             apiManager: apiManager,
             resolver: resolver,
             extensionInstaller: extensionInstaller,
