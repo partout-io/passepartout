@@ -11,5 +11,4 @@ default.profraw
 *.storekit
 .sqlite-*
 .dmg*
-PartoutNative.xcframework
 artifacts
