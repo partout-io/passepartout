@@ -9,9 +9,17 @@ public protocol ProfileRepository: Sendable {
 
     func fetchProfiles() async throws -> [Profile]
 
+    func persistProfile(_ profile: Profile) async throws
+
     func saveProfile(_ profile: Profile) async throws
 
     func removeProfiles(withIds profileIds: [Profile.ID]) async throws
 
     func removeAllProfiles() async throws
+}
+
+extension ProfileRepository {
+    public func saveProfile(_ profile: Profile) async throws {
+        try await persistProfile(profile)
+    }
 }

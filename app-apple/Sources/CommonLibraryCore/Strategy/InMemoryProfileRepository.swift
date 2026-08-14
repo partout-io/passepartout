@@ -28,7 +28,7 @@ public final class InMemoryProfileRepository: ProfileRepository {
         profiles
     }
 
-    public func saveProfile(_ profile: Profile) {
+    public func persistProfile(_ profile: Profile) {
         pspLog(.profiles, .info, "Save profile to repository: \(profile.id)")
         if let index = profiles.firstIndex(where: { $0.id == profile.id }) {
             profiles[index] = profile

@@ -89,7 +89,7 @@ extension CoreDataRepository: ProfileRepository where T == Profile {
         try await fetchAllEntities()
     }
 
-    public func saveProfile(_ profile: Profile) async throws {
+    public func persistProfile(_ profile: Profile) async throws {
         try await saveEntities([profile])
     }
 

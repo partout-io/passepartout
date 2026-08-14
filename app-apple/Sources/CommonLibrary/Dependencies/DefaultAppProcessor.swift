@@ -125,7 +125,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         }
 
         // Persist the effective profile before installing or connecting
-        try await profileRepository.saveProfile(profile)
+        try await profileRepository.persistProfile(profile)
 
         // Return processed profile
         return profile
