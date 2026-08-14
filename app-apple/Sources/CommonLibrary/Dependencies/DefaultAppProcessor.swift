@@ -36,6 +36,8 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 // MARK: - AppTunnelProcessor
 
 final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
+    private let profileRepository: ProfileRepository
+
     private let apiManager: APIManager?
 
     private let resolver: Resolver
@@ -45,11 +47,13 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
     private let providerServerSorter: ProviderServerParameters.Sorter
 
     init(
+        profileRepository: ProfileRepository,
         apiManager: APIManager?,
         resolver: Resolver,
         extensionInstaller: ExtensionInstaller?,
         providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
     ) {
+        self.profileRepository = profileRepository
         self.apiManager = apiManager
         self.resolver = resolver
         self.extensionInstaller = extensionInstaller
@@ -119,6 +123,9 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
                 }
             }
         }
+
+        // Persist the effective profile before installing or connecting
+        try await profileRepository.saveProfile(profile)
 
         // Return processed profile
         return profile

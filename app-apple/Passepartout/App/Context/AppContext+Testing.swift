@@ -49,12 +49,15 @@ extension AppContext {
         let profileProcessor = appConfiguration.makeAppProfileProcessor(
             iapManager: iapManager
         )
+        let mainProfileRepository = InMemoryProfileRepository()
         let profileManager: ProfileManager = .forUITesting(
             withRegistry: registry,
-            processor: profileProcessor
+            processor: profileProcessor,
+            repository: mainProfileRepository
         )
         profileManager.enableRemoteImporting(true)
         let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
+            profileRepository: mainProfileRepository,
             apiManager: apiManager,
             resolver: registry,
             extensionInstaller: nil,

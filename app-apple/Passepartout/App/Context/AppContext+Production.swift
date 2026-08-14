@@ -150,14 +150,6 @@ extension AppContext {
 
         let sysexManager = appConfiguration.makeSystemExtensionManager()
         let appEncoder = AppEncoder(coder: registry)
-        let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
-            apiManager: apiManager,
-            resolver: registry,
-            extensionInstaller: sysexManager,
-            providerServerSorter: {
-                $0.sort(using: $1.sortingComparators)
-            }
-        )
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = appConfiguration.newBackupProfileRepository(
@@ -217,6 +209,15 @@ extension AppContext {
             observingResults: false
         )
 #endif
+        let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
+            profileRepository: mainProfileRepository,
+            apiManager: apiManager,
+            resolver: registry,
+            extensionInstaller: sysexManager,
+            providerServerSorter: {
+                $0.sort(using: $1.sortingComparators)
+            }
+        )
         let profileProcessor = appConfiguration.makeAppProfileProcessor(
             iapManager: iapManager
         )
