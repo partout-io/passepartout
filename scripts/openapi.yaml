@@ -553,12 +553,10 @@ components:
       type: string
       x-enum-varnames:
       - appNotWorking
-      - ovpnV3
       - unknown
       - zigRuntime
       enum:
       - appNotWorking
-      - ovpnV3
       - unknown
       - zigRuntime
     ConfigBundle.Config:

@@ -40,23 +40,13 @@ private extension OpenVPNImplementationBuilder {
         var options = OpenVPNConnectionOptions()
         options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
         options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
-        let flags = configBlock()
-        if flags.contains(.ovpnV3) {
-            return try _OpenVPNConnectionV3(
-                ctx,
-                parameters: parameters,
-                module: module,
-                cachesURL: cachesURL,
-                options: options
-            )
-        } else {
-            return try _OpenVPNConnectionV2(
-                ctx,
-                parameters: parameters,
-                module: module,
-                cachesURL: cachesURL,
-                options: options
-            )
-        }
+//        let flags = configBlock()
+        return try _OpenVPNConnectionV3(
+            ctx,
+            parameters: parameters,
+            module: module,
+            cachesURL: cachesURL,
+            options: options
+        )
     }
 }
