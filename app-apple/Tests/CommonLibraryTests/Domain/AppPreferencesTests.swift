@@ -42,48 +42,48 @@ struct AppPreferencesTests {
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.ovpnV3, .zigRuntime]
-        sut.experimental.ignoredConfigFlags = [.appNotWorking, .ovpnV3]
+        sut.configFlags = [.unknown, .zigRuntime]
+        sut.experimental.ignoredConfigFlags = [.appNotWorking, .unknown]
         #expect(sut.isFlagEnabled(.zigRuntime))
-        #expect(!sut.isFlagEnabled(.ovpnV3))
+        #expect(!sut.isFlagEnabled(.unknown))
         #expect(!sut.isFlagEnabled(.appNotWorking))
     }
 
     @Test
     func givenExperimental_whenDecodeWithoutEnabledFlags_thenUsesEmptySet() throws {
-        let data = Data(#"{"ignoredConfigFlags":["ovpnV3"]}"#.utf8)
+        let data = Data(#"{"ignoredConfigFlags":["sdfgasdfasdg"]}"#.utf8)
         let sut = try ABI.decode(ABI.ExperimentalPreferences.self, from: data)
-        #expect(sut.ignoredConfigFlags == [.ovpnV3])
+        #expect(sut.ignoredConfigFlags == [.unknown])
         #expect(sut.enabledConfigFlags.isEmpty)
     }
 
     @Test
     func givenExperimental_whenEnableFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.ovpnV3]
+        sut.configFlags = [.unknown]
         sut.experimental.enabledConfigFlags = [.zigRuntime]
 
-        #expect(sut.isFlagEnabled(.ovpnV3))
+        #expect(sut.isFlagEnabled(.unknown))
         #expect(sut.isFlagEnabled(.zigRuntime))
-        #expect(sut.enabledFlags() == [.ovpnV3, .zigRuntime])
+        #expect(sut.enabledFlags() == [.unknown, .zigRuntime])
     }
 
     @Test
     func givenExperimental_whenEnableAndIgnoreSameFlag_thenIgnoreWins() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.ovpnV3]
+        sut.configFlags = [.unknown]
         sut.experimental.ignoredConfigFlags = [.zigRuntime]
         sut.experimental.enabledConfigFlags = [.zigRuntime]
 
         #expect(!sut.isFlagEnabled(.zigRuntime))
-        #expect(sut.enabledFlags() == [.ovpnV3])
+        #expect(sut.enabledFlags() == [.unknown])
     }
 }
 
 private extension AppPreferencesTests {
     static func preferences() -> ABI.AppPreferences {
         var preferences: ABI.AppPreferences = .default()
-        preferences.configFlags = [.ovpnV3, .zigRuntime]
+        preferences.configFlags = [.unknown, .zigRuntime]
         preferences.deviceId = "DeviceID"
         preferences.dnsFallsBack = false
         preferences.experimental.ignoredConfigFlags = [.appNotWorking]

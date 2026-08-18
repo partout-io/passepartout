@@ -205,13 +205,7 @@ private extension TunnelContext {
         )
 
         // Create daemon
-        let factory: NetworkInterfaceFactory
-        if preferences.isFlagEnabled(.ovpnV3) {
-            factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
-        } else {
-            let options = NEInterfaceFactory.Options()
-            factory = NEInterfaceFactory(ctx, provider: neProvider, options: options)
-        }
+        let factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
         let reachability = NEObservablePath(ctx)
         let connectionOptions = ConnectionParameters.Options()
         let connectionParameters = ConnectionParameters(
