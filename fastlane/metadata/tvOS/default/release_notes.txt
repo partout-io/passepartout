@@ -1,1 +1,1 @@
-* Core: Fix profile not saved before connecting (e.g. OTP) (#1920)
+* OpenVPN: Delete legacy implementation (#1922)
