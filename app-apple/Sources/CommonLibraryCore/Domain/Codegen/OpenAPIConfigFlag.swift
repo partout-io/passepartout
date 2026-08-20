@@ -10,5 +10,7 @@ import Partout
 public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case appNotWorking = "appNotWorking"
     case unknown = "unknown"
+    case zigOpenVPN = "zigOpenVPN"
     case zigRuntime = "zigRuntime"
+    case zigWireGuard = "zigWireGuard"
 }

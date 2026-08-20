@@ -37,7 +37,9 @@ public final class ConfigObservable {
 extension ConfigObservable {
     public var isUsingExperimentalFeatures: Bool {
         !activeFlags.isDisjoint(with: [
-            .zigRuntime
+            .zigRuntime,
+            .zigOpenVPN,
+            .zigWireGuard
         ])
     }
 }

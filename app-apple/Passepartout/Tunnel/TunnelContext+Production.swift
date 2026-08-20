@@ -32,7 +32,8 @@ extension TunnelContext {
                         preferences: preferences,
                         cachesURL: cachesURL
                     )
-                } catch RuntimeError.unsupportedProviders {
+                } catch RuntimeError.unsupportedProviders,
+                        RuntimeError.disabledModule {
                     // Fall back to Swift
                 }
             }
@@ -82,6 +83,7 @@ private extension TunnelContext {
     }
 
     enum RuntimeError: Error {
+        case disabledModule
         case unsupportedProviders
     }
 
@@ -115,6 +117,21 @@ private extension TunnelContext {
         } catch {
             pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
             throw error
+        }
+
+        switch profile.activeConnectionModule {
+        case is OpenVPNModule:
+            guard preferences.isFlagEnabled(.zigOpenVPN) else {
+                pspLog(profile.id, .profiles, .fault, "Zig/OpenVPN disabled, falling back to Swift runtime")
+                throw RuntimeError.disabledModule
+            }
+        case is WireGuardModule:
+            guard preferences.isFlagEnabled(.zigWireGuard) else {
+                pspLog(profile.id, .profiles, .fault, "Zig/WireGuard disabled, falling back to Swift runtime")
+                throw RuntimeError.disabledModule
+            }
+        default:
+            break
         }
 
         let backend = try PartoutProviderRuntime(

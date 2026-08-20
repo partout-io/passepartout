@@ -38,7 +38,9 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .zigRuntime
+        .zigRuntime,
+        .zigOpenVPN,
+        .zigWireGuard
     ]
 
     var canOverride: Bool {

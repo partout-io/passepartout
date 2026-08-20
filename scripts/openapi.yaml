@@ -554,11 +554,15 @@ components:
       x-enum-varnames:
       - appNotWorking
       - unknown
+      - zigOpenVPN
       - zigRuntime
+      - zigWireGuard
       enum:
       - appNotWorking
       - unknown
+      - zigOpenVPN
       - zigRuntime
+      - zigWireGuard
     ConfigBundle.Config:
       type: object
       additionalProperties: false
