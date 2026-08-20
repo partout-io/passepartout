@@ -4,7 +4,7 @@ set -euo pipefail
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 partout_dir=$(cd "$script_dir/../../partout" && pwd -P)
-grep -qFx 'nativeTarget = .local' "$partout_dir/Package.swift" || exit 0
+[[ -d "$partout_dir/PartoutNative.xcframework" ]] || exit 0
 
 : "${BUILD_DIR:?Select a target under 'Provide build settings from'}"
 : "${SRCROOT:?Missing SRCROOT}"
