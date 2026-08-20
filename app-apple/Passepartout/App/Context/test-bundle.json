@@ -2,6 +2,12 @@
     "zigRuntime": {
         "rate": 100
     },
+    "zigOpenVPN": {
+        "rate": 100
+    },
+    "zigWireGuard": {
+        "rate": 100
+    },
     "newProfileEncoding": {
         "rate": 100
     },

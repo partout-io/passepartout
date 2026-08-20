@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: appNotWorking,unknown,zigRuntime
+ * Values: appNotWorking,unknown,zigOpenVPN,zigRuntime,zigWireGuard
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
@@ -42,8 +42,14 @@ enum class ConfigFlag(val value: kotlin.String) {
     @SerialName(value = "unknown")
     unknown("unknown"),
 
+    @SerialName(value = "zigOpenVPN")
+    zigOpenVPN("zigOpenVPN"),
+
     @SerialName(value = "zigRuntime")
-    zigRuntime("zigRuntime");
+    zigRuntime("zigRuntime"),
+
+    @SerialName(value = "zigWireGuard")
+    zigWireGuard("zigWireGuard");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use
@@ -71,5 +77,4 @@ enum class ConfigFlag(val value: kotlin.String) {
         }
     }
 }
-
 
