@@ -1,1 +1,1 @@
-* OpenVPN: Delete legacy implementation (#1922)
+* Fix status sometimes not going through "Connecting" before "Connected"
