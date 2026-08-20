@@ -119,19 +119,16 @@ private extension TunnelContext {
             throw error
         }
 
-        switch profile.activeConnectionModule {
-        case is OpenVPNModule:
-            guard preferences.isFlagEnabled(.zigOpenVPN) else {
-                pspLog(profile.id, .profiles, .fault, "Zig/OpenVPN disabled, falling back to Swift runtime")
-                throw RuntimeError.disabledModule
-            }
-        case is WireGuardModule:
-            guard preferences.isFlagEnabled(.zigWireGuard) else {
-                pspLog(profile.id, .profiles, .fault, "Zig/WireGuard disabled, falling back to Swift runtime")
-                throw RuntimeError.disabledModule
-            }
-        default:
-            break
+        let activeModules = profile.activeModules
+        if activeModules.contains(where: { $0 is OpenVPNModule }),
+           !preferences.isFlagEnabled(.zigOpenVPN) {
+            pspLog(profile.id, .profiles, .fault, "Zig/OpenVPN disabled, falling back to Swift runtime")
+            throw RuntimeError.disabledModule
+        }
+        if activeModules.contains(where: { $0 is WireGuardModule }),
+           !preferences.isFlagEnabled(.zigWireGuard) {
+            pspLog(profile.id, .profiles, .fault, "Zig/WireGuard disabled, falling back to Swift runtime")
+            throw RuntimeError.disabledModule
         }
 
         let backend = try PartoutProviderRuntime(
