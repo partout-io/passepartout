@@ -20,8 +20,8 @@ val LocalTheme = compositionLocalOf {
 
 @Immutable
 data class Theme(
-    val lightColorScheme: ColorScheme = DefaultLightColorScheme,
-    val darkColorScheme: ColorScheme = DefaultDarkColorScheme,
+    val lightColorScheme: ColorScheme = defaultLightColorScheme,
+    val darkColorScheme: ColorScheme = defaultDarkColorScheme,
     val spacing: ThemeSpacing = ThemeSpacing(),
     val grid: ThemeGrid = ThemeGrid(),
     val animation: ThemeAnimation = ThemeAnimation(),
@@ -40,7 +40,7 @@ data class Theme(
     }
 
     private companion object {
-        val DefaultLightColorScheme = materialLightColorScheme(
+        val defaultLightColorScheme = materialLightColorScheme(
             primary = Color(0xFF9A571B),
             onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFFFFDCC1),
@@ -48,7 +48,7 @@ data class Theme(
             inversePrimary = Color(0xFFFFB878)
         )
 
-        val DefaultDarkColorScheme = materialDarkColorScheme(
+        val defaultDarkColorScheme = materialDarkColorScheme(
             primary = Color(0xFFFFB878),
             onPrimary = Color(0xFF4A2600),
             primaryContainer = Color(0xFF6B3A0E),

@@ -79,7 +79,7 @@ private fun ProfileGridViewPreview() {
             ProfileGridView(
                 modifier = Modifier,
                 state = ProfileContainerState(
-                    headers = PreviewProfileHeaders,
+                    headers = previewProfileHeaders,
                     contextualSelection = ProfileContextualSelection(
                         profileIds = listOf("office")
                     ),

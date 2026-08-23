@@ -109,7 +109,7 @@ private fun AdvancedPreferencesContent(
             themeListSection(
                 footer = overrideFooter
             ) {
-                items(AdvancedFlags) { flag ->
+                items(advancedFlags) { flag ->
                     ConfigPreferencePickerRow(
                         flag = flag,
                         isActive = configState.isActive(flag),
@@ -125,7 +125,7 @@ private fun AdvancedPreferencesContent(
                 header = allowHeader,
                 footer = remoteFooter
             ) {
-                items(AdvancedFlags) { flag ->
+                items(advancedFlags) { flag ->
                     ConfigFlagAllowedRow(
                         flag = flag,
                         isActive = configState.isActive(flag),
@@ -208,8 +208,8 @@ private fun ConfigPreferencePickerRow(
     )
 }
 
-private val AdvancedFlags = listOf(
-    ConfigFlag.ovpnV3
+private val advancedFlags = listOf(
+    ConfigFlag.zigRuntime
 )
 
 private enum class ConfigFlagPreference {

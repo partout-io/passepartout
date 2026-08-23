@@ -74,12 +74,12 @@ class ConfigObservable(
         }
 
         val isUsingExperimentalFeatures: Boolean
-            get() = activeFlags.intersect(ExperimentalFeatureFlags).isNotEmpty()
+            get() = activeFlags.intersect(experimentalFeatureFlags).isNotEmpty()
     }
 
     private companion object {
-        val ExperimentalFeatureFlags = setOf(
-            ConfigFlag.ovpnV3
+        val experimentalFeatureFlags = setOf(
+            ConfigFlag.zigRuntime
         )
     }
 

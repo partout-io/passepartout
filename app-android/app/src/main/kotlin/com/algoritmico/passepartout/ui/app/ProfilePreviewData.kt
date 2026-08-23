@@ -7,7 +7,7 @@ package com.algoritmico.passepartout.ui.app
 import com.algoritmico.passepartout.models.AppProfileHeader
 import io.partout.models.ModuleType
 
-internal val PreviewProfileHeaders = listOf(
+internal val previewProfileHeaders = listOf(
     previewProfileHeader(
         id = "home",
         name = "Home VPN",

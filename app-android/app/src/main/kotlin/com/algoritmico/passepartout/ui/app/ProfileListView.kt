@@ -71,7 +71,7 @@ private fun ProfileListViewPreview() {
             ProfileListView(
                 modifier = Modifier,
                 state = ProfileContainerState(
-                    headers = PreviewProfileHeaders,
+                    headers = previewProfileHeaders,
                     contextualSelection = ProfileContextualSelection(
                         profileIds = listOf("office")
                     ),
