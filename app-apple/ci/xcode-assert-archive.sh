@@ -68,6 +68,22 @@ assert_framework_install_name() {
         fail "$framework_binary has an unexpected install name"
 }
 
+assert_framework_dsym() {
+    local framework_binary=$1
+    local dsym="$archive_path/dSYMs/$framework_name.dSYM"
+    local dsym_binary="$dsym/Contents/Resources/DWARF/PartoutNative"
+    local framework_uuids
+    local dsym_uuids
+
+    [[ -f "$dsym_binary" ]] || fail "missing framework dSYM at $dsym"
+
+    framework_uuids=$(xcrun dwarfdump --uuid "$framework_binary" | awk '$1 == "UUID:" {print $2, $3}' | sort)
+    dsym_uuids=$(xcrun dwarfdump --uuid "$dsym_binary" | awk '$1 == "UUID:" {print $2, $3}' | sort)
+    [[ -n "$framework_uuids" ]] || fail "no UUIDs found in $framework_binary"
+    [[ "$framework_uuids" == "$dsym_uuids" ]] || \
+        fail "$dsym UUIDs ($dsym_uuids) do not match $framework_binary ($framework_uuids)"
+}
+
 assert_single_framework() {
     local app=$1
     local expected=$2
@@ -138,5 +154,7 @@ else
     assert_loads_framework "$tunnel_binary"
     assert_rpath "$tunnel_binary" "$tunnel_rpath"
 fi
+
+assert_framework_dsym "$expected_framework/PartoutNative"
 
 echo "Archive layout verified: $archive_path"
