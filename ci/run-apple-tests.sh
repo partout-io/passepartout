@@ -1,2 +1,2 @@
 #!/bin/bash
-cd app-apple && scripts/bootstrap.sh && FOR_TESTING=1 swift test
+cd app-apple && FOR_TESTING=1 swift test

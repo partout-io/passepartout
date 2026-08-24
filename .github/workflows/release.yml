@@ -37,8 +37,8 @@ jobs:
             "$xcframework" "$artifacts_dir" --full
           test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
           ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
-          swift package --package-path app-apple dump-package |
-            grep -F '"path" : "PartoutNative.xcframework"'
+          grep -F 'path = PartoutNative.xcframework;' \
+            app-apple/Passepartout.xcodeproj/project.pbxproj
       - name: Upload local Partout XCFramework
         uses: actions/upload-artifact@v7
         with:

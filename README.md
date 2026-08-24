@@ -53,7 +53,7 @@ cd passepartout
 git submodule update --init partout
 ```
 
-Then find the Xcode project in `app-apple`, open it after running `app-apple/scripts/bootstrap.sh`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
+Then find the Xcode project in `app-apple`. For everything to work properly, you must comply with all the capabilities and entitlements in the main app and the tunnel extension target. Therefore, you must update the `Config.xcconfig` file according to your developer account.
 
 To test the app on your Mac or iOS/tvOS Simulator:
 

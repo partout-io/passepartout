@@ -31,10 +31,6 @@ let package = Package(
             targets: ["AppLibraryTV"]
         ),
         .library(
-            name: "PartoutNative",
-            targets: ["PartoutNative"]
-        ),
-        .library(
             name: "TunnelLibrary",
             targets: ["TunnelLibrary"]
         )
@@ -85,10 +81,6 @@ let package = Package(
             resources: [
                 .process("Resources")
             ]
-        ),
-        .binaryTarget(
-            name: "PartoutNative",
-            path: "PartoutNative.xcframework"
         ),
         .target(
             name: "TunnelLibrary",

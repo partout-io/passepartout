@@ -14,9 +14,11 @@
 		0E6D8050303C86DA002C0DD8 /* PartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D804F303C86DA002C0DD8 /* PartoutRuntime */; };
 		0E6D8052303C86F1002C0DD8 /* PartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8051303C86F1002C0DD8 /* PartoutRuntime */; };
 		0E6D8054303C86F6002C0DD8 /* PartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8053303C86F6002C0DD8 /* PartoutRuntime */; };
-		0E6D8056303C8700002C0DD8 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8055303C8700002C0DD8 /* PartoutNative */; };
-		0E6D8058303C8700002C0DD8 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8057303C8700002C0DD8 /* PartoutNative */; };
-		0E6D805A303C8700002C0DD8 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8059303C8700002C0DD8 /* PartoutNative */; };
+		0E6D8056303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */; };
+		0E6D8058303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */; };
+		0E6D805A303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */; };
+		0E6D805C303C8700002C0DD8 /* PartoutNative.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0E6D805D303C8700002C0DD8 /* PartoutNative.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0E6EEEE32CF8CABA0076E2B0 /* AppContext+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */; };
 		0E6EEEE42CF8CABA0076E2B0 /* ProfileManager+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE22CF8CABA0076E2B0 /* ProfileManager+Testing.swift */; };
 		0E757F132CD0CFFC006E13E1 /* PassepartoutLoginItemApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E757F122CD0CFFC006E13E1 /* PassepartoutLoginItemApp.swift */; };
@@ -96,6 +98,31 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		0E6D805E303C8700002C0DD8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0E6D805C303C8700002C0DD8 /* PartoutNative.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E6D805F303C8700002C0DD8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0E6D805D303C8700002C0DD8 /* PartoutNative.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0E06D18F2B87629100176E1D /* Passepartout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Passepartout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E08447B2CF86F2A00ECED7C /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
@@ -119,6 +146,7 @@
 		0E3FF4AE2CE3AF6F00BFF640 /* PassepartoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PassepartoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderServersScreen.swift; sourceTree = "<group>"; };
 		0E5DFDDC2CDB8F9100F2DE70 /* Passepartout.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Passepartout.storekit; sourceTree = "<group>"; };
+		0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PartoutNative.xcframework; sourceTree = "<group>"; };
 		0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppContext+Testing.swift"; sourceTree = "<group>"; };
 		0E6EEEE22CF8CABA0076E2B0 /* ProfileManager+Testing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileManager+Testing.swift"; sourceTree = "<group>"; };
 		0E757F102CD0CFFC006E13E1 /* PassepartoutLoginItem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PassepartoutLoginItem.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,7 +226,7 @@
 				0EE9F4A32ECF28DD008D5837 /* TunnelLibrary in Frameworks */,
 				0EC332CA2B8A1808000B9C2F /* NetworkExtension.framework in Frameworks */,
 				0E6D8052303C86F1002C0DD8 /* PartoutRuntime in Frameworks */,
-				0E6D8058303C8700002C0DD8 /* PartoutNative in Frameworks */,
+				0E6D8058303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,7 +236,7 @@
 			files = (
 				0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */,
 				0E6D8050303C86DA002C0DD8 /* PartoutRuntime in Frameworks */,
-				0E6D8056303C8700002C0DD8 /* PartoutNative in Frameworks */,
+				0E6D8056303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */,
 				0EE9F49F2ECF28C4008D5837 /* AppLibraryMain in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -225,7 +253,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E6D8054303C86F6002C0DD8 /* PartoutRuntime in Frameworks */,
-				0E6D805A303C8700002C0DD8 /* PartoutNative in Frameworks */,
+				0E6D805A303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */,
 				0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */,
 				0EE662B52DC2BDDF00A4BB37 /* NetworkExtension.framework in Frameworks */,
 			);
@@ -260,6 +288,7 @@
 		0E06D1A32B8762AD00176E1D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0E6D805B303C8700002C0DD8 /* PartoutNative.xcframework */,
 				0EC332C92B8A1808000B9C2F /* NetworkExtension.framework */,
 			);
 			name = Frameworks;
@@ -437,6 +466,7 @@
 			buildPhases = (
 				0E06D18B2B87629100176E1D /* Sources */,
 				0ED27CBF2B9331FF0089E26B /* Frameworks */,
+				0E6D805E303C8700002C0DD8 /* Embed Frameworks */,
 				0E06D18D2B87629100176E1D /* Resources */,
 				0EAD6A702DC3AED900419346 /* Embed Extensions */,
 				0E8D852E2C328C54005493DE /* SwiftLint */,
@@ -454,7 +484,6 @@
 				0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */,
 				CE51B1E22F3E7D1100B1A001 /* partout */,
 				0E6D804F303C86DA002C0DD8 /* PartoutRuntime */,
-				0E6D8055303C8700002C0DD8 /* PartoutNative */,
 			);
 			productName = Passepartout;
 			productReference = 0E06D18F2B87629100176E1D /* Passepartout.app */;
@@ -532,7 +561,6 @@
 			packageProductDependencies = (
 				0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */,
 				0E6D8051303C86F1002C0DD8 /* PartoutRuntime */,
-				0E6D8057303C8700002C0DD8 /* PartoutNative */,
 			);
 			productName = Tunnel;
 			productReference = 0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */;
@@ -561,6 +589,7 @@
 			buildPhases = (
 				0EE662B02DC2BDDE00A4BB37 /* Sources */,
 				0EE662B12DC2BDDE00A4BB37 /* Frameworks */,
+				0E6D805F303C8700002C0DD8 /* Embed Frameworks */,
 				0EE662B22DC2BDDE00A4BB37 /* Resources */,
 			);
 			buildRules = (
@@ -572,7 +601,6 @@
 				CE51B1E82F3E7D1100B1A001 /* partout */,
 				0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */,
 				0E6D8053303C86F6002C0DD8 /* PartoutRuntime */,
-				0E6D8059303C8700002C0DD8 /* PartoutNative */,
 			);
 			productName = Tunnel;
 			productReference = 0EE662B42DC2BDDE00A4BB37 /* com.algoritmico.mac.Passepartout.Tunnel.systemextension */;
@@ -1691,21 +1719,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE51B1E92F3E7D1100B1A001 /* XCLocalSwiftPackageReference "../partout" */;
 			productName = PartoutRuntime;
-		};
-		0E6D8055303C8700002C0DD8 /* PartoutNative */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
-			productName = PartoutNative;
-		};
-		0E6D8057303C8700002C0DD8 /* PartoutNative */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
-			productName = PartoutNative;
-		};
-		0E6D8059303C8700002C0DD8 /* PartoutNative */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
-			productName = PartoutNative;
 		};
 		0ED0CBD02ED0843500B5E96E /* AppAccessibility */ = {
 			isa = XCSwiftPackageProductDependency;
