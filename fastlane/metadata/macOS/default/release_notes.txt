@@ -1,3 +1,2 @@
-* Core: Require more flags to enable Zig VPN (#1923)
 * Fix status sometimes not going through "Connecting" before "Connected"
 * OpenVPN: Delete legacy implementation (#1922)
