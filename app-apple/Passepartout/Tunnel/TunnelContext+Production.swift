@@ -131,6 +131,17 @@ private extension TunnelContext {
             throw RuntimeError.disabledModule
         }
 
+        // Replace the bootstrap logger with the profile-aware logger configured
+        // from the preferences loaded by the tunnel provider.
+        let logFormatter = appConfiguration.makeLogFormatter()
+        _ = pspLogRegister(
+            for: .tunnelProfile(profile.id),
+            with: appConfiguration,
+            preferences: preferences,
+            localURL: appConfiguration.urlForTunnelLog,
+            localMapper: logFormatter.localMapper
+        )
+
         let backend = try PartoutProviderRuntime(
             provider: neProvider,
             profile: profile,

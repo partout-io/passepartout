@@ -171,7 +171,7 @@ private extension PartoutLogger {
     }
 }
 
-private extension PartoutLogger.Builder {
+extension PartoutLogger.Builder {
     mutating func configureLogging(
         preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
@@ -204,6 +204,7 @@ private extension PartoutLogger.Builder {
         if preferences[\.logsPrivateData] {
             logsAddresses = true
             logsModules = true
+            logsRawBytes = true
         }
     }
 
