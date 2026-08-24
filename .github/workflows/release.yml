@@ -29,7 +29,7 @@ jobs:
       - uses: mlugg/setup-zig@v2
       - name: Build local Partout XCFramework
         run: |
-          xcframework="$GITHUB_WORKSPACE/partout/PartoutNative.xcframework"
+          xcframework="$GITHUB_WORKSPACE/app-apple/PartoutNative.xcframework"
           archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
           artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
 
@@ -37,7 +37,7 @@ jobs:
             "$xcframework" "$artifacts_dir" --full
           test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
           ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
-          swift package --package-path partout dump-package |
+          swift package --package-path app-apple dump-package |
             grep -F '"path" : "PartoutNative.xcframework"'
       - name: Upload local Partout XCFramework
         uses: actions/upload-artifact@v7
@@ -94,7 +94,7 @@ jobs:
         run: |
           ditto -x -k \
             "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
-            "$GITHUB_WORKSPACE/partout"
+            "$GITHUB_WORKSPACE/app-apple"
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -212,7 +212,7 @@ jobs:
         run: |
           ditto -x -k \
             "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
-            "$GITHUB_WORKSPACE/partout"
+            "$GITHUB_WORKSPACE/app-apple"
       - name: Notarize .dmg app
         working-directory: ${{ env.APPLE_ROOT }}
         env:
