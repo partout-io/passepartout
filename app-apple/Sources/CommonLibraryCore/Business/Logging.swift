@@ -204,7 +204,7 @@ extension PartoutLogger.Builder {
         if preferences[\.logsPrivateData] {
             logsAddresses = true
             logsModules = true
-            logsRawBytes = true
+            logsRawBytes = false
         }
     }
 
