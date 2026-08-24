@@ -13,6 +13,6 @@ fi
 
 ditto -x -k "$archive" "$app_dir"
 [[ -f $xcframework/Info.plist ]] || {
-    echo "boostrap.sh: failed to extract PartoutNative.xcframework" >&2
+    echo "bootstrap.sh: failed to extract PartoutNative.xcframework" >&2
     exit 1
 }
