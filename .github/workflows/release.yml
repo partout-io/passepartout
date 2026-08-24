@@ -18,7 +18,7 @@ jobs:
   validate_codebase:
     name: Validate codebase
     runs-on: macos-26
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
         with:
@@ -27,6 +27,25 @@ jobs:
           certificates-url: ${{ vars.CERTIFICATES_URL }}
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
       - uses: mlugg/setup-zig@v2
+      - name: Build local Partout XCFramework
+        run: |
+          xcframework="$GITHUB_WORKSPACE/app-apple/PartoutNative.xcframework"
+          archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
+          artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
+
+          partout/scripts/build-xcframework.sh \
+            "$xcframework" "$artifacts_dir" --full
+          test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
+          ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
+          swift package --package-path app-apple dump-package |
+            grep -F '"path" : "PartoutNative.xcframework"'
+      - name: Upload local Partout XCFramework
+        uses: actions/upload-artifact@v7
+        with:
+          name: partout-native
+          path: ${{ runner.temp }}/PartoutNative.xcframework.zip
+          compression-level: 0
+          if-no-files-found: error
       - name: Save app version
         id: app_version
         working-directory: ${{ env.APPLE_ROOT }}
@@ -66,6 +85,16 @@ jobs:
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+      - name: Download local Partout XCFramework
+        uses: actions/download-artifact@v8
+        with:
+          name: partout-native
+          path: ${{ runner.temp }}/partout-native
+      - name: Install local Partout XCFramework
+        run: |
+          ditto -x -k \
+            "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
+            "$GITHUB_WORKSPACE/app-apple"
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -174,6 +203,16 @@ jobs:
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
           certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+      - name: Download local Partout XCFramework
+        uses: actions/download-artifact@v8
+        with:
+          name: partout-native
+          path: ${{ runner.temp }}/partout-native
+      - name: Install local Partout XCFramework
+        run: |
+          ditto -x -k \
+            "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
+            "$GITHUB_WORKSPACE/app-apple"
       - name: Notarize .dmg app
         working-directory: ${{ env.APPLE_ROOT }}
         env:

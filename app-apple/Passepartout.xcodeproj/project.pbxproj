@@ -11,6 +11,12 @@
 		0E2306142DC2BF6B002D70D7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2306102DC2BF6B002D70D7 /* main.swift */; };
 		0E2306162DC2C00B002D70D7 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */; };
 		0E418AB52D074F0E00D33D47 /* ProviderServersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */; platformFilters = (ios, macos, ); };
+		0E6D8050303C86DA002C0DD8 /* PartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D804F303C86DA002C0DD8 /* PartoutRuntime */; };
+		0E6D8052303C86F1002C0DD8 /* PartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8051303C86F1002C0DD8 /* PartoutRuntime */; };
+		0E6D8054303C86F6002C0DD8 /* PartoutRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8053303C86F6002C0DD8 /* PartoutRuntime */; };
+		0E6D8056303C8700002C0DD8 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8055303C8700002C0DD8 /* PartoutNative */; };
+		0E6D8058303C8700002C0DD8 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8057303C8700002C0DD8 /* PartoutNative */; };
+		0E6D805A303C8700002C0DD8 /* PartoutNative in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6D8059303C8700002C0DD8 /* PartoutNative */; };
 		0E6EEEE32CF8CABA0076E2B0 /* AppContext+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE12CF8CABA0076E2B0 /* AppContext+Testing.swift */; };
 		0E6EEEE42CF8CABA0076E2B0 /* ProfileManager+Testing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6EEEE22CF8CABA0076E2B0 /* ProfileManager+Testing.swift */; };
 		0E757F132CD0CFFC006E13E1 /* PassepartoutLoginItemApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E757F122CD0CFFC006E13E1 /* PassepartoutLoginItemApp.swift */; };
@@ -44,8 +50,6 @@
 		0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */ = {isa = PBXBuildFile; platformFilters = (tvos, ); productRef = 0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */; };
 		0EE9F4A32ECF28DD008D5837 /* TunnelLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */; };
 		0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */; };
-		CE51B1E32F3E7D1100B1A001 /* partout in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E22F3E7D1100B1A001 /* partout */; };
-		CE51B1E72F3E7D1100B1A001 /* partout in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E82F3E7D1100B1A001 /* partout */; };
 		0EF74A8C2E2D92CC00AF7614 /* test-bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 0EF74A772E2D774600AF7614 /* test-bundle.json */; };
 		0EF9E1002CF4811000F4A7DA /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF9E0FF2CF4811000F4A7DA /* LocalizationTests.swift */; };
 		A1B2C3D4E5F60718293A4B5D /* AppContext+Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* AppContext+Production.swift */; };
@@ -193,6 +197,8 @@
 			files = (
 				0EE9F4A32ECF28DD008D5837 /* TunnelLibrary in Frameworks */,
 				0EC332CA2B8A1808000B9C2F /* NetworkExtension.framework in Frameworks */,
+				0E6D8052303C86F1002C0DD8 /* PartoutRuntime in Frameworks */,
+				0E6D8058303C8700002C0DD8 /* PartoutNative in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,8 +207,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */,
+				0E6D8050303C86DA002C0DD8 /* PartoutRuntime in Frameworks */,
+				0E6D8056303C8700002C0DD8 /* PartoutNative in Frameworks */,
 				0EE9F49F2ECF28C4008D5837 /* AppLibraryMain in Frameworks */,
-				CE51B1E32F3E7D1100B1A001 /* partout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,7 +224,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE51B1E72F3E7D1100B1A001 /* partout in Frameworks */,
+				0E6D8054303C86F6002C0DD8 /* PartoutRuntime in Frameworks */,
+				0E6D805A303C8700002C0DD8 /* PartoutNative in Frameworks */,
 				0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */,
 				0EE662B52DC2BDDF00A4BB37 /* NetworkExtension.framework in Frameworks */,
 			);
@@ -445,6 +453,8 @@
 				0EE9F49E2ECF28C4008D5837 /* AppLibraryMain */,
 				0EE9F4A02ECF28C4008D5837 /* AppLibraryTV */,
 				CE51B1E22F3E7D1100B1A001 /* partout */,
+				0E6D804F303C86DA002C0DD8 /* PartoutRuntime */,
+				0E6D8055303C8700002C0DD8 /* PartoutNative */,
 			);
 			productName = Passepartout;
 			productReference = 0E06D18F2B87629100176E1D /* Passepartout.app */;
@@ -521,6 +531,8 @@
 			name = PassepartoutTunnel;
 			packageProductDependencies = (
 				0EE9F4A22ECF28DD008D5837 /* TunnelLibrary */,
+				0E6D8051303C86F1002C0DD8 /* PartoutRuntime */,
+				0E6D8057303C8700002C0DD8 /* PartoutNative */,
 			);
 			productName = Tunnel;
 			productReference = 0EC332C82B8A1808000B9C2F /* PassepartoutTunnel.appex */;
@@ -559,6 +571,8 @@
 			packageProductDependencies = (
 				CE51B1E82F3E7D1100B1A001 /* partout */,
 				0EE9F4A42ECF28E0008D5837 /* TunnelLibrary */,
+				0E6D8053303C86F6002C0DD8 /* PartoutRuntime */,
+				0E6D8059303C8700002C0DD8 /* PartoutNative */,
 			);
 			productName = Tunnel;
 			productReference = 0EE662B42DC2BDDE00A4BB37 /* com.algoritmico.mac.Passepartout.Tunnel.systemextension */;
@@ -1290,6 +1304,10 @@
 				CODE_SIGN_STYLE = Manual;
 				ENABLE_PREVIEWS = YES;
 				EXCLUDED_SOURCE_FILE_NAMES = PartoutNative.framework;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
 				INFOPLIST_FILE = "$(CFG_INFO_PLIST)";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -1302,10 +1320,6 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Library/SystemExtensions/$(CFG_TUNNEL_ID).systemextension/Contents/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1658,11 +1672,41 @@
 		};
 		CE51B1E92F3E7D1100B1A001 /* XCLocalSwiftPackageReference "../partout" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../partout";
+			relativePath = ../partout;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0E6D804F303C86DA002C0DD8 /* PartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE51B1E92F3E7D1100B1A001 /* XCLocalSwiftPackageReference "../partout" */;
+			productName = PartoutRuntime;
+		};
+		0E6D8051303C86F1002C0DD8 /* PartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE51B1E92F3E7D1100B1A001 /* XCLocalSwiftPackageReference "../partout" */;
+			productName = PartoutRuntime;
+		};
+		0E6D8053303C86F6002C0DD8 /* PartoutRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE51B1E92F3E7D1100B1A001 /* XCLocalSwiftPackageReference "../partout" */;
+			productName = PartoutRuntime;
+		};
+		0E6D8055303C8700002C0DD8 /* PartoutNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = PartoutNative;
+		};
+		0E6D8057303C8700002C0DD8 /* PartoutNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = PartoutNative;
+		};
+		0E6D8059303C8700002C0DD8 /* PartoutNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
+			productName = PartoutNative;
+		};
 		0ED0CBD02ED0843500B5E96E /* AppAccessibility */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0EE116802ECF27CE00DAEA09 /* XCLocalSwiftPackageReference "../app-apple" */;
