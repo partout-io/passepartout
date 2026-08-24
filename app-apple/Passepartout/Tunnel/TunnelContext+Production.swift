@@ -9,7 +9,7 @@ import Partout
 import PartoutRuntime
 import TunnelLibrary
 
-extension PartoutProviderRuntime: TunnelBackendProtocol {
+extension PartoutProviderRuntime: @retroactive TunnelBackendProtocol {
     public func start() async throws {
         try await startTunnel()
     }
