@@ -32,6 +32,6 @@ struct LoggingTests {
 
         #expect(sut.logsAddresses)
         #expect(sut.logsModules)
-        #expect(sut.logsRawBytes)
+        #expect(!sut.logsRawBytes)
     }
 }
