@@ -9,6 +9,24 @@ import Partout
 import PartoutRuntime
 import TunnelLibrary
 
+extension PartoutProviderRuntime: TunnelBackendProtocol {
+    public func start() async throws {
+        try await startTunnel()
+    }
+
+    public func stop() async {
+        await stopTunnel()
+    }
+
+    public func hold() async {
+        await holdTunnel()
+    }
+
+    public func sendMessage(_ messageData: Data) async throws -> Data? {
+        await handleAppMessage(messageData)
+    }
+}
+
 extension TunnelContext {
     public static func forProduction(
         neProvider: NEPacketTunnelProvider,
