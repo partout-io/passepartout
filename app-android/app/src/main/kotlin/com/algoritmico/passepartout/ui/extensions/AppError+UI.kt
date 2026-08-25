@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
+import io.partout.models.ParseErrorInfo
 import io.partout.models.PartoutErrorCode
 
 // Map AppError.Code for ErrorHandler
@@ -116,12 +117,87 @@ private fun String.appending(optional: String?, separator: String): String {
 @Composable
 fun Throwable.partoutDescription(): String? {
     if (this !is PartoutException) return null
+    val parseErrorInfo = userInfo?.let {
+        runCatching {
+            JSON.decodeElement<ParseErrorInfo>(it)
+        }.getOrNull()
+    }
+    val name = parseErrorInfo?.name?.ifBlank { null } ?: "?"
+    val value = parseErrorInfo?.details
+        ?.substringAfter('=', missingDelimiterValue = "")
+        ?.trim()
+        ?.ifBlank { null }
+        ?: name
     return when (errorCode) {
         PartoutErrorCode.openVPNUnsupportedCompression -> stringResource(
             R.string.errors_openvpn_unsupported_compression
         )
         PartoutErrorCode.wireGuardEmptyPeers -> stringResource(
             R.string.errors_wireguard_empty_peers
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidAddress -> stringResource(
+            R.string.errors_wireguard_interface_address_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidDNS -> stringResource(
+            R.string.errors_wireguard_interface_dns_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidListenPort -> stringResource(
+            R.string.errors_wireguard_interface_listen_port_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidMTU -> stringResource(
+            R.string.errors_wireguard_interface_mtu_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidPrivateKey -> stringResource(
+            R.string.errors_wireguard_interface_private_key_invalid
+        )
+        PartoutErrorCode.wireGuardInterfaceHasNoPrivateKey -> stringResource(
+            R.string.errors_wireguard_interface_private_key_required
+        )
+        PartoutErrorCode.wireGuardInterfaceHasUnrecognizedKey -> stringResource(
+            R.string.errors_wireguard_interface_unrecognized_key,
+            name
+        )
+        PartoutErrorCode.wireGuardMultipleEntriesForKey -> stringResource(
+            R.string.errors_wireguard_multiple_entries_for_key,
+            name
+        )
+        PartoutErrorCode.wireGuardMultipleInterfaces -> stringResource(
+            R.string.errors_wireguard_multiple_interfaces
+        )
+        PartoutErrorCode.wireGuardMultiplePeersWithSamePublicKey -> stringResource(
+            R.string.errors_wireguard_peer_public_key_duplicated
+        )
+        PartoutErrorCode.wireGuardNoInterface -> stringResource(
+            R.string.errors_wireguard_no_interface
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidAllowedIP -> stringResource(
+            R.string.errors_wireguard_peer_allowed_ips_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidEndpoint -> stringResource(
+            R.string.errors_wireguard_peer_endpoint_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidPersistentKeepAlive -> stringResource(
+            R.string.errors_wireguard_peer_persistent_keepalive_invalid,
+            value
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidPreSharedKey -> stringResource(
+            R.string.errors_wireguard_peer_pre_shared_key_invalid
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidPublicKey -> stringResource(
+            R.string.errors_wireguard_peer_public_key_invalid
+        )
+        PartoutErrorCode.wireGuardPeerHasNoPublicKey -> stringResource(
+            R.string.errors_wireguard_peer_public_key_required
+        )
+        PartoutErrorCode.wireGuardPeerHasUnrecognizedKey -> stringResource(
+            R.string.errors_wireguard_peer_unrecognized_key,
+            name
         )
         else -> "${errorCode.value}, userInfo=${JSON.encode(userInfo)}"
     }
