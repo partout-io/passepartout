@@ -43,9 +43,6 @@ fun AppError.localizedMessage(): String {
             "OpenVPN, WireGuard"
         )
         AppErrorCode.noActiveModules -> stringResource(R.string.errors_app_no_active_modules)
-        AppErrorCode.openVPNUnsupportedCompression -> stringResource(
-            R.string.errors_openvpn_unsupported_compression
-        ).appending(detail, separator = "\n\n")
         AppErrorCode.other -> stringResource(R.string.errors_app_other)
             .appending(detail, separator = " ")
         AppErrorCode.partout -> stringResource(
@@ -55,11 +52,9 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.permissionDenied -> stringResource(R.string.errors_app_permission_denied)
         AppErrorCode.timeout -> stringResource(R.string.errors_app_timeout)
         AppErrorCode.webReceiver -> stringResource(R.string.errors_app_web_receiver)
-        AppErrorCode.wireGuardEmptyPeers -> stringResource(R.string.errors_wireguard_empty_peers)
         AppErrorCode.ineligibleProfile,
         AppErrorCode.interactiveLogin,
         AppErrorCode.notFound,
-        AppErrorCode.openVPNPassphraseRequired,
         AppErrorCode.rateLimit,
         AppErrorCode.systemExtension,
         AppErrorCode.unexpectedResponse,
@@ -72,6 +67,15 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.missingProviderEntity,
         AppErrorCode.missingProviderOption,
         AppErrorCode.multipleTunnels -> error("Unimplemented")
+        //
+//        AppErrorCode.openVPNPassphraseRequired,
+//        AppErrorCode.openVPNUnsupportedCompression -> stringResource(
+//            R.string.errors_openvpn_unsupported_compression
+//        ).appending(detail, separator = "\n\n")
+//        AppErrorCode.wireGuardEmptyPeers -> stringResource(R.string.errors_wireguard_empty_peers)
+        AppErrorCode.openVPNPassphraseRequired,
+        AppErrorCode.openVPNUnsupportedCompression,
+        AppErrorCode.wireGuardEmptyPeers -> error("Legacy")
     }
 }
 
