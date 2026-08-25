@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "接口的 DNS 服务器必须是以逗号分隔的 IP 地址列表";
 "errors.wireguard.interface.MessageListenPortInvalid" = "接口的监听端口必须在 0 到 65535 之间，或未指定";
 "errors.wireguard.interface.MessageMTUInvalid" = "接口的 MTU 必须在 576 到 65535 之间，或未指定";
-"errors.wireguard.interface.MessageNameRequired" = "接口名称是必需的";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "接口的私钥必须是一个 32 字节的 Base64 编码密钥";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "接口的私钥是必需的";
-"errors.wireguard.interface.Title" = "无效的接口";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Peer 的允许 IP 必须是以逗号分隔的 IP 地址列表，可选使用 CIDR 表示法";
 "errors.wireguard.peer.MessageEndpointInvalid" = "Peer 的端点必须是 'host:port' 或 '[host]:port' 格式";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "Peer 的持久 Keepalive 值必须在 0 到 65535 之间，或未指定";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "两个或更多的 Peer 不能使用相同的公钥";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Peer 的公钥必须是一个 32 字节的 Base64 编码密钥";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Peer 的公钥是必需的";
-"errors.wireguard.peer.Title" = "无效的 Peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "地址 '%@' 无效。";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "允许的 IP '%@' 无效";
 "errors.wireguard.title.DNSInvalid (%@)" = "DNS '%@' 无效。";

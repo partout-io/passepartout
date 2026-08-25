@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "De DNS-servers van de interface moeten een lijst zijn van door komma's gescheiden IP-adressen";
 "errors.wireguard.interface.MessageListenPortInvalid" = "De luisterpoort van de interface moet tussen 0 en 65535 liggen, of niet gespecificeerd";
 "errors.wireguard.interface.MessageMTUInvalid" = "De MTU van de interface moet tussen 576 en 65535 liggen, of niet gespecificeerd";
-"errors.wireguard.interface.MessageNameRequired" = "Interfacenaam is vereist";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "De privésleutel van de interface moet een 32-byte sleutel zijn in base64-codering";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Privésleutel van de interface is vereist";
-"errors.wireguard.interface.Title" = "Ongeldige interface";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "De toegestane IP's van de peer moeten een lijst zijn van door komma's gescheiden IP-adressen, optioneel in CIDR-notatie";
 "errors.wireguard.peer.MessageEndpointInvalid" = "De endpoint van de peer moet de vorm 'host:port' of '[host]:port' hebben";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "De persistent keepalive van de peer moet tussen 0 en 65535 liggen, of niet gespecificeerd";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Twee of meer peers kunnen niet dezelfde openbare sleutel hebben";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "De openbare sleutel van de peer moet een 32-byte sleutel zijn in base64-codering";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "De openbare sleutel van de peer is vereist";
-"errors.wireguard.peer.Title" = "Ongeldige peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "Het adres '%@' is ongeldig.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "De toegestane IP '%@' is ongeldig";
 "errors.wireguard.title.DNSInvalid (%@)" = "De DNS '%@' is ongeldig.";

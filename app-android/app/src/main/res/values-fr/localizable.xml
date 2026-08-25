@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s est verrouillé</string>
     <string name="errors_openvpn_unsupported_compression">La compression OpenVPN n\'est pas sûre et n\'est plus prise en charge.</string>
     <string name="errors_wireguard_empty_peers">Aucun pair défini.</string>
-    <string name="errors_wireguard_interface_title">Interface invalide</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Le nom de l\'interface est requis</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">La clé privée de l\'interface est requise</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">La clé privée de l\'interface doit être une clé de 32 octets en encodage base64</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Les adresses de l\'interface doivent être une liste d\'adresses IP séparées par des virgules, éventuellement en notation CIDR</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Le port d\'écoute de l\'interface doit être compris entre 0 et 65535, ou non spécifié</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">Le MTU de l\'interface doit être compris entre 576 et 65535, ou non spécifié</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Les serveurs DNS de l\'interface doivent être une liste d\'adresses IP séparées par des virgules</string>
-    <string name="errors_wireguard_peer_title">Pair invalide</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">La clé publique du pair est requise</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">La clé publique du pair doit être une clé de 32 octets en encodage base64</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">La clé pré-partagée du pair doit être une clé de 32 octets en encodage base64</string>

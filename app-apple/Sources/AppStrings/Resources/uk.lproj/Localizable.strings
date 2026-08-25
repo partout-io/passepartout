@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "DNS-сервери інтерфейсу мають бути списком IP-адрес, розділених комами";
 "errors.wireguard.interface.MessageListenPortInvalid" = "Порт прослуховування інтерфейсу має бути в межах від 0 до 65535 або не вказаний";
 "errors.wireguard.interface.MessageMTUInvalid" = "MTU інтерфейсу має бути в межах від 576 до 65535 або не вказаний";
-"errors.wireguard.interface.MessageNameRequired" = "Потрібно вказати назву інтерфейсу";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "Приватний ключ інтерфейсу має бути 32-байтовим ключем у кодуванні base64";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Потрібен приватний ключ інтерфейсу";
-"errors.wireguard.interface.Title" = "Некоректний інтерфейс";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Дозволені IP-адреси peer’а мають бути списком IP-адрес, розділених комами, за бажанням у нотації CIDR";
 "errors.wireguard.peer.MessageEndpointInvalid" = "Адреса peer’а має бути у форматі 'host:port' або '[host]:port'";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "Значення постійного keepalive peer’а має бути в межах від 0 до 65535 або не вказане";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Два або більше peer’ів не можуть мати один і той самий відкритий ключ";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Відкритий ключ peer’а має бути 32-байтовим ключем у кодуванні base64";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Потрібен відкритий ключ peer’а";
-"errors.wireguard.peer.Title" = "Некоректний peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "Адреса '%@' некоректна.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "Дозволена IP-адреса '%@' некоректна";
 "errors.wireguard.title.DNSInvalid (%@)" = "DNS '%@' некоректний.";

@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s ist gesperrt</string>
     <string name="errors_openvpn_unsupported_compression">OpenVPN-Kompression ist unsicher und wird nicht mehr unterstützt.</string>
     <string name="errors_wireguard_empty_peers">Keine Peers definiert.</string>
-    <string name="errors_wireguard_interface_title">Ungültige Schnittstelle</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Schnittstellenname ist erforderlich</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Privater Schlüssel der Schnittstelle ist erforderlich</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">Privater Schlüssel der Schnittstelle muss ein 32-Byte-Schlüssel in Base64-Codierung sein</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Schnittstellenadressen müssen eine Liste von durch Kommas getrennten IP-Adressen sein, optional in CIDR-Notation</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Der Listen-Port der Schnittstelle muss zwischen 0 und 65535 liegen oder nicht angegeben sein</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">Die MTU der Schnittstelle muss zwischen 576 und 65535 liegen oder nicht angegeben sein</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Die DNS-Server der Schnittstelle müssen eine Liste von durch Kommas getrennten IP-Adressen sein</string>
-    <string name="errors_wireguard_peer_title">Ungültiger Peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Öffentlicher Schlüssel des Peers ist erforderlich</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Öffentlicher Schlüssel des Peers muss ein 32-Byte-Schlüssel in Base64-Codierung sein</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Vorgeschalteter Schlüssel des Peers muss ein 32-Byte-Schlüssel in Base64-Codierung sein</string>

@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s заблоковано</string>
     <string name="errors_openvpn_unsupported_compression">Стиснення OpenVPN небезпечне й більше не підтримується.</string>
     <string name="errors_wireguard_empty_peers">Вузли не визначено.</string>
-    <string name="errors_wireguard_interface_title">Некоректний інтерфейс</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Потрібно вказати назву інтерфейсу</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Потрібен приватний ключ інтерфейсу</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">Приватний ключ інтерфейсу має бути 32-байтовим ключем у кодуванні base64</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Адреси інтерфейсу мають бути списком IP-адрес, розділених комами, за бажанням у нотації CIDR</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Порт прослуховування інтерфейсу має бути в межах від 0 до 65535 або не вказаний</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">MTU інтерфейсу має бути в межах від 576 до 65535 або не вказаний</string>
     <string name="errors_wireguard_interface_messagednsinvalid">DNS-сервери інтерфейсу мають бути списком IP-адрес, розділених комами</string>
-    <string name="errors_wireguard_peer_title">Некоректний peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Потрібен відкритий ключ peer’а</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Відкритий ключ peer’а має бути 32-байтовим ключем у кодуванні base64</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Попередньо розділений ключ peer’а має бути 32-байтовим ключем у кодуванні base64</string>

@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s jest zablokowane</string>
     <string name="errors_openvpn_unsupported_compression">Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.</string>
     <string name="errors_wireguard_empty_peers">Nie zdefiniowano peerów.</string>
-    <string name="errors_wireguard_interface_title">Nieprawidłowy interfejs</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Nazwa interfejsu jest wymagana</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Klucz prywatny interfejsu jest wymagany</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">Klucz prywatny interfejsu musi być kluczem 32-bajtowym w kodowaniu base64</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Adresy interfejsu muszą być listą adresów IP oddzielonych przecinkami, opcjonalnie w notacji CIDR</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Port nasłuchu interfejsu musi być w zakresie od 0 do 65535 lub nieokreślony</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">MTU interfejsu musi być w zakresie od 576 do 65535 lub nieokreślone</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Serwery DNS interfejsu muszą być listą adresów IP oddzielonych przecinkami</string>
-    <string name="errors_wireguard_peer_title">Nieprawidłowy peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Klucz publiczny peer’a jest wymagany</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Klucz publiczny peer’a musi być kluczem 32-bajtowym w kodowaniu base64</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Klucz współdzielony peer’a musi być kluczem 32-bajtowym w kodowaniu base64</string>

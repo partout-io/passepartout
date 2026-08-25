@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s is vergrendeld</string>
     <string name="errors_openvpn_unsupported_compression">OpenVPN-compressie is onveilig en wordt niet meer ondersteund.</string>
     <string name="errors_wireguard_empty_peers">Geen peers gedefinieerd.</string>
-    <string name="errors_wireguard_interface_title">Ongeldige interface</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Interfacenaam is vereist</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Privésleutel van de interface is vereist</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">De privésleutel van de interface moet een 32-byte sleutel zijn in base64-codering</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Interface-adressen moeten een lijst zijn van door komma\'s gescheiden IP-adressen, optioneel in CIDR-notatie</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">De luisterpoort van de interface moet tussen 0 en 65535 liggen, of niet gespecificeerd</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">De MTU van de interface moet tussen 576 en 65535 liggen, of niet gespecificeerd</string>
     <string name="errors_wireguard_interface_messagednsinvalid">De DNS-servers van de interface moeten een lijst zijn van door komma\'s gescheiden IP-adressen</string>
-    <string name="errors_wireguard_peer_title">Ongeldige peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">De openbare sleutel van de peer is vereist</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">De openbare sleutel van de peer moet een 32-byte sleutel zijn in base64-codering</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">De vooraf gedeelde sleutel van de peer moet een 32-byte sleutel zijn in base64-codering</string>

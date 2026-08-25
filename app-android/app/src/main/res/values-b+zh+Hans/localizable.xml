@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s 已锁定</string>
     <string name="errors_openvpn_unsupported_compression">OpenVPN 压缩不安全，已不再受支持。</string>
     <string name="errors_wireguard_empty_peers">未定义对等端。</string>
-    <string name="errors_wireguard_interface_title">无效的接口</string>
-    <string name="errors_wireguard_interface_messagenamerequired">接口名称是必需的</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">接口的私钥是必需的</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">接口的私钥必须是一个 32 字节的 Base64 编码密钥</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">接口地址必须是以逗号分隔的 IP 地址列表，可选使用 CIDR 表示法</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">接口的监听端口必须在 0 到 65535 之间，或未指定</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">接口的 MTU 必须在 576 到 65535 之间，或未指定</string>
     <string name="errors_wireguard_interface_messagednsinvalid">接口的 DNS 服务器必须是以逗号分隔的 IP 地址列表</string>
-    <string name="errors_wireguard_peer_title">无效的 Peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Peer 的公钥是必需的</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Peer 的公钥必须是一个 32 字节的 Base64 编码密钥</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Peer 的预共享密钥必须是一个 32 字节的 Base64 编码密钥</string>

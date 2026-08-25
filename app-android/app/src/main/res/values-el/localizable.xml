@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">Το %1$s είναι κλειδωμένο</string>
     <string name="errors_openvpn_unsupported_compression">Η συμπίεση OpenVPN δεν είναι ασφαλής και δεν υποστηρίζεται πλέον.</string>
     <string name="errors_wireguard_empty_peers">Δεν έχουν οριστεί ομότιμοι.</string>
-    <string name="errors_wireguard_interface_title">Μη έγκυρη διεπαφή</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Απαιτείται όνομα διεπαφής</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Απαιτείται ιδιωτικό κλειδί διεπαφής</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">Το ιδιωτικό κλειδί της διεπαφής πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Οι διευθύνσεις της διεπαφής πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα, προαιρετικά σε σημειογραφία CIDR</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Η θύρα ακρόασης της διεπαφής πρέπει να είναι μεταξύ 0 και 65535, ή να μην έχει καθοριστεί</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">Το MTU της διεπαφής πρέπει να είναι μεταξύ 576 και 65535, ή να μην έχει καθοριστεί</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Οι διακομιστές DNS της διεπαφής πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα</string>
-    <string name="errors_wireguard_peer_title">Μη έγκυρος peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Απαιτείται δημόσιο κλειδί του peer</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Το δημόσιο κλειδί του peer πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Το προ-μοιρασμένο κλειδί του peer πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64</string>

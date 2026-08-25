@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s är låst</string>
     <string name="errors_openvpn_unsupported_compression">OpenVPN-komprimering är osäker och stöds inte längre.</string>
     <string name="errors_wireguard_empty_peers">Inga peers definierade.</string>
-    <string name="errors_wireguard_interface_title">Ogiltigt gränssnitt</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Gränssnittsnamn krävs</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Gränssnittets privata nyckel krävs</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">Gränssnittets privata nyckel måste vara en 32-byte nyckel i base64-kodning</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Gränssnittsadresser måste vara en lista med IP-adresser separerade med kommatecken, eventuellt i CIDR-notation</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Gränssnittets lyssningsport måste vara mellan 0 och 65535, eller ospecificerad</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">Gränssnittets MTU måste vara mellan 576 och 65535, eller ospecificerad</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Gränssnittets DNS-servrar måste vara en lista med IP-adresser separerade med kommatecken</string>
-    <string name="errors_wireguard_peer_title">Ogiltig peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Peers publika nyckel krävs</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Peers publika nyckel måste vara en 32-byte nyckel i base64-kodning</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Peers fördelade nyckel måste vara en 32-byte nyckel i base64-kodning</string>

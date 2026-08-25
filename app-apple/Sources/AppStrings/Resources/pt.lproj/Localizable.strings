@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "Os servidores DNS da interface devem ser uma lista de endereços IP separados por vírgulas";
 "errors.wireguard.interface.MessageListenPortInvalid" = "A porta de escuta da interface deve estar entre 0 e 65535, ou não especificada";
 "errors.wireguard.interface.MessageMTUInvalid" = "O MTU da interface deve estar entre 576 e 65535, ou não especificado";
-"errors.wireguard.interface.MessageNameRequired" = "O nome da interface é obrigatório";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "A chave privada da interface deve ser uma chave de 32 bytes em codificação base64";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "A chave privada da interface é obrigatória";
-"errors.wireguard.interface.Title" = "Interface inválida";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Os IPs permitidos do peer devem ser uma lista de endereços IP separados por vírgulas, opcionalmente em notação CIDR";
 "errors.wireguard.peer.MessageEndpointInvalid" = "O endpoint do peer deve estar no formato 'host:port' ou '[host]:port'";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "O valor de keepalive persistente do peer deve estar entre 0 e 65535, ou não especificado";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Dois ou mais peers não podem ter a mesma chave pública";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "A chave pública do peer deve ser uma chave de 32 bytes em codificação base64";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "A chave pública do peer é obrigatória";
-"errors.wireguard.peer.Title" = "Peer inválido";
 "errors.wireguard.title.AddressInvalid (%@)" = "O endereço '%@' é inválido.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "O IP permitido '%@' é inválido";
 "errors.wireguard.title.DNSInvalid (%@)" = "O DNS '%@' é inválido.";

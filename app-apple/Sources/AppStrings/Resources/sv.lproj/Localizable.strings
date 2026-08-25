@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "Gränssnittets DNS-servrar måste vara en lista med IP-adresser separerade med kommatecken";
 "errors.wireguard.interface.MessageListenPortInvalid" = "Gränssnittets lyssningsport måste vara mellan 0 och 65535, eller ospecificerad";
 "errors.wireguard.interface.MessageMTUInvalid" = "Gränssnittets MTU måste vara mellan 576 och 65535, eller ospecificerad";
-"errors.wireguard.interface.MessageNameRequired" = "Gränssnittsnamn krävs";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "Gränssnittets privata nyckel måste vara en 32-byte nyckel i base64-kodning";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Gränssnittets privata nyckel krävs";
-"errors.wireguard.interface.Title" = "Ogiltigt gränssnitt";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Peers tillåtna IP-adresser måste vara en lista med IP-adresser separerade med kommatecken, eventuellt i CIDR-notation";
 "errors.wireguard.peer.MessageEndpointInvalid" = "Peers slutpunkt måste ha formatet 'host:port' eller '[host]:port'";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "Peers persistent keepalive-värde måste vara mellan 0 och 65535, eller ospecificerat";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Två eller fler peers kan inte ha samma publika nyckel";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Peers publika nyckel måste vara en 32-byte nyckel i base64-kodning";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Peers publika nyckel krävs";
-"errors.wireguard.peer.Title" = "Ogiltig peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "Adress '%@' är ogiltig.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "Tillåten IP '%@' är ogiltig";
 "errors.wireguard.title.DNSInvalid (%@)" = "DNS '%@' är ogiltig.";

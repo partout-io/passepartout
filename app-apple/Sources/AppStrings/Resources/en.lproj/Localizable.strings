@@ -505,8 +505,6 @@
 
 "errors.wireguard.empty_peers" = "No peers defined.";
 
-"errors.wireguard.interface.Title" = "Invalid interface";
-"errors.wireguard.interface.MessageNameRequired" = "Interface name is required";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Interface’s private key is required";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "Interface’s private key must be a 32-byte key in base64 encoding";
 "errors.wireguard.interface.MessageAddressInvalid" = "Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation";
@@ -514,7 +512,6 @@
 "errors.wireguard.interface.MessageMTUInvalid" = "Interface’s MTU must be between 576 and 65535, or unspecified";
 "errors.wireguard.interface.MessageDNSInvalid" = "Interface’s DNS servers must be a list of comma-separated IP addresses";
 
-"errors.wireguard.peer.Title" = "Invalid peer";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Peer’s public key is required";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Peer’s public key must be a 32-byte key in base64 encoding";
 "errors.wireguard.peer.MessagePreSharedKeyInvalid" = "Peer’s preshared key must be a 32-byte key in base64 encoding";

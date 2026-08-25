@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "Die DNS-Server der Schnittstelle müssen eine Liste von durch Kommas getrennten IP-Adressen sein";
 "errors.wireguard.interface.MessageListenPortInvalid" = "Der Listen-Port der Schnittstelle muss zwischen 0 und 65535 liegen oder nicht angegeben sein";
 "errors.wireguard.interface.MessageMTUInvalid" = "Die MTU der Schnittstelle muss zwischen 576 und 65535 liegen oder nicht angegeben sein";
-"errors.wireguard.interface.MessageNameRequired" = "Schnittstellenname ist erforderlich";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "Privater Schlüssel der Schnittstelle muss ein 32-Byte-Schlüssel in Base64-Codierung sein";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Privater Schlüssel der Schnittstelle ist erforderlich";
-"errors.wireguard.interface.Title" = "Ungültige Schnittstelle";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Die erlaubten IPs des Peers müssen eine Liste von durch Kommas getrennten IP-Adressen sein, optional in CIDR-Notation";
 "errors.wireguard.peer.MessageEndpointInvalid" = "Das Endpunkt des Peers muss die Form 'host:port' oder '[host]:port' haben";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "Der Wert für das persistente Keepalive des Peers muss zwischen 0 und 65535 liegen oder nicht angegeben sein";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Zwei oder mehr Peers dürfen nicht denselben öffentlichen Schlüssel haben";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Öffentlicher Schlüssel des Peers muss ein 32-Byte-Schlüssel in Base64-Codierung sein";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Öffentlicher Schlüssel des Peers ist erforderlich";
-"errors.wireguard.peer.Title" = "Ungültiger Peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "Adresse '%@' ist ungültig.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "Erlaubte IP '%@' ist ungültig";
 "errors.wireguard.title.DNSInvalid (%@)" = "DNS '%@' ist ungültig.";

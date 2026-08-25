@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s está bloqueado</string>
     <string name="errors_openvpn_unsupported_compression">La compresión de OpenVPN no es segura y ya no se admite.</string>
     <string name="errors_wireguard_empty_peers">No se han definido pares.</string>
-    <string name="errors_wireguard_interface_title">Interfaz no válida</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Se requiere el nombre de la interfaz</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Se requiere la clave privada de la interfaz</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">La clave privada de la interfaz debe ser una clave de 32 bytes en codificación base64</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Las direcciones de la interfaz deben ser una lista de direcciones IP separadas por comas, opcionalmente en notación CIDR</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">El puerto de escucha de la interfaz debe estar entre 0 y 65535, o no especificado</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">El MTU de la interfaz debe estar entre 576 y 65535, o no especificado</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Los servidores DNS de la interfaz deben ser una lista de direcciones IP separadas por comas</string>
-    <string name="errors_wireguard_peer_title">Peer no válido</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Se requiere la clave pública del peer</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">La clave pública del peer debe ser una clave de 32 bytes en codificación base64</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">La clave precompartida del peer debe ser una clave de 32 bytes en codificación base64</string>

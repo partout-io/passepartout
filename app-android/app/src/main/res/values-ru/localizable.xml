@@ -422,15 +422,12 @@
     <string name="theme_lock_screen_reason">%1$s заблокировано</string>
     <string name="errors_openvpn_unsupported_compression">Сжатие OpenVPN небезопасно и больше не поддерживается.</string>
     <string name="errors_wireguard_empty_peers">Узлы не определены.</string>
-    <string name="errors_wireguard_interface_title">Недопустимый интерфейс</string>
-    <string name="errors_wireguard_interface_messagenamerequired">Требуется имя интерфейса</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Требуется закрытый ключ интерфейса</string>
     <string name="errors_wireguard_interface_messageprivatekeyinvalid">Закрытый ключ интерфейса должен быть 32-байтовым ключом в кодировке base64</string>
     <string name="errors_wireguard_interface_messageaddressinvalid">Адреса интерфейса должны представлять собой список IP-адресов, разделенных запятыми, возможно в нотации CIDR</string>
     <string name="errors_wireguard_interface_messagelistenportinvalid">Порт прослушивания интерфейса должен быть от 0 до 65535 или не указан</string>
     <string name="errors_wireguard_interface_messagemtuinvalid">MTU интерфейса должен быть от 576 до 65535 или не указан</string>
     <string name="errors_wireguard_interface_messagednsinvalid">Серверы DNS интерфейса должны представлять собой список IP-адресов, разделенных запятыми</string>
-    <string name="errors_wireguard_peer_title">Недопустимый peer</string>
     <string name="errors_wireguard_peer_messagepublickeyrequired">Требуется открытый ключ peer’а</string>
     <string name="errors_wireguard_peer_messagepublickeyinvalid">Открытый ключ peer’а должен быть 32-байтовым ключом в кодировке base64</string>
     <string name="errors_wireguard_peer_messagepresharedkeyinvalid">Предварительно разделяемый ключ peer’а должен быть 32-байтовым ключом в кодировке base64</string>

@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "Οι διακομιστές DNS της διεπαφής πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα";
 "errors.wireguard.interface.MessageListenPortInvalid" = "Η θύρα ακρόασης της διεπαφής πρέπει να είναι μεταξύ 0 και 65535, ή να μην έχει καθοριστεί";
 "errors.wireguard.interface.MessageMTUInvalid" = "Το MTU της διεπαφής πρέπει να είναι μεταξύ 576 και 65535, ή να μην έχει καθοριστεί";
-"errors.wireguard.interface.MessageNameRequired" = "Απαιτείται όνομα διεπαφής";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "Το ιδιωτικό κλειδί της διεπαφής πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Απαιτείται ιδιωτικό κλειδί διεπαφής";
-"errors.wireguard.interface.Title" = "Μη έγκυρη διεπαφή";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Οι επιτρεπόμενες IP του peer πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα, προαιρετικά σε σημειογραφία CIDR";
 "errors.wireguard.peer.MessageEndpointInvalid" = "Το endpoint του peer πρέπει να είναι της μορφής 'host:port' ή '[host]:port'";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "Η τιμή του persistent keepalive του peer πρέπει να είναι μεταξύ 0 και 65535, ή να μην έχει καθοριστεί";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Δύο ή περισσότεροι peers δεν μπορούν να έχουν το ίδιο δημόσιο κλειδί";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Το δημόσιο κλειδί του peer πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Απαιτείται δημόσιο κλειδί του peer";
-"errors.wireguard.peer.Title" = "Μη έγκυρος peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "Η διεύθυνση '%@' δεν είναι έγκυρη.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "Η επιτρεπόμενη IP '%@' δεν είναι έγκυρη";
 "errors.wireguard.title.DNSInvalid (%@)" = "Το DNS '%@' δεν είναι έγκυρο.";

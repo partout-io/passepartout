@@ -88,10 +88,8 @@
 "errors.wireguard.interface.MessageDNSInvalid" = "Серверы DNS интерфейса должны представлять собой список IP-адресов, разделенных запятыми";
 "errors.wireguard.interface.MessageListenPortInvalid" = "Порт прослушивания интерфейса должен быть от 0 до 65535 или не указан";
 "errors.wireguard.interface.MessageMTUInvalid" = "MTU интерфейса должен быть от 576 до 65535 или не указан";
-"errors.wireguard.interface.MessageNameRequired" = "Требуется имя интерфейса";
 "errors.wireguard.interface.MessagePrivateKeyInvalid" = "Закрытый ключ интерфейса должен быть 32-байтовым ключом в кодировке base64";
 "errors.wireguard.interface.MessagePrivateKeyRequired" = "Требуется закрытый ключ интерфейса";
-"errors.wireguard.interface.Title" = "Недопустимый интерфейс";
 "errors.wireguard.peer.MessageAllowedIPsInvalid" = "Разрешенные IP-адреса peer’а должны представлять собой список IP-адресов, разделенных запятыми, возможно в нотации CIDR";
 "errors.wireguard.peer.MessageEndpointInvalid" = "Адрес peer’а должен быть в формате 'host:port' или '[host]:port'";
 "errors.wireguard.peer.MessagePersistentKeepaliveInvalid" = "Значение постоянного keepalive peer’а должно быть от 0 до 65535 или не указано";
@@ -99,7 +97,6 @@
 "errors.wireguard.peer.MessagePublicKeyDuplicated" = "Два или более peer’ов не могут иметь один и тот же открытый ключ";
 "errors.wireguard.peer.MessagePublicKeyInvalid" = "Открытый ключ peer’а должен быть 32-байтовым ключом в кодировке base64";
 "errors.wireguard.peer.MessagePublicKeyRequired" = "Требуется открытый ключ peer’а";
-"errors.wireguard.peer.Title" = "Недопустимый peer";
 "errors.wireguard.title.AddressInvalid (%@)" = "Адрес '%@' недопустим.";
 "errors.wireguard.title.AllowedIPInvalid (%@)" = "Разрешенный IP '%@' недопустим";
 "errors.wireguard.title.DNSInvalid (%@)" = "DNS '%@' недопустим.";
