@@ -130,9 +130,11 @@ fun Throwable.partoutDescription(): String? {
 
 @Composable
 fun PartoutException.parsingDescription(): String? {
-    return payload?.let {
-        val info = Json.decodeFromJsonElement<ParseErrorInfo>(it)
-        val arguments = info.arguments
+    return payload?.let { payload ->
+        val info = runCatching {
+            Json.decodeFromJsonElement<ParseErrorInfo>(payload)
+        }.getOrNull() ?: return null
+        val argument = info.arguments.firstOrNull()
         return when (info.recognizedType) {
             ModuleType.OpenVPN -> {
                 when (OpenVPNErrorCode.decode(info.subCode)) {
@@ -149,19 +151,19 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.interfaceHasInvalidAddress -> stringResource(
                         R.string.errors_wireguard_interface_address_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.interfaceHasInvalidDNS -> stringResource(
                         R.string.errors_wireguard_interface_dns_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.interfaceHasInvalidListenPort -> stringResource(
                         R.string.errors_wireguard_interface_listen_port_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.interfaceHasInvalidMTU -> stringResource(
                         R.string.errors_wireguard_interface_mtu_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.interfaceHasInvalidPrivateKey -> stringResource(
                         R.string.errors_wireguard_interface_private_key_invalid
@@ -171,11 +173,11 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.interfaceHasUnrecognizedKey -> stringResource(
                         R.string.errors_wireguard_interface_unrecognized_key,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.multipleEntriesForKey -> stringResource(
                         R.string.errors_wireguard_multiple_entries_for_key,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.multipleInterfaces -> stringResource(
                         R.string.errors_wireguard_multiple_interfaces
@@ -188,15 +190,15 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.peerHasInvalidAllowedIP -> stringResource(
                         R.string.errors_wireguard_peer_allowed_ips_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.peerHasInvalidEndpoint -> stringResource(
                         R.string.errors_wireguard_peer_endpoint_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.peerHasInvalidPersistentKeepAlive -> stringResource(
                         R.string.errors_wireguard_peer_persistent_keepalive_invalid,
-                        arguments.first()
+                        argument ?: return null
                     )
                     WireGuardErrorCode.peerHasInvalidPreSharedKey -> stringResource(
                         R.string.errors_wireguard_peer_pre_shared_key_invalid
@@ -209,7 +211,7 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.peerHasUnrecognizedKey -> stringResource(
                         R.string.errors_wireguard_peer_unrecognized_key,
-                        arguments.first()
+                        argument ?: return null
                     )
                     else -> null
                 }
