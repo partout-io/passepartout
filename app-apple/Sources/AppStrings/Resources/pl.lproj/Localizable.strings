@@ -49,7 +49,7 @@
 "errors.app.missing_provider_entity" = "Nie wybrano serwera w dostawcy.";
 "errors.app.module_requires_connection" = "Moduł %@ wymaga aktywnego połączenia jednego z następujących typów: %@";
 "errors.app.no_active_modules" = "Profil nie ma aktywnych modułów.";
-"errors.app.openvpn.unsupported_compression" = "Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.";
+"errors.openvpn.unsupported_compression" = "Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.";
 "errors.app.other" = "Nie można ukończyć operacji.";
 "errors.app.parsing" = "Nie można przeanalizować.";
 "errors.app.partout" = "Nie można ukończyć operacji (kod=%@).";
@@ -57,7 +57,7 @@
 "errors.app.timeout" = "Operacja przekroczyła limit czasu.";
 "errors.app.tunnel" = "Nie można wykonać operacji.";
 "errors.app.web_receiver" = "Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.";
-"errors.app.wireguard.empty_peers" = "Nie zdefiniowano peerów.";
+"errors.wireguard.empty_peers" = "Nie zdefiniowano peerów.";
 "errors.modules.DNS.emptyDoTHostname" = "Pusta nazwa hosta DoT.";
 "errors.modules.DNS.emptyServers" = "Brak serwerów.";
 "errors.modules.DNS.invalidDoHURL" = "Nieprawidłowy adres URL DoH.";

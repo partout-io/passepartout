@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Nie wybrano serwera w dostawcy.</string>
     <string name="errors_app_module_requires_connection">Moduł %1$s wymaga aktywnego połączenia jednego z następujących typów: %2$s</string>
     <string name="errors_app_no_active_modules">Profil nie ma aktywnych modułów.</string>
-    <string name="errors_app_openvpn_unsupported_compression">Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.</string>
     <string name="errors_app_other">Nie można ukończyć operacji.</string>
     <string name="errors_app_parsing">Nie można przeanalizować.</string>
     <string name="errors_app_partout">Nie można ukończyć operacji (kod=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">Operacja przekroczyła limit czasu.</string>
     <string name="errors_app_tunnel">Nie można wykonać operacji.</string>
     <string name="errors_app_web_receiver">Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.</string>
-    <string name="errors_app_wireguard_empty_peers">Nie zdefiniowano peerów.</string>
     <string name="errors_tunnel_auth">Błąd uwierzytelniania</string>
     <string name="errors_tunnel_compression">Kompresja nieobsługiwana</string>
     <string name="errors_tunnel_dns">Błąd DNS</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Anuluj</string>
     <string name="theme_confirmation_message">Czy na pewno chcesz kontynuować tę operację?</string>
     <string name="theme_lock_screen_reason">%1$s jest zablokowane</string>
+    <string name="errors_openvpn_unsupported_compression">Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.</string>
+    <string name="errors_wireguard_empty_peers">Nie zdefiniowano peerów.</string>
     <string name="errors_wireguard_interface_title">Nieprawidłowy interfejs</string>
     <string name="errors_wireguard_interface_messagenamerequired">Nazwa interfejsu jest wymagana</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Klucz prywatny interfejsu jest wymagany</string>

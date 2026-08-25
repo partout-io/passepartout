@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">未在提供商中选择服务器。</string>
     <string name="errors_app_module_requires_connection">模块 %1$s 需要以下类型中的一个处于活动连接状态：%2$s</string>
     <string name="errors_app_no_active_modules">配置文件没有激活模块。</string>
-    <string name="errors_app_openvpn_unsupported_compression">OpenVPN 压缩不安全，已不再受支持。</string>
     <string name="errors_app_other">无法完成操作。</string>
     <string name="errors_app_parsing">无法解析。</string>
     <string name="errors_app_partout">无法完成操作（代码=%1$s）。</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">操作超时。</string>
     <string name="errors_app_tunnel">无法执行操作。</string>
     <string name="errors_app_web_receiver">无法启动导入。请确保您的电视已正确连接到本地网络。</string>
-    <string name="errors_app_wireguard_empty_peers">未定义对等端。</string>
     <string name="errors_tunnel_auth">认证失败</string>
     <string name="errors_tunnel_compression">不支持压缩</string>
     <string name="errors_tunnel_dns">DNS 失败</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">取消</string>
     <string name="theme_confirmation_message">您确定要继续此操作吗？</string>
     <string name="theme_lock_screen_reason">%1$s 已锁定</string>
+    <string name="errors_openvpn_unsupported_compression">OpenVPN 压缩不安全，已不再受支持。</string>
+    <string name="errors_wireguard_empty_peers">未定义对等端。</string>
     <string name="errors_wireguard_interface_title">无效的接口</string>
     <string name="errors_wireguard_interface_messagenamerequired">接口名称是必需的</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">接口的私钥是必需的</string>

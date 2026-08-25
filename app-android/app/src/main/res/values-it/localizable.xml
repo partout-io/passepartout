@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Nessun server selezionato nel provider.</string>
     <string name="errors_app_module_requires_connection">Il modulo %1$s richiede una connessione attiva tra i seguenti tipi: %2$s</string>
     <string name="errors_app_no_active_modules">Il profilo non ha moduli attivi.</string>
-    <string name="errors_app_openvpn_unsupported_compression">La compressione OpenVPN non è sicura e non è più supportata.</string>
     <string name="errors_app_other">Impossibile completare l\'operazione.</string>
     <string name="errors_app_parsing">Impossibile analizzare.</string>
     <string name="errors_app_partout">Impossibile completare l\'operazione (codice=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">L\'operazione ha superato il tempo limite.</string>
     <string name="errors_app_tunnel">Impossibile eseguire l\'operazione.</string>
     <string name="errors_app_web_receiver">Impossibile avviare l\'importazione. Assicurati che la tua TV sia correttamente connessa alla rete locale.</string>
-    <string name="errors_app_wireguard_empty_peers">Nessun peer definito.</string>
     <string name="errors_tunnel_auth">Autenticazione fallita</string>
     <string name="errors_tunnel_compression">Compressione non supportata</string>
     <string name="errors_tunnel_dns">DNS fallito</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Annulla</string>
     <string name="theme_confirmation_message">Sei sicuro di voler procedere con questa operazione?</string>
     <string name="theme_lock_screen_reason">%1$s è bloccato</string>
+    <string name="errors_openvpn_unsupported_compression">La compressione OpenVPN non è sicura e non è più supportata.</string>
+    <string name="errors_wireguard_empty_peers">Nessun peer definito.</string>
     <string name="errors_wireguard_interface_title">Interfaccia non valida</string>
     <string name="errors_wireguard_interface_messagenamerequired">È richiesto il nome dell\'interfaccia</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">È richiesta la chiave privata dell\'interfaccia</string>

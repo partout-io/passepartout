@@ -49,7 +49,7 @@
 "errors.app.missing_provider_entity" = "Nenhum servidor selecionado no provedor.";
 "errors.app.module_requires_connection" = "O módulo %@ requer uma conexão ativa de um dos seguintes tipos: %@";
 "errors.app.no_active_modules" = "O perfil não possui módulos ativos.";
-"errors.app.openvpn.unsupported_compression" = "A compressão OpenVPN não é segura e não é mais suportada.";
+"errors.openvpn.unsupported_compression" = "A compressão OpenVPN não é segura e não é mais suportada.";
 "errors.app.other" = "Não foi possível concluir a operação.";
 "errors.app.parsing" = "Não foi possível analisar.";
 "errors.app.partout" = "Não foi possível concluir a operação (código=%@).";
@@ -57,7 +57,7 @@
 "errors.app.timeout" = "A operação expirou.";
 "errors.app.tunnel" = "Não foi possível executar a operação.";
 "errors.app.web_receiver" = "Não é possível iniciar a importação. Certifique-se de que sua TV esteja devidamente conectada à rede local.";
-"errors.app.wireguard.empty_peers" = "Nenhum peer definido.";
+"errors.wireguard.empty_peers" = "Nenhum peer definido.";
 "errors.modules.DNS.emptyDoTHostname" = "Nome de host DoT vazio.";
 "errors.modules.DNS.emptyServers" = "Nenhum servidor informado.";
 "errors.modules.DNS.invalidDoHURL" = "URL DoH inválida.";

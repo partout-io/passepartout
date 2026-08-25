@@ -49,7 +49,7 @@
 "errors.app.missing_provider_entity" = "未在提供商中选择服务器。";
 "errors.app.module_requires_connection" = "模块 %@ 需要以下类型中的一个处于活动连接状态：%@";
 "errors.app.no_active_modules" = "配置文件没有激活模块。";
-"errors.app.openvpn.unsupported_compression" = "OpenVPN 压缩不安全，已不再受支持。";
+"errors.openvpn.unsupported_compression" = "OpenVPN 压缩不安全，已不再受支持。";
 "errors.app.other" = "无法完成操作。";
 "errors.app.parsing" = "无法解析。";
 "errors.app.partout" = "无法完成操作（代码=%@）。";
@@ -57,7 +57,7 @@
 "errors.app.timeout" = "操作超时。";
 "errors.app.tunnel" = "无法执行操作。";
 "errors.app.web_receiver" = "无法启动导入。请确保您的电视已正确连接到本地网络。";
-"errors.app.wireguard.empty_peers" = "未定义对等端。";
+"errors.wireguard.empty_peers" = "未定义对等端。";
 "errors.modules.DNS.emptyDoTHostname" = "DoT 主机名为空。";
 "errors.modules.DNS.emptyServers" = "未填写服务器。";
 "errors.modules.DNS.invalidDoHURL" = "DoH URL 无效。";

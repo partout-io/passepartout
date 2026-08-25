@@ -49,7 +49,7 @@
 "errors.app.missing_provider_entity" = "Ingen server vald hos leverantören.";
 "errors.app.module_requires_connection" = "Modulen %@ kräver en aktiv anslutning av någon av följande typer: %@";
 "errors.app.no_active_modules" = "Profilen har inga aktiva moduler.";
-"errors.app.openvpn.unsupported_compression" = "OpenVPN-komprimering är osäker och stöds inte längre.";
+"errors.openvpn.unsupported_compression" = "OpenVPN-komprimering är osäker och stöds inte längre.";
 "errors.app.other" = "Kan inte slutföra åtgärden.";
 "errors.app.parsing" = "Kan inte tolka.";
 "errors.app.partout" = "Kan inte slutföra åtgärden (kod=%@).";
@@ -57,7 +57,7 @@
 "errors.app.timeout" = "Åtgärden tog för lång tid.";
 "errors.app.tunnel" = "Kunde inte utföra åtgärden.";
 "errors.app.web_receiver" = "Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.";
-"errors.app.wireguard.empty_peers" = "Inga peers definierade.";
+"errors.wireguard.empty_peers" = "Inga peers definierade.";
 "errors.modules.DNS.emptyDoTHostname" = "Tomt DoT-värdnamn.";
 "errors.modules.DNS.emptyServers" = "Inga servrar angivna.";
 "errors.modules.DNS.invalidDoHURL" = "Ogiltig DoH-URL.";

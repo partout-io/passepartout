@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">No server selected in provider.</string>
     <string name="errors_app_module_requires_connection">The %1$s module requires an active connection among the following types: %2$s</string>
     <string name="errors_app_no_active_modules">The profile has no active modules.</string>
-    <string name="errors_app_openvpn_unsupported_compression">OpenVPN compression is unsafe and no longer supported.</string>
     <string name="errors_app_other">Unable to complete operation.</string>
     <string name="errors_app_parsing">Unable to parse.</string>
     <string name="errors_app_partout">Unable to complete operation (code=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">The operation timed out.</string>
     <string name="errors_app_tunnel">Unable to execute operation.</string>
     <string name="errors_app_web_receiver">Unable to start the import. Make sure that your TV is properly connected to the local network.</string>
-    <string name="errors_app_wireguard_empty_peers">No peers defined.</string>
     <string name="errors_tunnel_auth">Auth failed</string>
     <string name="errors_tunnel_compression">Compression unsupported</string>
     <string name="errors_tunnel_dns">DNS failed</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Cancel</string>
     <string name="theme_confirmation_message">Are you sure you want to proceed with this operation?</string>
     <string name="theme_lock_screen_reason">%1$s is locked</string>
+    <string name="errors_openvpn_unsupported_compression">OpenVPN compression is unsafe and no longer supported.</string>
+    <string name="errors_wireguard_empty_peers">No peers defined.</string>
     <string name="errors_wireguard_interface_title">Invalid interface</string>
     <string name="errors_wireguard_interface_messagenamerequired">Interface name is required</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Interface’s private key is required</string>

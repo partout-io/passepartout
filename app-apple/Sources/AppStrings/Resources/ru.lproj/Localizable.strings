@@ -49,7 +49,7 @@
 "errors.app.missing_provider_entity" = "На провайдере не выбран сервер.";
 "errors.app.module_requires_connection" = "Модуль %@ требует активного подключения одного из следующих типов: %@";
 "errors.app.no_active_modules" = "В профиле нет активных модулей.";
-"errors.app.openvpn.unsupported_compression" = "Сжатие OpenVPN небезопасно и больше не поддерживается.";
+"errors.openvpn.unsupported_compression" = "Сжатие OpenVPN небезопасно и больше не поддерживается.";
 "errors.app.other" = "Не удалось выполнить операцию.";
 "errors.app.parsing" = "Не удалось разобрать.";
 "errors.app.partout" = "Не удалось выполнить операцию (код=%@).";
@@ -57,7 +57,7 @@
 "errors.app.timeout" = "Время операции истекло.";
 "errors.app.tunnel" = "Не удалось выполнить операцию.";
 "errors.app.web_receiver" = "Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.";
-"errors.app.wireguard.empty_peers" = "Узлы не определены.";
+"errors.wireguard.empty_peers" = "Узлы не определены.";
 "errors.modules.DNS.emptyDoTHostname" = "Пустое имя хоста DoT.";
 "errors.modules.DNS.emptyServers" = "Серверы не указаны.";
 "errors.modules.DNS.invalidDoHURL" = "Недопустимый URL DoH.";

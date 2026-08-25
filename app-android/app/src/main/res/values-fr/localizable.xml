@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Aucun serveur sélectionné chez le fournisseur.</string>
     <string name="errors_app_module_requires_connection">Le module %1$s nécessite une connexion active parmi les types suivants : %2$s</string>
     <string name="errors_app_no_active_modules">Le profil n\'a pas de modules actifs.</string>
-    <string name="errors_app_openvpn_unsupported_compression">La compression OpenVPN n\'est pas sûre et n\'est plus prise en charge.</string>
     <string name="errors_app_other">Impossible de terminer l\'opération.</string>
     <string name="errors_app_parsing">Impossible d\'analyser.</string>
     <string name="errors_app_partout">Impossible de terminer l\'opération (code=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">L\'opération a expiré.</string>
     <string name="errors_app_tunnel">Impossible d\'exécuter l\'opération.</string>
     <string name="errors_app_web_receiver">Impossible de démarrer l\'importation. Assurez-vous que votre téléviseur est correctement connecté au réseau local.</string>
-    <string name="errors_app_wireguard_empty_peers">Aucun pair défini.</string>
     <string name="errors_tunnel_auth">Échec de l\'authentification</string>
     <string name="errors_tunnel_compression">Compression non supportée</string>
     <string name="errors_tunnel_dns">Échec du DNS</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Annuler</string>
     <string name="theme_confirmation_message">Êtes-vous sûr de vouloir procéder avec cette opération ?</string>
     <string name="theme_lock_screen_reason">%1$s est verrouillé</string>
+    <string name="errors_openvpn_unsupported_compression">La compression OpenVPN n\'est pas sûre et n\'est plus prise en charge.</string>
+    <string name="errors_wireguard_empty_peers">Aucun pair défini.</string>
     <string name="errors_wireguard_interface_title">Interface invalide</string>
     <string name="errors_wireguard_interface_messagenamerequired">Le nom de l\'interface est requis</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">La clé privée de l\'interface est requise</string>

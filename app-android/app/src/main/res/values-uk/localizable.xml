@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Не вибрано сервер у постачальника.</string>
     <string name="errors_app_module_requires_connection">Модуль %1$s потребує активного з’єднання одного з таких типів: %2$s</string>
     <string name="errors_app_no_active_modules">Профіль не має активних модулів.</string>
-    <string name="errors_app_openvpn_unsupported_compression">Стиснення OpenVPN небезпечне й більше не підтримується.</string>
     <string name="errors_app_other">Не вдалося завершити операцію.</string>
     <string name="errors_app_parsing">Не вдалося розібрати.</string>
     <string name="errors_app_partout">Не вдалося виконати операцію (код=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">Час виконання операції вичерпано.</string>
     <string name="errors_app_tunnel">Не вдалося виконати операцію.</string>
     <string name="errors_app_web_receiver">Неможливо розпочати імпорт. Переконайтеся, що ваш телевізор правильно підключений до локальної мережі.</string>
-    <string name="errors_app_wireguard_empty_peers">Вузли не визначено.</string>
     <string name="errors_tunnel_auth">Помилка аутентифікації</string>
     <string name="errors_tunnel_compression">Стиснення не підтримується</string>
     <string name="errors_tunnel_dns">Помилка DNS</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Скасувати</string>
     <string name="theme_confirmation_message">Ви впевнені, що хочете продовжити виконання цієї операції?</string>
     <string name="theme_lock_screen_reason">%1$s заблоковано</string>
+    <string name="errors_openvpn_unsupported_compression">Стиснення OpenVPN небезпечне й більше не підтримується.</string>
+    <string name="errors_wireguard_empty_peers">Вузли не визначено.</string>
     <string name="errors_wireguard_interface_title">Некоректний інтерфейс</string>
     <string name="errors_wireguard_interface_messagenamerequired">Потрібно вказати назву інтерфейсу</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Потрібен приватний ключ інтерфейсу</string>

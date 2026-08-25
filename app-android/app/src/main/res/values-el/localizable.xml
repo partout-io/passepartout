@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Δεν επιλέχθηκε διακομιστής στον πάροχο.</string>
     <string name="errors_app_module_requires_connection">Η μονάδα %1$s απαιτεί ενεργή σύνδεση ενός από τους παρακάτω τύπους: %2$s</string>
     <string name="errors_app_no_active_modules">Το προφίλ δεν έχει ενεργές μονάδες.</string>
-    <string name="errors_app_openvpn_unsupported_compression">Η συμπίεση OpenVPN δεν είναι ασφαλής και δεν υποστηρίζεται πλέον.</string>
     <string name="errors_app_other">Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας.</string>
     <string name="errors_app_parsing">Δεν ήταν δυνατή η ανάλυση.</string>
     <string name="errors_app_partout">Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας (κωδικός=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">Η λειτουργία έληξε λόγω χρονικού ορίου.</string>
     <string name="errors_app_tunnel">Δεν ήταν δυνατή η εκτέλεση της ενέργειας.</string>
     <string name="errors_app_web_receiver">Δεν είναι δυνατή η εκκίνηση της εισαγωγής. Βεβαιωθείτε ότι η τηλεόρασή σας είναι σωστά συνδεδεμένη στο τοπικό δίκτυο.</string>
-    <string name="errors_app_wireguard_empty_peers">Δεν έχουν οριστεί ομότιμοι.</string>
     <string name="errors_tunnel_auth">Η επαλήθευση απέτυχε</string>
     <string name="errors_tunnel_compression">Η συμπίεση δεν υποστηρίζεται</string>
     <string name="errors_tunnel_dns">Το DNS απέτυχε</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Ακύρωση</string>
     <string name="theme_confirmation_message">Είστε βέβαιοι ότι θέλετε να συνεχίσετε με αυτήν τη λειτουργία;</string>
     <string name="theme_lock_screen_reason">Το %1$s είναι κλειδωμένο</string>
+    <string name="errors_openvpn_unsupported_compression">Η συμπίεση OpenVPN δεν είναι ασφαλής και δεν υποστηρίζεται πλέον.</string>
+    <string name="errors_wireguard_empty_peers">Δεν έχουν οριστεί ομότιμοι.</string>
     <string name="errors_wireguard_interface_title">Μη έγκυρη διεπαφή</string>
     <string name="errors_wireguard_interface_messagenamerequired">Απαιτείται όνομα διεπαφής</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Απαιτείται ιδιωτικό κλειδί διεπαφής</string>

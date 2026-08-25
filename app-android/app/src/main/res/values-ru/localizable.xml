@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">На провайдере не выбран сервер.</string>
     <string name="errors_app_module_requires_connection">Модуль %1$s требует активного подключения одного из следующих типов: %2$s</string>
     <string name="errors_app_no_active_modules">В профиле нет активных модулей.</string>
-    <string name="errors_app_openvpn_unsupported_compression">Сжатие OpenVPN небезопасно и больше не поддерживается.</string>
     <string name="errors_app_other">Не удалось выполнить операцию.</string>
     <string name="errors_app_parsing">Не удалось разобрать.</string>
     <string name="errors_app_partout">Не удалось выполнить операцию (код=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">Время операции истекло.</string>
     <string name="errors_app_tunnel">Не удалось выполнить операцию.</string>
     <string name="errors_app_web_receiver">Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.</string>
-    <string name="errors_app_wireguard_empty_peers">Узлы не определены.</string>
     <string name="errors_tunnel_auth">Ошибка аутентификации</string>
     <string name="errors_tunnel_compression">Сжатие не поддерживается</string>
     <string name="errors_tunnel_dns">Ошибка DNS</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Отменить</string>
     <string name="theme_confirmation_message">Вы уверены, что хотите продолжить выполнение этой операции?</string>
     <string name="theme_lock_screen_reason">%1$s заблокировано</string>
+    <string name="errors_openvpn_unsupported_compression">Сжатие OpenVPN небезопасно и больше не поддерживается.</string>
+    <string name="errors_wireguard_empty_peers">Узлы не определены.</string>
     <string name="errors_wireguard_interface_title">Недопустимый интерфейс</string>
     <string name="errors_wireguard_interface_messagenamerequired">Требуется имя интерфейса</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Требуется закрытый ключ интерфейса</string>

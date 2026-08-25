@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Nenhum servidor selecionado no provedor.</string>
     <string name="errors_app_module_requires_connection">O módulo %1$s requer uma conexão ativa de um dos seguintes tipos: %2$s</string>
     <string name="errors_app_no_active_modules">O perfil não possui módulos ativos.</string>
-    <string name="errors_app_openvpn_unsupported_compression">A compressão OpenVPN não é segura e não é mais suportada.</string>
     <string name="errors_app_other">Não foi possível concluir a operação.</string>
     <string name="errors_app_parsing">Não foi possível analisar.</string>
     <string name="errors_app_partout">Não foi possível concluir a operação (código=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">A operação expirou.</string>
     <string name="errors_app_tunnel">Não foi possível executar a operação.</string>
     <string name="errors_app_web_receiver">Não é possível iniciar a importação. Certifique-se de que sua TV esteja devidamente conectada à rede local.</string>
-    <string name="errors_app_wireguard_empty_peers">Nenhum peer definido.</string>
     <string name="errors_tunnel_auth">Falha na autenticação</string>
     <string name="errors_tunnel_compression">Compressão não suportada</string>
     <string name="errors_tunnel_dns">Falha no DNS</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Cancelar</string>
     <string name="theme_confirmation_message">Tem certeza de que deseja continuar com esta operação?</string>
     <string name="theme_lock_screen_reason">%1$s está bloqueado</string>
+    <string name="errors_openvpn_unsupported_compression">A compressão OpenVPN não é segura e não é mais suportada.</string>
+    <string name="errors_wireguard_empty_peers">Nenhum peer definido.</string>
     <string name="errors_wireguard_interface_title">Interface inválida</string>
     <string name="errors_wireguard_interface_messagenamerequired">O nome da interface é obrigatório</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">A chave privada da interface é obrigatória</string>

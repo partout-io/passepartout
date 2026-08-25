@@ -452,7 +452,6 @@
 "errors.app.missing_provider_entity" = "No server selected in provider.";
 "errors.app.module_requires_connection" = "The %@ module requires an active connection among the following types: %@";
 "errors.app.no_active_modules" = "The profile has no active modules.";
-"errors.app.openvpn.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";
 "errors.app.other" = "Unable to complete operation.";
 "errors.app.parsing" = "Unable to parse.";
 "errors.app.partout" = "Unable to complete operation (code=%@).";
@@ -460,7 +459,6 @@
 "errors.app.timeout" = "The operation timed out.";
 "errors.app.tunnel" = "Unable to execute operation.";
 "errors.app.web_receiver" = "Unable to start the import. Make sure that your TV is properly connected to the local network.";
-"errors.app.wireguard.empty_peers" = "No peers defined.";
 
 "errors.tunnel.auth" = "Auth failed";
 "errors.tunnel.compression" = "Compression unsupported";
@@ -499,7 +497,13 @@
 
 // MARK: - Errors
 
+// MARK: Errors (OpenVPN)
+
+"errors.openvpn.unsupported_compression" = "OpenVPN compression is unsafe and no longer supported.";
+
 // MARK: Errors (WireGuard)
+
+"errors.wireguard.empty_peers" = "No peers defined.";
 
 "errors.wireguard.interface.Title" = "Invalid interface";
 "errors.wireguard.interface.MessageNameRequired" = "Interface name is required";

@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Kein Server beim Anbieter ausgewählt.</string>
     <string name="errors_app_module_requires_connection">Das Modul %1$s erfordert eine aktive Verbindung eines der folgenden Typen: %2$s</string>
     <string name="errors_app_no_active_modules">Das Profil hat keine aktiven Module.</string>
-    <string name="errors_app_openvpn_unsupported_compression">OpenVPN-Kompression ist unsicher und wird nicht mehr unterstützt.</string>
     <string name="errors_app_other">Operation konnte nicht abgeschlossen werden.</string>
     <string name="errors_app_parsing">Konnte nicht analysiert werden.</string>
     <string name="errors_app_partout">Operation konnte nicht abgeschlossen werden (Code=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">Die Operation hat das Zeitlimit überschritten.</string>
     <string name="errors_app_tunnel">Aktion konnte nicht ausgeführt werden.</string>
     <string name="errors_app_web_receiver">Import kann nicht gestartet werden. Stellen Sie sicher, dass Ihr Fernseher ordnungsgemäß mit dem lokalen Netzwerk verbunden ist.</string>
-    <string name="errors_app_wireguard_empty_peers">Keine Peers definiert.</string>
     <string name="errors_tunnel_auth">Authentifizierung fehlgeschlagen</string>
     <string name="errors_tunnel_compression">Kompression wird nicht unterstützt</string>
     <string name="errors_tunnel_dns">DNS fehlgeschlagen</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Abbrechen</string>
     <string name="theme_confirmation_message">Bist du sicher, dass du mit dieser Aktion fortfahren möchtest?</string>
     <string name="theme_lock_screen_reason">%1$s ist gesperrt</string>
+    <string name="errors_openvpn_unsupported_compression">OpenVPN-Kompression ist unsicher und wird nicht mehr unterstützt.</string>
+    <string name="errors_wireguard_empty_peers">Keine Peers definiert.</string>
     <string name="errors_wireguard_interface_title">Ungültige Schnittstelle</string>
     <string name="errors_wireguard_interface_messagenamerequired">Schnittstellenname ist erforderlich</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Privater Schlüssel der Schnittstelle ist erforderlich</string>

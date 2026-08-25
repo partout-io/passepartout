@@ -383,7 +383,6 @@
     <string name="errors_app_missing_provider_entity">Geen server geselecteerd bij provider.</string>
     <string name="errors_app_module_requires_connection">De module %1$s vereist een actieve verbinding van een van de volgende typen: %2$s</string>
     <string name="errors_app_no_active_modules">Het profiel heeft geen actieve modules.</string>
-    <string name="errors_app_openvpn_unsupported_compression">OpenVPN-compressie is onveilig en wordt niet meer ondersteund.</string>
     <string name="errors_app_other">Kan bewerking niet voltooien.</string>
     <string name="errors_app_parsing">Kan niet parseren.</string>
     <string name="errors_app_partout">Kan bewerking niet voltooien (code=%1$s).</string>
@@ -391,7 +390,6 @@
     <string name="errors_app_timeout">De bewerking is verlopen.</string>
     <string name="errors_app_tunnel">Actie kan niet worden uitgevoerd.</string>
     <string name="errors_app_web_receiver">Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.</string>
-    <string name="errors_app_wireguard_empty_peers">Geen peers gedefinieerd.</string>
     <string name="errors_tunnel_auth">Verificatie mislukt</string>
     <string name="errors_tunnel_compression">Compressie niet ondersteund</string>
     <string name="errors_tunnel_dns">DNS mislukt</string>
@@ -422,6 +420,8 @@
     <string name="theme_confirmation_cancel">Annuleren</string>
     <string name="theme_confirmation_message">Weet je zeker dat je wilt doorgaan met deze bewerking?</string>
     <string name="theme_lock_screen_reason">%1$s is vergrendeld</string>
+    <string name="errors_openvpn_unsupported_compression">OpenVPN-compressie is onveilig en wordt niet meer ondersteund.</string>
+    <string name="errors_wireguard_empty_peers">Geen peers gedefinieerd.</string>
     <string name="errors_wireguard_interface_title">Ongeldige interface</string>
     <string name="errors_wireguard_interface_messagenamerequired">Interfacenaam is vereist</string>
     <string name="errors_wireguard_interface_messageprivatekeyrequired">Privésleutel van de interface is vereist</string>

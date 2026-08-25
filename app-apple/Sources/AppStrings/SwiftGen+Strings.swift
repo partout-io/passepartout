@@ -218,14 +218,6 @@ public enum Strings {
         /// Unable to import profiles.
         public static let generic = Strings.tr("Localizable", "errors.app.import.generic", fallback: "Unable to import profiles.")
       }
-      public enum Openvpn {
-        /// OpenVPN compression is unsafe and no longer supported.
-        public static let unsupportedCompression = Strings.tr("Localizable", "errors.app.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
-      }
-      public enum Wireguard {
-        /// No peers defined.
-        public static let emptyPeers = Strings.tr("Localizable", "errors.app.wireguard.empty_peers", fallback: "No peers defined.")
-      }
     }
     public enum Modules {
       /// Invalid fields.
@@ -273,6 +265,10 @@ public enum Strings {
         public static let publicKey = Strings.tr("Localizable", "errors.modules.WireGuard.publicKey", fallback: "Invalid public key.")
       }
     }
+    public enum Openvpn {
+      /// OpenVPN compression is unsafe and no longer supported.
+      public static let unsupportedCompression = Strings.tr("Localizable", "errors.openvpn.unsupported_compression", fallback: "OpenVPN compression is unsafe and no longer supported.")
+    }
     public enum Tunnel {
       /// Auth failed
       public static let auth = Strings.tr("Localizable", "errors.tunnel.auth", fallback: "Auth failed")
@@ -292,6 +288,8 @@ public enum Strings {
       public static let tls = Strings.tr("Localizable", "errors.tunnel.tls", fallback: "TLS failed")
     }
     public enum Wireguard {
+      /// No peers defined.
+      public static let emptyPeers = Strings.tr("Localizable", "errors.wireguard.empty_peers", fallback: "No peers defined.")
       public enum Interface {
         /// Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation
         public static let messageAddressInvalid = Strings.tr("Localizable", "errors.wireguard.interface.MessageAddressInvalid", fallback: "Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation")
