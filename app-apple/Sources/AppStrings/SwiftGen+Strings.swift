@@ -294,9 +294,9 @@ public enum Strings {
       public static func invalidLine(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.wireguard.invalid_line", String(describing: p1), fallback: "Invalid line: ‘%@’.")
       }
-      /// There should be only one entry per section for key ‘%@’
+      /// There should be only one entry per section for key ‘%@’.
       public static func multipleEntriesForKey(_ p1: Any) -> String {
-        return Strings.tr("Localizable", "errors.wireguard.multiple_entries_for_key", String(describing: p1), fallback: "There should be only one entry per section for key ‘%@’")
+        return Strings.tr("Localizable", "errors.wireguard.multiple_entries_for_key", String(describing: p1), fallback: "There should be only one entry per section for key ‘%@’.")
       }
       /// Configuration must have only one ‘Interface’ section.
       public static let multipleInterfaces = Strings.tr("Localizable", "errors.wireguard.multiple_interfaces", fallback: "Configuration must have only one ‘Interface’ section.")
@@ -308,70 +308,70 @@ public enum Strings {
           return Strings.tr("Localizable", "errors.wireguard.interface.unrecognized_key", String(describing: p1), fallback: "Interface contains unrecognized key ‘%@’ Valid keys are: ‘PrivateKey’, ‘ListenPort’, ‘Address’, ‘DNS’ and ‘MTU’.")
         }
         public enum Address {
-          /// Address ‘%@’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation
+          /// Address ‘%@’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.interface.address.invalid", String(describing: p1), fallback: "Address ‘%@’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation")
+            return Strings.tr("Localizable", "errors.wireguard.interface.address.invalid", String(describing: p1), fallback: "Address ‘%@’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation.")
           }
         }
         public enum Dns {
-          /// DNS ‘%@’ is invalid. Interface’s DNS servers must be a list of comma-separated IP addresses
+          /// DNS ‘%@’ is invalid. Interface’s DNS servers must be a list of comma-separated IP addresses.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.interface.dns.invalid", String(describing: p1), fallback: "DNS ‘%@’ is invalid. Interface’s DNS servers must be a list of comma-separated IP addresses")
+            return Strings.tr("Localizable", "errors.wireguard.interface.dns.invalid", String(describing: p1), fallback: "DNS ‘%@’ is invalid. Interface’s DNS servers must be a list of comma-separated IP addresses.")
           }
         }
         public enum ListenPort {
-          /// Listen port ‘%@’ is invalid. Interface’s listen port must be between 0 and 65535, or unspecified
+          /// Listen port ‘%@’ is invalid. Interface’s listen port must be between 0 and 65535, or unspecified.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.interface.listen_port.invalid", String(describing: p1), fallback: "Listen port ‘%@’ is invalid. Interface’s listen port must be between 0 and 65535, or unspecified")
+            return Strings.tr("Localizable", "errors.wireguard.interface.listen_port.invalid", String(describing: p1), fallback: "Listen port ‘%@’ is invalid. Interface’s listen port must be between 0 and 65535, or unspecified.")
           }
         }
         public enum Mtu {
-          /// MTU ‘%@’ is invalid. Interface’s MTU must be between 576 and 65535, or unspecified
+          /// MTU ‘%@’ is invalid. Interface’s MTU must be between 576 and 65535, or unspecified.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.interface.mtu.invalid", String(describing: p1), fallback: "MTU ‘%@’ is invalid. Interface’s MTU must be between 576 and 65535, or unspecified")
+            return Strings.tr("Localizable", "errors.wireguard.interface.mtu.invalid", String(describing: p1), fallback: "MTU ‘%@’ is invalid. Interface’s MTU must be between 576 and 65535, or unspecified.")
           }
         }
         public enum PrivateKey {
-          /// Private key is invalid. Interface’s private key must be a 32-byte key in base64 encoding
-          public static let invalid = Strings.tr("Localizable", "errors.wireguard.interface.private_key.invalid", fallback: "Private key is invalid. Interface’s private key must be a 32-byte key in base64 encoding")
-          /// Interface’s private key is required
-          public static let `required` = Strings.tr("Localizable", "errors.wireguard.interface.private_key.required", fallback: "Interface’s private key is required")
+          /// Private key is invalid. Interface’s private key must be a 32-byte key in base64 encoding.
+          public static let invalid = Strings.tr("Localizable", "errors.wireguard.interface.private_key.invalid", fallback: "Private key is invalid. Interface’s private key must be a 32-byte key in base64 encoding.")
+          /// Interface’s private key is required.
+          public static let `required` = Strings.tr("Localizable", "errors.wireguard.interface.private_key.required", fallback: "Interface’s private key is required.")
         }
       }
       public enum Peer {
-        /// Peer contains unrecognized key ‘%@’ Valid keys are: ‘PublicKey’, ‘PresharedKey’, ‘AllowedIPs’, ‘Endpoint’ and ‘PersistentKeepalive’
+        /// Peer contains unrecognized key ‘%@’ Valid keys are: ‘PublicKey’, ‘PresharedKey’, ‘AllowedIPs’, ‘Endpoint’ and ‘PersistentKeepalive’.
         public static func unrecognizedKey(_ p1: Any) -> String {
-          return Strings.tr("Localizable", "errors.wireguard.peer.unrecognized_key", String(describing: p1), fallback: "Peer contains unrecognized key ‘%@’ Valid keys are: ‘PublicKey’, ‘PresharedKey’, ‘AllowedIPs’, ‘Endpoint’ and ‘PersistentKeepalive’")
+          return Strings.tr("Localizable", "errors.wireguard.peer.unrecognized_key", String(describing: p1), fallback: "Peer contains unrecognized key ‘%@’ Valid keys are: ‘PublicKey’, ‘PresharedKey’, ‘AllowedIPs’, ‘Endpoint’ and ‘PersistentKeepalive’.")
         }
         public enum AllowedIps {
-          /// Allowed IP ‘%@’ is invalid Peer’s allowed IPs must be a list of comma-separated IP addresses, optionally in CIDR notation
+          /// Allowed IP ‘%@’ is invalid Peer’s allowed IPs must be a list of comma-separated IP addresses, optionally in CIDR notation.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.peer.allowed_ips.invalid", String(describing: p1), fallback: "Allowed IP ‘%@’ is invalid Peer’s allowed IPs must be a list of comma-separated IP addresses, optionally in CIDR notation")
+            return Strings.tr("Localizable", "errors.wireguard.peer.allowed_ips.invalid", String(describing: p1), fallback: "Allowed IP ‘%@’ is invalid Peer’s allowed IPs must be a list of comma-separated IP addresses, optionally in CIDR notation.")
           }
         }
         public enum Endpoint {
-          /// Endpoint ‘%@’ is invalid Peer’s endpoint must be of the form ‘host:port’ or ‘[host]:port’
+          /// Endpoint ‘%@’ is invalid Peer’s endpoint must be of the form ‘host:port’ or ‘[host]:port’.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.peer.endpoint.invalid", String(describing: p1), fallback: "Endpoint ‘%@’ is invalid Peer’s endpoint must be of the form ‘host:port’ or ‘[host]:port’")
+            return Strings.tr("Localizable", "errors.wireguard.peer.endpoint.invalid", String(describing: p1), fallback: "Endpoint ‘%@’ is invalid Peer’s endpoint must be of the form ‘host:port’ or ‘[host]:port’.")
           }
         }
         public enum PersistentKeepalive {
-          /// Persistent keepalive value ‘%@’ is invalid Peer’s persistent keepalive must be between 0 to 65535, or unspecified
+          /// Persistent keepalive value ‘%@’ is invalid Peer’s persistent keepalive must be between 0 to 65535, or unspecified.
           public static func invalid(_ p1: Any) -> String {
-            return Strings.tr("Localizable", "errors.wireguard.peer.persistent_keepalive.invalid", String(describing: p1), fallback: "Persistent keepalive value ‘%@’ is invalid Peer’s persistent keepalive must be between 0 to 65535, or unspecified")
+            return Strings.tr("Localizable", "errors.wireguard.peer.persistent_keepalive.invalid", String(describing: p1), fallback: "Persistent keepalive value ‘%@’ is invalid Peer’s persistent keepalive must be between 0 to 65535, or unspecified.")
           }
         }
         public enum PreSharedKey {
-          /// Preshared key is invalid Peer’s preshared key must be a 32-byte key in base64 encoding
-          public static let invalid = Strings.tr("Localizable", "errors.wireguard.peer.pre_shared_key.invalid", fallback: "Preshared key is invalid Peer’s preshared key must be a 32-byte key in base64 encoding")
+          /// Preshared key is invalid Peer’s preshared key must be a 32-byte key in base64 encoding.
+          public static let invalid = Strings.tr("Localizable", "errors.wireguard.peer.pre_shared_key.invalid", fallback: "Preshared key is invalid Peer’s preshared key must be a 32-byte key in base64 encoding.")
         }
         public enum PublicKey {
-          /// Two or more peers cannot have the same public key
-          public static let duplicated = Strings.tr("Localizable", "errors.wireguard.peer.public_key.duplicated", fallback: "Two or more peers cannot have the same public key")
-          /// Public key is invalid Peer’s public key must be a 32-byte key in base64 encoding
-          public static let invalid = Strings.tr("Localizable", "errors.wireguard.peer.public_key.invalid", fallback: "Public key is invalid Peer’s public key must be a 32-byte key in base64 encoding")
-          /// Peer’s public key is required
-          public static let `required` = Strings.tr("Localizable", "errors.wireguard.peer.public_key.required", fallback: "Peer’s public key is required")
+          /// Two or more peers cannot have the same public key.
+          public static let duplicated = Strings.tr("Localizable", "errors.wireguard.peer.public_key.duplicated", fallback: "Two or more peers cannot have the same public key.")
+          /// Public key is invalid Peer’s public key must be a 32-byte key in base64 encoding.
+          public static let invalid = Strings.tr("Localizable", "errors.wireguard.peer.public_key.invalid", fallback: "Public key is invalid Peer’s public key must be a 32-byte key in base64 encoding.")
+          /// Peer’s public key is required.
+          public static let `required` = Strings.tr("Localizable", "errors.wireguard.peer.public_key.required", fallback: "Peer’s public key is required.")
         }
       }
     }
