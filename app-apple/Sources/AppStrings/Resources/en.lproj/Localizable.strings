@@ -504,27 +504,27 @@
 // MARK: Errors (WireGuard)
 
 "errors.wireguard.invalid_line" = "Invalid line: ‘%@’.";
-"errors.wireguard.NoInterface" = "Configuration must have an ‘Interface’ section.";
-"errors.wireguard.MultipleInterfaces" = "Configuration must have only one ‘Interface’ section.";
-"errors.wireguard.MultipleEntriesForKey" = "There should be only one entry per section for key ‘%@’";
+"errors.wireguard.no_interface" = "Configuration must have an ‘Interface’ section.";
+"errors.wireguard.multiple_interfaces" = "Configuration must have only one ‘Interface’ section.";
+"errors.wireguard.multiple_entries_for_key" = "There should be only one entry per section for key ‘%@’";
 "errors.wireguard.empty_peers" = "No peers defined.";
 
-"errors.wireguard.interface.PrivateKeyRequired" = "Interface’s private key is required";
-"errors.wireguard.interface.PrivateKeyInvalid" = "Private key is invalid. Interface’s private key must be a 32-byte key in base64 encoding";
-"errors.wireguard.interface.AddressInvalid" = "Address ‘%@’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation";
-"errors.wireguard.interface.ListenPortInvalid" = "Listen port ‘%@’ is invalid. Interface’s listen port must be between 0 and 65535, or unspecified";
-"errors.wireguard.interface.MTUInvalid" = "MTU ‘%@’ is invalid. Interface’s MTU must be between 576 and 65535, or unspecified";
-"errors.wireguard.interface.DNSInvalid" = "DNS ‘%@’ is invalid. Interface’s DNS servers must be a list of comma-separated IP addresses";
-"errors.wireguard.interface.UnrecognizedKey" = "Interface contains unrecognized key ‘%@’ Valid keys are: ‘PrivateKey’, ‘ListenPort’, ‘Address’, ‘DNS’ and ‘MTU’.";
+"errors.wireguard.interface.private_key.required" = "Interface’s private key is required";
+"errors.wireguard.interface.private_key.invalid" = "Private key is invalid. Interface’s private key must be a 32-byte key in base64 encoding";
+"errors.wireguard.interface.address.invalid" = "Address ‘%@’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation";
+"errors.wireguard.interface.listen_port.invalid" = "Listen port ‘%@’ is invalid. Interface’s listen port must be between 0 and 65535, or unspecified";
+"errors.wireguard.interface.mtu.invalid" = "MTU ‘%@’ is invalid. Interface’s MTU must be between 576 and 65535, or unspecified";
+"errors.wireguard.interface.dns.invalid" = "DNS ‘%@’ is invalid. Interface’s DNS servers must be a list of comma-separated IP addresses";
+"errors.wireguard.interface.unrecognized_key" = "Interface contains unrecognized key ‘%@’ Valid keys are: ‘PrivateKey’, ‘ListenPort’, ‘Address’, ‘DNS’ and ‘MTU’.";
 
-"errors.wireguard.peer.PublicKeyRequired" = "Peer’s public key is required";
-"errors.wireguard.peer.PublicKeyInvalid" = "Public key is invalid Peer’s public key must be a 32-byte key in base64 encoding";
-"errors.wireguard.peer.PreSharedKeyInvalid" = "Preshared key is invalid Peer’s preshared key must be a 32-byte key in base64 encoding";
-"errors.wireguard.peer.AllowedIPsInvalid" = "Allowed IP ‘%@’ is invalid Peer’s allowed IPs must be a list of comma-separated IP addresses, optionally in CIDR notation";
-"errors.wireguard.peer.EndpointInvalid" = "Endpoint ‘%@’ is invalid Peer’s endpoint must be of the form ‘host:port’ or ‘[host]:port’";
-"errors.wireguard.peer.PersistentKeepaliveInvalid" = "Persistent keepalive value ‘%@’ is invalid Peer’s persistent keepalive must be between 0 to 65535, or unspecified";
-"errors.wireguard.peer.PublicKeyDuplicated" = "Two or more peers cannot have the same public key";
-"errors.wireguard.peer.UnrecognizedKey" = "Peer contains unrecognized key ‘%@’ Valid keys are: ‘PublicKey’, ‘PresharedKey’, ‘AllowedIPs’, ‘Endpoint’ and ‘PersistentKeepalive’";
+"errors.wireguard.peer.public_key.required" = "Peer’s public key is required";
+"errors.wireguard.peer.public_key.invalid" = "Public key is invalid Peer’s public key must be a 32-byte key in base64 encoding";
+"errors.wireguard.peer.pre_shared_key.invalid" = "Preshared key is invalid Peer’s preshared key must be a 32-byte key in base64 encoding";
+"errors.wireguard.peer.allowed_ips.invalid" = "Allowed IP ‘%@’ is invalid Peer’s allowed IPs must be a list of comma-separated IP addresses, optionally in CIDR notation";
+"errors.wireguard.peer.endpoint.invalid" = "Endpoint ‘%@’ is invalid Peer’s endpoint must be of the form ‘host:port’ or ‘[host]:port’";
+"errors.wireguard.peer.persistent_keepalive.invalid" = "Persistent keepalive value ‘%@’ is invalid Peer’s persistent keepalive must be between 0 to 65535, or unspecified";
+"errors.wireguard.peer.public_key.duplicated" = "Two or more peers cannot have the same public key";
+"errors.wireguard.peer.unrecognized_key" = "Peer contains unrecognized key ‘%@’ Valid keys are: ‘PublicKey’, ‘PresharedKey’, ‘AllowedIPs’, ‘Endpoint’ and ‘PersistentKeepalive’";
 
 // MARK: Android
 
