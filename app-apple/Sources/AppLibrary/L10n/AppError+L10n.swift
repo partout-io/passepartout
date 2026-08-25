@@ -102,7 +102,7 @@ extension ABI.AppError: StyledLocalizableEntity {
             // Handled manually
             return nil
         case .openVPNUnsupportedCompression(let option):
-            return V.Openvpn.unsupportedCompression.appending(option, separator: "\n\n")
+            return Strings.Errors.Openvpn.unsupportedCompression.appending(option, separator: "\n\n")
         case .other(let error):
             return V.other.appending(error?.localizedDescription, separator: " ")
         case .partout(let error):
@@ -137,7 +137,7 @@ extension ABI.AppError: StyledLocalizableEntity {
                 return error?.localizedDescription
             }
         case .wireGuardEmptyPeers:
-            return V.Wireguard.emptyPeers
+            return Strings.Errors.Wireguard.emptyPeers
         }
     }
 }

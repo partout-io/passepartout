@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
+import io.partout.models.ParseErrorInfo
 import io.partout.models.PartoutErrorCode
 
 // Map AppError.Code for ErrorHandler
@@ -43,23 +44,16 @@ fun AppError.localizedMessage(): String {
             "OpenVPN, WireGuard"
         )
         AppErrorCode.noActiveModules -> stringResource(R.string.errors_app_no_active_modules)
-        AppErrorCode.openVPNUnsupportedCompression -> stringResource(
-            R.string.errors_app_openvpn_unsupported_compression
-        ).appending(detail, separator = "\n\n")
         AppErrorCode.other -> stringResource(R.string.errors_app_other)
             .appending(detail, separator = " ")
-        AppErrorCode.partout -> stringResource(
-            R.string.errors_app_partout,
-            cause?.partoutDescription ?: detail ?: "?"
-        )
+        AppErrorCode.partout ->
+            cause?.partoutDescription() ?: detail ?: stringResource(R.string.errors_app_partout)
         AppErrorCode.permissionDenied -> stringResource(R.string.errors_app_permission_denied)
         AppErrorCode.timeout -> stringResource(R.string.errors_app_timeout)
         AppErrorCode.webReceiver -> stringResource(R.string.errors_app_web_receiver)
-        AppErrorCode.wireGuardEmptyPeers -> stringResource(R.string.errors_app_wireguard_empty_peers)
         AppErrorCode.ineligibleProfile,
         AppErrorCode.interactiveLogin,
         AppErrorCode.notFound,
-        AppErrorCode.openVPNPassphraseRequired,
         AppErrorCode.rateLimit,
         AppErrorCode.systemExtension,
         AppErrorCode.unexpectedResponse,
@@ -72,6 +66,10 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.missingProviderEntity,
         AppErrorCode.missingProviderOption,
         AppErrorCode.multipleTunnels -> error("Unimplemented")
+        //
+        AppErrorCode.openVPNPassphraseRequired,
+        AppErrorCode.openVPNUnsupportedCompression,
+        AppErrorCode.wireGuardEmptyPeers -> error("Deprecated")
     }
 }
 
@@ -116,10 +114,80 @@ private fun String.appending(optional: String?, separator: String): String {
         .joinToString(separator = separator)
 }
 
-private val Throwable.partoutDescription: String?
-    get() = when (this) {
-        is PartoutException -> payload?.let {
-            "${it.code.value}, userInfo=${JSON.encode(it.userInfo)}"
-        } ?: code.toString()
-        else -> null
+@Composable
+fun Throwable.partoutDescription(): String? {
+    if (this !is PartoutException) return null
+    return when (errorCode) {
+        PartoutErrorCode.openVPNUnsupportedCompression -> stringResource(
+            R.string.errors_openvpn_unsupported_compression
+        )
+        PartoutErrorCode.wireGuardEmptyPeers -> stringResource(
+            R.string.errors_wireguard_empty_peers
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidAddress -> stringResource(
+            R.string.errors_wireguard_interface_address_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidDNS -> stringResource(
+            R.string.errors_wireguard_interface_dns_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidListenPort -> stringResource(
+            R.string.errors_wireguard_interface_listen_port_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidMTU -> stringResource(
+            R.string.errors_wireguard_interface_mtu_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardInterfaceHasInvalidPrivateKey -> stringResource(
+            R.string.errors_wireguard_interface_private_key_invalid
+        )
+        PartoutErrorCode.wireGuardInterfaceHasNoPrivateKey -> stringResource(
+            R.string.errors_wireguard_interface_private_key_required
+        )
+        PartoutErrorCode.wireGuardInterfaceHasUnrecognizedKey -> stringResource(
+            R.string.errors_wireguard_interface_unrecognized_key,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardMultipleEntriesForKey -> stringResource(
+            R.string.errors_wireguard_multiple_entries_for_key,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardMultipleInterfaces -> stringResource(
+            R.string.errors_wireguard_multiple_interfaces
+        )
+        PartoutErrorCode.wireGuardMultiplePeersWithSamePublicKey -> stringResource(
+            R.string.errors_wireguard_peer_public_key_duplicated
+        )
+        PartoutErrorCode.wireGuardNoInterface -> stringResource(
+            R.string.errors_wireguard_no_interface
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidAllowedIP -> stringResource(
+            R.string.errors_wireguard_peer_allowed_ips_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidEndpoint -> stringResource(
+            R.string.errors_wireguard_peer_endpoint_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidPersistentKeepAlive -> stringResource(
+            R.string.errors_wireguard_peer_persistent_keepalive_invalid,
+            arguments.first()
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidPreSharedKey -> stringResource(
+            R.string.errors_wireguard_peer_pre_shared_key_invalid
+        )
+        PartoutErrorCode.wireGuardPeerHasInvalidPublicKey -> stringResource(
+            R.string.errors_wireguard_peer_public_key_invalid
+        )
+        PartoutErrorCode.wireGuardPeerHasNoPublicKey -> stringResource(
+            R.string.errors_wireguard_peer_public_key_required
+        )
+        PartoutErrorCode.wireGuardPeerHasUnrecognizedKey -> stringResource(
+            R.string.errors_wireguard_peer_unrecognized_key,
+            arguments.first()
+        )
+        else -> "${errorCode.value}, userInfo=${JSON.encodeElement(userInfo)}"
     }
+}

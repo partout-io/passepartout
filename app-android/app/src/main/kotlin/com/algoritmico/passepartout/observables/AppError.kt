@@ -23,7 +23,7 @@ val Throwable.asAppError: AppError
     get() = when (this) {
         is ConfigManagerException.RateLimit -> AppError(AppErrorCode.rateLimit, this)
         is GenericException -> AppError(AppErrorCode.other, this)
-        is PartoutException -> asAppErrorFromPayload
+        is PartoutException -> AppError(AppErrorCode.partout, this)
         is ProfileImporterException.Binary -> AppError(AppErrorCode.binaryFile, this)
         is ProfileImporterException.Failure -> cause?.asAppError ?: AppError(AppErrorCode.importError, this)
         is ProfileImporterException.Null -> AppError(AppErrorCode.importError, this)
@@ -36,22 +36,6 @@ val Throwable.asAppError: AppError
         is VersionCheckerException.RateLimit -> AppError(AppErrorCode.rateLimit, this)
         is VersionCheckerException.UnexpectedResponse -> AppError(AppErrorCode.unexpectedResponse, this)
         else -> AppError(AppErrorCode.other, this)
-    }
-
-private val PartoutException.asAppErrorFromPayload: AppError
-    get() {
-        return when (payload?.code) {
-            PartoutErrorCode.openVPNPassphraseRequired -> {
-                AppError(AppErrorCode.openVPNPassphraseRequired)
-            }
-            PartoutErrorCode.openVPNUnsupportedCompression -> {
-                AppError(AppErrorCode.openVPNUnsupportedCompression)
-            }
-            PartoutErrorCode.parsing -> {
-                AppError(AppErrorCode.importError, this)
-            }
-            else -> AppError(AppErrorCode.partout, this)
-        }
     }
 
 fun AppErrorCode.Companion.fromLastErrorCode(string: String): AppErrorCode? {

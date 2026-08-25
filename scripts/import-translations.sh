@@ -1,7 +1,7 @@
 #!/bin/bash
-cwd=`dirname $0`
-source $cwd/env.sh
-cd $cwd/..
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/env.sh"
+cd "$script_dir/.."
 
 rm -rf "$translations_input_path"
 mkdir -p "$translations_input_path"
@@ -51,3 +51,8 @@ for lang in `ls $translations_input_path`; do
     sort $tmp_path | uniq >$output_path
     rm "$keys_path" "$tmp_path"
 done
+
+# Keep generated Swift bindings and Android string resources in sync with the
+# imported Apple translations.
+swiftgen config run --config swiftgen.yml
+"$script_dir/../app-android/scripts/import-apple-strings.sh"

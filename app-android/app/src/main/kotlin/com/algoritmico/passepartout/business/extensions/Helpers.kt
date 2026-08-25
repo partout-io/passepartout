@@ -9,6 +9,7 @@ import com.algoritmico.passepartout.context.defaultAndroidConstants
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
@@ -94,6 +95,10 @@ object JSON {
 
     inline fun <reified T> decode(json: String): T {
         return _coder.decodeFromString<T>(json)
+    }
+
+    inline fun <reified T> decodeElement(element: JsonElement): T {
+        return _coder.decodeFromJsonElement<T>(element)
     }
 }
 //endregion
