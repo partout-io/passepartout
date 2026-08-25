@@ -45,10 +45,8 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.noActiveModules -> stringResource(R.string.errors_app_no_active_modules)
         AppErrorCode.other -> stringResource(R.string.errors_app_other)
             .appending(detail, separator = " ")
-        AppErrorCode.partout -> stringResource(
-            R.string.errors_app_partout,
-            cause?.partoutDescription ?: detail ?: "?"
-        )
+        AppErrorCode.partout ->
+            cause?.partoutDescription() ?: detail ?: stringResource(R.string.errors_app_partout)
         AppErrorCode.permissionDenied -> stringResource(R.string.errors_app_permission_denied)
         AppErrorCode.timeout -> stringResource(R.string.errors_app_timeout)
         AppErrorCode.webReceiver -> stringResource(R.string.errors_app_web_receiver)
@@ -68,11 +66,6 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.missingProviderOption,
         AppErrorCode.multipleTunnels -> error("Unimplemented")
         //
-//        AppErrorCode.openVPNPassphraseRequired,
-//        AppErrorCode.openVPNUnsupportedCompression -> stringResource(
-//            R.string.errors_openvpn_unsupported_compression
-//        ).appending(detail, separator = "\n\n")
-//        AppErrorCode.wireGuardEmptyPeers -> stringResource(R.string.errors_wireguard_empty_peers)
         AppErrorCode.openVPNPassphraseRequired,
         AppErrorCode.openVPNUnsupportedCompression,
         AppErrorCode.wireGuardEmptyPeers -> error("Legacy")
@@ -120,10 +113,16 @@ private fun String.appending(optional: String?, separator: String): String {
         .joinToString(separator = separator)
 }
 
-private val Throwable.partoutDescription: String?
-    get() = when (this) {
-        is PartoutException -> payload?.let {
-            "${it.code.value}, userInfo=${JSON.encode(it.userInfo)}"
-        } ?: code.toString()
-        else -> null
+@Composable
+fun Throwable.partoutDescription(): String? {
+    if (this !is PartoutException) return null
+    return when (errorCode) {
+        PartoutErrorCode.openVPNUnsupportedCompression -> stringResource(
+            R.string.errors_openvpn_unsupported_compression
+        )
+        PartoutErrorCode.wireGuardEmptyPeers -> stringResource(
+            R.string.errors_wireguard_empty_peers
+        )
+        else -> "${errorCode.value}, userInfo=${JSON.encode(userInfo)}"
     }
+}
