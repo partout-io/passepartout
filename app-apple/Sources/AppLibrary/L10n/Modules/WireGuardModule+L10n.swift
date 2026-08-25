@@ -9,51 +9,47 @@ extension WireGuardParseError: @retroactive LocalizedError {
         let V = Strings.Errors.Wireguard.self
         switch self {
         case .invalidLine(let line):
-            return V.Title.invalidLine(line)
+            return V.invalidLine(line)
         case .noInterface:
-            return V.Title.noInterface
+            return V.noInterface
         case .multipleInterfaces:
-            return V.Title.multipleInterfaces
+            return V.multipleInterfaces
         case .interfaceHasNoPrivateKey:
-            return composed(V.Interface.privateKeyRequired, V.Interface.privateKeyInvalid)
+            return V.Interface.privateKeyRequired
         case .interfaceHasInvalidPrivateKey:
-            return composed(V.Title.privateKeyInvalid, V.Interface.privateKeyInvalid)
+            return V.Interface.privateKeyInvalid
         case .interfaceHasInvalidListenPort(let value):
-            return composed(V.Title.listenPortInvalid(value), V.Interface.listenPortInvalid)
+            return V.Interface.listenPortInvalid(value)
         case .interfaceHasInvalidAddress(let value):
-            return composed(V.Title.addressInvalid(value), V.Interface.addressInvalid)
+            return V.Interface.addressInvalid(value)
         case .interfaceHasInvalidDNS(let value):
-            return composed(V.Title.dnsInvalid(value), V.Interface.dnsInvalid)
+            return V.Interface.dnsInvalid(value)
         case .interfaceHasInvalidMTU(let value):
-            return composed(V.Title.mtuInvalid(value), V.Interface.mtuInvalid)
+            return V.Interface.mtuInvalid(value)
         case .interfaceHasUnrecognizedKey(let value):
-            return composed(V.Title.unrecognizedInterfaceKey(value), V.Title.infoUnrecognizedInterfaceKey)
+            return V.Interface.unrecognizedKey(value)
         case .peerHasNoPublicKey:
-            return composed(V.Peer.publicKeyRequired, V.Peer.publicKeyInvalid)
+            return V.Peer.publicKeyRequired
         case .peerHasInvalidPublicKey:
-            return composed(V.Title.publicKeyInvalid, V.Peer.publicKeyInvalid)
+            return V.Peer.publicKeyInvalid
         case .peerHasInvalidPreSharedKey:
-            return composed(V.Title.preSharedKeyInvalid, V.Peer.preSharedKeyInvalid)
+            return V.Peer.preSharedKeyInvalid
         case .peerHasInvalidAllowedIP(let value):
-            return composed(V.Title.allowedIPInvalid(value), V.Peer.allowedIPsInvalid)
+            return V.Peer.allowedIPsInvalid(value)
         case .peerHasInvalidEndpoint(let value):
-            return composed(V.Title.endpointInvalid(value), V.Peer.endpointInvalid)
+            return V.Peer.endpointInvalid(value)
         case .peerHasInvalidPersistentKeepAlive(let value):
-            return composed(V.Title.persistentKeepliveInvalid(value), V.Peer.persistentKeepaliveInvalid)
+            return V.Peer.persistentKeepaliveInvalid(value)
         case .peerHasUnrecognizedKey(let value):
-            return composed(V.Title.unrecognizedPeerKey(value), V.Title.infoUnrecognizedPeerKey)
+            return V.Peer.unrecognizedKey(value)
         case .peerHasInvalidTransferBytes(let line):
-            return V.Title.invalidLine(line)
+            return V.invalidLine(line)
         case .peerHasInvalidLastHandshakeTime(let line):
-            return V.Title.invalidLine(line)
+            return V.invalidLine(line)
         case .multiplePeersWithSamePublicKey:
             return V.Peer.publicKeyDuplicated
         case .multipleEntriesForKey(let value):
-            return V.Title.multipleEntriesForKey(value)
+            return V.multipleEntriesForKey(value)
         }
     }
-}
-
-private func composed(_ title: String, _ info: String) -> String {
-    [title, info].joined(separator: " ")
 }
