@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "Введите пароль для '%@'.";
 "alerts.import.passphrase.ok" = "Расшифровать";
 "alerts.providers.missing_server.message" = "Не выбран сервер поставщика. Выберите целевой сервер на вашем устройстве iOS/macOS.";
+"android.alerts.interactive_unsupported.message" = "%@ требует ввода данных, который не поддерживается этой версией приложения.";
+"android.alerts.interactive_unsupported.title" = "Интерактивный профиль";
+"android.alerts.vpn_permission.message" = "%@ требуется разрешение VPN для установления соединения.";
+"android.alerts.vpn_permission.open_settings" = "Открыть настройки VPN";
+"android.alerts.vpn_permission.title" = "Требуется разрешение VPN";
+"android.errors.profile_importer.empty" = "Не удалось прочитать содержимое профиля.";
+"android.profiles.actions.add.content_description" = "Добавить профиль";
+"android.profiles.actions.delete.content_description" = "Удалить профили";
+"android.profiles.layout.grid.content_description" = "Показать профили сеткой";
+"android.profiles.layout.list.content_description" = "Показать профили списком";
+"android.profiles.selection.count" = "Выбрано: %d";
 "android.vpn_service.channel.description" = "Уведомление для службы VPN переднего плана";
 "android.vpn_service.status.stopped" = "Остановлено";
 "entities.dns_protocol.cleartext" = "Не зашифровано";

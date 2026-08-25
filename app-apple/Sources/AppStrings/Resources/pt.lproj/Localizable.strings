@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "Insira a senha para '%@'.";
 "alerts.import.passphrase.ok" = "Descriptografar";
 "alerts.providers.missing_server.message" = "Nenhum servidor de provedor selecionado. Selecione um servidor de destino no seu dispositivo iOS/macOS.";
+"android.alerts.interactive_unsupported.message" = "%@ requer dados que não são suportados por esta versão da aplicação.";
+"android.alerts.interactive_unsupported.title" = "Perfil interativo";
+"android.alerts.vpn_permission.message" = "%@ precisa de permissão de VPN para iniciar uma ligação.";
+"android.alerts.vpn_permission.open_settings" = "Abrir definições de VPN";
+"android.alerts.vpn_permission.title" = "Permissão de VPN necessária";
+"android.errors.profile_importer.empty" = "Não foi possível ler o conteúdo do perfil.";
+"android.profiles.actions.add.content_description" = "Adicionar perfil";
+"android.profiles.actions.delete.content_description" = "Eliminar perfis";
+"android.profiles.layout.grid.content_description" = "Mostrar perfis em grelha";
+"android.profiles.layout.list.content_description" = "Mostrar perfis em lista";
+"android.profiles.selection.count" = "%d selecionados";
 "android.vpn_service.channel.description" = "Notificação para o serviço VPN em primeiro plano";
 "android.vpn_service.status.stopped" = "Parado";
 "entities.dns_protocol.cleartext" = "Texto claro";

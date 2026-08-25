@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "Voer het wachtwoord in voor '%@'.";
 "alerts.import.passphrase.ok" = "Ontsleutelen";
 "alerts.providers.missing_server.message" = "Geen provider-server geselecteerd. Selecteer een doellocatieserver op je iOS-/macOS-apparaat.";
+"android.alerts.interactive_unsupported.message" = "%@ vereist invoer die niet wordt ondersteund door deze versie van de app.";
+"android.alerts.interactive_unsupported.title" = "Interactief profiel";
+"android.alerts.vpn_permission.message" = "%@ heeft VPN-toestemming nodig om een verbinding te starten.";
+"android.alerts.vpn_permission.open_settings" = "VPN-instellingen openen";
+"android.alerts.vpn_permission.title" = "VPN-toestemming vereist";
+"android.errors.profile_importer.empty" = "Kan de inhoud van het profiel niet lezen.";
+"android.profiles.actions.add.content_description" = "Profiel toevoegen";
+"android.profiles.actions.delete.content_description" = "Profielen verwijderen";
+"android.profiles.layout.grid.content_description" = "Profielen als raster weergeven";
+"android.profiles.layout.list.content_description" = "Profielen als lijst weergeven";
+"android.profiles.selection.count" = "%d geselecteerd";
 "android.vpn_service.channel.description" = "Melding voor de VPN-voorgrondservice";
 "android.vpn_service.status.stopped" = "Gestopt";
 "entities.dns_protocol.cleartext" = "Onversleuteld";

@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "输入 \"%@\" 的密码短语。";
 "alerts.import.passphrase.ok" = "解密";
 "alerts.providers.missing_server.message" = "未选择提供商服务器。请在您的 iOS/macOS 设备上选择目标服务器。";
+"android.alerts.interactive_unsupported.message" = "%@ 需要此版本的应用不支持的输入。";
+"android.alerts.interactive_unsupported.title" = "交互式配置文件";
+"android.alerts.vpn_permission.message" = "%@ 需要 VPN 权限才能建立连接。";
+"android.alerts.vpn_permission.open_settings" = "打开 VPN 设置";
+"android.alerts.vpn_permission.title" = "需要 VPN 权限";
+"android.errors.profile_importer.empty" = "无法读取配置文件内容。";
+"android.profiles.actions.add.content_description" = "添加配置文件";
+"android.profiles.actions.delete.content_description" = "删除配置文件";
+"android.profiles.layout.grid.content_description" = "以网格显示配置文件";
+"android.profiles.layout.list.content_description" = "以列表显示配置文件";
+"android.profiles.selection.count" = "已选择 %d 个";
 "android.vpn_service.channel.description" = "VPN 前台服务通知";
 "android.vpn_service.status.stopped" = "已停止";
 "entities.dns_protocol.cleartext" = "明文";

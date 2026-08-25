@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "Εισάγετε το μυστικό κλειδί για '%@'.";
 "alerts.import.passphrase.ok" = "Αποκρυπτογράφηση";
 "alerts.providers.missing_server.message" = "Δεν έχει επιλεγεί διακομιστής παρόχου. Επιλέξτε έναν διακομιστή προορισμού στη συσκευή σας iOS/macOS.";
+"android.alerts.interactive_unsupported.message" = "Το %@ απαιτεί εισαγωγή δεδομένων που δεν υποστηρίζεται από αυτήν την έκδοση της εφαρμογής.";
+"android.alerts.interactive_unsupported.title" = "Διαδραστικό προφίλ";
+"android.alerts.vpn_permission.message" = "Το %@ χρειάζεται άδεια VPN για να ξεκινήσει μια σύνδεση.";
+"android.alerts.vpn_permission.open_settings" = "Άνοιγμα ρυθμίσεων VPN";
+"android.alerts.vpn_permission.title" = "Απαιτείται άδεια VPN";
+"android.errors.profile_importer.empty" = "Δεν είναι δυνατή η ανάγνωση του περιεχομένου του προφίλ.";
+"android.profiles.actions.add.content_description" = "Προσθήκη προφίλ";
+"android.profiles.actions.delete.content_description" = "Διαγραφή προφίλ";
+"android.profiles.layout.grid.content_description" = "Προβολή προφίλ σε πλέγμα";
+"android.profiles.layout.list.content_description" = "Προβολή προφίλ σε λίστα";
+"android.profiles.selection.count" = "%d επιλεγμένα";
 "android.vpn_service.channel.description" = "Ειδοποίηση για την υπηρεσία VPN στο προσκήνιο";
 "android.vpn_service.status.stopped" = "Διακόπηκε";
 "entities.dns_protocol.cleartext" = "Απλό κείμενο";

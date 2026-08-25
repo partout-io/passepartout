@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "Введіть пароль для '%@'.";
 "alerts.import.passphrase.ok" = "Розшифрувати";
 "alerts.providers.missing_server.message" = "Не вибрано сервер постачальника. Будь ласка, виберіть сервер призначення на вашому пристрої iOS/macOS.";
+"android.alerts.interactive_unsupported.message" = "%@ потребує введення даних, яке не підтримується цією версією програми.";
+"android.alerts.interactive_unsupported.title" = "Інтерактивний профіль";
+"android.alerts.vpn_permission.message" = "%@ потребує дозволу VPN для встановлення з’єднання.";
+"android.alerts.vpn_permission.open_settings" = "Відкрити налаштування VPN";
+"android.alerts.vpn_permission.title" = "Потрібен дозвіл VPN";
+"android.errors.profile_importer.empty" = "Не вдалося прочитати вміст профілю.";
+"android.profiles.actions.add.content_description" = "Додати профіль";
+"android.profiles.actions.delete.content_description" = "Видалити профілі";
+"android.profiles.layout.grid.content_description" = "Показати профілі сіткою";
+"android.profiles.layout.list.content_description" = "Показати профілі списком";
+"android.profiles.selection.count" = "Вибрано: %d";
 "android.vpn_service.channel.description" = "Сповіщення для служби VPN переднього плану";
 "android.vpn_service.status.stopped" = "Зупинено";
 "entities.dns_protocol.cleartext" = "Відкритий текст";

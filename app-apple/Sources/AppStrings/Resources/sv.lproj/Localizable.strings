@@ -1,6 +1,17 @@
 "alerts.import.passphrase.message" = "Ange lösenfras för '%@'.";
 "alerts.import.passphrase.ok" = "Dekryptera";
 "alerts.providers.missing_server.message" = "Ingen leverantörsserver vald. Välj en målserver på din iOS/macOS-enhet.";
+"android.alerts.interactive_unsupported.message" = "%@ kräver inmatning som inte stöds av den här appversionen.";
+"android.alerts.interactive_unsupported.title" = "Interaktiv profil";
+"android.alerts.vpn_permission.message" = "%@ behöver VPN-behörighet för att starta en anslutning.";
+"android.alerts.vpn_permission.open_settings" = "Öppna VPN-inställningar";
+"android.alerts.vpn_permission.title" = "VPN-behörighet krävs";
+"android.errors.profile_importer.empty" = "Det gick inte att läsa profilens innehåll.";
+"android.profiles.actions.add.content_description" = "Lägg till profil";
+"android.profiles.actions.delete.content_description" = "Ta bort profiler";
+"android.profiles.layout.grid.content_description" = "Visa profiler som rutnät";
+"android.profiles.layout.list.content_description" = "Visa profiler som lista";
+"android.profiles.selection.count" = "%d valda";
 "android.vpn_service.channel.description" = "Avisering för VPN-förgrundstjänsten";
 "android.vpn_service.status.stopped" = "Stoppad";
 "entities.dns_protocol.cleartext" = "Okrypterat";
