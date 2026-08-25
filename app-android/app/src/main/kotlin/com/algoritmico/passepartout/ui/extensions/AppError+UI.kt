@@ -69,7 +69,7 @@ fun AppError.localizedMessage(): String {
         //
         AppErrorCode.openVPNPassphraseRequired,
         AppErrorCode.openVPNUnsupportedCompression,
-        AppErrorCode.wireGuardEmptyPeers -> error("Legacy")
+        AppErrorCode.wireGuardEmptyPeers -> error("Deprecated")
     }
 }
 
