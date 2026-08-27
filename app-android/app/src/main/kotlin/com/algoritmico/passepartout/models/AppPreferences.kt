@@ -34,6 +34,7 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param configFlags 
+ * @param cryptoBackend 
  * @param dnsFallsBack 
  * @param experimental 
  * @param extensiveLogging 
@@ -50,6 +51,9 @@ data class AppPreferences (
 
     @SerialName(value = "configFlags")
     val configFlags: kotlin.collections.List<@Contextual ConfigFlag>,
+
+    @SerialName(value = "cryptoBackend")
+    val cryptoBackend: kotlin.Int,
 
     @SerialName(value = "dnsFallsBack")
     val dnsFallsBack: kotlin.Boolean,

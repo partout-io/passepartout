@@ -10,6 +10,7 @@ import Partout
 public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
 
     public var configFlags: [OpenAPIConfigFlag]
+    public var cryptoBackend: Int
     public var deviceId: String?
     public var dnsFallsBack: Bool
     public var experimental: OpenAPIExperimentalPreferences
@@ -21,8 +22,9 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
     public var logsPrivateData: Bool
     public var skipsPurchases: Bool
 
-    public init(configFlags: [OpenAPIConfigFlag], deviceId: String? = nil, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, skipsPurchases: Bool) {
+    public init(configFlags: [OpenAPIConfigFlag], cryptoBackend: Int, deviceId: String? = nil, dnsFallsBack: Bool, experimental: OpenAPIExperimentalPreferences, extensiveLogging: Bool, lastCheckedVersionTimestamp: Int64? = nil, lastCheckedVersion: String? = nil, lastUsedProfileUUID: String? = nil, logsPrivateData: Bool, skipsPurchases: Bool) {
         self.configFlags = configFlags
+        self.cryptoBackend = cryptoBackend
         self.deviceId = deviceId
         self.dnsFallsBack = dnsFallsBack
         self.experimental = experimental
@@ -36,6 +38,7 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case configFlags
+        case cryptoBackend
         case deviceId
         case dnsFallsBack
         case experimental
@@ -52,6 +55,7 @@ public struct OpenAPIAppPreferences: Sendable, Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(configFlags, forKey: .configFlags)
+        try container.encode(cryptoBackend, forKey: .cryptoBackend)
         try container.encodeIfPresent(deviceId, forKey: .deviceId)
         try container.encode(dnsFallsBack, forKey: .dnsFallsBack)
         try container.encode(experimental, forKey: .experimental)

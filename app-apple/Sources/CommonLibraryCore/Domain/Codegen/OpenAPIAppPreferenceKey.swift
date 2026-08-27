@@ -9,6 +9,7 @@ import Partout
 
 public enum OpenAPIAppPreferenceKey: String, Sendable, Codable, CaseIterable {
     case configFlags = "configFlags"
+    case cryptoBackend = "cryptoBackend"
     case deviceId = "deviceId"
     case dnsFallsBack = "dnsFallsBack"
     case experimental = "experimental"

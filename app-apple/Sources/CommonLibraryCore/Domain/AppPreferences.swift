@@ -7,6 +7,7 @@ import Partout
 extension ABI {
     public protocol AppPreferencesProtocol: Sendable {
         var configFlags: [ConfigFlag] { get set }
+        var cryptoBackend: Int { get set }
         var deviceId: String? { get set }
         var dnsFallsBack: Bool { get set }
         var experimental: ExperimentalPreferences { get set }

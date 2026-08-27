@@ -26,6 +26,15 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
         }
     }
 
+    public var cryptoBackend: Int {
+        get {
+            defaults.integer(forAppPreference: .cryptoBackend)
+        }
+        set {
+            defaults.set(newValue, forAppPreference: .cryptoBackend)
+        }
+    }
+
     public var deviceId: String? {
         get {
             defaults.string(forAppPreference: .deviceId)
@@ -115,6 +124,7 @@ public final class UserDefaultsAppPreferences: ABI.AppPreferencesProtocol, @unch
 
     public func copy(_ other: ABI.AppPreferencesProtocol) {
         configFlags = other.configFlags
+        cryptoBackend = other.cryptoBackend
         deviceId = other.deviceId
         dnsFallsBack = other.dnsFallsBack
         experimental = other.experimental
@@ -140,11 +150,19 @@ private extension UserDefaults {
         object(forKey: preference.key) as? Date
     }
 
+    func integer(forAppPreference preference: ABI.AppPreferenceKey) -> Int {
+        integer(forKey: preference.key)
+    }
+
     func string(forAppPreference preference: ABI.AppPreferenceKey) -> String? {
         string(forKey: preference.key)
     }
 
     func set(_ value: Bool, forAppPreference preference: ABI.AppPreferenceKey) {
+        set(value, forKey: preference.key)
+    }
+
+    func set(_ value: Int, forAppPreference preference: ABI.AppPreferenceKey) {
         set(value, forKey: preference.key)
     }
 

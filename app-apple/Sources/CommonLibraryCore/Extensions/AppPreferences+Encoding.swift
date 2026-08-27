@@ -10,6 +10,7 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
     public static func `default`() -> ABI.AppPreferences {
         var preferences = ABI.AppPreferences(
             configFlags: [],
+            cryptoBackend: 0,
             deviceId: nil,
             dnsFallsBack: true,
             experimental: ABI.ExperimentalPreferences(
@@ -33,6 +34,8 @@ extension ABI.AppPreferencesProtocol where Self == ABI.AppPreferences {
         switch key {
         case .configFlags:
             configFlags = []
+        case .cryptoBackend:
+            cryptoBackend = 0
         case .deviceId:
             deviceId = nil
         case .dnsFallsBack:
@@ -73,6 +76,8 @@ extension ABI.AppPreferencesProtocol {
         switch key {
         case .configFlags:
             configFlags = preferences.configFlags
+        case .cryptoBackend:
+            cryptoBackend = preferences.cryptoBackend
         case .deviceId:
             deviceId = preferences.deviceId
         case .dnsFallsBack:
@@ -116,6 +121,8 @@ extension ABI.AppPreferences {
         switch key {
         case .configFlags:
             configFlags = try container.decodeIfPresent([ABI.ConfigFlag].self, forKey: .configFlags) ?? def.configFlags
+        case .cryptoBackend:
+            cryptoBackend = try container.decodeIfPresent(Int.self, forKey: .cryptoBackend) ?? 0
         case .deviceId:
             deviceId = try container.decodeIfPresent(String.self, forKey: .deviceId)
         case .dnsFallsBack:
