@@ -19,6 +19,7 @@ import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import com.algoritmico.passepartout.ui.theme.themeListSection
 
@@ -37,13 +38,12 @@ fun PreferencesView(
                     onCheckedChange = UserPreferencesObservable::updateDnsFallback
                 )
             }
-            // Hide "Advanced" because there are no actionable config flags
-//            item {
-//                ThemeNavigatingButton(
-//                    title = "Advanced",
-//                    onClick = onAdvanced
-//                )
-//            }
+            item {
+                ThemeNavigatingButton(
+                    title = stringResource(R.string.global_nouns_advanced),
+                    onClick = onAdvanced
+                )
+            }
         }
     }
 }
