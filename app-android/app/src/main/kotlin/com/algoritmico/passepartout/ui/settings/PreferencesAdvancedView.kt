@@ -234,7 +234,7 @@ private fun CryptoBackendPickerRow(
         mutableStateOf(false)
     }
     val selectedBackend = cryptoBackends.firstOrNull {
-        it.value == cryptoBackend
+        (it?.value ?: 0) == cryptoBackend
     }
 
     ListItem(
@@ -256,15 +256,6 @@ private fun CryptoBackendPickerRow(
                         isMenuExpanded = false
                     }
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(stringResource(R.string.global_nouns_default))
-                        },
-                        onClick = {
-                            isMenuExpanded = false
-                            onCryptoBackendChange(0)
-                        }
-                    )
                     cryptoBackends.forEach { backend ->
                         DropdownMenuItem(
                             text = {
@@ -272,7 +263,7 @@ private fun CryptoBackendPickerRow(
                             },
                             onClick = {
                                 isMenuExpanded = false
-                                onCryptoBackendChange(backend.value)
+                                onCryptoBackendChange(backend?.value ?: 0)
                             }
                         )
                     }
@@ -287,7 +278,8 @@ private val advancedFlags = listOf(
     ConfigFlag.zigRuntime
 )
 
-private val cryptoBackends = listOf(
+private val cryptoBackends: List<CryptoBackend?> = listOf(
+    null,
     CryptoBackend.openssl,
     CryptoBackend.mbedtls
 )
