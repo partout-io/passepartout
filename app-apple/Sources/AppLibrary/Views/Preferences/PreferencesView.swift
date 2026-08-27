@@ -147,8 +147,11 @@ private extension PreferencesView {
     }
 
     func advancedView() -> some View {
-        PreferencesAdvancedView(experimental: userPreferences.binding(\.experimental))
-            .navigationTitle(advancedTitle)
+        PreferencesAdvancedView(
+            userPreferences: userPreferences,
+            experimental: userPreferences.binding(\.experimental)
+        )
+        .navigationTitle(advancedTitle)
     }
 }
 

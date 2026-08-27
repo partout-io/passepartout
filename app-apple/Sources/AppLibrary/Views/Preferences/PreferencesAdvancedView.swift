@@ -15,12 +15,23 @@ struct PreferencesAdvancedView: View {
     @Environment(\.appConfiguration)
     private var appConfiguration
 
+    let userPreferences: UserPreferencesObservable
+
     @Binding
     var experimental: ABI.ExperimentalPreferences
+
+    static let cryptoBackends: [CryptoBackend] = [
+        .openssl,
+        .mbedtls,
+        .native
+    ]
 
     var body: some View {
         Form {
             configSection
+            if isEnabled(.zigRuntime) {
+                cryptoSection
+            }
         }
         .themeForm()
     }
@@ -108,12 +119,27 @@ private extension PreferencesAdvancedView {
         }
     }
 
+    func isEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        experimental.isAllowed(flag) &&
+        (configObservable.isActive(flag) || experimental.enabledConfigFlags.contains(flag))
+    }
+
     func flagView(for flag: ABI.ConfigFlag) -> some View {
         VStack(alignment: .leading) {
             Text(flag.localizedDescription)
             Text(configObservable.isActive(flag) ? Strings.Global.Nouns.enabled : Strings.Global.Nouns.disabled)
                 .themeSubtitle()
         }
+    }
+
+    var cryptoSection: some View {
+        Picker(Strings.Views.Preferences.cryptoBackend, selection: userPreferences.binding(\.cryptoBackend)) {
+            Text(Strings.Global.Nouns.default).tag(0)
+            ForEach(Self.cryptoBackends, id: \.rawValue) {
+                Text($0.localizedDescription)
+            }
+        }
+        .themeContainerEntry()
     }
 }
 

@@ -1158,6 +1158,8 @@ public enum Strings {
       }
     }
     public enum Preferences {
+      /// Cryptography
+      public static let cryptoBackend = Strings.tr("Localizable", "views.preferences.crypto_backend", fallback: "Cryptography")
       /// DNS fallback
       public static let dnsFallsBack = Strings.tr("Localizable", "views.preferences.dns_falls_back", fallback: "DNS fallback")
       /// In-app purchases
@@ -1170,8 +1172,6 @@ public enum Strings {
       public static let launchesOnLogin = Strings.tr("Localizable", "views.preferences.launches_on_login", fallback: "Launch on login")
       /// Lock in background
       public static let locksInBackground = Strings.tr("Localizable", "views.preferences.locks_in_background", fallback: "Lock in background")
-      /// Modern cryptography
-      public static let modernCrypto = Strings.tr("Localizable", "views.preferences.modern_crypto", fallback: "Modern cryptography")
       /// Pin active profile
       public static let pinsActiveProfile = Strings.tr("Localizable", "views.preferences.pins_active_profile", fallback: "Pin active profile")
       /// Appearance
@@ -1213,10 +1213,6 @@ public enum Strings {
       public enum LocksInBackground {
         /// Lock the app with FaceID when sent to the background.
         public static let footer = Strings.tr("Localizable", "views.preferences.locks_in_background.footer", fallback: "Lock the app with FaceID when sent to the background.")
-      }
-      public enum ModernCrypto {
-        /// Use modern and faster implementations of cryptographic algorithms, though potentially unstable.
-        public static let footer = Strings.tr("Localizable", "views.preferences.modern_crypto.footer", fallback: "Use modern and faster implementations of cryptographic algorithms, though potentially unstable.")
       }
       public enum PinsActiveProfile {
         /// Also show the active profile on top for quick access.
