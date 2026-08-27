@@ -171,6 +171,7 @@ private extension TunnelContext {
             logsPrivateData: preferences[\.logsPrivateData],
             cacheDir: cachesURL.path(),
             minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
+            cryptoBackend: CryptoBackend(rawValue: preferences[\.cryptoBackend]),
             logger: logger
         )
 
