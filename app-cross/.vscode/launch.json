@@ -1,44 +1,67 @@
 {
+    "version": "0.2.0",
     "configurations": [
         {
-            "type": "swift",
+            "name": "CMake: Debug installed app (macOS)",
+            "type": "cppdbg",
             "request": "launch",
+            "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
             "args": [],
-            "cwd": "${workspaceFolder:app-cross}",
-            "name": "Debug passepartout-tunnel",
-            "target": "passepartout-tunnel",
-            "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug passepartout-tunnel"
+            "cwd": "${workspaceFolder}/out/install/macos-clang",
+            "MIMode": "lldb",
+            "stopAtEntry": false,
+            "preLaunchTask": "CMake: Install macOS Debug"
         },
         {
-            "type": "swift",
+            "name": "CMake: Debug installed app (Windows ARM64)",
+            "type": "cppvsdbg",
             "request": "launch",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
             "args": [],
-            "cwd": "${workspaceFolder:app-cross}",
-            "name": "Release passepartout-tunnel",
-            "target": "passepartout-tunnel",
-            "configuration": "release",
-            "preLaunchTask": "swift: Build Release passepartout-tunnel"
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "stopAtEntry": false,
+            "preLaunchTask": "CMake: Install Windows ARM64 Debug"
         },
         {
-            "type": "swift",
+            "name": "CMake: Debug installed app (Windows x64)",
+            "type": "cppvsdbg",
             "request": "launch",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
             "args": [],
-            "cwd": "${workspaceFolder:app-cross}",
-            "name": "Debug passepartout",
-            "target": "passepartout",
-            "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug passepartout"
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "stopAtEntry": false,
+            "preLaunchTask": "CMake: Install Windows x64 Debug"
         },
         {
-            "type": "swift",
+            "name": "CMake: Run installed app (macOS Release)",
+            "type": "cppdbg",
             "request": "launch",
+            "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
             "args": [],
-            "cwd": "${workspaceFolder:app-cross}",
-            "name": "Release passepartout",
-            "target": "passepartout",
-            "configuration": "release",
-            "preLaunchTask": "swift: Build Release passepartout"
+            "cwd": "${workspaceFolder}/out/install/macos-clang",
+            "MIMode": "lldb",
+            "stopAtEntry": false,
+            "preLaunchTask": "CMake: Install macOS Release"
+        },
+        {
+            "name": "CMake: Run installed app (Windows ARM64 Release)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "stopAtEntry": false,
+            "preLaunchTask": "CMake: Install Windows ARM64 Release"
+        },
+        {
+            "name": "CMake: Run installed app (Windows x64 Release)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "stopAtEntry": false,
+            "preLaunchTask": "CMake: Install Windows x64 Release"
         }
     ]
 }

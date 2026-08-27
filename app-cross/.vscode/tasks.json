@@ -1,0 +1,146 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure macOS",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "macos-clang"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Build macOS Debug",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "macos-debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Configure macOS",
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Install macOS Debug",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--install",
+                "${workspaceFolder}/out/build/macos-clang",
+                "--config",
+                "Debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build macOS Debug",
+            "dependsOrder": "sequence",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Build macOS Release",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "macos-release"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Configure macOS",
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Install macOS Release",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--install",
+                "${workspaceFolder}/out/build/macos-clang",
+                "--config",
+                "Release"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build macOS Release",
+            "dependsOrder": "sequence",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Install Windows ARM64 Debug",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'; cmake --preset windows-arm64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-arm64-debug; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-arm64' --config Debug; exit $LASTEXITCODE }"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Install Windows ARM64 Release",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'; cmake --preset windows-arm64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-arm64-release; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-arm64' --config Release; exit $LASTEXITCODE }"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Install Windows x64 Debug",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'; cmake --preset windows-x64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-x64-debug; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-x64' --config Debug; exit $LASTEXITCODE }"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Install Windows x64 Release",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'; cmake --preset windows-x64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-x64-release; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-x64' --config Release; exit $LASTEXITCODE }"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

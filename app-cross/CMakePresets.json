@@ -18,10 +18,6 @@
       "name": "macos-clang",
       "displayName": "macOS clang",
       "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -29,22 +25,31 @@
       }
     },
     {
-      "name": "windows-arm64",
-      "displayName": "Windows arm64 clang-cl",
+      "name": "windows-base",
+      "hidden": true,
       "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-cl.exe",
-        "CMAKE_CXX_COMPILER": "clang-cl.exe",
-        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"
-      },
-      "architecture": {
-        "value": "arm64",
-        "strategy": "external"
-      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
+      }
+    },
+    {
+      "name": "windows-arm64",
+      "displayName": "Windows ARM64 MSVC",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "windows-x64",
+      "displayName": "Windows x64 MSVC",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       }
     }
   ],
@@ -67,6 +72,16 @@
     {
       "name": "windows-arm64-release",
       "configurePreset": "windows-arm64",
+      "configuration": "Release"
+    },
+    {
+      "name": "windows-x64-debug",
+      "configurePreset": "windows-x64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-x64-release",
+      "configurePreset": "windows-x64",
       "configuration": "Release"
     }
   ]
