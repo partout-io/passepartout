@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Δεν επιλέχθηκε διακομιστής στον πάροχο.";
 "errors.app.module_requires_connection" = "Η μονάδα %@ απαιτεί ενεργή σύνδεση ενός από τους παρακάτω τύπους: %@";
 "errors.app.no_active_modules" = "Το προφίλ δεν έχει ενεργές μονάδες.";
-"errors.openvpn.unsupported_compression" = "Η συμπίεση OpenVPN δεν είναι ασφαλής και δεν υποστηρίζεται πλέον.";
 "errors.app.other" = "Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας.";
 "errors.app.parsing" = "Δεν ήταν δυνατή η ανάλυση.";
 "errors.app.partout" = "Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας (κωδικός=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "Η λειτουργία έληξε λόγω χρονικού ορίου.";
 "errors.app.tunnel" = "Δεν ήταν δυνατή η εκτέλεση της ενέργειας.";
 "errors.app.web_receiver" = "Δεν είναι δυνατή η εκκίνηση της εισαγωγής. Βεβαιωθείτε ότι η τηλεόρασή σας είναι σωστά συνδεδεμένη στο τοπικό δίκτυο.";
-"errors.wireguard.empty_peers" = "Δεν έχουν οριστεί ομότιμοι.";
 "errors.modules.DNS.emptyDoTHostname" = "Κενό όνομα κεντρικού υπολογιστή DoT.";
 "errors.modules.DNS.emptyServers" = "Δεν ορίστηκαν διακομιστές.";
 "errors.modules.DNS.invalidDoHURL" = "Μη έγκυρο URL DoH.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Μη έγκυρο κοινόχρηστο κλειδί.";
 "errors.modules.WireGuard.privateKey" = "Μη έγκυρο ιδιωτικό κλειδί.";
 "errors.modules.WireGuard.publicKey" = "Μη έγκυρο δημόσιο κλειδί.";
+"errors.openvpn.unsupported_compression" = "Η συμπίεση OpenVPN δεν είναι ασφαλής και δεν υποστηρίζεται πλέον.";
 "errors.tunnel.auth" = "Η επαλήθευση απέτυχε";
 "errors.tunnel.compression" = "Η συμπίεση δεν υποστηρίζεται";
 "errors.tunnel.dns" = "Το DNS απέτυχε";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Η δρομολόγηση λείπει";
 "errors.tunnel.shutdown" = "Ο διακομιστής τερματίστηκε";
 "errors.tunnel.tls" = "Το TLS απέτυχε";
+"errors.wireguard.empty_peers" = "Δεν έχουν οριστεί ομότιμοι.";
 "errors.wireguard.interface.address.invalid" = "Η διεύθυνση '%@' δεν είναι έγκυρη. Οι διευθύνσεις της διεπαφής πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα, προαιρετικά σε σημειογραφία CIDR.";
 "errors.wireguard.interface.dns.invalid" = "Το DNS '%@' δεν είναι έγκυρο. Οι διακομιστές DNS της διεπαφής πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα.";
 "errors.wireguard.interface.listen_port.invalid" = "Η θύρα ακρόασης '%@' δεν είναι έγκυρη. Η θύρα ακρόασης της διεπαφής πρέπει να είναι μεταξύ 0 και 65535, ή να μην έχει καθοριστεί.";
 "errors.wireguard.interface.mtu.invalid" = "Το MTU '%@' δεν είναι έγκυρο. Το MTU της διεπαφής πρέπει να είναι μεταξύ 576 και 65535, ή να μην έχει καθοριστεί.";
 "errors.wireguard.interface.private_key.invalid" = "Το ιδιωτικό κλειδί δεν είναι έγκυρο. Το ιδιωτικό κλειδί της διεπαφής πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64.";
 "errors.wireguard.interface.private_key.required" = "Απαιτείται ιδιωτικό κλειδί διεπαφής.";
+"errors.wireguard.interface.unrecognized_key" = "Η διεπαφή περιέχει μη αναγνωρισμένο κλειδί '%@' Τα έγκυρα κλειδιά είναι: 'PrivateKey', 'ListenPort', 'Address', 'DNS' και 'MTU'.";
+"errors.wireguard.invalid_line" = "Μη έγκυρη γραμμή: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Πρέπει να υπάρχει μόνο μία καταχώρηση ανά τμήμα για το κλειδί '%@'.";
+"errors.wireguard.multiple_interfaces" = "Η διαμόρφωση πρέπει να έχει μόνο ένα τμήμα 'Interface'.";
+"errors.wireguard.no_interface" = "Η διαμόρφωση πρέπει να έχει ένα τμήμα 'Interface'.";
 "errors.wireguard.peer.allowed_ips.invalid" = "Η επιτρεπόμενη IP '%@' δεν είναι έγκυρη Οι επιτρεπόμενες IP του peer πρέπει να είναι μια λίστα από IP διευθύνσεις χωρισμένες με κόμμα, προαιρετικά σε σημειογραφία CIDR.";
 "errors.wireguard.peer.endpoint.invalid" = "Το endpoint '%@' δεν είναι έγκυρο Το endpoint του peer πρέπει να είναι της μορφής 'host:port' ή '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Η τιμή του persistent keepalive '%@' δεν είναι έγκυρη Η τιμή του persistent keepalive του peer πρέπει να είναι μεταξύ 0 και 65535, ή να μην έχει καθοριστεί.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Δύο ή περισσότεροι peers δεν μπορούν να έχουν το ίδιο δημόσιο κλειδί.";
 "errors.wireguard.peer.public_key.invalid" = "Το δημόσιο κλειδί δεν είναι έγκυρο Το δημόσιο κλειδί του peer πρέπει να είναι ένα κλειδί 32-byte σε κωδικοποίηση base64.";
 "errors.wireguard.peer.public_key.required" = "Απαιτείται δημόσιο κλειδί του peer.";
-"errors.wireguard.invalid_line" = "Μη έγκυρη γραμμή: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Πρέπει να υπάρχει μόνο μία καταχώρηση ανά τμήμα για το κλειδί '%@'.";
-"errors.wireguard.multiple_interfaces" = "Η διαμόρφωση πρέπει να έχει μόνο ένα τμήμα 'Interface'.";
-"errors.wireguard.no_interface" = "Η διαμόρφωση πρέπει να έχει ένα τμήμα 'Interface'.";
-"errors.wireguard.interface.unrecognized_key" = "Η διεπαφή περιέχει μη αναγνωρισμένο κλειδί '%@' Τα έγκυρα κλειδιά είναι: 'PrivateKey', 'ListenPort', 'Address', 'DNS' και 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Ο peer περιέχει μη αναγνωρισμένο κλειδί '%@' Τα έγκυρα κλειδιά είναι: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' και 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "Ρυθμίσεις DNS";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Αυτές οι λειτουργίες ελέγχονται απομακρυσμένα, αλλά μπορείτε να παρακάμψετε την ενεργοποίησή τους για δοκιμαστικούς σκοπούς.";
 "views.preferences.advanced.override.picker.remote" = "Απομακρυσμένο";
 "views.preferences.advanced.remote.footer" = "Αυτές οι λειτουργίες ελέγχονται απομακρυσμένα. Απενεργοποιήστε τους διακόπτες αν κάτι δεν λειτουργεί.";
+"views.preferences.crypto_backend" = "Κρυπτογραφία";
 "views.preferences.dns_falls_back.footer" = "Χρησιμοποιεί τους διακομιστές CloudFlare όταν το VPN δεν παρέχει ρυθμίσεις DNS.";
 "views.preferences.dns_falls_back" = "Εναλλακτικό DNS";
 "views.preferences.enables_iap.footer" = "Ενεργοποιήστε την υποστήριξη για πληρωμένες λειτουργίες. Απενεργοποιήστε το αν δεν έχετε Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Εκκίνηση κατά την είσοδο";
 "views.preferences.locks_in_background.footer" = "Κλειδώστε την εφαρμογή με το FaceID όταν αποστέλλεται στο παρασκήνιο.";
 "views.preferences.locks_in_background" = "Κλείδωμα στο παρασκήνιο";
-"views.preferences.modern_crypto.footer" = "Χρησιμοποιήστε σύγχρονες και ταχύτερες υλοποιήσεις αλγορίθμων κρυπτογράφησης, αν και ενδέχεται να είναι ασταθείς.";
-"views.preferences.modern_crypto" = "Σύγχρονη κρυπτογραφία";
 "views.preferences.pins_active_profile.footer" = "Εμφανίζει επίσης το ενεργό προφίλ στην κορυφή για γρήγορη πρόσβαση.";
 "views.preferences.pins_active_profile" = "Καρφίτσωμα ενεργού προφίλ";
 "views.preferences.system_appearance" = "Εμφάνιση";

@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Ingen server vald hos leverantören.";
 "errors.app.module_requires_connection" = "Modulen %@ kräver en aktiv anslutning av någon av följande typer: %@";
 "errors.app.no_active_modules" = "Profilen har inga aktiva moduler.";
-"errors.openvpn.unsupported_compression" = "OpenVPN-komprimering är osäker och stöds inte längre.";
 "errors.app.other" = "Kan inte slutföra åtgärden.";
 "errors.app.parsing" = "Kan inte tolka.";
 "errors.app.partout" = "Kan inte slutföra åtgärden (kod=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "Åtgärden tog för lång tid.";
 "errors.app.tunnel" = "Kunde inte utföra åtgärden.";
 "errors.app.web_receiver" = "Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.";
-"errors.wireguard.empty_peers" = "Inga peers definierade.";
 "errors.modules.DNS.emptyDoTHostname" = "Tomt DoT-värdnamn.";
 "errors.modules.DNS.emptyServers" = "Inga servrar angivna.";
 "errors.modules.DNS.invalidDoHURL" = "Ogiltig DoH-URL.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Ogiltig delad nyckel.";
 "errors.modules.WireGuard.privateKey" = "Ogiltig privat nyckel.";
 "errors.modules.WireGuard.publicKey" = "Ogiltig publik nyckel.";
+"errors.openvpn.unsupported_compression" = "OpenVPN-komprimering är osäker och stöds inte längre.";
 "errors.tunnel.auth" = "Autentisering misslyckades";
 "errors.tunnel.compression" = "Kompression stöds inte";
 "errors.tunnel.dns" = "DNS misslyckades";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Routning saknas";
 "errors.tunnel.shutdown" = "Server avstängd";
 "errors.tunnel.tls" = "TLS misslyckades";
+"errors.wireguard.empty_peers" = "Inga peers definierade.";
 "errors.wireguard.interface.address.invalid" = "Adress '%@' är ogiltig. Gränssnittsadresser måste vara en lista med IP-adresser separerade med kommatecken, eventuellt i CIDR-notation.";
 "errors.wireguard.interface.dns.invalid" = "DNS '%@' är ogiltig. Gränssnittets DNS-servrar måste vara en lista med IP-adresser separerade med kommatecken.";
 "errors.wireguard.interface.listen_port.invalid" = "Lyssningsport '%@' är ogiltig. Gränssnittets lyssningsport måste vara mellan 0 och 65535, eller ospecificerad.";
 "errors.wireguard.interface.mtu.invalid" = "MTU '%@' är ogiltig. Gränssnittets MTU måste vara mellan 576 och 65535, eller ospecificerad.";
 "errors.wireguard.interface.private_key.invalid" = "Privat nyckel är ogiltig. Gränssnittets privata nyckel måste vara en 32-byte nyckel i base64-kodning.";
 "errors.wireguard.interface.private_key.required" = "Gränssnittets privata nyckel krävs.";
+"errors.wireguard.interface.unrecognized_key" = "Gränssnittet innehåller en okänd nyckel '%@' Giltiga nycklar är: 'PrivateKey', 'ListenPort', 'Address', 'DNS' och 'MTU'.";
+"errors.wireguard.invalid_line" = "Ogiltig rad: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Det bör endast finnas en post per sektion för nyckeln '%@'.";
+"errors.wireguard.multiple_interfaces" = "Konfigurationen får endast ha en 'Interface'-sektion.";
+"errors.wireguard.no_interface" = "Konfigurationen måste ha en 'Interface'-sektion.";
 "errors.wireguard.peer.allowed_ips.invalid" = "Tillåten IP '%@' är ogiltig Peers tillåtna IP-adresser måste vara en lista med IP-adresser separerade med kommatecken, eventuellt i CIDR-notation.";
 "errors.wireguard.peer.endpoint.invalid" = "Slutpunkt '%@' är ogiltig Peers slutpunkt måste ha formatet 'host:port' eller '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Persistent keepalive-värde '%@' är ogiltigt Peers persistent keepalive-värde måste vara mellan 0 och 65535, eller ospecificerat.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Två eller fler peers kan inte ha samma publika nyckel.";
 "errors.wireguard.peer.public_key.invalid" = "Publik nyckel är ogiltig Peers publika nyckel måste vara en 32-byte nyckel i base64-kodning.";
 "errors.wireguard.peer.public_key.required" = "Peers publika nyckel krävs.";
-"errors.wireguard.invalid_line" = "Ogiltig rad: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Det bör endast finnas en post per sektion för nyckeln '%@'.";
-"errors.wireguard.multiple_interfaces" = "Konfigurationen får endast ha en 'Interface'-sektion.";
-"errors.wireguard.no_interface" = "Konfigurationen måste ha en 'Interface'-sektion.";
-"errors.wireguard.interface.unrecognized_key" = "Gränssnittet innehåller en okänd nyckel '%@' Giltiga nycklar är: 'PrivateKey', 'ListenPort', 'Address', 'DNS' och 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Peer innehåller en okänd nyckel '%@' Giltiga nycklar är: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' och 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "DNS-inställningar";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Dessa funktioner styrs på distans, men du kan åsidosätta deras aktiveringsstatus för teständamål.";
 "views.preferences.advanced.override.picker.remote" = "Fjärr";
 "views.preferences.advanced.remote.footer" = "Dessa funktioner styrs på distans. Stäng av växlarna om något inte fungerar.";
+"views.preferences.crypto_backend" = "Kryptografi";
 "views.preferences.dns_falls_back.footer" = "Återgår till CloudFlare-servrar när VPN inte tillhandahåller DNS-inställningar.";
 "views.preferences.dns_falls_back" = "DNS-backup";
 "views.preferences.enables_iap.footer" = "Aktivera stöd för betalda funktioner. Avaktivera detta om du inte har Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Starta vid inloggning";
 "views.preferences.locks_in_background.footer" = "Lås appen med FaceID när den skickas till bakgrunden.";
 "views.preferences.locks_in_background" = "Lås i bakgrunden";
-"views.preferences.modern_crypto.footer" = "Använd moderna och snabbare implementationer av kryptografiska algoritmer, men de kan vara instabila.";
-"views.preferences.modern_crypto" = "Modern kryptografi";
 "views.preferences.pins_active_profile.footer" = "Visar även den aktiva profilen överst för snabb åtkomst.";
 "views.preferences.pins_active_profile" = "Fäst aktiv profil";
 "views.preferences.system_appearance" = "Utseende";

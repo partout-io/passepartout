@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Nie wybrano serwera w dostawcy.";
 "errors.app.module_requires_connection" = "Moduł %@ wymaga aktywnego połączenia jednego z następujących typów: %@";
 "errors.app.no_active_modules" = "Profil nie ma aktywnych modułów.";
-"errors.openvpn.unsupported_compression" = "Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.";
 "errors.app.other" = "Nie można ukończyć operacji.";
 "errors.app.parsing" = "Nie można przeanalizować.";
 "errors.app.partout" = "Nie można ukończyć operacji (kod=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "Operacja przekroczyła limit czasu.";
 "errors.app.tunnel" = "Nie można wykonać operacji.";
 "errors.app.web_receiver" = "Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.";
-"errors.wireguard.empty_peers" = "Nie zdefiniowano peerów.";
 "errors.modules.DNS.emptyDoTHostname" = "Pusta nazwa hosta DoT.";
 "errors.modules.DNS.emptyServers" = "Brak serwerów.";
 "errors.modules.DNS.invalidDoHURL" = "Nieprawidłowy adres URL DoH.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Nieprawidłowy klucz współdzielony.";
 "errors.modules.WireGuard.privateKey" = "Nieprawidłowy klucz prywatny.";
 "errors.modules.WireGuard.publicKey" = "Nieprawidłowy klucz publiczny.";
+"errors.openvpn.unsupported_compression" = "Kompresja OpenVPN nie jest bezpieczna i nie jest już obsługiwana.";
 "errors.tunnel.auth" = "Błąd uwierzytelniania";
 "errors.tunnel.compression" = "Kompresja nieobsługiwana";
 "errors.tunnel.dns" = "Błąd DNS";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Brak trasowania";
 "errors.tunnel.shutdown" = "Serwer zamknięty";
 "errors.tunnel.tls" = "Błąd TLS";
+"errors.wireguard.empty_peers" = "Nie zdefiniowano peerów.";
 "errors.wireguard.interface.address.invalid" = "Adres '%@' jest nieprawidłowy. Adresy interfejsu muszą być listą adresów IP oddzielonych przecinkami, opcjonalnie w notacji CIDR.";
 "errors.wireguard.interface.dns.invalid" = "DNS '%@' jest nieprawidłowy. Serwery DNS interfejsu muszą być listą adresów IP oddzielonych przecinkami.";
 "errors.wireguard.interface.listen_port.invalid" = "Port nasłuchu '%@' jest nieprawidłowy. Port nasłuchu interfejsu musi być w zakresie od 0 do 65535 lub nieokreślony.";
 "errors.wireguard.interface.mtu.invalid" = "MTU '%@' jest nieprawidłowe. MTU interfejsu musi być w zakresie od 576 do 65535 lub nieokreślone.";
 "errors.wireguard.interface.private_key.invalid" = "Klucz prywatny jest nieprawidłowy. Klucz prywatny interfejsu musi być kluczem 32-bajtowym w kodowaniu base64.";
 "errors.wireguard.interface.private_key.required" = "Klucz prywatny interfejsu jest wymagany.";
+"errors.wireguard.interface.unrecognized_key" = "Interfejs zawiera nierozpoznany klucz '%@' Prawidłowe klucze to: 'PrivateKey', 'ListenPort', 'Address', 'DNS' i 'MTU'.";
+"errors.wireguard.invalid_line" = "Nieprawidłowa linia: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Powinna być tylko jedna wartość na sekcję dla klucza '%@'.";
+"errors.wireguard.multiple_interfaces" = "Konfiguracja może zawierać tylko jedną sekcję 'Interface'.";
+"errors.wireguard.no_interface" = "Konfiguracja musi zawierać sekcję 'Interface'.";
 "errors.wireguard.peer.allowed_ips.invalid" = "Dozwolone IP '%@' jest nieprawidłowe Dozwolone IP peer’a muszą być listą adresów IP oddzielonych przecinkami, opcjonalnie w notacji CIDR.";
 "errors.wireguard.peer.endpoint.invalid" = "Endpoint '%@' jest nieprawidłowy Endpoint peer’a musi mieć format 'host:port' lub '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Wartość persistent keepalive '%@' jest nieprawidłowa Wartość persistent keepalive peer’a musi być w zakresie od 0 do 65535 lub nieokreślona.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Dwa lub więcej peer’ów nie może mieć tego samego klucza publicznego.";
 "errors.wireguard.peer.public_key.invalid" = "Klucz publiczny jest nieprawidłowy Klucz publiczny peer’a musi być kluczem 32-bajtowym w kodowaniu base64.";
 "errors.wireguard.peer.public_key.required" = "Klucz publiczny peer’a jest wymagany.";
-"errors.wireguard.invalid_line" = "Nieprawidłowa linia: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Powinna być tylko jedna wartość na sekcję dla klucza '%@'.";
-"errors.wireguard.multiple_interfaces" = "Konfiguracja może zawierać tylko jedną sekcję 'Interface'.";
-"errors.wireguard.no_interface" = "Konfiguracja musi zawierać sekcję 'Interface'.";
-"errors.wireguard.interface.unrecognized_key" = "Interfejs zawiera nierozpoznany klucz '%@' Prawidłowe klucze to: 'PrivateKey', 'ListenPort', 'Address', 'DNS' i 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Peer zawiera nierozpoznany klucz '%@' Prawidłowe klucze to: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' i 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "Ustawienia DNS";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Te funkcje są kontrolowane zdalnie, ale możesz nadpisać ich stan włączenia do celów testowych.";
 "views.preferences.advanced.override.picker.remote" = "Zdalnie";
 "views.preferences.advanced.remote.footer" = "Te funkcje są sterowane zdalnie. Wyłącz przełączniki, jeśli coś nie działa.";
+"views.preferences.crypto_backend" = "Kryptografia";
 "views.preferences.dns_falls_back.footer" = "Przełącza się na serwery CloudFlare, gdy VPN nie zapewnia ustawień DNS.";
 "views.preferences.dns_falls_back" = "Awaryjny DNS";
 "views.preferences.enables_iap.footer" = "Włącz obsługę płatnych funkcji. Wyłącz to, jeśli nie masz Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Uruchom przy logowaniu";
 "views.preferences.locks_in_background.footer" = "Zablokuj aplikację za pomocą FaceID, gdy zostanie przeniesiona w tle.";
 "views.preferences.locks_in_background" = "Blokuj w tle";
-"views.preferences.modern_crypto.footer" = "Użyj nowoczesnych i szybszych implementacji algorytmów kryptograficznych, które mogą być niestabilne.";
-"views.preferences.modern_crypto" = "Nowoczesna kryptografia";
 "views.preferences.pins_active_profile.footer" = "Wyświetla także aktywny profil na górze dla szybkiego dostępu.";
 "views.preferences.pins_active_profile" = "Przypnij aktywny profil";
 "views.preferences.system_appearance" = "Wygląd";

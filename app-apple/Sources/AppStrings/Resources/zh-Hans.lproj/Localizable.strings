@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "未在提供商中选择服务器。";
 "errors.app.module_requires_connection" = "模块 %@ 需要以下类型中的一个处于活动连接状态：%@";
 "errors.app.no_active_modules" = "配置文件没有激活模块。";
-"errors.openvpn.unsupported_compression" = "OpenVPN 压缩不安全，已不再受支持。";
 "errors.app.other" = "无法完成操作。";
 "errors.app.parsing" = "无法解析。";
 "errors.app.partout" = "无法完成操作（代码=%@）。";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "操作超时。";
 "errors.app.tunnel" = "无法执行操作。";
 "errors.app.web_receiver" = "无法启动导入。请确保您的电视已正确连接到本地网络。";
-"errors.wireguard.empty_peers" = "未定义对等端。";
 "errors.modules.DNS.emptyDoTHostname" = "DoT 主机名为空。";
 "errors.modules.DNS.emptyServers" = "未填写服务器。";
 "errors.modules.DNS.invalidDoHURL" = "DoH URL 无效。";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "预共享密钥无效。";
 "errors.modules.WireGuard.privateKey" = "私钥无效。";
 "errors.modules.WireGuard.publicKey" = "公钥无效。";
+"errors.openvpn.unsupported_compression" = "OpenVPN 压缩不安全，已不再受支持。";
 "errors.tunnel.auth" = "认证失败";
 "errors.tunnel.compression" = "不支持压缩";
 "errors.tunnel.dns" = "DNS 失败";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "缺少路由";
 "errors.tunnel.shutdown" = "服务器关闭";
 "errors.tunnel.tls" = "TLS 失败";
+"errors.wireguard.empty_peers" = "未定义对等端。";
 "errors.wireguard.interface.address.invalid" = "地址 '%@' 无效。 接口地址必须是以逗号分隔的 IP 地址列表，可选使用 CIDR 表示法.";
 "errors.wireguard.interface.dns.invalid" = "DNS '%@' 无效。 接口的 DNS 服务器必须是以逗号分隔的 IP 地址列表.";
 "errors.wireguard.interface.listen_port.invalid" = "监听端口 '%@' 无效。 接口的监听端口必须在 0 到 65535 之间，或未指定.";
 "errors.wireguard.interface.mtu.invalid" = "MTU '%@' 无效。 接口的 MTU 必须在 576 到 65535 之间，或未指定.";
 "errors.wireguard.interface.private_key.invalid" = "私钥无效。 接口的私钥必须是一个 32 字节的 Base64 编码密钥.";
 "errors.wireguard.interface.private_key.required" = "接口的私钥是必需的.";
+"errors.wireguard.interface.unrecognized_key" = "接口包含未识别的键 '%@' 有效的键包括: 'PrivateKey'、'ListenPort'、'Address'、'DNS' 和 'MTU'。";
+"errors.wireguard.invalid_line" = "无效的行: '%@'。";
+"errors.wireguard.multiple_entries_for_key" = "每个部分只能包含一个 '%@' 键的条目.";
+"errors.wireguard.multiple_interfaces" = "配置必须只有一个 'Interface' 部分。";
+"errors.wireguard.no_interface" = "配置必须包含一个 'Interface' 部分。";
 "errors.wireguard.peer.allowed_ips.invalid" = "允许的 IP '%@' 无效 Peer 的允许 IP 必须是以逗号分隔的 IP 地址列表，可选使用 CIDR 表示法.";
 "errors.wireguard.peer.endpoint.invalid" = "端点 '%@' 无效 Peer 的端点必须是 'host:port' 或 '[host]:port' 格式.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "持久 Keepalive 值 '%@' 无效 Peer 的持久 Keepalive 值必须在 0 到 65535 之间，或未指定.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "两个或更多的 Peer 不能使用相同的公钥.";
 "errors.wireguard.peer.public_key.invalid" = "公钥无效 Peer 的公钥必须是一个 32 字节的 Base64 编码密钥.";
 "errors.wireguard.peer.public_key.required" = "Peer 的公钥是必需的.";
-"errors.wireguard.invalid_line" = "无效的行: '%@'。";
-"errors.wireguard.multiple_entries_for_key" = "每个部分只能包含一个 '%@' 键的条目.";
-"errors.wireguard.multiple_interfaces" = "配置必须只有一个 'Interface' 部分。";
-"errors.wireguard.no_interface" = "配置必须包含一个 'Interface' 部分。";
-"errors.wireguard.interface.unrecognized_key" = "接口包含未识别的键 '%@' 有效的键包括: 'PrivateKey'、'ListenPort'、'Address'、'DNS' 和 'MTU'。";
 "errors.wireguard.peer.unrecognized_key" = "Peer 包含未识别的键 '%@' 有效的键包括: 'PublicKey'、'PresharedKey'、'AllowedIPs'、'Endpoint' 和 'PersistentKeepalive'。";
 "features.appletv" = "%@";
 "features.dns" = "DNS 设置";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "这些功能由远程控制，但你可以为测试目的覆盖其启用状态。";
 "views.preferences.advanced.override.picker.remote" = "远程";
 "views.preferences.advanced.remote.footer" = "这些功能由远程控制。如果某些功能无法正常工作，请关闭开关。";
+"views.preferences.crypto_backend" = "密码学";
 "views.preferences.dns_falls_back.footer" = "当 VPN 不提供 DNS 设置时，回退到 CloudFlare 服务器。";
 "views.preferences.dns_falls_back" = "DNS 备用";
 "views.preferences.enables_iap.footer" = "启用对付费功能的支持。如果您没有 Apple ID，请禁用此功能。";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "登录时启动";
 "views.preferences.locks_in_background.footer" = "当应用切换到后台时，使用 FaceID 锁定它。";
 "views.preferences.locks_in_background" = "后台锁定";
-"views.preferences.modern_crypto.footer" = "使用现代且更快速的加密算法实现，但可能不稳定。";
-"views.preferences.modern_crypto" = "现代加密技术";
 "views.preferences.pins_active_profile.footer" = "还会在顶部显示活动配置文件，以便快速访问。";
 "views.preferences.pins_active_profile" = "固定活动配置文件";
 "views.preferences.system_appearance" = "外观";
