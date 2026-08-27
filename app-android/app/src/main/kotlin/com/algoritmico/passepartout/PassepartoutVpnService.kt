@@ -100,7 +100,7 @@ class PassepartoutVpnService: VpnService() {
             return PartoutVpnServiceRuntime.StartOptions(
                 logsPrivateData,
                 minDataCountDelta,
-                cryptoBackend ?: CryptoBackend.openssl,
+                cryptoBackend,
                 controllerOptions
             )
         }
