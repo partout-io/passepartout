@@ -116,38 +116,39 @@ private fun AdvancedPreferencesContent(
     val remoteFooter = stringResource(R.string.views_preferences_advanced_remote_footer)
 
     ThemeList(modifier = modifier) {
-        if (canOverride) {
-            themeListSection(
-                footer = overrideFooter
-            ) {
-                items(advancedFlags) { flag ->
-                    ConfigPreferencePickerRow(
-                        flag = flag,
-                        isActive = configState.isActive(flag),
-                        preference = preferences.preference(forFlag = flag),
-                        onPreferenceChange = {
-                            onPreferenceChange(flag, it)
-                        }
-                    )
-                }
-            }
-        } else {
-            themeListSection(
-                header = allowHeader,
-                footer = remoteFooter
-            ) {
-                items(advancedFlags) { flag ->
-                    ConfigFlagAllowedRow(
-                        flag = flag,
-                        isActive = configState.isActive(flag),
-                        isAllowed = preferences.isAllowed(flag),
-                        onAllowedChange = {
-                            onAllowedChange(flag, it)
-                        }
-                    )
-                }
-            }
-        }
+        // Hide as long as config flags are empty.
+//        if (canOverride) {
+//            themeListSection(
+//                footer = overrideFooter
+//            ) {
+//                items(advancedFlags) { flag ->
+//                    ConfigPreferencePickerRow(
+//                        flag = flag,
+//                        isActive = configState.isActive(flag),
+//                        preference = preferences.preference(forFlag = flag),
+//                        onPreferenceChange = {
+//                            onPreferenceChange(flag, it)
+//                        }
+//                    )
+//                }
+//            }
+//        } else {
+//            themeListSection(
+//                header = allowHeader,
+//                footer = remoteFooter
+//            ) {
+//                items(advancedFlags) { flag ->
+//                    ConfigFlagAllowedRow(
+//                        flag = flag,
+//                        isActive = configState.isActive(flag),
+//                        isAllowed = preferences.isAllowed(flag),
+//                        onAllowedChange = {
+//                            onAllowedChange(flag, it)
+//                        }
+//                    )
+//                }
+//            }
+//        }
         themeListSection {
             item {
                 CryptoBackendPickerRow(
@@ -277,7 +278,9 @@ private fun CryptoBackendPickerRow(
 }
 
 private val advancedFlags = listOf(
-    ConfigFlag.zigRuntime
+    ConfigFlag.zigRuntime,
+    ConfigFlag.zigOpenVPN,
+    ConfigFlag.zigWireGuard
 )
 
 private val cryptoBackends: List<CryptoBackend?> = listOf(
