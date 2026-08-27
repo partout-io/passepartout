@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">Bascule vers les serveurs CloudFlare lorsque le VPN ne fournit pas de paramètres DNS.</string>
     <string name="views_preferences_enables_iap">Achats intégrés</string>
     <string name="views_preferences_enables_iap_footer">Activez la prise en charge des fonctionnalités payantes. Désactivez ceci si vous n\'avez pas Apple ID.</string>
-    <string name="views_preferences_modern_crypto">Cryptographie moderne</string>
-    <string name="views_preferences_modern_crypto_footer">Utilisez des implémentations modernes et rapides des algorithmes cryptographiques, bien qu\'elles puissent être instables.</string>
+    <string name="views_preferences_crypto_backend">Cryptographie</string>
     <string name="views_preferences_erase_icloud">Supprimer les profils d\'iCloud</string>
     <string name="views_preferences_erase_icloud_footer">Pour supprimer tous les profils du stockage iCloud de manière sécurisée, faites-le sur tous vos appareils synchronisés. Cela n\'affectera pas les profils locaux.</string>
     <string name="views_preferences_advanced_override_picker_remote">À distance</string>

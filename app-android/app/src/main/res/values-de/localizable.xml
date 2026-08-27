@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">Fällt auf CloudFlare-Server zurück, wenn das VPN keine DNS-Einstellungen bereitstellt.</string>
     <string name="views_preferences_enables_iap">In-App-Käufe</string>
     <string name="views_preferences_enables_iap_footer">Aktivieren Sie die Unterstützung für kostenpflichtige Funktionen. Deaktivieren Sie dies, wenn Sie kein Apple ID haben.</string>
-    <string name="views_preferences_modern_crypto">Moderne Kryptografie</string>
-    <string name="views_preferences_modern_crypto_footer">Verwenden Sie moderne und schnellere Implementierungen kryptografischer Algorithmen, die jedoch möglicherweise instabil sind.</string>
+    <string name="views_preferences_crypto_backend">Kryptografie</string>
     <string name="views_preferences_erase_icloud">Profile aus iCloud löschen</string>
     <string name="views_preferences_erase_icloud_footer">Um alle Profile sicher aus dem iCloud-Speicher zu löschen, führen Sie diese Aktion auf allen synchronisierten Geräten aus. Lokale Profile werden nicht betroffen.</string>
     <string name="views_preferences_advanced_override_picker_remote">Remote</string>

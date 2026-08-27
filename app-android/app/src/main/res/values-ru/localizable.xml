@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.</string>
     <string name="views_preferences_enables_iap">Покупки в приложении</string>
     <string name="views_preferences_enables_iap_footer">Включите поддержку платных функций. Отключите, если у вас нет Apple ID.</string>
-    <string name="views_preferences_modern_crypto">Современная криптография</string>
-    <string name="views_preferences_modern_crypto_footer">Используйте современные и более быстрые реализации криптографических алгоритмов, хотя они могут быть нестабильными.</string>
+    <string name="views_preferences_crypto_backend">Криптография</string>
     <string name="views_preferences_erase_icloud">Удалить профили из iCloud</string>
     <string name="views_preferences_erase_icloud_footer">Чтобы безопасно удалить все профили из iCloud, выполните это действие на всех ваших синхронизированных устройствах. Это не затронет локальные профили.</string>
     <string name="views_preferences_advanced_override_picker_remote">Удалённо</string>

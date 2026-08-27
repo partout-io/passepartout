@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">当 VPN 不提供 DNS 设置时，回退到 CloudFlare 服务器。</string>
     <string name="views_preferences_enables_iap">应用内购买</string>
     <string name="views_preferences_enables_iap_footer">启用对付费功能的支持。如果您没有 Apple ID，请禁用此功能。</string>
-    <string name="views_preferences_modern_crypto">现代加密技术</string>
-    <string name="views_preferences_modern_crypto_footer">使用现代且更快速的加密算法实现，但可能不稳定。</string>
+    <string name="views_preferences_crypto_backend">密码学</string>
     <string name="views_preferences_erase_icloud">从 iCloud 中删除配置文件</string>
     <string name="views_preferences_erase_icloud_footer">要安全地从 iCloud 存储中删除所有配置文件，请在所有已同步的设备上执行此操作。这不会影响本地配置文件。</string>
     <string name="views_preferences_advanced_override_picker_remote">远程</string>
