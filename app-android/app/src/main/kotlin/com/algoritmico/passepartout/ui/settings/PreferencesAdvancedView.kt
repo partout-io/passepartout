@@ -36,16 +36,15 @@ import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
 import com.algoritmico.passepartout.observables.ConfigObservable
-import com.algoritmico.passepartout.observables.ErrorHandler
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalConfigObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import com.algoritmico.passepartout.ui.theme.themeListSection
-import kotlinx.coroutines.CoroutineScope
+import io.partout.models.CryptoBackend
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,14 +62,14 @@ fun PreferencesAdvancedView(
     val canOverride = isBeta || appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
     val errorHandler = LocalErrorHandler.current
 
-    fun updateExperimentalPreferences(
-        transform: (ExperimentalPreferences) -> ExperimentalPreferences
-    ) {
-        userPreferencesObservable.updateExperimentalPreferencesSafely(
-            coroutineScope = coroutineScope,
-            errorHandler = errorHandler,
-            transform = transform
-        )
+    fun updateSafely(block: suspend () -> Unit) {
+        coroutineScope.launch {
+            runCatchingNonFatal {
+                block()
+            }.onFailure {
+                errorHandler.report(it)
+            }
+        }
     }
 
     AdvancedPreferencesContent(
@@ -78,14 +77,22 @@ fun PreferencesAdvancedView(
         canOverride = canOverride,
         configState = configState,
         preferences = preferences.experimental,
+        cryptoBackend = preferences.cryptoBackend,
         onPreferenceChange = { flag, preference ->
-            updateExperimentalPreferences {
-                it.setPreference(preference, forFlag = flag)
+            updateSafely {
+                userPreferencesObservable.updateExperimentalPreferences {
+                    it.setPreference(preference, forFlag = flag)
+                }
             }
         },
         onAllowedChange = { flag, isAllowed ->
             userPreferencesObservable.updateExperimentalPreferences {
                 it.setAllowed(flag, isAllowed)
+            }
+        },
+        onCryptoBackendChange = {
+            updateSafely {
+                userPreferencesObservable.updateCryptoBackend(it)
             }
         }
     )
@@ -97,8 +104,10 @@ private fun AdvancedPreferencesContent(
     canOverride: Boolean,
     configState: ConfigObservable.State,
     preferences: ExperimentalPreferences,
+    cryptoBackend: Int,
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
-    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
+    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit,
+    onCryptoBackendChange: (Int) -> Unit
 ) {
     val allowHeader = stringResource(R.string.global_actions_allow)
     val overrideFooter = stringResource(R.string.views_preferences_advanced_override_footer)
@@ -135,6 +144,14 @@ private fun AdvancedPreferencesContent(
                         }
                     )
                 }
+            }
+        }
+        themeListSection {
+            item {
+                CryptoBackendPickerRow(
+                    cryptoBackend = cryptoBackend,
+                    onCryptoBackendChange = onCryptoBackendChange
+                )
             }
         }
     }
@@ -208,8 +225,71 @@ private fun ConfigPreferencePickerRow(
     )
 }
 
+@Composable
+private fun CryptoBackendPickerRow(
+    cryptoBackend: Int,
+    onCryptoBackendChange: (Int) -> Unit
+) {
+    var isMenuExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val selectedBackend = cryptoBackends.firstOrNull {
+        it.value == cryptoBackend
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(stringResource(R.string.views_preferences_crypto_backend))
+        },
+        trailingContent = {
+            Box {
+                TextButton(
+                    onClick = {
+                        isMenuExpanded = true
+                    }
+                ) {
+                    Text(selectedBackend.localizedDescription())
+                }
+                DropdownMenu(
+                    expanded = isMenuExpanded,
+                    onDismissRequest = {
+                        isMenuExpanded = false
+                    }
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(stringResource(R.string.global_nouns_default))
+                        },
+                        onClick = {
+                            isMenuExpanded = false
+                            onCryptoBackendChange(0)
+                        }
+                    )
+                    cryptoBackends.forEach { backend ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(backend.localizedDescription())
+                            },
+                            onClick = {
+                                isMenuExpanded = false
+                                onCryptoBackendChange(backend.value)
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
 private val advancedFlags = listOf(
     ConfigFlag.zigRuntime
+)
+
+private val cryptoBackends = listOf(
+    CryptoBackend.openssl,
+    CryptoBackend.mbedtls
 )
 
 private enum class ConfigFlagPreference {
@@ -265,16 +345,13 @@ private fun ConfigFlagPreference.localizedDescription(): String {
     }
 }
 
-private fun UserPreferencesObservable.updateExperimentalPreferencesSafely(
-    coroutineScope: CoroutineScope,
-    errorHandler: ErrorHandler,
-    transform: (ExperimentalPreferences) -> ExperimentalPreferences
-) {
-    coroutineScope.launch {
-        runCatchingNonFatal {
-            updateExperimentalPreferences(transform)
-        }.onFailure {
-            errorHandler.report(it)
-        }
+@Composable
+private fun CryptoBackend?.localizedDescription(): String {
+    return when (this) {
+        null -> stringResource(R.string.global_nouns_default)
+        CryptoBackend.openssl -> Strings.Unlocalized.Crypto.openSSL
+        CryptoBackend.mbedtls -> Strings.Unlocalized.Crypto.mbedTLS
+        CryptoBackend.native -> error("Unsupported crypto backend: $this")
+        CryptoBackend.mock -> Strings.Unlocalized.Crypto.mock
     }
 }

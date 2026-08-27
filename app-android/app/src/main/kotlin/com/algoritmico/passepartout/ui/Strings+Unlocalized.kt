@@ -6,6 +6,12 @@ package com.algoritmico.passepartout.ui
 
 object Strings {
     object Unlocalized {
+        object Crypto {
+            const val openSSL = "OpenSSL"
+            const val mbedTLS = "MbedTLS"
+            const val mock = "Mock"
+        }
+
         object OpenVPN {
             object Placeholders {
                 const val endpoint = "1.1.1.1:2222"
