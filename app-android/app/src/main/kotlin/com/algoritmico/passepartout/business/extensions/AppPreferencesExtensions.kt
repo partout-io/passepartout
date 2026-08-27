@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -58,6 +59,7 @@ private fun Flow<Preferences>.safePreferences(logTag: String): Flow<Preferences>
 val AppPreferences.Companion.default: AppPreferences
     get() = AppPreferences(
         configFlags = listOf(),
+        cryptoBackend = 0,
         dnsFallsBack = true,
         experimental = ExperimentalPreferences(listOf(), listOf()),
         extensiveLogging = false,
@@ -69,11 +71,14 @@ fun AppPreferences.update(fields: Collection<AppPreferenceKey>, new: AppPreferen
     var updated = this
     fields.forEach {
         updated = when (it) {
-            AppPreferenceKey.deviceId -> updated.copy(
-                deviceId = new.deviceId
-            )
             AppPreferenceKey.configFlags -> updated.copy(
                 configFlags = new.configFlags
+            )
+            AppPreferenceKey.cryptoBackend -> updated.copy(
+                cryptoBackend = new.cryptoBackend
+            )
+            AppPreferenceKey.deviceId -> updated.copy(
+                deviceId = new.deviceId
             )
             AppPreferenceKey.dnsFallsBack -> updated.copy(
                 dnsFallsBack = new.dnsFallsBack
@@ -111,6 +116,8 @@ fun Preferences.toAppPreferences(): AppPreferences {
             ?.mapNotNull { ConfigFlag.decode(it) }
             ?.toMutableList()
             ?: default.configFlags,
+        cryptoBackend = this[K.CRYPTO_BACKEND]
+            ?: default.cryptoBackend,
         dnsFallsBack = this[K.DNS_FALLS_BACK]
             ?: default.dnsFallsBack,
         experimental = this[K.EXPERIMENTAL]
@@ -177,16 +184,19 @@ fun MutablePreferences.updateExperimentalPreferences(
 fun MutablePreferences.update(fields: Collection<AppPreferenceKey>, new: AppPreferences) {
     fields.forEach {
         when (it) {
+            AppPreferenceKey.configFlags ->
+                this[K.CONFIG_FLAGS] = new.configFlags.map {
+                    flags -> flags.value
+                }.toSet()
+
+            AppPreferenceKey.cryptoBackend ->
+                this[K.CRYPTO_BACKEND] = new.cryptoBackend
+
             AppPreferenceKey.deviceId ->
                 setOrRemove(
                     K.DEVICE_ID,
                     new.deviceId
                 )
-
-            AppPreferenceKey.configFlags ->
-                this[K.CONFIG_FLAGS] = new.configFlags.map {
-                    flags -> flags.value
-                }.toSet()
 
             AppPreferenceKey.dnsFallsBack ->
                 this[K.DNS_FALLS_BACK] = new.dnsFallsBack
@@ -234,6 +244,7 @@ private fun <T> MutablePreferences.setOrRemove(key: Preferences.Key<T>, value: T
 
 private object K {
     val CONFIG_FLAGS = stringSetPreferencesKey(AppPreferenceKey.configFlags.name)
+    val CRYPTO_BACKEND = intPreferencesKey(AppPreferenceKey.cryptoBackend.name)
     val DEVICE_ID = stringPreferencesKey(AppPreferenceKey.deviceId.name)
     val DNS_FALLS_BACK = booleanPreferencesKey(AppPreferenceKey.dnsFallsBack.name)
     val EXPERIMENTAL = stringPreferencesKey(AppPreferenceKey.experimental.name)
