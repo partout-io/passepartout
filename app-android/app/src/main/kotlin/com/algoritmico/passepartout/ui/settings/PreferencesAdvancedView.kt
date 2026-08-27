@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -23,7 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
-import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.disable
 import com.algoritmico.passepartout.business.extensions.enable
 import com.algoritmico.passepartout.business.extensions.isAllowed
@@ -31,7 +31,6 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
@@ -55,8 +54,11 @@ fun PreferencesAdvancedView(
     val isBeta = LocalContext.current.isBetaSuggestedByAndroidAPI
     val configState by LocalConfigObservable.current.state.collectAsStateWithLifecycle()
     val userPreferencesObservable = LocalUserPreferencesObservable.current
+    val initialPreferences = remember(userPreferencesObservable) {
+        userPreferencesObservable.currentPreferences
+    }
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
-        initialValue = AppPreferences.default
+        initialValue = initialPreferences
     )
     val coroutineScope = rememberCoroutineScope()
     val canOverride = isBeta || appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
