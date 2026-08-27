@@ -30,7 +30,7 @@
 # Keep both the fun-interface methods and their generated lambda/object
 # implementors so R8 cannot rename the callback entry points.
 -keep interface io.partout.abi.PartoutCompletionCallback {
-    public void onComplete(int, java.lang.String);
+    public void onComplete(io.partout.models.PartoutErrorCode, kotlinx.serialization.json.JsonElement);
 }
 # JNI entry points are exported with static Java_* symbols, and the native
 # tunnel backend also receives this controller object and calls into it by name
@@ -41,6 +41,7 @@
     public int setTunnel(java.lang.String);
     public void configureSockets(int[]);
     public void onSnapshot(java.lang.String);
+    public void setEnvironmentValue(java.lang.String, java.lang.String);
     public void clearTunnel(boolean);
     public void cancelTunnel(java.lang.String);
 }
