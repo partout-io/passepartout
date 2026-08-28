@@ -30,8 +30,8 @@ extension View {
     }
 
     public func withMockEnvironment() -> some View {
+//        // XXX: This is crap, rethink previews with stateless closures
 //        task {
-//            // FIXME: #1683, Previews
 //            try? await ProfileObservable.forPreviews.observeLocal()
 //        }
         withEnvironment(from: AppContext.forPreviews, theme: Theme())

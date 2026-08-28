@@ -70,7 +70,7 @@ public final class DefaultAPIMapper: APIMapper {
 
 // MARK: - Engine
 
-// TODO: #54/partout, assumes engine to be JavaScript
+// TODO: #1928, assumes engine to be JavaScript
 extension ScriptingEngine {
     func authenticate(_ module: ProviderModule, on deviceId: String, with library: String) async throws -> ProviderModule {
         let script = try scriptCall(withName: "authenticate", args: [

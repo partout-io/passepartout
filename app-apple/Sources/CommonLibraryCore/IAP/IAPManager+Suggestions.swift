@@ -99,9 +99,8 @@ extension IAPManager {
             // TV, therefore selling the "Complete" packages is misleading
             // for TV-only customers. Only offer them if some "essential"
             // feature is required, because it means that the iOS/macOS app
-            // is also installed
+            // is also installed.
             //
-            // TODO: #103/partout, set always true because all features will be accessible on TV by importing a .json created elsewhere
             suggestsComplete = !essentialFeatures.isEmpty
         default:
             suggestsComplete = true

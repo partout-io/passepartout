@@ -182,7 +182,7 @@ private extension ProviderView {
 
 private extension ProviderView {
 
-    // FIXME: #1470, heavy data copy in SwiftUI
+    // TODO: #1470, heavy data copy in SwiftUI
     var module: ProviderModule? {
         try? draft.module.build()
     }
@@ -201,7 +201,7 @@ private extension ProviderView {
         draft.module.providerModuleType
     }
 
-    // FIXME: #1470, heavy data copy in SwiftUI
+    // TODO: #1470, heavy data copy in SwiftUI
     var providerEntity: ProviderEntity? {
         draft.module.entity
     }

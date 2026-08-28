@@ -69,7 +69,7 @@ private struct DestinationView: View {
         }
     }
 
-    // FIXME: #1470, heavy data copy in SwiftUI
+    // TODO: #1470, heavy data copy in SwiftUI
     private var module: ProviderModule? {
         try? draft.module.build()
     }

@@ -13,7 +13,7 @@ struct ProviderServerView: View {
     @EnvironmentObject
     private var preferencesManager: PreferencesManager
 
-    // FIXME: #1470, heavy data copy in SwiftUI
+    // TODO: #1470, heavy data copy in SwiftUI
     let module: ProviderModule
 
     var selectTitle = Strings.Views.Providers.selectEntity

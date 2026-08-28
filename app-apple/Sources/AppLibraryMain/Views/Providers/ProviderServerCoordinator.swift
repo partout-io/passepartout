@@ -10,7 +10,7 @@ struct ProviderServerCoordinator: View {
     @Environment(\.dismiss)
     private var dismiss
 
-    // FIXME: #1470, heavy data copy in SwiftUI
+    // TODO: #1470, heavy data copy in SwiftUI
     let module: ProviderModule
 
     let selectTitle: String

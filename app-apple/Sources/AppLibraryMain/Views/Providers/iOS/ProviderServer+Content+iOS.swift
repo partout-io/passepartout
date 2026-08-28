@@ -11,7 +11,7 @@ import SwiftUI
 extension ProviderServerView {
     struct ContentView: View {
 
-        // FIXME: #1470, heavy data copy in SwiftUI
+        // TODO: #1470, heavy data copy in SwiftUI
         let module: ProviderModule
 
         let servers: [ProviderServer]
