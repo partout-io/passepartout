@@ -34,13 +34,7 @@ add_subdirectory(../partout partout)
 
 function(target_link_partout target)
     add_dependencies(${target} partout)
-    target_include_directories(${target} PRIVATE "${PP_BUILD_OUTPUT}/partout/include")
-    target_link_directories(${target} PRIVATE "${PP_BUILD_OUTPUT}/partout/lib")
-    if(WIN32)
-        target_link_libraries(${target} PRIVATE partout.lib)
-    else()
-        target_link_libraries(${target} PRIVATE -lpartout)
-    endif()
+    target_link_libraries(${target} PRIVATE Partout::Partout)
     if(LINUX)
         target_link_options(${target} PRIVATE
             "LINKER:-rpath-link,${PP_BUILD_OUTPUT}/wg-go/lib"

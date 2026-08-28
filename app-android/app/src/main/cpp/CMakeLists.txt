@@ -21,10 +21,8 @@ endif()
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../partout" partout)
 
 add_dependencies(passepartout_wrapper partout)
-target_include_directories(passepartout_wrapper PRIVATE "${PP_BUILD_OUTPUT}/partout/include")
-target_link_directories(passepartout_wrapper PRIVATE "${PP_BUILD_OUTPUT}/partout/lib")
 target_link_libraries(passepartout_wrapper PRIVATE
-    -lpartout
+    Partout::Partout
     android
     log
 )
