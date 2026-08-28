@@ -1,1 +1,1 @@
-* Add preference to override crypto backend (#1927)
+* Normalize alert messages without a trailing period
