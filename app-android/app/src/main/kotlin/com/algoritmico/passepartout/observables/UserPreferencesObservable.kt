@@ -60,6 +60,14 @@ class UserPreferencesObservable(
     //endregion
 
     //region Editing
+    suspend fun updateCryptoBackend(cryptoBackend: Int) {
+        updatePreferences(
+            fields = listOf(AppPreferenceKey.cryptoBackend)
+        ) {
+            it.copy(cryptoBackend = cryptoBackend)
+        }
+    }
+
     suspend fun updateDnsFallback(isEnabled: Boolean) {
         updatePreferences(
             fields = listOf(AppPreferenceKey.dnsFallsBack)

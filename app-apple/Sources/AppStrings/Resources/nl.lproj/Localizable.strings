@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Geen server geselecteerd bij provider.";
 "errors.app.module_requires_connection" = "De module %@ vereist een actieve verbinding van een van de volgende typen: %@";
 "errors.app.no_active_modules" = "Het profiel heeft geen actieve modules.";
-"errors.openvpn.unsupported_compression" = "OpenVPN-compressie is onveilig en wordt niet meer ondersteund.";
 "errors.app.other" = "Kan bewerking niet voltooien.";
 "errors.app.parsing" = "Kan niet parseren.";
 "errors.app.partout" = "Kan bewerking niet voltooien (code=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "De bewerking is verlopen.";
 "errors.app.tunnel" = "Actie kan niet worden uitgevoerd.";
 "errors.app.web_receiver" = "Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.";
-"errors.wireguard.empty_peers" = "Geen peers gedefinieerd.";
 "errors.modules.DNS.emptyDoTHostname" = "Lege DoT-hostnaam.";
 "errors.modules.DNS.emptyServers" = "Geen servers opgegeven.";
 "errors.modules.DNS.invalidDoHURL" = "Ongeldige DoH-URL.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Ongeldige vooraf gedeelde sleutel.";
 "errors.modules.WireGuard.privateKey" = "Ongeldige privésleutel.";
 "errors.modules.WireGuard.publicKey" = "Ongeldige openbare sleutel.";
+"errors.openvpn.unsupported_compression" = "OpenVPN-compressie is onveilig en wordt niet meer ondersteund.";
 "errors.tunnel.auth" = "Verificatie mislukt";
 "errors.tunnel.compression" = "Compressie niet ondersteund";
 "errors.tunnel.dns" = "DNS mislukt";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Routering ontbreekt";
 "errors.tunnel.shutdown" = "Server uitgeschakeld";
 "errors.tunnel.tls" = "TLS mislukt";
+"errors.wireguard.empty_peers" = "Geen peers gedefinieerd.";
 "errors.wireguard.interface.address.invalid" = "Het adres '%@' is ongeldig. Interface-adressen moeten een lijst zijn van door komma's gescheiden IP-adressen, optioneel in CIDR-notatie.";
 "errors.wireguard.interface.dns.invalid" = "De DNS '%@' is ongeldig. De DNS-servers van de interface moeten een lijst zijn van door komma's gescheiden IP-adressen.";
 "errors.wireguard.interface.listen_port.invalid" = "De luisterpoort '%@' is ongeldig. De luisterpoort van de interface moet tussen 0 en 65535 liggen, of niet gespecificeerd.";
 "errors.wireguard.interface.mtu.invalid" = "De MTU '%@' is ongeldig. De MTU van de interface moet tussen 576 en 65535 liggen, of niet gespecificeerd.";
 "errors.wireguard.interface.private_key.invalid" = "De privésleutel is ongeldig. De privésleutel van de interface moet een 32-byte sleutel zijn in base64-codering.";
 "errors.wireguard.interface.private_key.required" = "Privésleutel van de interface is vereist.";
+"errors.wireguard.interface.unrecognized_key" = "De interface bevat een niet-herkende sleutel '%@' Geldige sleutels zijn: 'PrivateKey', 'ListenPort', 'Address', 'DNS' en 'MTU'.";
+"errors.wireguard.invalid_line" = "Ongeldige regel: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Er mag slechts één invoer per sectie zijn voor sleutel '%@'.";
+"errors.wireguard.multiple_interfaces" = "De configuratie mag slechts één 'Interface'-sectie bevatten.";
+"errors.wireguard.no_interface" = "De configuratie moet een 'Interface'-sectie bevatten.";
 "errors.wireguard.peer.allowed_ips.invalid" = "De toegestane IP '%@' is ongeldig De toegestane IP's van de peer moeten een lijst zijn van door komma's gescheiden IP-adressen, optioneel in CIDR-notatie.";
 "errors.wireguard.peer.endpoint.invalid" = "De endpoint '%@' is ongeldig De endpoint van de peer moet de vorm 'host:port' of '[host]:port' hebben.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "De persistent keepalive waarde '%@' is ongeldig De persistent keepalive van de peer moet tussen 0 en 65535 liggen, of niet gespecificeerd.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Twee of meer peers kunnen niet dezelfde openbare sleutel hebben.";
 "errors.wireguard.peer.public_key.invalid" = "De openbare sleutel is ongeldig De openbare sleutel van de peer moet een 32-byte sleutel zijn in base64-codering.";
 "errors.wireguard.peer.public_key.required" = "De openbare sleutel van de peer is vereist.";
-"errors.wireguard.invalid_line" = "Ongeldige regel: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Er mag slechts één invoer per sectie zijn voor sleutel '%@'.";
-"errors.wireguard.multiple_interfaces" = "De configuratie mag slechts één 'Interface'-sectie bevatten.";
-"errors.wireguard.no_interface" = "De configuratie moet een 'Interface'-sectie bevatten.";
-"errors.wireguard.interface.unrecognized_key" = "De interface bevat een niet-herkende sleutel '%@' Geldige sleutels zijn: 'PrivateKey', 'ListenPort', 'Address', 'DNS' en 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "De peer bevat een niet-herkende sleutel '%@' Geldige sleutels zijn: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' en 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "DNS-instellingen";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Deze functies worden extern aangestuurd, maar je kunt hun ingeschakelde status overschrijven voor testdoeleinden.";
 "views.preferences.advanced.override.picker.remote" = "Extern";
 "views.preferences.advanced.remote.footer" = "Deze functies worden op afstand beheerd. Zet de schakelaars uit als iets niet werkt.";
+"views.preferences.crypto_backend" = "Cryptografie";
 "views.preferences.dns_falls_back.footer" = "Valt terug op CloudFlare-servers wanneer het VPN geen DNS-instellingen biedt.";
 "views.preferences.dns_falls_back" = "DNS-terugval";
 "views.preferences.enables_iap.footer" = "Schakel ondersteuning voor betaalde functies in. Schakel dit uit als u geen Apple ID heeft.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Start bij inloggen";
 "views.preferences.locks_in_background.footer" = "Vergrendel de app met FaceID wanneer deze naar de achtergrond wordt gestuurd.";
 "views.preferences.locks_in_background" = "Vergrendelen in achtergrond";
-"views.preferences.modern_crypto.footer" = "Gebruik moderne en snellere implementaties van cryptografische algoritmen, die mogelijk instabiel zijn.";
-"views.preferences.modern_crypto" = "Moderne cryptografie";
 "views.preferences.pins_active_profile.footer" = "Toont ook het actieve profiel bovenaan voor snelle toegang.";
 "views.preferences.pins_active_profile" = "Actief profiel vastzetten";
 "views.preferences.system_appearance" = "Uiterlijk";

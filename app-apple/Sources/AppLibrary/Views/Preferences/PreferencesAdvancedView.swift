@@ -115,6 +115,7 @@ private extension PreferencesAdvancedView {
                 .themeSubtitle()
         }
     }
+
 }
 
 private extension ABI.ExperimentalPreferences {

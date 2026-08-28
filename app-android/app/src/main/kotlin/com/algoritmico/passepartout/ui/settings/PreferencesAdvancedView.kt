@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -23,7 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
-import com.algoritmico.passepartout.business.extensions.default
 import com.algoritmico.passepartout.business.extensions.disable
 import com.algoritmico.passepartout.business.extensions.enable
 import com.algoritmico.passepartout.business.extensions.isAllowed
@@ -31,13 +31,10 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
 import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
-import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
 import com.algoritmico.passepartout.observables.ConfigObservable
-import com.algoritmico.passepartout.observables.ErrorHandler
-import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalConfigObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
@@ -45,7 +42,6 @@ import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import com.algoritmico.passepartout.ui.theme.themeListSection
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,21 +52,24 @@ fun PreferencesAdvancedView(
     val isBeta = LocalContext.current.isBetaSuggestedByAndroidAPI
     val configState by LocalConfigObservable.current.state.collectAsStateWithLifecycle()
     val userPreferencesObservable = LocalUserPreferencesObservable.current
+    val initialPreferences = remember(userPreferencesObservable) {
+        userPreferencesObservable.currentPreferences
+    }
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
-        initialValue = AppPreferences.default
+        initialValue = initialPreferences
     )
     val coroutineScope = rememberCoroutineScope()
     val canOverride = isBeta || appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
     val errorHandler = LocalErrorHandler.current
 
-    fun updateExperimentalPreferences(
-        transform: (ExperimentalPreferences) -> ExperimentalPreferences
-    ) {
-        userPreferencesObservable.updateExperimentalPreferencesSafely(
-            coroutineScope = coroutineScope,
-            errorHandler = errorHandler,
-            transform = transform
-        )
+    fun updateSafely(block: suspend () -> Unit) {
+        coroutineScope.launch {
+            runCatchingNonFatal {
+                block()
+            }.onFailure {
+                errorHandler.report(it)
+            }
+        }
     }
 
     AdvancedPreferencesContent(
@@ -79,8 +78,10 @@ fun PreferencesAdvancedView(
         configState = configState,
         preferences = preferences.experimental,
         onPreferenceChange = { flag, preference ->
-            updateExperimentalPreferences {
-                it.setPreference(preference, forFlag = flag)
+            updateSafely {
+                userPreferencesObservable.updateExperimentalPreferences {
+                    it.setPreference(preference, forFlag = flag)
+                }
             }
         },
         onAllowedChange = { flag, isAllowed ->
@@ -105,38 +106,39 @@ private fun AdvancedPreferencesContent(
     val remoteFooter = stringResource(R.string.views_preferences_advanced_remote_footer)
 
     ThemeList(modifier = modifier) {
-        if (canOverride) {
-            themeListSection(
-                footer = overrideFooter
-            ) {
-                items(advancedFlags) { flag ->
-                    ConfigPreferencePickerRow(
-                        flag = flag,
-                        isActive = configState.isActive(flag),
-                        preference = preferences.preference(forFlag = flag),
-                        onPreferenceChange = {
-                            onPreferenceChange(flag, it)
-                        }
-                    )
-                }
-            }
-        } else {
-            themeListSection(
-                header = allowHeader,
-                footer = remoteFooter
-            ) {
-                items(advancedFlags) { flag ->
-                    ConfigFlagAllowedRow(
-                        flag = flag,
-                        isActive = configState.isActive(flag),
-                        isAllowed = preferences.isAllowed(flag),
-                        onAllowedChange = {
-                            onAllowedChange(flag, it)
-                        }
-                    )
-                }
-            }
-        }
+        // Hide as long as config flags are empty.
+//        if (canOverride) {
+//            themeListSection(
+//                footer = overrideFooter
+//            ) {
+//                items(advancedFlags) { flag ->
+//                    ConfigPreferencePickerRow(
+//                        flag = flag,
+//                        isActive = configState.isActive(flag),
+//                        preference = preferences.preference(forFlag = flag),
+//                        onPreferenceChange = {
+//                            onPreferenceChange(flag, it)
+//                        }
+//                    )
+//                }
+//            }
+//        } else {
+//            themeListSection(
+//                header = allowHeader,
+//                footer = remoteFooter
+//            ) {
+//                items(advancedFlags) { flag ->
+//                    ConfigFlagAllowedRow(
+//                        flag = flag,
+//                        isActive = configState.isActive(flag),
+//                        isAllowed = preferences.isAllowed(flag),
+//                        onAllowedChange = {
+//                            onAllowedChange(flag, it)
+//                        }
+//                    )
+//                }
+//            }
+//        }
     }
 }
 
@@ -209,7 +211,9 @@ private fun ConfigPreferencePickerRow(
 }
 
 private val advancedFlags = listOf(
-    ConfigFlag.zigRuntime
+    ConfigFlag.zigRuntime,
+    ConfigFlag.zigOpenVPN,
+    ConfigFlag.zigWireGuard
 )
 
 private enum class ConfigFlagPreference {
@@ -262,19 +266,5 @@ private fun ConfigFlagPreference.localizedDescription(): String {
         ConfigFlagPreference.Remote -> stringResource(R.string.views_preferences_advanced_override_picker_remote)
         ConfigFlagPreference.Enable -> stringResource(R.string.global_actions_enable)
         ConfigFlagPreference.Disable -> stringResource(R.string.global_actions_disable)
-    }
-}
-
-private fun UserPreferencesObservable.updateExperimentalPreferencesSafely(
-    coroutineScope: CoroutineScope,
-    errorHandler: ErrorHandler,
-    transform: (ExperimentalPreferences) -> ExperimentalPreferences
-) {
-    coroutineScope.launch {
-        runCatchingNonFatal {
-            updateExperimentalPreferences(transform)
-        }.onFailure {
-            errorHandler.report(it)
-        }
     }
 }

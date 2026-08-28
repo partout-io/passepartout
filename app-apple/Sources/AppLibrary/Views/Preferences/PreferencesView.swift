@@ -51,6 +51,9 @@ public struct PreferencesView: View {
             if appConfiguration.bundle.distributionTarget.supportsIAP {
                 enablesPurchasesSection
             }
+            if isEnabled(.zigRuntime) {
+                cryptoBackendSection
+            }
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
@@ -65,6 +68,12 @@ private extension PreferencesView {
         nil,
         .light,
         .dark
+    ]
+
+    static let cryptoBackends: [CryptoBackend] = [
+        .openssl,
+        .mbedtls,
+        .native
     ]
 
     var systemAppearanceSection: some View {
@@ -114,6 +123,16 @@ private extension PreferencesView {
         .themeContainerEntry(subtitle: Strings.Views.Preferences.EnablesIap.footer)
     }
 
+    var cryptoBackendSection: some View {
+        Picker(Strings.Views.Preferences.cryptoBackend, selection: userPreferences.binding(\.cryptoBackend)) {
+            Text(Strings.Global.Nouns.default).tag(0)
+            ForEach(Self.cryptoBackends, id: \.rawValue) {
+                Text($0.localizedDescription)
+            }
+        }
+        .themeContainerEntry()
+    }
+
     var eraseCloudKitSection: some View {
         Button(Strings.Views.Preferences.eraseIcloud, role: .destructive) {
             isConfirmingEraseiCloud = true
@@ -146,9 +165,14 @@ private extension PreferencesView {
         Strings.Global.Nouns.advanced
     }
 
+    func isEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        !userPreferences.experimental.ignoredConfigFlags.contains(flag) &&
+        (configObservable.isActive(flag) || userPreferences.experimental.enabledConfigFlags.contains(flag))
+    }
+
     func advancedView() -> some View {
         PreferencesAdvancedView(experimental: userPreferences.binding(\.experimental))
-            .navigationTitle(advancedTitle)
+        .navigationTitle(advancedTitle)
     }
 }
 

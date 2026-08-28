@@ -143,3 +143,15 @@ extension Route: LocalizableEntity {
         return "default → *"
     }
 }
+
+extension CryptoBackend: LocalizableEntity {
+    public var localizedDescription: String {
+        let V = Strings.Unlocalized.Crypto.self
+        switch self {
+        case .openssl: return V.openSSL
+        case .mbedtls: return V.mbedTLS
+        case .native: return V.native
+        case .mock: return V.mock
+        }
+    }
+}

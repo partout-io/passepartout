@@ -6,6 +6,13 @@ import CommonLibrary
 
 extension Strings {
     public enum Unlocalized {
+        public enum Crypto {
+            static let openSSL = "OpenSSL"
+            static let mbedTLS = "MbedTLS"
+            static let native = "CommonCrypto"
+            static let mock = "Mock"
+        }
+
         public enum OpenVPN {
             public enum Placeholders {
                 public static let endpoint = "1.1.1.1:2222"
@@ -13,11 +20,8 @@ extension Strings {
 
             public enum XOR: String {
                 case xormask
-
                 case xorptrpos
-
                 case reverse
-
                 case obfuscate
             }
 

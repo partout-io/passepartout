@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">Valt terug op CloudFlare-servers wanneer het VPN geen DNS-instellingen biedt.</string>
     <string name="views_preferences_enables_iap">In-app aankopen</string>
     <string name="views_preferences_enables_iap_footer">Schakel ondersteuning voor betaalde functies in. Schakel dit uit als u geen Apple ID heeft.</string>
-    <string name="views_preferences_modern_crypto">Moderne cryptografie</string>
-    <string name="views_preferences_modern_crypto_footer">Gebruik moderne en snellere implementaties van cryptografische algoritmen, die mogelijk instabiel zijn.</string>
+    <string name="views_preferences_crypto_backend">Cryptografie</string>
     <string name="views_preferences_erase_icloud">Verwijder profielen van iCloud</string>
     <string name="views_preferences_erase_icloud_footer">Om alle profielen veilig van de iCloud-opslag te verwijderen, doe dit op al uw gesynchroniseerde apparaten. Dit heeft geen invloed op lokale profielen.</string>
     <string name="views_preferences_advanced_override_picker_remote">Extern</string>

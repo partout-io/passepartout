@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Nessun server selezionato nel provider.";
 "errors.app.module_requires_connection" = "Il modulo %@ richiede una connessione attiva tra i seguenti tipi: %@";
 "errors.app.no_active_modules" = "Il profilo non ha moduli attivi.";
-"errors.openvpn.unsupported_compression" = "La compressione OpenVPN non è sicura e non è più supportata.";
 "errors.app.other" = "Impossibile completare l'operazione.";
 "errors.app.parsing" = "Impossibile analizzare.";
 "errors.app.partout" = "Impossibile completare l'operazione (codice=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "L'operazione ha superato il tempo limite.";
 "errors.app.tunnel" = "Impossibile eseguire l'operazione.";
 "errors.app.web_receiver" = "Impossibile avviare l'importazione. Assicurati che la tua TV sia correttamente connessa alla rete locale.";
-"errors.wireguard.empty_peers" = "Nessun peer definito.";
 "errors.modules.DNS.emptyDoTHostname" = "Nome host DoT vuoto.";
 "errors.modules.DNS.emptyServers" = "Nessun server specificato.";
 "errors.modules.DNS.invalidDoHURL" = "URL DoH non valido.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Chiave precondivisa non valida.";
 "errors.modules.WireGuard.privateKey" = "Chiave privata non valida.";
 "errors.modules.WireGuard.publicKey" = "Chiave pubblica non valida.";
+"errors.openvpn.unsupported_compression" = "La compressione OpenVPN non è sicura e non è più supportata.";
 "errors.tunnel.auth" = "Autenticazione fallita";
 "errors.tunnel.compression" = "Compressione non supportata";
 "errors.tunnel.dns" = "DNS fallito";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Routing mancante";
 "errors.tunnel.shutdown" = "Spegnimento del server";
 "errors.tunnel.tls" = "TLS fallito";
+"errors.wireguard.empty_peers" = "Nessun peer definito.";
 "errors.wireguard.interface.address.invalid" = "L'indirizzo '%@' non è valido. Gli indirizzi dell'interfaccia devono essere un elenco di indirizzi IP separati da virgole, eventualmente in notazione CIDR.";
 "errors.wireguard.interface.dns.invalid" = "Il DNS '%@' non è valido. I server DNS dell'interfaccia devono essere un elenco di indirizzi IP separati da virgole.";
 "errors.wireguard.interface.listen_port.invalid" = "La porta di ascolto '%@' non è valida. La porta di ascolto dell'interfaccia deve essere compresa tra 0 e 65535, o non specificata.";
 "errors.wireguard.interface.mtu.invalid" = "Il valore MTU '%@' non è valido. Il valore MTU dell'interfaccia deve essere compreso tra 576 e 65535, o non specificato.";
 "errors.wireguard.interface.private_key.invalid" = "La chiave privata non è valida. La chiave privata dell'interfaccia deve essere una chiave di 32 byte in codifica base64.";
 "errors.wireguard.interface.private_key.required" = "È richiesta la chiave privata dell'interfaccia.";
+"errors.wireguard.interface.unrecognized_key" = "L'interfaccia contiene una chiave non riconosciuta '%@' Le chiavi valide sono: 'PrivateKey', 'ListenPort', 'Address', 'DNS' e 'MTU'.";
+"errors.wireguard.invalid_line" = "Riga non valida: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Deve esserci solo una voce per sezione per la chiave '%@'.";
+"errors.wireguard.multiple_interfaces" = "La configurazione deve contenere solo una sezione 'Interface'.";
+"errors.wireguard.no_interface" = "La configurazione deve contenere una sezione 'Interface'.";
 "errors.wireguard.peer.allowed_ips.invalid" = "L'IP consentito '%@' non è valido Gli IP consentiti del peer devono essere un elenco di indirizzi IP separati da virgole, eventualmente in notazione CIDR.";
 "errors.wireguard.peer.endpoint.invalid" = "L'endpoint '%@' non è valido L'endpoint del peer deve essere nel formato 'host:port' o '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Il valore di keepalive persistente '%@' non è valido Il valore di keepalive persistente del peer deve essere compreso tra 0 e 65535, o non specificato.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Due o più peer non possono avere la stessa chiave pubblica.";
 "errors.wireguard.peer.public_key.invalid" = "La chiave pubblica non è valida La chiave pubblica del peer deve essere una chiave di 32 byte in codifica base64.";
 "errors.wireguard.peer.public_key.required" = "È richiesta la chiave pubblica del peer.";
-"errors.wireguard.invalid_line" = "Riga non valida: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Deve esserci solo una voce per sezione per la chiave '%@'.";
-"errors.wireguard.multiple_interfaces" = "La configurazione deve contenere solo una sezione 'Interface'.";
-"errors.wireguard.no_interface" = "La configurazione deve contenere una sezione 'Interface'.";
-"errors.wireguard.interface.unrecognized_key" = "L'interfaccia contiene una chiave non riconosciuta '%@' Le chiavi valide sono: 'PrivateKey', 'ListenPort', 'Address', 'DNS' e 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Il peer contiene una chiave non riconosciuta '%@' Le chiavi valide sono: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' e 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "Impostazioni DNS";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Queste funzionalità sono controllate da remoto, ma puoi sovrascrivere il loro stato di attivazione a scopo di test.";
 "views.preferences.advanced.override.picker.remote" = "Remoto";
 "views.preferences.advanced.remote.footer" = "Queste funzionalità sono controllate da remoto. Disattiva gli interruttori se qualcosa non funziona.";
+"views.preferences.crypto_backend" = "Crittografia";
 "views.preferences.dns_falls_back.footer" = "Ripiega sui server CloudFlare quando il VPN non fornisce impostazioni DNS.";
 "views.preferences.dns_falls_back" = "DNS di fallback";
 "views.preferences.enables_iap.footer" = "Abilita il supporto per le funzionalità a pagamento. Disabilitalo se non hai Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Avvia all'accesso";
 "views.preferences.locks_in_background.footer" = "Blocca l'app con FaceID quando viene inviata in background.";
 "views.preferences.locks_in_background" = "Blocca in background";
-"views.preferences.modern_crypto.footer" = "Usa implementazioni moderne e più veloci degli algoritmi crittografici, sebbene potenzialmente instabili.";
-"views.preferences.modern_crypto" = "Crittografia moderna";
 "views.preferences.pins_active_profile.footer" = "Mostra anche il profilo attivo in cima per un accesso rapido.";
 "views.preferences.pins_active_profile" = "Fissa profilo attivo";
 "views.preferences.system_appearance" = "Aspetto";

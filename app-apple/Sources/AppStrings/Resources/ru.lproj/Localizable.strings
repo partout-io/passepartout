@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "На провайдере не выбран сервер.";
 "errors.app.module_requires_connection" = "Модуль %@ требует активного подключения одного из следующих типов: %@";
 "errors.app.no_active_modules" = "В профиле нет активных модулей.";
-"errors.openvpn.unsupported_compression" = "Сжатие OpenVPN небезопасно и больше не поддерживается.";
 "errors.app.other" = "Не удалось выполнить операцию.";
 "errors.app.parsing" = "Не удалось разобрать.";
 "errors.app.partout" = "Не удалось выполнить операцию (код=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "Время операции истекло.";
 "errors.app.tunnel" = "Не удалось выполнить операцию.";
 "errors.app.web_receiver" = "Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.";
-"errors.wireguard.empty_peers" = "Узлы не определены.";
 "errors.modules.DNS.emptyDoTHostname" = "Пустое имя хоста DoT.";
 "errors.modules.DNS.emptyServers" = "Серверы не указаны.";
 "errors.modules.DNS.invalidDoHURL" = "Недопустимый URL DoH.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Недопустимый предварительный общий ключ.";
 "errors.modules.WireGuard.privateKey" = "Недопустимый приватный ключ.";
 "errors.modules.WireGuard.publicKey" = "Недопустимый публичный ключ.";
+"errors.openvpn.unsupported_compression" = "Сжатие OpenVPN небезопасно и больше не поддерживается.";
 "errors.tunnel.auth" = "Ошибка аутентификации";
 "errors.tunnel.compression" = "Сжатие не поддерживается";
 "errors.tunnel.dns" = "Ошибка DNS";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Маршрутизация отсутствует";
 "errors.tunnel.shutdown" = "Сервер отключен";
 "errors.tunnel.tls" = "Ошибка TLS";
+"errors.wireguard.empty_peers" = "Узлы не определены.";
 "errors.wireguard.interface.address.invalid" = "Адрес '%@' недопустим. Адреса интерфейса должны представлять собой список IP-адресов, разделенных запятыми, возможно в нотации CIDR.";
 "errors.wireguard.interface.dns.invalid" = "DNS '%@' недопустим. Серверы DNS интерфейса должны представлять собой список IP-адресов, разделенных запятыми.";
 "errors.wireguard.interface.listen_port.invalid" = "Порт прослушивания '%@' недопустим. Порт прослушивания интерфейса должен быть от 0 до 65535 или не указан.";
 "errors.wireguard.interface.mtu.invalid" = "MTU '%@' недопустим. MTU интерфейса должен быть от 576 до 65535 или не указан.";
 "errors.wireguard.interface.private_key.invalid" = "Закрытый ключ недопустим. Закрытый ключ интерфейса должен быть 32-байтовым ключом в кодировке base64.";
 "errors.wireguard.interface.private_key.required" = "Требуется закрытый ключ интерфейса.";
+"errors.wireguard.interface.unrecognized_key" = "Интерфейс содержит нераспознанный ключ '%@' Допустимые ключи: 'PrivateKey', 'ListenPort', 'Address', 'DNS' и 'MTU'.";
+"errors.wireguard.invalid_line" = "Недопустимая строка: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Должна быть только одна запись на раздел для ключа '%@'.";
+"errors.wireguard.multiple_interfaces" = "Конфигурация должна содержать только один раздел 'Interface'.";
+"errors.wireguard.no_interface" = "Конфигурация должна содержать раздел 'Interface'.";
 "errors.wireguard.peer.allowed_ips.invalid" = "Разрешенный IP '%@' недопустим Разрешенные IP-адреса peer’а должны представлять собой список IP-адресов, разделенных запятыми, возможно в нотации CIDR.";
 "errors.wireguard.peer.endpoint.invalid" = "Адрес '%@' недопустим Адрес peer’а должен быть в формате 'host:port' или '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Значение постоянного keepalive '%@' недопустимо Значение постоянного keepalive peer’а должно быть от 0 до 65535 или не указано.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Два или более peer’ов не могут иметь один и тот же открытый ключ.";
 "errors.wireguard.peer.public_key.invalid" = "Открытый ключ недопустим Открытый ключ peer’а должен быть 32-байтовым ключом в кодировке base64.";
 "errors.wireguard.peer.public_key.required" = "Требуется открытый ключ peer’а.";
-"errors.wireguard.invalid_line" = "Недопустимая строка: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Должна быть только одна запись на раздел для ключа '%@'.";
-"errors.wireguard.multiple_interfaces" = "Конфигурация должна содержать только один раздел 'Interface'.";
-"errors.wireguard.no_interface" = "Конфигурация должна содержать раздел 'Interface'.";
-"errors.wireguard.interface.unrecognized_key" = "Интерфейс содержит нераспознанный ключ '%@' Допустимые ключи: 'PrivateKey', 'ListenPort', 'Address', 'DNS' и 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Peer содержит нераспознанный ключ '%@' Допустимые ключи: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' и 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "Настройки DNS";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Эти функции управляются удалённо, но вы можете переопределить их состояние включения в целях тестирования.";
 "views.preferences.advanced.override.picker.remote" = "Удалённо";
 "views.preferences.advanced.remote.footer" = "Эти функции управляются удалённо. Отключите переключатели, если что-то не работает.";
+"views.preferences.crypto_backend" = "Криптография";
 "views.preferences.dns_falls_back.footer" = "Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.";
 "views.preferences.dns_falls_back" = "Резервный DNS";
 "views.preferences.enables_iap.footer" = "Включите поддержку платных функций. Отключите, если у вас нет Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Запуск при входе";
 "views.preferences.locks_in_background.footer" = "Блокируйте приложение с помощью FaceID, когда оно переводится в фоновый режим.";
 "views.preferences.locks_in_background" = "Блокировка в фоновом режиме";
-"views.preferences.modern_crypto.footer" = "Используйте современные и более быстрые реализации криптографических алгоритмов, хотя они могут быть нестабильными.";
-"views.preferences.modern_crypto" = "Современная криптография";
 "views.preferences.pins_active_profile.footer" = "Также отображает активный профиль сверху для быстрого доступа.";
 "views.preferences.pins_active_profile" = "Закрепить активный профиль";
 "views.preferences.system_appearance" = "Внешний вид";

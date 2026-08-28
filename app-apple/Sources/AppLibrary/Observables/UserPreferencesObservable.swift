@@ -20,6 +20,7 @@ public final class UserPreferencesObservable {
             UIPreference.pinsActiveProfile.key: true
         ])
 
+        cryptoBackend = preferences[\.cryptoBackend]
         dnsFallsBack = preferences[\.dnsFallsBack]
         experimental = preferences[\.experimental]
         extensiveLogging = preferences[\.extensiveLogging]
@@ -41,6 +42,14 @@ public final class UserPreferencesObservable {
     }
 
     // MARK: Preferences
+
+    public var cryptoBackend: Int {
+        didSet {
+            preferences.overwrite {
+                $0.cryptoBackend = cryptoBackend
+            }
+        }
+    }
 
     public var dnsFallsBack: Bool {
         didSet {

@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">Återgår till CloudFlare-servrar när VPN inte tillhandahåller DNS-inställningar.</string>
     <string name="views_preferences_enables_iap">Köp i appen</string>
     <string name="views_preferences_enables_iap_footer">Aktivera stöd för betalda funktioner. Avaktivera detta om du inte har Apple ID.</string>
-    <string name="views_preferences_modern_crypto">Modern kryptografi</string>
-    <string name="views_preferences_modern_crypto_footer">Använd moderna och snabbare implementationer av kryptografiska algoritmer, men de kan vara instabila.</string>
+    <string name="views_preferences_crypto_backend">Kryptografi</string>
     <string name="views_preferences_erase_icloud">Radera profiler från iCloud</string>
     <string name="views_preferences_erase_icloud_footer">För att säkert radera alla profiler från iCloud-lagringen, gör det på alla dina synkroniserade enheter. Detta påverkar inte lokala profiler.</string>
     <string name="views_preferences_advanced_override_picker_remote">Fjärr</string>

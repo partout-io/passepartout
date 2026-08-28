@@ -89,8 +89,7 @@
     <string name="views_preferences_dns_falls_back_footer">Χρησιμοποιεί τους διακομιστές CloudFlare όταν το VPN δεν παρέχει ρυθμίσεις DNS.</string>
     <string name="views_preferences_enables_iap">Αγορές εντός εφαρμογής</string>
     <string name="views_preferences_enables_iap_footer">Ενεργοποιήστε την υποστήριξη για πληρωμένες λειτουργίες. Απενεργοποιήστε το αν δεν έχετε Apple ID.</string>
-    <string name="views_preferences_modern_crypto">Σύγχρονη κρυπτογραφία</string>
-    <string name="views_preferences_modern_crypto_footer">Χρησιμοποιήστε σύγχρονες και ταχύτερες υλοποιήσεις αλγορίθμων κρυπτογράφησης, αν και ενδέχεται να είναι ασταθείς.</string>
+    <string name="views_preferences_crypto_backend">Κρυπτογραφία</string>
     <string name="views_preferences_erase_icloud">Διαγραφή προφίλ από το iCloud</string>
     <string name="views_preferences_erase_icloud_footer">Για να διαγράψετε όλα τα προφίλ από το iCloud με ασφάλεια, κάντε το σε όλες τις συγχρονισμένες συσκευές σας. Αυτό δεν θα επηρεάσει τα τοπικά προφίλ.</string>
     <string name="views_preferences_advanced_override_picker_remote">Απομακρυσμένο</string>

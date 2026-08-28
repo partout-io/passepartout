@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Kein Server beim Anbieter ausgewählt.";
 "errors.app.module_requires_connection" = "Das Modul %@ erfordert eine aktive Verbindung eines der folgenden Typen: %@";
 "errors.app.no_active_modules" = "Das Profil hat keine aktiven Module.";
-"errors.openvpn.unsupported_compression" = "OpenVPN-Kompression ist unsicher und wird nicht mehr unterstützt.";
 "errors.app.other" = "Operation konnte nicht abgeschlossen werden.";
 "errors.app.parsing" = "Konnte nicht analysiert werden.";
 "errors.app.partout" = "Operation konnte nicht abgeschlossen werden (Code=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "Die Operation hat das Zeitlimit überschritten.";
 "errors.app.tunnel" = "Aktion konnte nicht ausgeführt werden.";
 "errors.app.web_receiver" = "Import kann nicht gestartet werden. Stellen Sie sicher, dass Ihr Fernseher ordnungsgemäß mit dem lokalen Netzwerk verbunden ist.";
-"errors.wireguard.empty_peers" = "Keine Peers definiert.";
 "errors.modules.DNS.emptyDoTHostname" = "Leerer DoT-Hostname.";
 "errors.modules.DNS.emptyServers" = "Leere Server.";
 "errors.modules.DNS.invalidDoHURL" = "Ungültige DoH-URL.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Ungültiger Pre-Shared-Key.";
 "errors.modules.WireGuard.privateKey" = "Ungültiger privater Schlüssel.";
 "errors.modules.WireGuard.publicKey" = "Ungültiger öffentlicher Schlüssel.";
+"errors.openvpn.unsupported_compression" = "OpenVPN-Kompression ist unsicher und wird nicht mehr unterstützt.";
 "errors.tunnel.auth" = "Authentifizierung fehlgeschlagen";
 "errors.tunnel.compression" = "Kompression wird nicht unterstützt";
 "errors.tunnel.dns" = "DNS fehlgeschlagen";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Routing fehlt";
 "errors.tunnel.shutdown" = "Server heruntergefahren";
 "errors.tunnel.tls" = "TLS fehlgeschlagen";
+"errors.wireguard.empty_peers" = "Keine Peers definiert.";
 "errors.wireguard.interface.address.invalid" = "Adresse '%@' ist ungültig. Schnittstellenadressen müssen eine Liste von durch Kommas getrennten IP-Adressen sein, optional in CIDR-Notation.";
 "errors.wireguard.interface.dns.invalid" = "DNS '%@' ist ungültig. Die DNS-Server der Schnittstelle müssen eine Liste von durch Kommas getrennten IP-Adressen sein.";
 "errors.wireguard.interface.listen_port.invalid" = "Listen-Port '%@' ist ungültig. Der Listen-Port der Schnittstelle muss zwischen 0 und 65535 liegen oder nicht angegeben sein.";
 "errors.wireguard.interface.mtu.invalid" = "MTU '%@' ist ungültig. Die MTU der Schnittstelle muss zwischen 576 und 65535 liegen oder nicht angegeben sein.";
 "errors.wireguard.interface.private_key.invalid" = "Privater Schlüssel ist ungültig. Privater Schlüssel der Schnittstelle muss ein 32-Byte-Schlüssel in Base64-Codierung sein.";
 "errors.wireguard.interface.private_key.required" = "Privater Schlüssel der Schnittstelle ist erforderlich.";
+"errors.wireguard.interface.unrecognized_key" = "Schnittstelle enthält nicht erkannten Schlüssel '%@' Gültige Schlüssel sind: 'PrivateKey', 'ListenPort', 'Address', 'DNS' und 'MTU'.";
+"errors.wireguard.invalid_line" = "Ungültige Zeile: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Es sollte nur einen Eintrag pro Abschnitt für den Schlüssel '%@' geben.";
+"errors.wireguard.multiple_interfaces" = "Die Konfiguration darf nur einen 'Interface'-Abschnitt haben.";
+"errors.wireguard.no_interface" = "Die Konfiguration muss einen 'Interface'-Abschnitt haben.";
 "errors.wireguard.peer.allowed_ips.invalid" = "Erlaubte IP '%@' ist ungültig Die erlaubten IPs des Peers müssen eine Liste von durch Kommas getrennten IP-Adressen sein, optional in CIDR-Notation.";
 "errors.wireguard.peer.endpoint.invalid" = "Endpunkt '%@' ist ungültig Das Endpunkt des Peers muss die Form 'host:port' oder '[host]:port' haben.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Wert für persistentes Keepalive '%@' ist ungültig Der Wert für das persistente Keepalive des Peers muss zwischen 0 und 65535 liegen oder nicht angegeben sein.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Zwei oder mehr Peers dürfen nicht denselben öffentlichen Schlüssel haben.";
 "errors.wireguard.peer.public_key.invalid" = "Öffentlicher Schlüssel ist ungültig Öffentlicher Schlüssel des Peers muss ein 32-Byte-Schlüssel in Base64-Codierung sein.";
 "errors.wireguard.peer.public_key.required" = "Öffentlicher Schlüssel des Peers ist erforderlich.";
-"errors.wireguard.invalid_line" = "Ungültige Zeile: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Es sollte nur einen Eintrag pro Abschnitt für den Schlüssel '%@' geben.";
-"errors.wireguard.multiple_interfaces" = "Die Konfiguration darf nur einen 'Interface'-Abschnitt haben.";
-"errors.wireguard.no_interface" = "Die Konfiguration muss einen 'Interface'-Abschnitt haben.";
-"errors.wireguard.interface.unrecognized_key" = "Schnittstelle enthält nicht erkannten Schlüssel '%@' Gültige Schlüssel sind: 'PrivateKey', 'ListenPort', 'Address', 'DNS' und 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Peer enthält nicht erkannten Schlüssel '%@' Gültige Schlüssel sind: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' und 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "DNS-Einstellungen";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Diese Funktionen werden remote gesteuert, du kannst ihren Aktivierungsstatus jedoch zu Testzwecken überschreiben.";
 "views.preferences.advanced.override.picker.remote" = "Remote";
 "views.preferences.advanced.remote.footer" = "Diese Funktionen werden aus der Ferne gesteuert. Schalten Sie die Schalter aus, wenn etwas nicht funktioniert.";
+"views.preferences.crypto_backend" = "Kryptografie";
 "views.preferences.dns_falls_back.footer" = "Fällt auf CloudFlare-Server zurück, wenn das VPN keine DNS-Einstellungen bereitstellt.";
 "views.preferences.dns_falls_back" = "DNS-Fallback";
 "views.preferences.enables_iap.footer" = "Aktivieren Sie die Unterstützung für kostenpflichtige Funktionen. Deaktivieren Sie dies, wenn Sie kein Apple ID haben.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Beim Login starten";
 "views.preferences.locks_in_background.footer" = "Sperre die App mit FaceID, wenn sie in den Hintergrund geschickt wird.";
 "views.preferences.locks_in_background" = "Im Hintergrund sperren";
-"views.preferences.modern_crypto.footer" = "Verwenden Sie moderne und schnellere Implementierungen kryptografischer Algorithmen, die jedoch möglicherweise instabil sind.";
-"views.preferences.modern_crypto" = "Moderne Kryptografie";
 "views.preferences.pins_active_profile.footer" = "Zeigt das aktive Profil auch oben für schnellen Zugriff an.";
 "views.preferences.pins_active_profile" = "Aktives Profil anheften";
 "views.preferences.system_appearance" = "Erscheinungsbild";

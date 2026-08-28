@@ -350,6 +350,7 @@ components:
       type: string
       x-enum-varnames:
       - configFlags
+      - cryptoBackend
       - deviceId
       - dnsFallsBack
       - experimental
@@ -361,6 +362,7 @@ components:
       - skipsPurchases
       enum:
       - configFlags
+      - cryptoBackend
       - deviceId
       - dnsFallsBack
       - experimental
@@ -378,6 +380,8 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/ConfigFlag"
+        cryptoBackend:
+          type: integer
         deviceId:
           type: string
         dnsFallsBack:
@@ -398,6 +402,7 @@ components:
           type: boolean
       required:
       - configFlags
+      - cryptoBackend
       - dnsFallsBack
       - experimental
       - extensiveLogging

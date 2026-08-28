@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Nenhum servidor selecionado no provedor.";
 "errors.app.module_requires_connection" = "O módulo %@ requer uma conexão ativa de um dos seguintes tipos: %@";
 "errors.app.no_active_modules" = "O perfil não possui módulos ativos.";
-"errors.openvpn.unsupported_compression" = "A compressão OpenVPN não é segura e não é mais suportada.";
 "errors.app.other" = "Não foi possível concluir a operação.";
 "errors.app.parsing" = "Não foi possível analisar.";
 "errors.app.partout" = "Não foi possível concluir a operação (código=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "A operação expirou.";
 "errors.app.tunnel" = "Não foi possível executar a operação.";
 "errors.app.web_receiver" = "Não é possível iniciar a importação. Certifique-se de que sua TV esteja devidamente conectada à rede local.";
-"errors.wireguard.empty_peers" = "Nenhum peer definido.";
 "errors.modules.DNS.emptyDoTHostname" = "Nome de host DoT vazio.";
 "errors.modules.DNS.emptyServers" = "Nenhum servidor informado.";
 "errors.modules.DNS.invalidDoHURL" = "URL DoH inválida.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Chave pré-compartilhada inválida.";
 "errors.modules.WireGuard.privateKey" = "Chave privada inválida.";
 "errors.modules.WireGuard.publicKey" = "Chave pública inválida.";
+"errors.openvpn.unsupported_compression" = "A compressão OpenVPN não é segura e não é mais suportada.";
 "errors.tunnel.auth" = "Falha na autenticação";
 "errors.tunnel.compression" = "Compressão não suportada";
 "errors.tunnel.dns" = "Falha no DNS";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Roteamento ausente";
 "errors.tunnel.shutdown" = "Servidor desligado";
 "errors.tunnel.tls" = "Falha no TLS";
+"errors.wireguard.empty_peers" = "Nenhum peer definido.";
 "errors.wireguard.interface.address.invalid" = "O endereço '%@' é inválido. Os endereços da interface devem ser uma lista de endereços IP separados por vírgulas, opcionalmente em notação CIDR.";
 "errors.wireguard.interface.dns.invalid" = "O DNS '%@' é inválido. Os servidores DNS da interface devem ser uma lista de endereços IP separados por vírgulas.";
 "errors.wireguard.interface.listen_port.invalid" = "A porta de escuta '%@' é inválida. A porta de escuta da interface deve estar entre 0 e 65535, ou não especificada.";
 "errors.wireguard.interface.mtu.invalid" = "O MTU '%@' é inválido. O MTU da interface deve estar entre 576 e 65535, ou não especificado.";
 "errors.wireguard.interface.private_key.invalid" = "A chave privada é inválida. A chave privada da interface deve ser uma chave de 32 bytes em codificação base64.";
 "errors.wireguard.interface.private_key.required" = "A chave privada da interface é obrigatória.";
+"errors.wireguard.interface.unrecognized_key" = "A interface contém uma chave não reconhecida '%@' As chaves válidas são: 'PrivateKey', 'ListenPort', 'Address', 'DNS' e 'MTU'.";
+"errors.wireguard.invalid_line" = "Linha inválida: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "Deve haver apenas uma entrada por seção para a chave '%@'.";
+"errors.wireguard.multiple_interfaces" = "A configuração deve ter apenas uma seção 'Interface'.";
+"errors.wireguard.no_interface" = "A configuração deve ter uma seção 'Interface'.";
 "errors.wireguard.peer.allowed_ips.invalid" = "O IP permitido '%@' é inválido Os IPs permitidos do peer devem ser uma lista de endereços IP separados por vírgulas, opcionalmente em notação CIDR.";
 "errors.wireguard.peer.endpoint.invalid" = "O endpoint '%@' é inválido O endpoint do peer deve estar no formato 'host:port' ou '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "O valor de keepalive persistente '%@' é inválido O valor de keepalive persistente do peer deve estar entre 0 e 65535, ou não especificado.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Dois ou mais peers não podem ter a mesma chave pública.";
 "errors.wireguard.peer.public_key.invalid" = "A chave pública é inválida A chave pública do peer deve ser uma chave de 32 bytes em codificação base64.";
 "errors.wireguard.peer.public_key.required" = "A chave pública do peer é obrigatória.";
-"errors.wireguard.invalid_line" = "Linha inválida: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "Deve haver apenas uma entrada por seção para a chave '%@'.";
-"errors.wireguard.multiple_interfaces" = "A configuração deve ter apenas uma seção 'Interface'.";
-"errors.wireguard.no_interface" = "A configuração deve ter uma seção 'Interface'.";
-"errors.wireguard.interface.unrecognized_key" = "A interface contém uma chave não reconhecida '%@' As chaves válidas são: 'PrivateKey', 'ListenPort', 'Address', 'DNS' e 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "O peer contém uma chave não reconhecida '%@' As chaves válidas são: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' e 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "Configurações de DNS";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Estas funcionalidades são controladas remotamente, mas pode substituir o seu estado de ativação para fins de teste.";
 "views.preferences.advanced.override.picker.remote" = "Remoto";
 "views.preferences.advanced.remote.footer" = "Esses recursos são controlados remotamente. Desative as opções se algo não funcionar.";
+"views.preferences.crypto_backend" = "Criptografia";
 "views.preferences.dns_falls_back.footer" = "Reverte para os servidores CloudFlare quando o VPN não fornece configurações de DNS.";
 "views.preferences.dns_falls_back" = "Fallback de DNS";
 "views.preferences.enables_iap.footer" = "Ative o suporte para recursos pagos. Desative isto se você não tiver Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Iniciar ao fazer login";
 "views.preferences.locks_in_background.footer" = "Bloqueie o app com o FaceID ao enviá-lo para segundo plano.";
 "views.preferences.locks_in_background" = "Bloquear em segundo plano";
-"views.preferences.modern_crypto.footer" = "Use implementações modernas e mais rápidas de algoritmos criptográficos, embora potencialmente instáveis.";
-"views.preferences.modern_crypto" = "Criptografia moderna";
 "views.preferences.pins_active_profile.footer" = "Também exibe o perfil ativo no topo para acesso rápido.";
 "views.preferences.pins_active_profile" = "Fixar perfil ativo";
 "views.preferences.system_appearance" = "Aparência";

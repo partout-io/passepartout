@@ -49,7 +49,6 @@
 "errors.app.missing_provider_entity" = "Не вибрано сервер у постачальника.";
 "errors.app.module_requires_connection" = "Модуль %@ потребує активного з’єднання одного з таких типів: %@";
 "errors.app.no_active_modules" = "Профіль не має активних модулів.";
-"errors.openvpn.unsupported_compression" = "Стиснення OpenVPN небезпечне й більше не підтримується.";
 "errors.app.other" = "Не вдалося завершити операцію.";
 "errors.app.parsing" = "Не вдалося розібрати.";
 "errors.app.partout" = "Не вдалося виконати операцію (код=%@).";
@@ -57,7 +56,6 @@
 "errors.app.timeout" = "Час виконання операції вичерпано.";
 "errors.app.tunnel" = "Не вдалося виконати операцію.";
 "errors.app.web_receiver" = "Неможливо розпочати імпорт. Переконайтеся, що ваш телевізор правильно підключений до локальної мережі.";
-"errors.wireguard.empty_peers" = "Вузли не визначено.";
 "errors.modules.DNS.emptyDoTHostname" = "Порожнє ім’я хоста DoT.";
 "errors.modules.DNS.emptyServers" = "Сервери не вказані.";
 "errors.modules.DNS.invalidDoHURL" = "Недійсний URL DoH.";
@@ -76,6 +74,7 @@
 "errors.modules.WireGuard.preSharedKey" = "Недійсний попередньо спільний ключ.";
 "errors.modules.WireGuard.privateKey" = "Недійсний приватний ключ.";
 "errors.modules.WireGuard.publicKey" = "Недійсний публічний ключ.";
+"errors.openvpn.unsupported_compression" = "Стиснення OpenVPN небезпечне й більше не підтримується.";
 "errors.tunnel.auth" = "Помилка аутентифікації";
 "errors.tunnel.compression" = "Стиснення не підтримується";
 "errors.tunnel.dns" = "Помилка DNS";
@@ -84,12 +83,18 @@
 "errors.tunnel.routing" = "Маршрутизація відсутня";
 "errors.tunnel.shutdown" = "Сервер вимкнено";
 "errors.tunnel.tls" = "Помилка TLS";
+"errors.wireguard.empty_peers" = "Вузли не визначено.";
 "errors.wireguard.interface.address.invalid" = "Адреса '%@' некоректна. Адреси інтерфейсу мають бути списком IP-адрес, розділених комами, за бажанням у нотації CIDR.";
 "errors.wireguard.interface.dns.invalid" = "DNS '%@' некоректний. DNS-сервери інтерфейсу мають бути списком IP-адрес, розділених комами.";
 "errors.wireguard.interface.listen_port.invalid" = "Порт прослуховування '%@' некоректний. Порт прослуховування інтерфейсу має бути в межах від 0 до 65535 або не вказаний.";
 "errors.wireguard.interface.mtu.invalid" = "MTU '%@' некоректний. MTU інтерфейсу має бути в межах від 576 до 65535 або не вказаний.";
 "errors.wireguard.interface.private_key.invalid" = "Приватний ключ некоректний. Приватний ключ інтерфейсу має бути 32-байтовим ключем у кодуванні base64.";
 "errors.wireguard.interface.private_key.required" = "Потрібен приватний ключ інтерфейсу.";
+"errors.wireguard.interface.unrecognized_key" = "Інтерфейс містить нерозпізнаний ключ '%@' Дійсні ключі: 'PrivateKey', 'ListenPort', 'Address', 'DNS' і 'MTU'.";
+"errors.wireguard.invalid_line" = "Некоректний рядок: '%@'.";
+"errors.wireguard.multiple_entries_for_key" = "У кожному розділі має бути лише один запис для ключа '%@'.";
+"errors.wireguard.multiple_interfaces" = "Конфігурація має містити лише один розділ 'Interface'.";
+"errors.wireguard.no_interface" = "Конфігурація має містити розділ 'Interface'.";
 "errors.wireguard.peer.allowed_ips.invalid" = "Дозволена IP-адреса '%@' некоректна Дозволені IP-адреси peer’а мають бути списком IP-адрес, розділених комами, за бажанням у нотації CIDR.";
 "errors.wireguard.peer.endpoint.invalid" = "Адреса '%@' некоректна Адреса peer’а має бути у форматі 'host:port' або '[host]:port'.";
 "errors.wireguard.peer.persistent_keepalive.invalid" = "Значення постійного keepalive '%@' некоректне Значення постійного keepalive peer’а має бути в межах від 0 до 65535 або не вказане.";
@@ -97,11 +102,6 @@
 "errors.wireguard.peer.public_key.duplicated" = "Два або більше peer’ів не можуть мати один і той самий відкритий ключ.";
 "errors.wireguard.peer.public_key.invalid" = "Відкритий ключ некоректний Відкритий ключ peer’а має бути 32-байтовим ключем у кодуванні base64.";
 "errors.wireguard.peer.public_key.required" = "Потрібен відкритий ключ peer’а.";
-"errors.wireguard.invalid_line" = "Некоректний рядок: '%@'.";
-"errors.wireguard.multiple_entries_for_key" = "У кожному розділі має бути лише один запис для ключа '%@'.";
-"errors.wireguard.multiple_interfaces" = "Конфігурація має містити лише один розділ 'Interface'.";
-"errors.wireguard.no_interface" = "Конфігурація має містити розділ 'Interface'.";
-"errors.wireguard.interface.unrecognized_key" = "Інтерфейс містить нерозпізнаний ключ '%@' Дійсні ключі: 'PrivateKey', 'ListenPort', 'Address', 'DNS' і 'MTU'.";
 "errors.wireguard.peer.unrecognized_key" = "Peer містить нерозпізнаний ключ '%@' Дійсні ключі: 'PublicKey', 'PresharedKey', 'AllowedIPs', 'Endpoint' і 'PersistentKeepalive'.";
 "features.appletv" = "%@";
 "features.dns" = "Налаштування DNS";
@@ -365,6 +365,7 @@
 "views.preferences.advanced.override.footer" = "Ці функції керуються віддалено, але ви можете перевизначити їхній стан увімкнення для тестування.";
 "views.preferences.advanced.override.picker.remote" = "Віддалено";
 "views.preferences.advanced.remote.footer" = "Ці функції керуються віддалено. Вимкніть перемикачі, якщо щось не працює.";
+"views.preferences.crypto_backend" = "Криптографія";
 "views.preferences.dns_falls_back.footer" = "Перемикається на сервери CloudFlare, коли VPN не надає налаштування DNS.";
 "views.preferences.dns_falls_back" = "Резервний DNS";
 "views.preferences.enables_iap.footer" = "Увімкніть підтримку платних функцій. Вимкніть це, якщо у вас немає Apple ID.";
@@ -377,8 +378,6 @@
 "views.preferences.launches_on_login" = "Запуск під час входу";
 "views.preferences.locks_in_background.footer" = "Блокуйте додаток за допомогою FaceID, коли він переходе у фоновий режим.";
 "views.preferences.locks_in_background" = "Блокування у фоновому режимі";
-"views.preferences.modern_crypto.footer" = "Використовуйте сучасні та швидші реалізації криптографічних алгоритмів, хоча вони можуть бути нестабільними.";
-"views.preferences.modern_crypto" = "Сучасна криптографія";
 "views.preferences.pins_active_profile.footer" = "Також показує активний профіль зверху для швидкого доступу.";
 "views.preferences.pins_active_profile" = "Закріпити активний профіль";
 "views.preferences.system_appearance" = "Зовнішній вигляд";
