@@ -39,11 +39,9 @@ import com.algoritmico.passepartout.ui.LocalAppConfiguration
 import com.algoritmico.passepartout.ui.LocalConfigObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
-import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import com.algoritmico.passepartout.ui.theme.themeListSection
-import io.partout.models.CryptoBackend
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,7 +77,6 @@ fun PreferencesAdvancedView(
         canOverride = canOverride,
         configState = configState,
         preferences = preferences.experimental,
-        cryptoBackend = preferences.cryptoBackend,
         onPreferenceChange = { flag, preference ->
             updateSafely {
                 userPreferencesObservable.updateExperimentalPreferences {
@@ -91,11 +88,6 @@ fun PreferencesAdvancedView(
             userPreferencesObservable.updateExperimentalPreferences {
                 it.setAllowed(flag, isAllowed)
             }
-        },
-        onCryptoBackendChange = {
-            updateSafely {
-                userPreferencesObservable.updateCryptoBackend(it)
-            }
         }
     )
 }
@@ -106,10 +98,8 @@ private fun AdvancedPreferencesContent(
     canOverride: Boolean,
     configState: ConfigObservable.State,
     preferences: ExperimentalPreferences,
-    cryptoBackend: Int,
     onPreferenceChange: (ConfigFlag, ConfigFlagPreference) -> Unit,
-    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit,
-    onCryptoBackendChange: (Int) -> Unit
+    onAllowedChange: suspend (ConfigFlag, Boolean) -> Unit
 ) {
     val allowHeader = stringResource(R.string.global_actions_allow)
     val overrideFooter = stringResource(R.string.views_preferences_advanced_override_footer)
@@ -149,14 +139,6 @@ private fun AdvancedPreferencesContent(
 //                }
 //            }
 //        }
-        themeListSection {
-            item {
-                CryptoBackendPickerRow(
-                    cryptoBackend = cryptoBackend,
-                    onCryptoBackendChange = onCryptoBackendChange
-                )
-            }
-        }
     }
 }
 
@@ -228,65 +210,10 @@ private fun ConfigPreferencePickerRow(
     )
 }
 
-@Composable
-private fun CryptoBackendPickerRow(
-    cryptoBackend: Int,
-    onCryptoBackendChange: (Int) -> Unit
-) {
-    var isMenuExpanded by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val selectedBackend = cryptoBackends.firstOrNull {
-        (it?.value ?: 0) == cryptoBackend
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(stringResource(R.string.views_preferences_crypto_backend))
-        },
-        trailingContent = {
-            Box {
-                TextButton(
-                    onClick = {
-                        isMenuExpanded = true
-                    }
-                ) {
-                    Text(selectedBackend.localizedDescription())
-                }
-                DropdownMenu(
-                    expanded = isMenuExpanded,
-                    onDismissRequest = {
-                        isMenuExpanded = false
-                    }
-                ) {
-                    cryptoBackends.forEach { backend ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(backend.localizedDescription())
-                            },
-                            onClick = {
-                                isMenuExpanded = false
-                                onCryptoBackendChange(backend?.value ?: 0)
-                            }
-                        )
-                    }
-                }
-            }
-        },
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
 private val advancedFlags = listOf(
     ConfigFlag.zigRuntime,
     ConfigFlag.zigOpenVPN,
     ConfigFlag.zigWireGuard
-)
-
-private val cryptoBackends: List<CryptoBackend?> = listOf(
-    null,
-    CryptoBackend.openssl,
-    CryptoBackend.mbedtls
 )
 
 private enum class ConfigFlagPreference {
@@ -339,16 +266,5 @@ private fun ConfigFlagPreference.localizedDescription(): String {
         ConfigFlagPreference.Remote -> stringResource(R.string.views_preferences_advanced_override_picker_remote)
         ConfigFlagPreference.Enable -> stringResource(R.string.global_actions_enable)
         ConfigFlagPreference.Disable -> stringResource(R.string.global_actions_disable)
-    }
-}
-
-@Composable
-private fun CryptoBackend?.localizedDescription(): String {
-    return when (this) {
-        null -> stringResource(R.string.global_nouns_default)
-        CryptoBackend.openssl -> Strings.Unlocalized.Crypto.openSSL
-        CryptoBackend.mbedtls -> Strings.Unlocalized.Crypto.mbedTLS
-        CryptoBackend.native -> error("Unsupported crypto backend: $this")
-        CryptoBackend.mock -> Strings.Unlocalized.Crypto.mock
     }
 }
