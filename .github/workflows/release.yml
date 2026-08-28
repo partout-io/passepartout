@@ -32,9 +32,10 @@ jobs:
           xcframework="$GITHUB_WORKSPACE/app-apple/PartoutNative.xcframework"
           archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
           artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
+          prebuilts_version=$(tr -d '\r\n' < "$GITHUB_WORKSPACE/prebuilts-version.txt")
 
           partout/scripts/build-xcframework.sh \
-            "$xcframework" "$artifacts_dir" --full
+            "$prebuilts_version" "$xcframework" "$artifacts_dir" --full
           test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
           ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
           grep -F 'path = PartoutNative.xcframework;' \

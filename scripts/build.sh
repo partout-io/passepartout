@@ -5,6 +5,7 @@ set -e
 root_dir="$(cd "$(dirname "$0")"/.. && pwd)"
 build_dir="$root_dir/.cmake"
 bin_dir="bin"
+prebuilts_version=$(tr -d '\r\n' < "$root_dir/prebuilts-version.txt")
 
 pushd "$root_dir"
 
@@ -34,7 +35,7 @@ while [[ $# -gt 0 ]]; do
                 echo "-prebuilts requires a version"
                 exit 1
             fi
-            prebuilts_url=https://github.com/partout-io/prebuilts/releases/download/$2
+            prebuilts_version=$2
             shift
             shift
             ;;
@@ -49,6 +50,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 set -- "${positional_args[@]}"
+
+if [[ ! $prebuilts_version =~ ^[0-9A-Za-z][0-9A-Za-z._+-]*$ ]]; then
+    echo "Invalid prebuilts version: $prebuilts_version"
+    exit 1
+fi
 
 if [[ -z $build_type ]]; then
     build_type=Debug
@@ -68,9 +74,7 @@ if [[ $build_app == 1 ]]; then
 else
     cmake_opts+=("-DBUILD_APP=OFF")
 fi
-if [[ -n $prebuilts_url ]]; then
-    cmake_opts+=("-DPP_BUILD_VENDOR_PREBUILT_URL=$prebuilts_url")
-fi
+cmake_opts+=("-DPASSEPARTOUT_PREBUILTS_VERSION=$prebuilts_version")
 
 if [[ ! -d "$build_dir" ]]; then
     mkdir "$build_dir"

@@ -1,9 +1,6 @@
 set(PASSEPARTOUT_WX_PREBUILT_DIR "" CACHE PATH "Path to an extracted wxWidgets Windows prebuilt.")
-set(PASSEPARTOUT_WX_PREBUILT_BASE_URL
-    "https://github.com/partout-io/prebuilts/releases/latest/download"
-    CACHE STRING
-    "Base URL for wxWidgets Windows prebuilts."
-)
+set(PASSEPARTOUT_WX_PREBUILT_BASE_URL "" CACHE STRING
+    "Base URL for wxWidgets Windows prebuilts.")
 
 function(target_link_system_wxwidgets TARGET_NAME)
     if(APPLE AND NOT wxWidgets_CONFIG_EXECUTABLE)
@@ -65,6 +62,9 @@ function(get_windows_wxwidgets_arch OUT_VAR)
 endfunction()
 
 function(target_link_windows_wxwidgets TARGET_NAME)
+    if(NOT PASSEPARTOUT_WX_PREBUILT_BASE_URL)
+        message(FATAL_ERROR "PASSEPARTOUT_WX_PREBUILT_BASE_URL is required")
+    endif()
     get_windows_wxwidgets_arch(WX_PREBUILT_ARCH)
     set(WX_PREBUILT_URL "${PASSEPARTOUT_WX_PREBUILT_BASE_URL}/wxwidgets-windows-${WX_PREBUILT_ARCH}.zip")
     if(PASSEPARTOUT_WX_PREBUILT_DIR)

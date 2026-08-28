@@ -7,7 +7,7 @@ $configuration = "Debug"
 $generator = "Ninja Multi-Config"
 $gen_build = $false
 $build_app = $false
-$vendors_url = $null
+$prebuiltsVersion = (Get-Content -Raw (Join-Path $root_dir "prebuilts-version.txt")).Trim()
 
 $index = 0
 while ($index -lt $args.Count) {
@@ -33,8 +33,7 @@ while ($index -lt $args.Count) {
                 Write-Error "-prebuilts requires a version"
                 exit 1
             }
-            $version = $args[$index + 1]
-            $vendors_url = "https://github.com/partout-io/prebuilts/releases/download/$version"
+            $prebuiltsVersion = $args[$index + 1]
             $index += 2
         }
         "-generator" {
@@ -50,6 +49,11 @@ while ($index -lt $args.Count) {
             exit 1
         }
     }
+}
+
+if ($prebuiltsVersion -notmatch '^[0-9A-Za-z][0-9A-Za-z._+-]*$') {
+    Write-Error "Invalid prebuilts version: $prebuiltsVersion"
+    exit 1
 }
 
 $bin_arch = switch ($env:PROCESSOR_ARCHITECTURE) {
@@ -79,7 +83,8 @@ try {
         "-DOUTPUT_DIR=$output_dir",
         "-DCMAKE_INSTALL_LIBDIR=.",
         "-DCMAKE_INSTALL_BINDIR=.",
-        "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL"
+        "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL",
+        "-DPASSEPARTOUT_PREBUILTS_VERSION=$prebuiltsVersion"
     )
     if ($is_multi_config) {
         $cmake_opts += "-DCMAKE_CONFIGURATION_TYPES=$configuration"
@@ -90,9 +95,6 @@ try {
         $cmake_opts += "-DBUILD_APP=ON"
     } else {
         $cmake_opts += "-DBUILD_APP=OFF"
-    }
-    if ($vendors_url) {
-        $cmake_opts += "-DPP_BUILD_VENDOR_PREBUILT_URL=$vendors_url"
     }
     if ($gen_build) {
         cmake @cmake_opts $source_dir

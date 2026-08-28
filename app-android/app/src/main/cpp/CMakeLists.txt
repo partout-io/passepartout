@@ -7,14 +7,17 @@ project(Passepartout LANGUAGES C)
 
 add_library(passepartout_wrapper SHARED jvm.c)
 target_compile_options(passepartout_wrapper PRIVATE -W -Wall -Werror -pedantic)
-set(PREBUILTS_VERSION 0.6.0)
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../cmake/prebuilts.cmake")
 
 set(PP_BUILD_OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS ON)
-set(PP_BUILD_VENDOR_PREBUILT_URL "https://github.com/partout-io/prebuilts/releases/download/${PREBUILTS_VERSION}")
+if(NOT PP_BUILD_VENDOR_PREBUILT_URL)
+    set(PP_BUILD_VENDOR_PREBUILT_URL "${PASSEPARTOUT_PREBUILTS_URL}")
+endif()
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../partout" partout)
 
 add_dependencies(passepartout_wrapper partout)
