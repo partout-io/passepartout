@@ -49,6 +49,21 @@ fun PreferencesView(
                     checked = AppPreferences::dnsFallsBack,
                     onCheckedChange = UserPreferencesObservable::updateDnsFallback
                 )
+                PreferenceDropdownRow(
+                    title = stringResource(R.string.views_preferences_crypto_backend),
+                    values = cryptoBackends,
+                    selectedValue = { preferences ->
+                        cryptoBackends.firstOrNull {
+                            (it?.value ?: 0) == preferences.cryptoBackend
+                        }
+                    },
+                    valueDescription = {
+                        it.localizedDescription()
+                    },
+                    onValueChange = {
+                        updateCryptoBackend(it?.value ?: 0)
+                    }
+                )
             }
             // Hide "Advanced" because there are no actionable config flags
 //            item {
@@ -58,16 +73,20 @@ fun PreferencesView(
 //                )
 //            }
         }
-        themeListSection {
-            item {
-                CryptoBackendPickerRow()
-            }
-        }
     }
 }
 
 @Composable
-private fun CryptoBackendPickerRow() {
+private fun <Value> PreferenceDropdownRow(
+    title: String,
+    values: List<Value>,
+    selectedValue: (AppPreferences) -> Value,
+    valueDescription: @Composable (Value) -> String,
+    onValueChange: suspend UserPreferencesObservable.(Value) -> Unit,
+    modifier: Modifier = Modifier,
+    supportingText: String? = null,
+    enabled: Boolean = true
+) {
     val userPreferencesObservable = LocalUserPreferencesObservable.current
     val initialPreferences = remember(userPreferencesObservable) {
         userPreferencesObservable.currentPreferences
@@ -77,18 +96,16 @@ private fun CryptoBackendPickerRow() {
     )
     val coroutineScope = rememberCoroutineScope()
     val errorHandler = LocalErrorHandler.current
-    var isMenuExpanded by rememberSaveable {
+    var isMenuExpanded by rememberSaveable(title) {
         mutableStateOf(false)
     }
-    val selectedBackend = cryptoBackends.firstOrNull {
-        (it?.value ?: 0) == preferences.cryptoBackend
-    }
+    val selected = selectedValue(preferences)
 
-    fun update(backend: CryptoBackend?) {
+    fun update(value: Value) {
         isMenuExpanded = false
         coroutineScope.launch {
             runCatchingNonFatal {
-                userPreferencesObservable.updateCryptoBackend(backend?.value ?: 0)
+                userPreferencesObservable.onValueChange(value)
             }.onFailure {
                 errorHandler.report(it)
             }
@@ -97,16 +114,22 @@ private fun CryptoBackendPickerRow() {
 
     ListItem(
         headlineContent = {
-            Text(stringResource(R.string.views_preferences_crypto_backend))
+            Text(title)
+        },
+        supportingContent = supportingText?.let { text ->
+            {
+                Text(text)
+            }
         },
         trailingContent = {
             Box {
                 TextButton(
+                    enabled = enabled,
                     onClick = {
                         isMenuExpanded = true
                     }
                 ) {
-                    Text(selectedBackend.localizedDescription())
+                    Text(valueDescription(selected))
                 }
                 DropdownMenu(
                     expanded = isMenuExpanded,
@@ -114,20 +137,20 @@ private fun CryptoBackendPickerRow() {
                         isMenuExpanded = false
                     }
                 ) {
-                    cryptoBackends.forEach { backend ->
+                    values.forEach { value ->
                         DropdownMenuItem(
                             text = {
-                                Text(backend.localizedDescription())
+                                Text(valueDescription(value))
                             },
                             onClick = {
-                                update(backend)
+                                update(value)
                             }
                         )
                     }
                 }
             }
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
 
