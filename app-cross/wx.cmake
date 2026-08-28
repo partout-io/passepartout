@@ -82,8 +82,19 @@ function(target_link_windows_wxwidgets TARGET_NAME)
     endif()
     set(WX_LIB_DIR "${WX_PREBUILT_DIR}/lib/vc_${WX_PREBUILT_ARCH}_lib")
 
+    if(EXISTS "${WX_PREBUILT_DIR}/include/wx/wx.h")
+        set(WX_INCLUDE_DIR "${WX_PREBUILT_DIR}/include")
+    elseif(EXISTS "${WX_PREBUILT_DIR}/include/wx-3.3/wx/wx.h")
+        set(WX_INCLUDE_DIR "${WX_PREBUILT_DIR}/include/wx-3.3")
+    else()
+        message(FATAL_ERROR
+            "wxWidgets Windows ${WX_PREBUILT_ARCH} headers not found under "
+            "${WX_PREBUILT_DIR}/include. Check ${WX_PREBUILT_URL}, or set "
+            "PASSEPARTOUT_WX_PREBUILT_DIR to an extracted prebuilt directory."
+        )
+    endif()
+
     set(WX_REQUIRED_FILES
-        "${WX_PREBUILT_DIR}/include/wx/wx.h"
         "${WX_LIB_DIR}/mswu/wx/setup.h"
         "${WX_LIB_DIR}/wxmsw33u_core.lib"
         "${WX_LIB_DIR}/wxbase33u_net.lib"
@@ -92,7 +103,8 @@ function(target_link_windows_wxwidgets TARGET_NAME)
     foreach(WX_REQUIRED_FILE IN LISTS WX_REQUIRED_FILES)
         if(NOT EXISTS "${WX_REQUIRED_FILE}")
             message(FATAL_ERROR
-                "wxWidgets Windows ${WX_PREBUILT_ARCH} prebuilt not found. "
+                "wxWidgets Windows ${WX_PREBUILT_ARCH} prebuilt file not found: "
+                "${WX_REQUIRED_FILE}. "
                 "Check ${WX_PREBUILT_URL}, or set PASSEPARTOUT_WX_PREBUILT_DIR "
                 "to an extracted prebuilt directory."
             )
@@ -102,7 +114,7 @@ function(target_link_windows_wxwidgets TARGET_NAME)
     message(STATUS "Using wxWidgets Windows ${WX_PREBUILT_ARCH} prebuilt: ${WX_PREBUILT_DIR}")
     target_include_directories(${TARGET_NAME} PRIVATE
         "${WX_LIB_DIR}/mswu"
-        "${WX_PREBUILT_DIR}/include"
+        "${WX_INCLUDE_DIR}"
     )
     target_compile_definitions(${TARGET_NAME} PRIVATE
         __WXMSW__
