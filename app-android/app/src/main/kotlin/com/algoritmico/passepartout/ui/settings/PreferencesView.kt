@@ -20,10 +20,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
@@ -40,6 +42,7 @@ fun PreferencesView(
     modifier: Modifier = Modifier,
     onAdvanced: () -> Unit
 ) {
+    val isBeta = LocalContext.current.isBetaSuggestedByAndroidAPI
     ThemeList(modifier = modifier) {
         themeListSection {
             item {
@@ -49,21 +52,23 @@ fun PreferencesView(
                     checked = AppPreferences::dnsFallsBack,
                     onCheckedChange = UserPreferencesObservable::updateDnsFallback
                 )
-                PreferenceDropdownRow(
-                    title = stringResource(R.string.views_preferences_crypto_backend),
-                    values = cryptoBackends,
-                    selectedValue = { preferences ->
-                        cryptoBackends.firstOrNull {
-                            (it?.value ?: 0) == preferences.cryptoBackend
+                if (isBeta) {
+                    PreferenceDropdownRow(
+                        title = stringResource(R.string.views_preferences_crypto_backend),
+                        values = cryptoBackends,
+                        selectedValue = { preferences ->
+                            cryptoBackends.firstOrNull {
+                                (it?.value ?: 0) == preferences.cryptoBackend
+                            }
+                        },
+                        valueDescription = {
+                            it.localizedDescription()
+                        },
+                        onValueChange = {
+                            updateCryptoBackend(it?.value ?: 0)
                         }
-                    },
-                    valueDescription = {
-                        it.localizedDescription()
-                    },
-                    onValueChange = {
-                        updateCryptoBackend(it?.value ?: 0)
-                    }
-                )
+                    )
+                }
             }
             // Hide "Advanced" because there are no actionable config flags
 //            item {
