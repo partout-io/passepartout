@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Completa la configurazione del modulo %1$s.</string>
     <string name="errors_app_ineligible">Acquisto richiesto</string>
     <string name="errors_app_invalid_fields">Campi non validi.</string>
-    <string name="errors_app_malformed_module">Il modulo %1$s è malformato. %2$s</string>
+    <string name="errors_app_malformed_module">Il modulo %1$s è malformato. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Nessun server selezionato nel provider.</string>
-    <string name="errors_app_module_requires_connection">Il modulo %1$s richiede una connessione attiva tra i seguenti tipi: %2$s</string>
+    <string name="errors_app_module_requires_connection">Il modulo %1$s richiede una connessione attiva tra i seguenti tipi: %2$s.</string>
     <string name="errors_app_no_active_modules">Il profilo non ha moduli attivi.</string>
     <string name="errors_app_other">Impossibile completare l\'operazione.</string>
     <string name="errors_app_parsing">Impossibile analizzare.</string>
     <string name="errors_app_partout">Impossibile completare l\'operazione (codice=%1$s).</string>
-    <string name="errors_app_permission_denied">Permesso negato</string>
+    <string name="errors_app_permission_denied">Permesso negato.</string>
     <string name="errors_app_timeout">L\'operazione ha superato il tempo limite.</string>
     <string name="errors_app_tunnel">Impossibile eseguire l\'operazione.</string>
     <string name="errors_app_web_receiver">Impossibile avviare l\'importazione. Assicurati che la tua TV sia correttamente connessa alla rete locale.</string>

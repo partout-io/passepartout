@@ -45,14 +45,14 @@
 "errors.app.incomplete_module" = "Conclua a configuração do módulo %@.";
 "errors.app.ineligible" = "Compra necessária";
 "errors.app.invalid_fields" = "Campos inválidos.";
-"errors.app.malformed_module" = "O módulo %@ está corrompido. %@";
+"errors.app.malformed_module" = "O módulo %@ está corrompido. %@.";
 "errors.app.missing_provider_entity" = "Nenhum servidor selecionado no provedor.";
-"errors.app.module_requires_connection" = "O módulo %@ requer uma conexão ativa de um dos seguintes tipos: %@";
+"errors.app.module_requires_connection" = "O módulo %@ requer uma conexão ativa de um dos seguintes tipos: %@.";
 "errors.app.no_active_modules" = "O perfil não possui módulos ativos.";
 "errors.app.other" = "Não foi possível concluir a operação.";
 "errors.app.parsing" = "Não foi possível analisar.";
 "errors.app.partout" = "Não foi possível concluir a operação (código=%@).";
-"errors.app.permission_denied" = "Permissão negada";
+"errors.app.permission_denied" = "Permissão negada.";
 "errors.app.timeout" = "A operação expirou.";
 "errors.app.tunnel" = "Não foi possível executar a operação.";
 "errors.app.web_receiver" = "Não é possível iniciar a importação. Certifique-se de que sua TV esteja devidamente conectada à rede local.";

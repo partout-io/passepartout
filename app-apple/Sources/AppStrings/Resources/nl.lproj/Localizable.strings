@@ -45,14 +45,14 @@
 "errors.app.incomplete_module" = "Voltooi de configuratie van de %@-module.";
 "errors.app.ineligible" = "Aankoop vereist";
 "errors.app.invalid_fields" = "Ongeldige velden.";
-"errors.app.malformed_module" = "Module %@ is ongeldig. %@";
+"errors.app.malformed_module" = "Module %@ is ongeldig. %@.";
 "errors.app.missing_provider_entity" = "Geen server geselecteerd bij provider.";
-"errors.app.module_requires_connection" = "De module %@ vereist een actieve verbinding van een van de volgende typen: %@";
+"errors.app.module_requires_connection" = "De module %@ vereist een actieve verbinding van een van de volgende typen: %@.";
 "errors.app.no_active_modules" = "Het profiel heeft geen actieve modules.";
 "errors.app.other" = "Kan bewerking niet voltooien.";
 "errors.app.parsing" = "Kan niet parseren.";
 "errors.app.partout" = "Kan bewerking niet voltooien (code=%@).";
-"errors.app.permission_denied" = "Toegang geweigerd";
+"errors.app.permission_denied" = "Toegang geweigerd.";
 "errors.app.timeout" = "De bewerking is verlopen.";
 "errors.app.tunnel" = "Actie kan niet worden uitgevoerd.";
 "errors.app.web_receiver" = "Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.";

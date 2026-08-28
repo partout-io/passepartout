@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Voltooi de configuratie van de %1$s-module.</string>
     <string name="errors_app_ineligible">Aankoop vereist</string>
     <string name="errors_app_invalid_fields">Ongeldige velden.</string>
-    <string name="errors_app_malformed_module">Module %1$s is ongeldig. %2$s</string>
+    <string name="errors_app_malformed_module">Module %1$s is ongeldig. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Geen server geselecteerd bij provider.</string>
-    <string name="errors_app_module_requires_connection">De module %1$s vereist een actieve verbinding van een van de volgende typen: %2$s</string>
+    <string name="errors_app_module_requires_connection">De module %1$s vereist een actieve verbinding van een van de volgende typen: %2$s.</string>
     <string name="errors_app_no_active_modules">Het profiel heeft geen actieve modules.</string>
     <string name="errors_app_other">Kan bewerking niet voltooien.</string>
     <string name="errors_app_parsing">Kan niet parseren.</string>
     <string name="errors_app_partout">Kan bewerking niet voltooien (code=%1$s).</string>
-    <string name="errors_app_permission_denied">Toegang geweigerd</string>
+    <string name="errors_app_permission_denied">Toegang geweigerd.</string>
     <string name="errors_app_timeout">De bewerking is verlopen.</string>
     <string name="errors_app_tunnel">Actie kan niet worden uitgevoerd.</string>
     <string name="errors_app_web_receiver">Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.</string>

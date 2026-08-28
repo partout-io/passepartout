@@ -45,14 +45,14 @@
 "errors.app.incomplete_module" = "Proszę dokończyć konfigurację modułu %@.";
 "errors.app.ineligible" = "Wymagana zakup";
 "errors.app.invalid_fields" = "Nieprawidłowe pola.";
-"errors.app.malformed_module" = "Moduł %@ jest uszkodzony. %@";
+"errors.app.malformed_module" = "Moduł %@ jest uszkodzony. %@.";
 "errors.app.missing_provider_entity" = "Nie wybrano serwera w dostawcy.";
-"errors.app.module_requires_connection" = "Moduł %@ wymaga aktywnego połączenia jednego z następujących typów: %@";
+"errors.app.module_requires_connection" = "Moduł %@ wymaga aktywnego połączenia jednego z następujących typów: %@.";
 "errors.app.no_active_modules" = "Profil nie ma aktywnych modułów.";
 "errors.app.other" = "Nie można ukończyć operacji.";
 "errors.app.parsing" = "Nie można przeanalizować.";
 "errors.app.partout" = "Nie można ukończyć operacji (kod=%@).";
-"errors.app.permission_denied" = "Brak uprawnień";
+"errors.app.permission_denied" = "Brak uprawnień.";
 "errors.app.timeout" = "Operacja przekroczyła limit czasu.";
 "errors.app.tunnel" = "Nie można wykonać operacji.";
 "errors.app.web_receiver" = "Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.";

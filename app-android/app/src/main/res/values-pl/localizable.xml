@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Proszę dokończyć konfigurację modułu %1$s.</string>
     <string name="errors_app_ineligible">Wymagana zakup</string>
     <string name="errors_app_invalid_fields">Nieprawidłowe pola.</string>
-    <string name="errors_app_malformed_module">Moduł %1$s jest uszkodzony. %2$s</string>
+    <string name="errors_app_malformed_module">Moduł %1$s jest uszkodzony. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Nie wybrano serwera w dostawcy.</string>
-    <string name="errors_app_module_requires_connection">Moduł %1$s wymaga aktywnego połączenia jednego z następujących typów: %2$s</string>
+    <string name="errors_app_module_requires_connection">Moduł %1$s wymaga aktywnego połączenia jednego z następujących typów: %2$s.</string>
     <string name="errors_app_no_active_modules">Profil nie ma aktywnych modułów.</string>
     <string name="errors_app_other">Nie można ukończyć operacji.</string>
     <string name="errors_app_parsing">Nie można przeanalizować.</string>
     <string name="errors_app_partout">Nie można ukończyć operacji (kod=%1$s).</string>
-    <string name="errors_app_permission_denied">Brak uprawnień</string>
+    <string name="errors_app_permission_denied">Brak uprawnień.</string>
     <string name="errors_app_timeout">Operacja przekroczyła limit czasu.</string>
     <string name="errors_app_tunnel">Nie można wykonać operacji.</string>
     <string name="errors_app_web_receiver">Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.</string>

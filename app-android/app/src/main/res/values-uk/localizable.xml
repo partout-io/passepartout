@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Будь ласка, завершіть налаштування модуля %1$s.</string>
     <string name="errors_app_ineligible">Потрібна покупка</string>
     <string name="errors_app_invalid_fields">Некоректні поля.</string>
-    <string name="errors_app_malformed_module">Модуль %1$s некоректний. %2$s</string>
+    <string name="errors_app_malformed_module">Модуль %1$s некоректний. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Не вибрано сервер у постачальника.</string>
-    <string name="errors_app_module_requires_connection">Модуль %1$s потребує активного з’єднання одного з таких типів: %2$s</string>
+    <string name="errors_app_module_requires_connection">Модуль %1$s потребує активного з’єднання одного з таких типів: %2$s.</string>
     <string name="errors_app_no_active_modules">Профіль не має активних модулів.</string>
     <string name="errors_app_other">Не вдалося завершити операцію.</string>
     <string name="errors_app_parsing">Не вдалося розібрати.</string>
     <string name="errors_app_partout">Не вдалося виконати операцію (код=%1$s).</string>
-    <string name="errors_app_permission_denied">Доступ заборонено</string>
+    <string name="errors_app_permission_denied">Доступ заборонено.</string>
     <string name="errors_app_timeout">Час виконання операції вичерпано.</string>
     <string name="errors_app_tunnel">Не вдалося виконати операцію.</string>
     <string name="errors_app_web_receiver">Неможливо розпочати імпорт. Переконайтеся, що ваш телевізор правильно підключений до локальної мережі.</string>

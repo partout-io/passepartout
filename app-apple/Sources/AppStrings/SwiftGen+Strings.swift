@@ -184,15 +184,15 @@ public enum Strings {
       public static let ineligible = Strings.tr("Localizable", "errors.app.ineligible", fallback: "Purchase required")
       /// Invalid fields.
       public static let invalidFields = Strings.tr("Localizable", "errors.app.invalid_fields", fallback: "Invalid fields.")
-      /// Module %@ is malformed. %@
+      /// Module %@ is malformed. %@.
       public static func malformedModule(_ p1: Any, _ p2: Any) -> String {
-        return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@")
+        return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@.")
       }
       /// No server selected in provider.
       public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.missing_provider_entity", fallback: "No server selected in provider.")
-      /// The %@ module requires an active connection among the following types: %@
+      /// The %@ module requires an active connection among the following types: %@.
       public static func moduleRequiresConnection(_ p1: Any, _ p2: Any) -> String {
-        return Strings.tr("Localizable", "errors.app.module_requires_connection", String(describing: p1), String(describing: p2), fallback: "The %@ module requires an active connection among the following types: %@")
+        return Strings.tr("Localizable", "errors.app.module_requires_connection", String(describing: p1), String(describing: p2), fallback: "The %@ module requires an active connection among the following types: %@.")
       }
       /// The profile has no active modules.
       public static let noActiveModules = Strings.tr("Localizable", "errors.app.no_active_modules", fallback: "The profile has no active modules.")
@@ -204,8 +204,8 @@ public enum Strings {
       public static func partout(_ p1: Any) -> String {
         return Strings.tr("Localizable", "errors.app.partout", String(describing: p1), fallback: "Unable to complete operation (code=%@).")
       }
-      /// Permission denied
-      public static let permissionDenied = Strings.tr("Localizable", "errors.app.permission_denied", fallback: "Permission denied")
+      /// Permission denied.
+      public static let permissionDenied = Strings.tr("Localizable", "errors.app.permission_denied", fallback: "Permission denied.")
       /// The operation timed out.
       public static let timeout = Strings.tr("Localizable", "errors.app.timeout", fallback: "The operation timed out.")
       /// Unable to execute operation.

@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Conclua a configuração do módulo %1$s.</string>
     <string name="errors_app_ineligible">Compra necessária</string>
     <string name="errors_app_invalid_fields">Campos inválidos.</string>
-    <string name="errors_app_malformed_module">O módulo %1$s está corrompido. %2$s</string>
+    <string name="errors_app_malformed_module">O módulo %1$s está corrompido. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Nenhum servidor selecionado no provedor.</string>
-    <string name="errors_app_module_requires_connection">O módulo %1$s requer uma conexão ativa de um dos seguintes tipos: %2$s</string>
+    <string name="errors_app_module_requires_connection">O módulo %1$s requer uma conexão ativa de um dos seguintes tipos: %2$s.</string>
     <string name="errors_app_no_active_modules">O perfil não possui módulos ativos.</string>
     <string name="errors_app_other">Não foi possível concluir a operação.</string>
     <string name="errors_app_parsing">Não foi possível analisar.</string>
     <string name="errors_app_partout">Não foi possível concluir a operação (código=%1$s).</string>
-    <string name="errors_app_permission_denied">Permissão negada</string>
+    <string name="errors_app_permission_denied">Permissão negada.</string>
     <string name="errors_app_timeout">A operação expirou.</string>
     <string name="errors_app_tunnel">Não foi possível executar a operação.</string>
     <string name="errors_app_web_receiver">Não é possível iniciar a importação. Certifique-se de que sua TV esteja devidamente conectada à rede local.</string>

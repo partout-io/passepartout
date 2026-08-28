@@ -45,14 +45,14 @@
 "errors.app.incomplete_module" = "Veuillez terminer la configuration du module %@.";
 "errors.app.ineligible" = "Achat requis";
 "errors.app.invalid_fields" = "Champs invalides.";
-"errors.app.malformed_module" = "Le module %@ est mal formé. %@";
+"errors.app.malformed_module" = "Le module %@ est mal formé. %@.";
 "errors.app.missing_provider_entity" = "Aucun serveur sélectionné chez le fournisseur.";
-"errors.app.module_requires_connection" = "Le module %@ nécessite une connexion active parmi les types suivants : %@";
+"errors.app.module_requires_connection" = "Le module %@ nécessite une connexion active parmi les types suivants : %@.";
 "errors.app.no_active_modules" = "Le profil n'a pas de modules actifs.";
 "errors.app.other" = "Impossible de terminer l'opération.";
 "errors.app.parsing" = "Impossible d'analyser.";
 "errors.app.partout" = "Impossible de terminer l'opération (code=%@).";
-"errors.app.permission_denied" = "Permission refusée";
+"errors.app.permission_denied" = "Permission refusée.";
 "errors.app.timeout" = "L'opération a expiré.";
 "errors.app.tunnel" = "Impossible d'exécuter l'opération.";
 "errors.app.web_receiver" = "Impossible de démarrer l'importation. Assurez-vous que votre téléviseur est correctement connecté au réseau local.";

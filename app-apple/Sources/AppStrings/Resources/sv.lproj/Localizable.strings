@@ -45,14 +45,14 @@
 "errors.app.incomplete_module" = "Vänligen slutför konfigurationen av %@-modulen.";
 "errors.app.ineligible" = "Köp krävs";
 "errors.app.invalid_fields" = "Ogiltiga fält.";
-"errors.app.malformed_module" = "Modulen %@ är felaktig. %@";
+"errors.app.malformed_module" = "Modulen %@ är felaktig. %@.";
 "errors.app.missing_provider_entity" = "Ingen server vald hos leverantören.";
-"errors.app.module_requires_connection" = "Modulen %@ kräver en aktiv anslutning av någon av följande typer: %@";
+"errors.app.module_requires_connection" = "Modulen %@ kräver en aktiv anslutning av någon av följande typer: %@.";
 "errors.app.no_active_modules" = "Profilen har inga aktiva moduler.";
 "errors.app.other" = "Kan inte slutföra åtgärden.";
 "errors.app.parsing" = "Kan inte tolka.";
 "errors.app.partout" = "Kan inte slutföra åtgärden (kod=%@).";
-"errors.app.permission_denied" = "Åtkomst nekad";
+"errors.app.permission_denied" = "Åtkomst nekad.";
 "errors.app.timeout" = "Åtgärden tog för lång tid.";
 "errors.app.tunnel" = "Kunde inte utföra åtgärden.";
 "errors.app.web_receiver" = "Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.";

@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Ολοκληρώστε τη ρύθμιση του %1$s module.</string>
     <string name="errors_app_ineligible">Απαιτείται αγορά</string>
     <string name="errors_app_invalid_fields">Μη έγκυρα πεδία.</string>
-    <string name="errors_app_malformed_module">Το μονάδα %1$s είναι εσφαλμένη. %2$s</string>
+    <string name="errors_app_malformed_module">Το μονάδα %1$s είναι εσφαλμένη. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Δεν επιλέχθηκε διακομιστής στον πάροχο.</string>
-    <string name="errors_app_module_requires_connection">Η μονάδα %1$s απαιτεί ενεργή σύνδεση ενός από τους παρακάτω τύπους: %2$s</string>
+    <string name="errors_app_module_requires_connection">Η μονάδα %1$s απαιτεί ενεργή σύνδεση ενός από τους παρακάτω τύπους: %2$s.</string>
     <string name="errors_app_no_active_modules">Το προφίλ δεν έχει ενεργές μονάδες.</string>
     <string name="errors_app_other">Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας.</string>
     <string name="errors_app_parsing">Δεν ήταν δυνατή η ανάλυση.</string>
     <string name="errors_app_partout">Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας (κωδικός=%1$s).</string>
-    <string name="errors_app_permission_denied">Άρνηση άδειας</string>
+    <string name="errors_app_permission_denied">Άρνηση άδειας.</string>
     <string name="errors_app_timeout">Η λειτουργία έληξε λόγω χρονικού ορίου.</string>
     <string name="errors_app_tunnel">Δεν ήταν δυνατή η εκτέλεση της ενέργειας.</string>
     <string name="errors_app_web_receiver">Δεν είναι δυνατή η εκκίνηση της εισαγωγής. Βεβαιωθείτε ότι η τηλεόρασή σας είναι σωστά συνδεδεμένη στο τοπικό δίκτυο.</string>

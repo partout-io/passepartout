@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Please finish the configuration of the %1$s module.</string>
     <string name="errors_app_ineligible">Purchase required</string>
     <string name="errors_app_invalid_fields">Invalid fields.</string>
-    <string name="errors_app_malformed_module">Module %1$s is malformed. %2$s</string>
+    <string name="errors_app_malformed_module">Module %1$s is malformed. %2$s.</string>
     <string name="errors_app_missing_provider_entity">No server selected in provider.</string>
-    <string name="errors_app_module_requires_connection">The %1$s module requires an active connection among the following types: %2$s</string>
+    <string name="errors_app_module_requires_connection">The %1$s module requires an active connection among the following types: %2$s.</string>
     <string name="errors_app_no_active_modules">The profile has no active modules.</string>
     <string name="errors_app_other">Unable to complete operation.</string>
     <string name="errors_app_parsing">Unable to parse.</string>
     <string name="errors_app_partout">Unable to complete operation (code=%1$s).</string>
-    <string name="errors_app_permission_denied">Permission denied</string>
+    <string name="errors_app_permission_denied">Permission denied.</string>
     <string name="errors_app_timeout">The operation timed out.</string>
     <string name="errors_app_tunnel">Unable to execute operation.</string>
     <string name="errors_app_web_receiver">Unable to start the import. Make sure that your TV is properly connected to the local network.</string>

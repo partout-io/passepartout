@@ -127,17 +127,8 @@ private struct HandleErrorsByShowingAlertViewModifier: ViewModifier {
                              Text(errorHandler.dismissTitle)
                          }
                      } message: { alert in
-                         Text(alert.message.withTrailingDot)
+                         Text(alert.message)
                      }
             )
-    }
-}
-
-private extension String {
-    var withTrailingDot: String {
-        guard !hasSuffix(".") && !hasSuffix("!") else {
-            return self
-        }
-        return "\(self)."
     }
 }

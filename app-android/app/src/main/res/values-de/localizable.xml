@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Bitte schließen Sie die Konfiguration des %1$s-Moduls ab.</string>
     <string name="errors_app_ineligible">Kauf erforderlich</string>
     <string name="errors_app_invalid_fields">Ungültige Felder.</string>
-    <string name="errors_app_malformed_module">Modul %1$s ist fehlerhaft. %2$s</string>
+    <string name="errors_app_malformed_module">Modul %1$s ist fehlerhaft. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Kein Server beim Anbieter ausgewählt.</string>
-    <string name="errors_app_module_requires_connection">Das Modul %1$s erfordert eine aktive Verbindung eines der folgenden Typen: %2$s</string>
+    <string name="errors_app_module_requires_connection">Das Modul %1$s erfordert eine aktive Verbindung eines der folgenden Typen: %2$s.</string>
     <string name="errors_app_no_active_modules">Das Profil hat keine aktiven Module.</string>
     <string name="errors_app_other">Operation konnte nicht abgeschlossen werden.</string>
     <string name="errors_app_parsing">Konnte nicht analysiert werden.</string>
     <string name="errors_app_partout">Operation konnte nicht abgeschlossen werden (Code=%1$s).</string>
-    <string name="errors_app_permission_denied">Zugriff verweigert</string>
+    <string name="errors_app_permission_denied">Zugriff verweigert.</string>
     <string name="errors_app_timeout">Die Operation hat das Zeitlimit überschritten.</string>
     <string name="errors_app_tunnel">Aktion konnte nicht ausgeführt werden.</string>
     <string name="errors_app_web_receiver">Import kann nicht gestartet werden. Stellen Sie sicher, dass Ihr Fernseher ordnungsgemäß mit dem lokalen Netzwerk verbunden ist.</string>

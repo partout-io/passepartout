@@ -45,14 +45,14 @@
 "errors.app.incomplete_module" = "Будь ласка, завершіть налаштування модуля %@.";
 "errors.app.ineligible" = "Потрібна покупка";
 "errors.app.invalid_fields" = "Некоректні поля.";
-"errors.app.malformed_module" = "Модуль %@ некоректний. %@";
+"errors.app.malformed_module" = "Модуль %@ некоректний. %@.";
 "errors.app.missing_provider_entity" = "Не вибрано сервер у постачальника.";
-"errors.app.module_requires_connection" = "Модуль %@ потребує активного з’єднання одного з таких типів: %@";
+"errors.app.module_requires_connection" = "Модуль %@ потребує активного з’єднання одного з таких типів: %@.";
 "errors.app.no_active_modules" = "Профіль не має активних модулів.";
 "errors.app.other" = "Не вдалося завершити операцію.";
 "errors.app.parsing" = "Не вдалося розібрати.";
 "errors.app.partout" = "Не вдалося виконати операцію (код=%@).";
-"errors.app.permission_denied" = "Доступ заборонено";
+"errors.app.permission_denied" = "Доступ заборонено.";
 "errors.app.timeout" = "Час виконання операції вичерпано.";
 "errors.app.tunnel" = "Не вдалося виконати операцію.";
 "errors.app.web_receiver" = "Неможливо розпочати імпорт. Переконайтеся, що ваш телевізор правильно підключений до локальної мережі.";

@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">请完成 %1$s 模块的配置。</string>
     <string name="errors_app_ineligible">需要购买</string>
     <string name="errors_app_invalid_fields">字段无效。</string>
-    <string name="errors_app_malformed_module">模块 %1$s 格式错误。%2$s</string>
+    <string name="errors_app_malformed_module">模块 %1$s 格式错误。%2$s。</string>
     <string name="errors_app_missing_provider_entity">未在提供商中选择服务器。</string>
-    <string name="errors_app_module_requires_connection">模块 %1$s 需要以下类型中的一个处于活动连接状态：%2$s</string>
+    <string name="errors_app_module_requires_connection">模块 %1$s 需要以下类型中的一个处于活动连接状态：%2$s。</string>
     <string name="errors_app_no_active_modules">配置文件没有激活模块。</string>
     <string name="errors_app_other">无法完成操作。</string>
     <string name="errors_app_parsing">无法解析。</string>
     <string name="errors_app_partout">无法完成操作（代码=%1$s）。</string>
-    <string name="errors_app_permission_denied">权限被拒绝</string>
+    <string name="errors_app_permission_denied">权限被拒绝。</string>
     <string name="errors_app_timeout">操作超时。</string>
     <string name="errors_app_tunnel">无法执行操作。</string>
     <string name="errors_app_web_receiver">无法启动导入。请确保您的电视已正确连接到本地网络。</string>

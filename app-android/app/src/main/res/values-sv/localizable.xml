@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Vänligen slutför konfigurationen av %1$s-modulen.</string>
     <string name="errors_app_ineligible">Köp krävs</string>
     <string name="errors_app_invalid_fields">Ogiltiga fält.</string>
-    <string name="errors_app_malformed_module">Modulen %1$s är felaktig. %2$s</string>
+    <string name="errors_app_malformed_module">Modulen %1$s är felaktig. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Ingen server vald hos leverantören.</string>
-    <string name="errors_app_module_requires_connection">Modulen %1$s kräver en aktiv anslutning av någon av följande typer: %2$s</string>
+    <string name="errors_app_module_requires_connection">Modulen %1$s kräver en aktiv anslutning av någon av följande typer: %2$s.</string>
     <string name="errors_app_no_active_modules">Profilen har inga aktiva moduler.</string>
     <string name="errors_app_other">Kan inte slutföra åtgärden.</string>
     <string name="errors_app_parsing">Kan inte tolka.</string>
     <string name="errors_app_partout">Kan inte slutföra åtgärden (kod=%1$s).</string>
-    <string name="errors_app_permission_denied">Åtkomst nekad</string>
+    <string name="errors_app_permission_denied">Åtkomst nekad.</string>
     <string name="errors_app_timeout">Åtgärden tog för lång tid.</string>
     <string name="errors_app_tunnel">Kunde inte utföra åtgärden.</string>
     <string name="errors_app_web_receiver">Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.</string>

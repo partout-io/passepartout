@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Veuillez terminer la configuration du module %1$s.</string>
     <string name="errors_app_ineligible">Achat requis</string>
     <string name="errors_app_invalid_fields">Champs invalides.</string>
-    <string name="errors_app_malformed_module">Le module %1$s est mal formé. %2$s</string>
+    <string name="errors_app_malformed_module">Le module %1$s est mal formé. %2$s.</string>
     <string name="errors_app_missing_provider_entity">Aucun serveur sélectionné chez le fournisseur.</string>
-    <string name="errors_app_module_requires_connection">Le module %1$s nécessite une connexion active parmi les types suivants : %2$s</string>
+    <string name="errors_app_module_requires_connection">Le module %1$s nécessite une connexion active parmi les types suivants : %2$s.</string>
     <string name="errors_app_no_active_modules">Le profil n\'a pas de modules actifs.</string>
     <string name="errors_app_other">Impossible de terminer l\'opération.</string>
     <string name="errors_app_parsing">Impossible d\'analyser.</string>
     <string name="errors_app_partout">Impossible de terminer l\'opération (code=%1$s).</string>
-    <string name="errors_app_permission_denied">Permission refusée</string>
+    <string name="errors_app_permission_denied">Permission refusée.</string>
     <string name="errors_app_timeout">L\'opération a expiré.</string>
     <string name="errors_app_tunnel">Impossible d\'exécuter l\'opération.</string>
     <string name="errors_app_web_receiver">Impossible de démarrer l\'importation. Assurez-vous que votre téléviseur est correctement connecté au réseau local.</string>

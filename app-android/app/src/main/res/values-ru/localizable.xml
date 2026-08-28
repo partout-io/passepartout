@@ -378,14 +378,14 @@
     <string name="errors_app_incomplete_module">Пожалуйста, завершите настройку модуля %1$s.</string>
     <string name="errors_app_ineligible">Требуется покупка</string>
     <string name="errors_app_invalid_fields">Некорректные поля.</string>
-    <string name="errors_app_malformed_module">Модуль %1$s поврежден. %2$s</string>
+    <string name="errors_app_malformed_module">Модуль %1$s поврежден. %2$s.</string>
     <string name="errors_app_missing_provider_entity">На провайдере не выбран сервер.</string>
-    <string name="errors_app_module_requires_connection">Модуль %1$s требует активного подключения одного из следующих типов: %2$s</string>
+    <string name="errors_app_module_requires_connection">Модуль %1$s требует активного подключения одного из следующих типов: %2$s.</string>
     <string name="errors_app_no_active_modules">В профиле нет активных модулей.</string>
     <string name="errors_app_other">Не удалось выполнить операцию.</string>
     <string name="errors_app_parsing">Не удалось разобрать.</string>
     <string name="errors_app_partout">Не удалось выполнить операцию (код=%1$s).</string>
-    <string name="errors_app_permission_denied">Доступ запрещен</string>
+    <string name="errors_app_permission_denied">Доступ запрещен.</string>
     <string name="errors_app_timeout">Время операции истекло.</string>
     <string name="errors_app_tunnel">Не удалось выполнить операцию.</string>
     <string name="errors_app_web_receiver">Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.</string>
