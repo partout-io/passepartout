@@ -6,6 +6,7 @@
             "type": "process",
             "command": "cmake",
             "args": [
+                "--fresh",
                 "--preset",
                 "macos-clang"
             ],
@@ -89,7 +90,7 @@
             "args": [
                 "-NoProfile",
                 "-Command",
-                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'; cmake --preset windows-arm64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-arm64-debug; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-arm64' --config Debug; exit $LASTEXITCODE }"
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'; cmake --fresh --preset windows-arm64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-arm64-debug; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-arm64' --config Debug; exit $LASTEXITCODE }"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -104,7 +105,7 @@
             "args": [
                 "-NoProfile",
                 "-Command",
-                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'; cmake --preset windows-arm64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-arm64-release; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-arm64' --config Release; exit $LASTEXITCODE }"
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'; cmake --fresh --preset windows-arm64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-arm64-release; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-arm64' --config Release; exit $LASTEXITCODE }"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -119,7 +120,7 @@
             "args": [
                 "-NoProfile",
                 "-Command",
-                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'; cmake --preset windows-x64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-x64-debug; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-x64' --config Debug; exit $LASTEXITCODE }"
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'; cmake --fresh --preset windows-x64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-x64-debug; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-x64' --config Debug; exit $LASTEXITCODE }"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -134,7 +135,7 @@
             "args": [
                 "-NoProfile",
                 "-Command",
-                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'; cmake --preset windows-x64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-x64-release; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-x64' --config Release; exit $LASTEXITCODE }"
+                "& { Import-Module 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll'; Enter-VsDevShell 409fe070 -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'; cmake --fresh --preset windows-x64; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --build --preset windows-x64-release; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; cmake --install '${workspaceFolder}/out/build/windows-x64' --config Release; exit $LASTEXITCODE }"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
