@@ -1,2 +1,1 @@
-* Fix status sometimes not going through "Connecting" before "Connected"
-* OpenVPN: Delete legacy implementation (#1922)
+* Add preference to override crypto backend (#1927)
