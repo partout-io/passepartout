@@ -122,20 +122,23 @@ private fun String.appending(optional: String?, separator: String): String {
 @Composable
 fun Throwable.partoutDescription(): String? {
     if (this !is PartoutException) return null
+    val fallbackMessage =  "${code.value}, payload=${JSON.encodeElement(payload)}"
     return when (code) {
         PartoutErrorCode.parsing -> parsingDescription()
+        PartoutErrorCode.unknownImportedModule -> stringResource(R.string.errors_app_parsing)
         else -> null
-    } ?: "${code.value}, payload=${JSON.encodeElement(payload)}"
+    } ?: fallbackMessage
 }
 
 @Composable
-fun PartoutException.parsingDescription(): String? {
-    return payload?.let { payload ->
+fun PartoutException.parsingDescription(): String {
+    val specificString = payload?.let { payload ->
         val info = runCatching {
             Json.decodeFromJsonElement<ParseErrorInfo>(payload)
-        }.getOrNull() ?: return null
-        val argument = info.arguments.firstOrNull()
-        return when (info.recognizedType) {
+        }.getOrNull() ?: return@let null
+        // Fall back to dummy placeholder, but keep the original string.
+        val argument = info.arguments.firstOrNull() ?: "?"
+        when (info.recognizedType) {
             ModuleType.OpenVPN -> {
                 when (OpenVPNErrorCode.decode(info.subCode)) {
                     OpenVPNErrorCode.unsupportedCompression -> stringResource(
@@ -151,19 +154,19 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.interfaceHasInvalidAddress -> stringResource(
                         R.string.errors_wireguard_interface_address_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.interfaceHasInvalidDNS -> stringResource(
                         R.string.errors_wireguard_interface_dns_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.interfaceHasInvalidListenPort -> stringResource(
                         R.string.errors_wireguard_interface_listen_port_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.interfaceHasInvalidMTU -> stringResource(
                         R.string.errors_wireguard_interface_mtu_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.interfaceHasInvalidPrivateKey -> stringResource(
                         R.string.errors_wireguard_interface_private_key_invalid
@@ -173,11 +176,11 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.interfaceHasUnrecognizedKey -> stringResource(
                         R.string.errors_wireguard_interface_unrecognized_key,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.multipleEntriesForKey -> stringResource(
                         R.string.errors_wireguard_multiple_entries_for_key,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.multipleInterfaces -> stringResource(
                         R.string.errors_wireguard_multiple_interfaces
@@ -190,15 +193,15 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.peerHasInvalidAllowedIP -> stringResource(
                         R.string.errors_wireguard_peer_allowed_ips_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.peerHasInvalidEndpoint -> stringResource(
                         R.string.errors_wireguard_peer_endpoint_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.peerHasInvalidPersistentKeepAlive -> stringResource(
                         R.string.errors_wireguard_peer_persistent_keepalive_invalid,
-                        argument ?: return null
+                        argument
                     )
                     WireGuardErrorCode.peerHasInvalidPreSharedKey -> stringResource(
                         R.string.errors_wireguard_peer_pre_shared_key_invalid
@@ -211,7 +214,7 @@ fun PartoutException.parsingDescription(): String? {
                     )
                     WireGuardErrorCode.peerHasUnrecognizedKey -> stringResource(
                         R.string.errors_wireguard_peer_unrecognized_key,
-                        argument ?: return null
+                        argument
                     )
                     else -> null
                 }
@@ -219,4 +222,5 @@ fun PartoutException.parsingDescription(): String? {
             else -> null
         }
     }
+    return specificString ?: stringResource(R.string.errors_app_parsing)
 }
