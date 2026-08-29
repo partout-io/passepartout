@@ -434,15 +434,27 @@ private extension Collection where Element == Profile.DiffResult {
                 return false
             case .changedBehavior(let changes):
                 return changes.contains(.includesAllNetworks)
-            case .changedModules(let ids):
-                if ids.count == 1, let onlyID = ids.first,
-                   profile.module(withId: onlyID) is OnDemandModule {
-                    return false
-                }
-                return true
+            case .changedActiveModules:
+                // Ignore this and rely on specific enabled/disabled
+                // changes to determine reconnection.
+                return false
+            case .changedModules(let ids),
+                    .enabledModules(let ids),
+                    .disabledModules(let ids):
+                return !profile.onlyChangedOnDemand(ids: ids)
             default:
                 return true
             }
         }
+    }
+}
+
+private extension Profile {
+    func onlyChangedOnDemand(ids: [UniqueID]) -> Bool {
+        guard ids.count == 1, let onlyID = ids.first,
+              module(withId: onlyID) is OnDemandModule else {
+            return false
+        }
+        return true
     }
 }
