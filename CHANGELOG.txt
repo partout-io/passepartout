@@ -1,1 +1,3 @@
-* Normalize alert messages without a trailing period
+* Improve error mapping
+* Fix WireGuard occasionally showing "Failed" while connected
+* Do not reconnect after toggling on-demand (#1929)
