@@ -1,3 +1,4 @@
 * Improve error mapping
-* Fix WireGuard occasionally showing "Failed" while connected
+* WireGuard: Add option to prefer resolved IPv6 over IPv4 (#1931)
+* WireGuard: Fix occasionally shown "Failed" while connected
 * Do not reconnect after toggling on-demand (#1929)
