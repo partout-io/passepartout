@@ -243,6 +243,8 @@
 "modules.wireguard.private_key.generate" = "Generate new key";
 "modules.wireguard.interface" = "Interface";
 "modules.wireguard.interface.dns.footer" = "Specifying empty servers will discard these DNS settings.";
+"modules.wireguard.interface.prefers_ipv6" = "Prefer IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "For peer hostnames, try IPv6 addresses before IPv4.";
 "modules.wireguard.peer" = "Peer #%d";
 "modules.wireguard.peer.add" = "Add peer";
 "modules.wireguard.peer.delete" = "Delete peer";

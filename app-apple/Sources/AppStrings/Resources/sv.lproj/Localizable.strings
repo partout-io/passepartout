@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "TLS-omslag";
 "modules.wireguard.allowed_ips" = "Tillåtna IP";
 "modules.wireguard.interface.dns.footer" = "Att ange tomma servrar kommer att ignorera dessa DNS-inställningar.";
+"modules.wireguard.interface.prefers_ipv6" = "Föredra IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "För peer-värdnamn, prova IPv6-adresser före IPv4.";
 "modules.wireguard.interface" = "Gränssnitt";
 "modules.wireguard.peer.add" = "Lägg till peer";
 "modules.wireguard.peer.delete" = "Ta bort peer";

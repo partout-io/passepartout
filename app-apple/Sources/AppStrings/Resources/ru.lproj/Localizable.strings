@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "TLS обертка";
 "modules.wireguard.allowed_ips" = "Разрешенные IP-адреса";
 "modules.wireguard.interface.dns.footer" = "Указание пустых серверов приведёт к отклонению этих настроек DNS.";
+"modules.wireguard.interface.prefers_ipv6" = "Предпочитать IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "Для имён хостов узлов сначала пробовать IPv6-адреса, затем IPv4.";
 "modules.wireguard.interface" = "Интерфейс";
 "modules.wireguard.peer.add" = "Добавить узел";
 "modules.wireguard.peer.delete" = "Удалить узел";

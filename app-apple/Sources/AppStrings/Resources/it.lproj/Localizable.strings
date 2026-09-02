@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "Wrapping";
 "modules.wireguard.allowed_ips" = "IP consentiti";
 "modules.wireguard.interface.dns.footer" = "Specificare server vuoti farà scartare queste impostazioni DNS.";
+"modules.wireguard.interface.prefers_ipv6" = "Preferisci IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "Per i nomi host dei peer, prova gli indirizzi IPv6 prima di quelli IPv4.";
 "modules.wireguard.interface" = "Interfaccia";
 "modules.wireguard.peer.add" = "Aggiungi peer";
 "modules.wireguard.peer.delete" = "Elimina peer";
