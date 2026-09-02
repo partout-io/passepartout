@@ -86,6 +86,8 @@ private extension WireGuardView.ConfigurationView {
                 inputType: .number,
                 sideAligned: true
             )
+            Toggle(Strings.Modules.Wireguard.Interface.prefersIpv6, isOn: $viewModel.prefersIPv6)
+                .themeContainerEntry(subtitle: Strings.Modules.Wireguard.Interface.PrefersIpv6.footer)
         }
     }
 
@@ -205,6 +207,8 @@ extension WireGuardView.ConfigurationView {
 
         var mtu = ""
 
+        var prefersIPv6 = false
+
         var dnsServers = ""
 
         var dnsDomains = ""
@@ -217,6 +221,7 @@ extension WireGuardView.ConfigurationView {
             privateKey = configuration.interface.privateKey
             addresses = configuration.interface.addresses.joined(separator: separator)
             mtu = configuration.interface.mtu?.description ?? ""
+            prefersIPv6 = configuration.interface.prefersIPv6 ?? false
 
             dnsServers = configuration.interface.dns?.servers.joined(separator: separator) ?? ""
             dnsDomains = configuration.interface.dns?.domains?.joined(separator: separator) ?? ""
@@ -245,6 +250,7 @@ extension WireGuardView.ConfigurationView {
             }
             configuration.interface.addresses = addresses.trimmedSplit(separator: separator)
             configuration.interface.mtu = UInt16(mtu)
+            configuration.interface.prefersIPv6 = prefersIPv6
 
             let servers = dnsServers.trimmedSplit(separator: separator)
             let domains = dnsDomains.trimmedSplit(separator: separator)

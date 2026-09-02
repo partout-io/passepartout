@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "Περίβλημα TLS";
 "modules.wireguard.allowed_ips" = "Επιτρεπόμενες IP";
 "modules.wireguard.interface.dns.footer" = "Ο καθορισμός κενών διακομιστών θα απορρίψει αυτές τις ρυθμίσεις DNS.";
+"modules.wireguard.interface.prefers_ipv6" = "Προτίμηση IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "Για ονόματα κεντρικών υπολογιστών ομότιμων, δοκιμάστε διευθύνσεις IPv6 πριν από IPv4.";
 "modules.wireguard.interface" = "Διασύνδεση";
 "modules.wireguard.peer.add" = "Προσθήκη ομότιμου";
 "modules.wireguard.peer.delete" = "Διαγραφή ομότιμου";

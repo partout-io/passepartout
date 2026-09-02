@@ -849,9 +849,15 @@ public enum Strings {
       /// Pre-shared key
       public static let presharedKey = Strings.tr("Localizable", "modules.wireguard.preshared_key", fallback: "Pre-shared key")
       public enum Interface {
+        /// Prefer IPv6
+        public static let prefersIpv6 = Strings.tr("Localizable", "modules.wireguard.interface.prefers_ipv6", fallback: "Prefer IPv6")
         public enum Dns {
           /// Specifying empty servers will discard these DNS settings.
           public static let footer = Strings.tr("Localizable", "modules.wireguard.interface.dns.footer", fallback: "Specifying empty servers will discard these DNS settings.")
+        }
+        public enum PrefersIpv6 {
+          /// For peer hostnames, try IPv6 addresses before IPv4.
+          public static let footer = Strings.tr("Localizable", "modules.wireguard.interface.prefers_ipv6.footer", fallback: "For peer hostnames, try IPv6 addresses before IPv4.")
         }
       }
       public enum Peer {

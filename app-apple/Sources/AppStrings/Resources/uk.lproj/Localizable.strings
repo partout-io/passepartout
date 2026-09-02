@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "Інкапсуляція";
 "modules.wireguard.allowed_ips" = "Дозволені IP-адреси";
 "modules.wireguard.interface.dns.footer" = "Вказання порожніх серверів призведе до відхилення цих налаштувань DNS.";
+"modules.wireguard.interface.prefers_ipv6" = "Надавати перевагу IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "Для імен хостів вузлів спочатку пробувати IPv6-адреси, а потім IPv4.";
 "modules.wireguard.interface" = "Інтерфейс";
 "modules.wireguard.peer.add" = "Додати вузол";
 "modules.wireguard.peer.delete" = "Видалити вузол";

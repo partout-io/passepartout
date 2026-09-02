@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "TLS-wrap";
 "modules.wireguard.allowed_ips" = "Toegestane IP's";
 "modules.wireguard.interface.dns.footer" = "Het opgeven van lege servers zal deze DNS-instellingen verwerpen.";
+"modules.wireguard.interface.prefers_ipv6" = "IPv6 verkiezen";
+"modules.wireguard.interface.prefers_ipv6.footer" = "Probeer voor hostnamen van peers eerst IPv6-adressen en daarna IPv4.";
 "modules.wireguard.interface" = "Interface";
 "modules.wireguard.peer.add" = "Peer toevoegen";
 "modules.wireguard.peer.delete" = "Peer verwijderen";

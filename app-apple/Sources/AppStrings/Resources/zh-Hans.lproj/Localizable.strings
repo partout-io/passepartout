@@ -283,6 +283,8 @@
 "modules.openvpn.tls_wrap" = "TLS 包装";
 "modules.wireguard.allowed_ips" = "允许的 IP";
 "modules.wireguard.interface.dns.footer" = "指定空服务器将丢弃这些 DNS 设置。";
+"modules.wireguard.interface.prefers_ipv6" = "优先使用 IPv6";
+"modules.wireguard.interface.prefers_ipv6.footer" = "对于对等端主机名，先尝试 IPv6 地址，再尝试 IPv4。";
 "modules.wireguard.interface" = "接口";
 "modules.wireguard.peer.add" = "添加对等端";
 "modules.wireguard.peer.delete" = "删除对等端";
