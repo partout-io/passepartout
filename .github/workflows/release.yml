@@ -4,6 +4,20 @@ on:
   push:
     tags:
       - "builds/*"
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to package
+        required: true
+        type: choice
+        options:
+          - apple
+          - android
+      run_checks:
+        description: Run the initial checks
+        required: true
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,12 +26,14 @@ concurrency:
 jobs:
   checks:
     name: Run checks
+    if: ${{ github.event_name == 'push' || inputs.run_checks }}
     uses: ./.github/workflows/checks.yml
 
   release_info:
     name: Resolve release information
     runs-on: ubuntu-latest
     needs: checks
+    if: ${{ always() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
     timeout-minutes: 2
     outputs:
       version: ${{ steps.release_info.outputs.version }}
@@ -47,18 +63,21 @@ jobs:
   package_apple:
     name: Package Apple apps
     needs: release_info
+    if: ${{ github.event_name == 'push' || inputs.platform == 'apple' }}
     uses: ./.github/workflows/package_apple.yml
     secrets: inherit
 
   package_android:
     name: Package Android app
     needs: release_info
+    if: ${{ github.event_name == 'push' || inputs.platform == 'android' }}
     uses: ./.github/workflows/package_android.yml
     secrets: inherit
 
   distribute_apple:
     name: Distribute Apple apps
     needs: [release_info, package_apple]
+    if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/distribute_apple.yml
     with:
       version: ${{ needs.release_info.outputs.version }}
@@ -72,6 +91,7 @@ jobs:
       - release_info
       - package_android
       - distribute_apple
+    if: ${{ github.event_name == 'push' }}
     environment:
       name: release
     env:
