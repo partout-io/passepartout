@@ -1,0 +1,25 @@
+Protect your online privacy with Passepartout, a smart VPN client for Android.
+
+HOW PASSEPARTOUT WORKS
+
+Passepartout for Android includes essential VPN profile import and connection features.
+
+INCLUDED FEATURES:
+
+- Support for OpenVPN and WireGuard protocols.
+- Import and manage VPN profiles.
+- OpenVPN obfuscation (using --scramble).
+
+OpenVPN support focuses on common options; compression is not supported because it is not secure.
+
+PRIVACY YOU CAN TRUST
+
+Passepartout is built with transparency and privacy in mind:
+- See exactly which servers you’re connecting to.
+- No ads, trackers, or unnecessary background activities—just the VPN connection you need.
+
+OPEN SOURCE AND COMMUNITY-DRIVEN
+
+Passepartout is open source and constantly evolving with the help of its community. Check out the project on GitHub: https://github.com/partout-io
+
+Privacy Policy: https://partout.io/passepartout/privacy/
