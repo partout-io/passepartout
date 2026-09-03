@@ -366,7 +366,8 @@ private data class RequestedConnection(
     ): Boolean {
         val activeProfile = activeProfiles[profileId]
         return if (enabled) {
-            activeProfile != null || (activeProfiles.isEmpty() && !hadActiveProfiles)
+            (activeProfile != null && activeProfile.status != AppProfileStatus.connected) ||
+                (activeProfiles.isEmpty() && !hadActiveProfiles)
         } else {
             activeProfile?.isEnabled != true
         }
