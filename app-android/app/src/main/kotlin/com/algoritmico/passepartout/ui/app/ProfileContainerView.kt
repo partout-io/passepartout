@@ -153,7 +153,7 @@ fun ProfileContainerView(
         }
     }
 
-    LaunchedEffect(activeProfiles, tunnelState.serviceGeneration) {
+    LaunchedEffect(activeProfiles) {
         val hadActiveProfiles = previousActiveProfiles.isNotEmpty()
         val request = requestedConnection
         if (request != null) {
