@@ -5,7 +5,7 @@ on:
     secrets:
       ACCESS_TOKEN:
         required: true
-      CERTIFICATES_PASSPHRASE:
+      APPLE_CERTIFICATES_PASSPHRASE:
         required: true
       GPG_KEY:
         required: true
@@ -82,7 +82,7 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-passphrase: ${{ secrets.APPLE_CERTIFICATES_PASSPHRASE }}
       - uses: actions/download-artifact@v8
         with:
           name: partout-native
@@ -128,7 +128,7 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-passphrase: ${{ secrets.APPLE_CERTIFICATES_PASSPHRASE }}
       - uses: actions/download-artifact@v8
         with:
           name: partout-native

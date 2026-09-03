@@ -41,7 +41,7 @@ jobs:
         with:
           changes: "api/cache/src"
           repository: git@github.com:partout-io/passepartout-api-cache.git
-          ssh_key: ${{ secrets.CACHE_DEPLOY_KEY }}
+          ssh_key: ${{ secrets.API_CACHE_DEPLOY_KEY }}
           name: api
           email: providers@passepartoutvpn.app
           branch: master

@@ -31,7 +31,7 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-passphrase: ${{ secrets.APPLE_CERTIFICATES_PASSPHRASE }}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
