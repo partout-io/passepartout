@@ -155,7 +155,10 @@ class TunnelObservable(
 
     private fun onTunnelState(tunnelState: PartoutTunnel.State) {
         _state.update {
-            it.copy(activeProfiles = tunnelState.toState().activeProfiles)
+            it.copy(
+                activeProfiles = tunnelState.toState().activeProfiles,
+                serviceGeneration = tunnelState.serviceGeneration
+            )
         }
     }
 
@@ -174,7 +177,8 @@ class TunnelObservable(
 
     data class State(
         val activeProfiles: Map<String, AppTunnelInfo> = emptyMap(),
-        val isVpnPermissionDenied: Boolean = false
+        val isVpnPermissionDenied: Boolean = false,
+        val serviceGeneration: Long = 0L
     )
 
     private val AppProfileStatus.isActive: Boolean
@@ -200,7 +204,8 @@ class TunnelObservable(
         return State(
             activeProfiles = snapshots.mapValues {
                 it.value.toAppTunnelInfo()
-            }
+            },
+            serviceGeneration = serviceGeneration
         )
     }
 
