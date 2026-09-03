@@ -30,6 +30,7 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: gradle
+      - uses: mlugg/setup-zig@v2
       - uses: android-actions/setup-android@v4
       - name: Install Android SDK components
         run: |
