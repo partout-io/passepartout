@@ -1,21 +1,10 @@
 name: Checks
 
 on:
-  pull_request:
-    types: [opened, synchronize]
-    branches:
-      - master
-      - "hotfix/*"
-    paths-ignore:
-      - README.md
-      - ".env.*"
-      - "**/*.md"
-      - "app-apple/fastlane/**"
-  workflow_dispatch:
   workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: checks-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -70,6 +59,10 @@ jobs:
             git status --short
             exit 1
           fi
+
+      - name: Validate translations
+        if: matrix.suite == 'apple'
+        run: app-apple/scripts/clean-translations.sh
 
       - name: Run Apple tests
         if: matrix.suite == 'apple'

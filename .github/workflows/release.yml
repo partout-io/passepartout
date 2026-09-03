@@ -15,9 +15,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  checks:
+    name: Run checks
+    uses: ./.github/workflows/checks.yml
+
   validate_codebase:
     name: Validate codebase
     runs-on: macos-26
+    needs: checks
     timeout-minutes: 30
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
@@ -55,18 +60,6 @@ jobs:
           BUILD=`ci/build-number.sh`
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "build=$BUILD" >> $GITHUB_OUTPUT
-      - name: Validate translations
-        run: |
-          app-apple/scripts/clean-translations.sh
-      - name: Run Apple tests
-        run: |
-          ci/run-apple-tests.sh
-      - name: Run Partout tests (Swift)
-        run: |
-          ci/run-partout-swift-tests.sh
-      - name: Run Partout tests
-        run: |
-          ci/run-partout-tests.sh
     outputs:
       version: ${{ steps.app_version.outputs.version }}
       build: ${{ steps.app_version.outputs.build }}
