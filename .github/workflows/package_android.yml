@@ -21,7 +21,7 @@ defaults:
 jobs:
   build_upload:
     name: Build and upload
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
@@ -40,7 +40,7 @@ jobs:
             "platforms;android-36" \
             "build-tools;36.0.0" \
             "cmake;4.1.2" \
-            "ndk;29.0.13846066"
+            "ndk;29.0.14206865"
       - name: Prepare signing key
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

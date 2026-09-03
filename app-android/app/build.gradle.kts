@@ -79,7 +79,7 @@ android {
     buildFeatures {
         compose = true
     }
-    ndkVersion = "29.0.13846066"
+    ndkVersion = "29.0.14206865"
     externalNativeBuild {
         cmake {
             version = "4.1.2"

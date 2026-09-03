@@ -90,7 +90,7 @@ jobs:
   skip_checks:
     name: Checks skipped
     if: ${{ !inputs.run_checks }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - run: echo "Checks disabled for this run"

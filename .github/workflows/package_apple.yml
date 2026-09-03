@@ -29,7 +29,7 @@ defaults:
 jobs:
   build_partout_xcframework:
     name: Build Partout XCFramework
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 30
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
@@ -61,7 +61,7 @@ jobs:
   build_upload_appstore:
     name: Build and upload ${{ matrix.name }}
     needs: build_partout_xcframework
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -116,7 +116,7 @@ jobs:
   build_upload_dmg:
     name: Build and upload DMG (${{ matrix.architecture }})
     needs: build_partout_xcframework
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 45
     strategy:
       fail-fast: false

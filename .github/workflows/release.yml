@@ -32,7 +32,7 @@ jobs:
 
   release_info:
     name: Resolve release information
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: checks
     timeout-minutes: 2
     outputs:
@@ -86,7 +86,7 @@ jobs:
 
   publish_release:
     name: Publish Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - release_info
       - package_android
