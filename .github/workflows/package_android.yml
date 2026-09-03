@@ -11,6 +11,8 @@ on:
         required: true
       ANDROID_KEY_PASSWORD:
         required: true
+      ANDROID_PUBLISHER_CREDENTIALS:
+        required: true
 
 defaults:
   run:
@@ -18,7 +20,7 @@ defaults:
 
 jobs:
   build_upload:
-    name: Build and upload Android artifacts
+    name: Build and upload
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -32,7 +34,7 @@ jobs:
           cache: gradle
       - uses: mlugg/setup-zig@v2
       - uses: android-actions/setup-android@v4
-      - name: Install Android SDK components
+      - name: Install SDK components
         run: |
           sdkmanager \
             "platforms;android-36" \
@@ -47,16 +49,12 @@ jobs:
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | \
             base64 --decode > "$RUNNER_TEMP/android-upload.jks"
           chmod 600 "$RUNNER_TEMP/android-upload.jks"
-      - name: Package app
+      - name: Upload to Google Play
+        timeout-minutes: 15
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/android-upload.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: ci/package.sh play "$RUNNER_TEMP/release"
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: android
-          path: ${{ runner.temp }}/release
-          if-no-files-found: error
+          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+        run: ./gradlew --no-daemon :app:publishReleaseBundle
