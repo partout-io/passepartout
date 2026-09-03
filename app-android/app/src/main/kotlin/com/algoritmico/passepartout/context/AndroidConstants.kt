@@ -73,6 +73,7 @@ data class AndroidConstants(
     data class Storage(
         val tunnelProfileFilename: String = "tunnel_profile.json",
         val tunnelPreferencesFilename: String = "tunnel_preferences.json",
+        val tunnelRunningFilename: String = "tunnel_running",
         val preferencesStoreName: String = "preferences"
     )
 

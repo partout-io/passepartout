@@ -117,6 +117,10 @@ fun Context.lastTunnelPreferences(storage: AndroidConstants.Storage): File {
     return persistentFile(storage.tunnelPreferencesFilename)
 }
 
+fun Context.tunnelRunningMarker(storage: AndroidConstants.Storage): File {
+    return persistentFile(storage.tunnelRunningFilename)
+}
+
 val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore(
     defaultAndroidConstants.storage.preferencesStoreName
 )

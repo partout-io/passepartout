@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.lastTunnelPreferences
 import com.algoritmico.passepartout.context.lastTunnelProfile
+import com.algoritmico.passepartout.context.tunnelRunningMarker
 import com.algoritmico.passepartout.models.AppPreferences
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,12 @@ class VpnServiceStore(
     private val lastPreferencesFile: File
         get() = appContext.lastTunnelPreferences(storage)
 
+    private val runningMarkerFile: File
+        get() = appContext.tunnelRunningMarker(storage)
+
+    val wasTunnelRunning: Boolean
+        get() = runningMarkerFile.exists()
+
     suspend fun readLastProfile(): String = withContext(Dispatchers.IO) {
         readLastFile(lastProfileFile)
     }
@@ -49,6 +56,14 @@ class VpnServiceStore(
         }.onFailure {
             AppLog.w(logTag, "Unable to forget last profile", it)
         }
+    }
+
+    suspend fun markTunnelRunning() = withContext(Dispatchers.IO) {
+        writeLastFile(runningMarkerFile, "")
+    }
+
+    fun clearTunnelRunning() {
+        AtomicFile(runningMarkerFile).delete()
     }
 
     suspend fun readPreferences(intentPreferencesJSON: String?): AppPreferences? =

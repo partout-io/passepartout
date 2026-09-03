@@ -59,6 +59,7 @@ class PassepartoutVpnService: VpnService() {
             intent: Intent?,
             profileJSON: String
         ): PartoutVpnServiceRuntime.StartOptions {
+            store.markTunnelRunning()
             applicationContext.logPreamble(logTag)
 
             AppLog.i(logTag, "Started service")
@@ -122,6 +123,7 @@ class PassepartoutVpnService: VpnService() {
         }
 
         override fun onServiceStopped(wasRevoked: Boolean) {
+            store.clearTunnelRunning()
             notifications.onServiceStopped(wasRevoked)
         }
     }
