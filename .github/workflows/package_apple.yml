@@ -1,0 +1,158 @@
+name: Package Apple apps
+
+on:
+  workflow_call:
+    secrets:
+      ACCESS_TOKEN:
+        required: true
+      APPLE_CERTIFICATES_PASSPHRASE:
+        required: true
+      GPG_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+      APPLE_ID:
+        required: true
+      APPLE_ID_PASSWORD:
+        required: true
+      APP_STORE_CONNECT_API_KEY:
+        required: true
+      PILOT_BETA_APP_FEEDBACK:
+        required: true
+      PILOT_BETA_APP_REVIEW_INFO:
+        required: true
+
+defaults:
+  run:
+    working-directory: app-apple
+
+jobs:
+  build_partout_xcframework:
+    name: Build Partout XCFramework
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ github.token }}
+          submodules: true
+      - uses: mlugg/setup-zig@v2
+      - name: Build Partout XCFramework
+        run: |
+          xcframework="$PWD/PartoutNative.xcframework"
+          archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
+          artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
+          prebuilts_version=$(tr -d '\r\n' < "$GITHUB_WORKSPACE/prebuilts-version.txt")
+
+          "$GITHUB_WORKSPACE/partout/scripts/build-xcframework.sh" \
+            "$prebuilts_version" "$xcframework" "$artifacts_dir" --full
+          test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
+          ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
+          grep -F 'path = PartoutNative.xcframework;' \
+            Passepartout.xcodeproj/project.pbxproj
+      - name: Upload Partout XCFramework
+        uses: actions/upload-artifact@v7
+        with:
+          name: partout-native
+          path: ${{ runner.temp }}/PartoutNative.xcframework.zip
+          compression-level: 0
+          if-no-files-found: error
+
+  build_upload_appstore:
+    name: Build and upload ${{ matrix.name }}
+    needs: build_partout_xcframework
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: iOS
+            target: appstore-ios
+            artifact: apple-appstore-ios
+          - name: macOS
+            target: appstore-macos
+            artifact: apple-appstore-macos
+          - name: tvOS
+            target: appstore-tvos
+            artifact: apple-appstore-tvos
+    steps:
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true
+          certificates-url: ${{ vars.CERTIFICATES_URL }}
+          certificates-passphrase: ${{ secrets.APPLE_CERTIFICATES_PASSPHRASE }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: partout-native
+          path: ${{ runner.temp }}/partout-native
+      - name: Install Partout XCFramework
+        run: |
+          ditto -x -k \
+            "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
+            "$PWD"
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Package app
+        run: ci/package.sh "${{ matrix.target }}" "$RUNNER_TEMP/release"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ runner.temp }}/release
+          if-no-files-found: error
+      - name: Upload to TestFlight
+        timeout-minutes: 30
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          TESTFLIGHT_PREFACE: ${{ vars.TESTFLIGHT_PREFACE }}
+          PILOT_BETA_APP_FEEDBACK: ${{ secrets.PILOT_BETA_APP_FEEDBACK }}
+          PILOT_BETA_APP_REVIEW_INFO: ${{ secrets.PILOT_BETA_APP_REVIEW_INFO }}
+          PILOT_GROUPS: ${{ vars.PILOT_GROUPS }}
+        run: bundle exec fastlane --env "${{ matrix.name }}" beta
+
+  build_upload_dmg:
+    name: Build and upload DMG (${{ matrix.architecture }})
+    needs: build_partout_xcframework
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [arm64, x86_64]
+    steps:
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true
+          certificates-url: ${{ vars.CERTIFICATES_URL }}
+          certificates-passphrase: ${{ secrets.APPLE_CERTIFICATES_PASSPHRASE }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: partout-native
+          path: ${{ runner.temp }}/partout-native
+      - name: Install Partout XCFramework
+        run: |
+          ditto -x -k \
+            "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
+            "$PWD"
+      - name: Import GPG key
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+        run: |
+          "$GITHUB_WORKSPACE/ci/gpg-import.sh" "$GPG_KEY"
+      - name: Package DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          GPG_FINGERPRINT: ${{ vars.GPG_FINGERPRINT }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: ci/package.sh dmg "$RUNNER_TEMP/release" "${{ matrix.architecture }}"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: apple-dmg-${{ matrix.architecture }}
+          path: ${{ runner.temp }}/release
+          if-no-files-found: error

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -6,6 +8,26 @@ plugins {
 }
 
 val localPlayPublisherCredentials = rootProject.file("play-publisher-credentials.json")
+val releaseSigning = Properties().apply {
+    rootProject.file("signing.properties").takeIf { it.isFile }?.inputStream()?.use {
+        load(it)
+    }
+
+    mapOf(
+        "storeFile" to "ANDROID_KEYSTORE_PATH",
+        "storePassword" to "ANDROID_KEYSTORE_PASSWORD",
+        "keyAlias" to "ANDROID_KEY_ALIAS",
+        "keyPassword" to "ANDROID_KEY_PASSWORD",
+    ).forEach { (property, environment) ->
+        providers.environmentVariable(environment).orNull
+            ?.takeIf { it.isNotBlank() }
+            ?.let { setProperty(property, it) }
+    }
+}
+
+fun releaseSigningValue(name: String): String =
+    releaseSigning.getProperty(name)?.takeIf { it.isNotBlank() }
+        ?: error("Missing Android release signing property: $name")
 
 android {
     namespace = "com.algoritmico.passepartout"
@@ -15,7 +37,7 @@ android {
         applicationId = "com.algoritmico.passepartout"
         minSdk = 24
         targetSdk = 36
-        versionCode = 4143
+        versionCode = 4144
         versionName = "3.11.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -33,8 +55,19 @@ android {
         checkReleaseBuilds = false
         abortOnError = false
     }
+    val releaseSigningConfig = if (releaseSigning.isEmpty) {
+        null
+    } else {
+        signingConfigs.create("release") {
+            storeFile = rootProject.file(releaseSigningValue("storeFile"))
+            storePassword = releaseSigningValue("storePassword")
+            keyAlias = releaseSigningValue("keyAlias")
+            keyPassword = releaseSigningValue("keyPassword")
+        }
+    }
     buildTypes {
         release {
+            signingConfig = releaseSigningConfig
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

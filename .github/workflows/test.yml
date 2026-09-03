@@ -1,4 +1,4 @@
-name: SwiftPM Tests
+name: Tests
 
 on:
   pull_request:
@@ -10,44 +10,13 @@ on:
       - "README.md"
       - ".env.*"
       - "**/*.md"
-      - "**/*.sh"
       - "app-apple/fastlane/**"
-      - "app-android" # For now
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  run_swift_tests:
-    name: Run SwiftPM tests
-    runs-on: macos-26
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - name: Verify CMake file lists
-        run: |
-          app-cross/scripts/gen-cmake-files.sh
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git status --short
-            exit 1
-          fi
-      - uses: partout-io/action-prepare-xcode-build@master
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
-      - run: |
-          ci/run-apple-tests.sh
-  run_api_tests:
-    name: Run Node.js API tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: api/package-lock.json
-      - run: |
-          ci/run-api-tests.sh
+  checks:
+    name: Run checks
+    uses: ./.github/workflows/checks.yml

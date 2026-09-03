@@ -1,0 +1,62 @@
+name: Package Android app
+
+on:
+  workflow_call:
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: true
+      ANDROID_KEYSTORE_PASSWORD:
+        required: true
+      ANDROID_KEY_ALIAS:
+        required: true
+      ANDROID_KEY_PASSWORD:
+        required: true
+
+defaults:
+  run:
+    working-directory: app-android
+
+jobs:
+  build_upload:
+    name: Build and upload Android artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - uses: mlugg/setup-zig@v2
+      - uses: android-actions/setup-android@v4
+      - name: Install Android SDK components
+        run: |
+          sdkmanager \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "cmake;4.1.2" \
+            "ndk;29.0.13846066"
+      - name: Prepare signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | \
+            base64 --decode > "$RUNNER_TEMP/android-upload.jks"
+          chmod 600 "$RUNNER_TEMP/android-upload.jks"
+      - name: Package app
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/android-upload.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ci/package.sh play "$RUNNER_TEMP/release"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: android
+          path: ${{ runner.temp }}/release
+          if-no-files-found: error

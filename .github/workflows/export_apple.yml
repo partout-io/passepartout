@@ -8,7 +8,10 @@ on:
 env:
   APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
   TESTFLIGHT_PREFACE: ${{ vars.TESTFLIGHT_PREFACE }}
-  APPLE_ROOT: app-apple
+
+defaults:
+  run:
+    working-directory: app-apple
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,15 +31,13 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
           certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
+          certificates-passphrase: ${{ secrets.APPLE_CERTIFICATES_PASSPHRASE }}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
       - name: Archive app
-        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           ci/xcode-archive.sh ${{ matrix.platform }}
       - name: Export archive
-        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           ci/xcode-export.sh ${{ matrix.platform }}
