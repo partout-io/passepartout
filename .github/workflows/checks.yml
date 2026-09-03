@@ -1,0 +1,88 @@
+name: Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+      - "hotfix/*"
+    paths-ignore:
+      - README.md
+      - ".env.*"
+      - "**/*.md"
+      - "app-apple/fastlane/**"
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run_tests:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ matrix.timeout_minutes }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: Apple tests
+            suite: apple
+            runner: macos-26
+            timeout_minutes: 10
+          - name: Partout tests
+            suite: partout
+            runner: macos-26
+            timeout_minutes: 10
+          - name: Cross checks
+            suite: cross
+            runner: ubuntu-latest
+            timeout_minutes: 2
+          - name: API tests
+            suite: api
+            runner: ubuntu-latest
+            timeout_minutes: 2
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: partout-io/action-prepare-xcode-build@master
+        if: matrix.suite == 'apple' || matrix.suite == 'partout'
+        with:
+          access-token: ${{ github.token }}
+          submodules: true
+
+      - uses: mlugg/setup-zig@v2
+        if: matrix.suite == 'partout'
+
+      - uses: actions/setup-node@v6
+        if: matrix.suite == 'api'
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+
+      - name: Verify CMake file lists
+        if: matrix.suite == 'cross'
+        run: |
+          app-cross/scripts/gen-cmake-files.sh
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi
+
+      - name: Run Apple tests
+        if: matrix.suite == 'apple'
+        run: ci/run-apple-tests.sh
+
+      - name: Run Partout tests (Swift)
+        if: matrix.suite == 'partout'
+        run: ci/run-partout-swift-tests.sh
+
+      - name: Run Partout tests
+        if: matrix.suite == 'partout'
+        run: ci/run-partout-tests.sh
+
+      - name: Run API tests
+        if: matrix.suite == 'api'
+        run: ci/run-api-tests.sh
