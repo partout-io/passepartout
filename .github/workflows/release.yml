@@ -5,9 +5,6 @@ on:
     tags:
       - "builds/*"
 
-env:
-  APPLE_ROOT: app-apple
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -59,92 +56,22 @@ jobs:
     uses: ./.github/workflows/package_android.yml
     secrets: inherit
 
-  distribute_public_beta:
-    name: Distribute Public Beta
-    runs-on: ubuntu-latest
+  distribute_apple:
+    name: Distribute Apple apps
     needs: [release_info, package_apple]
-    continue-on-error: true
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: [iOS, macOS, tvOS]
-    environment:
-      name: public_beta
-    env:
-      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Publish on TestFlight
-        working-directory: ${{ env.APPLE_ROOT }}
-        env:
-          PILOT_APP_VERSION: ${{ needs.release_info.outputs.version }}
-          PILOT_BUILD_NUMBER: ${{ needs.release_info.outputs.build }}
-          PILOT_GROUPS: ${{ vars.PILOT_GROUPS }}
-          PILOT_NOTIFY_EXTERNAL_TESTERS: ${{ vars.PILOT_NOTIFY_EXTERNAL_TESTERS }}
-        run: bundle exec fastlane --env ${{ matrix.platform }} public_beta
-
-  create_app_versions:
-    name: Create App Store versions
-    runs-on: ubuntu-latest
-    needs: [release_info, package_apple]
-    environment:
-      name: app_store
-    env:
-      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-      DELIVER_APP_VERSION: ${{ needs.release_info.outputs.version }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Create App Store versions
-        continue-on-error: true
-        working-directory: ${{ env.APPLE_ROOT }}
-        run: |
-          status=0
-          for platform in iOS macOS tvOS; do
-            bundle exec fastlane --env "$platform" asc_version || status=1
-          done
-          exit "$status"
-
-  submit_for_app_review:
-    name: Submit to App Review
-    runs-on: ubuntu-latest
-    needs: [release_info, package_apple, create_app_versions]
-    continue-on-error: true
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: [iOS, macOS, tvOS]
-    environment:
-      name: app_review
-    env:
-      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-      DELIVER_APP_VERSION: ${{ needs.release_info.outputs.version }}
-      DELIVER_BUILD_NUMBER: ${{ needs.release_info.outputs.build }}
-      DELIVER_FORCE: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Submit for App Review
-        working-directory: ${{ env.APPLE_ROOT }}
-        run: bundle exec fastlane --env ${{ matrix.platform }} asc_review
+    uses: ./.github/workflows/distribute_apple.yml
+    with:
+      version: ${{ needs.release_info.outputs.version }}
+      build: ${{ needs.release_info.outputs.build }}
+    secrets: inherit
 
   publish_release:
     name: Publish Release
     runs-on: ubuntu-latest
     needs:
       - release_info
-      - package_apple
       - package_android
-      - distribute_public_beta
-      - create_app_versions
-      - submit_for_app_review
+      - distribute_apple
     environment:
       name: release
     env:
