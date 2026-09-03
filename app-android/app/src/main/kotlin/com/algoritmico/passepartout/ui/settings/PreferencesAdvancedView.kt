@@ -30,7 +30,7 @@ import com.algoritmico.passepartout.business.extensions.isAllowed
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
-import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
+import com.algoritmico.passepartout.context.isDebuggable
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.DistributionTarget
 import com.algoritmico.passepartout.models.ExperimentalPreferences
@@ -49,7 +49,7 @@ fun PreferencesAdvancedView(
     modifier: Modifier = Modifier
 ) {
     val appConfiguration = LocalAppConfiguration.current
-    val isBeta = LocalContext.current.isBetaSuggestedByAndroidAPI
+    val isDebuggable = LocalContext.current.isDebuggable
     val configState by LocalConfigObservable.current.state.collectAsStateWithLifecycle()
     val userPreferencesObservable = LocalUserPreferencesObservable.current
     val initialPreferences = remember(userPreferencesObservable) {
@@ -59,7 +59,8 @@ fun PreferencesAdvancedView(
         initialValue = initialPreferences
     )
     val coroutineScope = rememberCoroutineScope()
-    val canOverride = isBeta || appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
+    val canOverride = isDebuggable ||
+            appConfiguration.bundle.distributionTarget == DistributionTarget.developerID
     val errorHandler = LocalErrorHandler.current
 
     fun updateSafely(block: suspend () -> Unit) {

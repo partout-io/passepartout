@@ -12,7 +12,6 @@ import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
 import com.algoritmico.passepartout.context.defaultAndroidConstants
-import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.context.newConfigManager
 import com.algoritmico.passepartout.context.newProfileManager
 import com.algoritmico.passepartout.context.newTunnel
@@ -80,9 +79,6 @@ class AppContext(
             constants = constants
         )
 
-        // Beta?
-        val isBeta = context.isBetaSuggestedByAndroidAPI
-
         // Managers
         val tunnel = appConfiguration.newTunnel(
             logTag,
@@ -92,7 +88,6 @@ class AppContext(
         )
         configManager = appConfiguration.newConfigManager(
             logTag,
-            isBeta,
             androidConstants.events
         )
         profileManager = appConfiguration.newProfileManager(

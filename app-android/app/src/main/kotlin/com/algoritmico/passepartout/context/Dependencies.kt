@@ -9,7 +9,6 @@ import android.content.Intent
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
-import com.algoritmico.passepartout.business.extensions.betaConfigURL
 import com.algoritmico.passepartout.business.extensions.configURL
 import com.algoritmico.passepartout.business.extensions.urlForChangelog
 import com.algoritmico.passepartout.business.managers.ConfigManager
@@ -30,20 +29,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 //region Managers
 fun AppConfiguration.newConfigManager(
     logTag: String,
-    isBeta: Boolean,
     eventConstants: AndroidConstants.Events
 ): ConfigManager {
-    val url = if (isBeta) constants.websites.betaConfigURL else constants.websites.configURL
-    val ttlFactor = if (isBeta) constants.websites.betaTTLFactor else 1.0
-    val ttl = constants.websites.configTTL * ttlFactor
     val isCached = false
     val timeout = constants.url.timeoutInterval
     return ConfigManager(
         logTag,
         strategy = GitHubConfigStrategy(
             logTag = logTag,
-            url = url,
-            ttl = ttl,
+            url = constants.websites.configURL,
+            ttl = constants.websites.configTTL,
             fetcher = { url ->
                 URLFetcher.fetch(url, isCached, timeout)
             }

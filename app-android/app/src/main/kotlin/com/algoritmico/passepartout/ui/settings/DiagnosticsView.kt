@@ -4,21 +4,16 @@
 
 package com.algoritmico.passepartout.ui.settings
 
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.default
-import com.algoritmico.passepartout.context.isBetaSuggestedByAndroidAPI
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
-import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
@@ -30,8 +25,6 @@ fun DiagnosticsView(
     modifier: Modifier = Modifier,
     onLiveLog: (SettingsCoordinatorRoute) -> Unit
 ) {
-    val context = LocalContext.current
-    val isBeta = context.isBetaSuggestedByAndroidAPI
     val userPreferencesObservable = LocalUserPreferencesObservable.current
     val preferences by userPreferencesObservable.preferences.collectAsStateWithLifecycle(
         initialValue = AppPreferences.default
@@ -39,17 +32,6 @@ fun DiagnosticsView(
     val liveLogHeader = stringResource(R.string.views_diagnostics_sections_live)
     val preferencesHeader = stringResource(R.string.global_nouns_preferences)
     ThemeList(modifier = modifier) {
-        if (isBeta) {
-            themeListSection(header = Strings.Unlocalized.beta) {
-                item {
-                    ListItem(
-                        headlineContent = {
-                            Text(Strings.Unlocalized.betaBuild)
-                        }
-                    )
-                }
-            }
-        }
         themeListSection(header = liveLogHeader) {
             item {
                 ThemeNavigatingButton(

@@ -20,8 +20,6 @@ val AppConstantsWebsites.donateURL: String
 val AppConstantsWebsites.configURL: String
     get() = partoutURL.appendingPath("passepartout-config/v1/bundle.json")
 
-val AppConstantsWebsites.betaConfigURL: String
-    get() = partoutURL.appendingPath("passepartout-config/v1/bundle-beta.json")
 //endregion
 
 //region Passepartout
@@ -49,19 +47,8 @@ val AppConstantsEmails.issues: String
 val AppConstantsEmails.beta: String
     get() = email(to = recipients.beta)
 
-fun AppConstantsTunnel.verificationDelayMinutes(isBeta: Boolean): Int {
-    return (verificationParameters(isBeta).delay / 60.0).toInt()
-}
-
-fun AppConstantsTunnel.verificationParameters(
-    isBeta: Boolean
-): AppConstantsTunnelVerificationParameters {
-    return if (isBeta) {
-        verification.beta
-    } else {
-        verification.production
-    }
-}
+val AppConstantsTunnel.verificationDelayMinutes: Int
+    get() = (verification.production.delay / 60.0).toInt()
 
 val AppConstantsTunnelVerificationParameters.delay: Double
     get() = defaultDelay

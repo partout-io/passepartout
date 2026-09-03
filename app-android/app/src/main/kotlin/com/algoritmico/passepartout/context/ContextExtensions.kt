@@ -121,7 +121,7 @@ val Context.userPreferencesStore: DataStore<Preferences> by preferencesDataStore
     defaultAndroidConstants.storage.preferencesStoreName
 )
 
-val Context.isBetaSuggestedByAndroidAPI: Boolean
+val Context.isDebuggable: Boolean
     get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
 fun Context.persistentFile(path: String): File {
