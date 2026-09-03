@@ -26,14 +26,14 @@ concurrency:
 jobs:
   checks:
     name: Run checks
-    if: ${{ github.event_name == 'push' || inputs.run_checks }}
     uses: ./.github/workflows/checks.yml
+    with:
+      run_checks: ${{ github.event_name == 'push' || inputs.run_checks }}
 
   release_info:
     name: Resolve release information
     runs-on: ubuntu-latest
     needs: checks
-    if: ${{ always() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
     timeout-minutes: 2
     outputs:
       version: ${{ steps.release_info.outputs.version }}

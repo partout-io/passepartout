@@ -2,6 +2,12 @@ name: Checks
 
 on:
   workflow_call:
+    inputs:
+      run_checks:
+        description: Run the test suites
+        required: false
+        default: true
+        type: boolean
 
 concurrency:
   group: checks-${{ github.workflow }}-${{ github.ref }}
@@ -10,6 +16,7 @@ concurrency:
 jobs:
   run_tests:
     name: ${{ matrix.name }}
+    if: inputs.run_checks
     runs-on: ${{ matrix.runner }}
     timeout-minutes: ${{ matrix.timeout_minutes }}
     strategy:
@@ -79,3 +86,11 @@ jobs:
       - name: Run API tests
         if: matrix.suite == 'api'
         run: ci/run-api-tests.sh
+
+  skip_checks:
+    name: Checks skipped
+    if: ${{ !inputs.run_checks }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - run: echo "Checks disabled for this run"
