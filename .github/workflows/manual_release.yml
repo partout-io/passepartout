@@ -30,7 +30,8 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          path: artifacts
+          pattern: apple-dmg-*
+          path: artifacts/apple
           merge-multiple: true
           github-token: ${{ secrets.ACCESS_TOKEN }}
           run-id: ${{ inputs.run }}
@@ -59,7 +60,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v${APP_VERSION}" artifacts/*.dmg* \
+          gh release create "v${APP_VERSION}" artifacts/apple/*.dmg* \
             --verify-tag \
             --title "$APP_VERSION" \
             --notes-file "$RELEASE_NOTES"

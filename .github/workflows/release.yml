@@ -6,8 +6,6 @@ on:
       - "builds/*"
 
 env:
-  APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-  TESTFLIGHT_PREFACE: ${{ vars.TESTFLIGHT_PREFACE }}
   APPLE_ROOT: app-apple
 
 concurrency:
@@ -19,108 +17,61 @@ jobs:
     name: Run checks
     uses: ./.github/workflows/checks.yml
 
-  validate_codebase:
-    name: Validate codebase
-    runs-on: macos-26
+  release_info:
+    name: Resolve release information
+    runs-on: ubuntu-latest
     needs: checks
-    timeout-minutes: 30
-    steps:
-      - uses: partout-io/action-prepare-xcode-build@master
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
-          certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
-      - uses: mlugg/setup-zig@v2
-      - name: Build local Partout XCFramework
-        run: |
-          xcframework="$GITHUB_WORKSPACE/app-apple/PartoutNative.xcframework"
-          archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
-          artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
-          prebuilts_version=$(tr -d '\r\n' < "$GITHUB_WORKSPACE/prebuilts-version.txt")
-
-          partout/scripts/build-xcframework.sh \
-            "$prebuilts_version" "$xcframework" "$artifacts_dir" --full
-          test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
-          ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
-          grep -F 'path = PartoutNative.xcframework;' \
-            app-apple/Passepartout.xcodeproj/project.pbxproj
-      - name: Upload local Partout XCFramework
-        uses: actions/upload-artifact@v7
-        with:
-          name: partout-native
-          path: ${{ runner.temp }}/PartoutNative.xcframework.zip
-          compression-level: 0
-          if-no-files-found: error
-      - name: Save app version
-        id: app_version
-        working-directory: ${{ env.APPLE_ROOT }}
-        run: |
-          VERSION=`ci/version-number.sh`
-          BUILD=`ci/build-number.sh`
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "build=$BUILD" >> $GITHUB_OUTPUT
+    timeout-minutes: 2
     outputs:
-      version: ${{ steps.app_version.outputs.version }}
-      build: ${{ steps.app_version.outputs.build }}
-  build_upload:
-    name: Upload to App Store Connect
-    runs-on: macos-26
-    needs: validate_codebase
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: ["iOS", "macOS", "tvOS"]
+      version: ${{ steps.release_info.outputs.version }}
+      build: ${{ steps.release_info.outputs.build }}
     steps:
-      - uses: partout-io/action-prepare-xcode-build@master
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
-          certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
-      - name: Download local Partout XCFramework
-        uses: actions/download-artifact@v8
-        with:
-          name: partout-native
-          path: ${{ runner.temp }}/partout-native
-      - name: Install local Partout XCFramework
+      - uses: actions/checkout@v6
+      - name: Read and validate app versions
+        id: release_info
         run: |
-          ditto -x -k \
-            "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
-            "$GITHUB_WORKSPACE/app-apple"
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Archive app
-        working-directory: ${{ env.APPLE_ROOT }}
-        run: |
-          ci/xcode-archive.sh ${{ matrix.platform }}
-      - name: Export archive
-        working-directory: ${{ env.APPLE_ROOT }}
-        run: |
-          ci/xcode-export.sh ${{ matrix.platform }}
-      - name: Upload archive
-        id: upload_app
-        timeout-minutes: 30
-        working-directory: ${{ env.APPLE_ROOT }}
-        env:
-          PILOT_BETA_APP_FEEDBACK: ${{ secrets.PILOT_BETA_APP_FEEDBACK }}
-          PILOT_BETA_APP_REVIEW_INFO: ${{ secrets.PILOT_BETA_APP_REVIEW_INFO }}
-          PILOT_GROUPS: ${{ vars.PILOT_GROUPS }}
-        run: |
-          bundle exec fastlane --env ${{ matrix.platform }} beta
+          apple_version=$(app-apple/ci/version-number.sh)
+          apple_build=$(app-apple/ci/build-number.sh)
+          android_version=$(sed -nE \
+            's/^[[:space:]]*versionName = "([^"]+)"[[:space:]]*$/\1/p' \
+            app-android/app/build.gradle.kts)
+          android_build=$(sed -nE \
+            's/^[[:space:]]*versionCode = ([0-9]+)[[:space:]]*$/\1/p' \
+            app-android/app/build.gradle.kts)
+
+          test -n "$android_version"
+          test -n "$android_build"
+          test "$apple_version" = "$android_version"
+          test "$apple_build" = "$android_build"
+
+          echo "version=$apple_version" >> "$GITHUB_OUTPUT"
+          echo "build=$apple_build" >> "$GITHUB_OUTPUT"
+
+  package_apple:
+    name: Package Apple apps
+    needs: release_info
+    uses: ./.github/workflows/package_apple.yml
+    secrets: inherit
+
+  package_android:
+    name: Package Android app
+    needs: release_info
+    uses: ./.github/workflows/package_android.yml
+    secrets: inherit
+
   distribute_public_beta:
     name: Distribute Public Beta
     runs-on: ubuntu-latest
-    needs: [validate_codebase, build_upload]
+    needs: [release_info, package_apple]
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        platform: ["iOS", "macOS", "tvOS"]
+        platform: [iOS, macOS, tvOS]
     environment:
       name: public_beta
+    env:
+      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
     steps:
       - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
@@ -129,18 +80,21 @@ jobs:
       - name: Publish on TestFlight
         working-directory: ${{ env.APPLE_ROOT }}
         env:
-          PILOT_APP_VERSION: ${{ needs.validate_codebase.outputs.version }}
-          PILOT_BUILD_NUMBER: ${{ needs.validate_codebase.outputs.build }}
+          PILOT_APP_VERSION: ${{ needs.release_info.outputs.version }}
+          PILOT_BUILD_NUMBER: ${{ needs.release_info.outputs.build }}
           PILOT_GROUPS: ${{ vars.PILOT_GROUPS }}
           PILOT_NOTIFY_EXTERNAL_TESTERS: ${{ vars.PILOT_NOTIFY_EXTERNAL_TESTERS }}
-        run: |
-          bundle exec fastlane --env ${{ matrix.platform }} public_beta
+        run: bundle exec fastlane --env ${{ matrix.platform }} public_beta
+
   create_app_versions:
     name: Create App Store versions
     runs-on: ubuntu-latest
-    needs: [validate_codebase, build_upload]
+    needs: [release_info, package_apple]
+    environment:
+      name: app_store
     env:
-      DELIVER_APP_VERSION: ${{ needs.validate_codebase.outputs.version }}
+      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      DELIVER_APP_VERSION: ${{ needs.release_info.outputs.version }}
     steps:
       - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
@@ -155,20 +109,22 @@ jobs:
             bundle exec fastlane --env "$platform" asc_version || status=1
           done
           exit "$status"
+
   submit_for_app_review:
     name: Submit to App Review
     runs-on: ubuntu-latest
-    needs: [validate_codebase, build_upload, create_app_versions]
+    needs: [release_info, package_apple, create_app_versions]
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        platform: ["iOS", "macOS", "tvOS"]
+        platform: [iOS, macOS, tvOS]
     environment:
       name: app_review
     env:
-      DELIVER_APP_VERSION: ${{ needs.validate_codebase.outputs.version }}
-      DELIVER_BUILD_NUMBER: ${{ needs.validate_codebase.outputs.build }}
+      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      DELIVER_APP_VERSION: ${{ needs.release_info.outputs.version }}
+      DELIVER_BUILD_NUMBER: ${{ needs.release_info.outputs.build }}
       DELIVER_FORCE: true
     steps:
       - uses: actions/checkout@v6
@@ -177,83 +133,37 @@ jobs:
           bundler-cache: true
       - name: Submit for App Review
         working-directory: ${{ env.APPLE_ROOT }}
-        run: |
-          bundle exec fastlane --env ${{ matrix.platform }} asc_review
-  distribute_dmg:
-    name: Distribute Mac .dmg
-    runs-on: macos-26
-    needs: [validate_codebase]
-    timeout-minutes: 30
-    strategy:
-      fail-fast: true
-      matrix:
-        arch: ["arm64", "x86_64"]
-    steps:
-      - uses: actions/checkout@v6
-      - name: Import GPG key
-        env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: |
-          ci/gpg-import.sh "$GPG_KEY"
-      - uses: partout-io/action-prepare-xcode-build@master
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
-          certificates-url: ${{ vars.CERTIFICATES_URL }}
-          certificates-passphrase: ${{ secrets.CERTIFICATES_PASSPHRASE }}
-      - name: Download local Partout XCFramework
-        uses: actions/download-artifact@v8
-        with:
-          name: partout-native
-          path: ${{ runner.temp }}/partout-native
-      - name: Install local Partout XCFramework
-        run: |
-          ditto -x -k \
-            "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
-            "$GITHUB_WORKSPACE/app-apple"
-      - name: Notarize .dmg app
-        working-directory: ${{ env.APPLE_ROOT }}
-        env:
-          GPG_FINGERPRINT: ${{ vars.GPG_FINGERPRINT }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-        run: |
-          ci/xcode-archive.sh macOS 1 ${{ matrix.arch }}
-          ci/xcode-export.sh macOS 1
-          ci/dmg-generate.sh ${{ matrix.arch }}
-          ci/dmg-notarize.sh ${{ matrix.arch }} "$APPLE_ID" "$APPLE_ID_PASSWORD"
-          ci/dmg-sign.sh ${{ matrix.arch }} "$GPG_FINGERPRINT" "$GPG_PASSPHRASE"
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: mac-dmg-${{ matrix.arch }}
-          path: |
-            ${{ env.APPLE_ROOT }}/Passepartout.*.dmg
-            ${{ env.APPLE_ROOT }}/Passepartout.*.dmg.asc
+        run: bundle exec fastlane --env ${{ matrix.platform }} asc_review
+
   publish_release:
     name: Publish Release
     runs-on: ubuntu-latest
-    needs: [validate_codebase, build_upload, submit_for_app_review, distribute_dmg]
+    needs:
+      - release_info
+      - package_apple
+      - package_android
+      - distribute_public_beta
+      - create_app_versions
+      - submit_for_app_review
     environment:
       name: release
     env:
-      APP_VERSION: ${{ needs.validate_codebase.outputs.version }}
+      APP_VERSION: ${{ needs.release_info.outputs.version }}
       RELEASE_NOTES: app-apple/CHANGELOG.txt
     steps:
       - uses: actions/checkout@v6
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - name: Download Apple DMGs
+        uses: actions/download-artifact@v8
         with:
-          path: artifacts
+          pattern: apple-dmg-*
+          path: artifacts/apple
           merge-multiple: true
       - name: Print workspace structure
-        run: |
-          ls -R
+        run: ls -R artifacts
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
@@ -270,7 +180,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v${APP_VERSION}" artifacts/*.dmg* \
+          gh release create "v${APP_VERSION}" artifacts/apple/*.dmg* \
             --verify-tag \
             --title "$APP_VERSION" \
             --notes-file "$RELEASE_NOTES"
