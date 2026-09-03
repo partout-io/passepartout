@@ -12,8 +12,8 @@ Usage: ci/package.sh <target> <output-directory>
 Targets:
   play    Build the release Android App Bundle for Google Play
 
-The script builds but does not upload the bundle. Release signing must be
-configured in Gradle before the resulting bundle can be published.
+The script builds but does not upload the bundle. It fails if release signing
+is not configured or the resulting bundle has an invalid signature.
 EOF
 }
 
@@ -51,12 +51,11 @@ case $target in
 
         bundle="app/build/outputs/bundle/release/app-release.aab"
         [[ -f $bundle ]] || fail "Expected package was not produced: $bundle"
-        cp -f "$bundle" "$output_dir/Passepartout.aab"
+        command -v jarsigner >/dev/null || fail "jarsigner is required"
+        jarsigner -verify "$bundle" >/dev/null 2>&1 || \
+            fail "Android App Bundle is unsigned or has an invalid signature"
 
-        if command -v jarsigner >/dev/null && \
-            ! jarsigner -verify "$bundle" >/dev/null 2>&1; then
-            echo "warning: Passepartout.aab is unsigned" >&2
-        fi
+        cp -f "$bundle" "$output_dir/Passepartout.aab"
         ;;
     *)
         usage >&2
