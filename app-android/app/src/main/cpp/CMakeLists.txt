@@ -10,7 +10,7 @@ target_compile_options(passepartout_wrapper PRIVATE -W -Wall -Werror -pedantic)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../cmake/prebuilts.cmake")
 
-set(PP_BUILD_OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+set(PP_BUILD_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/bin")
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 set(PP_BUILD_USE_OPENSSL ON)
@@ -20,18 +20,8 @@ if(NOT PP_BUILD_VENDOR_PREBUILT_URL)
 endif()
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../partout" partout)
 
-add_dependencies(passepartout_wrapper partout)
 target_link_libraries(passepartout_wrapper PRIVATE
     Partout::Partout
     android
     log
-)
-add_custom_command(TARGET passepartout_wrapper POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "${PP_BUILD_OUTPUT}/partout/lib/libpartout.so"
-        "${PP_BUILD_OUTPUT}/openssl/lib/libcrypto.so"
-        "${PP_BUILD_OUTPUT}/openssl/lib/libssl.so"
-        "${PP_BUILD_OUTPUT}/wg-go/lib/libwg-go.so"
-        "$<TARGET_FILE_DIR:passepartout_wrapper>"
-    VERBATIM
 )
