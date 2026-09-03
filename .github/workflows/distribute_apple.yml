@@ -16,8 +16,11 @@ on:
         required: true
 
 env:
-  APPLE_ROOT: app-apple
   APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+
+defaults:
+  run:
+    working-directory: app-apple
 
 jobs:
   distribute_public_beta:
@@ -36,7 +39,6 @@ jobs:
         with:
           bundler-cache: true
       - name: Publish on TestFlight
-        working-directory: ${{ env.APPLE_ROOT }}
         env:
           PILOT_APP_VERSION: ${{ inputs.version }}
           PILOT_BUILD_NUMBER: ${{ inputs.build }}
@@ -58,7 +60,6 @@ jobs:
           bundler-cache: true
       - name: Create App Store versions
         continue-on-error: true
-        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           status=0
           for platform in iOS macOS tvOS; do
@@ -87,5 +88,4 @@ jobs:
         with:
           bundler-cache: true
       - name: Submit for App Review
-        working-directory: ${{ env.APPLE_ROOT }}
         run: bundle exec fastlane --env ${{ matrix.platform }} asc_review

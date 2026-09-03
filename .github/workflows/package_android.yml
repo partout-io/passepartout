@@ -12,6 +12,10 @@ on:
       ANDROID_KEY_PASSWORD:
         required: true
 
+defaults:
+  run:
+    working-directory: app-android
+
 jobs:
   build_upload:
     name: Build and upload Android artifacts
@@ -48,7 +52,7 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: app-android/ci/package.sh play "$RUNNER_TEMP/release"
+        run: ci/package.sh play "$RUNNER_TEMP/release"
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:

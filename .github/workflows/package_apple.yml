@@ -22,6 +22,10 @@ on:
       PILOT_BETA_APP_REVIEW_INFO:
         required: true
 
+defaults:
+  run:
+    working-directory: app-apple
+
 jobs:
   build_partout_xcframework:
     name: Build Partout XCFramework
@@ -35,17 +39,17 @@ jobs:
       - uses: mlugg/setup-zig@v2
       - name: Build Partout XCFramework
         run: |
-          xcframework="$GITHUB_WORKSPACE/app-apple/PartoutNative.xcframework"
+          xcframework="$PWD/PartoutNative.xcframework"
           archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
           artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
           prebuilts_version=$(tr -d '\r\n' < "$GITHUB_WORKSPACE/prebuilts-version.txt")
 
-          partout/scripts/build-xcframework.sh \
+          "$GITHUB_WORKSPACE/partout/scripts/build-xcframework.sh" \
             "$prebuilts_version" "$xcframework" "$artifacts_dir" --full
           test "$(find "$xcframework" -name '*.dSYM' -type d | wc -l | tr -d ' ')" -eq 5
           ditto -c -k --sequesterRsrc --keepParent "$xcframework" "$archive"
           grep -F 'path = PartoutNative.xcframework;' \
-            app-apple/Passepartout.xcodeproj/project.pbxproj
+            Passepartout.xcodeproj/project.pbxproj
       - name: Upload Partout XCFramework
         uses: actions/upload-artifact@v7
         with:
@@ -87,12 +91,12 @@ jobs:
         run: |
           ditto -x -k \
             "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
-            "$GITHUB_WORKSPACE/app-apple"
+            "$PWD"
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
       - name: Package app
-        run: app-apple/ci/package.sh "${{ matrix.target }}" "$RUNNER_TEMP/release"
+        run: ci/package.sh "${{ matrix.target }}" "$RUNNER_TEMP/release"
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -101,7 +105,6 @@ jobs:
           if-no-files-found: error
       - name: Upload to TestFlight
         timeout-minutes: 30
-        working-directory: app-apple
         env:
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
           TESTFLIGHT_PREFACE: ${{ vars.TESTFLIGHT_PREFACE }}
@@ -134,18 +137,19 @@ jobs:
         run: |
           ditto -x -k \
             "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
-            "$GITHUB_WORKSPACE/app-apple"
+            "$PWD"
       - name: Import GPG key
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: ci/gpg-import.sh "$GPG_KEY"
+        run: |
+          "$GITHUB_WORKSPACE/ci/gpg-import.sh" "$GPG_KEY"
       - name: Package DMG
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
           GPG_FINGERPRINT: ${{ vars.GPG_FINGERPRINT }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: app-apple/ci/package.sh dmg "$RUNNER_TEMP/release" "${{ matrix.architecture }}"
+        run: ci/package.sh dmg "$RUNNER_TEMP/release" "${{ matrix.architecture }}"
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
