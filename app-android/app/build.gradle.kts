@@ -96,7 +96,6 @@ android {
 
 play {
     defaultToAppBundles.set(true)
-    track.set("internal")
 
     // CI uses GPP's ANDROID_PUBLISHER_CREDENTIALS environment variable.
     if (!providers.environmentVariable("ANDROID_PUBLISHER_CREDENTIALS").isPresent &&
