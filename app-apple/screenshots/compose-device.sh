@@ -6,7 +6,7 @@ if [[ -z "$1" ]]; then
 fi
 device=$1
 cmd_compose="$cwd/compose.sh"
-fastlane_screenshots_root="$cwd/../../fastlane/screenshots"
+fastlane_screenshots_root="$cwd/../fastlane/screenshots"
 
 case $device in
 

@@ -1,8 +1,9 @@
 $cwd = Get-Location
-$root_dir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$source_dir = Join-Path $root_dir "app-cross"
-$build_dir = Join-Path $root_dir ".cmake"
-$bin_dir = "bin"
+$app_cross_dir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$root_dir = (Resolve-Path (Join-Path $app_cross_dir "..")).Path
+$source_dir = $app_cross_dir
+$build_dir = Join-Path $app_cross_dir ".cmake"
+$bin_dir = Join-Path $app_cross_dir "bin"
 $configuration = "Debug"
 $generator = "Ninja Multi-Config"
 $gen_build = $false
@@ -62,12 +63,12 @@ $bin_arch = switch ($env:PROCESSOR_ARCHITECTURE) {
     default { $env:PROCESSOR_ARCHITECTURE } # fallback for other values
 }
 
-$output_dir = "$root_dir/$bin_dir/windows-$bin_arch"
-$dist_dir = "$root_dir/dist"
+$output_dir = Join-Path $bin_dir "windows-$bin_arch"
+$dist_dir = Join-Path $app_cross_dir "dist"
 $is_multi_config = $generator -match "Multi-Config|Visual Studio|Xcode"
 
 try {
-    Set-Location -Path "$root_dir"
+    Set-Location -Path "$app_cross_dir"
 
     # Create build folder if it doesn't exist
     if (-not (Test-Path -Path "$build_dir")) {
@@ -97,7 +98,7 @@ try {
         $cmake_opts += "-DBUILD_APP=OFF"
     }
     if ($gen_build) {
-        cmake @cmake_opts $source_dir
+        cmake --fresh @cmake_opts $source_dir
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 

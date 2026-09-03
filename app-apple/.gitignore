@@ -5,6 +5,7 @@ screenshots/results/
 build/
 dist/
 tmp/
+l10n/
 default.profraw
 .build
 .swiftpm
@@ -12,3 +13,9 @@ default.profraw
 .sqlite-*
 .dmg*
 PartoutNative.xcframework
+fastlane/README.md
+fastlane/report.xml
+fastlane/**/*.html
+fastlane/**/test_output
+fastlane/**/review_information
+fastlane/**/trade_representative_contact_information

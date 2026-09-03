@@ -11,7 +11,7 @@ on:
       - ".env.*"
       - "**/*.md"
       - "**/*.sh"
-      - "fastlane/**"
+      - "app-apple/fastlane/**"
       - "app-android" # For now
 
 concurrency:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Verify CMake file lists
         run: |
-          scripts/gen-cmake-files.sh
+          app-cross/scripts/gen-cmake-files.sh
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
             exit 1

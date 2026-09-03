@@ -40,7 +40,7 @@ fun AppConstantsGithub.urlForIssue(issue: Int): String {
 }
 
 fun AppConstantsGithub.urlForChangelog(build: String): String {
-    return rawURL.appendingPath("refs/tags/builds/$build/CHANGELOG.txt")
+    return rawURL.appendingPath("refs/tags/builds/$build/app-android/CHANGELOG.txt")
 }
 
 val AppConstantsEmails.issues: String

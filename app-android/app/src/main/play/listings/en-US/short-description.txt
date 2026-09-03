@@ -1,0 +1,1 @@
+For WireGuard and OpenVPN

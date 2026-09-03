@@ -18,7 +18,7 @@ load File.expand_path("Fastfile.hacks", __dir__) if RUBY_PLATFORM.include?("darw
 desc "Push a new beta build to TestFlight"
 lane :beta do
     preface = ENV["TESTFLIGHT_PREFACE"]
-    log = File.read("../CHANGELOG.txt")
+    log = File.read(File.expand_path("../CHANGELOG.txt", __dir__))
     changelog = preface + log
     pilot(
         changelog: changelog,

@@ -1,13 +1,13 @@
 #!/bin/bash
-cwd=`dirname $0`
-source $cwd/env.sh
 set -e
-root_dir="$(cd "$(dirname "$0")"/.. && pwd)"
-build_dir="$root_dir/.cmake"
-bin_dir="bin"
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+app_cross_dir="$(cd "$script_dir/.." && pwd)"
+root_dir="$(cd "$app_cross_dir/.." && pwd)"
+build_dir="$app_cross_dir/.cmake"
+bin_dir="$app_cross_dir/bin"
 prebuilts_version=$(tr -d '\r\n' < "$root_dir/prebuilts-version.txt")
 
-pushd "$root_dir"
+pushd "$app_cross_dir"
 
 positional_args=()
 cmake_opts=()
@@ -61,8 +61,8 @@ if [[ -z $build_type ]]; then
 fi
 platform_name=$(uname -s | tr '[:upper:]' '[:lower:]')
 arch_name=$(uname -m | tr '[:upper:]' '[:lower:]')
-output_dir="$root_dir/$bin_dir/$platform_name-$arch_name"
-dist_dir="$root_dir/dist"
+output_dir="$bin_dir/$platform_name-$arch_name"
+dist_dir="$app_cross_dir/dist"
 
 cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 cmake_opts+=("-DOUTPUT_DIR=$output_dir")
@@ -83,9 +83,9 @@ if [[ ! -d "$bin_dir" ]]; then
     mkdir "$bin_dir"
 fi
 if [[ $gen_build == 1 ]]; then
-    scripts/gen-cmake-files.sh
+    "$script_dir/gen-cmake-files.sh"
     pushd "$build_dir"
-    cmake -G Ninja "${cmake_opts[@]}" "$root_dir/app-cross"
+    cmake --fresh -G Ninja "${cmake_opts[@]}" "$app_cross_dir"
 else
     pushd "$build_dir"
 fi

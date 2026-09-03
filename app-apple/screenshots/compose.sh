@@ -7,7 +7,7 @@ fi
 cmd_chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 cmd_magick="magick"
 
-# e.g.: <self> main iphone 01 1242 2688 "fastlane/screenshots/iOS"
+# e.g.: <self> main iphone 01 1242 2688 "app-apple/fastlane/screenshots/iOS"
 
 template=$1
 device=$2

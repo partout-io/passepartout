@@ -57,7 +57,7 @@ jobs:
           echo "build=$BUILD" >> $GITHUB_OUTPUT
       - name: Validate translations
         run: |
-          scripts/clean-translations.sh
+          app-apple/scripts/clean-translations.sh
       - name: Run Apple tests
         run: |
           ci/run-apple-tests.sh
@@ -110,6 +110,7 @@ jobs:
       - name: Upload archive
         id: upload_app
         timeout-minutes: 30
+        working-directory: ${{ env.APPLE_ROOT }}
         env:
           PILOT_BETA_APP_FEEDBACK: ${{ secrets.PILOT_BETA_APP_FEEDBACK }}
           PILOT_BETA_APP_REVIEW_INFO: ${{ secrets.PILOT_BETA_APP_REVIEW_INFO }}
@@ -133,6 +134,7 @@ jobs:
         with:
           bundler-cache: true
       - name: Publish on TestFlight
+        working-directory: ${{ env.APPLE_ROOT }}
         env:
           PILOT_APP_VERSION: ${{ needs.validate_codebase.outputs.version }}
           PILOT_BUILD_NUMBER: ${{ needs.validate_codebase.outputs.build }}
@@ -153,6 +155,7 @@ jobs:
           bundler-cache: true
       - name: Create App Store versions
         continue-on-error: true
+        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           status=0
           for platform in iOS macOS tvOS; do
@@ -180,6 +183,7 @@ jobs:
         with:
           bundler-cache: true
       - name: Submit for App Review
+        working-directory: ${{ env.APPLE_ROOT }}
         run: |
           bundle exec fastlane --env ${{ matrix.platform }} asc_review
   distribute_dmg:
@@ -242,7 +246,7 @@ jobs:
       name: release
     env:
       APP_VERSION: ${{ needs.validate_codebase.outputs.version }}
-      RELEASE_NOTES: CHANGELOG.txt
+      RELEASE_NOTES: app-apple/CHANGELOG.txt
     steps:
       - uses: actions/checkout@v6
         with:

@@ -1,6 +1,5 @@
 #!/bin/bash
 cwd=`dirname $0`
-source $cwd/env.sh
 cd $cwd/..
 
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -53,6 +52,32 @@ set -e
 cwd=`dirname $0`
 apple_xcconfig_path="app-apple/Passepartout/Config.xcconfig"
 android_gradle_path="app-android/app/build.gradle.kts"
+apple_changelog_path="app-apple/CHANGELOG.txt"
+android_changelog_path="app-android/CHANGELOG.txt"
+metadata_root_apple="app-apple/fastlane/metadata"
+metadata_root_android="app-android/app/src/main/play"
+
+edit_changelog() {
+    local changelog_path="$1"
+    local log_path="$changelog_path.tmp"
+    local editor_exit
+    echo "$log" >"$log_path"
+
+    set +e
+    $EDITOR "$log_path"
+    editor_exit=$?
+    set -e
+
+    echo "Editor exited with code $editor_exit"
+    if [[ $editor_exit != 0 ]]; then
+        echo "CHANGELOG editor cancelled"
+        rm "$log_path"
+        exit 1
+    fi
+
+    echo "Copy CHANGELOG..."
+    mv "$log_path" "$changelog_path"
+}
 
 if [[ -z "$opt_build" ]]; then
     apple_build=`app-apple/ci/xcconfig-get.sh "$apple_xcconfig_path" CURRENT_PROJECT_VERSION`
@@ -84,23 +109,17 @@ if [[ $opt_no_log != "1" ]]; then
     fi
     git_range="$opt_since..HEAD"
     log=$(git log $git_range --pretty="* %s" --date=short)
-    log_path="$changelog.tmp"
-    echo "$log" >"$log_path"
+    edit_changelog "$apple_changelog_path"
 
-    set +e
-    $EDITOR "$log_path"
-    editor_exit=$?
-    set -e
-
-    echo "Editor exited with code $editor_exit"
-    if [[ $editor_exit != 0 ]]; then
-        echo "CHANGELOG editor cancelled"
-        rm "$log_path"
-        exit 1
-    fi
-
-    echo "Copy CHANGELOG..."
-    mv "$log_path" "$changelog"
+    read -r -p "Reuse Apple CHANGELOG for Android? y/N " reuse_apple_changelog
+    case "$reuse_apple_changelog" in
+        y|Y)
+            cp "$apple_changelog_path" "$android_changelog_path"
+            ;;
+        *)
+            edit_changelog "$android_changelog_path"
+            ;;
+    esac
 fi
 
 # Apple
@@ -137,8 +156,10 @@ fi
 
 echo "Commit changes to repository..."
 git add \
-    "$metadata_root" \
-    "$changelog"
+    "$metadata_root_apple" \
+    "$metadata_root_android" \
+    "$apple_changelog_path" \
+    "$android_changelog_path"
 
 git commit -m "Bump version"
 

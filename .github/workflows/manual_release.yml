@@ -21,7 +21,7 @@ jobs:
     environment:
       name: app_store
     env:
-      RELEASE_NOTES: CHANGELOG.txt
+      RELEASE_NOTES: app-apple/CHANGELOG.txt
     steps:
       - uses: actions/checkout@v6
         with:

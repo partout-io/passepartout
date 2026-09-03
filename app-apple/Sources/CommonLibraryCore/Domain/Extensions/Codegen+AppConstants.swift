@@ -48,7 +48,7 @@ extension OpenAPIAppConstantsGithub {
     }
 
     public func urlForChangelog(ofBuild build: String) -> URL {
-        rawURL.appending(path: "refs/tags/builds/\(build)/CHANGELOG.txt")
+        rawURL.appending(path: "refs/tags/builds/\(build)/app-apple/CHANGELOG.txt")
     }
 }
 

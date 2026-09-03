@@ -2,7 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.play.publisher)
 }
+
+val localPlayPublisherCredentials = rootProject.file("play-publisher-credentials.json")
 
 android {
     namespace = "com.algoritmico.passepartout"
@@ -56,6 +59,18 @@ android {
         }
     }
     buildToolsVersion = "36.0.0"
+}
+
+play {
+    defaultToAppBundles.set(true)
+    track.set("internal")
+
+    // CI uses GPP's ANDROID_PUBLISHER_CREDENTIALS environment variable.
+    if (!providers.environmentVariable("ANDROID_PUBLISHER_CREDENTIALS").isPresent &&
+        localPlayPublisherCredentials.isFile
+    ) {
+        serviceAccountCredentials.set(localPlayPublisherCredentials)
+    }
 }
 
 dependencies {

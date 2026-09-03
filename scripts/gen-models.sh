@@ -3,8 +3,8 @@ set -e
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 root_dir="$(cd "$script_dir/.." && pwd)"
+codegen="$root_dir/node_modules/.bin/openapi-generator-cli"
 cd "$root_dir"
-source "$script_dir/env.sh"
 
 usage() {
     echo "Usage: $0 [all|swift|kotlin]"
