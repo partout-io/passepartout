@@ -13,10 +13,12 @@ import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.vpn.VpnServiceStore
 
-class PackageReplacedReceiver: BroadcastReceiver() {
+class VpnRestorationReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) {
-            return
+        val restartReason = when (intent.action) {
+            Intent.ACTION_BOOT_COMPLETED -> "device boot"
+            Intent.ACTION_MY_PACKAGE_REPLACED -> "app update"
+            else -> return
         }
         val constants = defaultAndroidConstants
         val store = VpnServiceStore(
@@ -27,14 +29,14 @@ class PackageReplacedReceiver: BroadcastReceiver() {
         if (!store.wasTunnelRunning) {
             return
         }
-        AppLog.i(constants.tags.service, "Restart VPN after app update")
+        AppLog.i(constants.tags.service, "Restart VPN after $restartReason")
         runCatchingNonFatal {
             ContextCompat.startForegroundService(
                 context,
                 Intent(context, PassepartoutVpnService::class.java)
             )
         }.onFailure {
-            AppLog.e(constants.tags.service, "Unable to restart VPN after app update", it)
+            AppLog.e(constants.tags.service, "Unable to restart VPN after $restartReason", it)
         }
     }
 }
