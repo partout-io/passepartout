@@ -141,8 +141,6 @@ class AppContext(
     }
 
     fun onApplicationActive() {
-        // FIXME: ###, AppContext, LifecycleManager.onApplicationActive()
-//        library.appOnForeground()
         if (applicationActiveJob?.isActive == true) {
             return
         }
@@ -166,6 +164,11 @@ class AppContext(
             }
         }
     }
+
+//    fun onSaveProfile() {
+//        // Observe ProfileManager events
+//        // Reconnect on relevant changes (old/new profile diff)
+//    }
 
     override fun close() {
         configObservable.close()

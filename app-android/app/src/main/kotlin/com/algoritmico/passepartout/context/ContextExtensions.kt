@@ -9,6 +9,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -41,8 +42,7 @@ fun Context.appBundle(): AppBundle {
     // These come from "build.gradle.kts"
     val appInfo = packageInfo()
     val versionNumber = appInfo.versionName.orEmpty()
-    // FIXME: Requires API 28
-    val buildNumber = appInfo.longVersionCode
+    val buildNumber = PackageInfoCompat.getLongVersionCode(appInfo)
         .coerceAtMost(Int.MAX_VALUE.toLong())
         .toInt()
 
