@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include "partout.h"
 
-static void stdio_logger(int level, const char *message) {
+static void stdio_logger(void *ctx, int level, const char *message) {
+    (void)ctx;
     printf("%s\n", message);
 }
 
