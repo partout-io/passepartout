@@ -15,7 +15,6 @@ OpenVPN support focuses on common options; compression is not supported because 
 PRIVACY YOU CAN TRUST
 
 Passepartout is built with transparency and privacy in mind:
-- See exactly which servers you’re connecting to.
 - No ads, trackers, or unnecessary background activities—just the VPN connection you need.
 
 OPEN SOURCE AND COMMUNITY-DRIVEN
