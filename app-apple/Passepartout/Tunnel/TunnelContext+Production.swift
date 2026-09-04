@@ -295,6 +295,7 @@ private struct TaggedProfileCoder: ProfileCoder {
 }
 
 private nonisolated func logger(
+    _ ctx: UnsafeMutableRawPointer?,
     _ level: Int32,
     _ message: UnsafePointer<CChar>?
 ) {
