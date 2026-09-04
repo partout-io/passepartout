@@ -46,18 +46,16 @@ data class AndroidConstants(
     )
 
     data class Tags(
-        val app: String = "Passepartout",
-        val appPartout: String = "PartoutApp",
+        val app: String = "Passepartout", // Also for generic error handlers
+        val partoutApp: String = "PartoutApp",
         val service: String = "PassepartoutVpnService",
-        val servicePartout: String = "PartoutService",
-        val partoutJni: String = "PartoutJNI",
-        val outOfBand: String = "PassepartoutOOB"
+        val partoutService: String = "PartoutService"
     ) {
         val appTags: Collection<String>
-            get() = listOf(app, appPartout)
+            get() = listOf(app, partoutApp)
 
         val serviceTags: Collection<String>
-            get() = listOf(service, servicePartout, partoutJni)
+            get() = listOf(service, partoutService)
     }
 
     data class ProfileImport(

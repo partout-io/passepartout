@@ -23,7 +23,7 @@ import io.partout.models.TunnelSnapshot
 class PassepartoutVpnService: VpnService() {
     private val androidConstants = defaultAndroidConstants
     private val logTag = androidConstants.tags.service
-    private val jniLogTag = androidConstants.tags.partoutJni
+    private val jniLogTag = androidConstants.tags.partoutService
     private val logsSnapshots = androidConstants.tunnel.logsSnapshots
 
     private val store by lazy {
@@ -90,7 +90,10 @@ class PassepartoutVpnService: VpnService() {
 
             // XXX: Hardcode CloudFlare for now
             val dnsFallsBack = preferences?.dnsFallsBack ?: true
-            val dnsFallbackServers = if (dnsFallsBack) listOf("1.1.1.1", "1.0.0.1") else emptyList()
+            val dnsFallbackServers = if (dnsFallsBack)
+                listOf("1.1.1.1", "1.0.0.1")
+            else
+                emptyList()
 
             val controllerOptions = TunnelControllerOptions(
                 dnsFallbackServers,

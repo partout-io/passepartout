@@ -67,7 +67,7 @@ class AppContext(
         )
         val preferences = userPreferencesObservable.currentPreferences
         AppLog.i(logTag, "Preferences: $preferences")
-        library.partoutInit(androidConstants.tags.appPartout, preferences.logsPrivateData)
+        library.partoutInit(androidConstants.tags.partoutApp, preferences.logsPrivateData)
 
         // Static app configuration
         val bundle = applicationContext.appBundle()
