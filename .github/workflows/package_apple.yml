@@ -1,4 +1,4 @@
-name: Package Apple apps
+name: "Apple: Package apps"
 
 on:
   workflow_call:

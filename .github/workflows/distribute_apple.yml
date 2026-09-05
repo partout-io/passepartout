@@ -1,4 +1,4 @@
-name: Distribute Apple apps
+name: "Apple: Distribute apps"
 
 on:
   workflow_call:

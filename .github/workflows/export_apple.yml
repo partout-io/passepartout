@@ -1,4 +1,4 @@
-name: Try Xcode Export
+name: "Apple: Try Xcode Export"
 
 on:
   push:

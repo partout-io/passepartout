@@ -1,4 +1,4 @@
-name: Package Android app
+name: "Android: Package app"
 
 on:
   workflow_call:
