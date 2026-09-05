@@ -69,13 +69,10 @@ jobs:
         include:
           - name: iOS
             target: appstore-ios
-            artifact: apple-appstore-ios
           - name: macOS
             target: appstore-macos
-            artifact: apple-appstore-macos
           - name: tvOS
             target: appstore-tvos
-            artifact: apple-appstore-tvos
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
         with:
@@ -97,12 +94,6 @@ jobs:
           bundler-cache: true
       - name: Package app
         run: ci/package.sh "${{ matrix.target }}" "$RUNNER_TEMP/release"
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ matrix.artifact }}
-          path: ${{ runner.temp }}/release
-          if-no-files-found: error
       - name: Upload to TestFlight
         timeout-minutes: 30
         env:
@@ -150,9 +141,11 @@ jobs:
           GPG_FINGERPRINT: ${{ vars.GPG_FINGERPRINT }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: ci/package.sh dmg "$RUNNER_TEMP/release" "${{ matrix.architecture }}"
-      - name: Upload artifacts
+      - name: Upload DMG
         uses: actions/upload-artifact@v7
         with:
           name: apple-dmg-${{ matrix.architecture }}
-          path: ${{ runner.temp }}/release
+          path: |
+            ${{ runner.temp }}/release/*.dmg
+            ${{ runner.temp }}/release/*.dmg.asc
           if-no-files-found: error
