@@ -1,1 +1,1 @@
-internal.txt
+* Bump version
