@@ -223,7 +223,7 @@
     <string name="onboarding_migrate_message">Zorg ervoor dat je al je apparaten bijwerkt naar de nieuwste versie om de nieuwe profielen te gebruiken.</string>
     <string name="onboarding_migrate_3_2_3_message">Versie 3.2.3 heeft de manier waarop providers worden opgeslagen gewijzigd.</string>
     <string name="onboarding_migrate_3_5_15_message">Versie 3.5.15 heeft de manier waarop profielen worden opgeslagen gewijzigd.</string>
-    <string name="onboarding_migrate_3_9_5_providers_message">Vanwege het beperkte gebruik en de doorlopende onderhoudsvereisten wordt de ondersteuning voor openbare providerintegraties in een komende release stopgezet. Providermodules worden uit je bestaande profielen verwijderd, dus zorg ervoor dat je je inloggegevens vooraf ergens anders opslaat.</string>
+    <string name="onboarding_migrate_3_9_5_providers_message">Vanwege het beperkte gebruik en de doorlopende onderhoudsvereisten wordt de ondersteuning voor openbare providerintegraties in een komende release stopgezet. Sla je inloggegevens indien nodig ergens anders op en verwijder vervolgens de providermodules uit je profielen om verdere waarschuwingen te voorkomen.</string>
     <string name="entities_tunnel_status_inactive">Inactief</string>
     <string name="entities_tunnel_status_activating">Activeren</string>
     <string name="entities_tunnel_status_active">Actief</string>

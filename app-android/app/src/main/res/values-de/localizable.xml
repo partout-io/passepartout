@@ -223,7 +223,7 @@
     <string name="onboarding_migrate_message">Stellen Sie sicher, dass Sie alle Ihre Geräte auf die neueste Version aktualisieren, um die neuen Profile zu verwenden.</string>
     <string name="onboarding_migrate_3_2_3_message">Version 3.2.3 hat die Art und Weise geändert, wie Anbieter gespeichert werden.</string>
     <string name="onboarding_migrate_3_5_15_message">Version 3.5.15 hat die Art und Weise geändert, wie Profile gespeichert werden.</string>
-    <string name="onboarding_migrate_3_9_5_providers_message">Aufgrund der geringen Nutzung und des fortlaufenden Wartungsaufwands wird die Unterstützung für öffentliche Provider-Integrationen in einer kommenden Version eingestellt. Provider-Module werden aus deinen bestehenden Profilen entfernt, daher solltest du deine Zugangsdaten vorher anderweitig sichern.</string>
+    <string name="onboarding_migrate_3_9_5_providers_message">Aufgrund der geringen Nutzung und des fortlaufenden Wartungsaufwands wird die Unterstützung für öffentliche Provider-Integrationen in einer kommenden Version eingestellt. Speichere deine Zugangsdaten bei Bedarf an anderer Stelle und lösche dann die Provider-Module aus deinen Profilen, damit keine weiteren Warnungen angezeigt werden.</string>
     <string name="entities_tunnel_status_inactive">Inaktiv</string>
     <string name="entities_tunnel_status_activating">Aktivierung</string>
     <string name="entities_tunnel_status_active">Aktiv</string>

@@ -223,7 +223,7 @@
     <string name="onboarding_migrate_message">Upewnij się, że wszystkie Twoje urządzenia są zaktualizowane do najnowszej wersji, aby korzystać z nowych profili.</string>
     <string name="onboarding_migrate_3_2_3_message">Wersja 3.2.3 zmieniła sposób przechowywania dostawców.</string>
     <string name="onboarding_migrate_3_5_15_message">Wersja 3.5.15 zmieniła sposób przechowywania profili.</string>
-    <string name="onboarding_migrate_3_9_5_providers_message">Ze względu na ograniczone użycie i bieżące wymagania konserwacyjne wsparcie dla publicznych integracji dostawców zostanie wycofane w nadchodzącej wersji. Moduły dostawców zostaną usunięte z istniejących profili, dlatego upewnij się, że wcześniej zapiszesz swoje dane uwierzytelniające w innym miejscu.</string>
+    <string name="onboarding_migrate_3_9_5_providers_message">Ze względu na ograniczone użycie i bieżące wymagania konserwacyjne wsparcie dla publicznych integracji dostawców zostanie wycofane w nadchodzącej wersji. W razie potrzeby zapisz dane uwierzytelniające w innym miejscu, a następnie usuń moduły dostawców ze swoich profili, aby zapobiec kolejnym ostrzeżeniom.</string>
     <string name="entities_tunnel_status_inactive">Nieaktywne</string>
     <string name="entities_tunnel_status_activating">Aktywowanie</string>
     <string name="entities_tunnel_status_active">Aktywne</string>

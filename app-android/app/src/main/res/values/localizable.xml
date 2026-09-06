@@ -223,7 +223,7 @@
     <string name="onboarding_migrate_message">Make sure to upgrade all your devices to the latest version to use the new profiles.</string>
     <string name="onboarding_migrate_3_2_3_message">Version 3.2.3 changed the way providers are stored.</string>
     <string name="onboarding_migrate_3_5_15_message">Version 3.5.15 changed the way profiles are stored.</string>
-    <string name="onboarding_migrate_3_9_5_providers_message">Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.</string>
+    <string name="onboarding_migrate_3_9_5_providers_message">Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Make sure to save your credentials elsewhere if necessary, then delete the provider modules from your profiles to suppress further warnings.</string>
     <string name="entities_tunnel_status_inactive">Inactive</string>
     <string name="entities_tunnel_status_activating">Activating</string>
     <string name="entities_tunnel_status_active">Active</string>

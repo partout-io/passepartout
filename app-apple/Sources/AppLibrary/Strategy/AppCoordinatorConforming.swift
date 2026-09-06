@@ -17,5 +17,7 @@ public protocol AppCoordinatorConforming {
 
     func onPurchaseRequired(for profile: Profile, features: Set<ABI.AppFeature>, continuation: (() -> Void)?)
 
+    func onInfo(title: String, message: String)
+
     func onError(_ error: Error, title: String)
 }

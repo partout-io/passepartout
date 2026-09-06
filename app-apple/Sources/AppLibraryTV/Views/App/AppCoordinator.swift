@@ -177,6 +177,10 @@ extension AppCoordinator {
         }
     }
 
+    public func onInfo(title: String, message: String) {
+        errorHandler.handle(title: title, message: message)
+    }
+
     public func onError(_ error: Error, title: String) {
         errorHandler.handle(
             error,

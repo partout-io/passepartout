@@ -293,7 +293,7 @@
 "modules.wireguard.private_key.generate" = "Genera nuova chiave";
 "onboarding.migrate_3_2_3.message" = "La versione 3.2.3 ha modificato il modo in cui vengono salvati i provider.";
 "onboarding.migrate_3_5_15.message" = "La versione 3.5.15 ha modificato il modo in cui vengono salvati i profili.";
-"onboarding.migrate_3_9_5_providers.message" = "A causa dell’utilizzo limitato e dei continui requisiti di manutenzione, il supporto per le integrazioni pubbliche dei provider verrà dismesso in una prossima versione. I moduli provider verranno rimossi dai tuoi profili esistenti, quindi assicurati di salvare altrove le tue credenziali in anticipo.";
+"onboarding.migrate_3_9_5_providers.message" = "A causa dell’utilizzo limitato e dei continui requisiti di manutenzione, il supporto per le integrazioni pubbliche dei provider verrà dismesso in una prossima versione. Assicurati di salvare altrove le tue credenziali, se necessario, quindi elimina i moduli provider dai tuoi profili per evitare ulteriori avvisi.";
 "onboarding.migrate.message" = "Assicurati di aggiornare tutti i tuoi dispositivi all'ultima versione per utilizzare i nuovi profili.";
 "placeholders.on_demand.ssid" = "Il mio SSID";
 "placeholders.profile.imported_name" = "Profilo importato";
