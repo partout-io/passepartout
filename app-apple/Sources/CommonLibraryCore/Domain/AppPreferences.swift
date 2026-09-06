@@ -60,6 +60,10 @@ extension ABI.AppPreferences: ABI.AppPreferencesProtocol {
 
 extension ABI.AppPreferencesProtocol {
     public func isFlagEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        if configFlags.contains(.enforceZig), flag.isZigFeature {
+            return configFlags.contains(flag)
+        }
+
         var result = configFlags.contains(flag)
         result = result || experimental.enabledConfigFlags.contains(flag)
         result = result && !experimental.ignoredConfigFlags.contains(flag)
@@ -67,10 +71,28 @@ extension ABI.AppPreferencesProtocol {
     }
 
     public func enabledFlags(of flags: Set<ABI.ConfigFlag>? = nil) -> Set<ABI.ConfigFlag> {
-        var result = flags ?? Set(configFlags)
+        let remoteFlags = flags ?? Set(configFlags)
+        var result = remoteFlags
         result.formUnion(experimental.enabledConfigFlags)
         result.subtract(experimental.ignoredConfigFlags)
+
+        if remoteFlags.contains(.enforceZig) {
+            result.subtract(ABI.ConfigFlag.zigFeatures)
+            result.formUnion(remoteFlags.intersection(ABI.ConfigFlag.zigFeatures))
+        }
         return result
+    }
+}
+
+private extension ABI.ConfigFlag {
+    static let zigFeatures: Set<Self> = [
+        .zigRuntime,
+        .zigOpenVPN,
+        .zigWireGuard
+    ]
+
+    var isZigFeature: Bool {
+        Self.zigFeatures.contains(self)
     }
 }
 

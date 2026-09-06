@@ -558,12 +558,14 @@ components:
       type: string
       x-enum-varnames:
       - appNotWorking
+      - enforceZig
       - unknown
       - zigOpenVPN
       - zigRuntime
       - zigWireGuard
       enum:
       - appNotWorking
+      - enforceZig
       - unknown
       - zigOpenVPN
       - zigRuntime
