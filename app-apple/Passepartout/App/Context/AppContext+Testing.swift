@@ -51,7 +51,7 @@ extension AppContext {
         )
         let mainProfileRepository = InMemoryProfileRepository()
         let profileManager: ProfileManager = .forUITesting(
-            withRegistry: registry,
+            withNewModule: registry.newModule,
             processor: profileProcessor,
             repository: mainProfileRepository
         )
