@@ -223,7 +223,7 @@
     <string name="onboarding_migrate_message">Se till att uppdatera alla dina enheter till den senaste versionen för att använda de nya profilerna.</string>
     <string name="onboarding_migrate_3_2_3_message">Version 3.2.3 ändrade hur leverantörer lagras.</string>
     <string name="onboarding_migrate_3_5_15_message">Version 3.5.15 ändrade hur profiler lagras.</string>
-    <string name="onboarding_migrate_3_9_5_providers_message">På grund av begrsad användning och löpande underhållskrav kommer stödet för offentliga leverantörsintegrationer att tas bort i en kommande version. Leverantörsmoduler kommer att tas bort från dina befintliga profiler, så se till att spara dina inloggningsuppgifter på annan plats i förväg.</string>
+    <string name="onboarding_migrate_3_9_5_providers_message">På grund av begrsad användning och löpande underhållskrav kommer stödet för offentliga leverantörsintegrationer att tas bort i en kommande version. Spara dina inloggningsuppgifter på annan plats om det behövs och ta sedan bort leverantörsmodulerna från dina profiler för att undvika fler varningar.</string>
     <string name="entities_tunnel_status_inactive">Inaktiv</string>
     <string name="entities_tunnel_status_activating">Aktiverar</string>
     <string name="entities_tunnel_status_active">Aktiv</string>

@@ -293,7 +293,7 @@
 "modules.wireguard.private_key.generate" = "Wygeneruj nowy klucz";
 "onboarding.migrate_3_2_3.message" = "Wersja 3.2.3 zmieniła sposób przechowywania dostawców.";
 "onboarding.migrate_3_5_15.message" = "Wersja 3.5.15 zmieniła sposób przechowywania profili.";
-"onboarding.migrate_3_9_5_providers.message" = "Ze względu na ograniczone użycie i bieżące wymagania konserwacyjne wsparcie dla publicznych integracji dostawców zostanie wycofane w nadchodzącej wersji. Moduły dostawców zostaną usunięte z istniejących profili, dlatego upewnij się, że wcześniej zapiszesz swoje dane uwierzytelniające w innym miejscu.";
+"onboarding.migrate_3_9_5_providers.message" = "Ze względu na ograniczone użycie i bieżące wymagania konserwacyjne wsparcie dla publicznych integracji dostawców zostanie wycofane w nadchodzącej wersji. W razie potrzeby zapisz dane uwierzytelniające w innym miejscu, a następnie usuń moduły dostawców ze swoich profili, aby zapobiec kolejnym ostrzeżeniom.";
 "onboarding.migrate.message" = "Upewnij się, że wszystkie Twoje urządzenia są zaktualizowane do najnowszej wersji, aby korzystać z nowych profili.";
 "placeholders.on_demand.ssid" = "Mój SSID";
 "placeholders.profile.imported_name" = "Zaimportowany profil";

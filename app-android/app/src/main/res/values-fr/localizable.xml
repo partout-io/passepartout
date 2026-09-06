@@ -223,7 +223,7 @@
     <string name="onboarding_migrate_message">Assurez-vous de mettre à jour tous vos appareils vers la dernière version pour utiliser les nouveaux profils.</string>
     <string name="onboarding_migrate_3_2_3_message">La version 3.2.3 a modifié la façon dont les fournisseurs sont stockés.</string>
     <string name="onboarding_migrate_3_5_15_message">La version 3.5.15 a modifié la façon dont les profils sont stockés.</string>
-    <string name="onboarding_migrate_3_9_5_providers_message">En raison d’une utilisation limitée et des exigences de maintenance continues, la prise en charge des intégrations publiques de fournisseurs sera abandonnée dans une prochaine version. Les modules de fournisseurs seront supprimés de vos profils existants, veillez donc à sauvegarder vos identifiants ailleurs au préalable.</string>
+    <string name="onboarding_migrate_3_9_5_providers_message">En raison d’une utilisation limitée et des exigences de maintenance continues, la prise en charge des intégrations publiques de fournisseurs sera abandonnée dans une prochaine version. Veillez à enregistrer vos identifiants ailleurs si nécessaire, puis supprimez les modules de fournisseurs de vos profils pour éviter d’autres avertissements.</string>
     <string name="entities_tunnel_status_inactive">Inactif</string>
     <string name="entities_tunnel_status_activating">Activation</string>
     <string name="entities_tunnel_status_active">Actif</string>
