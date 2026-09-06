@@ -11,6 +11,12 @@ extension AppCoordinatorConforming {
             if verify {
                 try iapObservable.verify(profile, extra: nil)
             }
+            if profile.modules.contains(where: { $0 is ProviderModule }) {
+                onInfo(
+                    title: Strings.Global.Nouns.providers,
+                    message: Strings.Onboarding.Migrate395Providers.message
+                )
+            }
             try await tunnel.connect(to: profile, force: force)
         } catch {
             let appError = ABI.AppError(error)

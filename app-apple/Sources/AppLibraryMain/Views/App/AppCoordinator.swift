@@ -356,6 +356,10 @@ extension AppCoordinator {
         }
     }
 
+    public func onInfo(title: String, message: String) {
+        errorHandler.handle(title: title, message: message)
+    }
+
     public func onError(_ error: Error, title: String) {
         if case ABI.AppError.systemExtension(let result) = error, result != .success {
             modalRoute = .systemExtension

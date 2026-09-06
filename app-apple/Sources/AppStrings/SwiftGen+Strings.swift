@@ -886,8 +886,8 @@ public enum Strings {
       public static let message = Strings.tr("Localizable", "onboarding.migrate_3_5_15.message", fallback: "Version 3.5.15 changed the way profiles are stored.")
     }
     public enum Migrate395Providers {
-      /// Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.
-      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_9_5_providers.message", fallback: "Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Provider modules will be removed from your existing profiles, so make sure to save your credentials elsewhere beforehand.")
+      /// Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Make sure to save your credentials elsewhere if necessary, then delete the provider modules from your profiles to suppress further warnings.
+      public static let message = Strings.tr("Localizable", "onboarding.migrate_3_9_5_providers.message", fallback: "Due to limited usage and ongoing maintenance requirements, support for public provider integrations will be discontinued in an upcoming release. Make sure to save your credentials elsewhere if necessary, then delete the provider modules from your profiles to suppress further warnings.")
     }
   }
   public enum Placeholders {
