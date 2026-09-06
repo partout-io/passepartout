@@ -6,10 +6,8 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
-            "args": [],
             "cwd": "${workspaceFolder}/out/install/macos-clang",
             "MIMode": "lldb",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: Install macOS Debug"
         },
         {
@@ -17,9 +15,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
-            "args": [],
             "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: Install Windows ARM64 Debug"
         },
         {
@@ -27,9 +23,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
-            "args": [],
             "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: Install Windows x64 Debug"
         },
         {
@@ -37,10 +31,8 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
-            "args": [],
             "cwd": "${workspaceFolder}/out/install/macos-clang",
             "MIMode": "lldb",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: Install macOS Release"
         },
         {
@@ -48,9 +40,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
-            "args": [],
             "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: Install Windows ARM64 Release"
         },
         {
@@ -58,9 +48,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
-            "args": [],
             "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: Install Windows x64 Release"
         }
     ]

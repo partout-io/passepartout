@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
     /* Initialize library (for logging). */
     const partout_init_args init_args = {
         .logs_private_data = false,
-        .logger = stdio_logger
+        .logger_ctx = NULL,
+        .logger_fn = stdio_logger
     };
     partout_init(&init_args);
 
