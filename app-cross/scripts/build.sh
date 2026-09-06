@@ -5,7 +5,7 @@ app_cross_dir="$(cd "$script_dir/.." && pwd)"
 root_dir="$(cd "$app_cross_dir/.." && pwd)"
 build_dir="$app_cross_dir/.cmake"
 bin_dir="$app_cross_dir/bin"
-prebuilts_version=$(tr -d '\r\n' < "$root_dir/prebuilts-version.txt")
+prebuilts_version=$(tr -d '\r\n' < "$root_dir/.prebuilts-version")
 
 pushd "$app_cross_dir"
 

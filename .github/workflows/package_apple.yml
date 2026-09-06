@@ -42,7 +42,7 @@ jobs:
           xcframework="$PWD/PartoutNative.xcframework"
           archive="$RUNNER_TEMP/PartoutNative.xcframework.zip"
           artifacts_dir="$RUNNER_TEMP/partout-prebuilts"
-          prebuilts_version=$(tr -d '\r\n' < "$GITHUB_WORKSPACE/prebuilts-version.txt")
+          prebuilts_version=$(tr -d '\r\n' < "$GITHUB_WORKSPACE/.prebuilts-version")
 
           "$GITHUB_WORKSPACE/partout/scripts/build-xcframework.sh" \
             "$prebuilts_version" "$xcframework" "$artifacts_dir" --full

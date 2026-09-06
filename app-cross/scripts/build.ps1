@@ -8,7 +8,7 @@ $configuration = "Debug"
 $generator = "Ninja Multi-Config"
 $gen_build = $false
 $build_app = $false
-$prebuiltsVersion = (Get-Content -Raw (Join-Path $root_dir "prebuilts-version.txt")).Trim()
+$prebuiltsVersion = (Get-Content -Raw (Join-Path $root_dir ".prebuilts-version")).Trim()
 
 $index = 0
 while ($index -lt $args.Count) {
