@@ -11,8 +11,8 @@ struct ProfileExportButton: View {
         var isExporting = false
     }
 
-    @Environment(AppEncoderObservable.self)
-    private var appEncoder
+    @Environment(\.appImportExport)
+    private var appImportExport
 
     @Environment(IAPObservable.self)
     private var iapObservable
@@ -46,7 +46,7 @@ struct ProfileExportButton: View {
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(TextFile.init),
                 contentType: .json,
-                defaultFilename: appEncoder.defaultFilename(for: profile),
+                defaultFilename: appImportExport.defaultFilename(for: profile),
                 onCompletion: { _ in }
             )
             .withErrorHandler(errorHandler)
@@ -64,7 +64,7 @@ private extension ProfileExportButton {
 
     func exportProfiles() {
         do {
-            viewModel.jsonString = try appEncoder.json(fromProfile: profile)
+            viewModel.jsonString = try appImportExport.json(fromProfile: profile)
             viewModel.isExporting = true
         } catch {
             errorHandler.handle(error)

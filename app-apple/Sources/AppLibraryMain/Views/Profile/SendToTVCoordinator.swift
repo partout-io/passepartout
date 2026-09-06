@@ -6,8 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct SendToTVCoordinator: View {
-    @Environment(AppEncoderObservable.self)
-    private var appEncoder
+    @Environment(\.appImportExport)
+    private var appImportExport
 
     @Environment(\.appConfiguration)
     private var appConfiguration
@@ -35,7 +35,7 @@ private extension SendToTVCoordinator {
             )
         )
         do {
-            let encodedProfile = try appEncoder.json(fromProfile: profile)
+            let encodedProfile = try appImportExport.json(fromProfile: profile)
             try await client.send(
                 encodedProfile,
                 filename: profile.name,

@@ -7,7 +7,6 @@ import SwiftUI
 
 extension OpenVPNView {
     struct ImportModifier: ViewModifier {
-
         @ObservedObject
         var draft: ModuleDraft<OpenVPNModule.Builder>
 
@@ -70,11 +69,11 @@ private extension OpenVPNView.ImportModifier {
             }
             importURL = url
 
-            guard let impl else {
-                fatalError("Requires OpenVPNModule implementation")
-            }
             let parsed: Module
             do {
+                guard let impl else {
+                    fatalError("Requires OpenVPNModule implementation")
+                }
                 parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
             } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")

@@ -10,7 +10,7 @@ public final class AppContext {
     public let appConfiguration: ABI.AppConfiguration
 
     // Manager-backed observables
-    public let appEncoderObservable: AppEncoderObservable
+    public let appImportExport: AppImportExport
     public let configObservable: ConfigObservable
     public let iapObservable: IAPObservable
     public let profileObservable: ProfileObservable
@@ -38,7 +38,6 @@ public final class AppContext {
     private let iapManager: IAPManager
     private let preferences: AppPreferencesStore
     private let profileManager: ProfileManager
-    private let registry: CodingRegistry
     private let versionChecker: VersionChecker
     private let webReceiverManager: WebReceiverManager
 
@@ -54,7 +53,7 @@ public final class AppContext {
     public init(
         apiManager: APIManager,
         appConfiguration: ABI.AppConfiguration,
-        appEncoder: AppEncoder,
+        appImportExport: AppImportExport,
         configManager: ConfigManager,
         defaults: UserDefaults,
         extensionInstaller: ExtensionInstaller?,
@@ -70,13 +69,13 @@ public final class AppContext {
     ) {
         self.apiManager = apiManager
         self.appConfiguration = appConfiguration
+        self.appImportExport = appImportExport
         self.configManager = configManager
         self.extensionInstaller = extensionInstaller
         self.iapManager = iapManager
         self.preferences = preferences
         self.preferencesManager = preferencesManager
         self.profileManager = profileManager
-        self.registry = registry
         self.tunnelObservable = tunnelObservable
         self.versionChecker = versionChecker
         self.webReceiverManager = webReceiverManager
@@ -87,16 +86,12 @@ public final class AppContext {
         iapManager.isEnabled = supportsIAP && !preferences[\.skipsPurchases]
 
         // Manager-backed observables
-        appEncoderObservable = AppEncoderObservable(appEncoder: appEncoder)
         configObservable = ConfigObservable()
         iapObservable = IAPObservable(
             iapManager: iapManager,
             supportsIAP: supportsIAP
         )
-        profileObservable = ProfileObservable(
-            profileManager: profileManager,
-            registry: registry
-        )
+        profileObservable = ProfileObservable(profileManager: profileManager)
         registryObservable = RegistryObservable(registry: registry)
         versionObservable = VersionObservable(versionChecker: versionChecker)
         webReceiverObservable = WebReceiverObservable(
@@ -357,7 +352,7 @@ private extension AppContext {
     func onWebUpload(_ upload: ABI.WebFileUpload) async throws {
         pspLog(.web, .info, "Uploaded: \(upload.name), \(upload.contents.count) bytes")
         do {
-            var profile = try registry.importedProfile(
+            var profile = try appImportExport.importedProfile(
                 from: .contents(filename: upload.name, data: upload.contents),
                 passphrase: nil
             )

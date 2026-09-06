@@ -4,6 +4,7 @@
 
 import AppResources
 import CommonLibrary
+import PartoutCore
 import SwiftUI
 
 extension EnvironmentValues {
@@ -24,6 +25,15 @@ extension EnvironmentValues {
             self[AppConfigurationKey.self] = newValue
         }
     }
+
+    public var appImportExport: AppImportExport {
+        get {
+            self[AppImportExportKey.self]
+        }
+        set {
+            self[AppImportExportKey.self] = newValue
+        }
+    }
 }
 
 private struct IsUITestingKey: EnvironmentKey {
@@ -35,4 +45,8 @@ private struct AppConfigurationKey: EnvironmentKey {
         distributionTarget: .appStore,
         buildTarget: .app
     )
+}
+
+private struct AppImportExportKey: EnvironmentKey {
+    static let defaultValue: AppImportExport = .dummy
 }

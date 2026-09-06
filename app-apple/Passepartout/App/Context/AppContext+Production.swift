@@ -62,7 +62,7 @@ extension AppContext {
             }
         )
 
-        // MARK: Registry
+        // MARK: Registry (legacy)
 
         let cachesURL = FileManager.default.temporaryDirectory
         let registry = appConfiguration.makeRegistryForApp(
@@ -79,6 +79,18 @@ extension AppContext {
             assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
 #endif
         }
+
+        // MARK: Import/Export
+
+        let appImportExport = AppImportExport(
+            exportModule: { module in
+                guard let serializable = module as? SerializableModule else {
+                    throw ABI.AppError.encoding()
+                }
+                return try serializable.serialized()
+            },
+            legacyRegistry: registry
+        )
 
         // MARK: Persistence (Core Data)
 
@@ -149,11 +161,10 @@ extension AppContext {
         // MARK: Profiles and Tunnel (NE)
 
         let sysexManager = appConfiguration.makeSystemExtensionManager()
-        let appEncoder = AppEncoder(coder: registry)
 #if targetEnvironment(simulator)
         let tunnelStrategy = FakeTunnelStrategy()
         let mainProfileRepository = appConfiguration.newBackupProfileRepository(
-            encoder: appEncoder,
+            encoder: appImportExport,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
             observingResults: true
@@ -203,7 +214,7 @@ extension AppContext {
             source: mainProfileRepository.eventsPublisher
         )
         let backupProfileRepository = appConfiguration.newBackupProfileRepository(
-            encoder: appEncoder,
+            encoder: appImportExport,
             model: cdRemoteModel,
             name: appConfiguration.constants.containers.backup,
             observingResults: false
@@ -302,7 +313,7 @@ extension AppContext {
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
                 let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
-                    encoder: appEncoder,
+                    encoder: appImportExport,
                     context: remoteStore.context,
                     observingResults: true,
                     onResultError: {
@@ -347,7 +358,7 @@ extension AppContext {
         return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
-            appEncoder: appEncoder,
+            appImportExport: appImportExport,
             configManager: configManager,
             defaults: defaults,
             extensionInstaller: sysexManager,
@@ -374,7 +385,7 @@ private extension ABI.AppConfiguration {
     }
 
     func newBackupProfileRepository(
-        encoder: AppEncoder,
+        encoder: ProfileCoder,
         model: NSManagedObjectModel,
         name: String,
         observingResults: Bool

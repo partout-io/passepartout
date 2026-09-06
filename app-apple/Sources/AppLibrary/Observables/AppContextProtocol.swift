@@ -9,7 +9,7 @@ public protocol AppContextProtocol: AnyObject {
     var appConfiguration: ABI.AppConfiguration { get }
 
     // Manager-backed observables
-    var appEncoderObservable: AppEncoderObservable { get }
+    var appImportExport: AppImportExport { get }
     var configObservable: ConfigObservable { get }
     var iapObservable: IAPObservable { get }
     var profileObservable: ProfileObservable { get }

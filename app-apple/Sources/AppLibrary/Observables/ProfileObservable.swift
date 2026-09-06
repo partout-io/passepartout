@@ -10,7 +10,6 @@ import Observation
 @MainActor @Observable
 public final class ProfileObservable {
     private let profileManager: ProfileManager
-    private let registry: CodingRegistry
 
     private var allHeaders: [Profile.ID: ABI.AppProfileHeader] {
         didSet {
@@ -25,11 +24,9 @@ public final class ProfileObservable {
 
     public init(
         profileManager: ProfileManager,
-        registry: CodingRegistry,
         searchDebounce: Int = 200
     ) {
         self.profileManager = profileManager
-        self.registry = registry
         allHeaders = [:]
         filteredHeaders = []
         isReady = false
@@ -59,18 +56,6 @@ extension ProfileObservable {
 
     public func saveAll() async {
         await profileManager.resaveAllProfiles()
-    }
-
-    public func `import`(_ input: ABI.ProfileImporterInput, passphrase: String? = nil) async throws {
-        let profile = try registry.importedProfile(
-            from: input,
-            passphrase: passphrase
-        )
-        try await profileManager.save(
-            profile,
-            isLocal: true,
-            remotelyShared: nil
-        )
     }
 
     public func duplicate(profileWithId profileId: Profile.ID) async throws {

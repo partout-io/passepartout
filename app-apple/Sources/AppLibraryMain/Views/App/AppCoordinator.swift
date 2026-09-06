@@ -15,6 +15,9 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
     @Environment(\.isUITesting)
     private var isUITesting
 
+    @Environment(\.appImportExport)
+    private var appImportExport
+
     @Environment(\.horizontalSizeClass)
     public var hsClass
 
@@ -271,7 +274,11 @@ extension AppCoordinator {
                 let filename = profileObservable.firstUniqueName(
                     from: Strings.Placeholders.Profile.importedName
                 )
-                try await profileObservable.import(.contents(filename: filename, data: text))
+                let profile = try await appImportExport.importedProfile(
+                    from: .contents(filename: filename, data: text),
+                    passphrase: nil
+                )
+                try await profileObservable.save(profile)
             } catch {
                 pspLog(.profiles, .error, "Unable to import text: \(error)")
                 errorHandler.handle(error, title: Strings.Global.Actions.import)

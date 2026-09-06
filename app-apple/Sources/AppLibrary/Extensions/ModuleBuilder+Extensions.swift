@@ -5,7 +5,10 @@
 import CommonLibrary
 
 extension ModuleBuilder {
-    public func serializedIgnoringErrors(withName name: String) -> SerializedModuleFile? {
+    public func serializedIgnoringErrors(
+        withName name: String,
+        exportModule: AppImportExport.ExportModule
+    ) -> SerializedModuleFile? {
         do {
             guard let mod = try build() as? SerializableModule else {
                 return nil
@@ -13,7 +16,7 @@ extension ModuleBuilder {
             return try SerializedModuleFile(
                 name: name,
                 extension: mod.preferredExtension,
-                content: mod.serialized()
+                content: exportModule(mod)
             )
         } catch {
             pspLog(.profiles, .debug, "Unable to serialize module \(id): \(error)")
