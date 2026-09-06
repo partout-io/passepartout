@@ -160,9 +160,19 @@ private extension TunnelContext {
             localMapper: logFormatter.localMapper
         )
 
+        // Clean up residual Swift/Zig mismatches
+        var builder = profile.builder()
+        builder.modules = try builder.modules.map {
+            if let wg = $0 as? WireGuardModule {
+                return try wg.builder().build()
+            }
+            return $0
+        }
+        let normalizedProfile = try builder.build()
+
         let backend = try PartoutProviderRuntime(
             provider: neProvider,
-            profile: profile,
+            profile: normalizedProfile,
             options: .init(
                 dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
                 logsSnapshots: false
@@ -177,7 +187,7 @@ private extension TunnelContext {
 
         return ProductionRuntime(
             backend: backend,
-            originalProfile: profile,
+            originalProfile: normalizedProfile,
             environment: backend.environment
         )
     }
