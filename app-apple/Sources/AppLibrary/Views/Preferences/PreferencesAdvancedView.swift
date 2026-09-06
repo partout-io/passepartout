@@ -47,6 +47,11 @@ private extension PreferencesAdvancedView {
         iapObservable.isBeta || appConfiguration.bundle.distributionTarget == .developerID
     }
 
+    var visibleFlags: [ABI.ConfigFlag] {
+        guard !configObservable.isActive(.enforceZig) else { return [] }
+        return Self.flags
+    }
+
     @ViewBuilder
     var configSection: some View {
         if canOverride {
@@ -57,7 +62,7 @@ private extension PreferencesAdvancedView {
     }
 
     var overrideSection: some View {
-        ForEach(Self.flags, id: \.rawValue) { flag in
+        ForEach(visibleFlags, id: \.rawValue) { flag in
             configPicker(for: flag)
         }
         .themeSection(
@@ -66,7 +71,7 @@ private extension PreferencesAdvancedView {
     }
 
     var remoteSection: some View {
-        ForEach(Self.flags, id: \.rawValue) { flag in
+        ForEach(visibleFlags, id: \.rawValue) { flag in
             configToggle(for: flag)
         }
         .themeSection(

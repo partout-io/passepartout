@@ -31,13 +31,16 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: appNotWorking,unknown,zigOpenVPN,zigRuntime,zigWireGuard
+ * Values: appNotWorking,enforceZig,unknown,zigOpenVPN,zigRuntime,zigWireGuard
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
 
     @SerialName(value = "appNotWorking")
     appNotWorking("appNotWorking"),
+
+    @SerialName(value = "enforceZig")
+    enforceZig("enforceZig"),
 
     @SerialName(value = "unknown")
     unknown("unknown"),

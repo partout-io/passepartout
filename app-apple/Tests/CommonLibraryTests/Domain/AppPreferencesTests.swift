@@ -78,6 +78,31 @@ struct AppPreferencesTests {
         #expect(!sut.isFlagEnabled(.zigRuntime))
         #expect(sut.enabledFlags() == [.unknown])
     }
+
+    @Test
+    func givenEnforcedZig_whenOverrideZigFlags_thenRemoteValuesWin() {
+        var sut: ABI.AppPreferences = .default()
+        sut.configFlags = [.enforceZig, .zigRuntime, .zigWireGuard]
+        sut.experimental.ignoredConfigFlags = [.zigRuntime, .zigWireGuard]
+        sut.experimental.enabledConfigFlags = [.zigOpenVPN]
+
+        #expect(sut.isFlagEnabled(.zigRuntime))
+        #expect(!sut.isFlagEnabled(.zigOpenVPN))
+        #expect(sut.isFlagEnabled(.zigWireGuard))
+        #expect(sut.enabledFlags() == [.enforceZig, .zigRuntime, .zigWireGuard])
+    }
+
+    @Test
+    func givenEnforcedZigInProvidedFlags_whenOverrideFlags_thenProvidedRemoteValuesWin() {
+        var sut: ABI.AppPreferences = .default()
+        sut.configFlags = [.zigOpenVPN]
+        sut.experimental.ignoredConfigFlags = [.unknown, .zigRuntime]
+        sut.experimental.enabledConfigFlags = [.appNotWorking, .zigOpenVPN]
+
+        let remoteFlags: Set<ABI.ConfigFlag> = [.enforceZig, .unknown, .zigRuntime]
+
+        #expect(sut.enabledFlags(of: remoteFlags) == [.appNotWorking, .enforceZig, .zigRuntime])
+    }
 }
 
 private extension AppPreferencesTests {
