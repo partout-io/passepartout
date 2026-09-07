@@ -5,18 +5,34 @@
 import CommonLibrary
 
 public struct AppImportExport: Sendable {
+    public typealias ImportProfile = @Sendable (
+        _ json: String,
+        _ name: String?
+    ) throws -> Profile
+
+    public typealias ImportModule = @Sendable (
+        _ text: String,
+        _ context: ModuleImportContext?
+    ) throws -> Module
+
     public typealias ExportModule = @Sendable (Module) throws -> String
 
     // ABI proxies
+    private let importProfile: ImportProfile
+    private let importModule: ImportModule
     public let exportModule: ExportModule
 
     // Legacy decoding
     private let legacyRegistry: CodingRegistry
 
     public init(
+        importProfile: @escaping ImportProfile,
+        importModule: @escaping ImportModule,
         exportModule: @escaping ExportModule,
         legacyRegistry: CodingRegistry
     ) {
+        self.importProfile = importProfile
+        self.importModule = importModule
         self.exportModule = exportModule
         self.legacyRegistry = legacyRegistry
     }
@@ -24,6 +40,8 @@ public struct AppImportExport: Sendable {
 
 extension AppImportExport {
     public static let dummy = AppImportExport(
+        importProfile: { _, _ in .forPreviews },
+        importModule: { _, _ in OnDemandModule.Builder().build() },
         exportModule: { _ in "" },
         legacyRegistry: CodingRegistry(registry: Registry(allHandlers: []))
     )
@@ -40,6 +58,14 @@ extension AppImportExport {
 
         // Fall back to parsing a single module
         do {
+            // FIXME: ###
+//            let context: ModuleImportContext?
+//            if let passphrase {
+//                context = .OpenVPN(passphrase: passphrase)
+//            } else {
+//                context = nil
+//            }
+//            let importedModule = try importModule(contents, context)
             let importedModule = try legacyRegistry.module(fromContents: contents, object: passphrase)
             return try Profile(withName: name, singleModule: importedModule)
         } catch {
@@ -47,14 +73,30 @@ extension AppImportExport {
             throw error
         }
     }
+
+    // FIXME: ###
+//    public func importedModule(from input: ABI.ProfileImporterInput, context: ModuleImportContext?) throws -> Module {
+//        let (_, contents) = try input.decodedPair()
+//        return try importModule(contents, context)
+//    }
 }
 
 extension AppImportExport: ProfileCoder {
     public func string(fromProfile profile: Profile) throws -> String {
+        // FIXME: ###
+//        try ABI.encodeJSON(profile.asTaggedProfile)
         try legacyRegistry.string(fromProfile: profile)
     }
 
     public func profile(fromString string: String) throws -> Profile {
+        // FIXME: ###
+//        do {
+//            // Via ABI (v3)
+//            return try importedProfile(from: .contents(filename: "", data: string), passphrase: nil)
+//        } catch {
+//            // Via legacy Swift (v1/v2)
+//            return try legacyRegistry.profile(fromString: string)
+//        }
         try legacyRegistry.profile(fromString: string)
     }
 }

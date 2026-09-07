@@ -7,6 +7,12 @@ import SwiftUI
 
 extension WireGuardView {
     struct ImportModifier: ViewModifier {
+        @Environment(\.appImportExport)
+        private var appImportExport
+
+        @Environment(ConfigObservable.self)
+        private var configObservable
+
         @ObservedObject
         var draft: ModuleDraft<WireGuardModule.Builder>
 
@@ -47,6 +53,18 @@ private extension WireGuardView.ImportModifier {
 
             let parsed: Module
             do {
+                // FIXME: ###
+//                if configObservable.isActive(.zigCoding) {
+//                    parsed = try appImportExport.importedModule(
+//                        from: .file(url),
+//                        context: .WireGuard
+//                    )
+//                } else {
+//                    guard let impl else {
+//                        fatalError("Requires WireGuardModule implementation")
+//                    }
+//                    parsed = try impl.importerBlock().module(fromURL: url, object: nil)
+//                }
                 guard let impl else {
                     fatalError("Requires WireGuardModule implementation")
                 }

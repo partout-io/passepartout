@@ -7,6 +7,12 @@ import SwiftUI
 
 extension OpenVPNView {
     struct ImportModifier: ViewModifier {
+        @Environment(\.appImportExport)
+        private var appImportExport
+
+        @Environment(ConfigObservable.self)
+        private var configObservable
+
         @ObservedObject
         var draft: ModuleDraft<OpenVPNModule.Builder>
 
@@ -66,11 +72,24 @@ private extension OpenVPNView.ImportModifier {
             }
             defer {
                 url.stopAccessingSecurityScopedResource()
+                importPassphrase = nil
             }
             importURL = url
 
             let parsed: Module
             do {
+                // FIXME: ###
+//                if configObservable.isActive(.zigCoding) {
+//                    parsed = try appImportExport.importedModule(
+//                        from: .file(url),
+//                        context: .OpenVPN(passphrase: importPassphrase)
+//                    )
+//                } else {
+//                    guard let impl else {
+//                        fatalError("Requires OpenVPNModule implementation")
+//                    }
+//                    parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
+//                }
                 guard let impl else {
                     fatalError("Requires OpenVPNModule implementation")
                 }
