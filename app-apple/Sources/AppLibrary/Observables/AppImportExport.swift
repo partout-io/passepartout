@@ -23,7 +23,7 @@ public struct AppImportExport: Sendable {
     private let configBlock: ConfigBlock
     private let importProfile: ImportProfile
     private let importModule: ImportModule
-    public let exportModule: ExportModule
+    private let exportModule: ExportModule
 
     // Legacy decoding
     private let legacyRegistry: CodingRegistry
@@ -92,6 +92,17 @@ extension AppImportExport {
     public func importedModule(from input: ABI.ProfileImporterInput, context: ModuleImportContext?) throws -> Module {
         let (_, contents) = try input.decodedPair()
         return try importModule(contents, context)
+    }
+
+    public func exportedModule(from module: Module) throws -> String {
+        if isEnabled(.zigCodingExport) {
+            return try exportModule(module)
+        } else {
+            guard let serializable = module as? SerializableModule else {
+                throw ABI.AppError.encoding()
+            }
+            return try serializable.serialized()
+        }
     }
 }
 

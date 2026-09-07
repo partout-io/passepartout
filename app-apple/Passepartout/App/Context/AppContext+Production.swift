@@ -82,7 +82,7 @@ extension AppContext {
 
         // MARK: Import/Export
 
-        let importer = PartoutImporter()
+        let importer = PartoutRuntime()
         let appImportExport = AppImportExport(
             configBlock: {
                 preferences.enabledFlags(of: configManager.activeFlags)
@@ -94,11 +94,7 @@ extension AppContext {
                 try importer.importModule(from: text, context: context)
             },
             exportModule: { module in
-                // FIXME: ###, Use partout_export_module() ABI
-                guard let serializable = module as? SerializableModule else {
-                    throw ABI.AppError.encoding()
-                }
-                return try serializable.serialized()
+                try importer.exportModule(module)
             },
             legacyRegistry: registry
         )

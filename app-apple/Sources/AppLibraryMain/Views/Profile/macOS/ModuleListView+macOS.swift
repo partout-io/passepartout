@@ -94,7 +94,7 @@ private extension ModuleListView {
         .contextMenu {
             if let file = module.serializedIgnoringErrors(
                 withName: profileEditor.profile.name,
-                exportModule: appImportExport.exportModule
+                exportModule: appImportExport.exportedModule
             ) {
                 ModuleShareGroup(
                     file: file,
