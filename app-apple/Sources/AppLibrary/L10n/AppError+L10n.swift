@@ -108,7 +108,7 @@ extension ABI.AppError: StyledLocalizableEntity {
         case .partout(let error):
             return V.partout(error.code.rawValue)
         case .partoutABI(let error):
-            return error.localizedDescription
+            return error.errorDescription
         case .permissionDenied:
             return V.permissionDenied
         case .rateLimit:

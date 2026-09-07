@@ -9,9 +9,9 @@ import Testing
 struct LocalizationTests {
     @Test
     func givenUnknownImportedModule_whenDescribing_thenReturnsParsingMessage() {
-        let sut = PartoutABIError(.unknownImportedModule)
+        let sut = ABI.AppError(PartoutABIError(.unknownImportedModule))
 
-        #expect(sut.localizedDescription == "Unable to parse.")
+        #expect(sut.localizedDescription(style: .errorHandler) == "Unable to parse.")
     }
 
     @Test
@@ -21,19 +21,19 @@ struct LocalizationTests {
             subCode: WireGuardErrorCode.interfaceHasInvalidAddress.rawValue,
             arguments: ["192.0.2.300/24"]
         )
-        let sut = PartoutABIError(.parsing, try JSON(encodable: info))
+        let sut = ABI.AppError(PartoutABIError(.parsing, try JSON(encodable: info)))
 
         #expect(
-            sut.localizedDescription ==
+            sut.localizedDescription(style: .errorHandler) ==
                 "Address ‘192.0.2.300/24’ is invalid. Interface addresses must be a list of comma-separated IP addresses, optionally in CIDR notation."
         )
     }
 
     @Test
     func givenOtherError_whenDescribing_thenReturnsDiagnosticMessage() {
-        let sut = PartoutABIError(.decoding)
+        let sut = ABI.AppError(PartoutABIError(.decoding))
 
-        #expect(sut.localizedDescription == "decoding, payload=null")
+        #expect(sut.localizedDescription(style: .errorHandler) == "decoding, payload=null")
     }
 
     @Test
