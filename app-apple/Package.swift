@@ -167,7 +167,7 @@ package.targets.append(contentsOf: [
                 "partout",
                 .product(name: "partout-legacy", package: "apple-legacy"),
                 .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
-                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
             ]
             list.append("CommonProviders")
             return list

@@ -7,6 +7,9 @@ import SwiftUI
 
 extension OpenVPNView {
     struct ImportModifier: ViewModifier {
+        @Environment(\.appImportExport)
+        private var appImportExport
+
         @ObservedObject
         var draft: ModuleDraft<OpenVPNModule.Builder>
 
@@ -66,15 +69,23 @@ private extension OpenVPNView.ImportModifier {
             }
             defer {
                 url.stopAccessingSecurityScopedResource()
+                importPassphrase = nil
             }
             importURL = url
 
             let parsed: Module
             do {
-                guard let impl else {
-                    fatalError("Requires OpenVPNModule implementation")
+                if appImportExport.isEnabled(.zigCodingImport) {
+                    parsed = try appImportExport.importedModule(
+                        from: .file(url),
+                        context: .OpenVPN(passphrase: importPassphrase)
+                    )
+                } else {
+                    guard let impl else {
+                        fatalError("Requires OpenVPNModule implementation")
+                    }
+                    parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
                 }
-                parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
             } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
                 let appError = ABI.AppError(error)

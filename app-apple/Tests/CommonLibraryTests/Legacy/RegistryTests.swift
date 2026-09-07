@@ -7,8 +7,8 @@ import Partout
 import Testing
 
 struct RegistryTests {
-    @Test(arguments: [true, false])
-    func givenKnownHandlers_whenSerializeProfile_thenIsDeserialized(legacy: Bool) throws {
+    @Test
+    func givenKnownHandlers_whenSerializeProfile_thenIsDeserialized() throws {
         let sut = CodingRegistry(
             registry: Registry(withKnown: true)
         )

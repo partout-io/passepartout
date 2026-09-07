@@ -1,4 +1,10 @@
 {
+    "zigCodingExport": {
+        "rate": 0
+    },
+    "zigCodingImport": {
+        "rate": 0
+    },
     "zigRuntime": {
         "rate": 100
     },
@@ -6,15 +12,6 @@
         "rate": 100
     },
     "zigWireGuard": {
-        "rate": 100
-    },
-    "newProfileEncoding": {
-        "rate": 100
-    },
-    "allowsRelaxedVerification": {
-        "rate": 100
-    },
-    "forcesRelaxedVerification": {
         "rate": 100
     },
     "appNotWorking": {

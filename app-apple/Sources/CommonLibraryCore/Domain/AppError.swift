@@ -52,6 +52,8 @@ extension ABI {
 
         case partout(PartoutError)
 
+        case partoutABI(PartoutABIError)
+
         case permissionDenied
 
         case rateLimit
@@ -87,6 +89,12 @@ extension ABI {
                     self = .missingProviderEntity
                 case .missingOption(let option):
                     self = .missingProviderOption(option)
+                }
+            } else if let partoutABIError = error as? PartoutABIError {
+                if partoutABIError.isOpenVPNPassphraseRequired {
+                    self = .openVPNPassphraseRequired
+                } else {
+                    self = .partoutABI(partoutABIError)
                 }
             } else if let partoutError = error as? PartoutError {
                 // Specialize some codes
@@ -147,6 +155,25 @@ extension ABI {
     }
 }
 
+private extension PartoutABIError {
+    var isOpenVPNPassphraseRequired: Bool {
+        guard code == .parsing, let payload else {
+            return false
+        }
+        guard
+            let data = try? JSONEncoder.shared().encode(payload),
+            let info = try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: data)
+        else {
+            return false
+        }
+        guard info.recognizedType == .OpenVPN else { return false }
+        guard let subCode = info.subCode.map(OpenVPNErrorCode.init(rawValue:)) else {
+            return false
+        }
+        return [.passphraseRequired, .unableToDecrypt].contains(subCode)
+    }
+}
+
 extension ABI.AppError {
     public var code: ABI.AppErrorCode {
         switch self {
@@ -194,7 +221,7 @@ extension ABI.AppError {
             return .openVPNUnsupportedCompression
         case .other:
             return .other
-        case .partout:
+        case .partout, .partoutABI:
             return .partout
         case .permissionDenied:
             return .permissionDenied

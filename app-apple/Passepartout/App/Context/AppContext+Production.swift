@@ -82,8 +82,19 @@ extension AppContext {
 
         // MARK: Import/Export
 
+        let importer = PartoutImporter()
         let appImportExport = AppImportExport(
+            configBlock: {
+                preferences.enabledFlags(of: configManager.activeFlags)
+            },
+            importProfile: { text, name in
+                try importer.importProfile(from: text, name: name)
+            },
+            importModule: { text, context in
+                try importer.importModule(from: text, context: context)
+            },
             exportModule: { module in
+                // FIXME: ###, Use partout_export_module() ABI
                 guard let serializable = module as? SerializableModule else {
                     throw ABI.AppError.encoding()
                 }

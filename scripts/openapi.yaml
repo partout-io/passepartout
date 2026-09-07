@@ -560,6 +560,8 @@ components:
       - appNotWorking
       - enforceZig
       - unknown
+      - zigCodingExport
+      - zigCodingImport
       - zigOpenVPN
       - zigRuntime
       - zigWireGuard
@@ -567,6 +569,8 @@ components:
       - appNotWorking
       - enforceZig
       - unknown
+      - zigCodingExport
+      - zigCodingImport
       - zigOpenVPN
       - zigRuntime
       - zigWireGuard

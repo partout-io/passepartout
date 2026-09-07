@@ -8,9 +8,32 @@ import Foundation
 import Testing
 
 struct AppImportExportTests {
+    @Test(arguments: [true, false])
+    func givenEffectiveImportFlag_whenDecodeProfile_thenSelectsExpectedDecoder(enabled: Bool) throws {
+        let registry = CodingRegistry(registry: Registry(withKnown: true))
+        let legacyProfile = try Profile.Builder(name: "legacy").build()
+        let zigProfile = try Profile.Builder(name: "zig").build()
+        let encoded = try registry.string(fromProfile: legacyProfile)
+        let sut = AppImportExport(
+            configBlock: { enabled ? [.zigCodingImport] : [] },
+            importProfile: { _, _ in zigProfile },
+            importModule: { _, _ in throw ABI.AppError.importError() },
+            exportModule: { _ in "" },
+            legacyRegistry: registry
+        )
+
+        let decoded = try sut.profile(fromString: encoded)
+
+        #expect(sut.isEnabled(.zigCodingImport) == enabled)
+        #expect(decoded == (enabled ? zigProfile : legacyProfile))
+    }
+
     @Test
     func givenBinaryFile_whenImportProfile_thenThrowsBinaryFile() throws {
         let sut = AppImportExport(
+            configBlock: { [] },
+            importProfile: { _, _ in throw ABI.AppError.importError() },
+            importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { _ in "" },
             legacyRegistry: CodingRegistry(
                 registry: Registry(withKnown: true)

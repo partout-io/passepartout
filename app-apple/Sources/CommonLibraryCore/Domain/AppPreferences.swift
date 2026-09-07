@@ -84,14 +84,14 @@ extension ABI.AppPreferencesProtocol {
     }
 }
 
-private extension ABI.ConfigFlag {
-    static let zigFeatures: Set<Self> = [
+extension ABI.ConfigFlag {
+    public static let zigFeatures: Set<Self> = [
         .zigRuntime,
         .zigOpenVPN,
         .zigWireGuard
     ]
 
-    var isZigFeature: Bool {
+    public var isZigFeature: Bool {
         Self.zigFeatures.contains(self)
     }
 }

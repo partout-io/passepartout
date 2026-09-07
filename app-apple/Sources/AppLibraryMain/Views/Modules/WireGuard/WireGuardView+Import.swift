@@ -7,6 +7,9 @@ import SwiftUI
 
 extension WireGuardView {
     struct ImportModifier: ViewModifier {
+        @Environment(\.appImportExport)
+        private var appImportExport
+
         @ObservedObject
         var draft: ModuleDraft<WireGuardModule.Builder>
 
@@ -47,10 +50,17 @@ private extension WireGuardView.ImportModifier {
 
             let parsed: Module
             do {
-                guard let impl else {
-                    fatalError("Requires WireGuardModule implementation")
+                if appImportExport.isEnabled(.zigCodingImport) {
+                    parsed = try appImportExport.importedModule(
+                        from: .file(url),
+                        context: .WireGuard
+                    )
+                } else {
+                    guard let impl else {
+                        fatalError("Requires WireGuardModule implementation")
+                    }
+                    parsed = try impl.importerBlock().module(fromURL: url, object: nil)
                 }
-                parsed = try impl.importerBlock().module(fromURL: url, object: nil)
             } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
                 throw ABI.AppError(error)

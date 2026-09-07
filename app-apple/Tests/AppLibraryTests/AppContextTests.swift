@@ -122,6 +122,9 @@ private struct Harness {
             registry: Registry(withKnown: true)
         )
         let appImportExport = AppImportExport(
+            configBlock: { [] },
+            importProfile: { _, _ in throw ABI.AppError.importError() },
+            importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { module in
                 guard let serializable = module as? SerializableModule else {
                     throw ABI.AppError.encoding()
