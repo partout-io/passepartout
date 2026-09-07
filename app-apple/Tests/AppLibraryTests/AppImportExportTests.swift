@@ -28,6 +28,22 @@ struct AppImportExportTests {
         #expect(decoded == (enabled ? zigProfile : legacyProfile))
     }
 
+    @Test(arguments: [true, false])
+    func givenEffectiveExportFlag_whenEncodeModule_thenSelectsExpectedEncoder(enabled: Bool) throws {
+        let sut = AppImportExport(
+            configBlock: { enabled ? [.zigCodingExport] : [] },
+            importProfile: { _, _ in throw ABI.AppError.importError() },
+            importModule: { _, _ in throw ABI.AppError.importError() },
+            exportModule: { _ in "zig" },
+            legacyRegistry: CodingRegistry(registry: Registry(withKnown: true))
+        )
+
+        let encoded = try sut.exportedModule(from: TestSerializableModule())
+
+        #expect(sut.isEnabled(.zigCodingExport) == enabled)
+        #expect(encoded == (enabled ? "zig" : "legacy"))
+    }
+
     @Test
     func givenBinaryFile_whenImportProfile_thenThrowsBinaryFile() throws {
         let sut = AppImportExport(
@@ -56,5 +72,13 @@ struct AppImportExportTests {
             throw error
         }
         #expect(didThrowBinaryFile)
+    }
+}
+
+private struct TestSerializableModule: SerializableModule {
+    let preferredExtension = "test"
+
+    func serialized() throws -> String {
+        "legacy"
     }
 }
