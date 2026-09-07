@@ -11,6 +11,7 @@ public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case appNotWorking = "appNotWorking"
     case enforceZig = "enforceZig"
     case unknown = "unknown"
+    case zigCoding = "zigCoding"
     case zigOpenVPN = "zigOpenVPN"
     case zigRuntime = "zigRuntime"
     case zigWireGuard = "zigWireGuard"
