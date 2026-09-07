@@ -106,11 +106,15 @@ extension AppImportExport: ProfileCoder {
     }
 
     public func profile(fromString string: String, name: String?) throws -> Profile {
-        do {
-            // Via ABI (v3)
-            return try importProfile(string, name)
-        } catch {
-            // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
+        if configBlock().contains(.zigCodingImport) {
+            do {
+                // Via ABI (v3)
+                return try importProfile(string, name)
+            } catch {
+                // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
+                return try legacyRegistry.profile(fromString: string)
+            }
+        } else {
             return try legacyRegistry.profile(fromString: string)
         }
     }
