@@ -12,6 +12,7 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
+        let appImportExport: AppImportExport = .dummy
         let registry = appConfiguration.makeRegistry(
             deviceId: "TestDeviceID",
             cachesURL: FileManager.default.temporaryDirectory,
@@ -19,7 +20,6 @@ extension AppContext {
         )
         let preferences = AppPreferencesStore()
         let defaults = UserDefaults()
-        let appEncoder = AppEncoder(coder: registry)
 
         pspLogRegister(
             for: .app,
@@ -51,7 +51,7 @@ extension AppContext {
         )
         let mainProfileRepository = InMemoryProfileRepository()
         let profileManager: ProfileManager = .forUITesting(
-            withRegistry: registry,
+            withNewModule: registry.newModule,
             processor: profileProcessor,
             repository: mainProfileRepository
         )
@@ -84,7 +84,7 @@ extension AppContext {
         return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
-            appEncoder: appEncoder,
+            appImportExport: appImportExport,
             configManager: configManager,
             defaults: defaults,
             extensionInstaller: nil,

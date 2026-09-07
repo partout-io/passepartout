@@ -16,7 +16,7 @@ extension AppContext {
         )
         let preferences = AppPreferencesStore()
         let defaults = UserDefaults()
-        let appEncoder = AppEncoder(coder: registry)
+        let appImportExport: AppImportExport = .dummy
         let configManager = ConfigManager()
         let apiManager = APIManager(
             from: API.bundled,
@@ -68,7 +68,7 @@ extension AppContext {
         return AppContext(
             apiManager: apiManager,
             appConfiguration: appConfiguration,
-            appEncoder: appEncoder,
+            appImportExport: appImportExport,
             configManager: configManager,
             defaults: defaults,
             extensionInstaller: nil,

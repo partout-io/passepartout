@@ -2,16 +2,19 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonLibraryCore
+@testable import AppLibrary
+import CommonLibrary
 import Foundation
-import Partout
 import Testing
 
-struct CodingRegistryTests {
+struct AppImportExportTests {
     @Test
     func givenBinaryFile_whenImportProfile_thenThrowsBinaryFile() throws {
-        let sut = CodingRegistry(
-            registry: Registry(withKnown: true)
+        let sut = AppImportExport(
+            exportModule: { _ in "" },
+            legacyRegistry: CodingRegistry(
+                registry: Registry(withKnown: true)
+            )
         )
         let url = URL.temporaryDirectory
             .appending(component: UUID().uuidString)

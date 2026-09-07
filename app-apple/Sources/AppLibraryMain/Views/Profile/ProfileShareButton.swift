@@ -6,8 +6,8 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileShareButton: View {
-    @Environment(AppEncoderObservable.self)
-    private var appEncoder
+    @Environment(\.appImportExport)
+    private var appImportExport
 
     @Environment(IAPObservable.self)
     private var iapObservable
@@ -50,7 +50,7 @@ private extension ProfileShareButton {
     nonisolated func toURL() throws -> URL {
         do {
             pspLog(.profiles, .debug, "Writing profile \(profile.id) for sharing...")
-            let url = try appEncoder.writeToURL(profile)
+            let url = try appImportExport.writeToURL(profile)
             pspLog(.profiles, .debug, "Written profile to: \(url)")
             return url
         } catch {

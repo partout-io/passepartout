@@ -11,6 +11,9 @@ import SwiftUI
 struct ModuleListView: View, Routable {
     static let generalModuleId = UUID()
 
+    @Environment(\.appImportExport)
+    private var appImportExport
+
     @Environment(\.appConfiguration)
     private var appConfiguration
 
@@ -89,7 +92,10 @@ private extension ModuleListView {
             }
         }
         .contextMenu {
-            if let file = module.serializedIgnoringErrors(withName: profileEditor.profile.name) {
+            if let file = module.serializedIgnoringErrors(
+                withName: profileEditor.profile.name,
+                exportModule: appImportExport.exportModule
+            ) {
                 ModuleShareGroup(
                     file: file,
                     isExporting: $isExporting,

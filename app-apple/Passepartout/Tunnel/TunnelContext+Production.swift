@@ -129,7 +129,9 @@ private extension TunnelContext {
         // Validate decoded profile
         let profile: Profile
         do {
-            profile = try Profile(withNEProvider: neProvider, decoder: decoder)
+            let originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
+            let processor = appConfiguration.makeTunnelProcessor()
+            profile = try processor.willProcess(originalProfile)
         } catch let error as RuntimeError {
             throw error
         } catch {

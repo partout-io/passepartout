@@ -8,7 +8,7 @@ import Partout
 
 extension CommonData {
     public static func cdProfileRepositoryV3(
-        encoder: AppEncoder,
+        encoder: ProfileCoder,
         context: NSManagedObjectContext,
         observingResults: Bool,
         onResultError: (@Sendable (Error) -> CoreDataResultAction)?
@@ -39,7 +39,7 @@ extension CommonData {
 private extension CommonData {
     static func fromMapper(
         _ cdEntity: CDProfileV3,
-        encoder: AppEncoder
+        encoder: ProfileCoder
     ) throws -> Profile? {
         guard let encoded = cdEntity.encoded else {
             return nil
@@ -50,7 +50,7 @@ private extension CommonData {
     static func toMapper(
         _ profile: Profile,
         _ context: NSManagedObjectContext,
-        encoder: AppEncoder
+        encoder: ProfileCoder
     ) throws -> CDProfileV3 {
         let encoded = try encoder.string(fromProfile: profile)
 

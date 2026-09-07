@@ -13,8 +13,8 @@ extension View {
             // Constants
             .environment(\.appConfiguration, context.appConfiguration)
             .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
-            // ABI concerns
-            .environment(context.appEncoderObservable)
+            // Model concerns
+            .environment(\.appImportExport, context.appImportExport)
             .environment(context.configObservable)
             .environment(context.iapObservable)
             .environment(context.profileObservable)

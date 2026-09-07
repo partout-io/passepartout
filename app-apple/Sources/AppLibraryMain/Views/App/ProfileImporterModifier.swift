@@ -6,6 +6,9 @@ import CommonLibrary
 import SwiftUI
 
 struct ProfileImporterModifier: ViewModifier {
+    @Environment(\.appImportExport)
+    private var appImportExport
+
     let profileObservable: ProfileObservable
 
     @Binding
@@ -59,7 +62,11 @@ private extension ProfileImporterModifier {
     }
 
     func doImport(url: URL, passphrase: String?) async throws {
-        try await profileObservable.import(.file(url), passphrase: passphrase)
+        let profile = try appImportExport.importedProfile(
+            from: .file(url),
+            passphrase: passphrase
+        )
+        try await profileObservable.saveImported(profile)
     }
 
     func handleResult(_ result: Result<[URL], Error>) {
