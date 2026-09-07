@@ -44,6 +44,10 @@ public struct AppImportExport: Sendable {
 }
 
 extension AppImportExport {
+    public func isEnabled(_ flag: ABI.ConfigFlag) -> Bool {
+        configBlock().contains(flag)
+    }
+
     public static let dummy = AppImportExport(
         configBlock: { [] },
         importProfile: { _, _ in .forPreviews },
@@ -65,7 +69,7 @@ extension AppImportExport {
         // Fall back to parsing a single module
         do {
             let importedModule: Module
-            if configBlock().contains(.zigCodingImport) {
+            if isEnabled(.zigCodingImport) {
                 let context: ModuleImportContext?
                 if let passphrase {
                     context = .OpenVPN(passphrase: passphrase)
@@ -93,7 +97,7 @@ extension AppImportExport {
 
 extension AppImportExport: ProfileCoder {
     public func string(fromProfile profile: Profile) throws -> String {
-        if configBlock().contains(.zigCodingExport) {
+        if isEnabled(.zigCodingExport) {
             return try ABI.encodeJSON(profile.asTaggedProfile)
         } else {
             // Should be equivalent
@@ -106,7 +110,7 @@ extension AppImportExport: ProfileCoder {
     }
 
     public func profile(fromString string: String, name: String?) throws -> Profile {
-        if configBlock().contains(.zigCodingImport) {
+        if isEnabled(.zigCodingImport) {
             do {
                 // Via ABI (v3)
                 return try importProfile(string, name)

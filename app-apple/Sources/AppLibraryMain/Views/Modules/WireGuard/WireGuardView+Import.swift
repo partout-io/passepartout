@@ -10,9 +10,6 @@ extension WireGuardView {
         @Environment(\.appImportExport)
         private var appImportExport
 
-        @Environment(ConfigObservable.self)
-        private var configObservable
-
         @ObservedObject
         var draft: ModuleDraft<WireGuardModule.Builder>
 
@@ -53,7 +50,7 @@ private extension WireGuardView.ImportModifier {
 
             let parsed: Module
             do {
-                if configObservable.isActive(.zigCodingImport) {
+                if appImportExport.isEnabled(.zigCodingImport) {
                     parsed = try appImportExport.importedModule(
                         from: .file(url),
                         context: .WireGuard

@@ -10,9 +10,6 @@ extension OpenVPNView {
         @Environment(\.appImportExport)
         private var appImportExport
 
-        @Environment(ConfigObservable.self)
-        private var configObservable
-
         @ObservedObject
         var draft: ModuleDraft<OpenVPNModule.Builder>
 
@@ -78,7 +75,7 @@ private extension OpenVPNView.ImportModifier {
 
             let parsed: Module
             do {
-                if configObservable.isActive(.zigCodingImport) {
+                if appImportExport.isEnabled(.zigCodingImport) {
                     parsed = try appImportExport.importedModule(
                         from: .file(url),
                         context: .OpenVPN(passphrase: importPassphrase)
