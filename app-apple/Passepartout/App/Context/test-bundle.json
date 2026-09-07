@@ -1,5 +1,8 @@
 {
-    "zigCoding": {
+    "zigCodingExport": {
+        "rate": 0
+    },
+    "zigCodingImport": {
         "rate": 0
     },
     "zigRuntime": {

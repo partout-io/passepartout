@@ -53,7 +53,7 @@ private extension WireGuardView.ImportModifier {
 
             let parsed: Module
             do {
-                if configObservable.isActive(.zigCoding) {
+                if configObservable.isActive(.zigCodingImport) {
                     parsed = try appImportExport.importedModule(
                         from: .file(url),
                         context: .WireGuard

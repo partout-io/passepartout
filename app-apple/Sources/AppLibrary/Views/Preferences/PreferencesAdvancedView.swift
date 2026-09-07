@@ -38,7 +38,8 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .zigCoding,
+        .zigCodingExport,
+        .zigCodingImport,
         .zigRuntime,
         .zigOpenVPN,
         .zigWireGuard
@@ -49,8 +50,11 @@ private extension PreferencesAdvancedView {
     }
 
     var visibleFlags: [ABI.ConfigFlag] {
-        guard !configObservable.isActive(.enforceZig) else { return [] }
-        return Self.flags
+        var flags = Self.flags
+        if configObservable.isActive(.enforceZig) {
+            flags.removeAll(where: \.isZigFeature)
+        }
+        return flags
     }
 
     @ViewBuilder

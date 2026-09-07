@@ -57,13 +57,7 @@ extension AppImportExport {
 
         // Try to decode a full Partout profile first
         do {
-            if configBlock().contains(.zigCoding) {
-                // Via ABI (v3)
-                return try importProfile(contents, name)
-            } else {
-                // Via legacy Swift (v1/v2)
-                return try legacyRegistry.profile(fromString: contents)
-            }
+            return try profile(fromString: contents, name: name)
         } catch {
             pspLog(.core, .debug, "Unable to decode profile for import: \(error)")
         }
@@ -71,7 +65,7 @@ extension AppImportExport {
         // Fall back to parsing a single module
         do {
             let importedModule: Module
-            if configBlock().contains(.zigCoding) {
+            if configBlock().contains(.zigCodingImport) {
                 let context: ModuleImportContext?
                 if let passphrase {
                     context = .OpenVPN(passphrase: passphrase)
@@ -99,7 +93,7 @@ extension AppImportExport {
 
 extension AppImportExport: ProfileCoder {
     public func string(fromProfile profile: Profile) throws -> String {
-        if configBlock().contains(.zigCoding) {
+        if configBlock().contains(.zigCodingExport) {
             return try ABI.encodeJSON(profile.asTaggedProfile)
         } else {
             // Should be equivalent
@@ -108,16 +102,15 @@ extension AppImportExport: ProfileCoder {
     }
 
     public func profile(fromString string: String) throws -> Profile {
-        if configBlock().contains(.zigCoding) {
-            do {
-                // Via ABI (v3)
-                return try importProfile(string, nil)
-            } catch {
-                // Fall back to legacy (not for v3)
-                return try legacyRegistry.profile(fromString: string, onlyLegacy: true)
-            }
-        } else {
-            // Via legacy Swift (v3/v2/v1)
+        try profile(fromString: string, name: nil)
+    }
+
+    public func profile(fromString string: String, name: String?) throws -> Profile {
+        do {
+            // Via ABI (v3)
+            return try importProfile(string, name)
+        } catch {
+            // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
             return try legacyRegistry.profile(fromString: string)
         }
     }
