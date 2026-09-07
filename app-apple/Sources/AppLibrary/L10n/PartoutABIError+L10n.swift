@@ -6,7 +6,7 @@ import AppStrings
 import CommonLibrary
 import Partout
 
-extension PartoutABIError: dsfaLocalizedError {
+extension PartoutABIError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let fallbackMessage = "\(code.rawValue), payload=\(payload?.debugDescription ?? "null")"
         switch code {
