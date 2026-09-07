@@ -278,7 +278,7 @@ extension AppCoordinator {
                     from: .contents(filename: filename, data: text),
                     passphrase: nil
                 )
-                try await profileObservable.save(profile)
+                try await profileObservable.saveImported(profile)
             } catch {
                 pspLog(.profiles, .error, "Unable to import text: \(error)")
                 errorHandler.handle(error, title: Strings.Global.Actions.import)

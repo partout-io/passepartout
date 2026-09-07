@@ -66,7 +66,7 @@ private extension ProfileImporterModifier {
             from: .file(url),
             passphrase: passphrase
         )
-        try await profileObservable.save(profile)
+        try await profileObservable.saveImported(profile)
     }
 
     func handleResult(_ result: Result<[URL], Error>) {

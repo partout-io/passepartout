@@ -54,6 +54,14 @@ extension ProfileObservable {
         )
     }
 
+    public func saveImported(_ profile: Profile) async throws {
+        try await profileManager.save(
+            profile,
+            isLocal: true,
+            remotelyShared: nil
+        )
+    }
+
     public func saveAll() async {
         await profileManager.resaveAllProfiles()
     }
