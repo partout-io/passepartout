@@ -109,10 +109,15 @@ extension AppImportExport: ProfileCoder {
 
     public func profile(fromString string: String) throws -> Profile {
         if configBlock().contains(.zigCoding) {
-            // Via ABI (v3)
-            return try importProfile(string, nil)
+            do {
+                // Via ABI (v3)
+                return try importProfile(string, nil)
+            } catch {
+                // Fall back to legacy (not for v3)
+                return try legacyRegistry.profile(fromString: string, onlyLegacy: true)
+            }
         } else {
-            // Via legacy Swift (v1/v2)
+            // Via legacy Swift (v3/v2/v1)
             return try legacyRegistry.profile(fromString: string)
         }
     }
