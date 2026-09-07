@@ -78,22 +78,17 @@ private extension OpenVPNView.ImportModifier {
 
             let parsed: Module
             do {
-                // FIXME: ###
-//                if configObservable.isActive(.zigCoding) {
-//                    parsed = try appImportExport.importedModule(
-//                        from: .file(url),
-//                        context: .OpenVPN(passphrase: importPassphrase)
-//                    )
-//                } else {
-//                    guard let impl else {
-//                        fatalError("Requires OpenVPNModule implementation")
-//                    }
-//                    parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
-//                }
-                guard let impl else {
-                    fatalError("Requires OpenVPNModule implementation")
+                if configObservable.isActive(.zigCoding) {
+                    parsed = try appImportExport.importedModule(
+                        from: .file(url),
+                        context: .OpenVPN(passphrase: importPassphrase)
+                    )
+                } else {
+                    guard let impl else {
+                        fatalError("Requires OpenVPNModule implementation")
+                    }
+                    parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
                 }
-                parsed = try impl.importerBlock().module(fromURL: url, object: importPassphrase)
             } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
                 let appError = ABI.AppError(error)

@@ -5,6 +5,8 @@
 import CommonLibrary
 
 public struct AppImportExport: Sendable {
+    public typealias ConfigBlock = @Sendable () -> Set<ABI.ConfigFlag>
+
     public typealias ImportProfile = @Sendable (
         _ json: String,
         _ name: String?
@@ -18,6 +20,7 @@ public struct AppImportExport: Sendable {
     public typealias ExportModule = @Sendable (Module) throws -> String
 
     // ABI proxies
+    private let configBlock: ConfigBlock
     private let importProfile: ImportProfile
     private let importModule: ImportModule
     public let exportModule: ExportModule
@@ -26,11 +29,13 @@ public struct AppImportExport: Sendable {
     private let legacyRegistry: CodingRegistry
 
     public init(
+        configBlock: @escaping ConfigBlock,
         importProfile: @escaping ImportProfile,
         importModule: @escaping ImportModule,
         exportModule: @escaping ExportModule,
         legacyRegistry: CodingRegistry
     ) {
+        self.configBlock = configBlock
         self.importProfile = importProfile
         self.importModule = importModule
         self.exportModule = exportModule
@@ -40,6 +45,7 @@ public struct AppImportExport: Sendable {
 
 extension AppImportExport {
     public static let dummy = AppImportExport(
+        configBlock: { [] },
         importProfile: { _, _ in .forPreviews },
         importModule: { _, _ in OnDemandModule.Builder().build() },
         exportModule: { _ in "" },
@@ -51,22 +57,33 @@ extension AppImportExport {
 
         // Try to decode a full Partout profile first
         do {
-            return try legacyRegistry.profile(fromString: contents)
+            if configBlock().contains(.zigCoding) {
+                // Via ABI (v3)
+                return try importProfile(contents, name)
+            } else {
+                // Via legacy Swift (v1/v2)
+                return try legacyRegistry.profile(fromString: contents)
+            }
         } catch {
             pspLog(.core, .debug, "Unable to decode profile for import: \(error)")
         }
 
         // Fall back to parsing a single module
         do {
-            // FIXME: ###
-//            let context: ModuleImportContext?
-//            if let passphrase {
-//                context = .OpenVPN(passphrase: passphrase)
-//            } else {
-//                context = nil
-//            }
-//            let importedModule = try importModule(contents, context)
-            let importedModule = try legacyRegistry.module(fromContents: contents, object: passphrase)
+            let importedModule: Module
+            if configBlock().contains(.zigCoding) {
+                let context: ModuleImportContext?
+                if let passphrase {
+                    context = .OpenVPN(passphrase: passphrase)
+                } else {
+                    context = nil
+                }
+                // Via ABI (v3)
+                importedModule = try importModule(contents, context)
+            } else {
+                // Via CodingRegistry (v3)
+                importedModule = try legacyRegistry.module(fromContents: contents, object: passphrase)
+            }
             return try Profile(withName: name, singleModule: importedModule)
         } catch {
             pspLog(.core, .error, "Unable to import profile module: \(error)")
@@ -74,30 +91,30 @@ extension AppImportExport {
         }
     }
 
-    // FIXME: ###
-//    public func importedModule(from input: ABI.ProfileImporterInput, context: ModuleImportContext?) throws -> Module {
-//        let (_, contents) = try input.decodedPair()
-//        return try importModule(contents, context)
-//    }
+    public func importedModule(from input: ABI.ProfileImporterInput, context: ModuleImportContext?) throws -> Module {
+        let (_, contents) = try input.decodedPair()
+        return try importModule(contents, context)
+    }
 }
 
 extension AppImportExport: ProfileCoder {
     public func string(fromProfile profile: Profile) throws -> String {
-        // FIXME: ###
-//        try ABI.encodeJSON(profile.asTaggedProfile)
-        try legacyRegistry.string(fromProfile: profile)
+        if configBlock().contains(.zigCoding) {
+            return try ABI.encodeJSON(profile.asTaggedProfile)
+        } else {
+            // Should be equivalent
+            return try legacyRegistry.string(fromProfile: profile)
+        }
     }
 
     public func profile(fromString string: String) throws -> Profile {
-        // FIXME: ###
-//        do {
-//            // Via ABI (v3)
-//            return try importedProfile(from: .contents(filename: "", data: string), passphrase: nil)
-//        } catch {
-//            // Via legacy Swift (v1/v2)
-//            return try legacyRegistry.profile(fromString: string)
-//        }
-        try legacyRegistry.profile(fromString: string)
+        if configBlock().contains(.zigCoding) {
+            // Via ABI (v3)
+            return try importProfile(string, nil)
+        } else {
+            // Via legacy Swift (v1/v2)
+            return try legacyRegistry.profile(fromString: string)
+        }
     }
 }
 

@@ -53,22 +53,17 @@ private extension WireGuardView.ImportModifier {
 
             let parsed: Module
             do {
-                // FIXME: ###
-//                if configObservable.isActive(.zigCoding) {
-//                    parsed = try appImportExport.importedModule(
-//                        from: .file(url),
-//                        context: .WireGuard
-//                    )
-//                } else {
-//                    guard let impl else {
-//                        fatalError("Requires WireGuardModule implementation")
-//                    }
-//                    parsed = try impl.importerBlock().module(fromURL: url, object: nil)
-//                }
-                guard let impl else {
-                    fatalError("Requires WireGuardModule implementation")
+                if configObservable.isActive(.zigCoding) {
+                    parsed = try appImportExport.importedModule(
+                        from: .file(url),
+                        context: .WireGuard
+                    )
+                } else {
+                    guard let impl else {
+                        fatalError("Requires WireGuardModule implementation")
+                    }
+                    parsed = try impl.importerBlock().module(fromURL: url, object: nil)
                 }
-                parsed = try impl.importerBlock().module(fromURL: url, object: nil)
             } catch {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
                 throw ABI.AppError(error)

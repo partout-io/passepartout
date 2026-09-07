@@ -11,6 +11,9 @@ struct AppImportExportTests {
     @Test
     func givenBinaryFile_whenImportProfile_thenThrowsBinaryFile() throws {
         let sut = AppImportExport(
+            configBlock: { [] },
+            importProfile: { _, _ in throw ABI.AppError.importError() },
+            importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { _ in "" },
             legacyRegistry: CodingRegistry(
                 registry: Registry(withKnown: true)
