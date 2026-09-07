@@ -86,9 +86,9 @@ struct AppContextTests {
         #expect(didStartReceiver)
 
         let uploadedProfile = try profile(withName: "Uploaded")
-        let contents = try harness.context.appEncoderObservable.json(fromProfile: uploadedProfile)
+        let contents = try harness.context.appImportExport.json(fromProfile: uploadedProfile)
         receiver.receive(
-            filename: harness.context.appEncoderObservable.defaultFilename(for: uploadedProfile),
+            filename: harness.context.appImportExport.defaultFilename(for: uploadedProfile),
             contents: contents
         )
 
@@ -121,6 +121,15 @@ private struct Harness {
         let registry = CodingRegistry(
             registry: Registry(withKnown: true)
         )
+        let appImportExport = AppImportExport(
+            exportModule: { module in
+                guard let serializable = module as? SerializableModule else {
+                    throw ABI.AppError.encoding()
+                }
+                return try serializable.serialized()
+            },
+            legacyRegistry: registry
+        )
         let preferences = AppPreferencesStore()
         preferences.overwrite {
             $0.skipsPurchases = skipsPurchases
@@ -147,7 +156,7 @@ private struct Harness {
         context = AppContext(
             apiManager: APIManager(),
             appConfiguration: appConfiguration,
-            appEncoder: AppEncoder(coder: registry),
+            appImportExport: appImportExport,
             configManager: ConfigManager(),
             defaults: UserDefaults(),
             extensionInstaller: nil,
