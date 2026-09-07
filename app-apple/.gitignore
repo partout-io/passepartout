@@ -5,7 +5,7 @@ screenshots/results/
 build/
 dist/
 tmp/
-l10n/
+/l10n/
 default.profraw
 .build
 .swiftpm
