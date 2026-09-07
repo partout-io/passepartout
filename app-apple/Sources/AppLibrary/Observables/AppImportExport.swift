@@ -21,7 +21,6 @@ public struct AppImportExport: Sendable {
 
     // ABI proxies
     private let configBlock: ConfigBlock
-    private let importProfile: ImportProfile
     private let importModule: ImportModule
     private let exportModule: ExportModule
 
@@ -30,13 +29,11 @@ public struct AppImportExport: Sendable {
 
     public init(
         configBlock: @escaping ConfigBlock,
-        importProfile: @escaping ImportProfile,
         importModule: @escaping ImportModule,
         exportModule: @escaping ExportModule,
         legacyRegistry: CodingRegistry
     ) {
         self.configBlock = configBlock
-        self.importProfile = importProfile
         self.importModule = importModule
         self.exportModule = exportModule
         self.legacyRegistry = legacyRegistry
@@ -50,7 +47,6 @@ extension AppImportExport {
 
     public static let dummy = AppImportExport(
         configBlock: { [] },
-        importProfile: { _, _ in .forPreviews },
         importModule: { _, _ in OnDemandModule.Builder().build() },
         exportModule: { _ in "" },
         legacyRegistry: CodingRegistry(registry: Registry(allHandlers: []))
@@ -61,7 +57,7 @@ extension AppImportExport {
 
         // Try to decode a full Partout profile first
         do {
-            return try profile(fromString: contents, name: name)
+            return try profile(fromString: contents)
         } catch {
             pspLog(.core, .debug, "Unable to decode profile for import: \(error)")
         }
@@ -117,21 +113,8 @@ extension AppImportExport: ProfileCoder {
     }
 
     public func profile(fromString string: String) throws -> Profile {
-        try profile(fromString: string, name: nil)
-    }
-
-    public func profile(fromString string: String, name: String?) throws -> Profile {
-        if isEnabled(.zigCodingImport) {
-            do {
-                // Via ABI (v3)
-                return try importProfile(string, name)
-            } catch {
-                // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
-                return try legacyRegistry.profile(fromString: string)
-            }
-        } else {
-            return try legacyRegistry.profile(fromString: string)
-        }
+        // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
+        try legacyRegistry.profile(fromString: string)
     }
 }
 

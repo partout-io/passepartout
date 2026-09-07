@@ -123,7 +123,6 @@ private struct Harness {
         )
         let appImportExport = AppImportExport(
             configBlock: { [] },
-            importProfile: { _, _ in throw ABI.AppError.importError() },
             importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { module in
                 guard let serializable = module as? SerializableModule else {

@@ -8,34 +8,30 @@ import Foundation
 import Testing
 
 struct AppImportExportTests {
-    @Test(arguments: [true, false])
-    func givenEffectiveImportFlag_whenDecodeProfile_thenSelectsExpectedDecoder(enabled: Bool) throws {
-        let registry = CodingRegistry(registry: Registry(withKnown: true))
+    let legacyRegistry = CodingRegistry(registry: Registry(withKnown: true))
+
+    @Test
+    func givenEffectiveImportFlag_whenDecodeProfile_thenSelectsExpectedDecoder() throws {
         let legacyProfile = try Profile.Builder(name: "legacy").build()
-        let zigProfile = try Profile.Builder(name: "zig").build()
-        let encoded = try registry.string(fromProfile: legacyProfile)
+        let encoded = try legacyRegistry.string(fromProfile: legacyProfile)
         let sut = AppImportExport(
-            configBlock: { enabled ? [.zigCodingImport] : [] },
-            importProfile: { _, _ in zigProfile },
+            configBlock: { [] },
             importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { _ in "" },
-            legacyRegistry: registry
+            legacyRegistry: legacyRegistry
         )
 
         let decoded = try sut.profile(fromString: encoded)
-
-        #expect(sut.isEnabled(.zigCodingImport) == enabled)
-        #expect(decoded == (enabled ? zigProfile : legacyProfile))
+        #expect(decoded == legacyProfile)
     }
 
     @Test(arguments: [true, false])
     func givenEffectiveExportFlag_whenEncodeModule_thenSelectsExpectedEncoder(enabled: Bool) throws {
         let sut = AppImportExport(
             configBlock: { enabled ? [.zigCodingExport] : [] },
-            importProfile: { _, _ in throw ABI.AppError.importError() },
             importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { _ in "zig" },
-            legacyRegistry: CodingRegistry(registry: Registry(withKnown: true))
+            legacyRegistry: legacyRegistry
         )
 
         let encoded = try sut.exportedModule(from: TestSerializableModule())
@@ -48,12 +44,9 @@ struct AppImportExportTests {
     func givenBinaryFile_whenImportProfile_thenThrowsBinaryFile() throws {
         let sut = AppImportExport(
             configBlock: { [] },
-            importProfile: { _, _ in throw ABI.AppError.importError() },
             importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { _ in "" },
-            legacyRegistry: CodingRegistry(
-                registry: Registry(withKnown: true)
-            )
+            legacyRegistry: legacyRegistry
         )
         let url = URL.temporaryDirectory
             .appending(component: UUID().uuidString)

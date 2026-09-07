@@ -87,9 +87,6 @@ extension AppContext {
             configBlock: {
                 preferences.enabledFlags(of: configManager.activeFlags)
             },
-            importProfile: { text, name in
-                try importer.importProfile(from: text, name: name)
-            },
             importModule: { text, context in
                 try importer.importModule(from: text, context: context)
             },
