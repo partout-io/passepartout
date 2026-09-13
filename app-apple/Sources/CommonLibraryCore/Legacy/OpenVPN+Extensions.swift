@@ -4,5 +4,8 @@
 
 import Partout
 
-extension OpenVPNModule: ConnectionModule {
+extension OpenVPNModule: ConnectionModule, SerializableModule {
+    public var preferredExtension: String {
+        "ovpn"
+    }
 }

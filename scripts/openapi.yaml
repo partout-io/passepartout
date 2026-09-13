@@ -560,22 +560,10 @@ components:
       type: string
       x-enum-varnames:
       - appNotWorking
-      - enforceZig
       - unknown
-      - zigCodingExport
-      - zigCodingImport
-      - zigOpenVPN
-      - zigRuntime
-      - zigWireGuard
       enum:
       - appNotWorking
-      - enforceZig
       - unknown
-      - zigCodingExport
-      - zigCodingImport
-      - zigOpenVPN
-      - zigRuntime
-      - zigWireGuard
     ConfigBundle.Config:
       type: object
       additionalProperties: false

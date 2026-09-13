@@ -64,20 +64,14 @@ extension AppImportExport {
 
         // Fall back to parsing a single module
         do {
-            let importedModule: Module
-            if isEnabled(.zigCodingImport) {
-                let context: ModuleImportContext?
-                if let passphrase {
-                    context = .OpenVPN(passphrase: passphrase)
-                } else {
-                    context = nil
-                }
-                // Via ABI (v3)
-                importedModule = try importModule(contents, context)
+            let context: ModuleImportContext?
+            if let passphrase {
+                context = .OpenVPN(passphrase: passphrase)
             } else {
-                // Via CodingRegistry (v3)
-                importedModule = try legacyRegistry.module(fromContents: contents, object: passphrase)
+                context = nil
             }
+            // Via ABI (v3)
+            let importedModule = try importModule(contents, context)
             return try Profile(withName: name, singleModule: importedModule)
         } catch {
             pspLog(.core, .error, "Unable to import profile module: \(error)")
@@ -91,25 +85,13 @@ extension AppImportExport {
     }
 
     public func exportedModule(from module: Module) throws -> String {
-        if isEnabled(.zigCodingExport) {
-            return try exportModule(module)
-        } else {
-            guard let serializable = module as? SerializableModule else {
-                throw ABI.AppError.encoding()
-            }
-            return try serializable.serialized()
-        }
+        try exportModule(module)
     }
 }
 
 extension AppImportExport: ProfileCoder {
     public func string(fromProfile profile: Profile) throws -> String {
-        if isEnabled(.zigCodingExport) {
-            return try ABI.encodeJSON(profile.asTaggedProfile)
-        } else {
-            // Should be equivalent
-            return try legacyRegistry.string(fromProfile: profile)
-        }
+        try ABI.encodeJSON(profile.asTaggedProfile)
     }
 
     public func profile(fromString string: String) throws -> Profile {

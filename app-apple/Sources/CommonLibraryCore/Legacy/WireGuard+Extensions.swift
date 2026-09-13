@@ -4,7 +4,10 @@
 
 import Partout
 
-extension WireGuardModule: ConnectionModule {
+extension WireGuardModule: ConnectionModule, SerializableModule {
+    public var preferredExtension: String {
+        "conf"
+    }
 }
 
 extension WireGuard.LocalInterface.Builder {
