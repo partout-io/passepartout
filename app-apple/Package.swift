@@ -114,7 +114,6 @@ package.products.append(
 
 package.dependencies.append(contentsOf: [
     .package(path: "../partout"),
-    .package(path: "../partout/cross/apple-legacy"),
     .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
 ])
 
@@ -165,7 +164,6 @@ package.targets.append(contentsOf: [
         dependencies: {
             var list: [Target.Dependency] = [
                 "partout",
-                .product(name: "partout-legacy", package: "apple-legacy"),
                 .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
             ]
@@ -204,9 +202,7 @@ package.targets.append(contentsOf: [
     ),
     .target(
         name: "CommonProvidersCore",
-        dependencies: [
-            .product(name: "partout-legacy", package: "apple-legacy")
-        ]
+        dependencies: ["partout"]
     )
 ])
 #if canImport(Darwin)
