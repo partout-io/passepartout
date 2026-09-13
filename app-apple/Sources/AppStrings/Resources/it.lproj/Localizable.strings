@@ -53,6 +53,7 @@
 "errors.app.parsing" = "Impossibile analizzare.";
 "errors.app.partout" = "Impossibile completare l'operazione (codice=%@).";
 "errors.app.permission_denied" = "Permesso negato.";
+"errors.app.providers_removed" = "Provider rimossi";
 "errors.app.timeout" = "L'operazione ha superato il tempo limite.";
 "errors.app.tunnel" = "Impossibile eseguire l'operazione.";
 "errors.app.web_receiver" = "Impossibile avviare l'importazione. Assicurati che la tua TV sia correttamente connessa alla rete locale.";

@@ -53,6 +53,7 @@
 "errors.app.parsing" = "Kan inte tolka.";
 "errors.app.partout" = "Kan inte slutföra åtgärden (kod=%@).";
 "errors.app.permission_denied" = "Åtkomst nekad.";
+"errors.app.providers_removed" = "Leverantörer borttagna";
 "errors.app.timeout" = "Åtgärden tog för lång tid.";
 "errors.app.tunnel" = "Kunde inte utföra åtgärden.";
 "errors.app.web_receiver" = "Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.";

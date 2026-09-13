@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Kan inte tolka.</string>
     <string name="errors_app_partout">Kan inte slutföra åtgärden (kod=%1$s).</string>
     <string name="errors_app_permission_denied">Åtkomst nekad.</string>
+    <string name="errors_app_providers_removed">Leverantörer borttagna</string>
     <string name="errors_app_timeout">Åtgärden tog för lång tid.</string>
     <string name="errors_app_tunnel">Kunde inte utföra åtgärden.</string>
     <string name="errors_app_web_receiver">Kan inte starta importen. Se till att din TV är korrekt ansluten till det lokala nätverket.</string>

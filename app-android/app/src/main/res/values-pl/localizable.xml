@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Nie można przeanalizować.</string>
     <string name="errors_app_partout">Nie można ukończyć operacji (kod=%1$s).</string>
     <string name="errors_app_permission_denied">Brak uprawnień.</string>
+    <string name="errors_app_providers_removed">Dostawcy usunięci</string>
     <string name="errors_app_timeout">Operacja przekroczyła limit czasu.</string>
     <string name="errors_app_tunnel">Nie można wykonać operacji.</string>
     <string name="errors_app_web_receiver">Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.</string>

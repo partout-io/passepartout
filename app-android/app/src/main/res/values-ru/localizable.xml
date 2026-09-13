@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Не удалось разобрать.</string>
     <string name="errors_app_partout">Не удалось выполнить операцию (код=%1$s).</string>
     <string name="errors_app_permission_denied">Доступ запрещен.</string>
+    <string name="errors_app_providers_removed">Провайдеры удалены</string>
     <string name="errors_app_timeout">Время операции истекло.</string>
     <string name="errors_app_tunnel">Не удалось выполнить операцию.</string>
     <string name="errors_app_web_receiver">Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.</string>

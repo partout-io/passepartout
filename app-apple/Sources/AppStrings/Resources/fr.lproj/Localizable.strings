@@ -53,6 +53,7 @@
 "errors.app.parsing" = "Impossible d'analyser.";
 "errors.app.partout" = "Impossible de terminer l'opération (code=%@).";
 "errors.app.permission_denied" = "Permission refusée.";
+"errors.app.providers_removed" = "Fournisseurs supprimés";
 "errors.app.timeout" = "L'opération a expiré.";
 "errors.app.tunnel" = "Impossible d'exécuter l'opération.";
 "errors.app.web_receiver" = "Impossible de démarrer l'importation. Assurez-vous que votre téléviseur est correctement connecté au réseau local.";

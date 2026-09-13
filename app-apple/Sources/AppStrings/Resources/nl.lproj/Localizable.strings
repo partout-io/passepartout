@@ -53,6 +53,7 @@
 "errors.app.parsing" = "Kan niet parseren.";
 "errors.app.partout" = "Kan bewerking niet voltooien (code=%@).";
 "errors.app.permission_denied" = "Toegang geweigerd.";
+"errors.app.providers_removed" = "Providers verwijderd";
 "errors.app.timeout" = "De bewerking is verlopen.";
 "errors.app.tunnel" = "Actie kan niet worden uitgevoerd.";
 "errors.app.web_receiver" = "Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.";

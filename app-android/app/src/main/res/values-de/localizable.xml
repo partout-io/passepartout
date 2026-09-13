@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Konnte nicht analysiert werden.</string>
     <string name="errors_app_partout">Operation konnte nicht abgeschlossen werden (Code=%1$s).</string>
     <string name="errors_app_permission_denied">Zugriff verweigert.</string>
+    <string name="errors_app_providers_removed">Provider entfernt</string>
     <string name="errors_app_timeout">Die Operation hat das Zeitlimit überschritten.</string>
     <string name="errors_app_tunnel">Aktion konnte nicht ausgeführt werden.</string>
     <string name="errors_app_web_receiver">Import kann nicht gestartet werden. Stellen Sie sicher, dass Ihr Fernseher ordnungsgemäß mit dem lokalen Netzwerk verbunden ist.</string>

@@ -157,7 +157,7 @@ extension ABI.AppErrorCode: StyledOptionalLocalizableEntity {
             case .ineligibleProfile:
                 return V.ineligible
             case .providersRemoved:
-                return "Providers removed"
+                return V.providersRemoved
             default:
                 return nil
             }

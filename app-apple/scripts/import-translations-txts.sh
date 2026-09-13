@@ -54,6 +54,6 @@ done
 
 # Keep generated Swift bindings in sync with the imported Apple translations.
 (
-    cd "$script_dir/../.."
+    cd "$script_dir/.."
     swiftgen config run --config swiftgen.yml
 )

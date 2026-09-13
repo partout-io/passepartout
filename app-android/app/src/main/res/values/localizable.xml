@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Unable to parse.</string>
     <string name="errors_app_partout">Unable to complete operation (code=%1$s).</string>
     <string name="errors_app_permission_denied">Permission denied.</string>
+    <string name="errors_app_providers_removed">Providers removed</string>
     <string name="errors_app_timeout">The operation timed out.</string>
     <string name="errors_app_tunnel">Unable to execute operation.</string>
     <string name="errors_app_web_receiver">Unable to start the import. Make sure that your TV is properly connected to the local network.</string>

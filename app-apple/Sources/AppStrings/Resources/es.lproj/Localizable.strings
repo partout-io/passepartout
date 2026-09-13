@@ -53,6 +53,7 @@
 "errors.app.parsing" = "No se pudo analizar.";
 "errors.app.partout" = "No se pudo completar la operación (código=%@).";
 "errors.app.permission_denied" = "Permiso denegado.";
+"errors.app.providers_removed" = "Proveedores eliminados";
 "errors.app.timeout" = "La operación agotó el tiempo de espera.";
 "errors.app.tunnel" = "No se pudo ejecutar la operación.";
 "errors.app.web_receiver" = "No se puede iniciar la importación. Asegúrate de que tu TV esté correctamente conectada a la red local.";

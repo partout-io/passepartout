@@ -53,6 +53,7 @@
 "errors.app.parsing" = "Не удалось разобрать.";
 "errors.app.partout" = "Не удалось выполнить операцию (код=%@).";
 "errors.app.permission_denied" = "Доступ запрещен.";
+"errors.app.providers_removed" = "Провайдеры удалены";
 "errors.app.timeout" = "Время операции истекло.";
 "errors.app.tunnel" = "Не удалось выполнить операцию.";
 "errors.app.web_receiver" = "Не удается запустить импорт. Убедитесь, что ваш телевизор правильно подключен к локальной сети.";

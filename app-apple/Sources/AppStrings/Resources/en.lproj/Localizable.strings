@@ -455,6 +455,7 @@
 "errors.app.parsing" = "Unable to parse.";
 "errors.app.partout" = "Unable to complete operation (code=%@).";
 "errors.app.permission_denied" = "Permission denied.";
+"errors.app.providers_removed" = "Providers removed";
 "errors.app.timeout" = "The operation timed out.";
 "errors.app.tunnel" = "Unable to execute operation.";
 "errors.app.web_receiver" = "Unable to start the import. Make sure that your TV is properly connected to the local network.";

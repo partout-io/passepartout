@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Kan niet parseren.</string>
     <string name="errors_app_partout">Kan bewerking niet voltooien (code=%1$s).</string>
     <string name="errors_app_permission_denied">Toegang geweigerd.</string>
+    <string name="errors_app_providers_removed">Providers verwijderd</string>
     <string name="errors_app_timeout">De bewerking is verlopen.</string>
     <string name="errors_app_tunnel">Actie kan niet worden uitgevoerd.</string>
     <string name="errors_app_web_receiver">Kan de import niet starten. Zorg ervoor dat uw TV correct verbonden is met het lokale netwerk.</string>

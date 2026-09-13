@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Impossibile analizzare.</string>
     <string name="errors_app_partout">Impossibile completare l\'operazione (codice=%1$s).</string>
     <string name="errors_app_permission_denied">Permesso negato.</string>
+    <string name="errors_app_providers_removed">Provider rimossi</string>
     <string name="errors_app_timeout">L\'operazione ha superato il tempo limite.</string>
     <string name="errors_app_tunnel">Impossibile eseguire l\'operazione.</string>
     <string name="errors_app_web_receiver">Impossibile avviare l\'importazione. Assicurati che la tua TV sia correttamente connessa alla rete locale.</string>

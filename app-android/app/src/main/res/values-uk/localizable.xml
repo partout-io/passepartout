@@ -386,6 +386,7 @@
     <string name="errors_app_parsing">Не вдалося розібрати.</string>
     <string name="errors_app_partout">Не вдалося виконати операцію (код=%1$s).</string>
     <string name="errors_app_permission_denied">Доступ заборонено.</string>
+    <string name="errors_app_providers_removed">Провайдери видалені</string>
     <string name="errors_app_timeout">Час виконання операції вичерпано.</string>
     <string name="errors_app_tunnel">Не вдалося виконати операцію.</string>
     <string name="errors_app_web_receiver">Неможливо розпочати імпорт. Переконайтеся, що ваш телевізор правильно підключений до локальної мережі.</string>

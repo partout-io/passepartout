@@ -206,6 +206,8 @@ public enum Strings {
       }
       /// Permission denied.
       public static let permissionDenied = Strings.tr("Localizable", "errors.app.permission_denied", fallback: "Permission denied.")
+      /// Providers removed
+      public static let providersRemoved = Strings.tr("Localizable", "errors.app.providers_removed", fallback: "Providers removed")
       /// The operation timed out.
       public static let timeout = Strings.tr("Localizable", "errors.app.timeout", fallback: "The operation timed out.")
       /// Unable to execute operation.

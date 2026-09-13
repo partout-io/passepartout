@@ -53,6 +53,7 @@
 "errors.app.parsing" = "Nie można przeanalizować.";
 "errors.app.partout" = "Nie można ukończyć operacji (kod=%@).";
 "errors.app.permission_denied" = "Brak uprawnień.";
+"errors.app.providers_removed" = "Dostawcy usunięci";
 "errors.app.timeout" = "Operacja przekroczyła limit czasu.";
 "errors.app.tunnel" = "Nie można wykonać operacji.";
 "errors.app.web_receiver" = "Nie można rozpocząć importu. Upewnij się, że Twój telewizor jest prawidłowo podłączony do sieci lokalnej.";
