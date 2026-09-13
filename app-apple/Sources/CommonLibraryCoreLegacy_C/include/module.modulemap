@@ -1,0 +1,4 @@
+module CommonLibraryCoreLegacy_C {
+    umbrella header "wireguard/wireguard.h"
+    export *
+}

@@ -164,12 +164,16 @@ package.targets.append(contentsOf: [
         dependencies: {
             var list: [Target.Dependency] = [
                 "partout",
+                "CommonLibraryCoreLegacy_C",
                 .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
                 .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
             ]
             list.append("CommonProviders")
             return list
         }()
+    ),
+    .target(
+        name: "CommonLibraryCoreLegacy_C"
     ),
     .testTarget(
         name: "CommonLibraryTests",

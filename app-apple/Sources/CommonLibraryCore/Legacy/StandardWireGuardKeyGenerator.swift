@@ -10,35 +10,27 @@ public final class StandardWireGuardKeyGenerator: WireGuardKeyGenerator {
     }
 
     public func newPrivateKey() -> String {
-        // FIXME: ###
-        fatalError()
-//        PrivateKey().base64Key
+        PrivateKey().base64Key
     }
 
     public func privateKey(from string: String) throws -> String {
-        // FIXME: ###
-        fatalError()
-//        guard let key = PrivateKey(base64Key: string) else {
-//            throw PartoutError(.parsing)
-//        }
-//        return key.base64Key
+        guard let key = PrivateKey(base64Key: string) else {
+            throw PartoutError(.parsing)
+        }
+        return key.base64Key
     }
 
     public func publicKey(from string: String) throws -> String {
-        // FIXME: ###
-        fatalError()
-//        guard let key = PublicKey(base64Key: string) else {
-//            throw PartoutError(.parsing)
-//        }
-//        return key.base64Key
+        guard let key = PublicKey(base64Key: string) else {
+            throw PartoutError(.parsing)
+        }
+        return key.base64Key
     }
 
     public func publicKey(for privateKey: String) throws -> String {
-        // FIXME: ###
-        fatalError()
-//        guard let key = PrivateKey(base64Key: privateKey) else {
-//            throw PartoutError(.parsing)
-//        }
-//        return key.publicKey.base64Key
+        guard let key = PrivateKey(base64Key: privateKey) else {
+            throw PartoutError(.parsing)
+        }
+        return key.publicKey.base64Key
     }
 }
