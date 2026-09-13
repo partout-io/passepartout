@@ -13,21 +13,7 @@ struct WireGuardImplementationBuilder: Sendable {
 
     func build() -> WireGuardModule.Implementation {
         WireGuardModule.Implementation(
-            keyGenerator: StandardWireGuardKeyGenerator(),
-            importerBlock: { newParser() },
-            validatorBlock: { newParser() },
-            connectionBlock: {
-                let ctx = PartoutLoggerContext($0.profile.id)
-                return try _WireGuardConnectionV2(
-                    ctx,
-                    parameters: $0,
-                    module: $1
-                )
-            }
+            keyGenerator: StandardWireGuardKeyGenerator()
         )
-    }
-
-    private func newParser() -> ModuleImporter & ModuleBuilderValidator {
-        StandardWireGuardParser()
     }
 }

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import Partout
+@_exported import Partout
 
 extension LoggerCategory {
     public static let providers = LoggerCategory(rawValue: "providers")

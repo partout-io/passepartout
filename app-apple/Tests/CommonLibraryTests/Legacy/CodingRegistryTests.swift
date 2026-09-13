@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import PartoutLegacyCore
+@testable import CommonLibraryCore
 import Testing
 
 struct CodingRegistryTests {

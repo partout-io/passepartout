@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-@testable import PartoutLegacyCore
 import Testing
 
 // Decode always probes V3, then V2, then V1, so these legacy decode checks
