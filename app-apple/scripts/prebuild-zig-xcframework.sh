@@ -14,5 +14,5 @@ prebuilts_version=$(tr -d '\r\n' < "$root_dir/.prebuilts-version")
 }
 "$partout_dir/scripts/build-xcframework.sh" \
     "$prebuilts_version" \
-    "$script_dir/../PartoutNative.xcframework" \
-    "$partout_dir/prebuilts"
+    --out "$script_dir/../PartoutNative.xcframework" \
+    --prebuilts-out "$partout_dir/prebuilts"
