@@ -148,7 +148,7 @@ private extension TunnelContext {
             let processor = appConfiguration.makeTunnelProcessor()
             profile = try processor.willProcess(resolvedProfile)
         } catch {
-            pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
+            pspLog(.profiles, .fault, "Unable to decode profile: \(error)")
             throw error
         }
 
