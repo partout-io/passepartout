@@ -279,6 +279,7 @@ components:
       - other
       - partout
       - permissionDenied
+      - providersRemoved
       - rateLimit
       - systemExtension
       - timeout
@@ -315,6 +316,7 @@ components:
       - other
       - partout
       - permissionDenied
+      - providersRemoved
       - rateLimit
       - systemExtension
       - timeout

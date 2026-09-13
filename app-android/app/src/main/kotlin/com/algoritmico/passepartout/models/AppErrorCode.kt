@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,missingProviderOption,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
+ * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,missingProviderOption,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,providersRemoved,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
  */
 @Serializable
 enum class AppErrorCode(val value: kotlin.String) {
@@ -107,6 +107,9 @@ enum class AppErrorCode(val value: kotlin.String) {
 
     @SerialName(value = "permissionDenied")
     permissionDenied("permissionDenied"),
+
+    @SerialName(value = "providersRemoved")
+    providersRemoved("providersRemoved"),
 
     @SerialName(value = "rateLimit")
     rateLimit("rateLimit"),

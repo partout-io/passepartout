@@ -28,7 +28,11 @@ extension PartoutProviderRuntime: @retroactive TunnelBackendProtocol {
 }
 
 extension TunnelContext {
-    public static func forProduction(
+    enum RuntimeError: Error {
+        case unsupportedProviders
+    }
+
+    static func forProduction(
         neProvider: NEPacketTunnelProvider,
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore
@@ -84,10 +88,6 @@ private extension TunnelContext {
         let environment: TunnelEnvironment
     }
 
-    enum RuntimeError: Error {
-        case unsupportedProviders
-    }
-
     static func newZigRuntime(
         neProvider: NEPacketTunnelProvider,
         bundleIdentifier: String,
@@ -100,23 +100,53 @@ private extension TunnelContext {
         // This depends on distribution target
         let defaults = appConfiguration.makeTunnelDefaults()
 
-        // Profile decoding requires no registry. Parse as TaggedProfile
-        // and rethrow on failure.
-        let codingPair = appConfiguration.makeKeychainAndNECoder(
+        // This is only to get the profile ID.
+        let plainCodingPair = appConfiguration.makeKeychainAndNECoder(
             .global,
             bundleIdentifier: bundleIdentifier,
-            coder: TaggedProfileCoder()
+            coder: TaggedProfileCoder(resolved: false)
         )
-        let decoder = codingPair.neCoder
+
+        // Profile decoding requires no registry. Parse as TaggedProfile
+        // and rethrow on failure.
+        let resolvingCodingPair = appConfiguration.makeKeychainAndNECoder(
+            .global,
+            bundleIdentifier: bundleIdentifier,
+            coder: TaggedProfileCoder(resolved: true)
+        )
 
         // Validate decoded profile
         let profile: Profile
         do {
-            let originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
+            let originalProfile = try Profile(
+                withNEProvider: neProvider,
+                decoder: plainCodingPair.neCoder
+            )
+            let resolvedProfile: Profile
+            do {
+                resolvedProfile = try Profile(
+                    withNEProvider: neProvider,
+                    decoder: resolvingCodingPair.neCoder
+                )
+            } catch let error as RuntimeError {
+                let env = UserDefaultsEnvironment(
+                    profileId: originalProfile.id,
+                    defaults: defaults
+                )
+                // XXX: Required to show error in UI
+                env.setEnvironmentValue(
+                    ConnectionStatus.disconnected,
+                    forKey: TunnelEnvironmentKeys.connectionStatus
+                )
+                env.setEnvironmentValue(
+                    ABI.AppErrorCode.providersRemoved.toLastErrorCode,
+                    forKey: TunnelEnvironmentKeys.lastErrorCode
+                )
+                throw error
+            }
+            assert(originalProfile == resolvedProfile)
             let processor = appConfiguration.makeTunnelProcessor()
-            profile = try processor.willProcess(originalProfile)
-        } catch let error as RuntimeError {
-            throw error
+            profile = try processor.willProcess(resolvedProfile)
         } catch {
             pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
             throw error
@@ -167,13 +197,16 @@ private extension TunnelContext {
 }
 
 private struct TaggedProfileCoder: ProfileCoder {
+    let resolved: Bool
+
     func profile(fromString string: String) throws -> Profile {
         let profile = try ABI.decodeJSON(TaggedProfile.self, from: string)
+        guard resolved else {  return try profile.asProfile() }
 
         // Profiles with custom (provider) modules require the Swift runtime
         return try profile.asProfile { _ in
             pspLog(profile.id, .profiles, .fault,
-                   "Custom modules are not supported by Zig, falling back to Swift runtime")
+                   "Custom modules (providers) are not supported")
             throw TunnelContext.RuntimeError.unsupportedProviders
         }
     }

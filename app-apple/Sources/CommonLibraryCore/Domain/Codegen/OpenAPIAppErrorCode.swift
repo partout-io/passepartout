@@ -32,6 +32,7 @@ public enum OpenAPIAppErrorCode: String, Sendable, Codable, CaseIterable {
     case other = "other"
     case partout = "partout"
     case permissionDenied = "permissionDenied"
+    case providersRemoved = "providersRemoved"
     case rateLimit = "rateLimit"
     case systemExtension = "systemExtension"
     case timeout = "timeout"
