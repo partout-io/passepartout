@@ -131,7 +131,9 @@ extension AppImportExport {
         let string = try string(fromProfile: profile)
         let data = Data(string.utf8)
         let filename = "\(profile.id.uuidString).json"
-        let path = FileManager.default.makeTemporaryURL(filename: filename).filePath()
+        let path = FileManager.default.temporaryDirectory
+            .appending(component: filename)
+            .filePath()
         try data.write(toFile: path)
         return path
     }

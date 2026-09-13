@@ -193,15 +193,6 @@ extension ProfileEditor {
             throw ABI.AppError.noActiveModules
         }
 
-        // Validate builders if implementation supports it
-        try editableProfile.modules.forEach {
-            do {
-                try registryObservable?.validate($0)
-            } catch {
-                throw ABI.AppError.malformedModule($0, reason: error)
-            }
-        }
-
         let builder = try editableProfile.builder()
         let profile = try builder.build()
 

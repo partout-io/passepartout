@@ -134,7 +134,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user caches directory: \(error)")
+            NSLog("Unable to create user caches directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
@@ -143,7 +143,7 @@ private extension URL {
         do {
             return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         } catch {
-            SimpleLogDestination().append(.fault, "Unable to create user documents directory: \(error)")
+            NSLog("Unable to create user documents directory: \(error)")
             return URL(fileURLWithPath: NSTemporaryDirectory())
         }
     }
