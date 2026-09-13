@@ -124,12 +124,7 @@ private struct Harness {
         let appImportExport = AppImportExport(
             configBlock: { [] },
             importModule: { _, _ in throw ABI.AppError.importError() },
-            exportModule: { module in
-                guard let serializable = module as? SerializableModule else {
-                    throw ABI.AppError.encoding()
-                }
-                return try serializable.serialized()
-            },
+            exportModule: { _ in throw ABI.AppError.encoding() },
             legacyRegistry: registry
         )
         let preferences = AppPreferencesStore()
