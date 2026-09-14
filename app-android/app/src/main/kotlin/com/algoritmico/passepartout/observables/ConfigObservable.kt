@@ -78,9 +78,10 @@ class ConfigObservable(
     }
 
     private companion object {
-        val experimentalFeatureFlags = setOf(
-            ConfigFlag.zigRuntime
-        )
+//        val experimentalFeatureFlags = setOf(
+//            ConfigFlag.zigRuntime
+//        )
+        val experimentalFeatureFlags = emptySet<ConfigFlag>()
     }
 
     private fun JsonElement.configData(): Map<ConfigFlag, JsonElement> {

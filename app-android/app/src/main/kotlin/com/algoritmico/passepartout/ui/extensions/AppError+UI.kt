@@ -54,6 +54,7 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.partout ->
             cause?.partoutDescription() ?: detail ?: stringResource(R.string.errors_app_partout)
         AppErrorCode.permissionDenied -> stringResource(R.string.errors_app_permission_denied)
+        AppErrorCode.providersRemoved -> stringResource(R.string.errors_app_providers_removed)
         AppErrorCode.timeout -> stringResource(R.string.errors_app_timeout)
         AppErrorCode.webReceiver -> stringResource(R.string.errors_app_web_receiver)
         AppErrorCode.ineligibleProfile,
