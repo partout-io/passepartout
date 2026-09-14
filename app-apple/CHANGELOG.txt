@@ -1,3 +1,1 @@
-* Warn about upcoming providers removal on connect (#1938)
-* WireGuard: Fix encoding before feeding to tunnel (#1936)
-* WireGuard: Revert "Prefer IPv6" option until a better fix (#1931)"
+* Drop Partout legacy and support for providers (#1944)
