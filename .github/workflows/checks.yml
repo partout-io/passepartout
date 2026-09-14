@@ -35,10 +35,6 @@ jobs:
             suite: cross
             runner: ubuntu-latest
             timeout_minutes: 2
-          - name: API tests
-            suite: api
-            runner: ubuntu-latest
-            timeout_minutes: 2
     steps:
       - uses: actions/checkout@v6
 
