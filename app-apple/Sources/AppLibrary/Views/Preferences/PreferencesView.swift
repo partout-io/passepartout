@@ -51,7 +51,7 @@ public struct PreferencesView: View {
             if appConfiguration.bundle.distributionTarget.supportsIAP {
                 enablesPurchasesSection
             }
-            if iapObservable.isBeta && isEnabled(.zigRuntime) {
+            if iapObservable.isBeta {
                 cryptoBackendSection
             }
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {

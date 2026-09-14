@@ -42,11 +42,10 @@ struct AppPreferencesTests {
     @Test
     func givenExperimental_whenIgnoreFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.unknown, .zigRuntime]
-        sut.experimental.ignoredConfigFlags = [.appNotWorking, .unknown]
-        #expect(sut.isFlagEnabled(.zigRuntime))
+        sut.configFlags = [.unknown, .appNotWorking]
+        sut.experimental.ignoredConfigFlags = [.unknown]
+        #expect(sut.isFlagEnabled(.appNotWorking))
         #expect(!sut.isFlagEnabled(.unknown))
-        #expect(!sut.isFlagEnabled(.appNotWorking))
     }
 
     @Test
@@ -61,54 +60,39 @@ struct AppPreferencesTests {
     func givenExperimental_whenEnableFlags_thenIsApplied() {
         var sut: ABI.AppPreferences = .default()
         sut.configFlags = [.unknown]
-        sut.experimental.enabledConfigFlags = [.zigRuntime]
+        sut.experimental.enabledConfigFlags = [.appNotWorking]
 
         #expect(sut.isFlagEnabled(.unknown))
-        #expect(sut.isFlagEnabled(.zigRuntime))
-        #expect(sut.enabledFlags() == [.unknown, .zigRuntime])
+        #expect(sut.isFlagEnabled(.appNotWorking))
+        #expect(sut.enabledFlags() == [.unknown, .appNotWorking])
     }
 
     @Test
     func givenExperimental_whenEnableAndIgnoreSameFlag_thenIgnoreWins() {
         var sut: ABI.AppPreferences = .default()
         sut.configFlags = [.unknown]
-        sut.experimental.ignoredConfigFlags = [.zigRuntime]
-        sut.experimental.enabledConfigFlags = [.zigRuntime]
+        sut.experimental.ignoredConfigFlags = [.appNotWorking]
+        sut.experimental.enabledConfigFlags = [.appNotWorking]
 
-        #expect(!sut.isFlagEnabled(.zigRuntime))
+        #expect(!sut.isFlagEnabled(.appNotWorking))
         #expect(sut.enabledFlags() == [.unknown])
     }
 
     @Test
-    func givenEnforcedZig_whenOverrideZigFlags_thenRemoteValuesWin() {
+    func givenProvidedFlags_whenEnableFlags_thenUsesProvidedValues() {
         var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.enforceZig, .zigRuntime, .zigWireGuard]
-        sut.experimental.ignoredConfigFlags = [.zigRuntime, .zigWireGuard]
-        sut.experimental.enabledConfigFlags = [.zigOpenVPN]
+        sut.configFlags = [.appNotWorking]
 
-        #expect(sut.isFlagEnabled(.zigRuntime))
-        #expect(!sut.isFlagEnabled(.zigOpenVPN))
-        #expect(sut.isFlagEnabled(.zigWireGuard))
-        #expect(sut.enabledFlags() == [.enforceZig, .zigRuntime, .zigWireGuard])
-    }
+        let remoteFlags: Set<ABI.ConfigFlag> = [.unknown]
 
-    @Test
-    func givenEnforcedZigInProvidedFlags_whenOverrideFlags_thenProvidedRemoteValuesWin() {
-        var sut: ABI.AppPreferences = .default()
-        sut.configFlags = [.zigOpenVPN]
-        sut.experimental.ignoredConfigFlags = [.unknown, .zigRuntime]
-        sut.experimental.enabledConfigFlags = [.appNotWorking, .zigOpenVPN]
-
-        let remoteFlags: Set<ABI.ConfigFlag> = [.enforceZig, .unknown, .zigRuntime]
-
-        #expect(sut.enabledFlags(of: remoteFlags) == [.appNotWorking, .enforceZig, .zigRuntime])
+        #expect(sut.enabledFlags(of: remoteFlags) == [.unknown])
     }
 }
 
 private extension AppPreferencesTests {
     static func preferences() -> ABI.AppPreferences {
         var preferences: ABI.AppPreferences = .default()
-        preferences.configFlags = [.unknown, .zigRuntime]
+        preferences.configFlags = [.unknown, .appNotWorking]
         preferences.deviceId = "DeviceID"
         preferences.dnsFallsBack = false
         preferences.experimental.ignoredConfigFlags = [.appNotWorking]

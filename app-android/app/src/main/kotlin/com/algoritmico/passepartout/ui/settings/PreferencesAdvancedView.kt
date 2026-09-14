@@ -6,7 +6,6 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ListItem
@@ -26,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.disable
 import com.algoritmico.passepartout.business.extensions.enable
-import com.algoritmico.passepartout.business.extensions.isAllowed
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
@@ -41,7 +39,6 @@ import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
-import com.algoritmico.passepartout.ui.theme.themeListSection
 import kotlinx.coroutines.launch
 
 @Composable
@@ -211,10 +208,12 @@ private fun ConfigPreferencePickerRow(
     )
 }
 
-private val advancedFlags = listOf(
-    ConfigFlag.zigRuntime,
-    ConfigFlag.zigOpenVPN,
-    ConfigFlag.zigWireGuard
+//private val advancedFlags = listOf(
+//    ConfigFlag.zigRuntime,
+//    ConfigFlag.zigOpenVPN,
+//    ConfigFlag.zigWireGuard
+//)
+private val advancedFlags = emptyList<ConfigFlag>(
 )
 
 private enum class ConfigFlagPreference {

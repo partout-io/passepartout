@@ -32,7 +32,7 @@ extension ABI.AppProduct: AppFeatureProviding {
         // MARK: Discontinued
 
         case .Features.allProviders:
-            return [.providers]
+            return []
 
         case .Features.networkSettings:
             return [.dns, .httpProxy, .routing]

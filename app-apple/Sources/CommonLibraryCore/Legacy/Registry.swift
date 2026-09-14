@@ -33,15 +33,6 @@ public final class Registry: Sendable {
     }
 }
 
-// MARK: - ConnectionFactory
-
-extension Registry: ConnectionFactory {
-    public func connection(for connectionModule: ConnectionModule, parameters: ConnectionParameters) throws -> Connection {
-        let impl = implementation(for: connectionModule.moduleType)
-        return try connectionModule.newConnection(with: impl, parameters: parameters)
-    }
-}
-
 // MARK: ModuleRegistry
 
 extension Registry: ModuleRegistry {

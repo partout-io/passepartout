@@ -151,10 +151,7 @@ private extension ProfileEditView {
     }
 
     var addModuleMenu: some View {
-        AddModuleMenu(
-            moduleTypes: availableTypes,
-            withProviderType: appConfiguration.bundle.distributionTarget.supportsPaidFeatures
-        ) {
+        AddModuleMenu(moduleTypes: availableTypes) {
             flow?.onNewModule($0)
         } label: {
             Text(Strings.Views.Profile.Rows.addModule)

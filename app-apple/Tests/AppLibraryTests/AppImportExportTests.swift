@@ -11,7 +11,7 @@ struct AppImportExportTests {
     let legacyRegistry = CodingRegistry(registry: Registry(withKnown: true))
 
     @Test
-    func givenEffectiveImportFlag_whenDecodeProfile_thenSelectsExpectedDecoder() throws {
+    func givenLegacyProfile_whenDecodeProfile_thenUsesLegacyRegistry() throws {
         let legacyProfile = try Profile.Builder(name: "legacy").build()
         let encoded = try legacyRegistry.string(fromProfile: legacyProfile)
         let sut = AppImportExport(
@@ -25,19 +25,18 @@ struct AppImportExportTests {
         #expect(decoded == legacyProfile)
     }
 
-    @Test(arguments: [true, false])
-    func givenEffectiveExportFlag_whenEncodeModule_thenSelectsExpectedEncoder(enabled: Bool) throws {
+    @Test
+    func givenModule_whenExport_thenUsesABIExporter() throws {
         let sut = AppImportExport(
-            configBlock: { enabled ? [.zigCodingExport] : [] },
+            configBlock: { [] },
             importModule: { _, _ in throw ABI.AppError.importError() },
-            exportModule: { _ in "zig" },
+            exportModule: { _ in "exported" },
             legacyRegistry: legacyRegistry
         )
 
-        let encoded = try sut.exportedModule(from: TestSerializableModule())
+        let encoded = try sut.exportedModule(from: OnDemandModule.Builder().build())
 
-        #expect(sut.isEnabled(.zigCodingExport) == enabled)
-        #expect(encoded == (enabled ? "zig" : "legacy"))
+        #expect(encoded == "exported")
     }
 
     @Test
@@ -65,13 +64,5 @@ struct AppImportExportTests {
             throw error
         }
         #expect(didThrowBinaryFile)
-    }
-}
-
-private struct TestSerializableModule: SerializableModule {
-    let preferredExtension = "test"
-
-    func serialized() throws -> String {
-        "legacy"
     }
 }

@@ -279,6 +279,7 @@ components:
       - other
       - partout
       - permissionDenied
+      - providersRemoved
       - rateLimit
       - systemExtension
       - timeout
@@ -315,6 +316,7 @@ components:
       - other
       - partout
       - permissionDenied
+      - providersRemoved
       - rateLimit
       - systemExtension
       - timeout
@@ -334,7 +336,6 @@ components:
       - httpProxy
       - onDemand
       - otp
-      - providers
       - routing
       - sharing
       enum:
@@ -343,7 +344,6 @@ components:
       - httpProxy
       - onDemand
       - otp
-      - providers
       - routing
       - sharing
     AppPreferenceKey:
@@ -558,22 +558,10 @@ components:
       type: string
       x-enum-varnames:
       - appNotWorking
-      - enforceZig
       - unknown
-      - zigCodingExport
-      - zigCodingImport
-      - zigOpenVPN
-      - zigRuntime
-      - zigWireGuard
       enum:
       - appNotWorking
-      - enforceZig
       - unknown
-      - zigCodingExport
-      - zigCodingImport
-      - zigOpenVPN
-      - zigRuntime
-      - zigWireGuard
     ConfigBundle.Config:
       type: object
       additionalProperties: false

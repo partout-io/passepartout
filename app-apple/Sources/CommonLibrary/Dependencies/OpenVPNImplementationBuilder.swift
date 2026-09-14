@@ -22,31 +22,6 @@ struct OpenVPNImplementationBuilder: Sendable {
     }
 
     func build() -> OpenVPNModule.Implementation {
-        OpenVPNModule.Implementation(
-            importerBlock: { StandardOpenVPNParser() },
-            connectionBlock: {
-                try crossConnection(with: $0, module: $1)
-            }
-        )
-    }
-}
-
-private extension OpenVPNImplementationBuilder {
-    func crossConnection(
-        with parameters: ConnectionParameters,
-        module: OpenVPNModule
-    ) throws -> Connection {
-        let ctx = PartoutLoggerContext(parameters.profile.id)
-        var options = OpenVPNConnectionOptions()
-        options.writeTimeout = TimeInterval(parameters.options.linkWriteTimeout) / 1000.0
-        options.minDataCountInterval = TimeInterval(parameters.options.minDataCountInterval) / 1000.0
-//        let flags = configBlock()
-        return try _OpenVPNConnectionV3(
-            ctx,
-            parameters: parameters,
-            module: module,
-            cachesURL: cachesURL,
-            options: options
-        )
+        OpenVPNModule.Implementation()
     }
 }

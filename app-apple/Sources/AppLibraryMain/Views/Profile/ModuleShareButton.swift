@@ -27,7 +27,8 @@ private struct SerializedModuleRepresentation: Transferable {
 
     static var transferRepresentation: some TransferRepresentation {
         ProxyRepresentation { subject in
-            let url = FileManager.default.makeTemporaryURL(filename: subject.file.filename)
+            let url = FileManager.default.temporaryDirectory
+                .appending(component: subject.file.filename)
             try subject.file.content.write(to: url, atomically: true, encoding: .utf8)
             return url
         }

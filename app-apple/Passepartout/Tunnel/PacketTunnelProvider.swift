@@ -69,11 +69,15 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         }())
 
         // Create the tunnel context
-        context = try await TunnelContext.forProduction(
-            neProvider: self,
-            appConfiguration: appConfiguration,
-            preferences: preferences
-        )
+        do {
+            context = try await TunnelContext.forProduction(
+                neProvider: self,
+                appConfiguration: appConfiguration,
+                preferences: preferences
+            )
+        } catch TunnelContext.RuntimeError.unsupportedProviders {
+            //
+        }
         context?.log(.core, .notice, "Start PTP")
         try await context?.start(isInteractive: isInteractive)
     }

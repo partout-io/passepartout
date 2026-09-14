@@ -181,7 +181,8 @@ extension ABI.AppConfiguration {
     public func makeRegistry(
         deviceId: String,
         cachesURL: URL,
-        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>
+        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>,
+        wgValidateBlock: @escaping @Sendable (String) throws -> Void
     ) -> CodingRegistry {
         let customHandlers: [ModuleHandler] = [
             ProviderModule.moduleHandler
@@ -193,7 +194,8 @@ extension ABI.AppConfiguration {
                 configBlock: configBlock
             ).build(),
             WireGuardImplementationBuilder(
-                configBlock: configBlock
+                configBlock: configBlock,
+                validateBlock: wgValidateBlock
             ).build()
         ]
         // Deprecated
@@ -242,7 +244,8 @@ extension ABI.AppConfiguration {
         deviceId: String,
         preferences: AppPreferencesStore,
         configManager: ConfigManager,
-        cachesURL: URL
+        cachesURL: URL,
+        wgValidateBlock: @escaping @Sendable (String) throws -> Void
     ) -> CodingRegistry {
         assert(deviceId == preferences[\.deviceId])
         return makeRegistry(
@@ -251,7 +254,8 @@ extension ABI.AppConfiguration {
             configBlock: { [weak configManager, weak preferences] in
                 guard let configManager, let preferences else { return [] }
                 return preferences.enabledFlags(of: configManager.activeFlags)
-            }
+            },
+            wgValidateBlock: wgValidateBlock
         )
     }
 
@@ -266,7 +270,8 @@ extension ABI.AppConfiguration {
             cachesURL: cachesURL,
             configBlock: {
                 preferences.enabledFlags()
-            }
+            },
+            wgValidateBlock: { _ in }
         )
     }
 

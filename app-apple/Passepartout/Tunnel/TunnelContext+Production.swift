@@ -28,7 +28,11 @@ extension PartoutProviderRuntime: @retroactive TunnelBackendProtocol {
 }
 
 extension TunnelContext {
-    public static func forProduction(
+    enum RuntimeError: Error {
+        case unsupportedProviders
+    }
+
+    static func forProduction(
         neProvider: NEPacketTunnelProvider,
         appConfiguration: ABI.AppConfiguration,
         preferences: AppPreferencesStore
@@ -40,29 +44,13 @@ extension TunnelContext {
         let cachesURL = FileManager.default.temporaryDirectory
 
         // Pick runtime based on config flag
-        let runtime = try {
-            if preferences.isFlagEnabled(.zigRuntime) {
-                do {
-                    return try newZigRuntime(
-                        neProvider: neProvider,
-                        bundleIdentifier: bundleIdentifier,
-                        appConfiguration: appConfiguration,
-                        preferences: preferences,
-                        cachesURL: cachesURL
-                    )
-                } catch RuntimeError.unsupportedProviders,
-                        RuntimeError.disabledModule {
-                    // Fall back to Swift
-                }
-            }
-            return try newSwiftRuntime(
-                neProvider: neProvider,
-                bundleIdentifier: bundleIdentifier,
-                appConfiguration: appConfiguration,
-                preferences: preferences,
-                cachesURL: cachesURL
-            )
-        }()
+        let runtime = try newZigRuntime(
+            neProvider: neProvider,
+            bundleIdentifier: bundleIdentifier,
+            appConfiguration: appConfiguration,
+            preferences: preferences,
+            cachesURL: cachesURL
+        )
 
         // Create IAPManager for receipt verification
         let iapManager = appConfiguration.makeIAPManager(
@@ -100,11 +88,6 @@ private extension TunnelContext {
         let environment: TunnelEnvironment
     }
 
-    enum RuntimeError: Error {
-        case disabledModule
-        case unsupportedProviders
-    }
-
     static func newZigRuntime(
         neProvider: NEPacketTunnelProvider,
         bundleIdentifier: String,
@@ -117,38 +100,56 @@ private extension TunnelContext {
         // This depends on distribution target
         let defaults = appConfiguration.makeTunnelDefaults()
 
-        // Profile decoding requires no registry. Parse as TaggedProfile
-        // and rethrow on failure.
-        let codingPair = appConfiguration.makeKeychainAndNECoder(
+        // This is only to get the profile ID.
+        let plainCodingPair = appConfiguration.makeKeychainAndNECoder(
             .global,
             bundleIdentifier: bundleIdentifier,
-            coder: TaggedProfileCoder()
+            coder: TaggedProfileCoder(resolved: false)
         )
-        let decoder = codingPair.neCoder
+
+        // Profile decoding requires no registry. Parse as TaggedProfile
+        // and rethrow on failure.
+        let resolvingCodingPair = appConfiguration.makeKeychainAndNECoder(
+            .global,
+            bundleIdentifier: bundleIdentifier,
+            coder: TaggedProfileCoder(resolved: true)
+        )
 
         // Validate decoded profile
         let profile: Profile
         do {
-            let originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
+            let originalProfile = try Profile(
+                withNEProvider: neProvider,
+                decoder: plainCodingPair.neCoder
+            )
+            let resolvedProfile: Profile
+            do {
+                resolvedProfile = try Profile(
+                    withNEProvider: neProvider,
+                    decoder: resolvingCodingPair.neCoder
+                )
+            } catch let error as RuntimeError {
+                let env = UserDefaultsEnvironment(
+                    profileId: originalProfile.id,
+                    defaults: defaults
+                )
+                // XXX: Required to show error in UI
+                env.setEnvironmentValue(
+                    ConnectionStatus.disconnected,
+                    forKey: TunnelEnvironmentKeys.connectionStatus
+                )
+                env.setEnvironmentValue(
+                    ABI.AppErrorCode.providersRemoved.toLastErrorCode,
+                    forKey: TunnelEnvironmentKeys.lastErrorCode
+                )
+                throw error
+            }
+            assert(originalProfile == resolvedProfile)
             let processor = appConfiguration.makeTunnelProcessor()
-            profile = try processor.willProcess(originalProfile)
-        } catch let error as RuntimeError {
-            throw error
+            profile = try processor.willProcess(resolvedProfile)
         } catch {
-            pspLog(.profiles, .fault, "Unable to decode profile in Zig (legacy?): \(error)")
+            pspLog(.profiles, .fault, "Unable to decode profile: \(error)")
             throw error
-        }
-
-        let activeModules = profile.activeModules
-        if activeModules.contains(where: { $0 is OpenVPNModule }),
-           !preferences.isFlagEnabled(.zigOpenVPN) {
-            pspLog(profile.id, .profiles, .fault, "Zig/OpenVPN disabled, falling back to Swift runtime")
-            throw RuntimeError.disabledModule
-        }
-        if activeModules.contains(where: { $0 is WireGuardModule }),
-           !preferences.isFlagEnabled(.zigWireGuard) {
-            pspLog(profile.id, .profiles, .fault, "Zig/WireGuard disabled, falling back to Swift runtime")
-            throw RuntimeError.disabledModule
         }
 
         // Replace the bootstrap logger with the profile-aware logger configured
@@ -193,110 +194,19 @@ private extension TunnelContext {
             environment: backend.environment
         )
     }
-
-    static func newSwiftRuntime(
-        neProvider: NEPacketTunnelProvider,
-        bundleIdentifier: String,
-        appConfiguration: ABI.AppConfiguration,
-        preferences: AppPreferencesStore,
-        cachesURL: URL
-    ) throws -> ProductionRuntime {
-        pspLog(.core, .info, "Using Swift runtime")
-
-        // Create global registry
-        let registry = appConfiguration.makeRegistryForTunnel(
-            preferences: preferences,
-            cachesURL: cachesURL
-        )
-        let codingPair = appConfiguration.makeKeychainAndNECoder(
-            .global,
-            bundleIdentifier: bundleIdentifier,
-            coder: registry
-        )
-        let decoder = codingPair.neCoder
-
-        // Decode profile from NE provider
-        let originalProfile: Profile
-        let processedProfile: Profile
-        do {
-            originalProfile = try Profile(withNEProvider: neProvider, decoder: decoder)
-            let resolvedProfile = try registry.resolvedProfile(originalProfile)
-            let processor = appConfiguration.makeTunnelProcessor()
-            processedProfile = try processor.willProcess(resolvedProfile)
-        } catch {
-            pspLog(.profiles, .fault, "Unable to decode or process profile: \(error)")
-            throw error
-        }
-        let environment = appConfiguration.makeTunnelEnvironment(profileId: processedProfile.id)
-
-        // Update the logger now that we have a context
-        assert(processedProfile.id == originalProfile.id)
-        let logFormatter = appConfiguration.makeLogFormatter()
-        let ctx = pspLogRegister(
-            for: .tunnelProfile(processedProfile.id),
-            with: appConfiguration,
-            preferences: preferences,
-            localURL: appConfiguration.urlForTunnelLog,
-            localMapper: logFormatter.localMapper
-        )
-
-        // Decode preferences and config flags
-        pspLog(ctx.profileId, .core, .info, "Tunnel profile initialized")
-        let configFlags = preferences[\.configFlags]
-        pspLog(ctx.profileId, .core, .info, "\tActive config flags: \(configFlags)")
-        pspLog(ctx.profileId, .core, .info, "\tIgnored config flags: \(preferences[\.experimental.ignoredConfigFlags])")
-        pspLog(ctx.profileId, .core, .info, "\tEnabled config flags: \(preferences[\.experimental.enabledConfigFlags])")
-
-        // Create TunnelController for connnection management
-        let neTunnelController = NETunnelController(
-            provider: neProvider,
-            profile: processedProfile,
-            options: {
-                var options = TunnelControllerOptions()
-                if preferences[\.dnsFallsBack] {
-                    options.dnsFallbackServers = appConfiguration.constants.tunnel.dnsFallbackServers
-                }
-                return options
-            }()
-        )
-
-        // Create daemon
-        let factory = NativeSocketFactory(ctx, betterPathFactory: NEBetterPathStreamFactory(ctx))
-        let reachability = NEObservablePath(ctx)
-        let connectionOptions = ConnectionParameters.Options()
-        let connectionParameters = ConnectionParameters(
-            profile: processedProfile,
-            controller: neTunnelController,
-            factory: factory,
-            reachability: reachability,
-            environment: environment,
-            options: connectionOptions
-        )
-        let messageHandler = DefaultMessageHandler(ctx, environment: environment)
-        let params = SimpleConnectionDaemon.Parameters(
-            connectionFactory: registry,
-            connectionParameters: connectionParameters,
-            messageHandler: messageHandler,
-            startsImmediately: true,
-            cancelsUnrecoverable: false // Prevents on-demand reconnection
-        )
-        let backend = try SimpleConnectionDaemon(params: params)
-        return ProductionRuntime(
-            backend: backend,
-            originalProfile: originalProfile,
-            environment: environment
-        )
-    }
 }
 
 private struct TaggedProfileCoder: ProfileCoder {
+    let resolved: Bool
+
     func profile(fromString string: String) throws -> Profile {
         let profile = try ABI.decodeJSON(TaggedProfile.self, from: string)
+        guard resolved else {  return try profile.asProfile() }
 
         // Profiles with custom (provider) modules require the Swift runtime
         return try profile.asProfile { _ in
             pspLog(profile.id, .profiles, .fault,
-                   "Custom modules are not supported by Zig, falling back to Swift runtime")
+                   "Custom modules (providers) are not supported")
             throw TunnelContext.RuntimeError.unsupportedProviders
         }
     }

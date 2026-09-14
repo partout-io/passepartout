@@ -6,28 +6,20 @@ import Partout
 
 struct WireGuardImplementationBuilder: Sendable {
     private let configBlock: @Sendable () -> Set<ABI.ConfigFlag>
+    private let validateBlock: @Sendable (String) throws -> Void
 
-    init(configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>) {
+    init(
+        configBlock: @escaping @Sendable () -> Set<ABI.ConfigFlag>,
+        validateBlock: @escaping @Sendable (String) throws -> Void
+    ) {
         self.configBlock = configBlock
+        self.validateBlock = validateBlock
     }
 
     func build() -> WireGuardModule.Implementation {
         WireGuardModule.Implementation(
             keyGenerator: StandardWireGuardKeyGenerator(),
-            importerBlock: { newParser() },
-            validatorBlock: { newParser() },
-            connectionBlock: {
-                let ctx = PartoutLoggerContext($0.profile.id)
-                return try _WireGuardConnectionV2(
-                    ctx,
-                    parameters: $0,
-                    module: $1
-                )
-            }
+            validateBlock: validateBlock
         )
-    }
-
-    private func newParser() -> ModuleImporter & ModuleBuilderValidator {
-        StandardWireGuardParser()
     }
 }

@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: appleTV,dns,httpProxy,onDemand,otp,providers,routing,sharing
+ * Values: appleTV,dns,httpProxy,onDemand,otp,routing,sharing
  */
 @Serializable
 enum class AppFeature(val value: kotlin.String) {
@@ -50,9 +50,6 @@ enum class AppFeature(val value: kotlin.String) {
 
     @SerialName(value = "otp")
     otp("otp"),
-
-    @SerialName(value = "providers")
-    providers("providers"),
 
     @SerialName(value = "routing")
     routing("routing"),

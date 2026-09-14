@@ -115,12 +115,6 @@ private extension CodingRegistry {
 
 // MARK: - Registry facade
 
-extension CodingRegistry: ConnectionFactory {
-    public func connection(for connectionModule: ConnectionModule, parameters: ConnectionParameters) throws -> Connection {
-        try registry.connection(for: connectionModule, parameters: parameters)
-    }
-}
-
 extension CodingRegistry: Resolver {
     public func resolvedProfile(_ profile: Profile) throws -> Profile {
         try registry.resolvedProfile(profile)

@@ -11,10 +11,4 @@ final class LocalizationTests {
         #expect(Strings.Global.Actions.connect == "Connect")
         #expect(Strings.Global.Nouns.address == "Address")
     }
-
-    @Test
-    func givenModules_whenTranslateWireGuard_thenWorks() {
-        let sut = WireGuardParseError.noInterface
-        #expect(sut.localizedDescription == "Configuration must have an ‘Interface’ section.")
-    }
 }
