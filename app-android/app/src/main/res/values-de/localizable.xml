@@ -378,7 +378,7 @@
     <string name="errors_app_incomplete_module">Bitte schließen Sie die Konfiguration des %1$s-Moduls ab.</string>
     <string name="errors_app_ineligible">Kauf erforderlich</string>
     <string name="errors_app_invalid_fields">Ungültige Felder.</string>
-    <string name="errors_app_malformed_module">Modul %1$s ist fehlerhaft. %2$s.</string>
+    <string name="errors_app_malformed_module">Modul %1$s ist fehlerhaft. %2$s</string>
     <string name="errors_app_missing_provider_entity">Kein Server beim Anbieter ausgewählt.</string>
     <string name="errors_app_module_requires_connection">Das Modul %1$s erfordert eine aktive Verbindung eines der folgenden Typen: %2$s.</string>
     <string name="errors_app_no_active_modules">Das Profil hat keine aktiven Module.</string>

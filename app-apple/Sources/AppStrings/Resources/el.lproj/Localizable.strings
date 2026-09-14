@@ -45,7 +45,7 @@
 "errors.app.incomplete_module" = "Ολοκληρώστε τη ρύθμιση του %@ module.";
 "errors.app.ineligible" = "Απαιτείται αγορά";
 "errors.app.invalid_fields" = "Μη έγκυρα πεδία.";
-"errors.app.malformed_module" = "Το μονάδα %@ είναι εσφαλμένη. %@.";
+"errors.app.malformed_module" = "Το μονάδα %@ είναι εσφαλμένη. %@";
 "errors.app.missing_provider_entity" = "Δεν επιλέχθηκε διακομιστής στον πάροχο.";
 "errors.app.module_requires_connection" = "Η μονάδα %@ απαιτεί ενεργή σύνδεση ενός από τους παρακάτω τύπους: %@.";
 "errors.app.no_active_modules" = "Το προφίλ δεν έχει ενεργές μονάδες.";

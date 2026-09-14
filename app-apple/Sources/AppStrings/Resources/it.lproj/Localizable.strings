@@ -45,7 +45,7 @@
 "errors.app.incomplete_module" = "Completa la configurazione del modulo %@.";
 "errors.app.ineligible" = "Acquisto richiesto";
 "errors.app.invalid_fields" = "Campi non validi.";
-"errors.app.malformed_module" = "Il modulo %@ è malformato. %@.";
+"errors.app.malformed_module" = "Il modulo %@ è malformato. %@";
 "errors.app.missing_provider_entity" = "Nessun server selezionato nel provider.";
 "errors.app.module_requires_connection" = "Il modulo %@ richiede una connessione attiva tra i seguenti tipi: %@.";
 "errors.app.no_active_modules" = "Il profilo non ha moduli attivi.";

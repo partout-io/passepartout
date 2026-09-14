@@ -184,9 +184,9 @@ public enum Strings {
       public static let ineligible = Strings.tr("Localizable", "errors.app.ineligible", fallback: "Purchase required")
       /// Invalid fields.
       public static let invalidFields = Strings.tr("Localizable", "errors.app.invalid_fields", fallback: "Invalid fields.")
-      /// Module %@ is malformed. %@.
+      /// Module %@ is malformed. %@
       public static func malformedModule(_ p1: Any, _ p2: Any) -> String {
-        return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@.")
+        return Strings.tr("Localizable", "errors.app.malformed_module", String(describing: p1), String(describing: p2), fallback: "Module %@ is malformed. %@")
       }
       /// No server selected in provider.
       public static let missingProviderEntity = Strings.tr("Localizable", "errors.app.missing_provider_entity", fallback: "No server selected in provider.")

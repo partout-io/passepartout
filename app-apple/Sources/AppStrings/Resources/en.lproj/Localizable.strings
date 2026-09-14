@@ -447,7 +447,7 @@
 "errors.app.incomplete_module" = "Please finish the configuration of the %@ module.";
 "errors.app.ineligible" = "Purchase required";
 "errors.app.invalid_fields" = "Invalid fields.";
-"errors.app.malformed_module" = "Module %@ is malformed. %@.";
+"errors.app.malformed_module" = "Module %@ is malformed. %@";
 "errors.app.missing_provider_entity" = "No server selected in provider.";
 "errors.app.module_requires_connection" = "The %@ module requires an active connection among the following types: %@.";
 "errors.app.no_active_modules" = "The profile has no active modules.";

@@ -378,7 +378,7 @@
     <string name="errors_app_incomplete_module">Completa la configurazione del modulo %1$s.</string>
     <string name="errors_app_ineligible">Acquisto richiesto</string>
     <string name="errors_app_invalid_fields">Campi non validi.</string>
-    <string name="errors_app_malformed_module">Il modulo %1$s è malformato. %2$s.</string>
+    <string name="errors_app_malformed_module">Il modulo %1$s è malformato. %2$s</string>
     <string name="errors_app_missing_provider_entity">Nessun server selezionato nel provider.</string>
     <string name="errors_app_module_requires_connection">Il modulo %1$s richiede una connessione attiva tra i seguenti tipi: %2$s.</string>
     <string name="errors_app_no_active_modules">Il profilo non ha moduli attivi.</string>

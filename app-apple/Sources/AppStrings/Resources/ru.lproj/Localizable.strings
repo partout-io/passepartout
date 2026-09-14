@@ -45,7 +45,7 @@
 "errors.app.incomplete_module" = "Пожалуйста, завершите настройку модуля %@.";
 "errors.app.ineligible" = "Требуется покупка";
 "errors.app.invalid_fields" = "Некорректные поля.";
-"errors.app.malformed_module" = "Модуль %@ поврежден. %@.";
+"errors.app.malformed_module" = "Модуль %@ поврежден. %@";
 "errors.app.missing_provider_entity" = "На провайдере не выбран сервер.";
 "errors.app.module_requires_connection" = "Модуль %@ требует активного подключения одного из следующих типов: %@.";
 "errors.app.no_active_modules" = "В профиле нет активных модулей.";

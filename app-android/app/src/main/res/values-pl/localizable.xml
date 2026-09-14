@@ -378,7 +378,7 @@
     <string name="errors_app_incomplete_module">Proszę dokończyć konfigurację modułu %1$s.</string>
     <string name="errors_app_ineligible">Wymagana zakup</string>
     <string name="errors_app_invalid_fields">Nieprawidłowe pola.</string>
-    <string name="errors_app_malformed_module">Moduł %1$s jest uszkodzony. %2$s.</string>
+    <string name="errors_app_malformed_module">Moduł %1$s jest uszkodzony. %2$s</string>
     <string name="errors_app_missing_provider_entity">Nie wybrano serwera w dostawcy.</string>
     <string name="errors_app_module_requires_connection">Moduł %1$s wymaga aktywnego połączenia jednego z następujących typów: %2$s.</string>
     <string name="errors_app_no_active_modules">Profil nie ma aktywnych modułów.</string>

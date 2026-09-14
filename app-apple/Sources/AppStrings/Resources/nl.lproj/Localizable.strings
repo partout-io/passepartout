@@ -45,7 +45,7 @@
 "errors.app.incomplete_module" = "Voltooi de configuratie van de %@-module.";
 "errors.app.ineligible" = "Aankoop vereist";
 "errors.app.invalid_fields" = "Ongeldige velden.";
-"errors.app.malformed_module" = "Module %@ is ongeldig. %@.";
+"errors.app.malformed_module" = "Module %@ is ongeldig. %@";
 "errors.app.missing_provider_entity" = "Geen server geselecteerd bij provider.";
 "errors.app.module_requires_connection" = "De module %@ vereist een actieve verbinding van een van de volgende typen: %@.";
 "errors.app.no_active_modules" = "Het profiel heeft geen actieve modules.";

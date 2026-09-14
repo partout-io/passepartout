@@ -45,7 +45,7 @@
 "errors.app.incomplete_module" = "Vänligen slutför konfigurationen av %@-modulen.";
 "errors.app.ineligible" = "Köp krävs";
 "errors.app.invalid_fields" = "Ogiltiga fält.";
-"errors.app.malformed_module" = "Modulen %@ är felaktig. %@.";
+"errors.app.malformed_module" = "Modulen %@ är felaktig. %@";
 "errors.app.missing_provider_entity" = "Ingen server vald hos leverantören.";
 "errors.app.module_requires_connection" = "Modulen %@ kräver en aktiv anslutning av någon av följande typer: %@.";
 "errors.app.no_active_modules" = "Profilen har inga aktiva moduler.";

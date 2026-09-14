@@ -378,7 +378,7 @@
     <string name="errors_app_incomplete_module">Conclua a configuração do módulo %1$s.</string>
     <string name="errors_app_ineligible">Compra necessária</string>
     <string name="errors_app_invalid_fields">Campos inválidos.</string>
-    <string name="errors_app_malformed_module">O módulo %1$s está corrompido. %2$s.</string>
+    <string name="errors_app_malformed_module">O módulo %1$s está corrompido. %2$s</string>
     <string name="errors_app_missing_provider_entity">Nenhum servidor selecionado no provedor.</string>
     <string name="errors_app_module_requires_connection">O módulo %1$s requer uma conexão ativa de um dos seguintes tipos: %2$s.</string>
     <string name="errors_app_no_active_modules">O perfil não possui módulos ativos.</string>
