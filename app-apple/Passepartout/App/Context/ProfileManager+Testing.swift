@@ -28,60 +28,29 @@ extension ProfileManager {
                     for moduleType in parameters.moduleTypes {
                         var moduleBuilder = newModule(moduleType)
 
-                        if parameters.name == "Hide.me" {
-                            if var ovpnBuilder = moduleBuilder as? ProviderModule.Builder {
-                                ovpnBuilder.providerId = parameters.providerId
-                                ovpnBuilder.providerModuleType = .OpenVPN
-                                ovpnBuilder.entity = mockHideMeEntity
-                                let credentials = OpenVPN.Credentials.Builder(username: "foo", password: "bar").build()
-                                var options = OpenVPNProviderTemplate.Options()
-                                options.credentials = credentials
-                                try ovpnBuilder.setOptions(options, for: moduleType)
-                                moduleBuilder = ovpnBuilder
-                            } else if var onDemandBuilder = moduleBuilder as? OnDemandModule.Builder {
-#if os(tvOS)
-                                onDemandIdIfDisabled = onDemandBuilder.id
-#endif
-                                onDemandBuilder.policy = .excluding
-                                onDemandBuilder.withSSIDs = [
-                                    "Friend's House": false,
-                                    "My Home Network": true,
-                                    "Safe Wi-Fi": true
-                                ]
-                                moduleBuilder = onDemandBuilder
-                            } else if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
-//                                dnsBuilder.protocolType = .https
-//                                dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
-                                dnsBuilder.protocolType = .cleartext
-                                dnsBuilder.servers = ["1.1.1.1", "1.0.0.1"]
-                                dnsBuilder.domains = ["my-domain.com", "search-one.com", "search-two.org"]
-                                moduleBuilder = dnsBuilder
-                            }
-                        }
-
-                        if parameters.name == "My VPS" {
-                            if var ovpnBuilder = moduleBuilder as? OpenVPNModule.Builder {
-                                var cfgBuilder = OpenVPN.Configuration.Builder()
-                                cfgBuilder.ca = .init(pem: "...")
-                                cfgBuilder.remotes = [
-                                    ExtendedEndpoint(rawValue: "1.2.3.4:UDP:1234")!
-                                ]
-                                ovpnBuilder.configurationBuilder = cfgBuilder
-                                moduleBuilder = ovpnBuilder
-                            } else if let onDemandBuilder = moduleBuilder as? OnDemandModule.Builder {
-                                moduleBuilder = onDemandBuilder
-                            }
-                        }
-
                         if var wgBuilder = moduleBuilder as? WireGuardModule.Builder {
-                            var cfgBuilder = WireGuard.Configuration.Builder(privateKey: "")
-                            cfgBuilder.peers = [.init(publicKey: "")]
+                            let gen = StandardWireGuardKeyGenerator()
+                            var cfgBuilder = WireGuard.Configuration.Builder(keyGenerator: gen)
+                            cfgBuilder.peers = [.init(publicKey: gen.newPrivateKey())]
                             wgBuilder.configurationBuilder = cfgBuilder
                             moduleBuilder = wgBuilder
-                        }
-
-                        if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
-                            dnsBuilder.servers = ["1.1.1.1"]
+                        } else if var onDemandBuilder = moduleBuilder as? OnDemandModule.Builder {
+                            if parameters.name == "My VPS" {
+                                onDemandIdIfDisabled = onDemandBuilder.id
+                            }
+                            onDemandBuilder.policy = .excluding
+                            onDemandBuilder.withSSIDs = [
+                                "Friend's House": false,
+                                "My Home Network": true,
+                                "Safe Wi-Fi": true
+                            ]
+                            moduleBuilder = onDemandBuilder
+                        } else if var dnsBuilder = moduleBuilder as? DNSModule.Builder {
+//                            dnsBuilder.protocolType = .https
+//                            dnsBuilder.dohURL = "https://cloudflare-dns.com/dns-query"
+                            dnsBuilder.protocolType = .cleartext
+                            dnsBuilder.servers = ["1.1.1.1", "1.0.0.1"]
+                            dnsBuilder.domains = ["my-domain.com", "search-one.com", "search-two.org"]
                             moduleBuilder = dnsBuilder
                         }
 
@@ -130,49 +99,8 @@ private extension ProfileManager {
     static let mockParameters: [Parameters] = [
         Parameters("CloudFlare DoT", false, false, [.DNS]),
         Parameters("Coffee VPN", true, false, [.WireGuard]),
-        Parameters("Hide.me", true, true, [.Provider, .OnDemand, .DNS], .hideme),
-        Parameters("My VPS", true, true, [.OpenVPN, .OnDemand]),
-        Parameters("Office", true, false, [.OnDemand, .HTTPProxy]),
+        Parameters("My VPS", true, true, [.WireGuard, .OnDemand, .DNS, .HTTPProxy]),
+        Parameters("Office", true, true, [.OnDemand, .HTTPProxy]),
         Parameters("Personal DoH", false, false, [.DNS, .OnDemand])
     ]
-
-    static var mockHideMeEntity: ProviderEntity {
-        do {
-            var cfgBuilder = OpenVPN.Configuration.Builder()
-            cfgBuilder.ca = .init(pem: "...")
-            let cfg = try cfgBuilder.build(isClient: false)
-            let endpoints: [EndpointProtocol] = [.init(.udp, 1194)]
-            let template = OpenVPNProviderTemplate(configuration: cfg, endpoints: endpoints)
-            let templateData = try JSONEncoder().encode(template)
-
-            let preset = ProviderPreset(
-                providerId: .hideme,
-                presetId: "default",
-                description: "Default",
-                moduleType: .OpenVPN,
-                templateData: templateData
-            )
-
-            return ProviderEntity(
-                server: .init(
-                    metadata: .init(
-                        providerId: .hideme,
-                        categoryName: "default",
-                        countryCode: "BE",
-                        otherCountryCodes: nil,
-                        area: nil
-                    ),
-                    serverId: "be-v4",
-                    hostname: "be-v4.hideservers.net",
-                    ipAddresses: nil,
-                    supportedModuleTypes: [.OpenVPN],
-                    supportedPresetIds: nil
-                ),
-                preset: preset,
-                heuristic: .sameCountry("BE")
-            )
-        } catch {
-            fatalError("Unable to build Hide.me entity: \(error)")
-        }
-    }
 }
