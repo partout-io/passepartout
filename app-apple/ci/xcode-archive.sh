@@ -27,4 +27,4 @@ xcodebuild archive \
     -configuration $configuration \
     $arch_line
 
-"$cwd/xcode-assert-archive.sh" "$dst/$platform/$project_name.xcarchive" "$developer_id"
+"$cwd/xcode-assert-archive.sh" "$dst/$platform/$project_name.xcarchive" "$developer_id" "$arch"

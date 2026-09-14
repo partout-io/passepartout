@@ -129,6 +129,8 @@ jobs:
           ditto -x -k \
             "$RUNNER_TEMP/partout-native/PartoutNative.xcframework.zip" \
             "$PWD"
+      - name: Thin Partout XCFramework for DMG
+        run: bash ci/thin-macos-xcframework.sh "$PWD/PartoutNative.xcframework" "${{ matrix.architecture }}"
       - name: Import GPG key
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
