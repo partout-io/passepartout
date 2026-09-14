@@ -131,10 +131,7 @@ private extension ModuleListView {
     }
 
     var addModuleMenu: some View {
-        AddModuleMenu(
-            moduleTypes: availableTypes,
-            withProviderType: appConfiguration.bundle.distributionTarget.supportsPaidFeatures
-        ) {
+        AddModuleMenu(moduleTypes: availableTypes) {
             flow?.onNewModule($0)
         } label: {
             ThemeImage(.add)

@@ -4,6 +4,6 @@
 
 extension ProviderID: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
-        self != .oeck ? [.providers] : []
+        []
     }
 }

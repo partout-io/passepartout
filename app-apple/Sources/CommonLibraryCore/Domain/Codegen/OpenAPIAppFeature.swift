@@ -13,7 +13,6 @@ public enum OpenAPIAppFeature: String, Sendable, Codable, CaseIterable {
     case httpProxy = "httpProxy"
     case onDemand = "onDemand"
     case otp = "otp"
-    case providers = "providers"
     case routing = "routing"
     case sharing = "sharing"
 }

@@ -336,7 +336,6 @@ components:
       - httpProxy
       - onDemand
       - otp
-      - providers
       - routing
       - sharing
       enum:
@@ -345,7 +344,6 @@ components:
       - httpProxy
       - onDemand
       - otp
-      - providers
       - routing
       - sharing
     AppPreferenceKey:

@@ -33,10 +33,6 @@ struct AddProfileMenu: View {
             importQRButton
 #endif
             importTextButton
-            if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
-                Divider()
-                providerProfileMenu
-            }
         } label: {
             ThemeImage(.add)
         }
@@ -76,34 +72,11 @@ private extension AddProfileMenu {
             ThemeImageLabel(Strings.Views.App.Toolbar.ImportText.title.forMenu, .profileImportText)
         }
     }
-
-    var providerProfileMenu: some View {
-        Menu {
-            ForEach(supportedProviders, content: providerSubmenu(for:))
-        } label: {
-            ThemeImageLabel(Strings.Views.App.Toolbar.NewProfile.provider, .profileProvider)
-        }
-    }
-
-    func providerSubmenu(for provider: Provider) -> some View {
-        ProviderSubmenu(
-            provider: provider,
-            onSelect: {
-                var copy = $0
-                copy.name = profileObservable.firstUniqueName(from: copy.name)
-                onNewProfile(copy)
-            }
-        )
-    }
 }
 
 private extension AddProfileMenu {
     var newName: String {
         profileObservable.firstUniqueName(from: Strings.Placeholders.Profile.name)
-    }
-
-    var supportedProviders: [Provider] {
-        apiManager.providers
     }
 }
 

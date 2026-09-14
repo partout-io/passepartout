@@ -19,8 +19,6 @@ extension ABI.AppFeature: LocalizableEntity {
             return V.onDemand
         case .otp:
             return Strings.Unlocalized.otp
-        case .providers:
-            return V.providers
         case .routing:
             return V.routing
         case .sharing:

@@ -8,7 +8,6 @@ extension ABI.AppFeature {
         .httpProxy,
         .onDemand,
         .otp,
-        .providers,
         .routing,
         .sharing
     ]
