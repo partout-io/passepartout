@@ -13,6 +13,8 @@ static void stdio_logger(void *ctx, int level, const char *message) {
     printf("%s\n", message);
 }
 
+char *psp_readfile(const char *rel_path, const char *parent);
+
 int main(int argc, char *argv[]) {
     char *bundle = NULL;
     char *constants = NULL;
@@ -28,22 +30,16 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-#ifdef USE_SWIFTPM
-    const char *parent = "app-cross_passepartout-shared.bundle/Contents/Resources/assets";
-#else
-    const char *parent = NULL;
-#endif
-
     /* Paths to JSON input. */
-//    if ((bundle = partout_readfile(argv[1], parent)) == NULL) {
+//    if ((bundle = psp_readfile(argv[1], NULL)) == NULL) {
 //        fprintf(stderr, "Unable to open bundle: %s\n", argv[1]);
 //        goto failure;
 //    }
-//    if ((constants = partout_readfile(argv[2], parent)) == NULL) {
+//    if ((constants = psp_readfile(argv[2], NULL)) == NULL) {
 //        fprintf(stderr, "Unable to open constants: %s\n", argv[2]);
 //        goto failure;
 //    }
-    if ((profile = partout_readfile(argv[1], parent)) == NULL) {
+    if ((profile = psp_readfile(argv[1], NULL)) == NULL) {
         fprintf(stderr, "Unable to open profile: %s\n", argv[1]);
         goto failure;
     }

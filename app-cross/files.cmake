@@ -4,5 +4,6 @@ app/app.cc
 app/main.cc
 )
 set(TUNNEL_SOURCES
+tunnel/common.c
 tunnel/main.c
 )
