@@ -62,6 +62,10 @@ extension AppContext {
             }
         )
 
+        // MARK: ABI-based Runtime
+
+        let importer = PartoutRuntime()
+
         // MARK: Registry (legacy)
 
         let cachesURL = FileManager.default.temporaryDirectory
@@ -69,7 +73,10 @@ extension AppContext {
             deviceId: deviceId,
             preferences: preferences,
             configManager: configManager,
-            cachesURL: cachesURL
+            cachesURL: cachesURL,
+            wgValidateBlock: {
+                _ = try importer.importProfile(from: $0, name: nil)
+            }
         )
 
         // Ensure that all module builders can be rendered in the profile editor.
@@ -82,7 +89,6 @@ extension AppContext {
 
         // MARK: Import/Export
 
-        let importer = PartoutRuntime()
         let appImportExport = AppImportExport(
             configBlock: {
                 preferences.enabledFlags(of: configManager.activeFlags)

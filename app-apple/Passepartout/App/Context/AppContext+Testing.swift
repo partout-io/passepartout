@@ -16,7 +16,8 @@ extension AppContext {
         let registry = appConfiguration.makeRegistry(
             deviceId: "TestDeviceID",
             cachesURL: FileManager.default.temporaryDirectory,
-            configBlock: { [] }
+            configBlock: { [] },
+            wgValidateBlock: { _ in }
         )
         let preferences = AppPreferencesStore()
         let defaults = UserDefaults()

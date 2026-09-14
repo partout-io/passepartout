@@ -30,3 +30,7 @@ public protocol SerializableModule: Module {
     /// Preferred file extension for serialized output.
     var preferredExtension: String { get }
 }
+
+public protocol ModuleBuilderValidator: Sendable {
+    func validate(_ module: any ModuleBuilder) throws
+}
