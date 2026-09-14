@@ -3,6 +3,7 @@ set -euo pipefail
 
 archive_path=${1:-}
 developer_id=${2:-}
+architecture=${3:-}
 framework_name="PartoutNative.framework"
 framework_install_name="@rpath/$framework_name/PartoutNative"
 
@@ -101,7 +102,7 @@ assert_single_framework() {
         fail "missing framework binary at $expected/PartoutNative"
 }
 
-[[ -n "$archive_path" ]] || fail "usage: $0 <archive-path> [developer-id]"
+[[ -n "$archive_path" ]] || fail "usage: $0 <archive-path> [developer-id] [architecture]"
 [[ -d "$archive_path" ]] || fail "archive does not exist: $archive_path"
 
 shopt -s nullglob
@@ -156,5 +157,11 @@ else
 fi
 
 assert_framework_dsym "$expected_framework/PartoutNative"
+
+if [[ -n "$architecture" ]]; then
+    framework_architectures=$(lipo -archs "$expected_framework/PartoutNative")
+    [[ "$framework_architectures" == "$architecture" ]] || \
+        fail "expected framework architecture $architecture, found $framework_architectures"
+fi
 
 echo "Archive layout verified: $archive_path"
