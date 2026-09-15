@@ -1,2 +1,2 @@
-* CI: Thin PartoutNative before embedding in .dmg artifacts (#1945)
 * Drop Partout legacy and support for providers (#1944)
+* Restore original app size (-50%)
