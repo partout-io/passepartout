@@ -30,9 +30,3 @@ extension ModuleType {
         }
     }
 }
-
-extension ProviderModule {
-    public var buildsConnection: Bool {
-        ModuleType.connectionTypes.contains(providerModuleType)
-    }
-}

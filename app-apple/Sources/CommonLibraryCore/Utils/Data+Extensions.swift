@@ -6,7 +6,7 @@ import Partout
 
 extension Data {
     public func toTemporaryURL(withFilename filename: String) -> URL? {
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        let url = FileManager.default.temporaryDirectory.appending(component: filename)
         do {
             try write(toFile: url.filePath())
             return url

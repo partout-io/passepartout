@@ -20,8 +20,6 @@ public final class AppContext {
 
     // Legacy managers not migrated to observables
     @available(*, deprecated, message: "#1679")
-    public let apiManager: APIManager
-    @available(*, deprecated, message: "#1679")
     public let preferencesManager: PreferencesManager
 
     // Tunnel concerns
@@ -51,7 +49,6 @@ public final class AppContext {
     private var subscriptions: [Task<Void, Never>]
 
     public init(
-        apiManager: APIManager,
         appConfiguration: ABI.AppConfiguration,
         appImportExport: AppImportExport,
         configManager: ConfigManager,
@@ -61,13 +58,11 @@ public final class AppContext {
         preferences: AppPreferencesStore,
         preferencesManager: PreferencesManager,
         profileManager: ProfileManager,
-        registry: CodingRegistry,
         tunnelObservable: TunnelObservable,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
         onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
-        self.apiManager = apiManager
         self.appConfiguration = appConfiguration
         self.appImportExport = appImportExport
         self.configManager = configManager
@@ -92,7 +87,7 @@ public final class AppContext {
             supportsIAP: supportsIAP
         )
         profileObservable = ProfileObservable(profileManager: profileManager)
-        registryObservable = RegistryObservable(registry: registry)
+        registryObservable = RegistryObservable()
         versionObservable = VersionObservable(versionChecker: versionChecker)
         webReceiverObservable = WebReceiverObservable(
             webReceiverManager: webReceiverManager
@@ -280,13 +275,6 @@ private extension AppContext {
                 }
             }
         })
-
-        do {
-            pspLog(.core, .info, "\tFetch providers index...")
-            try await apiManager.fetchIndex()
-        } catch {
-            pspLog(.core, .error, "\tUnable to fetch providers index: \(error)")
-        }
     }
 
     func onForeground() async throws {

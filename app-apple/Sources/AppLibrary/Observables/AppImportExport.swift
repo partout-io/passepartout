@@ -49,7 +49,7 @@ extension AppImportExport {
         configBlock: { [] },
         importModule: { _, _ in OnDemandModule.Builder().build() },
         exportModule: { _ in "" },
-        legacyRegistry: CodingRegistry(registry: Registry(allHandlers: []))
+        legacyRegistry: CodingRegistry()
     )
 
     public func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
@@ -70,7 +70,6 @@ extension AppImportExport {
             } else {
                 context = nil
             }
-            // Via ABI (v3)
             let importedModule = try importModule(contents, context)
             return try Profile(withName: name, singleModule: importedModule)
         } catch {

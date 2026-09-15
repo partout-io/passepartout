@@ -12,9 +12,6 @@ struct AddProfileMenu: View {
         case importText
     }
 
-    @EnvironmentObject
-    private var apiManager: APIManager
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 
@@ -77,43 +74,5 @@ private extension AddProfileMenu {
 private extension AddProfileMenu {
     var newName: String {
         profileObservable.firstUniqueName(from: Strings.Placeholders.Profile.name)
-    }
-}
-
-// MARK: - Providers
-
-private struct ProviderSubmenu: View {
-    let provider: Provider
-
-    let onSelect: (EditableProfile) -> Void
-
-    var body: some View {
-        Menu {
-            ForEach(Array(sortedTypes), id: \.self, content: profileButton(for:))
-        } label: {
-            Text(provider.description)
-        }
-    }
-
-    func profileButton(for moduleType: ModuleType) -> some View {
-        Button(moduleType.localizedDescription) {
-            var editable = EditableProfile()
-            editable.name = provider.description
-            var moduleBuilder = ProviderModule.Builder()
-            moduleBuilder.providerId = provider.id
-            moduleBuilder.providerModuleType = moduleType
-            editable.modules.append(moduleBuilder)
-            let onDemandBuilder = OnDemandModule.Builder()
-            editable.modules.append(onDemandBuilder)
-            editable.activeModulesIds = Set(editable.modules.map(\.id))
-            onSelect(editable)
-        }
-    }
-
-    private var sortedTypes: [ModuleType] {
-        provider.metadata.keys
-            .sorted {
-                $0.localizedDescription < $1.localizedDescription
-            }
     }
 }

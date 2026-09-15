@@ -15,10 +15,6 @@ struct OpenVPNView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<OpenVPNModule.Builder>
 
-    var impl: OpenVPNModule.Implementation? {
-        registryObservable.implementation(for: draft.module) as? OpenVPNModule.Implementation
-    }
-
     private let isServerPushed: Bool
 
     @State
@@ -47,7 +43,6 @@ struct OpenVPNView: View, ModuleDraftEditing {
             .moduleView(draft: draft, withUUID: !isServerPushed)
             .modifier(ImportModifier(
                 draft: draft,
-                impl: impl,
                 isImporting: $isImporting,
                 errorHandler: errorHandler
             ))

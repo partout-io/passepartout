@@ -268,8 +268,6 @@ components:
       - interactiveLogin
       - invalidField
       - malformedModule
-      - missingProviderEntity
-      - missingProviderOption
       - moduleRequiresConnection
       - multipleTunnels
       - noActiveModules
@@ -305,8 +303,6 @@ components:
       - interactiveLogin
       - invalidField
       - malformedModule
-      - missingProviderEntity
-      - missingProviderOption
       - moduleRequiresConnection
       - multipleTunnels
       - noActiveModules
@@ -426,8 +422,6 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/ModuleType"
-        providerInfo:
-          "$ref": "#/components/schemas/ProviderInfo"
         fingerprint:
           type: string
         sharingFlags:
@@ -739,10 +733,6 @@ components:
           type: array
           items:
             type: string
-        providerLastUpdates:
-          type: object
-          additionalProperties:
-            "$ref": "#/components/schemas/Timestamp"
         attachments:
           type: array
           items:

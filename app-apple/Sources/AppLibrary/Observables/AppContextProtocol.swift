@@ -19,8 +19,6 @@ public protocol AppContextProtocol: AnyObject {
 
     // Legacy managers not migrated to observables
     @available(*, deprecated, message: "#1679")
-    var apiManager: APIManager { get }
-    @available(*, deprecated, message: "#1679")
     var preferencesManager: PreferencesManager { get }
 
     // Tunnel concerns

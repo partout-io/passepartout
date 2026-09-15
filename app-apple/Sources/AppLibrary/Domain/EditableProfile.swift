@@ -67,14 +67,9 @@ public struct EditableProfile: MutableProfileType {
 
 private extension Profile.Builder {
     var hasConnection: Bool {
-        let hasActiveConnection = modules.contains {
+        modules.contains {
             activeModulesIds.contains($0.id) && $0.moduleType.isConnection
         }
-        if hasActiveConnection { return true }
-        if let providerModule = firstModule(ofType: ProviderModule.self, ifActive: true) {
-            return providerModule.buildsConnection
-        }
-        return false
     }
 }
 

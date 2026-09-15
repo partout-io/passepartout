@@ -25,7 +25,6 @@ extension View {
             .environment(context.onboardingObservable)
             .environment(context.userPreferences)
             // Deprecated
-            .environmentObject(context.apiManager)
             .environmentObject(context.preferencesManager)
     }
 

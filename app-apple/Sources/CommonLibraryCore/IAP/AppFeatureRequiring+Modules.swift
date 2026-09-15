@@ -50,13 +50,3 @@ extension WireGuardModule.Builder: AppFeatureRequiring {
         []
     }
 }
-
-extension ProviderModule.Builder: AppFeatureRequiring {
-    public var features: Set<ABI.AppFeature> {
-        var list: Set<ABI.AppFeature> = []
-        providerId?.features.forEach {
-            list.insert($0)
-        }
-        return list
-    }
-}

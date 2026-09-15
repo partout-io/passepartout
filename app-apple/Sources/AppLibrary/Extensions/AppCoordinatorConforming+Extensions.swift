@@ -11,12 +11,6 @@ extension AppCoordinatorConforming {
             if verify {
                 try iapObservable.verify(profile, extra: nil)
             }
-            if profile.modules.contains(where: { $0 is ProviderModule }) {
-                onInfo(
-                    title: Strings.Global.Nouns.providers,
-                    message: Strings.Onboarding.Migrate395Providers.message
-                )
-            }
             try await tunnel.connect(to: profile, force: force)
         } catch {
             let appError = ABI.AppError(error)
@@ -34,8 +28,6 @@ extension AppCoordinatorConforming {
                         await onConnect(newProfile, force: true, verify: verify)
                     }
                 }
-            case .missingProviderEntity:
-                onProviderEntityRequired(profile, force: force)
             default:
                 onError(appError, profile: profile)
             }

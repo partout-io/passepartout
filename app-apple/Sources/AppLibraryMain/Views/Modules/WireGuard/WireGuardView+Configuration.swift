@@ -14,8 +14,6 @@ extension WireGuardView {
         @Binding
         private var viewModel: ViewModel
 
-        private let keyGenerator: WireGuardKeyGenerator?
-
         private var configurationBuilder: WireGuard.Configuration.Builder {
             draft.module.configurationBuilder ?? newConfiguration
         }
@@ -24,15 +22,15 @@ extension WireGuardView {
 
         init(
             draft: ModuleDraft<WireGuardModule.Builder>,
-            viewModel: Binding<ViewModel>,
-            keyGenerator: WireGuardKeyGenerator?
+            viewModel: Binding<ViewModel>
         ) {
             self.draft = draft
             _viewModel = viewModel
-            self.keyGenerator = keyGenerator
-            newConfiguration = keyGenerator.map {
-                WireGuard.Configuration.Builder(keyGenerator: $0)
-            } ?? WireGuard.Configuration.Builder(privateKey: "")
+            // FIXME: ###
+            fatalError()
+//            newConfiguration = keyGenerator.map {
+//                WireGuard.Configuration.Builder(keyGenerator: $0)
+//            } ?? WireGuard.Configuration.Builder(privateKey: "")
         }
 
         var body: some View {
@@ -59,15 +57,16 @@ private extension WireGuardView.ConfigurationView {
                 Strings.Global.Nouns.privateKey,
                 text: $viewModel.privateKey
             )
-            if let keyGenerator {
-                ThemeCopiableText(
-                    Strings.Global.Nouns.publicKey,
-                    value: (try? keyGenerator.publicKey(for: viewModel.privateKey)) ?? ""
-                )
-                Button(Strings.Modules.Wireguard.PrivateKey.generate) {
-                    viewModel.privateKey = keyGenerator.newPrivateKey()
-                }
-            }
+            // FIXME: ###
+//            if let keyGenerator {
+//                ThemeCopiableText(
+//                    Strings.Global.Nouns.publicKey,
+//                    value: (try? keyGenerator.publicKey(for: viewModel.privateKey)) ?? ""
+//                )
+//                Button(Strings.Modules.Wireguard.PrivateKey.generate) {
+//                    viewModel.privateKey = keyGenerator.newPrivateKey()
+//                }
+//            }
         }
     }
 
@@ -226,7 +225,9 @@ extension WireGuardView.ConfigurationView {
                 peer.publicKey = $1.publicKey
                 peer.preSharedKey = $1.preSharedKey ?? ""
                 peer.endpoint = $1.endpoint.map {
-                    Endpoint(rawValue: $0)?.wgRepresentation ?? $0
+                    // FIXME: ###
+                    fatalError($0)
+//                    Endpoint(rawValue: $0)?.wgRepresentation ?? $0
                 } ?? ""
                 peer.allowedIPs = $1.allowedIPs.joined(separator: separator)
                 peer.keepAlive = $1.keepAlive?.description ?? ""
@@ -316,8 +317,7 @@ private extension String {
                 Form {
                     WireGuardView.ConfigurationView(
                         draft: ModuleDraft(module: module),
-                        viewModel: $viewModel,
-                        keyGenerator: nil
+                        viewModel: $viewModel
                     )
                     .onLoad {
                         viewModel.load(from: module.configurationBuilder!)

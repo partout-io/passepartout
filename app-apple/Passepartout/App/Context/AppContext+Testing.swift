@@ -13,12 +13,6 @@ extension AppContext {
             buildTarget: .app
         )
         let appImportExport: AppImportExport = .dummy
-        let registry = appConfiguration.makeRegistry(
-            deviceId: "TestDeviceID",
-            cachesURL: FileManager.default.temporaryDirectory,
-            configBlock: { [] },
-            wgValidateBlock: { _ in }
-        )
         let preferences = AppPreferencesStore()
         let defaults = UserDefaults()
 
@@ -30,10 +24,6 @@ extension AppContext {
             localMapper: \.message
         )
 
-        let apiManager = APIManager(
-            from: API.bundled,
-            repository: InMemoryAPIRepository()
-        )
         let iapManager = IAPManager(
             customUserLevel: .complete,
             inAppHelper: appConfiguration.makeInAppHelper(),
@@ -52,19 +42,15 @@ extension AppContext {
         )
         let mainProfileRepository = InMemoryProfileRepository()
         let profileManager: ProfileManager = .forUITesting(
-            withNewModule: registry.newModule,
+            // FIXME: ###
+            withNewModule: CodingRegistry().newModule,
             processor: profileProcessor,
             repository: mainProfileRepository
         )
         profileManager.enableRemoteImporting(true)
         let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
             profileRepository: mainProfileRepository,
-            apiManager: apiManager,
-            resolver: registry,
-            extensionInstaller: nil,
-            providerServerSorter: {
-                $0.sort(using: $1.sortingComparators)
-            }
+            extensionInstaller: nil
         )
         let tunnel = Tunnel(
             .global,
@@ -83,7 +69,6 @@ extension AppContext {
         let versionChecker = VersionChecker()
 
         return AppContext(
-            apiManager: apiManager,
             appConfiguration: appConfiguration,
             appImportExport: appImportExport,
             configManager: configManager,
@@ -93,7 +78,6 @@ extension AppContext {
             preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
-            registry: registry,
             tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager

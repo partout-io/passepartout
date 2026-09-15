@@ -8,7 +8,6 @@ import AppResources
 import CommonData
 import CommonDataPreferences
 import CommonDataProfiles
-import CommonDataProviders
 import CommonLibrary
 import CoreData
 import Partout
@@ -29,9 +28,6 @@ extension AppContext {
         let defaults: UserDefaults = .standard
         let preferences = AppPreferencesStore(
             UserDefaultsAppPreferences(defaults: defaults)
-        )
-        let deviceId = preferences.configureDeviceId(
-            length: appConfiguration.constants.deviceIdLength
         )
 
         let logFormatter = appConfiguration.makeLogFormatter()
@@ -68,22 +64,12 @@ extension AppContext {
 
         // MARK: Registry (legacy)
 
-        let cachesURL = FileManager.default.temporaryDirectory
-        let registry = appConfiguration.makeRegistryForApp(
-            deviceId: deviceId,
-            preferences: preferences,
-            configManager: configManager,
-            cachesURL: cachesURL,
-            wgValidateBlock: {
-                _ = try importer.importProfile(from: $0, name: nil)
-            }
-        )
-
         // Ensure that all module builders can be rendered in the profile editor.
-        ModuleType.knownTypes.forEach { moduleType in
+        ModuleType.knownTypes.forEach { _ in // moduleType in
 #if !os(tvOS)
-            let builder = registry.newModule(ofType: moduleType)
-            assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
+            // FIXME: ###
+//            let builder = registry.newModule(ofType: moduleType)
+//            assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
 #endif
         }
 
@@ -99,28 +85,17 @@ extension AppContext {
             exportModule: { module in
                 try importer.exportModule(module)
             },
-            legacyRegistry: registry
+            legacyRegistry: CodingRegistry()
         )
 
         // MARK: Persistence (Core Data)
 
-        guard let cdLocalModel = NSManagedObjectModel.mergedModel(from: [
-            CommonData.providersBundle
-        ]) else {
-            fatalError("Unable to load local model")
-        }
         guard let cdRemoteModel = NSManagedObjectModel.mergedModel(from: [
             CommonData.profilesBundle,
             CommonData.preferencesBundle
         ]) else {
             fatalError("Unable to load remote model")
         }
-        let localStore = CoreDataPersistentStore(
-            containerName: appConfiguration.constants.containers.local,
-            model: cdLocalModel,
-            cloudKitIdentifier: nil,
-            author: nil
-        )
         let newRemoteStore: (_ cloudKit: Bool) -> CoreDataPersistentStore = { isEnabled in
             let cloudKitIdentifier: String?
             if isEnabled && appConfiguration.bundle.distributionTarget.supportsCloudKit {
@@ -159,15 +134,6 @@ extension AppContext {
             betaChecker: betaChecker
         )
 
-        // MARK: API
-
-        let apiManager = APIManager(
-            from: API.shared,
-            repository: CommonData.cdAPIRepositoryV3(
-                context: localStore.backgroundContext()
-            )
-        )
-
         // MARK: Profiles and Tunnel (NE)
 
         let sysexManager = appConfiguration.makeSystemExtensionManager()
@@ -184,7 +150,7 @@ extension AppContext {
         let codingPair = appConfiguration.makeKeychainAndNECoder(
             ctx,
             bundleIdentifier: bundleIdentifier,
-            coder: registry
+            coder: appImportExport
         )
         let profilesBootstrap: KeychainProfileRepository.Bootstrap?
 
@@ -195,7 +161,7 @@ extension AppContext {
             let migrator = NEManagerToKeychainMigrator(
                 tunnelBundleIdentifier: tunnelIdentifier,
                 keychain: codingPair.keychain,
-                profileCoder: registry,
+                profileCoder: appImportExport,
                 protocolCoder: codingPair.neCoder,
                 label: appConfiguration.makeKeychainTitle(),
                 isComplete: {
@@ -214,7 +180,7 @@ extension AppContext {
 
         let mainProfileRepository = KeychainProfileRepository(
             keychain: codingPair.keychain,
-            coder: registry,
+            coder: appImportExport,
             bootstrap: profilesBootstrap,
             label: appConfiguration.makeKeychainTitle()
         )
@@ -232,12 +198,7 @@ extension AppContext {
 #endif
         let tunnelProcessor = appConfiguration.makeAppTunnelProcessor(
             profileRepository: mainProfileRepository,
-            apiManager: apiManager,
-            resolver: registry,
-            extensionInstaller: sysexManager,
-            providerServerSorter: {
-                $0.sort(using: $1.sortingComparators)
-            }
+            extensionInstaller: sysexManager
         )
         let profileProcessor = appConfiguration.makeAppProfileProcessor(
             iapManager: iapManager
@@ -350,23 +311,9 @@ extension AppContext {
                     throw error
                 }
             }
-
-            pspLog(.core, .info, "\tRefresh providers preferences repository...")
-            preferencesManager.providersRepositoryFactory = {
-                do {
-                    return try CommonData.cdProviderPreferencesRepositoryV3(
-                        context: remoteStore.context,
-                        providerId: $0
-                    )
-                } catch {
-                    pspLog(.core, .error, "Unable to load preferences for provider \($0): \(error)")
-                    throw error
-                }
-            }
         }
 
         return AppContext(
-            apiManager: apiManager,
             appConfiguration: appConfiguration,
             appImportExport: appImportExport,
             configManager: configManager,
@@ -376,7 +323,6 @@ extension AppContext {
             preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
-            registry: registry,
             tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension WireGuardModule {
     public final class Implementation: ModuleImplementation, Sendable {
         public let moduleType = WireGuardModule.moduleType

@@ -6,9 +6,6 @@ import CommonLibrary
 import SwiftUI
 
 struct AppNotWorkingButton: View {
-    @EnvironmentObject
-    private var apiManager: APIManager
-
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -26,7 +23,6 @@ struct AppNotWorkingButton: View {
                 title: data.localizedString(forKey: "title"),
                 message: data.localizedString(forKey: "message"),
                 tunnel: tunnel,
-                apiManager: apiManager,
                 purchasedProducts: iapObservable.purchasedProducts,
                 isUnableToEmail: $isUnableToEmail
             )

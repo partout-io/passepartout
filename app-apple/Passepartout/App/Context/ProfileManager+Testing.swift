@@ -85,14 +85,11 @@ private extension ProfileManager {
 
         let moduleTypes: [ModuleType]
 
-        let providerId: ProviderID?
-
-        init(_ name: String, _ isShared: Bool, _ isTV: Bool, _ moduleTypes: [ModuleType], _ providerId: ProviderID? = nil) {
+        init(_ name: String, _ isShared: Bool, _ isTV: Bool, _ moduleTypes: [ModuleType]) {
             self.name = name
             self.isShared = isShared
             self.isTV = isTV
             self.moduleTypes = moduleTypes
-            self.providerId = providerId
         }
     }
 

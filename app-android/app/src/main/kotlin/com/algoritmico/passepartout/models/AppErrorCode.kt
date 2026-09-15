@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,missingProviderEntity,missingProviderOption,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,providersRemoved,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
+ * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,providersRemoved,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
  */
 @Serializable
 enum class AppErrorCode(val value: kotlin.String) {
@@ -74,12 +74,6 @@ enum class AppErrorCode(val value: kotlin.String) {
 
     @SerialName(value = "malformedModule")
     malformedModule("malformedModule"),
-
-    @SerialName(value = "missingProviderEntity")
-    missingProviderEntity("missingProviderEntity"),
-
-    @SerialName(value = "missingProviderOption")
-    missingProviderOption("missingProviderOption"),
 
     @SerialName(value = "moduleRequiresConnection")
     moduleRequiresConnection("moduleRequiresConnection"),

@@ -21,23 +21,12 @@ extension Profile {
             .map(\.moduleType)
             .nilIfEmpty
 
-        let providerInfo: ABI.ProviderInfo?
-        if let activeProviderModule {
-            providerInfo = ABI.ProviderInfo(
-                providerId: activeProviderModule.providerId,
-                countryCode: activeProviderModule.entity?.header.countryCode
-            )
-        } else {
-            providerInfo = nil
-        }
-
         return ABI.AppProfileHeader(
             id: id,
             name: name,
             moduleTypes: modules.map(\.moduleType),
             primaryModuleType: primaryModuleType,
             secondaryModuleTypes: secondaryModuleTypes,
-            providerInfo: providerInfo,
             fingerprint: (attributes.fingerprint ?? UniqueID()).uuidString,
             sharingFlags: sharingFlags,
             requiredFeatures: requiredFeatures
@@ -47,13 +36,10 @@ extension Profile {
 
 private extension Module {
     var isPrimary: Bool {
-        self is ProviderModule || buildsConnection
+        buildsConnection
     }
 
     var mainModuleType: ModuleType {
-        if let providerModule = self as? ProviderModule {
-            return providerModule.providerModuleType
-        }
-        return moduleType
+        moduleType
     }
 }

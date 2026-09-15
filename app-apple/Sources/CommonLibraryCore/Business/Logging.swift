@@ -187,7 +187,6 @@ extension PartoutLogger.Builder {
             .App.web
         ] + [.openvpn, .wireguard] // Legacy
         list.append(.runtime)
-        list.append(.providers)
         setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension OpenVPNModule {
     public final class Implementation: ModuleImplementation, Sendable {
         public let moduleType = OpenVPNModule.moduleType

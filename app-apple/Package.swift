@@ -137,13 +137,6 @@ package.targets.append(contentsOf: [
         ]
     ),
     .target(
-        name: "CommonDataProviders",
-        dependencies: ["CommonData"],
-        resources: [
-            .process("Providers.xcdatamodeld")
-        ]
-    ),
-    .target(
         name: "CommonLibrary",
         dependencies: [
             "CommonLibraryCore",
@@ -155,25 +148,16 @@ package.targets.append(contentsOf: [
         dependencies: [
             "CommonDataPreferences",
             "CommonDataProfiles",
-            "CommonDataProviders",
             "CommonLibraryCore"
         ]
     ),
     .target(
         name: "CommonLibraryCore",
-        dependencies: {
-            var list: [Target.Dependency] = [
-                "partout",
-                "CommonLibraryCoreLegacy_C",
-                .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
-                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
-            ]
-            list.append("CommonProviders")
-            return list
-        }()
-    ),
-    .target(
-        name: "CommonLibraryCoreLegacy_C"
+        dependencies: [
+            "partout",
+            .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+            .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
+        ]
     ),
     .testTarget(
         name: "CommonLibraryTests",
@@ -183,44 +167,3 @@ package.targets.append(contentsOf: [
         ]
     )
 ])
-
-// MARK: Providers
-
-package.products.append(
-    .library(
-        name: "CommonProviders",
-        targets: ["CommonProviders"]
-    )
-)
-package.targets.append(contentsOf: [
-    .target(
-        name: "CommonProviders",
-        dependencies: ["CommonProvidersAPI"]
-    ),
-    .target(
-        name: "CommonProvidersAPI",
-        dependencies: ["CommonProvidersCore"],
-        resources: [
-            .copy("JSON")
-        ]
-    ),
-    .target(
-        name: "CommonProvidersCore",
-        dependencies: ["partout"]
-    )
-])
-#if canImport(Darwin)
-package.targets.append(contentsOf: [
-    .testTarget(
-        name: "CommonProvidersTests",
-        dependencies: ["CommonProviders"],
-        resources: [
-            .copy("Resources")
-        ]
-    ),
-    .testTarget(
-        name: "CommonProvidersAPITests",
-        dependencies: ["CommonProvidersAPI"]
-    )
-])
-#endif

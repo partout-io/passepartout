@@ -13,9 +13,6 @@ struct DiagnosticsView: View {
     @Environment(AppFormatter.self)
     private var appFormatter
 
-    @EnvironmentObject
-    private var apiManager: APIManager
-
     @Environment(IAPObservable.self)
     private var iapObservable
 
@@ -122,7 +119,6 @@ private extension DiagnosticsView {
             ReportIssueButton(
                 title: Strings.Views.Diagnostics.ReportIssue.title,
                 tunnel: tunnel,
-                apiManager: apiManager,
                 purchasedProducts: iapObservable.purchasedProducts,
                 isUnableToEmail: $isPresentingUnableToEmail
             )
