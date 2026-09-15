@@ -44,7 +44,7 @@ jobs:
           access-token: ${{ github.token }}
           submodules: true
 
-      - uses: mlugg/setup-zig@v2
+      - uses: partout-io/setup-zig@v3
         if: matrix.suite == 'partout'
 
       - uses: actions/setup-node@v6
