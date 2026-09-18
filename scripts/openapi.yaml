@@ -558,9 +558,11 @@ components:
       type: string
       x-enum-varnames:
       - appNotWorking
+      - daemonLooperV2
       - unknown
       enum:
       - appNotWorking
+      - daemonLooperV2
       - unknown
     ConfigBundle.Config:
       type: object

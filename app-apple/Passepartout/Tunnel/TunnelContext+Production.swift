@@ -185,6 +185,7 @@ private extension TunnelContext {
             cacheDir: cachesURL.path(),
             minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
             cryptoBackend: CryptoBackend(rawValue: preferences[\.cryptoBackend]),
+            featureFlags: preferences.isFlagEnabled(.daemonLooperV2) ? [.experimentalDaemon] : [],
             logger: logger
         )
 

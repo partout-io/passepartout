@@ -9,5 +9,6 @@ import Partout
 
 public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case appNotWorking = "appNotWorking"
+    case daemonLooperV2 = "daemonLooperV2"
     case unknown = "unknown"
 }
