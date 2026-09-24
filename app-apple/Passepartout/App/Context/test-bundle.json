@@ -1,17 +1,5 @@
 {
-    "zigCodingExport": {
-        "rate": 100
-    },
-    "zigCodingImport": {
-        "rate": 100
-    },
-    "zigRuntime": {
-        "rate": 100
-    },
-    "zigOpenVPN": {
-        "rate": 100
-    },
-    "zigWireGuard": {
+    "daemonLooperV2": {
         "rate": 100
     },
     "appNotWorking": {

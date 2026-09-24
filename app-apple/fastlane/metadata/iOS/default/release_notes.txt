@@ -1,2 +1,1 @@
-* Drop Partout legacy and support for providers (#1944)
-* Restore original app size (-50%)
+* Partout: Enable new daemon
