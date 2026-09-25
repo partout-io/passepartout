@@ -52,7 +52,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         connect: Bool,
         force: Bool
     ) async throws -> Profile? {
-        var profile = preProfile
+        let profile = preProfile
 
         // Trigger user input if profile is interactive
         if connect {

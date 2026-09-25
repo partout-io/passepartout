@@ -6,6 +6,3 @@
 #if canImport(CommonLibraryApple)
 @_exported import CommonLibraryApple
 #endif
-#if canImport(CommonProviders)
-@_exported import CommonProviders
-#endif
