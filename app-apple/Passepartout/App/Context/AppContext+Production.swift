@@ -73,8 +73,7 @@ extension AppContext {
             },
             exportModule: { module in
                 try runtime.exportModule(module)
-            },
-            legacyRegistry: CodingRegistry()
+            }
         )
 
         // MARK: Persistence (Core Data)

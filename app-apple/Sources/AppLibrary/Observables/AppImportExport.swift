@@ -19,6 +19,8 @@ public struct AppImportExport: Sendable {
 
     public typealias ExportModule = @Sendable (Module) throws -> String
 
+    private let legacyDecoder = LegacyProfileDecoder()
+
     // ABI proxies
     private let configBlock: ConfigBlock
     private let importModule: ImportModule
@@ -88,9 +90,10 @@ extension AppImportExport: ProfileCoder {
     }
 
     public func profile(fromString string: String) throws -> Profile {
-        // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
-//        try legacyRegistry.profile(fromString: string)
-        try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
+        if let profile = try? legacyDecoder.profile(fromString: string) {
+            return profile
+        }
+        return try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
     }
 }
 
