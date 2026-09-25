@@ -16,3 +16,23 @@ public protocol WireGuardKeyGenerator: Sendable {
 
     func publicKey(for privateKey: String) throws -> String
 }
+
+public final class FakeWireGuardKeyGenerator: WireGuardKeyGenerator {
+    public init() {}
+
+    public func newPrivateKey() -> String {
+        "foobar"
+    }
+
+    public func privateKey(from string: String) throws -> String {
+        "foobar"
+    }
+
+    public func publicKey(from string: String) throws -> String {
+        "foobar"
+    }
+
+    public func publicKey(for privateKey: String) throws -> String {
+        "foobar"
+    }
+}

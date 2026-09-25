@@ -70,7 +70,8 @@ extension AppContext {
             profileManager: profileManager,
             tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator()
         )
     }()
 }

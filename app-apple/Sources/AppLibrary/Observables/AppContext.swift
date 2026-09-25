@@ -61,6 +61,7 @@ public final class AppContext {
         tunnelObservable: TunnelObservable,
         versionChecker: VersionChecker,
         webReceiverManager: WebReceiverManager,
+        wireGuardKeyGenerator: WireGuardKeyGenerator,
         onEligibleFeaturesBlock: (@Sendable (Set<ABI.AppFeature>) async -> Void)? = nil
     ) {
         self.appConfiguration = appConfiguration
@@ -87,7 +88,7 @@ public final class AppContext {
             supportsIAP: supportsIAP
         )
         profileObservable = ProfileObservable(profileManager: profileManager)
-        registryObservable = RegistryObservable()
+        registryObservable = RegistryObservable(wireGuardKeyGenerator: wireGuardKeyGenerator)
         versionObservable = VersionObservable(versionChecker: versionChecker)
         webReceiverObservable = WebReceiverObservable(
             webReceiverManager: webReceiverManager
