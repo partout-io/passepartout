@@ -7,6 +7,9 @@ import CommonLibrary
 public struct EditableProfile: MutableProfileType {
     public let version: Int? = nil
 
+    // Modules without an editor still belong to the profile and must survive saves.
+    fileprivate var retainedModules: [(index: Int, module: Module)] = []
+
     public var id: UUID
 
     public var name: String
@@ -44,6 +47,9 @@ public struct EditableProfile: MutableProfileType {
                 throw ABI.AppError.malformedModule($0, reason: error)
             }
         }
+        for retained in retainedModules {
+            builder.modules.insert(retained.module, at: min(retained.index, builder.modules.count))
+        }
         builder.activeModulesIds = activeModulesIds
 
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
@@ -68,14 +74,14 @@ public struct EditableProfile: MutableProfileType {
 private extension Profile.Builder {
     var hasConnection: Bool {
         modules.contains {
-            activeModulesIds.contains($0.id) && $0.moduleType.isConnection
+            activeModulesIds.contains($0.id) && ($0.moduleType.isConnection || $0.isLegacyProviderConnection)
         }
     }
 }
 
 extension Profile {
     public func editable() -> EditableProfile {
-        EditableProfile(
+        var editable = EditableProfile(
             id: id,
             name: name,
             modules: modulesBuilders(),
@@ -83,6 +89,10 @@ extension Profile {
             behavior: behavior,
             userInfo: userInfo
         )
+        editable.retainedModules = modules.enumerated().compactMap { index, module in
+            module.moduleBuilder() == nil ? (index, module) : nil
+        }
+        return editable
     }
 
     public func modulesBuilders() -> [any ModuleBuilder] {

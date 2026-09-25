@@ -11,8 +11,7 @@ extension ModuleType {
         .DNS,
         .HTTPProxy,
         .IP,
-        .OnDemand,
-        .Provider
+        .OnDemand
     ]
 
     public static var connectionTypes: [ModuleType] {

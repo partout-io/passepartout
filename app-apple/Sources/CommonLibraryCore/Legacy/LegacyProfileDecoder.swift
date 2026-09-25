@@ -32,7 +32,11 @@ public struct LegacyProfileDecoder: Sendable {
     }
 
     private func decodeV3(_ string: String) throws -> Profile {
-        try JSONDecoder.shared().decode(TaggedProfile.self, from: Data(string.utf8)).asProfile()
+        try JSONDecoder.shared().decode(TaggedProfile.self, from: Data(string.utf8)).asProfile { custom in
+            guard custom.innerType == .Provider else { return custom }
+            // Keep the provider payload opaque, but retain its identity and active state.
+            return try LegacyProviderModule(json: custom.json)
+        }
     }
 
     private func decodeV2(_ string: String) throws -> Profile {
@@ -88,7 +92,9 @@ private struct LegacyCodableModuleV2: Decodable {
             wrappedModule = try OpenVPNModule(from: payload)
         case .WireGuard:
             wrappedModule = try WireGuardModule(from: payload)
-        case .Custom, .Provider, .Undefined:
+        case .Provider:
+            wrappedModule = try LegacyProviderModule(json: JSON(from: payload), legacyDates: true)
+        case .Custom, .Undefined:
             throw PartoutError.unknownModuleHandler(moduleType: moduleType)
         }
     }
@@ -168,4 +174,53 @@ private struct LegacyCodableProfileV1: Decodable {
     let behavior: ProfileBehavior?
 
     let userInfo: Data?
+}
+
+// Provider services and editing are retired. Retain their serialized data so that
+// loading, renaming, duplicating, and exporting old profiles never drops it.
+private struct LegacyProviderModule: Module, Codable, Hashable {
+    static let moduleType: ModuleType = .Provider
+
+    let id: UniqueID
+    let json: JSON
+    let providerModuleType: ModuleType
+
+    init(json: JSON, legacyDates: Bool = false) throws {
+        struct Metadata: Decodable {
+            let id: UniqueID
+            let providerId: String
+            let providerModuleType: ModuleType
+        }
+        let metadata = try JSONDecoder.shared().decode(Metadata.self, from: JSONEncoder.shared().encode(json))
+        id = metadata.id
+        providerModuleType = metadata.providerModuleType
+        var normalized = json
+        // V2 used Foundation's reference-date seconds; V3 uses Unix milliseconds.
+        if legacyDates,
+           var authentication = normalized["authentication"],
+           var token = authentication["token"],
+           case .number(let seconds) = token["expiryDate"] {
+            token["expiryDate"] = .number(Date(timeIntervalSinceReferenceDate: seconds).timeIntervalSince1970 * 1000)
+            authentication["token"] = token
+            normalized["authentication"] = authentication
+        }
+        self.json = normalized
+    }
+
+    init(from decoder: Decoder) throws {
+        try self.init(json: JSON(from: decoder))
+    }
+
+    func encode(to encoder: Encoder) throws {
+        try json.encode(to: encoder)
+    }
+
+    var isFinal: Bool { false }
+}
+
+extension Module {
+    public var isLegacyProviderConnection: Bool {
+        guard let provider = self as? LegacyProviderModule else { return false }
+        return provider.providerModuleType.isConnection
+    }
 }

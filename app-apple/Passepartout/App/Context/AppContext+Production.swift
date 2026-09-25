@@ -301,7 +301,7 @@ extension AppContext {
             }
         }
 
-        return AppContext(
+        let context = AppContext(
             appConfiguration: appConfiguration,
             appImportExport: appImportExport,
             configManager: configManager,
@@ -317,6 +317,18 @@ extension AppContext {
             wireGuardKeyGenerator: PartoutWireGuardKeyGenerator(runtime: runtime),
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
+
+        // Ensure that all module builders can be rendered in the profile editor.
+        ModuleType.knownTypes.forEach { moduleType in
+#if !os(tvOS)
+            guard let builder = context.registryObservable.newModule(ofType: moduleType) else {
+                return
+            }
+            assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
+#endif
+        }
+
+        return context
     }
 }
 
