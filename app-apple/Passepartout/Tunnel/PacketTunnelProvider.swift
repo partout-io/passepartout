@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import AppResources
+import AppStrings
 import CommonLibrary
 @preconcurrency import NetworkExtension
+import os
 import Partout
 import PartoutRuntime
 import TunnelLibrary
@@ -79,7 +81,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             //
         }
         context?.log(.core, .notice, "Start PTP")
-        try await context?.start(isInteractive: isInteractive)
+        do {
+            try await context?.start(isInteractive: isInteractive)
+        } catch ABI.AppError.interactiveLogin {
+            await displayInteractiveLoginMessage()
+            throw ABI.AppError.interactiveLogin
+        }
     }
 
     override func stopTunnel(with reason: NEProviderStopReason) async {
@@ -99,6 +106,29 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         guard let context else { return nil }
         pspLog(.core, .debug, "Handle PTP message")
         return await context.sendMessage(messageData)
+    }
+
+    /// Asks NetworkExtension to present the system VPN message, then returns.
+    /// The completion handler runs for both acknowledgement and presentation
+    /// failure, so startup cannot remain waiting when the message is dismissed
+    /// or cannot be shown.
+    private func displayInteractiveLoginMessage() async {
+        let message = Strings.Errors.App.interactiveLogin
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            let resumed = OSAllocatedUnfairLock(initialState: false)
+            displayMessage(message) { _ in
+                let shouldResume = resumed.withLock { didResume -> Bool in
+                    if didResume {
+                        return false
+                    }
+                    didResume = true
+                    return true
+                }
+                if shouldResume {
+                    continuation.resume()
+                }
+            }
+        }
     }
 
 //    override func wake() {

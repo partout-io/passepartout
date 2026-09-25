@@ -182,6 +182,8 @@ public enum Strings {
       }
       /// Purchase required
       public static let ineligible = Strings.tr("Localizable", "errors.app.ineligible", fallback: "Purchase required")
+      /// Open Passepartout to enter the credentials required for this VPN.
+      public static let interactiveLogin = Strings.tr("Localizable", "errors.app.interactive_login", fallback: "Open Passepartout to enter the credentials required for this VPN.")
       /// Invalid fields.
       public static let invalidFields = Strings.tr("Localizable", "errors.app.invalid_fields", fallback: "Invalid fields.")
       /// Module %@ is malformed. %@
