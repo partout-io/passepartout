@@ -72,6 +72,73 @@ struct AppImportExportTests {
         }
     }
 
+    @Test(arguments: [2, 3])
+    @MainActor
+    func givenLegacyProvider_whenImportEditAndExport_thenPreservesPayloadAndActiveID(version: Int) throws {
+        let moduleID = UUID()
+        let provider: JSON = .object([
+            "id": .string(moduleID.uuidString),
+            "providerId": .string("mullvad"),
+            "providerModuleType": .string("WireGuard"),
+            "authentication": .object([
+                "credentials": .object(["username": .string("legacy-user"), "password": .string("legacy-password")]),
+                "token": .object(["accessToken": .string("legacy-token"), "expiryDate": .number(1_700_000_000_000)])
+            ]),
+            "moduleOptions": .object(["WireGuard": .string("e30=")]),
+            "entity": .object([
+                "server": .object([
+                    "metadata": .object([
+                        "providerId": .string("mullvad"),
+                        "categoryName": .string("default"),
+                        "countryCode": .string("SE")
+                    ]),
+                    "serverId": .string("legacy-server"),
+                    "hostname": .string("vpn.example.com")
+                ]),
+                "preset": .object([
+                    "providerId": .string("mullvad"),
+                    "presetId": .string("default"),
+                    "description": .string("Default"),
+                    "moduleType": .string("WireGuard"),
+                    "templateData": .string("e30=")
+                ])
+            ])
+        ])
+        let ip = IPModule.Builder(mtu: 1280).build()
+        let tagged = TaggedProfile(
+            id: UUID(), name: "Legacy provider",
+            modules: [.Custom(CustomModule(innerType: .Provider, json: provider)), .IP(ip)],
+            activeModulesIds: [moduleID, ip.id]
+        )
+        var object = try #require(JSONSerialization.jsonObject(with: ABI.encode(tagged)) as? [String: Any])
+        if version == 2 {
+            var legacyProvider = provider
+            legacyProvider["authentication"]?["token"]?["expiryDate"] = .number(
+                Date(timeIntervalSince1970: 1_700_000_000).timeIntervalSinceReferenceDate
+            )
+            object["modules"] = [
+                ["moduleType": "Provider", "payload": try JSONSerialization.jsonObject(with: ABI.encode(legacyProvider))],
+                ["moduleType": "IP", "payload": try JSONSerialization.jsonObject(with: ABI.encode(ip))]
+            ]
+        }
+        let string = String(decoding: try JSONSerialization.data(withJSONObject: object), as: UTF8.self)
+        let sut = AppImportExport.dummy
+        let profile = try sut.profile(fromString: string)
+        #expect(profile.modules.map(\.id) == [moduleID, ip.id])
+        #expect(profile.activeModulesIds == [moduleID, ip.id])
+        #expect(!profile.isFinal)
+
+        let editor = ProfileEditor(profile: profile)
+        editor.profile.name = "Renamed"
+        let edited = try editor.buildAndUpdate()
+        let exported = try ABI.decodeJSON(TaggedProfile.self, from: sut.string(fromProfile: edited))
+        #expect(exported.name == "Renamed")
+        #expect(exported.activeModulesIds == tagged.activeModulesIds)
+        #expect(exported.modules == tagged.modules)
+        let roundTrip = try sut.profile(fromString: sut.string(fromProfile: edited))
+        #expect(roundTrip == edited)
+    }
+
     @Test
     func givenModule_whenExport_thenUsesABIExporter() throws {
         let sut = AppImportExport(

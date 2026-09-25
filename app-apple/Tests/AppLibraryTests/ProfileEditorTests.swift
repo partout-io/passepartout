@@ -16,6 +16,13 @@ extension ProfileEditorTests {
     // MARK: CRUD
 
     @Test
+    func givenProfileEditor_whenListingNewModules_thenOmitsRetiredProviders() {
+        let sut = ProfileEditor()
+        #expect(!sut.availableModuleTypes(forTarget: .appStore).contains(.Provider))
+        #expect(!sut.availableModuleTypes(forTarget: .developerID).contains(.Provider))
+    }
+
+    @Test
     func givenModules_thenMatchesModules() {
         let sut = ProfileEditor(modules: [
             DNSModule.Builder(),

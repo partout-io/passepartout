@@ -37,7 +37,7 @@ struct LegacyProfileDecoderLegacyTests {
     @Test
     func givenLegacyV2_whenDecodeProfileWithUnknownModule_thenFailsDecoding() throws {
         let fixture = try newLegacyV2ProfileFixture()
-        let encoded = fixture.encoded.replacingOccurrences(of: "\"DNS\"", with: "\"Provider\"")
+        let encoded = fixture.encoded.replacingOccurrences(of: "\"DNS\"", with: "\"Undefined\"")
         #expect(encoded != fixture.encoded)
         let error = #expect(throws: PartoutError.self) {
             _ = try LegacyProfileDecoder().profile(fromString: encoded)
