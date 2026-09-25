@@ -78,11 +78,6 @@ extension ABI.AppError: StyledLocalizableEntity {
                 module.moduleType.localizedDescription,
                 reason.appLocalizedDescription
             )
-        case .missingProviderEntity:
-            return V.missingProviderEntity
-        case .missingProviderOption:
-            // Should not happen, thrown by WireGuard providers (disabled)
-            return nil
         case .moduleRequiresConnection(let module):
             return V.moduleRequiresConnection(
                 module.moduleType.localizedDescription,

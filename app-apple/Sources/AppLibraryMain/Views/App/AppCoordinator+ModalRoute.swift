@@ -8,7 +8,6 @@ import Foundation
 extension AppCoordinator {
     enum ModalRoute: Identifiable {
         case editProfile
-        case editProviderEntity(Profile, Bool, Module)
         case importProfileQR
         case importProfileText
         case interactiveLogin
@@ -18,7 +17,6 @@ extension AppCoordinator {
         var id: Int {
             switch self {
             case .editProfile: return 1
-            case .editProviderEntity: return 2
             case .importProfileQR: return 3
             case .importProfileText: return 4
             case .interactiveLogin: return 5

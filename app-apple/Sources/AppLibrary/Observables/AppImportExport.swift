@@ -19,24 +19,21 @@ public struct AppImportExport: Sendable {
 
     public typealias ExportModule = @Sendable (Module) throws -> String
 
+    private let legacyDecoder = LegacyProfileDecoder()
+
     // ABI proxies
     private let configBlock: ConfigBlock
     private let importModule: ImportModule
     private let exportModule: ExportModule
 
-    // Legacy decoding
-    private let legacyRegistry: CodingRegistry
-
     public init(
         configBlock: @escaping ConfigBlock,
         importModule: @escaping ImportModule,
-        exportModule: @escaping ExportModule,
-        legacyRegistry: CodingRegistry
+        exportModule: @escaping ExportModule
     ) {
         self.configBlock = configBlock
         self.importModule = importModule
         self.exportModule = exportModule
-        self.legacyRegistry = legacyRegistry
     }
 }
 
@@ -48,8 +45,7 @@ extension AppImportExport {
     public static let dummy = AppImportExport(
         configBlock: { [] },
         importModule: { _, _ in OnDemandModule.Builder().build() },
-        exportModule: { _ in "" },
-        legacyRegistry: CodingRegistry(registry: Registry(allHandlers: []))
+        exportModule: { _ in "" }
     )
 
     public func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
@@ -70,7 +66,6 @@ extension AppImportExport {
             } else {
                 context = nil
             }
-            // Via ABI (v3)
             let importedModule = try importModule(contents, context)
             return try Profile(withName: name, singleModule: importedModule)
         } catch {
@@ -95,8 +90,10 @@ extension AppImportExport: ProfileCoder {
     }
 
     public func profile(fromString string: String) throws -> Profile {
-        // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
-        try legacyRegistry.profile(fromString: string)
+        if let profile = try? legacyDecoder.profile(fromString: string) {
+            return profile
+        }
+        return try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
     }
 }
 

@@ -35,7 +35,6 @@ import kotlinx.serialization.Contextual
  * @param id 
  * @param comment 
  * @param purchasedProducts 
- * @param providerLastUpdates 
  * @param attachments 
  * @param osLine 
  * @param appLine 
@@ -53,9 +52,6 @@ data class Issue (
 
     @SerialName(value = "purchasedProducts")
     val purchasedProducts: kotlin.collections.List<kotlin.String>,
-
-    @SerialName(value = "providerLastUpdates")
-    val providerLastUpdates: kotlin.collections.Map<kotlin.String, kotlin.Long>,
 
     @SerialName(value = "attachments")
     val attachments: kotlin.collections.List<IssueAttachment>,

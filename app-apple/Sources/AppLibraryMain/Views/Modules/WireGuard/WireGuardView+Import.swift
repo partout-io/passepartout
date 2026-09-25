@@ -13,8 +13,6 @@ extension WireGuardView {
         @ObservedObject
         var draft: ModuleDraft<WireGuardModule.Builder>
 
-        let impl: WireGuardModule.Implementation?
-
         @Binding
         var isImporting: Bool
 

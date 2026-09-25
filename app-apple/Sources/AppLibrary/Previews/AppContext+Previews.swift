@@ -11,17 +11,10 @@ extension AppContext {
             distributionTarget: .appStore,
             buildTarget: .app
         )
-        let registry = CodingRegistry(
-            registry: Registry(withKnown: true)
-        )
         let preferences = AppPreferencesStore()
         let defaults = UserDefaults()
         let appImportExport: AppImportExport = .dummy
         let configManager = ConfigManager()
-        let apiManager = APIManager(
-            from: API.bundled,
-            repository: InMemoryAPIRepository()
-        )
         let iapManager = IAPManager(
             customUserLevel: .complete,
             inAppHelper: FakeInAppHelper(),
@@ -66,7 +59,6 @@ extension AppContext {
         }
 
         return AppContext(
-            apiManager: apiManager,
             appConfiguration: appConfiguration,
             appImportExport: appImportExport,
             configManager: configManager,
@@ -76,10 +68,10 @@ extension AppContext {
             preferences: preferences,
             preferencesManager: preferencesManager,
             profileManager: profileManager,
-            registry: registry,
             tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator()
         )
     }()
 }
@@ -113,11 +105,5 @@ extension TunnelObservable {
 extension WebReceiverObservable {
     public static var forPreviews: WebReceiverObservable {
         AppContext.forPreviews.webReceiverObservable
-    }
-}
-
-extension APIManager {
-    public static var forPreviews: APIManager {
-        AppContext.forPreviews.apiManager
     }
 }

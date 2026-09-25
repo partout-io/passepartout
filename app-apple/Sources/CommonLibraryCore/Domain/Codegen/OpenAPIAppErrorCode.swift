@@ -21,8 +21,6 @@ public enum OpenAPIAppErrorCode: String, Sendable, Codable, CaseIterable {
     case interactiveLogin = "interactiveLogin"
     case invalidField = "invalidField"
     case malformedModule = "malformedModule"
-    case missingProviderEntity = "missingProviderEntity"
-    case missingProviderOption = "missingProviderOption"
     case moduleRequiresConnection = "moduleRequiresConnection"
     case multipleTunnels = "multipleTunnels"
     case noActiveModules = "noActiveModules"

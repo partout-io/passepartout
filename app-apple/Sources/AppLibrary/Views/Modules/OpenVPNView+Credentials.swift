@@ -14,9 +14,6 @@ public struct OpenVPNCredentialsGroup: View {
         case otp
     }
 
-    @EnvironmentObject
-    private var apiManager: APIManager
-
     @Environment(\.appConfiguration)
     private var appConfiguration
 

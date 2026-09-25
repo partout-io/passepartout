@@ -202,12 +202,9 @@ private struct TaggedProfileCoder: ProfileCoder {
 
     func profile(fromString string: String) throws -> Profile {
         let profile = try ABI.decodeJSON(TaggedProfile.self, from: string)
-        guard resolved else {  return try profile.asProfile() }
-
-        // Profiles with custom (provider) modules require the Swift runtime
+        guard resolved else { return try profile.asProfile() }
         return try profile.asProfile { _ in
-            pspLog(profile.id, .profiles, .fault,
-                   "Custom modules (providers) are not supported")
+            pspLog(profile.id, .profiles, .fault, "Custom modules (providers) are not supported")
             throw TunnelContext.RuntimeError.unsupportedProviders
         }
     }

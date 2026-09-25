@@ -8,15 +8,11 @@ import Foundation
 
 extension ABI.Issue {
     var body: String {
-        let providers = providerLastUpdates.mapValues {
-            $0.date.localizedDescription(style: .timestamp)
-        }
         return Resources.issueTemplate
             .replacingOccurrences(of: "$comment", with: comment)
             .replacingOccurrences(of: "$appLine", with: appLine ?? "unknown")
             .replacingOccurrences(of: "$osLine", with: osLine)
             .replacingOccurrences(of: "$deviceLine", with: deviceLine ?? "unknown")
-            .replacingOccurrences(of: "$providerLastUpdates", with: providers.description)
             .replacingOccurrences(of: "$purchasedProducts", with: purchasedProducts.description)
     }
 }
@@ -24,13 +20,8 @@ extension ABI.Issue {
 extension ABI.Issue {
     struct Metadata {
         let appConfiguration: ABI.AppConfiguration
-
         let purchasedProducts: Set<ABI.AppProduct>
-
-        let providerLastUpdates: [ProviderID: Timestamp]
-
         let tunnel: TunnelObservable
-
         let comment: String
     }
 
@@ -71,7 +62,6 @@ extension ABI.Issue {
             comment: metadata.comment,
             appLine: "\(Strings.Unlocalized.appName) \(metadata.appConfiguration.bundle.versionString) [\(metadata.appConfiguration.bundle.distributionTarget.rawValue)]",
             purchasedProducts: metadata.purchasedProducts,
-            providerLastUpdates: metadata.providerLastUpdates,
             attachments: attachments
         )
     }

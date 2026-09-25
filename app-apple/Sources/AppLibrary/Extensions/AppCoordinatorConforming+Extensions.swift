@@ -11,7 +11,7 @@ extension AppCoordinatorConforming {
             if verify {
                 try iapObservable.verify(profile, extra: nil)
             }
-            if profile.modules.contains(where: { $0 is ProviderModule }) {
+            if profile.modules.contains(where: { $0.moduleType == .Provider || ($0 as? CustomModule)?.innerType == .Provider }) {
                 onInfo(
                     title: Strings.Global.Nouns.providers,
                     message: Strings.Onboarding.Migrate395Providers.message
@@ -34,8 +34,6 @@ extension AppCoordinatorConforming {
                         await onConnect(newProfile, force: true, verify: verify)
                     }
                 }
-            case .missingProviderEntity:
-                onProviderEntityRequired(profile, force: force)
             default:
                 onError(appError, profile: profile)
             }

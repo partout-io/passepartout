@@ -82,9 +82,6 @@ private extension AppCoordinator {
                         return
                     }
                     await onConnect(profile, force: false)
-                },
-                onProviderEntityRequired: {
-                    onProviderEntityRequired($0, force: false)
                 }
             )
         )
@@ -138,13 +135,6 @@ extension AppCoordinator {
         interactiveObservable.present(
             with: profile,
             onComplete: onComplete
-        )
-    }
-
-    public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
-        errorHandler.handle(
-            title: profile.name,
-            message: Strings.Alerts.Providers.MissingServer.message
         )
     }
 

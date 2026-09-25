@@ -13,8 +13,6 @@ extension OpenVPNView {
         @ObservedObject
         var draft: ModuleDraft<OpenVPNModule.Builder>
 
-        let impl: OpenVPNModule.Implementation?
-
         @Binding
         var isImporting: Bool
 

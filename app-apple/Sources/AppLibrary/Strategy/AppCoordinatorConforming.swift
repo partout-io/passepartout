@@ -13,8 +13,6 @@ public protocol AppCoordinatorConforming {
 
     func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock)
 
-    func onProviderEntityRequired(_ profile: Profile, force: Bool)
-
     func onPurchaseRequired(for profile: Profile, features: Set<ABI.AppFeature>, continuation: (() -> Void)?)
 
     func onInfo(title: String, message: String)

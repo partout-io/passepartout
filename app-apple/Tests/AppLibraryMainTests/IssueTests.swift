@@ -31,7 +31,11 @@ struct IssueTests {
 
     @Test
     func givenAppLineAndProducts_whenCreateIssue_thenMatchesTemplate() {
-        let issue = ABI.Issue(comment: comment, appLine: appLine, purchasedProducts: [.Features.appleTV])
+        let issue = ABI.Issue(
+            comment: comment,
+            appLine: appLine,
+            purchasedProducts: [.Features.appleTV]
+        )
         let expected = """
 Hi,
 
@@ -43,7 +47,6 @@ App: \(issue.appLine ?? "unknown")
 OS: \(issue.osLine)
 Device: \(issue.deviceLine ?? "unknown")
 Purchased: ["\(ABI.AppProduct.Features.appleTV.rawValue)"]
-Providers: [:]
 
 --
 

@@ -8,13 +8,9 @@ import Foundation
 public struct ConnectionFlow {
     public let onConnect: (ABI.AppProfileHeader) async -> Void
 
-    public let onProviderEntityRequired: (Profile) -> Void
-
     public init(
-        onConnect: @escaping (ABI.AppProfileHeader) async -> Void,
-        onProviderEntityRequired: @escaping (Profile) -> Void
+        onConnect: @escaping (ABI.AppProfileHeader) async -> Void
     ) {
         self.onConnect = onConnect
-        self.onProviderEntityRequired = onProviderEntityRequired
     }
 }

@@ -29,7 +29,6 @@ struct ProfileContextMenu: View, Routable {
 
     var body: some View {
         tunnelRestartButton
-        providerConnectToButton
         Divider()
         profileEditButton
         if style == .installedProfile {
@@ -44,23 +43,6 @@ struct ProfileContextMenu: View, Routable {
 
 @MainActor
 private extension ProfileContextMenu {
-    var providerConnectToButton: some View {
-        ProviderConnectToButton(
-            header: header,
-            onTap: {
-                guard let profile = profileObservable.profile(withId: $0.id) else {
-                    pspLog(.profiles, .error, "Unable to find profile from header: \($0.id)")
-                    return
-                }
-                flow?.connectionFlow?.onProviderEntityRequired(profile)
-            },
-            label: {
-                ThemeImageLabel(header.providerServerSelectionTitle, .profileProvider)
-            }
-        )
-        .uiAccessibility(.App.ProfileMenu.connectTo)
-    }
-
     var tunnelRestartButton: some View {
         TunnelRestartButton(
             tunnel: tunnel,

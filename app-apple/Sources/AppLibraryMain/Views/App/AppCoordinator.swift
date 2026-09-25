@@ -127,9 +127,6 @@ extension AppCoordinator {
                             return
                         }
                         await onConnect(profile, force: false)
-                    },
-                    onProviderEntityRequired: {
-                        onProviderEntityRequired($0, force: false)
                     }
                 )
             )
@@ -173,15 +170,6 @@ extension AppCoordinator {
                 moduleViewFactory: DefaultModuleViewFactory(),
                 path: $profilePath,
                 onDismiss: onDismiss
-            )
-        case .editProviderEntity(let profile, let force, let module):
-            ProviderServerCoordinatorIfSupported(
-                module: module,
-                errorHandler: errorHandler,
-                selectTitle: profile.providerServerSelectionTitle,
-                onSelect: {
-                    try await onSelectProviderEntity(with: $0, in: profile, force: force)
-                }
             )
         case .importProfileQR:
 #if os(iOS)
@@ -287,51 +275,12 @@ extension AppCoordinator {
     }
 }
 
-// MARK: - Providers
-
-private struct ProviderServerCoordinatorIfSupported: View {
-    let module: Module
-
-    let errorHandler: ErrorHandler
-
-    let selectTitle: String
-
-    let onSelect: (Module) async throws -> Void
-
-    var body: some View {
-        if let supporting = module as? ProviderModule {
-            ProviderServerCoordinator(
-                module: supporting,
-                selectTitle: selectTitle,
-                onSelect: {
-                    var newBuilder = supporting.builder()
-                    newBuilder.entity = $0
-                    let newModule = try newBuilder.build()
-                    try await onSelect(newModule)
-                },
-                errorHandler: errorHandler
-            )
-        } else {
-            fatalError("Module got too far without being ProviderModule: \(module)")
-        }
-    }
-}
-
 // MARK: - Handlers
 
 extension AppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
         pspLog(.core, .info, "Present interactive login")
         interactiveObservable.present(with: profile, onComplete: onComplete)
-    }
-
-    public func onProviderEntityRequired(_ profile: Profile, force: Bool) {
-        guard let module = profile.activeProviderModule else {
-            assertionFailure("Editing provider entity, but profile has no selected provider module")
-            return
-        }
-        pspLog(.core, .info, "Present provider entity selector")
-        present(.editProviderEntity(profile, force, module))
     }
 
     public func onPurchaseRequired(

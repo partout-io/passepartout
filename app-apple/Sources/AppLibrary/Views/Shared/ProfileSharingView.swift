@@ -64,6 +64,8 @@ private extension ProfileSharingView {
     }
 }
 
+import Combine
+
 #Preview {
     struct ContentView: View {
 

@@ -16,10 +16,9 @@ public protocol AppContextProtocol: AnyObject {
     var registryObservable: RegistryObservable { get }
     var versionObservable: VersionObservable { get }
     var webReceiverObservable: WebReceiverObservable { get }
+    var wireGuardKeyGenerator: WireGuardKeyGenerator { get }
 
     // Legacy managers not migrated to observables
-    @available(*, deprecated, message: "#1679")
-    var apiManager: APIManager { get }
     @available(*, deprecated, message: "#1679")
     var preferencesManager: PreferencesManager { get }
 

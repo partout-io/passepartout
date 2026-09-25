@@ -24,7 +24,6 @@ extension ABI.AppProfileHeader: OpenAPIEncodable {
             moduleTypes: moduleTypes,
             primaryModuleType: primaryModuleType,
             secondaryModuleTypes: secondaryModuleTypes ?? [],
-            providerInfo: providerInfo?.toProto,
             fingerprint: fingerprint,
             sharingFlags: sharingFlags,
             requiredFeatures: Array(requiredFeatures)
@@ -50,15 +49,6 @@ extension ABI.OriginalPurchase: OpenAPIEncodable {
         OpenAPIOriginalPurchase(
             buildNumber: buildNumber,
             purchaseDate: purchaseDate.timestamp
-        )
-    }
-}
-
-extension ABI.ProviderInfo: OpenAPIEncodable {
-    var toProto: OpenAPIProviderInfo {
-        OpenAPIProviderInfo(
-            providerId: providerId.rawValue,
-            countryCode: countryCode
         )
     }
 }

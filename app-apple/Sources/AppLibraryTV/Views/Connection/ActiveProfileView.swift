@@ -13,9 +13,6 @@ struct ActiveProfileView: View {
     @Environment(ProfileObservable.self)
     private var profileObservable
 
-    @EnvironmentObject
-    private var apiManager: APIManager
-
     let header: ABI.AppProfileHeader?
 
     let tunnel: TunnelObservable
@@ -78,18 +75,6 @@ private extension ActiveProfileView {
             if let primaryType = header.localizedDescription(optionalStyle: .primaryType) {
                 ListRowView(title: Strings.Global.Nouns.protocol) {
                     Text(primaryType)
-                }
-            }
-            if let providerInfo = header.providerInfo {
-                if let provider = apiManager.provider(withId: providerInfo.providerId) {
-                    ListRowView(title: Strings.Global.Nouns.provider) {
-                        Text(provider.description)
-                    }
-                }
-                if let countryCode = providerInfo.countryCode {
-                    ListRowView(title: Strings.Global.Nouns.country) {
-                        ThemeCountryText(countryCode)
-                    }
                 }
             }
             if let secondaryTypes = header.localizedDescription(optionalStyle: .secondaryTypes) {
@@ -156,35 +141,6 @@ private extension ActiveProfileView {
             .frame(maxWidth: .infinity)
         VStack {}
             .frame(maxWidth: .infinity)
-    }
-}
-
-#Preview("Provider") {
-    let profile: Profile = {
-        do {
-            var moduleBuilder = ProviderModule.Builder()
-            moduleBuilder.providerId = .mullvad
-            moduleBuilder.providerModuleType = .OpenVPN
-            let module = try moduleBuilder.build()
-
-            let builder = Profile.Builder(
-                name: "Provider",
-                modules: [module]
-            )
-            return try builder.build()
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }()
-
-    HStack {
-        ContentPreview(header: profile.abiHeaderWithBogusFlagsAndRequirements())
-            .frame(maxWidth: .infinity)
-        VStack {}
-            .frame(maxWidth: .infinity)
-    }
-    .task {
-        try? await APIManager.forPreviews.fetchIndex()
     }
 }
 

@@ -37,27 +37,14 @@ final class DefaultProfileProcessor: ProfileProcessor, Sendable {
 
 final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
     private let profileRepository: ProfileRepository
-
-    private let apiManager: APIManager?
-
-    private let resolver: Resolver
-
     private let extensionInstaller: ExtensionInstaller?
-
-    private let providerServerSorter: ProviderServerParameters.Sorter
 
     init(
         profileRepository: ProfileRepository,
-        apiManager: APIManager?,
-        resolver: Resolver,
-        extensionInstaller: ExtensionInstaller?,
-        providerServerSorter: @escaping @Sendable ProviderServerParameters.Sorter
+        extensionInstaller: ExtensionInstaller?
     ) {
         self.profileRepository = profileRepository
-        self.apiManager = apiManager
-        self.resolver = resolver
         self.extensionInstaller = extensionInstaller
-        self.providerServerSorter = providerServerSorter
     }
 
     nonisolated func willInstall(
@@ -65,36 +52,7 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         connect: Bool,
         force: Bool
     ) async throws -> Profile? {
-        var profile = preProfile
-
-        // Apply provider preprocessing if APIManager provided
-        if let apiManager {
-            // Apply connection heuristic
-            do {
-                if let builder = profile.activeProviderModule?.moduleBuilder() as? ProviderModule.Builder,
-                   let heuristic = builder.entity?.heuristic {
-                    pspLog(.core, .info, "Apply connection heuristic: \(heuristic)")
-                    profile.activeProviderModule?.entity.map {
-                        pspLog(.core, .info, "\tOld server: \($0.server)")
-                    }
-                    profile = try await profile.withNewServer(using: heuristic, apiManager: apiManager, sort: providerServerSorter)
-                    profile.activeProviderModule?.entity.map {
-                        pspLog(.core, .info, "\tNew server: \($0.server)")
-                    }
-                }
-            } catch {
-                pspLog(.core, .error, "Unable to pick new provider server: \(error)")
-            }
-
-            // Validate provider modules. Do not commit resolved
-            // profile, the tunnel requires the original profile.
-            do {
-                _ = try resolver.resolvedProfile(profile)
-            } catch {
-                pspLog(.core, .error, "Unable to inject provider modules: \(error)")
-                throw error
-            }
-        }
+        let profile = preProfile
 
         // Trigger user input if profile is interactive
         if connect {
@@ -129,60 +87,5 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
 
         // Return processed profile
         return profile
-    }
-}
-
-// MARK: Heuristics
-
-private extension Profile {
-    func withNewServer(using heuristic: ProviderHeuristic, apiManager: APIManager, sort: @escaping ProviderServerParameters.Sorter) async throws -> Profile {
-        guard var providerModule = activeProviderModule?.moduleBuilder() as? ProviderModule.Builder else {
-            return self
-        }
-        try await providerModule.setRandomServer(using: heuristic, apiManager: apiManager, sort: sort)
-
-        var newBuilder = builder()
-        newBuilder.saveModule(try providerModule.build())
-        return try newBuilder.build()
-    }
-}
-
-private extension ProviderModule.Builder {
-    @MainActor
-    mutating func setRandomServer(using heuristic: ProviderHeuristic, apiManager: APIManager, sort: @escaping ProviderServerParameters.Sorter) async throws {
-        guard let providerId, let providerModuleType, let entity else {
-            return
-        }
-        let module = try ProviderModule.Builder(providerId: providerId, providerModuleType: providerModuleType).build()
-        let repo = try await apiManager.providerRepository(for: module, sort: sort)
-        let providerManager = ProviderManager()
-        try await providerManager.setRepository(repo, for: providerModuleType)
-
-        var filters = ProviderFilters()
-        filters.categoryName = entity.server.metadata.categoryName
-        filters.presetId = entity.preset.presetId
-
-        switch heuristic {
-        case .exact(let server):
-            filters.serverIds = [server.serverId]
-        case .sameCountry(let code):
-            filters.countryCode = code
-        case .sameRegion(let region):
-            filters.countryCode = region.countryCode
-            filters.area = region.area
-        }
-
-        var servers = try await providerManager.filteredServers(with: filters)
-        servers.removeAll {
-            $0.serverId == entity.server.serverId
-        }
-        guard let randomServer = servers.randomElement() else {
-            return
-        }
-        self.entity = ProviderEntity(
-            server: randomServer,
-            preset: entity.preset,
-            heuristic: entity.heuristic
-        )
     }
 }

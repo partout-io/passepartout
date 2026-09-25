@@ -25,7 +25,6 @@ package com.algoritmico.passepartout.models
 
 import com.algoritmico.passepartout.models.AppFeature
 import com.algoritmico.passepartout.models.ProfileSharingFlag
-import com.algoritmico.passepartout.models.ProviderInfo
 import io.partout.models.ModuleType
 
 import kotlinx.serialization.Serializable
@@ -43,7 +42,6 @@ import kotlinx.serialization.Contextual
  * @param sharingFlags 
  * @param requiredFeatures 
  * @param primaryModuleType 
- * @param providerInfo 
  */
 @Serializable
 
@@ -71,10 +69,7 @@ data class AppProfileHeader (
     val requiredFeatures: kotlin.collections.List<@Contextual AppFeature>,
 
     @Contextual @SerialName(value = "primaryModuleType")
-    val primaryModuleType: ModuleType? = null,
-
-    @SerialName(value = "providerInfo")
-    val providerInfo: ProviderInfo? = null
+    val primaryModuleType: ModuleType? = null
 
 ) {
 

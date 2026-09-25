@@ -7,7 +7,7 @@ import CommonLibrary
 
 extension ProfileManager {
     public static func forUITesting(
-        withNewModule newModule: @escaping (ModuleType) -> any ModuleBuilder,
+        withNewModule newModule: @escaping (ModuleType) -> (any ModuleBuilder)?,
         processor: ProfileProcessor,
         repository: ProfileRepository = InMemoryProfileRepository()
     ) -> ProfileManager {
@@ -26,10 +26,12 @@ extension ProfileManager {
                     var onDemandIdIfDisabled: UniqueID?
 
                     for moduleType in parameters.moduleTypes {
-                        var moduleBuilder = newModule(moduleType)
+                        guard var moduleBuilder = newModule(moduleType) else {
+                            fatalError("Unknown module type: \(moduleType)")
+                        }
 
                         if var wgBuilder = moduleBuilder as? WireGuardModule.Builder {
-                            let gen = StandardWireGuardKeyGenerator()
+                            let gen = FakeWireGuardKeyGenerator()
                             var cfgBuilder = WireGuard.Configuration.Builder(keyGenerator: gen)
                             cfgBuilder.peers = [.init(publicKey: gen.newPrivateKey())]
                             wgBuilder.configurationBuilder = cfgBuilder
@@ -85,14 +87,11 @@ private extension ProfileManager {
 
         let moduleTypes: [ModuleType]
 
-        let providerId: ProviderID?
-
-        init(_ name: String, _ isShared: Bool, _ isTV: Bool, _ moduleTypes: [ModuleType], _ providerId: ProviderID? = nil) {
+        init(_ name: String, _ isShared: Bool, _ isTV: Bool, _ moduleTypes: [ModuleType]) {
             self.name = name
             self.isShared = isShared
             self.isTV = isTV
             self.moduleTypes = moduleTypes
-            self.providerId = providerId
         }
     }
 

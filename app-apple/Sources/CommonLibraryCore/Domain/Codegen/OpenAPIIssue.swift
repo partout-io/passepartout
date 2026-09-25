@@ -13,17 +13,15 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
     public var comment: String
     public var appLine: String?
     public var purchasedProducts: [String]
-    public var providerLastUpdates: [String: Int64]
     public var attachments: [OpenAPIIssueAttachment]
     public var osLine: String
     public var deviceLine: String?
 
-    public init(id: UUID, comment: String, appLine: String? = nil, purchasedProducts: [String], providerLastUpdates: [String: Int64], attachments: [OpenAPIIssueAttachment], osLine: String, deviceLine: String? = nil) {
+    public init(id: UUID, comment: String, appLine: String? = nil, purchasedProducts: [String], attachments: [OpenAPIIssueAttachment], osLine: String, deviceLine: String? = nil) {
         self.id = id
         self.comment = comment
         self.appLine = appLine
         self.purchasedProducts = purchasedProducts
-        self.providerLastUpdates = providerLastUpdates
         self.attachments = attachments
         self.osLine = osLine
         self.deviceLine = deviceLine
@@ -34,7 +32,6 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
         case comment
         case appLine
         case purchasedProducts
-        case providerLastUpdates
         case attachments
         case osLine
         case deviceLine
@@ -48,7 +45,6 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
         try container.encode(comment, forKey: .comment)
         try container.encodeIfPresent(appLine, forKey: .appLine)
         try container.encode(purchasedProducts, forKey: .purchasedProducts)
-        try container.encode(providerLastUpdates, forKey: .providerLastUpdates)
         try container.encode(attachments, forKey: .attachments)
         try container.encode(osLine, forKey: .osLine)
         try container.encodeIfPresent(deviceLine, forKey: .deviceLine)

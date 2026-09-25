@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import AppLibrary
 @testable import AppResources
 @testable import CommonLibrary
 import Foundation
@@ -58,7 +59,7 @@ struct AppConfigurationFactoriesTests {
                 ABI.AppBundle.BundleKey.tunnelId.rawValue: "com.example.PacketTunnel"
             ]
         )
-        let coder = CodingRegistry(registry: Registry(withKnown: true))
+        let coder = AppImportExport.dummy
 
         let appStorePair = appStore.makeKeychainAndNECoder(
             .global,
@@ -83,7 +84,7 @@ struct AppConfigurationFactoriesTests {
                 ABI.AppBundle.BundleKey.tunnelId.rawValue: "com.example.PacketTunnel"
             ]
         )
-        let coder = CodingRegistry(registry: Registry(withKnown: true))
+        let coder = AppImportExport.dummy
         let codingPair = sut.makeKeychainAndNECoder(
             .global,
             bundleIdentifier: "com.example.App",

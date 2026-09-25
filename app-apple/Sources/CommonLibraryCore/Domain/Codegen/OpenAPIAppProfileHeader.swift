@@ -14,18 +14,16 @@ public struct OpenAPIAppProfileHeader: Sendable, Codable, Hashable {
     public var moduleTypes: [ModuleType]
     public var primaryModuleType: ModuleType?
     public var secondaryModuleTypes: [ModuleType]
-    public var providerInfo: OpenAPIProviderInfo?
     public var fingerprint: String
     public var sharingFlags: [OpenAPIProfileSharingFlag]
     public var requiredFeatures: [OpenAPIAppFeature]
 
-    public init(id: String, name: String, moduleTypes: [ModuleType], primaryModuleType: ModuleType? = nil, secondaryModuleTypes: [ModuleType], providerInfo: OpenAPIProviderInfo? = nil, fingerprint: String, sharingFlags: [OpenAPIProfileSharingFlag], requiredFeatures: [OpenAPIAppFeature]) {
+    public init(id: String, name: String, moduleTypes: [ModuleType], primaryModuleType: ModuleType? = nil, secondaryModuleTypes: [ModuleType], fingerprint: String, sharingFlags: [OpenAPIProfileSharingFlag], requiredFeatures: [OpenAPIAppFeature]) {
         self.id = id
         self.name = name
         self.moduleTypes = moduleTypes
         self.primaryModuleType = primaryModuleType
         self.secondaryModuleTypes = secondaryModuleTypes
-        self.providerInfo = providerInfo
         self.fingerprint = fingerprint
         self.sharingFlags = sharingFlags
         self.requiredFeatures = requiredFeatures
@@ -37,7 +35,6 @@ public struct OpenAPIAppProfileHeader: Sendable, Codable, Hashable {
         case moduleTypes
         case primaryModuleType
         case secondaryModuleTypes
-        case providerInfo
         case fingerprint
         case sharingFlags
         case requiredFeatures
@@ -52,7 +49,6 @@ public struct OpenAPIAppProfileHeader: Sendable, Codable, Hashable {
         try container.encode(moduleTypes, forKey: .moduleTypes)
         try container.encodeIfPresent(primaryModuleType, forKey: .primaryModuleType)
         try container.encode(secondaryModuleTypes, forKey: .secondaryModuleTypes)
-        try container.encodeIfPresent(providerInfo, forKey: .providerInfo)
         try container.encode(fingerprint, forKey: .fingerprint)
         try container.encode(sharingFlags, forKey: .sharingFlags)
         try container.encode(requiredFeatures, forKey: .requiredFeatures)

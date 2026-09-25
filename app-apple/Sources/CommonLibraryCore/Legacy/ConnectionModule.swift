@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 /// Special ``Module`` able to establish a ``Connection``.
 public protocol ConnectionModule: Module {
 }

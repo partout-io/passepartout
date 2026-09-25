@@ -11,8 +11,7 @@ extension ModuleType {
         .DNS,
         .HTTPProxy,
         .IP,
-        .OnDemand,
-        .Provider
+        .OnDemand
     ]
 
     public static var connectionTypes: [ModuleType] {
@@ -28,11 +27,5 @@ extension ModuleType {
         default:
             return false
         }
-    }
-}
-
-extension ProviderModule {
-    public var buildsConnection: Bool {
-        ModuleType.connectionTypes.contains(providerModuleType)
     }
 }

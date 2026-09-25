@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 /// Represents a network connection.
 public protocol Connection: AnyObject, Sendable {
     /// Publishes the ``ConnectionStatus`` of the connection.

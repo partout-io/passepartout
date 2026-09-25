@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="23H222" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24902" systemVersion="25G83" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="CDExcludedEndpoint" representedClassName="CDExcludedEndpoint" syncable="YES">
         <attribute name="endpoint" optional="YES" attributeType="String"/>
         <relationship name="modulePreferences" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDModulePreferencesV3" inverseName="excludedEndpoints" inverseEntity="CDModulePreferencesV3"/>

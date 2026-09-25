@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+import Partout
+
 extension Endpoint {
     public var wgRepresentation: String {
         switch address {

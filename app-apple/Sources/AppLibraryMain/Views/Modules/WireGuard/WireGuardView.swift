@@ -15,10 +15,6 @@ struct WireGuardView: View, ModuleDraftEditing {
     @ObservedObject
     var draft: ModuleDraft<WireGuardModule.Builder>
 
-    var impl: WireGuardModule.Implementation? {
-        registryObservable.implementation(for: draft.module) as? WireGuardModule.Implementation
-    }
-
     @State
     private var paywallReason: PaywallReason?
 
@@ -40,7 +36,6 @@ struct WireGuardView: View, ModuleDraftEditing {
             .moduleView(draft: draft)
             .modifier(ImportModifier(
                 draft: draft,
-                impl: impl,
                 isImporting: $isImporting,
                 errorHandler: errorHandler,
                 onImport: {
@@ -58,7 +53,6 @@ struct WireGuardView: View, ModuleDraftEditing {
 // MARK: - Content
 
 private extension WireGuardView {
-
     @ViewBuilder
     var contentView: some View {
         if draft.module.configurationBuilder != nil {
@@ -66,7 +60,7 @@ private extension WireGuardView {
             ConfigurationView(
                 draft: draft,
                 viewModel: $configurationViewModel,
-                keyGenerator: impl?.keyGenerator
+                keyGenerator: registryObservable.wireGuardKeyGenerator
             )
             .onLoad {
                 guard let configurationBuilder = draft.module.configurationBuilder else {

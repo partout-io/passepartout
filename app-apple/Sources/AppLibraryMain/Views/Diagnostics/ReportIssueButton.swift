@@ -15,8 +15,6 @@ struct ReportIssueButton {
 
     let tunnel: TunnelObservable
 
-    let apiManager: APIManager
-
     let purchasedProducts: Set<ABI.AppProduct>
 
     @Binding
@@ -63,12 +61,5 @@ extension ReportIssueButton {
                 sendEmail(comment: $0)
             }
         )
-    }
-}
-
-@MainActor
-extension ReportIssueButton {
-    var providerLastUpdates: [ProviderID: Timestamp] {
-        apiManager.cache.compactMapValues(\.lastUpdate)
     }
 }

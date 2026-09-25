@@ -80,15 +80,8 @@ private extension InstalledProfileView {
 
     var statusView: some View {
         HStack {
-            providerServerButton
             statusText
         }
-    }
-
-    var providerServerButton: some View {
-        profile?.providerSelectorButton(
-            onSelect: flow?.connectionFlow?.onProviderEntityRequired
-        )
     }
 
     var statusText: some View {

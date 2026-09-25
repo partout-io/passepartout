@@ -9,7 +9,6 @@ extension ABI.Issue {
         comment: String,
         appLine: String?,
         purchasedProducts: Set<ABI.AppProduct>,
-        providerLastUpdates: [ProviderID: Timestamp] = [:],
         attachments: [ABI.IssueAttachment] = []
     ) {
         let systemInfo = SystemInformation()
@@ -20,9 +19,6 @@ extension ABI.Issue {
             purchasedProducts: purchasedProducts
                 .map(\.rawValue)
                 .sorted(),
-            providerLastUpdates: providerLastUpdates.reduce(into: [:]) {
-                $0[$1.key.rawValue] = $1.value
-            },
             attachments: attachments,
             osLine: systemInfo.osString,
             deviceLine: systemInfo.deviceString

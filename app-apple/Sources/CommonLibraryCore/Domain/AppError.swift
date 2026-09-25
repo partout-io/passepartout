@@ -32,10 +32,6 @@ extension ABI {
 
         case malformedModule(any ModuleBuilder, reason: Error)
 
-        case missingProviderEntity
-
-        case missingProviderOption(String?)
-
         case moduleRequiresConnection(any Module)
 
         case multipleTunnels
@@ -81,15 +77,6 @@ extension ABI {
         public init(_ error: Error) {
             if let spError = error as? AppError {
                 self = spError
-            } else if let providerError = error as? PartoutProviderError {
-                switch providerError {
-                case .corruptModule(let reason):
-                    self = .corruptProviderModule(reason: reason)
-                case .missingEntity:
-                    self = .missingProviderEntity
-                case .missingOption(let option):
-                    self = .missingProviderOption(option)
-                }
             } else if let partoutABIError = error as? PartoutABIError {
                 if partoutABIError.isOpenVPNPassphraseRequired {
                     self = .openVPNPassphraseRequired
@@ -203,10 +190,6 @@ extension ABI.AppError {
             return .invalidField
         case .malformedModule:
             return .malformedModule
-        case .missingProviderEntity:
-            return .missingProviderEntity
-        case .missingProviderOption:
-            return .missingProviderOption
         case .moduleRequiresConnection:
             return .moduleRequiresConnection
         case .multipleTunnels:
