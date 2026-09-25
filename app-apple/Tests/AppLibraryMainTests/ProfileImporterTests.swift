@@ -111,9 +111,6 @@ struct ProfileImporterTests {
 // MARK: -
 
 private struct SomeModule: Module {
-    final class Implementation: ModuleImplementation {
-        let moduleType = SomeModule.moduleType
-    }
 }
 
 private extension ProfileManager {

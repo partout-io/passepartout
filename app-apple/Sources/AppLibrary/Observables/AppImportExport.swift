@@ -24,19 +24,14 @@ public struct AppImportExport: Sendable {
     private let importModule: ImportModule
     private let exportModule: ExportModule
 
-    // Legacy decoding
-    private let legacyRegistry: CodingRegistry
-
     public init(
         configBlock: @escaping ConfigBlock,
         importModule: @escaping ImportModule,
-        exportModule: @escaping ExportModule,
-        legacyRegistry: CodingRegistry
+        exportModule: @escaping ExportModule
     ) {
         self.configBlock = configBlock
         self.importModule = importModule
         self.exportModule = exportModule
-        self.legacyRegistry = legacyRegistry
     }
 }
 
@@ -48,8 +43,7 @@ extension AppImportExport {
     public static let dummy = AppImportExport(
         configBlock: { [] },
         importModule: { _, _ in OnDemandModule.Builder().build() },
-        exportModule: { _ in "" },
-        legacyRegistry: CodingRegistry()
+        exportModule: { _ in "" }
     )
 
     public func importedProfile(from input: ABI.ProfileImporterInput, passphrase: String?) throws -> Profile {
@@ -95,7 +89,8 @@ extension AppImportExport: ProfileCoder {
 
     public func profile(fromString string: String) throws -> Profile {
         // Fall back to legacy decoders (Swift/v3 is tolerant to "Custom Codable")
-        try legacyRegistry.profile(fromString: string)
+//        try legacyRegistry.profile(fromString: string)
+        try ABI.decodeJSON(TaggedProfile.self, from: string).asProfile()
     }
 }
 
