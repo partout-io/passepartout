@@ -29,6 +29,7 @@ public final class AppContext {
     public let appFormatter: AppFormatter
     public let onboardingObservable: OnboardingObservable
     public let userPreferences: UserPreferencesObservable
+    public let wireGuardKeyGenerator: WireGuardKeyGenerator
 
     // Managers
     private let configManager: ConfigManager
@@ -88,7 +89,12 @@ public final class AppContext {
             supportsIAP: supportsIAP
         )
         profileObservable = ProfileObservable(profileManager: profileManager)
-        registryObservable = RegistryObservable(wireGuardKeyGenerator: wireGuardKeyGenerator)
+        registryObservable = RegistryObservable(
+            wireGuardKeyGenerator: wireGuardKeyGenerator,
+            wireGuardValidateBlock: {
+                _ = try appImportExport.profile(fromString: $0)
+            }
+        )
         versionObservable = VersionObservable(versionChecker: versionChecker)
         webReceiverObservable = WebReceiverObservable(
             webReceiverManager: webReceiverManager
@@ -98,6 +104,7 @@ public final class AppContext {
         appFormatter = AppFormatter(constants: appConfiguration.constants)
         userPreferences = UserPreferencesObservable(preferences: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
+        self.wireGuardKeyGenerator = wireGuardKeyGenerator
 
         // Ensure that all module builders can be rendered in the profile editor.
         ModuleType.knownTypes.forEach { moduleType in

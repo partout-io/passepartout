@@ -53,14 +53,14 @@ struct WireGuardView: View, ModuleDraftEditing {
 // MARK: - Content
 
 private extension WireGuardView {
-
     @ViewBuilder
     var contentView: some View {
         if draft.module.configurationBuilder != nil {
             ModuleImportSection(isImporting: $isImporting)
             ConfigurationView(
                 draft: draft,
-                viewModel: $configurationViewModel
+                viewModel: $configurationViewModel,
+                keyGenerator: registryObservable.wireGuardKeyGenerator
             )
             .onLoad {
                 guard let configurationBuilder = draft.module.configurationBuilder else {

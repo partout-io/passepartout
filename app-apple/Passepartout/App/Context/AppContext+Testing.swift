@@ -41,11 +41,14 @@ extension AppContext {
             iapManager: iapManager
         )
         let mainProfileRepository = InMemoryProfileRepository()
-        let wgKeyGenerator = FakeWireGuardKeyGenerator()
+        let wireGuardKeyGenerator = FakeWireGuardKeyGenerator()
         let profileManager: ProfileManager = .forUITesting(
             withNewModule: {
-                RegistryObservable(wireGuardKeyGenerator: wgKeyGenerator)
-                    .newModule(ofType: $0)
+                RegistryObservable(
+                    wireGuardKeyGenerator: wireGuardKeyGenerator,
+                    wireGuardValidateBlock: { _ in }
+                )
+                .newModule(ofType: $0)
             },
             processor: profileProcessor,
             repository: mainProfileRepository
@@ -84,7 +87,7 @@ extension AppContext {
             tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
-            wireGuardKeyGenerator: wgKeyGenerator
+            wireGuardKeyGenerator: wireGuardKeyGenerator
         )
     }
 }

@@ -15,6 +15,7 @@ extension View {
             .environment(\.isUITesting, AppCommandLine.contains(.uiTesting))
             // Model concerns
             .environment(\.appImportExport, context.appImportExport)
+            .environment(\.wireGuardKeyGenerator, context.wireGuardKeyGenerator)
             .environment(context.configObservable)
             .environment(context.iapObservable)
             .environment(context.profileObservable)

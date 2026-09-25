@@ -34,6 +34,15 @@ extension EnvironmentValues {
             self[AppImportExportKey.self] = newValue
         }
     }
+
+    public var wireGuardKeyGenerator: WireGuardKeyGenerator {
+        get {
+            self[WireGuardKeyGeneratorKey.self]
+        }
+        set {
+            self[WireGuardKeyGeneratorKey.self] = newValue
+        }
+    }
 }
 
 private struct IsUITestingKey: EnvironmentKey {
@@ -49,4 +58,8 @@ private struct AppConfigurationKey: EnvironmentKey {
 
 private struct AppImportExportKey: EnvironmentKey {
     static let defaultValue: AppImportExport = .dummy
+}
+
+private struct WireGuardKeyGeneratorKey: EnvironmentKey {
+    static let defaultValue: WireGuardKeyGenerator = FakeWireGuardKeyGenerator()
 }

@@ -7,12 +7,13 @@ import SwiftUI
 
 extension WireGuardView {
     struct ConfigurationView: View {
-
         @ObservedObject
         private var draft: ModuleDraft<WireGuardModule.Builder>
 
         @Binding
         private var viewModel: ViewModel
+
+        private let keyGenerator: WireGuardKeyGenerator
 
         private var configurationBuilder: WireGuard.Configuration.Builder {
             draft.module.configurationBuilder ?? newConfiguration
@@ -22,15 +23,15 @@ extension WireGuardView {
 
         init(
             draft: ModuleDraft<WireGuardModule.Builder>,
-            viewModel: Binding<ViewModel>
+            viewModel: Binding<ViewModel>,
+            keyGenerator: WireGuardKeyGenerator
         ) {
             self.draft = draft
             _viewModel = viewModel
-            // FIXME: ###
-            fatalError()
-//            newConfiguration = keyGenerator.map {
-//                WireGuard.Configuration.Builder(keyGenerator: $0)
-//            } ?? WireGuard.Configuration.Builder(privateKey: "")
+            self.keyGenerator = keyGenerator
+            newConfiguration = WireGuard.Configuration.Builder(
+                keyGenerator: keyGenerator
+            )
         }
 
         var body: some View {
@@ -57,16 +58,13 @@ private extension WireGuardView.ConfigurationView {
                 Strings.Global.Nouns.privateKey,
                 text: $viewModel.privateKey
             )
-            // FIXME: ###
-//            if let keyGenerator {
-//                ThemeCopiableText(
-//                    Strings.Global.Nouns.publicKey,
-//                    value: (try? keyGenerator.publicKey(for: viewModel.privateKey)) ?? ""
-//                )
-//                Button(Strings.Modules.Wireguard.PrivateKey.generate) {
-//                    viewModel.privateKey = keyGenerator.newPrivateKey()
-//                }
-//            }
+            ThemeCopiableText(
+                Strings.Global.Nouns.publicKey,
+                value: (try? keyGenerator.publicKey(for: viewModel.privateKey)) ?? ""
+            )
+            Button(Strings.Modules.Wireguard.PrivateKey.generate) {
+                viewModel.privateKey = keyGenerator.newPrivateKey()
+            }
         }
     }
 
@@ -305,6 +303,8 @@ private extension String {
 
 #Preview {
     struct Preview: View {
+        @Environment(\.wireGuardKeyGenerator)
+        private var wireGuardKeyGenerator
 
         @State
         private var module = WireGuardModule.Builder(configurationBuilder: .forPreviews)
@@ -317,7 +317,8 @@ private extension String {
                 Form {
                     WireGuardView.ConfigurationView(
                         draft: ModuleDraft(module: module),
-                        viewModel: $viewModel
+                        viewModel: $viewModel,
+                        keyGenerator: wireGuardKeyGenerator
                     )
                     .onLoad {
                         viewModel.load(from: module.configurationBuilder!)
