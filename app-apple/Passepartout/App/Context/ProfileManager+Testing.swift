@@ -7,7 +7,7 @@ import CommonLibrary
 
 extension ProfileManager {
     public static func forUITesting(
-        withNewModule newModule: @escaping (ModuleType) -> any ModuleBuilder,
+        withNewModule newModule: @escaping (ModuleType) -> (any ModuleBuilder)?,
         processor: ProfileProcessor,
         repository: ProfileRepository = InMemoryProfileRepository()
     ) -> ProfileManager {
@@ -26,7 +26,9 @@ extension ProfileManager {
                     var onDemandIdIfDisabled: UniqueID?
 
                     for moduleType in parameters.moduleTypes {
-                        var moduleBuilder = newModule(moduleType)
+                        guard var moduleBuilder = newModule(moduleType) else {
+                            fatalError("Unknown module type: \(moduleType)")
+                        }
 
                         if var wgBuilder = moduleBuilder as? WireGuardModule.Builder {
                             let gen = FakeWireGuardKeyGenerator()

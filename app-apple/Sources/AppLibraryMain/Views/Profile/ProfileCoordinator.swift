@@ -132,7 +132,9 @@ private extension ProfileCoordinator {
 
 private extension ProfileCoordinator {
     func addNewModule(_ moduleType: ModuleType) {
-        let module = registryObservable.newModule(ofType: moduleType)
+        guard let module = registryObservable.newModule(ofType: moduleType) else {
+            fatalError("Unknown module type: \(moduleType)")
+        }
         withAnimation(theme.animation(for: .modules)) {
             profileEditor.saveModule(module, activating: true)
         }

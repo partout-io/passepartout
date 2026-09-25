@@ -102,7 +102,9 @@ public final class AppContext {
         // Ensure that all module builders can be rendered in the profile editor.
         ModuleType.knownTypes.forEach { moduleType in
 #if !os(tvOS)
-            let builder = registryObservable.newModule(ofType: moduleType)
+            guard let builder = registryObservable.newModule(ofType: moduleType) else {
+                return
+            }
             assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
 #endif
         }

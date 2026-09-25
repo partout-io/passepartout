@@ -13,9 +13,10 @@ public final class RegistryObservable {
         self.wireGuardKeyGenerator = wireGuardKeyGenerator
     }
 
-    public func newModule(ofType moduleType: ModuleType) -> any ModuleBuilder {
+    public func newModule(ofType moduleType: ModuleType) -> (any ModuleBuilder)? {
         guard var newBuilder = moduleType.builderType?.empty() else {
-            fatalError("Unknown module type: \(self)")
+//            fatalError("Unknown module type: \(moduleType)")
+            return nil
         }
         switch moduleType {
         case .OpenVPN:
@@ -52,6 +53,9 @@ private extension ModuleType {
             return OpenVPNModule.Builder.self
         case .WireGuard:
             return WireGuardModule.Builder.self
+        case .Provider, .Custom:
+            // Legacy
+            return nil
         default:
             assertionFailure("ModuleType '\(rawValue)' has no ModuleBuilder associated")
             return nil
