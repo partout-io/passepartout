@@ -92,7 +92,10 @@ public final class AppContext {
         registryObservable = RegistryObservable(
             wireGuardKeyGenerator: wireGuardKeyGenerator,
             wireGuardValidateBlock: {
-                _ = try appImportExport.profile(fromString: $0)
+                _ = try appImportExport.importedModule(
+                    from: .contents(filename: "", data: $0),
+                    context: nil
+                )
             }
         )
         versionObservable = VersionObservable(versionChecker: versionChecker)
