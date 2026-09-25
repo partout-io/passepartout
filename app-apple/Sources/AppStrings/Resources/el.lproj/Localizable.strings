@@ -44,6 +44,7 @@
 "errors.app.incompatible_modules" = "Μερικές ενεργές μονάδες είναι ασύμβατες, δοκιμάστε να ενεργοποιήσετε μόνο μία.";
 "errors.app.incomplete_module" = "Ολοκληρώστε τη ρύθμιση του %@ module.";
 "errors.app.ineligible" = "Απαιτείται αγορά";
+"errors.app.interactive_login" = "Open Passepartout to enter the credentials required for this VPN.";
 "errors.app.invalid_fields" = "Μη έγκυρα πεδία.";
 "errors.app.malformed_module" = "Το μονάδα %@ είναι εσφαλμένη. %@";
 "errors.app.missing_provider_entity" = "Δεν επιλέχθηκε διακομιστής στον πάροχο.";

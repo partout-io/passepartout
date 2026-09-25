@@ -44,6 +44,7 @@
 "errors.app.incompatible_modules" = "Sommige actieve modules zijn incompatibel. Probeer er slechts één te activeren.";
 "errors.app.incomplete_module" = "Voltooi de configuratie van de %@-module.";
 "errors.app.ineligible" = "Aankoop vereist";
+"errors.app.interactive_login" = "Open Passepartout to enter the credentials required for this VPN.";
 "errors.app.invalid_fields" = "Ongeldige velden.";
 "errors.app.malformed_module" = "Module %@ is ongeldig. %@";
 "errors.app.missing_provider_entity" = "Geen server geselecteerd bij provider.";
