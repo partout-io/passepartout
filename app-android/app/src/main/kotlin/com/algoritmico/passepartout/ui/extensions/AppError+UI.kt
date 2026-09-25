@@ -69,8 +69,6 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.verificationRequiredFeatures,
         AppErrorCode.webUploader -> detail ?: stringResource(R.string.errors_app_other)
         AppErrorCode.corruptProviderModule,
-        AppErrorCode.missingProviderEntity,
-        AppErrorCode.missingProviderOption,
         AppErrorCode.multipleTunnels -> error("Unimplemented")
         //
         AppErrorCode.openVPNPassphraseRequired,

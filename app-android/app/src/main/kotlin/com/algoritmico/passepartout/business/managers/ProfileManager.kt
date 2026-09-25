@@ -129,7 +129,6 @@ private fun TaggedProfile.appHeader(): AppProfileHeader {
         moduleTypes = typedModules.map { it.type },
         primaryModuleType = primaryType,
         secondaryModuleTypes = secondaryTypes,
-        providerInfo = null,
         fingerprint = fingerprint ?: id,
         sharingFlags = emptyList(),
         requiredFeatures = emptyList()

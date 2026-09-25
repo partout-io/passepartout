@@ -62,7 +62,6 @@ class DiagnosticsObservable(
             comment = comment,
             appLine = "${appConfiguration.bundle.displayName} ${appConfiguration.bundle.versionString} [${appConfiguration.bundle.distributionTarget}]",
             purchasedProducts = emptyList(),
-            providerLastUpdates = emptyMap(),
             attachments = listOfNotNull(
                 appLog.await(),
                 tunnelLog.await(),

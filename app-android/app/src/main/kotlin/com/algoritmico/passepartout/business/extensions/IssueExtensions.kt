@@ -6,15 +6,9 @@ package com.algoritmico.passepartout.business.extensions
 
 import com.algoritmico.passepartout.models.Issue
 import com.algoritmico.passepartout.ui.Strings
-import java.text.DateFormat
-import java.util.Date
-import java.util.Locale
 
 val Issue.body: String
     get() {
-        val providers = providerLastUpdates.mapValues {
-            timestampFormatter.format(Date(it.value))
-        }
         return buildString {
             appendLine("Hi,")
             appendLine()
@@ -26,7 +20,6 @@ val Issue.body: String
             appendLine("OS: $osLine")
             appendLine("Device: ${deviceLine ?: "unknown"}")
             appendLine("Purchased: ${purchasedProducts.issueDescription()}")
-            appendLine("Providers: ${providers.issueDescription()}")
             appendLine()
             appendLine("--")
             appendLine()
@@ -38,24 +31,8 @@ val Issue.body: String
 val Issue.subject: String
     get() = Strings.Unlocalized.Issues.subject
 
-private val timestampFormatter: DateFormat
-    get() = DateFormat.getDateTimeInstance(
-        DateFormat.MEDIUM,
-        DateFormat.MEDIUM,
-        Locale.getDefault()
-    )
-
 private fun List<String>.issueDescription(): String {
     return joinToString(prefix = "[", postfix = "]") {
         "\"$it\""
-    }
-}
-
-private fun Map<String, String>.issueDescription(): String {
-    if (isEmpty()) {
-        return "[:]"
-    }
-    return entries.joinToString(prefix = "[", postfix = "]") {
-        "\"${it.key}\": \"${it.value}\""
     }
 }
