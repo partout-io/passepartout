@@ -60,18 +60,7 @@ extension AppContext {
 
         // MARK: ABI-based Runtime
 
-        let importer = PartoutRuntime()
-
-        // MARK: Registry (legacy)
-
-        // Ensure that all module builders can be rendered in the profile editor.
-        ModuleType.knownTypes.forEach { _ in // moduleType in
-#if !os(tvOS)
-            // FIXME: ###
-//            let builder = registry.newModule(ofType: moduleType)
-//            assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
-#endif
-        }
+        let runtime = PartoutRuntime()
 
         // MARK: Import/Export
 
@@ -80,10 +69,10 @@ extension AppContext {
                 preferences.enabledFlags(of: configManager.activeFlags)
             },
             importModule: { text, context in
-                try importer.importModule(from: text, context: context)
+                try runtime.importModule(from: text, context: context)
             },
             exportModule: { module in
-                try importer.exportModule(module)
+                try runtime.exportModule(module)
             },
             legacyRegistry: CodingRegistry()
         )
@@ -326,6 +315,7 @@ extension AppContext {
             tunnelObservable: tunnelObservable,
             versionChecker: versionChecker,
             webReceiverManager: webReceiverManager,
+            wireGuardKeyGenerator: PartoutWireGuardKeyGenerator(runtime: runtime),
             onEligibleFeaturesBlock: onEligibleFeaturesBlock
         )
     }
@@ -361,5 +351,25 @@ private extension ABI.AppConfiguration {
                 return .ignore
             }
         )
+    }
+}
+
+private struct PartoutWireGuardKeyGenerator: WireGuardKeyGenerator {
+    private let runtime: PartoutRuntime
+
+    init(runtime: PartoutRuntime) {
+        self.runtime = runtime
+    }
+
+    func newPrivateKey() -> String {
+        do {
+            return try runtime.wireGuardGeneratePrivateKey()
+        } catch {
+            fatalError("WireGuard keygen should never fail")
+        }
+    }
+
+    func publicKey(for privateKey: String) throws -> String {
+        try runtime.wireGuardDerivePublicKey(privateKey: privateKey)
     }
 }

@@ -99,6 +99,14 @@ public final class AppContext {
         userPreferences = UserPreferencesObservable(preferences: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
 
+        // Ensure that all module builders can be rendered in the profile editor.
+        ModuleType.knownTypes.forEach { moduleType in
+#if !os(tvOS)
+            let builder = registryObservable.newModule(ofType: moduleType)
+            assert(builder is any ModuleViewProviding, "\(moduleType): is not ModuleViewProviding")
+#endif
+        }
+
         observeManagerEvents()
         tunnelObservable.observeObjects()
     }

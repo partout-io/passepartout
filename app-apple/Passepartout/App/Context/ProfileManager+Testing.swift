@@ -29,7 +29,7 @@ extension ProfileManager {
                         var moduleBuilder = newModule(moduleType)
 
                         if var wgBuilder = moduleBuilder as? WireGuardModule.Builder {
-                            let gen = StandardWireGuardKeyGenerator()
+                            let gen = FakeWireGuardKeyGenerator()
                             var cfgBuilder = WireGuard.Configuration.Builder(keyGenerator: gen)
                             cfgBuilder.peers = [.init(publicKey: gen.newPrivateKey())]
                             wgBuilder.configurationBuilder = cfgBuilder
