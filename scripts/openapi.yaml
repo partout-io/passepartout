@@ -272,8 +272,6 @@ components:
       - multipleTunnels
       - noActiveModules
       - notFound
-      - openVPNPassphraseRequired
-      - openVPNUnsupportedCompression
       - other
       - partout
       - permissionDenied
@@ -288,7 +286,6 @@ components:
       - verificationRequiredFeatures
       - webReceiver
       - webUploader
-      - wireGuardEmptyPeers
       enum:
       - binaryFile
       - corruptProviderModule
@@ -307,8 +304,6 @@ components:
       - multipleTunnels
       - noActiveModules
       - notFound
-      - openVPNPassphraseRequired
-      - openVPNUnsupportedCompression
       - other
       - partout
       - permissionDenied
@@ -323,7 +318,6 @@ components:
       - verificationRequiredFeatures
       - webReceiver
       - webUploader
-      - wireGuardEmptyPeers
     AppFeature:
       type: string
       x-enum-varnames:

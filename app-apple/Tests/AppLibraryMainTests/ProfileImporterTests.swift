@@ -93,6 +93,42 @@ struct ProfileImporterTests {
         try await exp.fulfillment(timeout: 500)
     }
 
+    @Test(arguments: [OpenVPNErrorCode.passphraseRequired, .unableToDecrypt], [false, true])
+    func givenPassphraseError_whenImport_thenQueuesURL(code: OpenVPNErrorCode, wrapped: Bool) async throws {
+        let sut = ProfileImporter()
+        let url = URL(string: "file:///filename.encrypted")!
+
+        try await sut.tryImport(urls: [url]) { _, _ in
+            let error = PartoutError(codeForOpenVPN: code)
+            if wrapped {
+                throw ABI.AppError(error)
+            }
+            throw error
+        }
+        #expect(sut.urlsRequiringPassphrase == [url])
+    }
+
+    @Test
+    func givenUnsupportedCompression_whenImport_thenThrowsWithoutPrompting() async {
+        let sut = ProfileImporter()
+        let url = URL(string: "file:///filename.ovpn")!
+
+        do {
+            try await sut.tryImport(urls: [url]) { _, _ in
+                throw PartoutError(codeForOpenVPN: .unsupportedCompression)
+            }
+            Issue.record("Expected unsupported compression error")
+        } catch {
+            guard case .partout(let wrapped) = error as? ABI.AppError else {
+                Issue.record("Expected PartoutError, got \(error)")
+                return
+            }
+            #expect(wrapped.subCode == OpenVPNErrorCode.unsupportedCompression.rawValue)
+        }
+        #expect(sut.urlsRequiringPassphrase.isEmpty)
+        #expect(!sut.isPresentingPassphrase)
+    }
+
     @Test
     func givenURLsRequiringPassphrase_whenImport_thenURLsArePending() async throws {
         let sut = ProfileImporter()
@@ -118,7 +154,7 @@ private extension ProfileManager {
         let importedModule = try {
             if url.absoluteString.hasSuffix(".encrypted") {
                 guard let passphrase else {
-                    throw PartoutABIError(codeForOpenVPN: .passphraseRequired)
+                    throw PartoutError(codeForOpenVPN: .passphraseRequired)
                 }
                 guard passphrase == "passphrase" else {
                     throw PartoutError(.crypto)

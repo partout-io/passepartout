@@ -73,10 +73,6 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.webUploader -> detail ?: stringResource(R.string.errors_app_other)
         AppErrorCode.corruptProviderModule,
         AppErrorCode.multipleTunnels -> error("Unimplemented")
-        //
-        AppErrorCode.openVPNPassphraseRequired,
-        AppErrorCode.openVPNUnsupportedCompression,
-        AppErrorCode.wireGuardEmptyPeers -> error("Deprecated")
     }
 }
 

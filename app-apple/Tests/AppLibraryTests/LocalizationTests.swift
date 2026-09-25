@@ -8,8 +8,30 @@ import Testing
 
 struct LocalizationTests {
     @Test
+    func givenNativeValidationError_whenConverting_thenPreservesField() {
+        let sut = ABI.AppError(PartoutError.invalidField(.DNS.ipDomains))
+        guard case .invalidField(let key) = sut else {
+            Issue.record("Expected invalidField")
+            return
+        }
+        #expect(key == "errors.modules.\(PartoutError.ModuleField.DNS.ipDomains.key)")
+    }
+
+    @Test
+    func givenPortableIncompleteModule_whenConverting_thenPreservesError() {
+        let error = PartoutError(.incompleteModule, payload: ["moduleId": "example"])
+        let sut = ABI.AppError(error)
+        guard case .partout(let wrapped) = sut else {
+            Issue.record("Expected portable error without a native builder")
+            return
+        }
+        #expect(wrapped.payload == error.payload)
+    }
+
+
+    @Test
     func givenUnknownImportedModule_whenDescribing_thenReturnsParsingMessage() {
-        let sut = ABI.AppError(PartoutABIError(.unknownImportedModule))
+        let sut = ABI.AppError(PartoutError(.unknownImportedModule))
 
         #expect(sut.localizedDescription(style: .errorHandler) == "Unable to parse.")
     }
@@ -21,7 +43,7 @@ struct LocalizationTests {
             subCode: WireGuardErrorCode.interfaceHasInvalidAddress.rawValue,
             arguments: ["192.0.2.300/24"]
         )
-        let sut = ABI.AppError(PartoutABIError(.wireGuard, try JSON(encodable: info)))
+        let sut = ABI.AppError(PartoutError(.wireGuard, payload: try JSON(encodable: info)))
 
         #expect(
             sut.localizedDescription(style: .errorHandler) ==
@@ -31,25 +53,42 @@ struct LocalizationTests {
 
     @Test
     func givenOtherError_whenDescribing_thenReturnsDiagnosticMessage() {
-        let sut = ABI.AppError(PartoutABIError(.decoding))
+        let sut = ABI.AppError(PartoutError(.decoding))
 
         #expect(sut.localizedDescription(style: .errorHandler) == "decoding, payload=null")
     }
 
-    @Test
-    func givenOpenVPNPassphraseError_whenConvertingToAppError_thenSpecializesIt() throws {
+    @Test(arguments: [OpenVPNErrorCode.passphraseRequired, .unableToDecrypt])
+    func givenOpenVPNPassphraseError_whenConvertingToAppError_thenPreservesIt(code: OpenVPNErrorCode) throws {
         let info = ParseErrorInfo(
             recognizedType: .OpenVPN,
-            subCode: OpenVPNErrorCode.passphraseRequired.rawValue,
+            subCode: code.rawValue,
             arguments: []
         )
-        let sut = ABI.AppError(
-            PartoutABIError(.openVPN, try JSON(encodable: info))
-        )
+        let error = PartoutError(.openVPN, payload: try JSON(encodable: info))
+        let sut = ABI.AppError(error)
 
-        guard case .openVPNPassphraseRequired = sut else {
-            Issue.record("Expected openVPNPassphraseRequired, got \(sut)")
+        guard case .partout(let wrapped) = sut else {
+            Issue.record("Expected PartoutError, got \(sut)")
             return
         }
+        #expect(wrapped.payload == error.payload)
+        #expect(wrapped.isOpenVPNPassphraseRequired)
+        #expect(sut.code == .partout)
+        #expect(sut.localizedDescription(style: .errorHandler) == Strings.Errors.App.other)
+    }
+
+    @Test
+    func givenProtocolErrors_whenDescribing_thenUsesPartoutLocalization() {
+        let compression = PartoutError(codeForOpenVPN: .unsupportedCompression)
+        let emptyPeers = PartoutError(codeForWireGuard: .emptyPeers)
+
+        #expect(!compression.isOpenVPNPassphraseRequired)
+        #expect(!emptyPeers.isOpenVPNPassphraseRequired)
+        #expect(ABI.AppError(compression).code == .partout)
+        #expect(ABI.AppError(emptyPeers).code == .partout)
+        #expect(ABI.AppError(compression).localizedDescription(style: .errorHandler) ==
+            "OpenVPN compression is unsafe and no longer supported.")
+        #expect(ABI.AppError(emptyPeers).localizedDescription(style: .errorHandler) == "No peers defined.")
     }
 }

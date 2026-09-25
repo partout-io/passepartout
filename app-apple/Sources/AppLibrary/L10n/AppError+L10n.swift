@@ -93,16 +93,9 @@ extension ABI.AppError: StyledLocalizableEntity {
         case .notFound:
             // Typically asserts
             return nil
-        case .openVPNPassphraseRequired:
-            // Handled manually
-            return nil
-        case .openVPNUnsupportedCompression(let option):
-            return Strings.Errors.Openvpn.unsupportedCompression.appending(option, separator: "\n\n")
         case .other(let error):
             return V.other.appending(error?.localizedDescription, separator: " ")
         case .partout(let error):
-            return V.partout(error.code.rawValue)
-        case .partoutABI(let error):
             return error.localizedDescription
         case .permissionDenied:
             return V.permissionDenied
@@ -133,8 +126,6 @@ extension ABI.AppError: StyledLocalizableEntity {
             default:
                 return error?.localizedDescription
             }
-        case .wireGuardEmptyPeers:
-            return Strings.Errors.Wireguard.emptyPeers
         }
     }
 }

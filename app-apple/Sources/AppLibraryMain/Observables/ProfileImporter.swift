@@ -35,7 +35,7 @@ final class ProfileImporter {
             } catch {
                 let appError = ABI.AppError(error)
                 switch appError {
-                case .openVPNPassphraseRequired:
+                case .partout(let error) where error.isOpenVPNPassphraseRequired:
                     withPassphrase.append(url)
                     continue
                 default:

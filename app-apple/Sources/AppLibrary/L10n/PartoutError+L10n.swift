@@ -6,7 +6,7 @@ import AppStrings
 import CommonLibrary
 import Partout
 
-extension PartoutABIError: @retroactive LocalizedError {
+extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let fallbackMessage = "\(code.rawValue), payload=\(payload?.debugDescription ?? "null")"
         switch code {
@@ -22,12 +22,16 @@ extension PartoutABIError: @retroactive LocalizedError {
     }
 }
 
-private extension PartoutABIError {
+private extension PartoutError {
     func protocolDescription() -> String {
         let argument = payload?["arguments"]?.arrayValue?.first?.stringValue ?? "?"
         switch code {
         case .openVPN:
             let specific = subCode.flatMap(OpenVPNErrorCode.init(rawValue:))
+            if isOpenVPNPassphraseRequired {
+                // The importer handles these errors with a passphrase prompt.
+                return Strings.Errors.App.other
+            }
             if specific == .unsupportedCompression {
                 return Strings.Errors.Openvpn.unsupportedCompression
             }

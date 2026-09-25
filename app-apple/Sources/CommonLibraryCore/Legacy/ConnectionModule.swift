@@ -19,7 +19,7 @@ extension ConnectionModule {
             return
         }
         guard !otherModule.buildsConnection else {
-            throw PartoutError(.incompatibleModules, [self, otherModule])
+            throw PartoutError(.incompatibleModules, context: .incompatibleModules([self, otherModule]))
         }
     }
 }
