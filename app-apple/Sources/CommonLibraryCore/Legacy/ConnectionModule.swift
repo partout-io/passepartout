@@ -4,7 +4,6 @@
 
 import Partout
 
-/// Special ``Module`` able to establish a ``Connection``.
 public protocol ConnectionModule: Module {
 }
 
@@ -22,12 +21,6 @@ extension ConnectionModule {
         guard !otherModule.buildsConnection else {
             throw PartoutError(.incompatibleModules, [self, otherModule])
         }
-    }
-}
-
-extension ModuleBuilder {
-    public var buildsConnectionModule: Bool {
-        BuiltType.self is ConnectionModule.Type
     }
 }
 
