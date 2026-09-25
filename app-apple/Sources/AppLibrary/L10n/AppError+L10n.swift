@@ -19,8 +19,8 @@ public struct LocalizedConnectionStatusError: LocalizableEntity {
             .localizedDescription(optionalStyle: .connectionStatus) {
             return appDescription
         }
-        if let partoutDescription = PartoutError.Code(rawValue: lastErrorCode)?
-            .localizedDescription(optionalStyle: .connectionStatus) {
+        if let partoutDescription = PartoutErrorExtendedCode(rawValue: lastErrorCode)?
+            .localizedConnectionDescription {
             return partoutDescription
         }
         return Strings.Errors.Tunnel.generic
@@ -207,19 +207,37 @@ extension PartoutError.Code: StyledOptionalLocalizableEntity {
                 return V.dns
             case .timeout:
                 return Strings.Global.Nouns.timeout
-            case .openVPNCompressionMismatch:
-                return V.compression
-            case .openVPNNoRouting:
-                return V.routing
-            case .openVPNRecoverableAuthentication:
-                return Strings.Entities.TunnelStatus.activating
-            case .openVPNServerShutdown:
-                return V.shutdown
-            case .openVPNTLSFailure:
-                return V.tls
             default:
                 return nil
             }
+        }
+    }
+}
+
+
+extension PartoutErrorExtendedCode {
+    var localizedConnectionDescription: String? {
+        switch code {
+        case .openVPN:
+            return subCode.flatMap(OpenVPNErrorCode.init(rawValue:))?.localizedConnectionDescription
+        case .wireGuard:
+            return nil
+        default:
+            return code.localizedDescription(optionalStyle: .connectionStatus)
+        }
+    }
+}
+
+extension OpenVPNErrorCode {
+    var localizedConnectionDescription: String? {
+        let V = Strings.Errors.Tunnel.self
+        switch self {
+        case .compressionMismatch: return V.compression
+        case .noRouting: return V.routing
+        case .recoverableAuthentication: return Strings.Entities.TunnelStatus.activating
+        case .serverShutdown: return V.shutdown
+        case .tlsFailure: return V.tls
+        default: return nil
         }
     }
 }

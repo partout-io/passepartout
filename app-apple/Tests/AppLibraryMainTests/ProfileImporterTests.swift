@@ -118,7 +118,7 @@ private extension ProfileManager {
         let importedModule = try {
             if url.absoluteString.hasSuffix(".encrypted") {
                 guard let passphrase else {
-                    throw PartoutError(.openVPNPassphraseRequired)
+                    throw PartoutABIError(codeForOpenVPN: .passphraseRequired)
                 }
                 guard passphrase == "passphrase" else {
                     throw PartoutError(.crypto)

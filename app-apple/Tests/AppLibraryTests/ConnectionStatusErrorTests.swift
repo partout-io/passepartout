@@ -38,10 +38,21 @@ struct ConnectionStatusErrorTests {
     @Test
     func givenPartoutErrorCodeWithoutConnectionStatus_thenFallsBackToGenericDescription() {
         let sut = LocalizedConnectionStatusError(
-            lastErrorCode: PartoutError.Code.wireGuardEmptyPeers.rawValue
+            lastErrorCode: "wireGuard.emptyPeers"
         )
 
         #expect(sut.localizedDescription == "Failed")
+    }
+
+    @Test
+    func givenProtocolCode_whenDescribing_thenUsesSubCode() {
+        let sut = LocalizedConnectionStatusError(lastErrorCode: "openVPN.tlsFailure")
+        #expect(sut.localizedDescription == OpenVPNErrorCode.tlsFailure.localizedConnectionDescription)
+    }
+
+    @Test(arguments: ["openVPN.unknown", "wireGuard.unknown", "openVPN", "openVPN."])
+    func givenUnknownSubCode_whenDescribing_thenFallsBack(raw: String) {
+        #expect(LocalizedConnectionStatusError(lastErrorCode: raw).localizedDescription == "Failed")
     }
 
     @Test

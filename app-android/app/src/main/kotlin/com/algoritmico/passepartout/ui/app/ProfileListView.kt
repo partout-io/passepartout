@@ -88,7 +88,7 @@ private fun ProfileListViewPreview() {
                         )
                     ),
                     lastErrorCodes = mapOf(
-                        "broken" to PartoutErrorCode.openVPNCompressionMismatch.value
+                        "broken" to "openVPN.compressionMismatch"
                     )
                 )
             )

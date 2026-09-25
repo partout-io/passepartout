@@ -10,8 +10,10 @@ extension PartoutABIError: @retroactive LocalizedError {
     public var errorDescription: String? {
         let fallbackMessage = "\(code.rawValue), payload=\(payload?.debugDescription ?? "null")"
         switch code {
+        case .openVPN, .wireGuard:
+            return protocolDescription()
         case .parsing:
-            return parsingDescription()
+            return Strings.Errors.App.parsing
         case .unknownImportedModule:
             return Strings.Errors.App.parsing
         default:
@@ -21,27 +23,18 @@ extension PartoutABIError: @retroactive LocalizedError {
 }
 
 private extension PartoutABIError {
-    func parsingDescription() -> String {
-        guard
-            let payload,
-            let payloadData = try? JSONEncoder.shared().encode(payload),
-            let info = try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: payloadData)
-        else {
-            return Strings.Errors.App.parsing
-        }
-
-        let argument = info.arguments.first ?? "?"
-        switch info.recognizedType {
-        case .OpenVPN:
-            switch info.subCode.flatMap(OpenVPNErrorCode.init(rawValue:)) {
-            case .unsupportedCompression:
+    func protocolDescription() -> String {
+        let argument = payload?["arguments"]?.arrayValue?.first?.stringValue ?? "?"
+        switch code {
+        case .openVPN:
+            let specific = subCode.flatMap(OpenVPNErrorCode.init(rawValue:))
+            if specific == .unsupportedCompression {
                 return Strings.Errors.Openvpn.unsupportedCompression
-            default:
-                return Strings.Errors.App.parsing
             }
-        case .WireGuard:
+            return specific?.localizedConnectionDescription ?? Strings.Errors.App.parsing
+        case .wireGuard:
             return wireGuardParsingDescription(
-                code: info.subCode.flatMap(WireGuardErrorCode.init(rawValue:)),
+                code: subCode.flatMap(WireGuardErrorCode.init(rawValue:)),
                 argument: argument
             ) ?? Strings.Errors.App.parsing
         default:

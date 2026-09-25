@@ -21,7 +21,7 @@ struct LocalizationTests {
             subCode: WireGuardErrorCode.interfaceHasInvalidAddress.rawValue,
             arguments: ["192.0.2.300/24"]
         )
-        let sut = ABI.AppError(PartoutABIError(.parsing, try JSON(encodable: info)))
+        let sut = ABI.AppError(PartoutABIError(.wireGuard, try JSON(encodable: info)))
 
         #expect(
             sut.localizedDescription(style: .errorHandler) ==
@@ -44,7 +44,7 @@ struct LocalizationTests {
             arguments: []
         )
         let sut = ABI.AppError(
-            PartoutABIError(.parsing, try JSON(encodable: info))
+            PartoutABIError(.openVPN, try JSON(encodable: info))
         )
 
         guard case .openVPNPassphraseRequired = sut else {

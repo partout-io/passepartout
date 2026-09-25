@@ -42,10 +42,16 @@ class ConnectionStatusErrorUnitTest {
     @Test
     fun partoutErrorCode_withoutConnectionStatusFallsBackToGenericResource() {
         val sut = LocalizedConnectionStatusError(
-            PartoutErrorCode.wireGuardEmptyPeers.value
+            "wireGuard.emptyPeers"
         )
 
         assertEquals(R.string.errors_tunnel_generic, sut.localizedDescriptionResource)
+    }
+
+    @Test
+    fun protocolSubCode_mapsToResource() {
+        assertEquals(R.string.errors_tunnel_tls, LocalizedConnectionStatusError("openVPN.tlsFailure").localizedDescriptionResource)
+        assertEquals(R.string.errors_tunnel_generic, LocalizedConnectionStatusError("openVPN.unknown").localizedDescriptionResource)
     }
 
     @Test

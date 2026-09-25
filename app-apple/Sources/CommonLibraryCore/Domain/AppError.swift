@@ -105,11 +105,8 @@ extension ABI {
                     self = .invalidField(stringKey: stringKey)
                 case .noActiveModules:
                     self = .noActiveModules
-                case .openVPNPassphraseRequired:
-                    self = .openVPNPassphraseRequired
-                case .openVPNUnsupportedCompression:
-                    let option = partoutError.userInfo as? String
-                    self = .openVPNUnsupportedCompression(option: option)
+                case .openVPN, .wireGuard:
+                    self.init(PartoutABIError(partoutError.code, partoutError.userInfo as? JSON))
                 case .parsing:
                     let message: String?
                     if let info = partoutError.userInfo as? String {
@@ -130,8 +127,6 @@ extension ABI {
                     self = .other(partoutError.reason)
                 case .unknownImportedModule:
                     self = .importError()
-                case .wireGuardEmptyPeers:
-                    self = .wireGuardEmptyPeers
                 default:
                     self = .partout(partoutError)
                 }
@@ -144,17 +139,7 @@ extension ABI {
 
 private extension PartoutABIError {
     var isOpenVPNPassphraseRequired: Bool {
-        guard code == .parsing, let payload else {
-            return false
-        }
-        guard
-            let data = try? JSONEncoder.shared().encode(payload),
-            let info = try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: data)
-        else {
-            return false
-        }
-        guard info.recognizedType == .OpenVPN else { return false }
-        guard let subCode = info.subCode.map(OpenVPNErrorCode.init(rawValue:)) else {
+        guard code == .openVPN, let subCode = subCode.flatMap(OpenVPNErrorCode.init(rawValue:)) else {
             return false
         }
         return [.passphraseRequired, .unableToDecrypt].contains(subCode)
