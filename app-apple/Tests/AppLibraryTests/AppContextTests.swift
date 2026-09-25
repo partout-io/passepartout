@@ -118,14 +118,10 @@ private struct Harness {
             bundle: ABI.AppBundle(distributionTarget: .appStore),
             constants: Resources.constants
         )
-        let registry = CodingRegistry(
-            registry: Registry(withKnown: true)
-        )
         let appImportExport = AppImportExport(
             configBlock: { [] },
             importModule: { _, _ in throw ABI.AppError.importError() },
-            exportModule: { _ in throw ABI.AppError.encoding() },
-            legacyRegistry: registry
+            exportModule: { _ in throw ABI.AppError.encoding() }
         )
         let preferences = AppPreferencesStore()
         preferences.overwrite {
@@ -151,7 +147,6 @@ private struct Harness {
         self.iapManager = iapManager
         self.preferences = preferences
         context = AppContext(
-            apiManager: APIManager(),
             appConfiguration: appConfiguration,
             appImportExport: appImportExport,
             configManager: ConfigManager(),
@@ -161,10 +156,10 @@ private struct Harness {
             preferences: preferences,
             preferencesManager: PreferencesManager(),
             profileManager: profileManager,
-            registry: registry,
             tunnelObservable: tunnelObservable,
             versionChecker: VersionChecker(),
-            webReceiverManager: webReceiverManager
+            webReceiverManager: webReceiverManager,
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator()
         )
     }
 }

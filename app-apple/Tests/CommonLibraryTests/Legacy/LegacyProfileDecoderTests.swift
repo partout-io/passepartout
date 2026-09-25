@@ -3,13 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
+import Foundation
+import Partout
 import Testing
 
-struct CodingRegistryTests {
+struct LegacyProfileDecoderTests {
     @Test
-    func givenCoder_whenEncodeProfileWithKnownHandlers_thenIsDecoded() throws {
-        let registry = Registry(withKnown: true)
-        let sut = CodingRegistry(registry: registry)
+    func givenKnownModules_whenDecodeV3Profile_thenPreservesModule() throws {
+        let sut = LegacyProfileDecoder()
 
         var ovpnBuilder = OpenVPN.Configuration.Builder()
         ovpnBuilder.ca = OpenVPN.CryptoContainer(pem: "ca is required")
@@ -28,19 +29,19 @@ struct CodingRegistryTests {
         profileBuilder.modules.append(try HTTPProxyModule.Builder(address: "1.1.1.1", port: 1080).build())
         profileBuilder.modules.append(try OpenVPNModule.Builder(configurationBuilder: ovpnBuilder).build())
         profileBuilder.modules.append(try WireGuardModule.Builder(configurationBuilder: wgBuilder).build())
-        let profile = try profileBuilder.build()
+        for module in profileBuilder.modules {
+            let profile = try Profile.Builder(modules: [module]).build()
 
-        let encoded = try sut.string(fromProfile: profile)
-        print(encoded)
+            let encoded = try JSONEncoder.shared().encodeJSON(profile.asTaggedProfile)
 
-        let decoded = try sut.profile(fromString: encoded)
-        #expect(profile == decoded)
+            let decoded = try sut.profile(fromString: encoded)
+            #expect(profile == decoded)
+        }
     }
 
     @Test
     func givenCoder_whenDecodeV3ProfileWithLegacyOTPMethod_thenIsDecoded() throws {
-        let registry = Registry(withKnown: true)
-        let sut = CodingRegistry(registry: registry)
+        let sut = LegacyProfileDecoder()
 
         var ovpnBuilder = OpenVPN.Configuration.Builder()
         ovpnBuilder.ca = OpenVPN.CryptoContainer(pem: "ca is required")
@@ -60,7 +61,7 @@ struct CodingRegistryTests {
         ).build()
         let profile = try Profile.Builder(modules: [module]).build()
 
-        let encoded = try sut.string(fromProfile: profile)
+        let encoded = try JSONEncoder.shared().encodeJSON(profile.asTaggedProfile)
         let legacyEncoded = encoded.replacingOccurrences(
             of: "\"otpMethod\":\"append\"",
             with: "\"otpMethod\":{\"append\":{}}"
@@ -72,40 +73,8 @@ struct CodingRegistryTests {
     }
 
     @Test
-    func givenCoder_whenEncodeProfileWithRegisteredModule_thenIsDecoded() throws {
-        let registry = Registry(allHandlers: [
-            DNSModule.moduleHandler
-        ])
-        let sut = CodingRegistry(registry: registry)
-        let module = try DNSModule.Builder(servers: ["1.1.1.1"]).build()
-        let profile = try Profile.Builder(modules: [module]).build()
-
-        let encoded = try sut.string(fromProfile: profile)
-        let decoded = try sut.profile(fromString: encoded)
-        #expect(decoded == profile)
-    }
-
-    @Test
-    func givenCoder_whenEncodeProfile_thenIsDecoded() throws {
-        let registry = Registry(allHandlers: [
-            DNSModule.moduleHandler
-        ])
-        let sut = CodingRegistry(registry: registry)
-        let module = try DNSModule.Builder(servers: ["1.1.1.1"]).build()
-        let profile = try Profile.Builder(modules: [module]).build()
-
-        let encoded = try sut.string(fromProfile: profile)
-        let decoded = try sut.profile(fromString: encoded)
-        #expect(decoded == profile)
-    }
-
-    @Test
     func givenCoder_whenEncodeProfile_thenDecodesToEqual() throws {
-        let registry = Registry(allHandlers: [
-            DNSModule.moduleHandler,
-            IPModule.moduleHandler
-        ])
-        let sut = CodingRegistry(registry: registry)
+        let sut = LegacyProfileDecoder()
         let dnsModule = try DNSModule.Builder(
             protocolType: .tls,
             servers: ["1.1.1.1", "4.4.4.4"],
@@ -117,10 +86,8 @@ struct CodingRegistryTests {
             userInfo: ["foo": "bar", "zen": 12]
         ).build()
 
-        let encodedString = try sut.string(fromProfile: profile)
-        print(encodedString)
+        let encodedString = try JSONEncoder.shared().encodeJSON(profile.asTaggedProfile)
         let decodedProfile = try sut.profile(fromString: encodedString)
-        print(decodedProfile)
         #expect(decodedProfile.modules[0] as? DNSModule == dnsModule)
         #expect(decodedProfile.modules[1] as? IPModule == ipModule)
         #expect(decodedProfile == profile)

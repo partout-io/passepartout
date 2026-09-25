@@ -137,8 +137,8 @@ struct KeychainProfileRepositoryTests {
 }
 
 private extension KeychainProfileRepositoryTests {
-    func makeCoder() -> CodingRegistry {
-        CodingRegistry(registry: Registry(withKnown: true))
+    func makeCoder() -> TestProfileCoder {
+        TestProfileCoder()
     }
 
     func makeRepository(
@@ -271,5 +271,15 @@ private final class MockProfileKeychain: Keychain, @unchecked Sendable {
             return nil
         }
         return String(value.dropFirst("reference:".count))
+    }
+}
+
+private struct TestProfileCoder: ProfileCoder {
+    func string(fromProfile profile: Profile) throws -> String {
+        try ABI.encodeJSON(profile.asTaggedProfile)
+    }
+
+    func profile(fromString string: String) throws -> Profile {
+        try LegacyProfileDecoder().profile(fromString: string)
     }
 }

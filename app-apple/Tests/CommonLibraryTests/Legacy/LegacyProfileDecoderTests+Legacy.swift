@@ -3,26 +3,23 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
+import Foundation
+import Partout
 import Testing
 
-// Decode always probes V3, then V2, then V1, so these legacy decode checks
-// stay unparameterized.
-struct CodingRegistryLegacyTests {
+struct LegacyProfileDecoderLegacyTests {
     @Test
     func givenCoder_whenDecodeProfileEncodedWithLegacyV2_thenIsDecoded() throws {
-        let registry = Registry(withKnown: true)
-        let encoder = LegacyProfileEncoderV2(registry)
-        let fixture = try newLegacyV2ProfileFixture(encoder)
-        let encoded = try encoder.encode(fixture.profile.asCodableProfileV2)
-
-        let sut = CodingRegistry(registry: registry)
+        let fixture = try newLegacyV2ProfileFixture()
+        let encoded = fixture.encoded
+        let sut = LegacyProfileDecoder()
         let decoded = try sut.profile(fromString: encoded)
         #expect(decoded == fixture.profile)
     }
 
     @Test
     func givenCoder_whenDecodeProfileEncodedWithLegacyV1_thenDecodesWithoutRegistryHandlers() throws {
-        let sut = CodingRegistry(registry: Registry(allHandlers: []))
+        let sut = LegacyProfileDecoder()
 
         for module in try newKnownModules() {
             var builder = Profile.Builder(modules: [module])
@@ -38,22 +35,32 @@ struct CodingRegistryLegacyTests {
     }
 
     @Test
-    func givenLegacyV2_whenDecodeProfileWithUnknownModule_thenFailsWithUnknownModuleHandler() throws {
-        let registry = Registry(allHandlers: [])
-        let encoder = LegacyProfileEncoderV2(registry)
-        let fixture = try newLegacyV2ProfileFixture(encoder)
-
+    func givenLegacyV2_whenDecodeProfileWithUnknownModule_thenFailsDecoding() throws {
+        let fixture = try newLegacyV2ProfileFixture()
+        let encoded = fixture.encoded.replacingOccurrences(of: "\"DNS\"", with: "\"Provider\"")
+        #expect(encoded != fixture.encoded)
         let error = #expect(throws: PartoutError.self) {
-            _ = try encoder.decode(fixture.encoded)
+            _ = try LegacyProfileDecoder().profile(fromString: encoded)
         }
-        #expect(error?.code == .unknownModuleHandler)
+        #expect(error?.code == .decoding)
     }
 }
 
-private extension CodingRegistryLegacyTests {
-    func newLegacyV2ProfileFixture(_ encoder: LegacyProfileEncoderV2) throws -> LegacyProfileFixture {
+private extension LegacyProfileDecoderLegacyTests {
+    func newLegacyV2ProfileFixture() throws -> LegacyProfileFixture {
         let profile = try newTestProfile()
-        let encoded = try encoder.encode(profile.asCodableProfileV2)
+        let encoder = JSONEncoder(userInfo: [.legacySwiftEncoding: true])
+        var payload = try #require(JSONSerialization.jsonObject(
+            with: JSONEncoder.shared().encode(profile.asTaggedProfile)
+        ) as? [String: Any])
+        payload["modules"] = try profile.modules.map { module in
+            let encodable = try #require(module as? any Encodable)
+            return [
+                "moduleType": module.moduleType.rawValue,
+                "payload": try JSONSerialization.jsonObject(with: encoder.encode(encodable))
+            ] as [String: Any]
+        }
+        let encoded = String(decoding: try JSONSerialization.data(withJSONObject: payload), as: UTF8.self)
         return LegacyProfileFixture(profile: profile, encoded: encoded)
     }
 
