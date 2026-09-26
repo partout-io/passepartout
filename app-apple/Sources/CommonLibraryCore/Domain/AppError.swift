@@ -100,6 +100,7 @@ extension ABI {
                 case .unknownImportedModule:
                     self = .importError()
                 default:
+                    // Keep .parsing wrapped to preserve ParseErrorInfo for localization and passphrase handling.
                     self = .partout(partoutError)
                 }
             } else {
