@@ -1,1 +1,1 @@
-* Partout: Enable new daemon
+* Delete stale legacy/providers code (#1948)
