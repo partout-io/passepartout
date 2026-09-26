@@ -51,11 +51,14 @@ struct LocalizationTests {
         )
     }
 
-    @Test
-    func givenOtherError_whenDescribing_thenReturnsDiagnosticMessage() {
-        let sut = ABI.AppError(PartoutError(.decoding))
+    @Test(
+        arguments: [PartoutErrorCode.keychainAddItem, .keychainItemNotFound, .invalidValue, .decoding],
+        [nil, JSON.string("diagnostic details")]
+    )
+    func givenOtherError_whenDescribing_thenReturnsLocalizedFallback(code: PartoutErrorCode, payload: JSON?) {
+        let sut = ABI.AppError(PartoutError(code, payload: payload))
 
-        #expect(sut.localizedDescription(style: .errorHandler) == "decoding, payload=null")
+        #expect(sut.localizedDescription(style: .errorHandler) == Strings.Errors.App.partout(code.rawValue))
     }
 
     @Test(arguments: [OpenVPNErrorCode.passphraseRequired, .unableToDecrypt])

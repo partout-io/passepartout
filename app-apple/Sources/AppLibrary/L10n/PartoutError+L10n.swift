@@ -8,7 +8,6 @@ import Partout
 
 extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
-        let fallbackMessage = "\(code.rawValue), payload=\(payload?.debugDescription ?? "null")"
         switch code {
         case .openVPN, .wireGuard:
             return protocolDescription()
@@ -17,7 +16,7 @@ extension PartoutError: @retroactive LocalizedError {
         case .unknownImportedModule:
             return Strings.Errors.App.parsing
         default:
-            return fallbackMessage
+            return Strings.Errors.App.partout(code.rawValue)
         }
     }
 }
