@@ -24,10 +24,10 @@ extension PartoutError: @retroactive LocalizedError {
 
 private extension PartoutError {
     func protocolDescription() -> String {
-        let argument = payload?["arguments"]?.arrayValue?.first?.stringValue ?? "?"
-        switch code {
+        let pair = errorPair
+        switch pair.code {
         case .openVPN:
-            let specific = subCode.flatMap(OpenVPNErrorCode.init(rawValue:))
+            let specific = pair.subCode.flatMap(OpenVPNErrorCode.init(rawValue:))
             if isOpenVPNPassphraseRequired {
                 // The importer handles these errors with a passphrase prompt.
                 return Strings.Errors.App.other
@@ -38,12 +38,19 @@ private extension PartoutError {
             return specific?.localizedConnectionDescription ?? Strings.Errors.App.parsing
         case .wireGuard:
             return wireGuardParsingDescription(
-                code: subCode.flatMap(WireGuardErrorCode.init(rawValue:)),
-                argument: argument
+                code: pair.subCode.flatMap(WireGuardErrorCode.init(rawValue:)),
+                argument: parseErrorInfo?.arguments.first ?? "?"
             ) ?? Strings.Errors.App.parsing
         default:
             return Strings.Errors.App.parsing
         }
+    }
+
+    var parseErrorInfo: ParseErrorInfo? {
+        guard let payload, let data = try? JSONEncoder.shared().encode(payload) else {
+            return nil
+        }
+        return try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: data)
     }
 
     func wireGuardParsingDescription(code: WireGuardErrorCode?, argument: String) -> String? {
