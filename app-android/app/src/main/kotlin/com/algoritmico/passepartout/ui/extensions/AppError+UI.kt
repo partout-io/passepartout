@@ -8,20 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.JSON
+import com.algoritmico.passepartout.business.extensions.errorPair
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
 import io.partout.models.OpenVPNErrorCode
 import io.partout.abi.errorPair
+import io.partout.models.ParseErrorInfo
 import io.partout.models.PartoutErrorCode
 import io.partout.models.PartoutErrorPair
 import io.partout.models.WireGuardErrorCode
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.contentOrNull
 
 // Map AppError.Code for ErrorHandler
 @Composable
@@ -143,93 +140,93 @@ fun Throwable.partoutDescription(): String? {
 
 @Composable
 fun PartoutException.protocolDescription(): String {
-    val specificString = payload?.let { payload ->
-        val info = runCatching { payload.jsonObject }.getOrNull() ?: return@let null
-        val subCode = runCatching { info["subCode"]?.jsonPrimitive?.contentOrNull }.getOrNull()
-        val argument = runCatching { info["arguments"]?.jsonArray?.firstOrNull()?.jsonPrimitive?.contentOrNull }.getOrNull() ?: "?"
-        when (code) {
-            PartoutErrorCode.openVPN -> {
-                when (OpenVPNErrorCode.decode(subCode)) {
-                    OpenVPNErrorCode.unsupportedCompression -> stringResource(
-                        R.string.errors_openvpn_unsupported_compression
-                    )
-                    else -> OpenVPNErrorCode.decode(subCode)?.localizedStatusResource?.let { stringResource(it) }
-                }
+    val pair = errorPair
+    val argument = parseErrorInfo?.arguments?.firstOrNull() ?: "?"
+    val specificString = when (pair.code) {
+        PartoutErrorCode.openVPN -> {
+            when (OpenVPNErrorCode.decode(pair.subCode)) {
+                OpenVPNErrorCode.unsupportedCompression -> stringResource(
+                    R.string.errors_openvpn_unsupported_compression
+                )
+                else -> OpenVPNErrorCode.decode(pair.subCode)?.localizedStatusResource?.let { stringResource(it) }
             }
-            PartoutErrorCode.wireGuard -> {
-                when (WireGuardErrorCode.decode(subCode)) {
-                    WireGuardErrorCode.emptyPeers -> stringResource(
-                        R.string.errors_wireguard_empty_peers
-                    )
-                    WireGuardErrorCode.interfaceHasInvalidAddress -> stringResource(
-                        R.string.errors_wireguard_interface_address_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.interfaceHasInvalidDNS -> stringResource(
-                        R.string.errors_wireguard_interface_dns_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.interfaceHasInvalidListenPort -> stringResource(
-                        R.string.errors_wireguard_interface_listen_port_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.interfaceHasInvalidMTU -> stringResource(
-                        R.string.errors_wireguard_interface_mtu_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.interfaceHasInvalidPrivateKey -> stringResource(
-                        R.string.errors_wireguard_interface_private_key_invalid
-                    )
-                    WireGuardErrorCode.interfaceHasNoPrivateKey -> stringResource(
-                        R.string.errors_wireguard_interface_private_key_required
-                    )
-                    WireGuardErrorCode.interfaceHasUnrecognizedKey -> stringResource(
-                        R.string.errors_wireguard_interface_unrecognized_key,
-                        argument
-                    )
-                    WireGuardErrorCode.multipleEntriesForKey -> stringResource(
-                        R.string.errors_wireguard_multiple_entries_for_key,
-                        argument
-                    )
-                    WireGuardErrorCode.multipleInterfaces -> stringResource(
-                        R.string.errors_wireguard_multiple_interfaces
-                    )
-                    WireGuardErrorCode.multiplePeersWithSamePublicKey -> stringResource(
-                        R.string.errors_wireguard_peer_public_key_duplicated
-                    )
-                    WireGuardErrorCode.noInterface -> stringResource(
-                        R.string.errors_wireguard_no_interface
-                    )
-                    WireGuardErrorCode.peerHasInvalidAllowedIP -> stringResource(
-                        R.string.errors_wireguard_peer_allowed_ips_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.peerHasInvalidEndpoint -> stringResource(
-                        R.string.errors_wireguard_peer_endpoint_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.peerHasInvalidPersistentKeepAlive -> stringResource(
-                        R.string.errors_wireguard_peer_persistent_keepalive_invalid,
-                        argument
-                    )
-                    WireGuardErrorCode.peerHasInvalidPreSharedKey -> stringResource(
-                        R.string.errors_wireguard_peer_pre_shared_key_invalid
-                    )
-                    WireGuardErrorCode.peerHasInvalidPublicKey -> stringResource(
-                        R.string.errors_wireguard_peer_public_key_invalid
-                    )
-                    WireGuardErrorCode.peerHasNoPublicKey -> stringResource(
-                        R.string.errors_wireguard_peer_public_key_required
-                    )
-                    WireGuardErrorCode.peerHasUnrecognizedKey -> stringResource(
-                        R.string.errors_wireguard_peer_unrecognized_key,
-                        argument
-                    )
-                    else -> null
-                }
-            }
-            else -> null
         }
+        PartoutErrorCode.wireGuard -> {
+            when (WireGuardErrorCode.decode(pair.subCode)) {
+                WireGuardErrorCode.emptyPeers -> stringResource(
+                    R.string.errors_wireguard_empty_peers
+                )
+                WireGuardErrorCode.interfaceHasInvalidAddress -> stringResource(
+                    R.string.errors_wireguard_interface_address_invalid,
+                    argument
+                )
+                WireGuardErrorCode.interfaceHasInvalidDNS -> stringResource(
+                    R.string.errors_wireguard_interface_dns_invalid,
+                    argument
+                )
+                WireGuardErrorCode.interfaceHasInvalidListenPort -> stringResource(
+                    R.string.errors_wireguard_interface_listen_port_invalid,
+                    argument
+                )
+                WireGuardErrorCode.interfaceHasInvalidMTU -> stringResource(
+                    R.string.errors_wireguard_interface_mtu_invalid,
+                    argument
+                )
+                WireGuardErrorCode.interfaceHasInvalidPrivateKey -> stringResource(
+                    R.string.errors_wireguard_interface_private_key_invalid
+                )
+                WireGuardErrorCode.interfaceHasNoPrivateKey -> stringResource(
+                    R.string.errors_wireguard_interface_private_key_required
+                )
+                WireGuardErrorCode.interfaceHasUnrecognizedKey -> stringResource(
+                    R.string.errors_wireguard_interface_unrecognized_key,
+                    argument
+                )
+                WireGuardErrorCode.multipleEntriesForKey -> stringResource(
+                    R.string.errors_wireguard_multiple_entries_for_key,
+                    argument
+                )
+                WireGuardErrorCode.multipleInterfaces -> stringResource(
+                    R.string.errors_wireguard_multiple_interfaces
+                )
+                WireGuardErrorCode.multiplePeersWithSamePublicKey -> stringResource(
+                    R.string.errors_wireguard_peer_public_key_duplicated
+                )
+                WireGuardErrorCode.noInterface -> stringResource(
+                    R.string.errors_wireguard_no_interface
+                )
+                WireGuardErrorCode.peerHasInvalidAllowedIP -> stringResource(
+                    R.string.errors_wireguard_peer_allowed_ips_invalid,
+                    argument
+                )
+                WireGuardErrorCode.peerHasInvalidEndpoint -> stringResource(
+                    R.string.errors_wireguard_peer_endpoint_invalid,
+                    argument
+                )
+                WireGuardErrorCode.peerHasInvalidPersistentKeepAlive -> stringResource(
+                    R.string.errors_wireguard_peer_persistent_keepalive_invalid,
+                    argument
+                )
+                WireGuardErrorCode.peerHasInvalidPreSharedKey -> stringResource(
+                    R.string.errors_wireguard_peer_pre_shared_key_invalid
+                )
+                WireGuardErrorCode.peerHasInvalidPublicKey -> stringResource(
+                    R.string.errors_wireguard_peer_public_key_invalid
+                )
+                WireGuardErrorCode.peerHasNoPublicKey -> stringResource(
+                    R.string.errors_wireguard_peer_public_key_required
+                )
+                WireGuardErrorCode.peerHasUnrecognizedKey -> stringResource(
+                    R.string.errors_wireguard_peer_unrecognized_key,
+                    argument
+                )
+                else -> null
+            }
+        }
+        else -> null
     }
     return specificString ?: stringResource(R.string.errors_app_parsing)
 }
+
+private val PartoutException.parseErrorInfo: ParseErrorInfo?
+    get() = payload?.let { runCatching { JSON.decodeElement<ParseErrorInfo>(it) }.getOrNull() }

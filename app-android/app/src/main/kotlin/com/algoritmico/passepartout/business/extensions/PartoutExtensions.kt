@@ -4,12 +4,15 @@
 
 package com.algoritmico.passepartout.business.extensions
 
+import io.partout.abi.PartoutException
 import io.partout.models.OpenVPNErrorCode
 import io.partout.models.PartoutErrorCode
 import io.partout.models.PartoutErrorPair
 import io.partout.models.TaggedProfile
 import io.partout.models.WireGuardErrorCode
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
 val TaggedProfile.fingerprint: String?
@@ -23,3 +26,9 @@ fun PartoutErrorPair.Companion.openVPN(code: OpenVPNErrorCode): PartoutErrorPair
 
 fun PartoutErrorPair.Companion.wireGuard(code: WireGuardErrorCode): PartoutErrorPair =
     PartoutErrorPair(PartoutErrorCode.wireGuard, code.value)
+
+val PartoutException.errorPair: PartoutErrorPair
+    get() {
+        val subCode = (payload as? JsonObject)?.get("subCode") as? JsonPrimitive
+        return PartoutErrorPair(code, subCode?.contentOrNull)
+    }
