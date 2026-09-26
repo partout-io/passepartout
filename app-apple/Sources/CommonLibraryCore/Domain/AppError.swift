@@ -40,15 +40,9 @@ extension ABI {
 
         case notFound
 
-        case openVPNPassphraseRequired
-
-        case openVPNUnsupportedCompression(option: String?)
-
         case other(Error?)
 
         case partout(PartoutError)
-
-        case partoutABI(PartoutABIError)
 
         case permissionDenied
 
@@ -72,32 +66,26 @@ extension ABI {
 
         case webUploader(Int?, Error?)
 
-        case wireGuardEmptyPeers
-
         public init(_ error: Error) {
             if let spError = error as? AppError {
                 self = spError
-            } else if let partoutABIError = error as? PartoutABIError {
-                if partoutABIError.isOpenVPNPassphraseRequired {
-                    self = .openVPNPassphraseRequired
-                } else {
-                    self = .partoutABI(partoutABIError)
-                }
             } else if let partoutError = error as? PartoutError {
                 // Specialize some codes
                 switch partoutError.code {
                 case .incompatibleModules:
-                    let modules = partoutError.userInfo as? [Module] ?? []
+                    guard case .incompatibleModules(let modules) = partoutError.context else {
+                        self = .partout(partoutError)
+                        return
+                    }
                     self = .incompatibleModules(modules)
                 case .incompleteModule:
-                    guard let builder = partoutError.userInfo as? any ModuleBuilder else {
-                        assertionFailure("Missing ModuleBuilder from .incompleteModule userInfo")
+                    guard case .incompleteModule(let builder) = partoutError.context else {
                         self = .partout(partoutError)
                         return
                     }
                     self = .incompleteModule(builder)
                 case .invalidField:
-                    guard let field = partoutError.userInfo as? PartoutError.ModuleField else {
+                    guard case .invalidField(let field) = partoutError.context else {
                         self = .invalidField(stringKey: nil)
                         return
                     }
@@ -105,14 +93,9 @@ extension ABI {
                     self = .invalidField(stringKey: stringKey)
                 case .noActiveModules:
                     self = .noActiveModules
-                case .openVPNPassphraseRequired:
-                    self = .openVPNPassphraseRequired
-                case .openVPNUnsupportedCompression:
-                    let option = partoutError.userInfo as? String
-                    self = .openVPNUnsupportedCompression(option: option)
                 case .parsing:
                     let message: String?
-                    if let info = partoutError.userInfo as? String {
+                    if let info = partoutError.payload?.stringValue {
                         message = info
                     } else if let reason = partoutError.reason {
                         if let localizedReason = reason as? LocalizedError {
@@ -127,11 +110,9 @@ extension ABI {
                 case .timeout:
                     self = .timeout
                 case .unhandled:
-                    self = .other(partoutError.reason)
+                    self = partoutError.payload != nil ? .partout(partoutError) : .other(partoutError.reason)
                 case .unknownImportedModule:
                     self = .importError()
-                case .wireGuardEmptyPeers:
-                    self = .wireGuardEmptyPeers
                 default:
                     self = .partout(partoutError)
                 }
@@ -139,25 +120,6 @@ extension ABI {
                 self = .other(error)
             }
         }
-    }
-}
-
-private extension PartoutABIError {
-    var isOpenVPNPassphraseRequired: Bool {
-        guard code == .parsing, let payload else {
-            return false
-        }
-        guard
-            let data = try? JSONEncoder.shared().encode(payload),
-            let info = try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: data)
-        else {
-            return false
-        }
-        guard info.recognizedType == .OpenVPN else { return false }
-        guard let subCode = info.subCode.map(OpenVPNErrorCode.init(rawValue:)) else {
-            return false
-        }
-        return [.passphraseRequired, .unableToDecrypt].contains(subCode)
     }
 }
 
@@ -198,13 +160,9 @@ extension ABI.AppError {
             return .noActiveModules
         case .notFound:
             return .notFound
-        case .openVPNPassphraseRequired:
-            return .openVPNPassphraseRequired
-        case .openVPNUnsupportedCompression:
-            return .openVPNUnsupportedCompression
         case .other:
             return .other
-        case .partout, .partoutABI:
+        case .partout:
             return .partout
         case .permissionDenied:
             return .permissionDenied
@@ -228,8 +186,6 @@ extension ABI.AppError {
             return .webReceiver
         case .webUploader:
             return .webUploader
-        case .wireGuardEmptyPeers:
-            return .wireGuardEmptyPeers
         }
     }
 }

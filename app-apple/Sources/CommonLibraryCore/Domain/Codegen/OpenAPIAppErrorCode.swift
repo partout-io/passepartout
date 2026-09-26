@@ -25,8 +25,6 @@ public enum OpenAPIAppErrorCode: String, Sendable, Codable, CaseIterable {
     case multipleTunnels = "multipleTunnels"
     case noActiveModules = "noActiveModules"
     case notFound = "notFound"
-    case openVPNPassphraseRequired = "openVPNPassphraseRequired"
-    case openVPNUnsupportedCompression = "openVPNUnsupportedCompression"
     case other = "other"
     case partout = "partout"
     case permissionDenied = "permissionDenied"
@@ -41,5 +39,4 @@ public enum OpenAPIAppErrorCode: String, Sendable, Codable, CaseIterable {
     case verificationRequiredFeatures = "verificationRequiredFeatures"
     case webReceiver = "webReceiver"
     case webUploader = "webUploader"
-    case wireGuardEmptyPeers = "wireGuardEmptyPeers"
 }

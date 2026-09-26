@@ -19,8 +19,8 @@ public struct LocalizedConnectionStatusError: LocalizableEntity {
             .localizedDescription(optionalStyle: .connectionStatus) {
             return appDescription
         }
-        if let partoutDescription = PartoutError.Code(rawValue: lastErrorCode)?
-            .localizedDescription(optionalStyle: .connectionStatus) {
+        if let partoutDescription = PartoutErrorPair(rawValue: lastErrorCode)?
+            .localizedConnectionDescription {
             return partoutDescription
         }
         return Strings.Errors.Tunnel.generic
@@ -93,16 +93,9 @@ extension ABI.AppError: StyledLocalizableEntity {
         case .notFound:
             // Typically asserts
             return nil
-        case .openVPNPassphraseRequired:
-            // Handled manually
-            return nil
-        case .openVPNUnsupportedCompression(let option):
-            return Strings.Errors.Openvpn.unsupportedCompression.appending(option, separator: "\n\n")
         case .other(let error):
             return V.other.appending(error?.localizedDescription, separator: " ")
         case .partout(let error):
-            return V.partout(error.code.rawValue)
-        case .partoutABI(let error):
             return error.localizedDescription
         case .permissionDenied:
             return V.permissionDenied
@@ -133,8 +126,6 @@ extension ABI.AppError: StyledLocalizableEntity {
             default:
                 return error?.localizedDescription
             }
-        case .wireGuardEmptyPeers:
-            return Strings.Errors.Wireguard.emptyPeers
         }
     }
 }
@@ -207,19 +198,37 @@ extension PartoutError.Code: StyledOptionalLocalizableEntity {
                 return V.dns
             case .timeout:
                 return Strings.Global.Nouns.timeout
-            case .openVPNCompressionMismatch:
-                return V.compression
-            case .openVPNNoRouting:
-                return V.routing
-            case .openVPNRecoverableAuthentication:
-                return Strings.Entities.TunnelStatus.activating
-            case .openVPNServerShutdown:
-                return V.shutdown
-            case .openVPNTLSFailure:
-                return V.tls
             default:
                 return nil
             }
+        }
+    }
+}
+
+
+extension PartoutErrorPair {
+    var localizedConnectionDescription: String? {
+        switch code {
+        case .openVPN:
+            return subCode.flatMap(OpenVPNErrorCode.init(rawValue:))?.localizedConnectionDescription
+        case .wireGuard:
+            return nil
+        default:
+            return code.localizedDescription(optionalStyle: .connectionStatus)
+        }
+    }
+}
+
+extension OpenVPNErrorCode {
+    var localizedConnectionDescription: String? {
+        let V = Strings.Errors.Tunnel.self
+        switch self {
+        case .compressionMismatch: return V.compression
+        case .noRouting: return V.routing
+        case .recoverableAuthentication: return Strings.Entities.TunnelStatus.activating
+        case .serverShutdown: return V.shutdown
+        case .tlsFailure: return V.tls
+        default: return nil
         }
     }
 }

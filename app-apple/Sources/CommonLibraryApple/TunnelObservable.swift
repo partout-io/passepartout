@@ -26,7 +26,7 @@ public final class TunnelObservable {
 
     public typealias WillInstallBlock = @Sendable (Profile, Bool, Bool) async throws -> Profile?
 
-    private let tunnel: Tunnel
+    private let tunnel: PartoutTunnel
 
     private let preferences: AppPreferencesStore?
 
@@ -42,7 +42,7 @@ public final class TunnelObservable {
 
     // TODO: #218, keep "last used profile" until .multiple
     public init(
-        tunnel: Tunnel,
+        tunnel: PartoutTunnel,
         preferences: AppPreferencesStore? = nil,
         logging: Logging? = nil,
         willInstall: WillInstallBlock? = nil

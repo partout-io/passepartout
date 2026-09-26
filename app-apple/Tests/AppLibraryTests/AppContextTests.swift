@@ -131,7 +131,7 @@ private struct Harness {
         let profileManager = ProfileManager(profiles: profiles)
         profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
-        let tunnel = Tunnel(
+        let tunnel = PartoutTunnel(
             .global,
             strategy: FakeTunnelStrategy(),
             environmentFactory: { @Sendable _ in

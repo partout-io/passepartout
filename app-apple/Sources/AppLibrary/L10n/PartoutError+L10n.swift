@@ -6,47 +6,50 @@ import AppStrings
 import CommonLibrary
 import Partout
 
-extension PartoutABIError: @retroactive LocalizedError {
+extension PartoutError: @retroactive LocalizedError {
     public var errorDescription: String? {
-        let fallbackMessage = "\(code.rawValue), payload=\(payload?.debugDescription ?? "null")"
         switch code {
+        case .openVPN, .wireGuard:
+            return protocolDescription()
         case .parsing:
-            return parsingDescription()
+            return Strings.Errors.App.parsing
         case .unknownImportedModule:
             return Strings.Errors.App.parsing
         default:
-            return fallbackMessage
+            return Strings.Errors.App.partout(code.rawValue)
         }
     }
 }
 
-private extension PartoutABIError {
-    func parsingDescription() -> String {
-        guard
-            let payload,
-            let payloadData = try? JSONEncoder.shared().encode(payload),
-            let info = try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: payloadData)
-        else {
-            return Strings.Errors.App.parsing
-        }
-
-        let argument = info.arguments.first ?? "?"
-        switch info.recognizedType {
-        case .OpenVPN:
-            switch info.subCode.flatMap(OpenVPNErrorCode.init(rawValue:)) {
-            case .unsupportedCompression:
-                return Strings.Errors.Openvpn.unsupportedCompression
-            default:
-                return Strings.Errors.App.parsing
+private extension PartoutError {
+    func protocolDescription() -> String {
+        let pair = errorPair
+        switch pair.code {
+        case .openVPN:
+            let specific = pair.subCode.flatMap(OpenVPNErrorCode.init(rawValue:))
+            if isOpenVPNPassphraseRequired {
+                // The importer handles these errors with a passphrase prompt.
+                return Strings.Errors.App.other
             }
-        case .WireGuard:
+            if specific == .unsupportedCompression {
+                return Strings.Errors.Openvpn.unsupportedCompression
+            }
+            return specific?.localizedConnectionDescription ?? Strings.Errors.App.parsing
+        case .wireGuard:
             return wireGuardParsingDescription(
-                code: info.subCode.flatMap(WireGuardErrorCode.init(rawValue:)),
-                argument: argument
+                code: pair.subCode.flatMap(WireGuardErrorCode.init(rawValue:)),
+                argument: parseErrorInfo?.arguments.first ?? "?"
             ) ?? Strings.Errors.App.parsing
         default:
             return Strings.Errors.App.parsing
         }
+    }
+
+    var parseErrorInfo: ParseErrorInfo? {
+        guard let payload, let data = try? JSONEncoder.shared().encode(payload) else {
+            return nil
+        }
+        return try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: data)
     }
 
     func wireGuardParsingDescription(code: WireGuardErrorCode?, argument: String) -> String? {

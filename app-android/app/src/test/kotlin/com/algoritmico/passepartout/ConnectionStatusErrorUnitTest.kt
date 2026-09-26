@@ -4,10 +4,16 @@
 
 package com.algoritmico.passepartout
 
+import com.algoritmico.passepartout.business.extensions.openVPN
+import com.algoritmico.passepartout.business.extensions.wireGuard
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.toLastErrorCode
 import com.algoritmico.passepartout.ui.extensions.LocalizedConnectionStatusError
+import io.partout.abi.rawValue
+import io.partout.models.OpenVPNErrorCode
 import io.partout.models.PartoutErrorCode
+import io.partout.models.PartoutErrorPair
+import io.partout.models.WireGuardErrorCode
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -42,10 +48,22 @@ class ConnectionStatusErrorUnitTest {
     @Test
     fun partoutErrorCode_withoutConnectionStatusFallsBackToGenericResource() {
         val sut = LocalizedConnectionStatusError(
-            PartoutErrorCode.wireGuardEmptyPeers.value
+            PartoutErrorPair.wireGuard(WireGuardErrorCode.emptyPeers).rawValue
         )
 
         assertEquals(R.string.errors_tunnel_generic, sut.localizedDescriptionResource)
+    }
+
+    @Test
+    fun protocolSubCode_mapsToResource() {
+        assertEquals(
+            R.string.errors_tunnel_tls,
+            LocalizedConnectionStatusError(PartoutErrorPair.openVPN(OpenVPNErrorCode.tlsFailure).rawValue).localizedDescriptionResource
+        )
+        assertEquals(
+            R.string.errors_tunnel_generic,
+            LocalizedConnectionStatusError(PartoutErrorPair(PartoutErrorCode.openVPN, "unknown").rawValue).localizedDescriptionResource
+        )
     }
 
     @Test

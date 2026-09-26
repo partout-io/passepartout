@@ -36,7 +36,7 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = Tunnel(
+        let tunnel = PartoutTunnel(
             .global,
             strategy: FakeTunnelStrategy(),
             refreshInterval: 10000,
