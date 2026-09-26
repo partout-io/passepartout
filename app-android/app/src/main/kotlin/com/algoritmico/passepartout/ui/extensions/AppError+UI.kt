@@ -13,9 +13,9 @@ import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
 import io.partout.models.OpenVPNErrorCode
-import io.partout.abi.extendedErrorCode
+import io.partout.abi.errorPair
 import io.partout.models.PartoutErrorCode
-import io.partout.models.PartoutErrorExtendedCode
+import io.partout.models.PartoutErrorPair
 import io.partout.models.WireGuardErrorCode
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -81,7 +81,7 @@ data class LocalizedConnectionStatusError(
 ) {
     val localizedDescriptionResource: Int
         get() = AppErrorCode.fromLastErrorCode(lastErrorCode)?.localizedStatusResource
-            ?: lastErrorCode.extendedErrorCode()?.localizedStatusResource
+            ?: lastErrorCode.errorPair()?.localizedStatusResource
             ?: R.string.errors_tunnel_generic
 
     // Map error code in the ProfileRow lastErrorCode status text
@@ -106,7 +106,7 @@ private val PartoutErrorCode.localizedStatusResource: Int?
         else -> null
     }
 
-private val PartoutErrorExtendedCode.localizedStatusResource: Int?
+private val PartoutErrorPair.localizedStatusResource: Int?
     get() = when (code) {
         PartoutErrorCode.openVPN -> OpenVPNErrorCode.decode(subCode)?.localizedStatusResource
         PartoutErrorCode.wireGuard -> null

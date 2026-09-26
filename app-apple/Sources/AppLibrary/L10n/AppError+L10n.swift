@@ -19,7 +19,7 @@ public struct LocalizedConnectionStatusError: LocalizableEntity {
             .localizedDescription(optionalStyle: .connectionStatus) {
             return appDescription
         }
-        if let partoutDescription = PartoutErrorExtendedCode(rawValue: lastErrorCode)?
+        if let partoutDescription = PartoutErrorPair(rawValue: lastErrorCode)?
             .localizedConnectionDescription {
             return partoutDescription
         }
@@ -206,7 +206,7 @@ extension PartoutError.Code: StyledOptionalLocalizableEntity {
 }
 
 
-extension PartoutErrorExtendedCode {
+extension PartoutErrorPair {
     var localizedConnectionDescription: String? {
         switch code {
         case .openVPN:
