@@ -5,8 +5,17 @@
 import Partout
 
 public extension PartoutError {
+    var parseErrorInfo: ParseErrorInfo? {
+        guard code == .parsing, let payload,
+              let data = try? JSONEncoder.shared().encode(payload) else {
+            return nil
+        }
+        return try? JSONDecoder.shared().decode(ParseErrorInfo.self, from: data)
+    }
+
     var isOpenVPNPassphraseRequired: Bool {
-        guard code == .openVPN, let subCode = subCode.flatMap(OpenVPNErrorCode.init(rawValue:)) else {
+        guard let info = parseErrorInfo, info.recognizedType == .OpenVPN,
+              let subCode = info.subCode.flatMap(OpenVPNErrorCode.init(rawValue:)) else {
             return false
         }
         return [.passphraseRequired, .unableToDecrypt].contains(subCode)

@@ -43,7 +43,7 @@ struct LocalizationTests {
             subCode: WireGuardErrorCode.interfaceHasInvalidAddress.rawValue,
             arguments: ["192.0.2.300/24"]
         )
-        let sut = ABI.AppError(PartoutError(.wireGuard, payload: try JSON(encodable: info)))
+        let sut = ABI.AppError(PartoutError(.parsing, payload: try JSON(encodable: info)))
 
         #expect(
             sut.localizedDescription(style: .errorHandler) ==
@@ -68,7 +68,7 @@ struct LocalizationTests {
             subCode: code.rawValue,
             arguments: []
         )
-        let error = PartoutError(.openVPN, payload: try JSON(encodable: info))
+        let error = PartoutError(.parsing, payload: try JSON(encodable: info))
         let sut = ABI.AppError(error)
 
         guard case .partout(let wrapped) = sut else {
@@ -79,6 +79,36 @@ struct LocalizationTests {
         #expect(wrapped.isOpenVPNPassphraseRequired)
         #expect(sut.code == .partout)
         #expect(sut.localizedDescription(style: .errorHandler) == Strings.Errors.App.other)
+    }
+
+    @Test
+    func givenOpenVPNCompressionParseError_whenDescribing_thenUsesSpecificMessage() throws {
+        let info = ParseErrorInfo(
+            recognizedType: .OpenVPN,
+            subCode: OpenVPNErrorCode.unsupportedCompression.rawValue,
+            arguments: ["lzo"]
+        )
+        let error = PartoutError(.parsing, payload: try JSON(encodable: info))
+        #expect(ABI.AppError(error).localizedDescription(style: .errorHandler) == Strings.Errors.Openvpn.unsupportedCompression)
+    }
+
+    @Test(arguments: [nil, JSON.string("unexpected payload"), JSON.object([:])])
+    func givenMissingOrMalformedParseInfo_whenDescribing_thenFallsBack(payload: JSON?) {
+        let error = PartoutError(.parsing, payload: payload)
+        #expect(!error.isOpenVPNPassphraseRequired)
+        #expect(ABI.AppError(error).localizedDescription(style: .errorHandler) == Strings.Errors.App.parsing)
+    }
+
+    @Test
+    func givenRuntimeError_whenReadingParseInfo_thenReturnsNil() throws {
+        let info = ParseErrorInfo(
+            recognizedType: .OpenVPN,
+            subCode: OpenVPNErrorCode.passphraseRequired.rawValue,
+            arguments: []
+        )
+        let error = PartoutError(.openVPN, payload: try JSON(encodable: info))
+        #expect(error.parseErrorInfo == nil)
+        #expect(!error.isOpenVPNPassphraseRequired)
     }
 
     @Test

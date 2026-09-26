@@ -93,20 +93,6 @@ extension ABI {
                     self = .invalidField(stringKey: stringKey)
                 case .noActiveModules:
                     self = .noActiveModules
-                case .parsing:
-                    let message: String?
-                    if let info = partoutError.payload?.stringValue {
-                        message = info
-                    } else if let reason = partoutError.reason {
-                        if let localizedReason = reason as? LocalizedError {
-                            message = localizedReason.localizedDescription
-                        } else {
-                            message = String(describing: reason)
-                        }
-                    } else {
-                        message = nil
-                    }
-                    self = .importError(message: message)
                 case .timeout:
                     self = .timeout
                 case .unhandled:
@@ -114,6 +100,7 @@ extension ABI {
                 case .unknownImportedModule:
                     self = .importError()
                 default:
+                    // Keep .parsing wrapped to preserve ParseErrorInfo for localization and passphrase handling.
                     self = .partout(partoutError)
                 }
             } else {
