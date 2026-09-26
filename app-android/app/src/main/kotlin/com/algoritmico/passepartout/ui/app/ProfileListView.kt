@@ -17,10 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.business.extensions.openVPN
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.ProfileTransfer
 import com.algoritmico.passepartout.ui.theme.LocalTheme
-import io.partout.models.PartoutErrorCode
+import io.partout.abi.rawValue
+import io.partout.models.OpenVPNErrorCode
+import io.partout.models.PartoutErrorPair
 
 @Composable
 fun ProfileListView(
@@ -88,7 +91,7 @@ private fun ProfileListViewPreview() {
                         )
                     ),
                     lastErrorCodes = mapOf(
-                        "broken" to "openVPN.compressionMismatch"
+                        "broken" to PartoutErrorPair.openVPN(OpenVPNErrorCode.compressionMismatch).rawValue
                     )
                 )
             )

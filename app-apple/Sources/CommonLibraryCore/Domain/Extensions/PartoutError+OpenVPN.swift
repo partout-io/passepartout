@@ -12,3 +12,13 @@ public extension PartoutError {
         return [.passphraseRequired, .unableToDecrypt].contains(subCode)
     }
 }
+
+extension PartoutErrorPair {
+    public static func openVPN(_ code: OpenVPNErrorCode) -> Self {
+        Self(code: .openVPN, subCode: code.rawValue)
+    }
+
+    public static func wireGuard(_ code: WireGuardErrorCode) -> Self {
+        Self(code: .wireGuard, subCode: code.rawValue)
+    }
+}
