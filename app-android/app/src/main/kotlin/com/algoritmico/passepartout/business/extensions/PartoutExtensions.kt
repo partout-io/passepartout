@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.business.extensions
 
 import io.partout.abi.PartoutException
 import io.partout.models.OpenVPNErrorCode
+import io.partout.models.ParseErrorInfo
 import io.partout.models.PartoutErrorCode
 import io.partout.models.PartoutErrorPair
 import io.partout.models.TaggedProfile
@@ -32,3 +33,8 @@ val PartoutException.errorPair: PartoutErrorPair
         val subCode = (payload as? JsonObject)?.get("subCode") as? JsonPrimitive
         return PartoutErrorPair(code, subCode?.contentOrNull)
     }
+
+val PartoutException.parseErrorInfo: ParseErrorInfo?
+    get() = if (code == PartoutErrorCode.parsing) {
+        payload?.let { runCatching { JSON.decodeElement<ParseErrorInfo>(it) }.getOrNull() }
+    } else null

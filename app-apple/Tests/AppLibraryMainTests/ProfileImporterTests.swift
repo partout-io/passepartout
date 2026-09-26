@@ -99,7 +99,7 @@ struct ProfileImporterTests {
         let url = URL(string: "file:///filename.encrypted")!
 
         try await sut.tryImport(urls: [url]) { _, _ in
-            let error = PartoutError(codeForOpenVPN: code)
+            let error = try openVPNParseError(code)
             if wrapped {
                 throw ABI.AppError(error)
             }
@@ -115,7 +115,7 @@ struct ProfileImporterTests {
 
         do {
             try await sut.tryImport(urls: [url]) { _, _ in
-                throw PartoutError(codeForOpenVPN: .unsupportedCompression)
+                throw try openVPNParseError(.unsupportedCompression)
             }
             Issue.record("Expected unsupported compression error")
         } catch {
@@ -123,7 +123,8 @@ struct ProfileImporterTests {
                 Issue.record("Expected PartoutError, got \(error)")
                 return
             }
-            #expect(wrapped.subCode == OpenVPNErrorCode.unsupportedCompression.rawValue)
+            #expect(wrapped.code == .parsing)
+            #expect(wrapped.parseErrorInfo?.subCode == OpenVPNErrorCode.unsupportedCompression.rawValue)
         }
         #expect(sut.urlsRequiringPassphrase.isEmpty)
         #expect(!sut.isPresentingPassphrase)
@@ -154,7 +155,7 @@ private extension ProfileManager {
         let importedModule = try {
             if url.absoluteString.hasSuffix(".encrypted") {
                 guard let passphrase else {
-                    throw PartoutError(codeForOpenVPN: .passphraseRequired)
+                    throw try openVPNParseError(.passphraseRequired)
                 }
                 guard passphrase == "passphrase" else {
                     throw PartoutError(.crypto)
@@ -165,4 +166,9 @@ private extension ProfileManager {
         let profile = try Profile(withName: "foobar", singleModule: importedModule)
         try await save(profile, isLocal: true)
     }
+}
+
+private func openVPNParseError(_ code: OpenVPNErrorCode) throws -> PartoutError {
+    let info = ParseErrorInfo(recognizedType: .OpenVPN, subCode: code.rawValue, arguments: [])
+    return PartoutError(.parsing, payload: try JSON(encodable: info))
 }

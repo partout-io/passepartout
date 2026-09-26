@@ -9,13 +9,14 @@ import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.errorPair
+import com.algoritmico.passepartout.business.extensions.parseErrorInfo
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
 import io.partout.models.OpenVPNErrorCode
 import io.partout.abi.errorPair
-import io.partout.models.ParseErrorInfo
+import io.partout.models.ModuleType
 import io.partout.models.PartoutErrorCode
 import io.partout.models.PartoutErrorPair
 import io.partout.models.WireGuardErrorCode
@@ -132,27 +133,27 @@ fun Throwable.partoutDescription(): String? {
     val fallbackMessage =  "${code.value}, payload=${JSON.encodeElement(payload)}"
     return when (code) {
         PartoutErrorCode.openVPN, PartoutErrorCode.wireGuard -> protocolDescription()
-        PartoutErrorCode.parsing -> stringResource(R.string.errors_app_parsing)
+        PartoutErrorCode.parsing -> parsingDescription()
         PartoutErrorCode.unknownImportedModule -> stringResource(R.string.errors_app_parsing)
         else -> null
     } ?: fallbackMessage
 }
 
 @Composable
-fun PartoutException.protocolDescription(): String {
-    val pair = errorPair
-    val argument = parseErrorInfo?.arguments?.firstOrNull() ?: "?"
-    val specificString = when (pair.code) {
-        PartoutErrorCode.openVPN -> {
-            when (OpenVPNErrorCode.decode(pair.subCode)) {
+fun PartoutException.parsingDescription(): String {
+    val info = parseErrorInfo ?: return stringResource(R.string.errors_app_parsing)
+    val argument = info.arguments.firstOrNull() ?: "?"
+    val specificString = when (info.recognizedType) {
+        ModuleType.OpenVPN -> {
+            when (OpenVPNErrorCode.decode(info.subCode)) {
                 OpenVPNErrorCode.unsupportedCompression -> stringResource(
                     R.string.errors_openvpn_unsupported_compression
                 )
-                else -> OpenVPNErrorCode.decode(pair.subCode)?.localizedStatusResource?.let { stringResource(it) }
+                else -> null
             }
         }
-        PartoutErrorCode.wireGuard -> {
-            when (WireGuardErrorCode.decode(pair.subCode)) {
+        ModuleType.WireGuard -> {
+            when (WireGuardErrorCode.decode(info.subCode)) {
                 WireGuardErrorCode.emptyPeers -> stringResource(
                     R.string.errors_wireguard_empty_peers
                 )
@@ -228,5 +229,19 @@ fun PartoutException.protocolDescription(): String {
     return specificString ?: stringResource(R.string.errors_app_parsing)
 }
 
-private val PartoutException.parseErrorInfo: ParseErrorInfo?
-    get() = payload?.let { runCatching { JSON.decodeElement<ParseErrorInfo>(it) }.getOrNull() }
+@Composable
+fun PartoutException.protocolDescription(): String {
+    val pair = errorPair
+    val resource = when (pair.code) {
+        PartoutErrorCode.openVPN -> when (val code = OpenVPNErrorCode.decode(pair.subCode)) {
+            OpenVPNErrorCode.unsupportedCompression -> R.string.errors_openvpn_unsupported_compression
+            else -> code?.localizedStatusResource
+        }
+        PartoutErrorCode.wireGuard -> when (WireGuardErrorCode.decode(pair.subCode)) {
+            WireGuardErrorCode.emptyPeers -> R.string.errors_wireguard_empty_peers
+            else -> null
+        }
+        else -> null
+    }
+    return stringResource(resource ?: R.string.errors_tunnel_generic)
+}
