@@ -127,6 +127,11 @@ struct AppImportExportTests {
         #expect(profile.modules.map(\.id) == [moduleID, ip.id])
         #expect(profile.activeModulesIds == [moduleID, ip.id])
         #expect(!profile.isFinal)
+        #expect(profile.features == [.routing])
+
+        var providerOnly = profile.builder()
+        providerOnly.activeModulesIds = [moduleID]
+        #expect(try providerOnly.build().features.isEmpty)
 
         let editor = ProfileEditor(profile: profile)
         editor.profile.name = "Renamed"
@@ -137,6 +142,22 @@ struct AppImportExportTests {
         #expect(exported.modules == tagged.modules)
         let roundTrip = try sut.profile(fromString: sut.string(fromProfile: edited))
         #expect(roundTrip == edited)
+        #expect(roundTrip.features == [.routing])
+    }
+
+    @Test(arguments: [false, true])
+    func givenCustomModule_whenImporting_thenOnlyKnownActiveModulesRequireFeatures(withRouting: Bool) throws {
+        let custom = CustomModule(innerType: .Undefined, json: .object(["legacy": .string("payload")]))
+        let ip = IPModule.Builder(mtu: 1280).build()
+        let tagged = TaggedProfile(
+            id: UUID(), name: "Custom module",
+            modules: [.Custom(custom), .IP(ip)],
+            activeModulesIds: withRouting ? [custom.id, ip.id] : [custom.id]
+        )
+        let profile = try AppImportExport.dummy.profile(fromString: ABI.encodeJSON(tagged))
+
+        #expect(profile.activeModules.contains { $0.moduleType == .Custom })
+        #expect(profile.features == (withRouting ? [.routing] : []))
     }
 
     @Test
