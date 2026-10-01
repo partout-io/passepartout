@@ -28,7 +28,6 @@ struct LocalizationTests {
         #expect(wrapped.payload == error.payload)
     }
 
-
     @Test
     func givenUnknownImportedModule_whenDescribing_thenReturnsParsingMessage() {
         let sut = ABI.AppError(PartoutError(.unknownImportedModule))

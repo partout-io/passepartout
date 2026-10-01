@@ -205,7 +205,6 @@ extension PartoutError.Code: StyledOptionalLocalizableEntity {
     }
 }
 
-
 extension PartoutErrorPair {
     var localizedConnectionDescription: String? {
         switch code {
