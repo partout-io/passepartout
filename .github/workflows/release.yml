@@ -89,7 +89,6 @@ jobs:
     runs-on: ubuntu-24.04
     needs:
       - release_info
-      - package_android
       - distribute_apple
     if: ${{ github.event_name == 'push' }}
     environment:
