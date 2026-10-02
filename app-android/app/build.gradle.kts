@@ -37,8 +37,8 @@ android {
         applicationId = "com.algoritmico.passepartout"
         minSdk = 24
         targetSdk = 36
-        versionCode = 4163
-        versionName = "3.12.2"
+        versionCode = 4164
+        versionName = "3.12.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

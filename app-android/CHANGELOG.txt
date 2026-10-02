@@ -1,1 +1,1 @@
-* Delete stale legacy/providers code (#1948)
+* WireGuard: Move wg-go to Partout
