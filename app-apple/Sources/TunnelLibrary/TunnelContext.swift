@@ -52,6 +52,23 @@ public final class TunnelContext: TunnelContextProtocol {
 
     public func start(isInteractive: Bool) async throws {
         guard let backend else { return }
+
+        // System starts (Shortcuts, on-demand) cannot present the credential sheet.
+        // Reject before tracking, hold, or the backend so a later app start is not
+        // blocked by the single-tunnel guard and the VPN is not left connected.
+        if originalProfile.isInteractive && !isInteractive {
+            pspLog(.abi, .error, "Profile requires interactive login")
+            environment.setEnvironmentValue(
+                ConnectionStatus.disconnected,
+                forKey: TunnelEnvironmentKeys.connectionStatus
+            )
+            environment.setEnvironmentValue(
+                ABI.AppErrorCode.interactiveLogin.toLastErrorCode,
+                forKey: TunnelEnvironmentKeys.lastErrorCode
+            )
+            throw ABI.AppError.interactiveLogin
+        }
+
         try trackContext()
 
         do {
@@ -224,6 +241,6 @@ private extension TunnelContext {
     }
 }
 
-private extension TunnelEnvironmentKeys {
+extension TunnelEnvironmentKeys {
     static let holdFlag = TunnelEnvironmentKey<Bool>("Tunnel.onHold")
 }

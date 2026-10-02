@@ -142,6 +142,8 @@ extension ABI.AppErrorCode: StyledOptionalLocalizableEntity {
             switch self {
             case .ineligibleProfile:
                 return V.ineligible
+            case .interactiveLogin:
+                return V.interactiveLogin
             case .providersRemoved:
                 return V.providersRemoved
             default:
