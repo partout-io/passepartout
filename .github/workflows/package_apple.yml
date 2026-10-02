@@ -38,6 +38,9 @@ jobs:
           submodules: true
       - uses: partout-io/setup-zig@v3
       - uses: actions/setup-go@v7
+        with:
+          go-version: 1.24
+          cache-dependency-path: partout/src/**/go.sum
       - name: Build Partout XCFramework
         run: |
           xcframework="$PWD/PartoutNative.xcframework"
