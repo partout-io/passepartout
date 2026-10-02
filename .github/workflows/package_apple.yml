@@ -37,6 +37,7 @@ jobs:
           access-token: ${{ github.token }}
           submodules: true
       - uses: partout-io/setup-zig@v3
+      - uses: actions/setup-go@v7
       - name: Build Partout XCFramework
         run: |
           xcframework="$PWD/PartoutNative.xcframework"

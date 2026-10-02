@@ -34,6 +34,7 @@ jobs:
           java-version: 17
           cache: gradle
       - uses: partout-io/setup-zig@v3
+      - uses: actions/setup-go@v7
       - uses: android-actions/setup-android@v4
         with:
           packages: platform-tools
