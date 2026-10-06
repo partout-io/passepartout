@@ -547,10 +547,12 @@ components:
       x-enum-varnames:
       - appNotWorking
       - daemonLooperV2
+      - daemonLooperV2WireGuard
       - unknown
       enum:
       - appNotWorking
       - daemonLooperV2
+      - daemonLooperV2WireGuard
       - unknown
     ConfigBundle.Config:
       type: object

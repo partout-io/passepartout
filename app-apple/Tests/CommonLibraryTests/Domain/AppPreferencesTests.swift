@@ -8,6 +8,35 @@ import Testing
 
 struct AppPreferencesTests {
     @Test
+    func givenDaemonConfigFlags_thenSelectsDaemonFeatures() {
+        let cases: [(Set<ABI.ConfigFlag>, Set<DaemonFeatureFlag>)] = [
+            ([], []),
+            ([.appNotWorking], []),
+            ([.daemonLooperV2], [.experimentalDaemon, .experimentalOpenVPN]),
+            ([.daemonLooperV2WireGuard], [.experimentalDaemon, .experimentalOpenVPN, .experimentalWireGuard]),
+            ([.daemonLooperV2, .daemonLooperV2WireGuard], [.experimentalDaemon, .experimentalOpenVPN, .experimentalWireGuard])
+        ]
+        for (flags, expected) in cases {
+            #expect(flags.daemonFeatureFlags == expected)
+        }
+    }
+
+    @Test
+    func givenDaemonConfigOverrides_thenSelectsEffectiveDaemonFeatures() {
+        var sut: ABI.AppPreferences = .default()
+        sut.configFlags = [.daemonLooperV2, .daemonLooperV2WireGuard]
+        sut.experimental.ignoredConfigFlags = [.daemonLooperV2WireGuard]
+        #expect(sut.enabledFlags().daemonFeatureFlags == [.experimentalDaemon, .experimentalOpenVPN])
+
+        sut.experimental.ignoredConfigFlags = [.daemonLooperV2]
+        #expect(sut.enabledFlags().daemonFeatureFlags == [.experimentalDaemon, .experimentalOpenVPN, .experimentalWireGuard])
+
+        sut.configFlags = []
+        sut.experimental.enabledConfigFlags = [.daemonLooperV2WireGuard]
+        #expect(sut.enabledFlags().daemonFeatureFlags == [.experimentalDaemon, .experimentalOpenVPN, .experimentalWireGuard])
+    }
+
+    @Test
     func givenAppPreferencesProtocol_whenSerialized_thenPreservesValues() {
         let expected = Self.preferences()
         let sut: any ABI.AppPreferencesProtocol = expected

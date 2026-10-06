@@ -17,6 +17,7 @@ import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.models.CryptoBackend
+import io.partout.models.DaemonFeatureFlag
 import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
 
@@ -85,7 +86,6 @@ class PassepartoutVpnService: VpnService() {
             AppLog.i(logTag, "Preferences: $preferences")
 
             // Initialize the library with the intent preferences
-//            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
 
             // XXX: Hardcode CloudFlare for now
@@ -105,7 +105,8 @@ class PassepartoutVpnService: VpnService() {
                 logsPrivateData,
                 minDataCountDelta,
                 cryptoBackend,
-                controllerOptions
+                controllerOptions,
+                featureFlags = DaemonFeatureFlag.entries.toSet()
             )
         }
 

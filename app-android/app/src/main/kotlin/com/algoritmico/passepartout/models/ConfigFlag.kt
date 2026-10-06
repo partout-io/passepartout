@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: appNotWorking,daemonLooperV2,unknown
+ * Values: appNotWorking,daemonLooperV2,daemonLooperV2WireGuard,unknown
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
@@ -41,6 +41,9 @@ enum class ConfigFlag(val value: kotlin.String) {
 
     @SerialName(value = "daemonLooperV2")
     daemonLooperV2("daemonLooperV2"),
+
+    @SerialName(value = "daemonLooperV2WireGuard")
+    daemonLooperV2WireGuard("daemonLooperV2WireGuard"),
 
     @SerialName(value = "unknown")
     unknown("unknown");
