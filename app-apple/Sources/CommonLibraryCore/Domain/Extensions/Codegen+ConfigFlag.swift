@@ -7,10 +7,13 @@ import Partout
 extension Set where Element == ABI.ConfigFlag {
     public var daemonFeatureFlags: Set<DaemonFeatureFlag> {
         var result: Set<DaemonFeatureFlag> = []
-        if contains(.daemonLooperV2) || contains(.daemonLooperV2WireGuard) {
-            result.formUnion([.experimentalDaemon, .experimentalOpenVPN])
+        if contains(.experimentalDaemon_202610) {
+            result.insert(.experimentalDaemon)
         }
-        if contains(.daemonLooperV2WireGuard) {
+        if contains(.experimentalDaemonOpenVPN_202610) {
+            result.insert(.experimentalOpenVPN)
+        }
+        if contains(.experimentalDaemonWireGuard_202610) {
             result.insert(.experimentalWireGuard)
         }
         return result

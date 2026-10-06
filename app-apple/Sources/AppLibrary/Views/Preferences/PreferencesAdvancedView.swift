@@ -38,8 +38,9 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
 
 private extension PreferencesAdvancedView {
     static let flags: [ABI.ConfigFlag] = [
-        .daemonLooperV2,
-        .daemonLooperV2WireGuard
+        .experimentalDaemon_202610,
+        .experimentalDaemonOpenVPN_202610,
+        .experimentalDaemonWireGuard_202610
     ]
 
     var canOverride: Bool {

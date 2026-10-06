@@ -544,15 +544,18 @@ components:
       - data
     ConfigFlag:
       type: string
+      description: New configuration keys use a fixed YYYYMM suffix for the month when the feature was introduced. Never reuse a key for an unrelated feature.
       x-enum-varnames:
       - appNotWorking
-      - daemonLooperV2
-      - daemonLooperV2WireGuard
+      - experimentalDaemon_202610
+      - experimentalDaemonOpenVPN_202610
+      - experimentalDaemonWireGuard_202610
       - unknown
       enum:
       - appNotWorking
-      - daemonLooperV2
-      - daemonLooperV2WireGuard
+      - experimentalDaemon_202610
+      - experimentalDaemonOpenVPN_202610
+      - experimentalDaemonWireGuard_202610
       - unknown
     ConfigBundle.Config:
       type: object
