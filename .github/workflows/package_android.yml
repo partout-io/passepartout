@@ -33,7 +33,7 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: gradle
-      - uses: partout-io/setup-zig@master
+      - uses: partout-io/setup-zig@main
       - uses: actions/setup-go@v7
         with:
           go-version: 1.24
