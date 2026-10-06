@@ -1,5 +1,11 @@
 {
-    "daemonLooperV2": {
+    "experimentalDaemonWireGuard_202610": {
+        "rate": 100
+    },
+    "experimentalDaemonOpenVPN_202610": {
+        "rate": 100
+    },
+    "experimentalDaemon_202610": {
         "rate": 100
     },
     "appNotWorking": {
