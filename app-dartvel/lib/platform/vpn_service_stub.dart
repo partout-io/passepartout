@@ -1,33 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0
 // Copyright 2026 SigmaDev
-import '../dartvel_client/dartvel_client.dart';
+// Targets without dart:io. main.dart replaces it with WebVpnService on web;
+// it stays Flutter-free so backend code can import vpn_service.dart.
 import '../domain/profile.dart';
 import 'vpn_service.dart';
 
-VpnService createVpnService() => const WebVpnService();
+VpnService createVpnService() => const UnavailableVpnService();
 
-/// The browser has no tunnel API. Parsing goes through the app's own
-/// web-server binary, which links Partout; connecting is unavailable.
-class const WebVpnService() implements VpnService {
+class const UnavailableVpnService() implements VpnService {
+  static const String _reason = 'The VPN engine is not available on this target.';
+  Never _unavailable() => throw UnsupportedError(_reason);
   @override
   bool get canConnect => false;
   @override
-  String? get connectUnavailableReason => 'A browser cannot open a VPN tunnel. Use the desktop or mobile app to connect.';
-
+  String? get connectUnavailableReason => _reason;
   @override
-  Future<TunnelProfile> importProfile(String text, String name) async =>
-      TunnelProfile.decode(await importProfileText(text: text, name: name));
+  Future<TunnelProfile> importProfile(String text, String name) async => _unavailable();
   @override
-  Future<TaggedModule> importModule(String text, {String? contextJson}) => throw UnsupportedError(connectUnavailableReason!);
+  Future<TaggedModule> importModule(String text, {String? contextJson}) async => _unavailable();
   @override
-  Future<String> exportModule(TaggedModule module) => throw UnsupportedError(connectUnavailableReason!);
+  Future<String> exportModule(TaggedModule module) async => _unavailable();
   @override
-  Future<String> generateWireGuardKey() => throw UnsupportedError(connectUnavailableReason!);
+  Future<String> generateWireGuardKey() async => _unavailable();
   @override
-  Future<String> wireGuardPublicKey(String privateKey) => throw UnsupportedError(connectUnavailableReason!);
+  Future<String> wireGuardPublicKey(String privateKey) async => _unavailable();
   @override
-  Future<void> connect(TunnelProfile profile, {required void Function(TunnelEvent) onStatus}) =>
-      throw UnsupportedError(connectUnavailableReason!);
+  Future<void> connect(TunnelProfile profile, {required void Function(TunnelEvent) onStatus}) async => _unavailable();
   @override
   Future<void> disconnect() async {}
 }

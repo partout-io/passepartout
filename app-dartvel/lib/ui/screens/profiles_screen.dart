@@ -59,7 +59,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: big ? null : const _SettingsButton(),
-        title: const Text('Passepartout'),
+        title: Semantics(headingLevel: 1, child: const Text('Passepartout')),
         actions: <Widget>[
           if (profiles.hasProfiles) _SearchField(controller: _search),
           const AddProfileMenu(),

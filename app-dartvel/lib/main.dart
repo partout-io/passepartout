@@ -3,10 +3,13 @@
 
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'dartvel_client/dartvel_client.dart';
 import 'l10n/strings.g.dart';
+import 'platform/vpn_service.dart';
+import 'platform/web_vpn_service.dart';
 import 'state/app_log.dart';
 import 'state/app_state.dart';
 import 'state/profile_draft.dart';
@@ -18,6 +21,7 @@ void main(List<String> arguments) async {
   // the terminal, in which case a launch with no display may leave for it.
   await negotiateDartvelLaunch(arguments);
   _loadStrings();
+  if (kIsWeb) VpnService.instance = const WebVpnService();
   AppLog.init();
   ProfileStore.init();
   TunnelStore.init();

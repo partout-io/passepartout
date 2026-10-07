@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
 // Copyright 2026 SigmaDev
 import '../domain/profile.dart';
-import '../state/app_state.dart' show TunnelStatus;
+import '../domain/tunnel_status.dart';
+export '../domain/tunnel_status.dart';
 import 'vpn_service_stub.dart' if (dart.library.io) 'vpn_service_native.dart' as implementation;
 
 /// A change reported by the tunnel: Partout's `partout_daemon_events`
 /// (`set_connection_status`, `set_data_count`, `set_last_error_code`).
 class const TunnelEvent({final TunnelStatus? status, final int? received, final int? sent, final String? errorCode});
+
+// Flutter-free on purpose: backend functions (server isolate) import this.
 
 /// App platform boundary, analogous to DV.Platform.*. Pages never import FFI.
 abstract class VpnService {

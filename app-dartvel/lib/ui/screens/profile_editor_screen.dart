@@ -104,7 +104,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             automaticallyImplyLeading: false,
             leadingWidth: 96,
             leading: TextButton(onPressed: _cancel, child: Text(tr(Strings.globalActionsCancel))),
-            title: Text(tr(Strings.globalNounsProfile)),
+            title: Semantics(headingLevel: 1, child: Text(tr(Strings.globalNounsProfile))),
             centerTitle: true,
             actions: <Widget>[
               if (_saving)

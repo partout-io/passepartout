@@ -119,7 +119,7 @@ class const PSSection({
                 if (header != null)
                   Expanded(
                     child: Semantics(
-                      header: true,
+                      headingLevel: 2,
                       child: Text(header!.toUpperCase(), style: secondary?.copyWith(letterSpacing: 0.3)),
                     ),
                   ),
@@ -545,7 +545,7 @@ class const PSScaffold({
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           leading: leading,
-          title: Semantics(header: true, child: Text(title, style: largeTitle ? Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: .bold) : null)),
+          title: Semantics(headingLevel: 1, child: Text(title, style: largeTitle ? Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: .bold) : null)),
           actions: <Widget>[...actions, const SizedBox(width: 8)],
         ),
         body: SafeArea(top: false, child: body),

@@ -14,8 +14,11 @@ import 'dart:convert';
 
 import '../dartvel_client/dartvel_client.dart';
 import '../domain/profile.dart';
+import '../domain/tunnel_status.dart';
 import '../platform/vpn_service.dart';
 import 'app_log.dart';
+
+export '../domain/tunnel_status.dart';
 
 // ---------------------------------------------------------------------------
 // Values
@@ -54,8 +57,6 @@ class const ProfilesState({
   }
 }
 
-/// ConnectionStatus in openapi.yaml.
-enum TunnelStatus { disconnected, connecting, connected, disconnecting }
 
 class const TunnelState({
   final String? activeProfileId,
