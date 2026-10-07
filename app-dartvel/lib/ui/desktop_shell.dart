@@ -5,8 +5,11 @@
 // the profiles from the tray, show the window, quit; keep running in the
 // tray after the window closes when "Keep in menu bar" is on.
 //
-// OWNER: tray workstream. This stub keeps the app building until it lands.
+// The menu is in desktop/app_menu.dart and the tray in
+// desktop/tray_controller.dart. A no-op on the web and on mobile.
+
+import 'desktop/tray_controller.dart';
 
 abstract final class DesktopShell {
-  static Future<void> start() async {}
+  static Future<void> start() => TrayController.instance.start();
 }
