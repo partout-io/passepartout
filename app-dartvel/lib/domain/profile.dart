@@ -96,8 +96,8 @@ class const TunnelProfile({required final Map<String, dynamic> json}) {
         'activeModulesIds': modules.map((m) => m.id).where(active.contains).toList(),
       });
 
-  /// Adds or replaces [module] by id. A new module becomes active; activating
-  /// a connection module deactivates any other connection, as upstream does.
+  /// Adds or replaces [module] by id. A new module becomes active, as in
+  /// upstream `ProfileEditor.saveModule(_:activating:)`.
   TunnelProfile savingModule(TaggedModule module, {bool? activate}) {
     final list = modules;
     final index = list.indexWhere((m) => m.id == module.id);
@@ -107,29 +107,34 @@ class const TunnelProfile({required final Map<String, dynamic> json}) {
     } else {
       list[index] = module;
     }
-    var active = activeModuleIds;
-    if (activate ?? isNew) active = _activating(active, list, module);
+    final active = activeModuleIds;
+    if (activate ?? isNew) active.add(module.id);
     return _withModules(list, active);
   }
 
+  /// Upstream `toggleModule(withId:)`: activating does NOT deactivate other
+  /// connections; [validate] reports incompatible ones on save instead.
   TunnelProfile togglingModule(String moduleId) {
-    final list = modules;
-    final target = list.firstWhere((m) => m.id == moduleId);
     final active = activeModuleIds;
-    if (active.contains(moduleId)) {
-      return _withModules(list, active..remove(moduleId));
-    }
-    return _withModules(list, _activating(active, list, target));
+    if (!active.remove(moduleId)) active.add(moduleId);
+    return _withModules(modules, active);
   }
 
-  Set<String> _activating(Set<String> active, List<TaggedModule> list, TaggedModule module) {
-    final next = <String>{...active, module.id};
-    if (ModuleType.isConnection(module.type)) {
-      for (final other in list) {
-        if (other.id != module.id && ModuleType.isConnection(other.type)) next.remove(other.id);
+  /// Upstream `ProfileEditor.build` checks, in its order. Null when valid.
+  ProfileProblem? validate() {
+    if (name.trim().isEmpty) return const ProfileProblem(.emptyName);
+    final active = modules.where((m) => isActive(m.id)).toList();
+    if (active.isEmpty) return const ProfileProblem(.noActiveModules);
+    final connections = active.where((m) => ModuleType.isConnection(m.type)).toList();
+    if (connections.length > 1) {
+      return ProfileProblem(.incompatibleModules, moduleIds: connections.map((m) => m.id).toSet());
+    }
+    for (final module in connections) {
+      if (module.value['configuration'] == null) {
+        return ProfileProblem(.incompleteModule, moduleIds: <String>{module.id}, moduleType: module.typeLabel);
       }
     }
-    return next;
+    return null;
   }
 
   TunnelProfile removingModule(String moduleId) {
@@ -157,6 +162,11 @@ class const TunnelProfile({required final Map<String, dynamic> json}) {
     });
   }
 }
+
+enum ProfileProblemKind { emptyName, noActiveModules, incompatibleModules, incompleteModule }
+
+/// Why a profile cannot be saved, and which modules to flag (upstream `ABI.AppError`).
+class const ProfileProblem(final ProfileProblemKind kind, {final Set<String> moduleIds = const <String>{}, final String? moduleType});
 
 /// `TaggedModule`: `{"type": "DNS", "value": {...}}`.
 class const TaggedModule({required final Map<String, dynamic> json}) {

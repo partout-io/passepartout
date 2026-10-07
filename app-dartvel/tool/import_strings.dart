@@ -93,7 +93,7 @@ void main() {
     ..writeln('/// Upstream locale code to its catalogue. English is the fallback.')
     ..writeln('final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationCatalog>{');
   for (final entry in locales.entries) {
-    out.writeln("  '${entry.key}': DVTranslationCatalog(locale: LocaleTag('${entry.key}'), messages: <DVTranslationKey, String>{");
+    out.writeln("  '${entry.key}': const DVTranslationCatalog(locale: LocaleTag('${entry.key}'), messages: <DVTranslationKey, String>{");
     for (final message in entry.value.entries) {
       if (!english.containsKey(message.key)) continue;
       out.writeln('    Strings.${_identifier(message.key)}: ${_literal(message.value)},');

@@ -916,7 +916,7 @@ abstract final class Strings {
 
 /// Upstream locale code to its catalogue. English is the fallback.
 final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationCatalog>{
-  'de': DVTranslationCatalog(locale: LocaleTag('de'), messages: <DVTranslationKey, String>{
+  'de': const DVTranslationCatalog(locale: LocaleTag('de'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Gib das Passwort für \'{0}\' ein.',
     Strings.alertsImportPassphraseOk: 'Entschlüsseln',
     Strings.alertsProvidersMissingServerMessage: 'Kein Anbieter-Server ausgewählt. Bitte wähle einen Zielserver auf deinem iOS/macOS-Gerät.',
@@ -1370,7 +1370,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Upload abgeschlossen!',
     Strings.webUploaderTitle: 'Auf Apple TV hochladen',
   }),
-  'el': DVTranslationCatalog(locale: LocaleTag('el'), messages: <DVTranslationKey, String>{
+  'el': const DVTranslationCatalog(locale: LocaleTag('el'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Εισάγετε το μυστικό κλειδί για \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Αποκρυπτογράφηση',
     Strings.alertsProvidersMissingServerMessage: 'Δεν έχει επιλεγεί διακομιστής παρόχου. Επιλέξτε έναν διακομιστή προορισμού στη συσκευή σας iOS/macOS.',
@@ -1824,7 +1824,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Η αποστολ ολοκληρώθηκε!',
     Strings.webUploaderTitle: 'Αποστολή στο Apple TV',
   }),
-  'en': DVTranslationCatalog(locale: LocaleTag('en'), messages: <DVTranslationKey, String>{
+  'en': const DVTranslationCatalog(locale: LocaleTag('en'), messages: <DVTranslationKey, String>{
     Strings.viewsSettingsTitle: 'Settings',
     Strings.viewsSettingsLinksUpdate: 'Update to {0}',
     Strings.viewsSettingsLinksTitle: 'Links',
@@ -2279,7 +2279,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.androidProfilesLayoutGridContentDescription: 'Grid profiles',
     Strings.androidErrorsProfileImporterEmpty: 'Unable to read profile content.',
   }),
-  'es': DVTranslationCatalog(locale: LocaleTag('es'), messages: <DVTranslationKey, String>{
+  'es': const DVTranslationCatalog(locale: LocaleTag('es'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Introduce la passphrase para \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Desencriptar',
     Strings.alertsProvidersMissingServerMessage: 'No se ha seleccionado servidor de proveedor. Por favor, selecciona un servidor de destino en tu dispositivo iOS/macOS.',
@@ -2733,7 +2733,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: '¡Subida completada!',
     Strings.webUploaderTitle: 'Subir a Apple TV',
   }),
-  'fr': DVTranslationCatalog(locale: LocaleTag('fr'), messages: <DVTranslationKey, String>{
+  'fr': const DVTranslationCatalog(locale: LocaleTag('fr'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Entrez la passphrase pour \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Décrypter',
     Strings.alertsProvidersMissingServerMessage: 'Aucun serveur fournisseur sélectionné. Veuillez sélectionner un serveur de destination sur votre appareil iOS/macOS.',
@@ -3187,7 +3187,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Téléversement terminé !',
     Strings.webUploaderTitle: 'Téléverser vers Apple TV',
   }),
-  'it': DVTranslationCatalog(locale: LocaleTag('it'), messages: <DVTranslationKey, String>{
+  'it': const DVTranslationCatalog(locale: LocaleTag('it'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Inserisci la passphrase per \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Decrittografa',
     Strings.alertsProvidersMissingServerMessage: 'Nessun server provider selezionato. Seleziona un server di destinazione sul tuo dispositivo iOS/macOS.',
@@ -3641,7 +3641,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Caricamento completato!',
     Strings.webUploaderTitle: 'Carica su Apple TV',
   }),
-  'nl': DVTranslationCatalog(locale: LocaleTag('nl'), messages: <DVTranslationKey, String>{
+  'nl': const DVTranslationCatalog(locale: LocaleTag('nl'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Voer het wachtwoord in voor \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Ontsleutelen',
     Strings.alertsProvidersMissingServerMessage: 'Geen provider-server geselecteerd. Selecteer een doellocatieserver op je iOS-/macOS-apparaat.',
@@ -4095,7 +4095,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Upload voltooid!',
     Strings.webUploaderTitle: 'Uploaden naar Apple TV',
   }),
-  'pl': DVTranslationCatalog(locale: LocaleTag('pl'), messages: <DVTranslationKey, String>{
+  'pl': const DVTranslationCatalog(locale: LocaleTag('pl'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Wprowadź hasło dla \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Odszyfruj',
     Strings.alertsProvidersMissingServerMessage: 'Nie wybrano serwera dostawcy. Wybierz serwer docelowy na swoim urządzeniu iOS/macOS.',
@@ -4549,7 +4549,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Przesyłanie zakończone!',
     Strings.webUploaderTitle: 'Wyślij do Apple TV',
   }),
-  'pt': DVTranslationCatalog(locale: LocaleTag('pt'), messages: <DVTranslationKey, String>{
+  'pt': const DVTranslationCatalog(locale: LocaleTag('pt'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Insira a senha para \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Descriptografar',
     Strings.alertsProvidersMissingServerMessage: 'Nenhum servidor de provedor selecionado. Selecione um servidor de destino no seu dispositivo iOS/macOS.',
@@ -5003,7 +5003,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Envio concluído!',
     Strings.webUploaderTitle: 'Enviar para Apple TV',
   }),
-  'ru': DVTranslationCatalog(locale: LocaleTag('ru'), messages: <DVTranslationKey, String>{
+  'ru': const DVTranslationCatalog(locale: LocaleTag('ru'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Введите пароль для \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Расшифровать',
     Strings.alertsProvidersMissingServerMessage: 'Не выбран сервер поставщика. Выберите целевой сервер на вашем устройстве iOS/macOS.',
@@ -5457,7 +5457,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Загрузка завершена!',
     Strings.webUploaderTitle: 'Загрузить на Apple TV',
   }),
-  'sv': DVTranslationCatalog(locale: LocaleTag('sv'), messages: <DVTranslationKey, String>{
+  'sv': const DVTranslationCatalog(locale: LocaleTag('sv'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Ange lösenfras för \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Dekryptera',
     Strings.alertsProvidersMissingServerMessage: 'Ingen leverantörsserver vald. Välj en målserver på din iOS/macOS-enhet.',
@@ -5911,7 +5911,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Uppladdningen klar!',
     Strings.webUploaderTitle: 'Ladda upp till Apple TV',
   }),
-  'uk': DVTranslationCatalog(locale: LocaleTag('uk'), messages: <DVTranslationKey, String>{
+  'uk': const DVTranslationCatalog(locale: LocaleTag('uk'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: 'Введіть пароль для \'{0}\'.',
     Strings.alertsImportPassphraseOk: 'Розшифрувати',
     Strings.alertsProvidersMissingServerMessage: 'Не вибрано сервер постачальника. Будь ласка, виберіть сервер призначення на вашому пристрої iOS/macOS.',
@@ -6365,7 +6365,7 @@ final Map<String, DVTranslationCatalog> stringCatalogs = <String, DVTranslationC
     Strings.webUploaderSuccess: 'Завантаження завершено!',
     Strings.webUploaderTitle: 'Завантажити на Apple TV',
   }),
-  'zh-Hans': DVTranslationCatalog(locale: LocaleTag('zh-Hans'), messages: <DVTranslationKey, String>{
+  'zh-Hans': const DVTranslationCatalog(locale: LocaleTag('zh-Hans'), messages: <DVTranslationKey, String>{
     Strings.alertsImportPassphraseMessage: '输入 "{0}" 的密码短语。',
     Strings.alertsImportPassphraseOk: '解密',
     Strings.alertsProvidersMissingServerMessage: '未选择提供商服务器。请在您的 iOS/macOS 设备上选择目标服务器。',
