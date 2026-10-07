@@ -254,7 +254,7 @@ class _PSTextRowState extends State<PSTextRow> {
       child: Row(children: <Widget>[
         ConstrainedBox(
           constraints: const BoxConstraints(minWidth: 96),
-          child: Text(widget.label),
+          child: Text(widget.label, style: theme.textTheme.bodyLarge),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -311,106 +311,6 @@ class const PSPickerRow<T>({
       ),
     );
   }
-}
-
-/// An editable list of strings (`ThemeTextList`): one field per entry, swipe or
-/// minus to delete, "Add" row to append. Used for servers, domains, routes.
-class PSStringListSection extends StatelessWidget {
-  const PSStringListSection({
-    super.key,
-    required this.header,
-    required this.values,
-    required this.onChanged,
-    this.footer,
-    this.placeholder,
-    this.addTitle,
-    this.monospaced = false,
-    this.keyboardType,
-  });
-
-  final String header;
-  final String? footer;
-  final List<String> values;
-  final ValueChanged<List<String>> onChanged;
-  final String? placeholder;
-  final String? addTitle;
-  final bool monospaced;
-  final TextInputType? keyboardType;
-
-  @override
-  Widget build(BuildContext context) => PSSection(
-        header: header,
-        footer: footer,
-        children: <Widget>[
-          for (var i = 0; i < values.length; i++)
-            _StringListEntry(
-              key: ValueKey<String>('$header/$i'),
-              value: values[i],
-              placeholder: placeholder,
-              monospaced: monospaced,
-              keyboardType: keyboardType,
-              onChanged: (text) => onChanged(<String>[...values]..[i] = text),
-              onDelete: () => onChanged(<String>[...values]..removeAt(i)),
-            ),
-          PSRow(
-            title: addTitle ?? tr(Strings.globalActionsAdd),
-            leading: const Icon(Icons.add_circle, color: PSColors.active),
-            onTap: () => onChanged(<String>[...values, '']),
-          ),
-        ],
-      );
-}
-
-class _StringListEntry extends StatefulWidget {
-  const _StringListEntry({
-    super.key,
-    required this.value,
-    required this.onChanged,
-    required this.onDelete,
-    this.placeholder,
-    this.monospaced = false,
-    this.keyboardType,
-  });
-
-  final String value;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onDelete;
-  final String? placeholder;
-  final bool monospaced;
-  final TextInputType? keyboardType;
-
-  @override
-  State<_StringListEntry> createState() => _StringListEntryState();
-}
-
-class _StringListEntryState extends State<_StringListEntry> {
-  late final TextEditingController _controller = TextEditingController(text: widget.value);
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Row(children: <Widget>[
-        IconButton(
-          tooltip: tr(Strings.globalActionsDelete),
-          icon: const Icon(Icons.remove_circle, color: PSColors.error),
-          onPressed: widget.onDelete,
-        ),
-        Expanded(
-          child: TextField(
-            controller: _controller,
-            autofocus: widget.value.isEmpty,
-            keyboardType: widget.keyboardType,
-            style: TextStyle(fontFamily: widget.monospaced ? 'monospace' : null),
-            decoration: InputDecoration(border: InputBorder.none, hintText: widget.placeholder),
-            onChanged: widget.onChanged,
-          ),
-        ),
-        const SizedBox(width: 16),
-      ]);
 }
 
 /// The connect switch (`TunnelToggle`).

@@ -18,6 +18,8 @@ import '../../l10n/strings.g.dart';
 import '../../state/app_state.dart';
 import '../../state/profile_draft.dart';
 import '../kit.dart';
+import '../modules/common/module_validation.dart';
+import '../../platform/vpn_service.dart';
 
 bool get _isApple => !kIsWeb && (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS);
 
@@ -35,6 +37,15 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   bool _saving = false;
 
   Future<void> _save(TunnelProfile profile) async {
+    // Upstream builds every module first and shows the first invalid field.
+    for (final module in profile.modules) {
+      final error = moduleValidationError(module);
+      if (error != null) {
+        setState(() => _errorModuleIds = <String>{module.id});
+        await showErrorAlert(context, title: module.typeLabel, message: error);
+        return;
+      }
+    }
     final problem = profile.validate();
     if (problem != null) {
       setState(() => _errorModuleIds = problem.moduleIds);
@@ -289,11 +300,21 @@ class const _AddModuleMenu({required final List<String> types, required final St
     final connection = types.where(ModuleType.isConnection).toList()..sort();
     final other = types.where((t) => !ModuleType.isConnection(t)).toList()..sort();
     Widget entry(String type) => MenuItemButton(
-          onPressed: () {
-            final module = TaggedModule.empty(type);
+          onPressed: () => runGuarded(context, () async {
+            var module = TaggedModule.empty(type);
+            // Upstream starts a WireGuard module with a fresh private key and no peers.
+            if (type == ModuleType.wireGuard) {
+              module = module.withField('configuration', <String, dynamic>{
+                'interface': <String, dynamic>{
+                  'privateKey': await VpnService.instance.generateWireGuardKey(),
+                  'addresses': <dynamic>[],
+                },
+                'peers': <dynamic>[],
+              });
+            }
             DraftStore.update((p) => p.savingModule(module, activate: true));
-            DV.Navigation.push(DVRoutes.profilesmodules(id: profileId, moduleId: module.id));
-          },
+            await DV.Navigation.push(DVRoutes.profilesmodules(id: profileId, moduleId: module.id));
+          }),
           child: Text(TaggedModule.of(type, const <String, dynamic>{'id': ''}).typeLabel),
         );
     Widget header(String text) => Padding(

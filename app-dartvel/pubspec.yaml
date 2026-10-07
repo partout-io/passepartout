@@ -36,6 +36,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   ffigen: ^20.1.1
+  yaml: ^3.1.2
   lints: ^4.0.0
   dartvel_cli: 
     path: /home/sigmadev/dartvel_dev/packages/dartvel_cli
@@ -53,6 +54,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/credits/
 
 dartvel:
   org: io.partout
