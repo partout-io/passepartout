@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-3.0
+# Copyright 2026 SigmaDev
+name: PartoutBindings
+description: Generated from the pinned Partout C ABI. Do not edit.
+output: lib/platform/generated/partout_bindings.dart
+headers:
+  entry-points:
+    - ../partout/src/partout.h
+llvm-path:
+  - /usr/lib/x86_64-linux-gnu
+preamble: |
+  // SPDX-License-Identifier: GPL-3.0
+  // Copyright 2026 SigmaDev
+  // ABI copyright: 2026 Davide De Rosa

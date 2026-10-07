@@ -19,6 +19,8 @@ platforms:
 dependencies:
   flutter:
     sdk: flutter
+  uuid: ^4.5.1
+  ffi: ^2.1.4
   go_router: ^14.2.0
   dio: ^5.5.0
   dartvel_core: 
@@ -33,6 +35,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  ffigen: ^20.1.1
   lints: ^4.0.0
   dartvel_cli: 
     path: /home/sigmadev/dartvel_dev/packages/dartvel_cli
@@ -53,10 +56,10 @@ flutter:
 
 dartvel:
   org: io.partout
-  backendHost: 0.0.0.0
-  backendPort: 3000
-  devBackendHost: http://localhost:3000
-  prodBackendHost: https://api.passepartout.com
+  backendHost: 127.0.0.1
+  backendPort: 3187
+  devBackendHost: http://localhost:3187
+  prodBackendHost: http://localhost:3187
   pagesDir: lib/pages
   backendDir: lib/backend
   apiBasePath: /api

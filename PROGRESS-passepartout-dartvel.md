@@ -23,3 +23,16 @@ Done: committed generated six-platform skeleton and upstream logo. PARITY.md inv
 Next: engine FFI generation, JSON models and fixture import tests.
 Tests: generated rules reviewed; no native folders staged.
 Blockers: engine build still running.
+
+## Step 4 — engine implementation
+Done: full Linux OpenSSL/WireGuard build passed. ffigen generated C ABI bindings. App platform service owns import/module export/keygen and explicit privileged-helper connect stub. Lossless schema-shaped profile/tagged modules plus typed DNS/proxy wire values added; fixtures taken from upstream ABI tests. Sensitive Dartvel VpnProfile storage model added.
+Next: run native import tests, then profile list/import/detail and DNS/proxy UI.
+Tests: engine build and ffigen generation passed (enum ABI warning documented; daemon connection disabled).
+Blockers: connection requires CAP_NET_ADMIN helper; Android/Apple/Windows engine integration deferred as brief specifies.
+
+## Step 4 validation correction / Step 5 UI
+Native tests exposed the ABI's {payload: ...} envelope (the lower-level Zig tests return bare JSON). Corrected wrapper to unwrap payload and reject error envelopes without exposing configuration in errors. UI now has own routes for profile list, import, profile details, DNS and HTTP proxy; loading/error states, Enter submission, file picker through DV.Platform.fileStorage, typed navigation and model.save persistence.
+Next: regenerate client, analyze and validate browser/build targets. Screens remain partial pending those checks and exact Apple layout/wording parity.
+Tests: first native run 1 pass/4 failed due envelope; corrected rerun pending.
+Blockers: none new.
+Native import suite passed 5/5 after envelope fix. Generator refused sensitive model without a privacy subject; added DVSubject.self and indefinite retention. Server bound to loopback and app port 3187. No external access or deployment.
