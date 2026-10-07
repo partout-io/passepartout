@@ -55,6 +55,7 @@ flutter:
   assets:
     - assets/
     - assets/credits/
+    - assets/tray/
 
 dartvel:
   org: io.partout
