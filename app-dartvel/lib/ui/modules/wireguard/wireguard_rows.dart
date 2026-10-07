@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 // Copyright 2026 SigmaDev
-// The rows the WireGuard editor uses that the kit has no equivalent for yet:
-// upstream `ThemeLongContentLink` (title + preview, opens a monospaced text
-// editor page) and `ThemeCopiableText` for the derived public key.
+// WireGuard-only rows: "N entries" previews and `ThemeCopiableText` for the
+// public key derived from the private key. Long-content rows and their pages
+// are the kit's `PSLongContentRow` / `PSLongContentPage`.
 
 import 'package:flutter/material.dart';
 
@@ -22,93 +22,6 @@ String? asNumberOfEntries(String text) {
   final trimmed = text.trim();
   if (trimmed.isEmpty) return null;
   return localizedEntries(1 + ','.allMatches(trimmed).length);
-}
-
-/// `ThemeLongContentLink`: a row showing [title] and a one-line preview that
-/// opens an editor page for [text]. Each keystroke reports [onChanged].
-class const WireGuardLongContentRow({
-  super.key,
-  required final String title,
-  required final String text,
-  required final ValueChanged<String> onChanged,
-  final String? Function(String text)? preview,
-  final TextInputType? keyboardType,
-}) extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final shown = preview == null ? text : preview!(text);
-    return PSRow(
-      title: title,
-      value: (shown == null || shown.isEmpty) ? null : _middleTruncated(shown),
-      monospaced: preview == null,
-      navigates: true,
-      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (_) => WireGuardLongContentPage(
-          title: title,
-          text: text,
-          onChanged: onChanged,
-          keyboardType: keyboardType,
-        ),
-      )),
-    );
-  }
-}
-
-/// Upstream truncates the preview in the middle (`.truncationMode(.middle)`).
-String _middleTruncated(String text, {int maxLength = 24}) {
-  if (text.length <= maxLength) return text;
-  final half = (maxLength - 1) ~/ 2;
-  return '${text.substring(0, half)}…${text.substring(text.length - half)}';
-}
-
-/// `LongContentEditor`: a full-page, monospaced text editor.
-class WireGuardLongContentPage extends StatefulWidget {
-  const WireGuardLongContentPage({
-    super.key,
-    required this.title,
-    required this.text,
-    required this.onChanged,
-    this.keyboardType,
-  });
-
-  final String title;
-  final String text;
-  final ValueChanged<String> onChanged;
-  final TextInputType? keyboardType;
-
-  @override
-  State<WireGuardLongContentPage> createState() => _WireGuardLongContentPageState();
-}
-
-class _WireGuardLongContentPageState extends State<WireGuardLongContentPage> {
-  late final TextEditingController _controller = TextEditingController(text: widget.text);
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => PSScaffold(
-        title: widget.title,
-        body: Padding(
-          padding: const .all(16),
-          child: TextField(
-            controller: _controller,
-            autofocus: true,
-            expands: true,
-            maxLines: null,
-            keyboardType: widget.keyboardType ?? TextInputType.multiline,
-            autocorrect: false,
-            enableSuggestions: false,
-            textAlignVertical: .top,
-            style: const TextStyle(fontFamily: 'monospace'),
-            decoration: InputDecoration(border: InputBorder.none, semanticCounterText: widget.title),
-            onChanged: widget.onChanged,
-          ),
-        ),
-      );
 }
 
 /// `ThemeCopiableText(publicKey, value: keyGenerator.publicKey(for: privateKey))`:
