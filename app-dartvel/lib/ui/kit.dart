@@ -444,12 +444,133 @@ class const PSScaffold({
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          leading: leading,
+          leading: leading ?? PSBackTarget.fallbackButton(context),
           title: Semantics(headingLevel: 1, child: Text(title, style: largeTitle ? Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: .bold) : null)),
           actions: <Widget>[...actions, const SizedBox(width: 8)],
         ),
         body: SafeArea(top: false, child: body),
       );
+}
+
+/// Where "back" goes on a page opened by URL with nothing under it (a deep
+/// link or a reload): its parent page, e.g. a module's sub-page goes back to
+/// the module. With a page to pop, back pops as usual.
+class PSBackTarget extends InheritedWidget {
+  const PSBackTarget({super.key, required this.target, required super.child});
+
+  final DVRouteTarget target;
+
+  /// A back button to the enclosing [PSBackTarget], or null when the page can
+  /// pop or there is none.
+  static Widget? fallbackButton(BuildContext context) {
+    final backTarget = context.dependOnInheritedWidgetOfExactType<PSBackTarget>();
+    if (backTarget == null || (Navigator.maybeOf(context)?.canPop() ?? false)) return null;
+    return BackButton(onPressed: () => DV.Navigation.navigate(backTarget.target));
+  }
+
+  @override
+  bool updateShouldNotify(PSBackTarget oldWidget) => oldWidget.target.path != target.path;
+}
+
+/// `ThemeLongContentLink`: a row showing [title] and a one-line preview of
+/// [text] (or of [preview]'s result), opening the content's own page on tap.
+class const PSLongContentRow({
+  super.key,
+  required final String title,
+  required final String text,
+  required final VoidCallback onTap,
+  final String? Function(String text)? preview,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final shown = preview == null ? text : preview!(text);
+    return PSRow(
+      title: title,
+      value: (shown == null || shown.isEmpty) ? null : _middleTruncated(shown),
+      monospaced: preview == null,
+      navigates: true,
+      onTap: onTap,
+    );
+  }
+}
+
+/// Upstream truncates previews in the middle (`.truncationMode(.middle)`).
+String _middleTruncated(String text, {int maxLength = 24}) {
+  if (text.length <= maxLength) return text;
+  final half = (maxLength - 1) ~/ 2;
+  return '${text.substring(0, half)}…${text.substring(text.length - half)}';
+}
+
+/// `LongContentEditor` / long read-only content: a full page of monospaced
+/// text. Editable when [onChanged] is set (each keystroke reports it);
+/// otherwise selectable, with a copy action.
+class PSLongContentPage extends StatefulWidget {
+  const PSLongContentPage({super.key, required this.title, required this.text, this.onChanged, this.keyboardType});
+
+  final String title;
+  final String text;
+  final ValueChanged<String>? onChanged;
+  final TextInputType? keyboardType;
+
+  @override
+  State<PSLongContentPage> createState() => _PSLongContentPageState();
+}
+
+class _PSLongContentPageState extends State<PSLongContentPage> {
+  late final TextEditingController _controller = TextEditingController(text: widget.text);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final onChanged = widget.onChanged;
+    if (onChanged == null) {
+      return PSScaffold(
+        title: widget.title,
+        actions: <Widget>[
+          IconButton(
+            tooltip: 'Copy',
+            icon: const Icon(Icons.copy),
+            onPressed: () => copyToClipboard(context, widget.text),
+          ),
+        ],
+        body: PSForm(children: <Widget>[
+          PSSection(children: <Widget>[
+            Padding(
+              padding: const .all(16),
+              child: SelectableText(
+                widget.text,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace', height: 1.4),
+              ),
+            ),
+          ]),
+        ]),
+      );
+    }
+    return PSScaffold(
+      title: widget.title,
+      body: Padding(
+        padding: const .all(16),
+        child: TextField(
+          controller: _controller,
+          autofocus: true,
+          expands: true,
+          maxLines: null,
+          keyboardType: widget.keyboardType ?? TextInputType.multiline,
+          autocorrect: false,
+          enableSuggestions: false,
+          textAlignVertical: .top,
+          style: const TextStyle(fontFamily: 'monospace'),
+          decoration: InputDecoration(border: InputBorder.none, semanticCounterText: widget.title),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
 }
 
 /// Placeholder body for a screen whose port is in progress. Says so plainly.

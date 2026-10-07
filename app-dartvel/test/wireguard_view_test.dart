@@ -20,7 +20,6 @@ import 'package:passepartout/ui/kit.dart';
 import 'package:passepartout/ui/modules/module_view.dart';
 import 'package:passepartout/ui/modules/wireguard/wireguard_configuration.dart';
 import 'package:passepartout/ui/modules/wireguard/wireguard_import.dart';
-import 'package:passepartout/ui/modules/wireguard/wireguard_rows.dart';
 import 'package:passepartout/ui/modules/wireguard_view.dart';
 
 const String conf = '''
@@ -144,13 +143,22 @@ void main() {
     await tester.enterText(keepAlive, '60');
     await tester.pump();
 
-    // Endpoint: a long-content page pushed over the form.
-    await tester.tap(find.widgetWithText(WireGuardLongContentRow, tr(Strings.globalNounsEndpoint)));
-    await tester.pumpAndSettle();
-    expect(find.byType(WireGuardLongContentPage), findsOneWidget);
+    // Endpoint: its row shows the value; its own page (a route, tested from
+    // its URL in module_subpages_test.dart) edits it.
+    expect(find.widgetWithText(PSLongContentRow, tr(Strings.globalNounsEndpoint)), findsOneWidget);
+    var edited = _latest();
+    await tester.pumpWidget(MaterialApp(
+      home: Builder(
+        builder: (context) => wireGuardSubpage(
+          context,
+          ModuleViewArgs(profileId: 'profile', module: edited, onChanged: (next) => edited = next),
+          'peer-1-endpoint',
+        )!,
+      ),
+    ));
+    expect(find.byType(PSLongContentPage), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'vpn.example.org:443');
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+    await pumpHost(tester, edited);
 
     var module = _latest();
     var peer = WireGuardConfiguration(module: module).peers.single;

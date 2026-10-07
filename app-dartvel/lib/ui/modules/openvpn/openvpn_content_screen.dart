@@ -5,48 +5,10 @@ import 'package:flutter/material.dart';
 import '../../kit.dart';
 
 /// Full-screen viewer for long cryptographic or configuration content
-/// (CA certificate, client certificate, client key, TLS wrap key, data ciphers, XOR).
-/// Pushed with `Navigator.push` of a `PSScaffold`.
-class OpenVPNContentScreen extends StatelessWidget {
-  const OpenVPNContentScreen({
-    super.key,
-    required this.title,
-    required this.content,
-  });
-
-  final String title;
-  final String content;
-
+/// (CA certificate, client certificate, client key, TLS wrap key, data ciphers, XOR):
+/// the kit's read-only [PSLongContentPage]. The module view opens it by URL,
+/// `/profiles/<id>/modules/<moduleId>/<section>` (see `openVPNSubpage`).
+class const OpenVPNContentScreen({super.key, required final String title, required final String content}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return PSScaffold(
-      title: title,
-      actions: <Widget>[
-        IconButton(
-          tooltip: 'Copy',
-          icon: const Icon(Icons.copy),
-          onPressed: () => copyToClipboard(context, content),
-        ),
-      ],
-      body: PSForm(
-        children: <Widget>[
-          PSSection(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: SelectableText(
-                  content,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontFamily: 'monospace',
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => PSLongContentPage(title: title, text: content);
 }

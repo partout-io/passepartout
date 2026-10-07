@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../l10n/strings.g.dart';
 import '../kit.dart';
 import 'module_view.dart';
-import 'openvpn/openvpn_content_screen.dart';
 import 'openvpn/openvpn_credentials_screen.dart';
 import 'openvpn/openvpn_formatters.dart';
 import 'openvpn/openvpn_import_dialog.dart';
@@ -66,15 +65,7 @@ List<Widget> openVPNSections(BuildContext context, ModuleViewArgs args) {
             title: tr(Strings.modulesOpenvpnRemotes),
             value: formatEntriesCount(remotes.length),
             navigates: true,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => OpenVPNRemotesScreen(
-                  module: args.module,
-                  onChanged: args.onChanged,
-                ),
-              ),
-            ),
+            onTap: () => pushModuleSection(args, 'remotes'),
           ),
         ],
       ),
@@ -90,15 +81,7 @@ List<Widget> openVPNSections(BuildContext context, ModuleViewArgs args) {
           PSRow(
             title: tr(Strings.modulesOpenvpnCredentials),
             navigates: true,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => OpenVPNCredentialsScreen(
-                  module: args.module,
-                  onChanged: args.onChanged,
-                ),
-              ),
-            ),
+            onTap: () => pushModuleSection(args, 'credentials'),
           ),
         ],
       ),
@@ -262,15 +245,7 @@ List<Widget> openVPNSections(BuildContext context, ModuleViewArgs args) {
         title: tr(Strings.modulesOpenvpnDataCiphers),
         value: dataCiphers.join(':'),
         navigates: true,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (_) => OpenVPNContentScreen(
-              title: tr(Strings.modulesOpenvpnDataCiphers),
-              content: dataCiphers.join('\n'),
-            ),
-          ),
-        ),
+        onTap: () => pushModuleSection(args, 'data-ciphers'),
       ),
     if (cipher != null && cipher.isNotEmpty)
       PSRow(
@@ -287,19 +262,7 @@ List<Widget> openVPNSections(BuildContext context, ModuleViewArgs args) {
         title: 'XOR',
         value: xorMethod['type']?.toString(),
         navigates: true,
-        onTap: () {
-          final type = xorMethod['type']?.toString() ?? 'XOR';
-          final mask = xorMethod['mask']?.toString() ?? '';
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => OpenVPNContentScreen(
-                title: 'XOR',
-                content: mask.isNotEmpty ? '$type\n\nMask: $mask' : type,
-              ),
-            ),
-          );
-        },
+        onTap: () => pushModuleSection(args, 'xor'),
       ),
   ];
   if (commRows.isNotEmpty) {
@@ -349,63 +312,28 @@ List<Widget> openVPNSections(BuildContext context, ModuleViewArgs args) {
         title: 'CA',
         value: 'PEM',
         navigates: true,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (_) => OpenVPNContentScreen(title: 'CA', content: ca),
-          ),
-        ),
+        onTap: () => pushModuleSection(args, 'ca'),
       ),
     if (clientCert != null && clientCert.isNotEmpty)
       PSRow(
         title: tr(Strings.globalNounsCertificate),
         value: 'PEM',
         navigates: true,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (_) => OpenVPNContentScreen(
-              title: tr(Strings.globalNounsCertificate),
-              content: clientCert,
-            ),
-          ),
-        ),
+        onTap: () => pushModuleSection(args, 'certificate'),
       ),
     if (clientKey != null && clientKey.isNotEmpty)
       PSRow(
         title: tr(Strings.globalNounsKey),
         value: 'PEM',
         navigates: true,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (_) => OpenVPNContentScreen(
-              title: tr(Strings.globalNounsKey),
-              content: clientKey,
-            ),
-          ),
-        ),
+        onTap: () => pushModuleSection(args, 'key'),
       ),
     if (tlsWrap != null)
       PSRow(
         title: tr(Strings.modulesOpenvpnTlsWrap),
         value: formatTlsWrapStrategy(tlsWrap),
         navigates: true,
-        onTap: () {
-          final keyData = (tlsWrap['key'] is Map)
-              ? (tlsWrap['key'] as Map)['data']?.toString() ?? ''
-              : '';
-          final strategy = formatTlsWrapStrategy(tlsWrap);
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => OpenVPNContentScreen(
-                title: tr(Strings.modulesOpenvpnTlsWrap),
-                content: 'Strategy: $strategy\nKey: $keyData',
-              ),
-            ),
-          );
-        },
+        onTap: () => pushModuleSection(args, 'tls-wrap'),
       ),
     if (checksEKU != null)
       PSRow(
@@ -477,6 +405,46 @@ List<Widget> openVPNSections(BuildContext context, ModuleViewArgs args) {
   }
 
   return sections;
+}
+
+/// OpenVPN sub-pages, at `/profiles/<id>/modules/<moduleId>/<section>`:
+/// `remotes`, `credentials`, and the read-only `data-ciphers`, `xor`, `ca`,
+/// `certificate`, `key` and `tls-wrap` content.
+Widget? openVPNSubpage(BuildContext context, ModuleViewArgs args, String section) {
+  final rawConfig = args.module.value['configuration'];
+  final config = rawConfig is Map ? Map<String, dynamic>.from(rawConfig) : <String, dynamic>{};
+  Widget? content(String title, Object? text) =>
+      text is String && text.isNotEmpty ? PSLongContentPage(title: title, text: text) : null;
+  switch (section) {
+    case 'remotes':
+      return OpenVPNRemotesScreen(module: args.module, onChanged: args.onChanged);
+    case 'credentials':
+      return OpenVPNCredentialsScreen(module: args.module, onChanged: args.onChanged);
+    case 'data-ciphers':
+      final dataCiphers = config['dataCiphers'];
+      return dataCiphers is List && dataCiphers.isNotEmpty
+          ? content(tr(Strings.modulesOpenvpnDataCiphers), dataCiphers.join('\n'))
+          : null;
+    case 'xor':
+      final xorMethod = config['xorMethod'];
+      if (xorMethod is! Map) return null;
+      final type = xorMethod['type']?.toString() ?? 'XOR';
+      final mask = xorMethod['mask']?.toString() ?? '';
+      return content('XOR', mask.isNotEmpty ? '$type\n\nMask: $mask' : type);
+    case 'ca':
+      return content('CA', config['ca']);
+    case 'certificate':
+      return content(tr(Strings.globalNounsCertificate), config['clientCertificate']);
+    case 'key':
+      return content(tr(Strings.globalNounsKey), config['clientKey']);
+    case 'tls-wrap':
+      final tlsWrap = config['tlsWrap'];
+      if (tlsWrap is! Map) return null;
+      final wrap = Map<String, dynamic>.from(tlsWrap);
+      final keyData = wrap['key'] is Map ? (wrap['key'] as Map)['data']?.toString() ?? '' : '';
+      return content(tr(Strings.modulesOpenvpnTlsWrap), 'Strategy: ${formatTlsWrapStrategy(wrap)}\nKey: $keyData');
+  }
+  return null;
 }
 
 List<Widget> _buildIpRows(
