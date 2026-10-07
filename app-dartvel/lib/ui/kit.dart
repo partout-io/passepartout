@@ -59,9 +59,13 @@ ThemeData passepartoutTheme(Brightness brightness) {
       ),
     ),
     dividerTheme: DividerThemeData(color: scheme.outlineVariant.withValues(alpha: 0.5), thickness: 0.5, space: 0.5),
+    // iOS switch: green track, white thumb, no outline.
     switchTheme: SwitchThemeData(
       trackColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? const Color(0xFF34C759) : null),
+          (states) => states.contains(WidgetState.selected) ? const Color(0xFF34C759) : (dark ? const Color(0xFF39393D) : const Color(0xFFE9E9EA))),
+      thumbColor: const WidgetStatePropertyAll<Color>(Colors.white),
+      trackOutlineColor: const WidgetStatePropertyAll<Color>(Colors.transparent),
+      thumbIcon: const WidgetStatePropertyAll<Icon?>(null),
     ),
     listTileTheme: const ListTileThemeData(contentPadding: .symmetric(horizontal: 16), minVerticalPadding: 10),
   );
