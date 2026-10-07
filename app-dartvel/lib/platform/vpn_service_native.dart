@@ -9,8 +9,6 @@ import 'package:ffi/ffi.dart';
 import '../domain/profile.dart';
 import 'generated/partout_bindings.dart';
 import 'vpn_service.dart';
-import '../state/app_state.dart' show TunnelStatus;
-import '../state/app_log.dart';
 import 'tunnel/tunnel_process.dart';
 import 'tunnel/tunnel_logs.dart';
 
@@ -52,7 +50,7 @@ class PartoutVpnService implements VpnService {
   }
 
   void _writeLog(String text) {
-    AppLog.info(text);
+    VpnService.log('info', text);
     _log?.writeln('${DateTime.now().toIso8601String()} $text');
   }
 

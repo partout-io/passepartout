@@ -23,6 +23,7 @@ void main(List<String> arguments) async {
   _loadStrings();
   if (kIsWeb) VpnService.instance = const WebVpnService();
   AppLog.init();
+  VpnService.log = AppLog.add;
   ProfileStore.init();
   TunnelStore.init();
   PreferencesStore.init();
