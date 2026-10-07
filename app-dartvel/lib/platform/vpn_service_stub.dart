@@ -28,4 +28,6 @@ class const UnavailableVpnService() implements VpnService {
   Future<void> connect(TunnelProfile profile, {required void Function(TunnelEvent) onStatus}) async => _unavailable();
   @override
   Future<void> disconnect() async {}
+  @override
+  Future<String> engineVersion() async => 'Not available on this target';
 }

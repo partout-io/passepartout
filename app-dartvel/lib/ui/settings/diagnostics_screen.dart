@@ -7,11 +7,15 @@
 //   Live log: App, Tunnel
 //   Extensive logging, Include private data
 //   Active profiles (only when a profile is active)
-//   Tunnel: Remove tunnel logs + one row per saved tunnel log
+//   Tunnel: Remove tunnel logs + one row per saved tunnel log, newest first
 //   Report issue
 //
-// Tunnel logs come from the tunnel-log workstream; until it lands the live
-// tunnel log shows "No content" and the Tunnel section lists nothing.
+// Log pages, each at its own URL:
+//   /settings/diagnostics/log                           app log (live)
+//   /settings/diagnostics/log?source=tunnel             newest tunnel log, re-read every second
+//   /settings/diagnostics/log?source=tunnel&file=<name> one saved tunnel log
+
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,17 +26,59 @@ import '../../state/app_log.dart';
 import '../../state/app_state.dart';
 import '../kit.dart';
 import 'settings_support.dart';
+import 'tunnel_log_access.dart';
 
-/// The query that picks which log [LiveLogScreen] shows.
+export 'tunnel_log_access.dart';
+
+/// The queries that pick which log [LiveLogScreen] shows.
 const String logSourceQuery = 'source';
+const String logFileQuery = 'file';
 const String tunnelLogSource = 'tunnel';
 
-/// A saved tunnel log (`ABI.LogEntry`). None exist until the tunnel-log
-/// workstream provides them.
-class const TunnelLogEntry({required final DateTime date, required final String path});
+DVRouteTarget tunnelLogRoute([String? fileName]) => DVRoutes.settingsdiagnosticslog.withQuery(<String, String>{
+      logSourceQuery: tunnelLogSource,
+      logFileQuery: ?fileName,
+    });
 
-class const DiagnosticsScreen({super.key, final List<TunnelLogEntry> tunnelLogs = const <TunnelLogEntry>[]})
-    extends StatelessWidget {
+class DiagnosticsScreen extends StatefulWidget {
+  const DiagnosticsScreen({super.key, this.tunnelLogs = const TunnelLogAccess()});
+
+  final TunnelLogAccess tunnelLogs;
+
+  @override
+  State<DiagnosticsScreen> createState() => _DiagnosticsScreenState();
+}
+
+class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
+  List<TunnelLogEntry> _tunnelLogs = const <TunnelLogEntry>[];
+
+  @override
+  void initState() {
+    super.initState();
+    _reloadTunnelLogs();
+  }
+
+  /// `computedTunnelLogs()`.
+  Future<void> _reloadTunnelLogs() async {
+    List<TunnelLogEntry> entries;
+    try {
+      entries = await widget.tunnelLogs.entries();
+    } on Object catch (error) {
+      AppLog.warning('Unable to list tunnel logs: $error');
+      entries = const <TunnelLogEntry>[];
+    }
+    if (mounted) setState(() => _tunnelLogs = entries);
+  }
+
+  /// `removeTunnelLogs()`, after the confirmation every destructive action gets here.
+  Future<void> _removeTunnelLogs() async {
+    final title = tr(Strings.viewsDiagnosticsRowsRemoveTunnelLogs);
+    if (!await confirmDestructive(context, title: title, action: title)) return;
+    if (!mounted) return;
+    await runGuarded(context, widget.tunnelLogs.deleteAll);
+    await _reloadTunnelLogs();
+  }
+
   @override
   Widget build(BuildContext context) {
     final preferences = context.global<Preferences>();
@@ -59,8 +105,7 @@ class const DiagnosticsScreen({super.key, final List<TunnelLogEntry> tunnelLogs 
           PSRow(
             title: tr(Strings.viewsDiagnosticsRowsTunnel),
             navigates: true,
-            onTap: () => pushRoute(DVRoutes.settingsdiagnosticslog.withQuery(
-                const <String, String>{logSourceQuery: tunnelLogSource})),
+            onTap: () => pushRoute(tunnelLogRoute()),
           ),
         ]),
         PSSection(children: <Widget>[
@@ -88,12 +133,15 @@ class const DiagnosticsScreen({super.key, final List<TunnelLogEntry> tunnelLogs 
         PSSection(header: tr(Strings.viewsDiagnosticsSectionsTunnel), children: <Widget>[
           PSRow(
             title: tr(Strings.viewsDiagnosticsRowsRemoveTunnelLogs),
-            // Disabled while empty, as upstream; removal belongs to the
-            // tunnel-log workstream.
-            onTap: tunnelLogs.isEmpty ? null : () {},
+            destructive: _tunnelLogs.isNotEmpty,
+            onTap: _tunnelLogs.isEmpty ? null : _removeTunnelLogs,
           ),
-          for (final entry in tunnelLogs)
-            PSRow(title: _formatLogDate(context, entry.date), navigates: true),
+          for (final entry in _tunnelLogs)
+            PSRow(
+              title: tunnelLogTitle(context, entry),
+              navigates: true,
+              onTap: () => pushRoute(tunnelLogRoute(entry.name)),
+            ),
         ]),
         const PSSection(children: <Widget>[ReportIssueButton()]),
       ]),
@@ -101,10 +149,13 @@ class const DiagnosticsScreen({super.key, final List<TunnelLogEntry> tunnelLogs 
   }
 }
 
-String _formatLogDate(BuildContext context, DateTime date) {
+/// `appFormatter.string(from: item.date)`, or the file name without a date.
+String tunnelLogTitle(BuildContext context, TunnelLogEntry entry) {
+  final date = entry.date;
+  if (date == null) return entry.name;
   final localizations = MaterialLocalizations.of(context);
   return '${localizations.formatMediumDate(date)} '
-      '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(date))}';
+      '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(date), alwaysUse24HourFormat: true)}';
 }
 
 /// `ReportIssueButton`: asks for a comment, then writes the email upstream
@@ -197,20 +248,91 @@ String reportIssueBody(String comment) {
 
 // ---------------------------------------------------------------------------
 
-/// `DebugLogView` + `DebugLogContentView`: the app log (or the tunnel log
-/// with `?source=tunnel`), selectable, with copy, share and clear.
-class const LiveLogScreen({super.key, final String? source}) extends StatelessWidget {
+/// `DebugLogView` + `DebugLogContentView`: the app log, or a tunnel log
+/// (`?source=tunnel`, `&file=<name>`), selectable, with copy, share and clear.
+class LiveLogScreen extends StatefulWidget {
+  const LiveLogScreen({
+    super.key,
+    this.source,
+    this.file,
+    this.tunnelLogs = const TunnelLogAccess(),
+    this.pollInterval = const Duration(seconds: 1),
+  });
+
+  /// `tunnel`, or null for the app log; read from the URL when null.
+  final String? source;
+
+  /// A saved tunnel log's name; read from the URL when null.
+  final String? file;
+
+  final TunnelLogAccess tunnelLogs;
+
+  /// How often the live tunnel log is re-read.
+  final Duration pollInterval;
+
+  @override
+  State<LiveLogScreen> createState() => _LiveLogScreenState();
+}
+
+class _LiveLogScreenState extends State<LiveLogScreen> {
+  List<String> _tunnelLines = const <String>[];
+  Timer? _poll;
+  bool _isTunnel = false;
+  bool _started = false;
+  String? _file;
+  TunnelLogEntry? _entry;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    final query = currentRouteQuery(context);
+    _isTunnel = (widget.source ?? query[logSourceQuery]) == tunnelLogSource;
+    _file = widget.file ?? query[logFileQuery];
+    if (!_isTunnel) return;
+    _readTunnelLog();
+    // A saved log is read once, as upstream's `DebugLogView(withURL:)`; the
+    // live one follows the newest file while this page is open.
+    if (_file == null) _poll = Timer.periodic(widget.pollInterval, (_) => _readTunnelLog());
+  }
+
+  @override
+  void dispose() {
+    _poll?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _readTunnelLog() async {
+    try {
+      final entry = _file == null ? (await widget.tunnelLogs.entries()).firstOrNull : await widget.tunnelLogs.byName(_file!);
+      final lines = entry == null ? const <String>[] : await widget.tunnelLogs.lines(entry);
+      if (!mounted) return;
+      if (entry?.path != _entry?.path || !listEquals(lines, _tunnelLines)) {
+        setState(() {
+          _entry = entry;
+          _tunnelLines = lines;
+        });
+      }
+    } on Object catch (error) {
+      AppLog.warning('Unable to read tunnel log: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isTunnel = (source ?? currentRouteQuery(context)[logSourceQuery]) == tunnelLogSource;
     final appLines = context.global<AppLogLines>().lines;
-    // The tunnel's live log arrives with the tunnel-log workstream.
-    final lines = isTunnel ? const <String>[] : <String>[for (final line in appLines) '$line'];
+    final lines = _isTunnel ? _tunnelLines : <String>[for (final line in appLines) '$line'];
     final text = lines.join('\n');
     final theme = Theme.of(context);
+    final title = !_isTunnel
+        ? tr(Strings.viewsDiagnosticsRowsApp)
+        : (_file != null && _entry != null)
+            ? tunnelLogTitle(context, _entry!)
+            : tr(Strings.viewsDiagnosticsRowsTunnel);
 
     return PSScaffold(
-      title: isTunnel ? tr(Strings.viewsDiagnosticsRowsTunnel) : tr(Strings.viewsDiagnosticsRowsApp),
+      title: title,
       actions: <Widget>[
         IconButton(
           // Upstream's copy button is an icon with no title string.
@@ -223,7 +345,7 @@ class const LiveLogScreen({super.key, final String? source}) extends StatelessWi
           icon: const Icon(Icons.share),
           onPressed: lines.isEmpty ? null : () => runGuarded(context, () => DV.Platform.share.shareText(text)),
         ),
-        if (!isTunnel)
+        if (!_isTunnel)
           IconButton(
             tooltip: tr(Strings.globalActionsRemove),
             icon: const Icon(Icons.delete_outline),

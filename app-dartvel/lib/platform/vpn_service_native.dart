@@ -98,6 +98,13 @@ class PartoutVpnService implements VpnService {
     }
   }
 
+  /// `partout_version()` returns a static string the library owns: not freed.
+  @override
+  Future<String> engineVersion() async {
+    final version = _abi.partout_version();
+    return version == nullptr ? 'Unknown' : version.cast<Utf8>().toDartString();
+  }
+
   @override
   Future<TunnelProfile> importProfile(String text, String name) async {
     final input = text.toNativeUtf8();

@@ -5,7 +5,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:passepartout/platform/tunnel/tunnel_logs_stub.dart' as web_logs;
 import 'package:passepartout/ui/settings/settings_support.dart';
+import 'package:passepartout/ui/settings/tunnel_log_access.dart';
 
 void main() {
   test('credits.json decodes as upstream ships it', () {
@@ -58,5 +60,18 @@ void main() {
   test('version matches pubspec', () {
     final pubspec = File('pubspec.yaml').readAsStringSync();
     expect(RegExp(r'^version: (.+)$', multiLine: true).firstMatch(pubspec)!.group(1)!.trim(), SettingsBundle.versionNumber);
+  });
+
+  test('tunnel log entries take their date from the file name', () {
+    final when = DateTime(2026, 10, 7, 21, 5, 3);
+    final entry = TunnelLogEntry(path: '/home/u/.cache/passepartout/tunnel/${when.microsecondsSinceEpoch}.log');
+    expect(entry.name, '${when.microsecondsSinceEpoch}.log');
+    expect(entry.date, when);
+    expect(const TunnelLogEntry(path: '/x/notes.log').date, isNull);
+  });
+
+  test('web stub has no tunnel logs', () async {
+    expect(await web_logs.tunnelLogFiles(), isEmpty);
+    expect(() => web_logs.readTunnelLog('/etc/passwd'), throwsArgumentError);
   });
 }

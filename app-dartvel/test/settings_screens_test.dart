@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:passepartout/dartvel_client/dartvel_client.dart';
 import 'package:passepartout/l10n/strings.g.dart';
+import 'package:passepartout/platform/vpn_service.dart';
+import 'package:passepartout/platform/vpn_service_stub.dart';
 import 'package:passepartout/state/app_log.dart';
 import 'package:passepartout/state/app_state.dart';
 import 'package:passepartout/state/profile_draft.dart';
@@ -37,6 +39,17 @@ Future<void> pumpScreen(WidgetTester tester, Widget screen) async {
 
 Credits upstreamCredits() => Credits.fromJson(
     jsonDecode(File('assets/credits/credits.json').readAsStringSync()) as Map<String, dynamic>);
+
+/// In-memory tunnel log files for [TunnelLogAccess].
+class MemoryTunnelLogs {
+  final Map<String, String> files = <String, String>{};
+
+  TunnelLogAccess get access => TunnelLogAccess(
+        listFiles: () async => files.keys.toList(),
+        readFile: (path) async => files[path] ?? (throw ArgumentError('Not a tunnel log')),
+        deleteFiles: (paths) async => paths.forEach(files.remove),
+      );
+}
 
 void main() {
   setUp(initGlobals);
@@ -150,7 +163,7 @@ void main() {
 
   group('DiagnosticsScreen', () {
     testWidgets('shows upstream sections and logging toggles', (tester) async {
-      await pumpScreen(tester, const DiagnosticsScreen());
+      await pumpScreen(tester, DiagnosticsScreen(tunnelLogs: MemoryTunnelLogs().access));
       for (final key in <DVTranslationKey>[
         Strings.viewsDiagnosticsRowsApp,
         Strings.viewsDiagnosticsRowsTunnel,
@@ -182,7 +195,7 @@ void main() {
     });
 
     testWidgets('report issue asks for a comment', (tester) async {
-      await pumpScreen(tester, const DiagnosticsScreen());
+      await pumpScreen(tester, DiagnosticsScreen(tunnelLogs: MemoryTunnelLogs().access));
       await tester.tap(find.text(tr(Strings.viewsDiagnosticsReportIssueTitle)));
       await tester.pumpAndSettle();
       expect(find.text(tr(Strings.globalNounsComment)), findsOneWidget);
@@ -223,11 +236,82 @@ void main() {
       expect(find.text(tr(Strings.globalNounsNoContent)), findsOneWidget);
     });
 
-    testWidgets('tunnel log is empty until the tunnel-log workstream lands', (tester) async {
+    testWidgets('live tunnel log is empty without logs', (tester) async {
       AppLog.info('app only');
-      await pumpScreen(tester, const LiveLogScreen(source: tunnelLogSource));
+      await pumpScreen(tester, LiveLogScreen(source: tunnelLogSource, tunnelLogs: MemoryTunnelLogs().access));
+      await tester.pump();
       expect(find.text(tr(Strings.viewsDiagnosticsRowsTunnel)), findsOneWidget);
       expect(find.text(tr(Strings.globalNounsNoContent)), findsOneWidget);
+    });
+
+    testWidgets('live tunnel log follows the newest file, re-read every second', (tester) async {
+      final logs = MemoryTunnelLogs()..files['/t/1000.log'] = 'old line\n';
+      await tester.runAsync(() async {
+        await pumpScreen(tester, LiveLogScreen(source: tunnelLogSource, tunnelLogs: logs.access));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      });
+      await tester.pump();
+      expect(tester.widget<SelectableText>(find.byType(SelectableText)).data, 'old line');
+      logs.files['/t/2000.log'] = 'new line\nsecond\n';
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 1200)));
+      await tester.pump();
+      expect(tester.widget<SelectableText>(find.byType(SelectableText)).data, 'new line\nsecond');
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a saved tunnel log opens by file name', (tester) async {
+      final logs = MemoryTunnelLogs()
+        ..files['/t/1000.log'] = 'first session\n'
+        ..files['/t/2000.log'] = 'second session\n';
+      await tester.runAsync(() async {
+        await pumpScreen(tester, LiveLogScreen(source: tunnelLogSource, file: '1000.log', tunnelLogs: logs.access));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      });
+      await tester.pump();
+      expect(tester.widget<SelectableText>(find.byType(SelectableText)).data, 'first session');
+      expect(find.byTooltip(tr(Strings.globalActionsRemove)), findsNothing);
+    });
+  });
+
+  group('Diagnostics tunnel logs', () {
+    testWidgets('lists saved logs newest first and deletes all after confirming', (tester) async {
+      final older = DateTime(2026, 10, 1, 9, 30);
+      final newer = DateTime(2026, 10, 7, 21, 5);
+      final logs = MemoryTunnelLogs()
+        ..files['/t/${older.microsecondsSinceEpoch}.log'] = 'a'
+        ..files['/t/${newer.microsecondsSinceEpoch}.log'] = 'b';
+      await tester.runAsync(() async {
+        await pumpScreen(tester, DiagnosticsScreen(tunnelLogs: logs.access));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      });
+      await tester.pump();
+      final context = tester.element(find.byType(DiagnosticsScreen));
+      final newerTitle = tunnelLogTitle(context, TunnelLogEntry(path: '/t/${newer.microsecondsSinceEpoch}.log'));
+      final olderTitle = tunnelLogTitle(context, TunnelLogEntry(path: '/t/${older.microsecondsSinceEpoch}.log'));
+      await tester.scrollUntilVisible(find.text(olderTitle), 200);
+      expect(tester.getTopLeft(find.text(newerTitle)).dy, lessThan(tester.getTopLeft(find.text(olderTitle)).dy));
+
+      final remove = find.text(tr(Strings.viewsDiagnosticsRowsRemoveTunnelLogs));
+      await tester.tap(remove);
+      await tester.pumpAndSettle();
+      // Cancel keeps them.
+      await tester.tap(find.text(tr(Strings.globalActionsCancel)));
+      await tester.pumpAndSettle();
+      expect(logs.files, hasLength(2));
+      await tester.tap(remove);
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.byType(TextButton)).last);
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      });
+      await tester.pumpAndSettle();
+      expect(logs.files, isEmpty);
+      expect(find.text(newerTitle), findsNothing);
+    });
+
+    test('tunnel log routes have their own URL', () {
+      expect(tunnelLogRoute().path, '/settings/diagnostics/log?source=tunnel');
+      expect(tunnelLogRoute('1000.log').path, '/settings/diagnostics/log?source=tunnel&file=1000.log');
     });
   });
 
@@ -296,6 +380,16 @@ void main() {
       expect(find.text(tr(Strings.viewsVersionExtra, <Object>['Passepartout', 'Davide De Rosa (keeshux)'])), findsOneWidget);
       expect(find.text('CHANGELOG'), findsOneWidget);
       expect(find.text('Partout'), findsOneWidget);
+    });
+
+    testWidgets('Version shows the engine version from VpnService', (tester) async {
+      VpnService.instance = const UnavailableVpnService();
+      await pumpScreen(tester, const VersionScreen(query: <String, String>{}));
+      await tester.pump();
+      expect(find.text('Not available on this target'), findsOneWidget);
+      await pumpScreen(tester, const VersionScreen(query: <String, String>{}, partoutVersion: '0.99.0'));
+      await tester.pump();
+      expect(find.text('0.99.0'), findsOneWidget);
     });
 
     testWidgets('Changelog lists entries, issue rows link to GitHub', (tester) async {
