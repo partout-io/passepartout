@@ -17,3 +17,9 @@ Done: `heavy.sh dartvel create app-dartvel --project-name passepartout --ssr` su
 Next: commit build documentation then skeleton; add logo and parity matrix.
 Tests: generator and dependency resolution passed.
 Blockers: none new.
+
+## Step 3 — inventory
+Done: committed generated six-platform skeleton and upstream logo. PARITY.md inventories 473 Apple sources, including list/grid/card/row, installed header, import flows, module subpages, providers, diagnostics, reports, settings, onboarding and TV pairing. Every source has a proposed route, honest status and platform notes.
+Next: engine FFI generation, JSON models and fixture import tests.
+Tests: generated rules reviewed; no native folders staged.
+Blockers: engine build still running.
