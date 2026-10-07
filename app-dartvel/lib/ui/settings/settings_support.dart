@@ -54,6 +54,10 @@ abstract final class SettingsConstants {
   static const String faqUrl = '$homeUrl/faq';
   static const String privacyPolicyUrl = '$homeUrl/privacy';
 
+  /// Where Report issue mails go: upstream's own address, kept 1:1.
+  ///
+  /// TODO(owner): choose the address for this fork. This is upstream's issue
+  /// inbox; reports from this port land with upstream's author until changed.
   static const String issuesEmail = 'issues@passepartoutvpn.app';
 
   static String urlForIssue(int issue) => '$issuesUrl/$issue';

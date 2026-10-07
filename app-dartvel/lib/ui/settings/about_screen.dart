@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 
 import '../../dartvel_client/dartvel_client.dart';
 import '../../l10n/strings.g.dart';
+import '../../platform/vpn_service.dart';
 import '../../state/app_log.dart';
 import '../kit.dart';
 import 'settings_support.dart';
@@ -276,11 +277,8 @@ class const VersionScreen({
             child: const Text(SettingsUnlocalized.changelog),
           ),
           const SizedBox(height: 24),
-          // Not in upstream's VersionView: the engine version. VpnService does
-          // not report it yet, so it shows a dash (see PROGRESS).
-          PSSection(children: <Widget>[
-            PSRow(title: SettingsUnlocalized.partout, value: partoutVersion ?? '—', monospaced: true),
-          ]),
+          // Not in upstream's VersionView: the engine version.
+          PSSection(children: <Widget>[_EngineVersionRow(version: partoutVersion)]),
         ]),
       ),
     );
@@ -339,5 +337,46 @@ class _ChangelogScreenState extends State<ChangelogScreen> {
                           PSRow(title: entry.comment),
                     ]),
                   ]),
+      );
+}
+
+/// "Partout  <version>", from `VpnService.engineVersion()` unless [version] is given.
+class _EngineVersionRow extends StatefulWidget {
+  const _EngineVersionRow({this.version});
+
+  final String? version;
+
+  @override
+  State<_EngineVersionRow> createState() => _EngineVersionRowState();
+}
+
+class _EngineVersionRowState extends State<_EngineVersionRow> {
+  late Future<String> _version = _start();
+
+  Future<String> _start() => widget.version != null ? Future<String>.value(widget.version) : _load();
+
+  @override
+  void didUpdateWidget(_EngineVersionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.version != widget.version) _version = _start();
+  }
+
+  static Future<String> _load() async {
+    try {
+      return await VpnService.instance.engineVersion();
+    } on Object catch (error) {
+      AppLog.warning('Unable to read the engine version: $error');
+      return 'Unknown';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<String>(
+        future: _version,
+        builder: (context, snapshot) => PSRow(
+          title: SettingsUnlocalized.partout,
+          value: snapshot.data ?? '…',
+          monospaced: true,
+        ),
       );
 }

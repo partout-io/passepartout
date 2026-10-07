@@ -38,4 +38,8 @@ abstract class VpnService {
   /// Brings [profile] up and reports progress through [onStatus] until it is down.
   Future<void> connect(TunnelProfile profile, {required void Function(TunnelEvent) onStatus});
   Future<void> disconnect();
+
+  /// Partout's version (`partout_version()`), or a plain note where the
+  /// engine is not linked into this target.
+  Future<String> engineVersion();
 }
