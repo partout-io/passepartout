@@ -1,0 +1,52 @@
+{"type":"log","level":2,"message":"Partout initialized"}
+{"type":"log","level":2,"message":"Using daemon v1 (legacy)"}
+{"type":"log","level":2,"message":"Using daemon v1"}
+{"type":"log","level":2,"message":"Decoded profile:"}
+{"type":"log","level":2,"message":"\tID: E9F43018-CF93-4D13-8B57-87A3133BFA54"}
+{"type":"log","level":2,"message":"\tName: Unprivileged dummy probe"}
+{"type":"log","level":2,"message":"\tModules:"}
+{"type":"log","level":2,"message":"\t\t+ WireGuardModule: <redacted>"}
+{"type":"log","level":2,"message":"Using WireGuardConnection"}
+{"type":"log","level":3,"message":"Start looper"}
+{"type":"log","level":2,"message":"Start daemon"}
+{"type":"log","level":2,"message":"Clear connection events"}
+{"type":"status","status":"disconnected"}
+{"type":"log","level":2,"message":"Daemon started successfully"}
+{"type":"log","level":3,"message":"Pause connection gate during reconnection"}
+{"type":"log","level":2,"message":"Start connection"}
+{"type":"log","level":3,"message":"Start tunnel"}
+{"type":"status","status":"connecting"}
+{"type":"log","level":3,"message":"ConnectionGate.onReady({signal=false, network=false, status=connecting}) -> false"}
+{"type":"log","level":3,"message":"Start adapter"}
+{"type":"log","level":4,"message":"DNS64: mapped <redacted> to itself."}
+{"type":"log","level":4,"message":"Platform: Set tunnel"}
+{"type":"log","level":3,"message":"tun_linux: ctrl_set_tunnel((nil))"}
+{"type":"log","level":0,"message":"tun_linux: create(), ioctl(TUNSETIFF)"}
+{"type":"log","level":1,"message":"Unable to configure tunnel settings: TunNotAvailable"}
+{"type":"log","level":0,"message":"Unable to start: TunNotAvailable"}
+{"type":"log","level":4,"message":"Clear tunnel settings: withKillSwitch=false"}
+{"type":"log","level":3,"message":"tun_linux: ctrl_clear_tunnel((nil))"}
+{"type":"log","level":0,"message":"Starting tunnel failed with setTunnelNetworkSettings returning TunNotAvailable"}
+{"type":"error","code":"tunNotAvailable"}
+{"type":"log","level":3,"message":"Resume connection gate in 2000 milliseconds"}
+{"type":"status","status":"disconnected"}
+{"type":"log","level":3,"message":"ConnectionGate.onReady({signal=false, network=false, status=disconnected}) -> false"}
+{"type":"log","level":1,"message":"Unable to start connection: UnableToStart"}
+{"type":"error","code":"unhandled"}
+{"type":"log","level":3,"message":"Resume connection gate now"}
+{"type":"log","level":3,"message":"ConnectionGate.onReady({signal=true, network=false, status=disconnected}) -> false"}
+{"type":"log","level":2,"message":"Stop daemon"}
+{"type":"log","level":2,"message":"Connection profile, disconnect with a timeout of 2000 milliseconds"}
+{"type":"log","level":4,"message":"Stop ignored, adapter is stopped"}
+{"type":"log","level":3,"message":"Stop looper"}
+{"type":"log","level":3,"message":"Looper: stop requested"}
+{"type":"log","level":3,"message":"Finish looper"}
+{"type":"log","level":4,"message":"Deinit WireGuardConnection"}
+{"type":"log","level":4,"message":"Deinit WireGuardAdapter"}
+{"type":"log","level":4,"message":"Deinit Looper"}
+{"type":"log","level":2,"message":"Clear connection events"}
+{"type":"log","level":2,"message":"Daemon stopped successfully"}
+{"type":"log","level":4,"message":"Deinit ConnectionGate"}
+{"type":"log","level":4,"message":"Deinit daemon"}
+{"type":"log","level":4,"message":"Deinit Platform"}
+{"type":"exit","code":0}
