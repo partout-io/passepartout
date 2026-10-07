@@ -10,6 +10,10 @@ import 'vpn_service.dart';
 
 VpnService createVpnService() => PartoutVpnService();
 class PartoutVpnService implements VpnService {
+  @override
+  bool get canConnect => false; // Set by the tunnel helper work (Linux first).
+  @override
+  String? get connectUnavailableReason => 'Connecting is not built yet on this platform.';
   late final PartoutBindings _abi;
   PartoutVpnService({String? libraryPath}) {
     final path = libraryPath ?? Platform.environment['PARTOUT_LIBRARY'] ??
@@ -32,20 +36,20 @@ class PartoutVpnService implements VpnService {
     final input = text.toNativeUtf8();
     try { return _owned(call(input.cast())); } finally { malloc.free(input); }
   }
-  @override TunnelProfile importProfile(String text, String name) {
+  @override Future<TunnelProfile> importProfile(String text, String name) async {
     final input = text.toNativeUtf8(); final label = name.toNativeUtf8();
     try { return TunnelProfile.decode(jsonEncode(_payload(_owned(_abi.partout_import_profile(input.cast(), label.cast()))))); }
     finally { malloc.free(input); malloc.free(label); }
   }
-  @override TaggedModule importModule(String text, {String? contextJson}) {
+  @override Future<TaggedModule> importModule(String text, {String? contextJson}) async {
     final input = text.toNativeUtf8(); final context = contextJson?.toNativeUtf8();
     try { return TaggedModule(json: _payload(_owned(_abi.partout_import_module(input.cast(), context?.cast() ?? nullptr)))); }
     finally { malloc.free(input); if (context != null) malloc.free(context); }
   }
-  @override String exportModule(TaggedModule module) => _call(jsonEncode(module.json), _abi.partout_export_module);
-  @override String generateWireGuardKey() => _owned(_abi.partout_wireguard_genkey());
-  @override String wireGuardPublicKey(String privateKey) => _call(privateKey, _abi.partout_wireguard_pubkey);
-  @override Future<void> connect(TunnelProfile profile) async {
+  @override Future<String> exportModule(TaggedModule module) async => _call(jsonEncode(module.json), _abi.partout_export_module);
+  @override Future<String> generateWireGuardKey() async => _owned(_abi.partout_wireguard_genkey());
+  @override Future<String> wireGuardPublicKey(String privateKey) async => _call(privateKey, _abi.partout_wireguard_pubkey);
+  @override Future<void> connect(TunnelProfile profile, {required void Function(TunnelEvent) onStatus}) async {
     throw UnsupportedError('Linux connection requires a CAP_NET_ADMIN helper and tun/route/DNS lifecycle. See docs/BUILD.md.');
   }
   @override Future<void> disconnect() async { _abi.partout_daemon_stop(); }

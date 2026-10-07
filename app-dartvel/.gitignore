@@ -33,3 +33,7 @@ lib/dartvel_client/
 # OS
 .DS_Store
 Thumbs.db
+/lib/dartvel_client/
+/.dartvel/
+/.dart_tool/dartvel_backend.g.dart
+/.dart_tool/dartvel_backend_routes.g.dart
