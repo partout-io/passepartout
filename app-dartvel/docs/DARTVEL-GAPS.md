@@ -73,3 +73,9 @@ In a widget test, a second `createDartvelApp()` in the same file (a new `testWid
 empty page at any URL after the first test's app; the first renders fine. Probably the router's
 once-per-process setup (`_dartvelSetUp`, deferred page loaders) keeps state from the first app.
 `test/module_subpages_test.dart` works around it by opening every URL from one app.
+
+### `dartvel build linux` rewrites tracked project files
+
+Every Linux build modifies `.metadata` and `analysis_options.yaml` (and touches `pubspec.lock`), so a clean
+worktree is dirty after a build. Repro: `git status` clean, `dartvel build linux`, `git status`. Wanted: a
+build leaves committed project files alone.
