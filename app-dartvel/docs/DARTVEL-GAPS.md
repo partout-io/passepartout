@@ -30,3 +30,20 @@ Wanted: a generated `DV.app.version` / build number.
 
 Credits > Translations names each language. Upstream uses Foundation's localized language names; Dartvel's
 `DVI18n` has no display-name table, so the port names each language in itself (Deutsch, Français...).
+
+## lead
+
+### Web-server build rejects some dot shorthands that `dart analyze` and Flutter accept
+
+`dartvel build web-server` failed with `The static getter or field 'w600' isn't defined for the type 'invalid-type'`
+for `theme.textTheme.titleMedium?.copyWith(fontWeight: .w600)` and for `Text(..., textAlign: .center)`, while
+the same shorthands compile for web and pass `dart analyze`. The server compile resolves those parameter types
+to an invalid type, so a shorthand has no context. Repro: any page using `Text('x', textAlign: .center)`, then
+`dartvel build web-server`. Workaround in the app: spell the type (`TextAlign.center`). Fix belongs in the
+server-side compile of pages (the shorthand rule in the generated CLAUDE.md promises they work).
+
+### Backend functions silently lose imports that reach Flutter
+
+A backend function importing `../../platform/vpn_service.dart` failed with `Undefined name 'VpnService'`,
+because that file (transitively) imported Flutter and the generator drops such imports without a word.
+Wanted: a build error naming the import chain that reaches Flutter.

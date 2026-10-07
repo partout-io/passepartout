@@ -66,7 +66,7 @@ class const SettingsScreen({super.key, final bool? desktopLayout}) extends State
             PSSection(header: tr(Strings.globalNounsTroubleshooting), children: <Widget>[faq, diagnostics]),
             Padding(
               padding: const .all(16),
-              child: Text(SettingsBundle.versionString, textAlign: .center),
+              child: Text(SettingsBundle.versionString, textAlign: TextAlign.center),
             ),
           ]
         : <Widget>[

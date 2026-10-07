@@ -325,7 +325,7 @@ class const _ProfileCard({required final TunnelProfile profile}) extends Statele
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(crossAxisAlignment: .start, mainAxisSize: .min, children: <Widget>[
-      Text(profile.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: .w600)),
+      Text(profile.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
       const SizedBox(height: 2),
       ConnectionStatusText(profileId: profile.id, style: theme.textTheme.bodyMedium),
     ]);
