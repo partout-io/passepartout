@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: GPL-3.0
+# Copyright 2026 SigmaDev
+name: passepartout
+description: Universal Passepartout VPN profile manager (phase 1)
+publish_to: "none"
+version: 0.0.1
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+  flutter: ">=3.47.0"
+platforms:
+  web:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
+dependencies:
+  flutter:
+    sdk: flutter
+  go_router: ^14.2.0
+  dio: ^5.5.0
+  dartvel_core: 
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_core
+  dartvel_shelf: 
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_shelf
+  dartvel_flutter: 
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_flutter
+  flutter_web_plugins:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^4.0.0
+  dartvel_cli: 
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_cli
+dependency_overrides:
+  dartvel_core:
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_core
+  dartvel_shelf:
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_shelf
+  dartvel_flutter:
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_flutter
+  dartvel_cli:
+    path: /home/sigmadev/dartvel_dev/packages/dartvel_cli
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+
+dartvel:
+  org: io.partout
+  backendHost: 0.0.0.0
+  backendPort: 3000
+  devBackendHost: http://localhost:3000
+  prodBackendHost: https://api.passepartout.com
+  pagesDir: lib/pages
+  backendDir: lib/backend
+  apiBasePath: /api
+  envFiles: [.env, .env.local]
+  plugins: []
+  ota: false
+  platforms:
+    - web
+    - android
+    - ios
+    - linux
+    - macos
+    - windows
+
+  transitions:
+    default: fade
+    durationMs: 200
+    curve: easeInOut
+
+  seo:
+    siteName: Passepartout
+    defaultTitle: Profiles
+    defaultDescription: A Dartvel application

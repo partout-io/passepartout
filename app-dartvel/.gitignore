@@ -1,0 +1,35 @@
+# Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Ephemeral native platform folders (generated at build time)
+android/
+ios/
+web/
+linux/
+windows/
+macos/
+tizen/
+elinux/
+webos/
+tvos/
+
+# Environment
+.env
+.env.local
+
+# Generated
+lib/dartvel_client/
+.dartvel/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

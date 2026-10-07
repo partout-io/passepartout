@@ -1,0 +1,17 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  errors:
+    # A Dartvel generation input is a private declaration whose body is
+    # copied into generated code, so nothing in your own files calls it.
+    unused_element: ignore
+  exclude:
+    - "lib/dartvel_client/**"
+    - ".dart_tool/**"
+    - build/**
+
+linter:
+  rules:
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
+    - avoid_print
