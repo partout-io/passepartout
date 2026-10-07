@@ -29,6 +29,8 @@
 		0E7F460E2CF7F01600B1C53A /* MainFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F460B2CF7F01600B1C53A /* MainFlowTests.swift */; platformFilters = (ios, macos, ); };
 		0E7F460F2CF7F01600B1C53A /* XCUIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F460C2CF7F01600B1C53A /* XCUIApplication+Extensions.swift */; };
 		0E7F46122CF7F44C00B1C53A /* AppScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F46102CF7F44C00B1C53A /* AppScreen.swift */; platformFilters = (ios, macos, ); };
+		0E90ED373076835C00A1374D /* partout in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E22F3E7D1100B1A001 /* partout */; };
+		0E90ED383076835C00A1374D /* partout in Frameworks */ = {isa = PBXBuildFile; productRef = CE51B1E82F3E7D1100B1A001 /* partout */; };
 		0E916B782CF80FD60072921A /* ProfileEditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E916B772CF80FD60072921A /* ProfileEditorScreen.swift */; platformFilters = (ios, macos, ); };
 		0E916B7C2CF811EB0072921A /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E916B7B2CF811EB0072921A /* XCUIElement+Extensions.swift */; };
 		0E94EE582B93554B00588243 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7E3D672B9345FD002BBDB4 /* PacketTunnelProvider.swift */; };
@@ -142,7 +144,6 @@
 		0E29E7202D0B7D06003294CA /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AppPlist.strings; sourceTree = "<group>"; };
 		0E29E7212D0B7D09003294CA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/AppPlist.strings; sourceTree = "<group>"; };
 		0E29E7262D0B7D75003294CA /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/AppPlist.strings; sourceTree = "<group>"; };
-		0E3DC7CF2D347FAA003F1C4B /* Demo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Demo.xcodeproj; sourceTree = "<group>"; };
 		0E3FF4AE2CE3AF6F00BFF640 /* PassepartoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PassepartoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E418AB42D074F0E00D33D47 /* ProviderServersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderServersScreen.swift; sourceTree = "<group>"; };
 		0E5DFDDC2CDB8F9100F2DE70 /* Passepartout.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Passepartout.storekit; sourceTree = "<group>"; };
@@ -234,6 +235,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E90ED373076835C00A1374D /* partout in Frameworks */,
 				0EE9F4A12ECF28C4008D5837 /* AppLibraryTV in Frameworks */,
 				0E6D8050303C86DA002C0DD8 /* PartoutRuntime in Frameworks */,
 				0E6D8056303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */,
@@ -252,6 +254,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E90ED383076835C00A1374D /* partout in Frameworks */,
 				0E6D8054303C86F6002C0DD8 /* PartoutRuntime in Frameworks */,
 				0E6D805A303C8700002C0DD8 /* PartoutNative.xcframework in Frameworks */,
 				0EE9F4A52ECF28E0008D5837 /* TunnelLibrary in Frameworks */,
@@ -430,11 +433,6 @@
 				0EAD6A1A2CF7F79A00CC1F02 /* MainScreenshotTests.swift */,
 			);
 			path = Main;
-			sourceTree = "<group>";
-		};
-		0ED0C0C42DA513430026DA9B /* Products */ = {
-			isa = PBXGroup;
-			name = Products;
 			sourceTree = "<group>";
 		};
 		0ED61CF62CD04174008FE259 /* Platforms */ = {
@@ -666,12 +664,6 @@
 			);
 			productRefGroup = 0E06D1902B87629100176E1D /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 0ED0C0C42DA513430026DA9B /* Products */;
-					ProjectRef = 0E3DC7CF2D347FAA003F1C4B /* Demo.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				0E06D18E2B87629100176E1D /* Passepartout */,
