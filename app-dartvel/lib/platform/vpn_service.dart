@@ -17,6 +17,10 @@ abstract class VpnService {
   static VpnService get instance => _instance ??= implementation.createVpnService();
   static set instance(VpnService service) => _instance = service;
 
+  /// Where engine messages go. This file stays Flutter-free for the backend
+  /// binary, so it cannot call `AppLog`; the app sets `VpnService.log = AppLog.add`.
+  static void Function(String level, String message) log = (_, _) {};
+
   /// Whether this target can bring a tunnel up at all (false on web).
   bool get canConnect;
 

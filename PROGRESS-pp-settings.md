@@ -22,9 +22,16 @@ The first pass was merged into agent/passepartout-dartvel; this covers the follo
 - Settings tests: 30 passed.
 - Full `flutter test`: 79 passed, 1 skipped.
 - `dart analyze lib`: 0 errors.
-- `dartvel build web-server`: see the final report.
+- `dartvel build web-server` (through heavy.sh): passes.
+  - Before the fix, the backend executable failed to compile. `vpn_service_native.dart` (from the tunnel merge)
+    imported `state/app_state.dart` and `state/app_log.dart`, which pulled Flutter into the server binary.
+  - Fix: dropped both imports (`TunnelStatus` already comes through `vpn_service.dart`) and replaced
+    `AppLog.info` with a Flutter-free hook, `VpnService.log`.
 
 ## Requests to lead
+
+- **main.dart:** add `VpnService.log = AppLog.add;` after `AppLog.init()`. Tunnel messages still go to the tunnel
+  log file, but until then they no longer reach the in-app log.
 
 - Web could ask the web-server binary for the engine version (it links Partout).
 - Optional proper routes in place of the query URLs, as asked before.
