@@ -5,9 +5,16 @@
     <key>method</key>
     <string>app-store-connect</string>
     <key>signingStyle</key>
-    <string>automatic</string>
+    <string>manual</string>
     <key>teamID</key>
     <string>CFG_TEAM_ID</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.algoritmico.ios.Passepartout</key>
+        <string>CFG_PLATFORM Team Provisioning Profile: com.algoritmico.ios.Passepartout</string>
+        <key>com.algoritmico.ios.Passepartout.Tunnel</key>
+        <string>CFG_PLATFORM Team Provisioning Profile: com.algoritmico.ios.Passepartout.Tunnel</string>
+    </dict>
     <key>installerSigningCertificate</key>
 	<string>3rd Party Mac Developer Installer</string>
     <key>uploadSymbols</key>
