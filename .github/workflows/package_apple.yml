@@ -97,6 +97,8 @@ jobs:
         with:
           bundler-cache: true
       - name: Package app
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: ci/package.sh "${{ matrix.target }}" "$RUNNER_TEMP/release"
       - name: Upload to TestFlight
         timeout-minutes: 30

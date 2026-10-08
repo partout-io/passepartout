@@ -21,9 +21,11 @@ The dmg target requires an architecture (arm64 or x86_64) and these variables:
   GPG_FINGERPRINT
   GPG_PASSPHRASE
 
-The signing certificates, provisioning profiles, and GPG key must already be
-installed. PartoutNative.xcframework must also have been prepared before this
-script runs.
+App Store targets use APP_STORE_CONNECT_API_KEY (Fastlane JSON format) in CI
+to manage distribution signing automatically. Archive signing assets must
+already be installed. The dmg target also requires its distribution signing
+assets and GPG key. PartoutNative.xcframework must have been prepared before
+this script runs.
 EOF
 }
 
