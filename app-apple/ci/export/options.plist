@@ -11,9 +11,9 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>com.algoritmico.ios.Passepartout</key>
-        <string>CFG_PLATFORM Team Provisioning Profile: com.algoritmico.ios.Passepartout</string>
+        <string>Passepartout AppStore CFG_PLATFORM</string>
         <key>com.algoritmico.ios.Passepartout.Tunnel</key>
-        <string>CFG_PLATFORM Team Provisioning Profile: com.algoritmico.ios.Passepartout.Tunnel</string>
+        <string>Passepartout AppStore Tunnel CFG_PLATFORM</string>
     </dict>
     <key>installerSigningCertificate</key>
 	<string>3rd Party Mac Developer Installer</string>

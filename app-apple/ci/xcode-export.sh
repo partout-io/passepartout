@@ -15,12 +15,8 @@ tmp_plist="$TMPDIR/options.$platform.plist"
 if [[ $developer_id == 1 ]]; then
     sed "s/CFG_TEAM_ID/$team_id/g" "$cwd/export/options_dmg.plist" >"$tmp_plist"
 else
-    cfg_platform=$platform
-    if [[ $cfg_platform == macOS ]]; then
-        cfg_platform=Mac
-    fi
     sed "s/CFG_TEAM_ID/$team_id/g" "$cwd/export/options.plist" | \
-        sed "s/CFG_PLATFORM/$cfg_platform/g" >"$tmp_plist"
+        sed "s/CFG_PLATFORM/$platform/g" >"$tmp_plist"
 fi
 
 xcodebuild -exportArchive \
