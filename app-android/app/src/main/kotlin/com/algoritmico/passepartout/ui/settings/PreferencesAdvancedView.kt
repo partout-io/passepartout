@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.ui.settings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ListItem
@@ -25,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.disable
 import com.algoritmico.passepartout.business.extensions.enable
+import com.algoritmico.passepartout.business.extensions.isAllowed
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.extensions.setAllowed
 import com.algoritmico.passepartout.business.extensions.unignore
@@ -39,6 +41,7 @@ import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
+import com.algoritmico.passepartout.ui.theme.themeListSection
 import kotlinx.coroutines.launch
 
 @Composable
@@ -104,39 +107,38 @@ private fun AdvancedPreferencesContent(
     val remoteFooter = stringResource(R.string.views_preferences_advanced_remote_footer)
 
     ThemeList(modifier = modifier) {
-        // Hide as long as config flags are empty.
-//        if (canOverride) {
-//            themeListSection(
-//                footer = overrideFooter
-//            ) {
-//                items(advancedFlags) { flag ->
-//                    ConfigPreferencePickerRow(
-//                        flag = flag,
-//                        isActive = configState.isActive(flag),
-//                        preference = preferences.preference(forFlag = flag),
-//                        onPreferenceChange = {
-//                            onPreferenceChange(flag, it)
-//                        }
-//                    )
-//                }
-//            }
-//        } else {
-//            themeListSection(
-//                header = allowHeader,
-//                footer = remoteFooter
-//            ) {
-//                items(advancedFlags) { flag ->
-//                    ConfigFlagAllowedRow(
-//                        flag = flag,
-//                        isActive = configState.isActive(flag),
-//                        isAllowed = preferences.isAllowed(flag),
-//                        onAllowedChange = {
-//                            onAllowedChange(flag, it)
-//                        }
-//                    )
-//                }
-//            }
-//        }
+        if (canOverride) {
+            themeListSection(
+                footer = overrideFooter
+            ) {
+                items(advancedFlags) { flag ->
+                    ConfigPreferencePickerRow(
+                        flag = flag,
+                        isActive = configState.isActive(flag),
+                        preference = preferences.preference(forFlag = flag),
+                        onPreferenceChange = {
+                            onPreferenceChange(flag, it)
+                        }
+                    )
+                }
+            }
+        } else {
+            themeListSection(
+                header = allowHeader,
+                footer = remoteFooter
+            ) {
+                items(advancedFlags) { flag ->
+                    ConfigFlagAllowedRow(
+                        flag = flag,
+                        isActive = configState.isActive(flag),
+                        isAllowed = preferences.isAllowed(flag),
+                        onAllowedChange = {
+                            onAllowedChange(flag, it)
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -208,12 +210,10 @@ private fun ConfigPreferencePickerRow(
     )
 }
 
-//private val advancedFlags = listOf(
-//    ConfigFlag.zigRuntime,
-//    ConfigFlag.zigOpenVPN,
-//    ConfigFlag.zigWireGuard
-//)
-private val advancedFlags = emptyList<ConfigFlag>(
+private val advancedFlags = listOf(
+    ConfigFlag.experimentalDaemon_202610,
+    ConfigFlag.experimentalDaemonOpenVPN_202610,
+    ConfigFlag.experimentalDaemonWireGuard_202610
 )
 
 private enum class ConfigFlagPreference {

@@ -20,18 +20,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.context.isDebuggable
 import com.algoritmico.passepartout.models.AppPreferences
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
 import com.algoritmico.passepartout.ui.LocalErrorHandler
 import com.algoritmico.passepartout.ui.LocalUserPreferencesObservable
 import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.ThemeList
+import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 import com.algoritmico.passepartout.ui.theme.ThemeSwitchRow
 import com.algoritmico.passepartout.ui.theme.themeListSection
 import io.partout.models.CryptoBackend
@@ -42,7 +41,6 @@ fun PreferencesView(
     modifier: Modifier = Modifier,
     onAdvanced: () -> Unit
 ) {
-    val isDebuggable = LocalContext.current.isDebuggable
     ThemeList(modifier = modifier) {
         themeListSection {
             item {
@@ -68,13 +66,12 @@ fun PreferencesView(
                     }
                 )
             }
-            // Hide "Advanced" because there are no actionable config flags
-//            item {
-//                ThemeNavigatingButton(
-//                    title = stringResource(R.string.global_nouns_advanced),
-//                    onClick = onAdvanced
-//                )
-//            }
+            item {
+                ThemeNavigatingButton(
+                    title = stringResource(R.string.global_nouns_advanced),
+                    onClick = onAdvanced
+                )
+            }
         }
     }
 }
