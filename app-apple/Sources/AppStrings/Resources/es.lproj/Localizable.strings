@@ -44,6 +44,7 @@
 "errors.app.incompatible_modules" = "Algunos módulos activos son incompatibles, intenta activar solo uno de ellos.";
 "errors.app.incomplete_module" = "Por favor, completa la configuración del módulo %@.";
 "errors.app.ineligible" = "Compra requerida";
+"errors.app.interactive_login" = "Open Passepartout to enter the credentials required for this VPN.";
 "errors.app.invalid_fields" = "Campos no válidos.";
 "errors.app.malformed_module" = "El módulo %@ está malformado. %@";
 "errors.app.missing_provider_entity" = "No se seleccionó un servidor en el proveedor.";
