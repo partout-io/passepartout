@@ -7,6 +7,8 @@ package com.algoritmico.passepartout
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
+import com.algoritmico.passepartout.business.extensions.daemonFeatureFlags
+import com.algoritmico.passepartout.business.extensions.enabledFlags
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.appBundle
@@ -17,7 +19,6 @@ import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
 import io.partout.PartoutVpnServiceRuntime
 import io.partout.models.CryptoBackend
-import io.partout.models.DaemonFeatureFlag
 import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
 
@@ -101,12 +102,14 @@ class PassepartoutVpnService: VpnService() {
             )
             val cryptoBackend = CryptoBackend.decode(preferences?.cryptoBackend)
             AppLog.d(logTag, "Crypto backend: $cryptoBackend")
+            val featureFlags = preferences?.enabledFlags()?.daemonFeatureFlags ?: emptySet()
+            AppLog.d(logTag, "Daemon feature flags: $featureFlags")
             return PartoutVpnServiceRuntime.StartOptions(
                 logsPrivateData,
                 minDataCountDelta,
                 cryptoBackend,
                 controllerOptions,
-                featureFlags = DaemonFeatureFlag.entries.toSet()
+                featureFlags = featureFlags
             )
         }
 

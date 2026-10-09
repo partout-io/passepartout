@@ -269,6 +269,11 @@ fun AppPreferences.isFlagEnabled(flag: ConfigFlag): Boolean {
             !experimental.ignoredConfigFlags.contains(flag)
 }
 
+fun AppPreferences.enabledFlags(): Set<ConfigFlag> {
+    return (configFlags.toSet() + experimental.enabledConfigFlags) -
+            experimental.ignoredConfigFlags.toSet()
+}
+
 fun ExperimentalPreferences.isAllowed(flag: ConfigFlag): Boolean {
     return !ignoredConfigFlags.contains(flag)
 }
