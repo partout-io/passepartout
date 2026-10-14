@@ -177,7 +177,7 @@ private extension TunnelContext {
             provider: neProvider,
             profile: normalizedProfile,
             options: .init(
-                dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
+                dnsFallbackServers: preferences[\.dnsFallsBack] ? appConfiguration.constants.tunnel.dnsFallbackServers : [],
                 logsSnapshots: false
             ),
             defaults: defaults,
