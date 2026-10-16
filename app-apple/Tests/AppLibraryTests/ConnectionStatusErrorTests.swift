@@ -18,6 +18,15 @@ struct ConnectionStatusErrorTests {
     }
 
     @Test
+    func givenInteractiveLogin_whenResolvingConnectionStatus_thenMapsToInstruction() {
+        let sut = LocalizedConnectionStatusError(
+            lastErrorCode: ABI.AppErrorCode.interactiveLogin.toLastErrorCode
+        )
+
+        #expect(sut.localizedDescription == "Open Passepartout to enter the credentials required for this VPN.")
+    }
+
+    @Test
     func givenAppErrorCodeWithoutConnectionStatus_thenFallsBackToGenericDescription() {
         let sut = LocalizedConnectionStatusError(
             lastErrorCode: ABI.AppErrorCode.timeout.toLastErrorCode
