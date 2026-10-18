@@ -1,2 +1,2 @@
-* WireGuard: Enable experimental connection via feature flags (#1958)
+* Fix regression in DNS fallback preference
 * OpenVPN: Restore support for inline auth-user-pass (#1959)
