@@ -1,0 +1,5 @@
+LIBRARY "passepartout-vpnchannel"
+
+EXPORTS
+    DllCanUnloadNow PRIVATE
+    DllGetActivationFactory PRIVATE

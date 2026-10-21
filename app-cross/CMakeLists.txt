@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
+# Select per-target MSVC runtime checks before enabling any languages.
+if(POLICY CMP0184)
+    cmake_policy(SET CMP0184 NEW)
+endif()
 if(POLICY CMP0177)
     cmake_policy(SET CMP0177 NEW)
     set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
 endif()
 project(Passepartout LANGUAGES C CXX)
+
+if(WIN32 AND CMAKE_VERSION VERSION_LESS 4.0)
+    message(FATAL_ERROR "The Windows WinRT build requires CMake 4.0 or newer")
+endif()
 
 option(BUILD_APP "Build app executable" OFF)
 
@@ -26,9 +34,18 @@ endif()
 # Depend on Partout
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
 set(PP_BUILD_USE_OPENSSL ON)
-set(PP_BUILD_USE_MBEDTLS OFF)
+set(PP_BUILD_USE_MBEDTLS ON)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
+if(WIN32)
+    set(PP_BUILD_WINRT ON)
+    # Stop the packaged host before replacing its shared dependencies.
+    find_program(PLUGIN_POWERSHELL NAMES powershell.exe REQUIRED)
+    set(PLUGIN_STOP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tunnel/stop-plugin.ps1")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/tunnel/stop-plugin.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake" @ONLY)
+    install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake")
+endif()
 
 add_subdirectory(../partout partout)
 
@@ -95,11 +112,18 @@ set_target_properties(passepartout-tunnel PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
 )
-target_sources(passepartout-tunnel PRIVATE ${TUNNEL_SOURCES})
+if(WIN32)
+    target_sources(passepartout-tunnel PRIVATE tunnel/main_windows.cc)
+    set_target_properties(passepartout-tunnel PROPERTIES WIN32_EXECUTABLE ON)
+else()
+    target_sources(passepartout-tunnel PRIVATE tunnel/main_linux.c)
+endif()
 target_include_directories(passepartout-tunnel PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
 )
-target_link_partout(passepartout-tunnel)
+if(NOT WIN32)
+    target_link_partout(passepartout-tunnel)
+endif()
 if(APPLE)
     set_target_properties(passepartout-tunnel PROPERTIES
         MACOSX_RPATH ON
@@ -117,3 +141,5 @@ endif()
 install(TARGETS passepartout-tunnel
     RUNTIME DESTINATION .
 )
+
+include("tunnel/plugin.cmake")

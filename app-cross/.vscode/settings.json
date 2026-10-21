@@ -1,4 +1,5 @@
 {
     "cmake.useCMakePresets": "always",
-    "cmake.useVsDeveloperEnvironment": "always"
+    "cmake.useVsDeveloperEnvironment": "always",
+    "files.eol": "\n"
 }

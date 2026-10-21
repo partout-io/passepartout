@@ -7,18 +7,15 @@
 #include "app.h"
 #include "abi.h"
 
-extern "C" {
 #include <stdlib.h>
 #include "partout.h"
-}
 
-bool MyApp::OnInit()
-{
+bool MyApp::OnInit() {
 #ifdef _WIN32
     // Per-monitor DPI awareness (v2)
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 #endif
-    MyFrame* frame = 0;
+    MyFrame *frame = 0;
 
     /*
     char *bundle = NULL;
@@ -58,27 +55,25 @@ bool MyApp::OnInit()
     frame = new MyFrame();
     frame->Show(true);
     return true;
-// failure:
-//     if (bundle) free(bundle);
-//     if (constants) free(constants);
-//     return false;
+    // failure:
+    //     if (bundle) free(bundle);
+    //     if (constants) free(constants);
+    //     return false;
 }
 
 void MyApp::OnActivateApp(wxActivateEvent &) {
-//    psp_app_on_foreground();
+    //    psp_app_on_foreground();
 }
 
-MyFrame::MyFrame()
-    : wxFrame(nullptr, wxID_ANY, "Passepartout")
-{
-    wxMenuBar* menuBar = new wxMenuBar;
+MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Passepartout") {
+    wxMenuBar *menuBar = new wxMenuBar;
 
     // Application menu (macOS merges this under the app name)
-    wxMenu* appMenu = new wxMenu;
+    wxMenu *appMenu = new wxMenu;
     appMenu->Append(wxID_ABOUT, "&About");
     appMenu->Append(wxID_EXIT, "Quit");
 
-    wxMenu* actionsMenu = new wxMenu;
+    wxMenu *actionsMenu = new wxMenu;
     actionsMenu->Append(ID_ImportProfile, "Import profile");
     actionsMenu->Append(ID_FlushLog, "Flush log");
     const wxString partoutVersion = wxString::Format("Partout %s", partout_version());
@@ -100,40 +95,37 @@ MyFrame::MyFrame()
     Centre();
 }
 
-void MyFrame::OnImportProfile(wxCommandEvent &)
-{
-//    wxFileDialog openFileDialog(this, _("Import profile"), "", "",
-//                                "*.ovpn;*.conf;*.json",
-//                                wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-//
-//    if (openFileDialog.ShowModal() == wxID_CANCEL) return;
-//
-//    const wxString path = openFileDialog.GetPath();
-//    const char *cPath = path.utf8_str().data();
-//    printf("Path: %s\n", cPath);
-//    psp_app_import_profile_path(cPath, PSP_CB(this, [](void *ctx, int code, const char *json) {
-//        printf(">>> ABI Result: (ctx=%p), %d, %p\n", ctx, code, json);
-//        wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
-//    }));
+void MyFrame::OnImportProfile(wxCommandEvent &) {
+    //    wxFileDialog openFileDialog(this, _("Import profile"), "", "",
+    //                                "*.ovpn;*.conf;*.json",
+    //                                wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    //
+    //    if (openFileDialog.ShowModal() == wxID_CANCEL) return;
+    //
+    //    const wxString path = openFileDialog.GetPath();
+    //    const char *cPath = path.utf8_str().data();
+    //    printf("Path: %s\n", cPath);
+    //    psp_app_import_profile_path(cPath, PSP_CB(this, [](void *ctx, int code, const char *json)
+    //    {
+    //        printf(">>> ABI Result: (ctx=%p), %d, %p\n", ctx, code, json);
+    //        wxMessageBox("Import done.", "Import", wxOK | wxICON_INFORMATION);
+    //    }));
 }
 
-void MyFrame::OnFlushLog(wxCommandEvent &)
-{
-//    psp_app_flush_log();
+void MyFrame::OnFlushLog(wxCommandEvent &) {
+    //    psp_app_flush_log();
 }
 
-void MyFrame::OnAbout(wxCommandEvent &)
-{
-    wxMessageBox("This is a simple wxWidgets macOS menu bar app.", "About", wxOK | wxICON_INFORMATION);
+void MyFrame::OnAbout(wxCommandEvent &) {
+    wxMessageBox("This is a simple wxWidgets macOS menu bar app.", "About",
+                 wxOK | wxICON_INFORMATION);
 }
 
-void MyFrame::OnQuit(wxCommandEvent &)
-{
+void MyFrame::OnQuit(wxCommandEvent &) {
     Close(true);
 }
 
-void MyFrame::OnABIEvent(wxCommandEvent &event)
-{
+void MyFrame::OnABIEvent(wxCommandEvent &event) {
     const wxString json = event.GetString();
     const char *cJSON = json.utf8_str().data();
     printf(">>> ABI Event (MyFrame): %s\n", cJSON);
