@@ -8,15 +8,10 @@ import Testing
 
 struct ConfigBundleTests {
     @Test
-    func givenBundle_whenLegacyDaemonKeys_thenOnlyCurrentKeysAreActive() throws {
+    func givenBundle_whenRemovedDaemonKeys_thenOnlyCurrentKeysAreActive() throws {
         let json = #"{"daemonLooperV2":{"rate":100},"daemonLooperV2WireGuard":{"rate":100},"experimentalDaemon_202610":{"rate":100},"experimentalDaemonOpenVPN_202610":{"rate":100},"experimentalDaemonWireGuard_202610":{"rate":100},"appNotWorking":{"rate":100}}"#
         let sut = try ABI.decodeJSON(ConfigBundle.self, from: json)
-        #expect(sut.activeFlags(withBuild: 1) == [
-            .appNotWorking,
-            .experimentalDaemon_202610,
-            .experimentalDaemonOpenVPN_202610,
-            .experimentalDaemonWireGuard_202610
-        ])
+        #expect(sut.activeFlags(withBuild: 1) == [.appNotWorking])
     }
 
     @Test(arguments: [

@@ -10,8 +10,5 @@ import Partout
 /** New configuration keys use a fixed YYYYMM suffix for the month when the feature was introduced. Never reuse a key for an unrelated feature. */
 public enum OpenAPIConfigFlag: String, Sendable, Codable, CaseIterable {
     case appNotWorking = "appNotWorking"
-    case experimentalDaemon_202610 = "experimentalDaemon_202610"
-    case experimentalDaemonOpenVPN_202610 = "experimentalDaemonOpenVPN_202610"
-    case experimentalDaemonWireGuard_202610 = "experimentalDaemonWireGuard_202610"
     case unknown = "unknown"
 }
