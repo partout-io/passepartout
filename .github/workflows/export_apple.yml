@@ -20,7 +20,7 @@ concurrency:
 jobs:
   try_export:
     name: Try Xcode export
-    runs-on: macos-26
+    runs-on: xcode-27
     strategy:
       fail-fast: true
       matrix:

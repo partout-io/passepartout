@@ -25,11 +25,11 @@ jobs:
         include:
           - name: Apple tests
             suite: apple
-            runner: macos-26
+            runner: xcode-27
             timeout_minutes: 10
           - name: Partout tests
             suite: partout
-            runner: macos-26
+            runner: xcode-27
             timeout_minutes: 10
           - name: Cross checks
             suite: cross
