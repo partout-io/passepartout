@@ -85,6 +85,10 @@ extension View {
         formStyle(.grouped)
     }
 
+    public func themeGradient() -> some View {
+        modifier(ThemeGradientModifier())
+    }
+
     public func themeList() -> some View {
 #if os(tvOS)
         listStyle(.grouped)

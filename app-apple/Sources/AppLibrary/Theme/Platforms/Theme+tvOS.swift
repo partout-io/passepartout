@@ -20,24 +20,9 @@ extension View {
     public func themeLockScreen() -> some View {
         self
     }
-
-    public func themeGradient() -> some View {
-        modifier(ThemeGradientModifier())
-    }
 }
 
 // MARK: - Modifiers
-
-private struct ThemeGradientModifier: ViewModifier {
-
-    @Environment(Theme.self)
-    private var theme
-
-    func body(content: Content) -> some View {
-        content
-            .background(theme.darkAccentColor.opacity(0.6).gradient)
-    }
-}
 
 extension ThemeManualInputModifier {
     func body(content: Content) -> some View {
