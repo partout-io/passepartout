@@ -116,7 +116,7 @@ if(WIN32)
     target_sources(passepartout-tunnel PRIVATE tunnel/main_windows.cc)
     set_target_properties(passepartout-tunnel PROPERTIES WIN32_EXECUTABLE ON)
 else()
-    target_sources(passepartout-tunnel PRIVATE tunnel/main_linux.c tunnel/common.c)
+    target_sources(passepartout-tunnel PRIVATE tunnel/main_posix.c tunnel/common.c)
 endif()
 target_include_directories(passepartout-tunnel PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/tunnel/include
