@@ -8,8 +8,5 @@ cat >${filelist} <<EOF
 set(APP_SOURCES
 $(find app -name "*.cc" | sort)
 )
-set(TUNNEL_SOURCES
-$(find tunnel -name "*.c" | sort)
-)
 EOF
 popd

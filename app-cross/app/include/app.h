@@ -7,15 +7,13 @@
 #pragma once
 #include <wx/wx.h>
 
-class MyApp : public wxApp
-{
+class MyApp : public wxApp {
 public:
     bool OnInit() override;
     void OnActivateApp(wxActivateEvent &event);
 };
 
-class MyFrame : public wxFrame
-{
+class MyFrame : public wxFrame {
 public:
     MyFrame();
 

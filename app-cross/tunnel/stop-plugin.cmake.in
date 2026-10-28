@@ -1,0 +1,10 @@
+# Runs at install time, so --prefix overrides select the correct running host.
+execute_process(
+    COMMAND "@PLUGIN_POWERSHELL@" -NoProfile -NonInteractive -ExecutionPolicy Bypass
+        -File "@PLUGIN_STOP_SCRIPT@"
+        -InstallDirectory "${CMAKE_INSTALL_PREFIX}"
+    RESULT_VARIABLE PLUGIN_STOP_RESULT
+)
+if(NOT PLUGIN_STOP_RESULT STREQUAL "0")
+    message(FATAL_ERROR "Unable to stop the installed VPN host (${PLUGIN_STOP_RESULT})")
+endif()

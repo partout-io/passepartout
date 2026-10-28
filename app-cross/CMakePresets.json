@@ -11,7 +11,7 @@
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
         "CMAKE_INSTALL_BINDIR": ".",
         "CMAKE_INSTALL_LIBDIR": ".",
-        "BUILD_APP": "ON"
+        "BUILD_APP": "OFF"
       }
     },
     {
