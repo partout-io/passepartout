@@ -189,6 +189,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
         runtime_.reset();
         const auto profile = ReadProfile(channel);
 
+        // FIXME: ###, Apply user preferences here.
         partout_init_args init_args{};
         init_args.logger_fn = LogNative;
         init_args.logs_private_data = false;
@@ -197,6 +198,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
         options.cache_dir = temp_dir.c_str();
         options.starts_immediately = true;
         options.crypto = PartoutCryptoNative;
+
         auto runtime = std::make_unique<Partout::VpnChannelRuntime>(
             channel, profile.c_str(), init_args, options);
         // FIXME: ###, Allow cancellation during startup and verify callback reentrancy:
