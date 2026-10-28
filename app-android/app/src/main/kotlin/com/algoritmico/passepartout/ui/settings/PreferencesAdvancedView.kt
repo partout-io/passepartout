@@ -210,11 +210,7 @@ private fun ConfigPreferencePickerRow(
     )
 }
 
-private val advancedFlags = listOf(
-    ConfigFlag.experimentalDaemon_202610,
-    ConfigFlag.experimentalDaemonOpenVPN_202610,
-    ConfigFlag.experimentalDaemonWireGuard_202610
-)
+internal val advancedFlags: List<ConfigFlag> = emptyList()
 
 private enum class ConfigFlagPreference {
     Remote,

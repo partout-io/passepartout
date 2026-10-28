@@ -31,22 +31,13 @@ import kotlinx.serialization.Serializable
 /**
  * New configuration keys use a fixed YYYYMM suffix for the month when the feature was introduced. Never reuse a key for an unrelated feature.
  *
- * Values: appNotWorking,experimentalDaemon_202610,experimentalDaemonOpenVPN_202610,experimentalDaemonWireGuard_202610,unknown
+ * Values: appNotWorking,unknown
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
 
     @SerialName(value = "appNotWorking")
     appNotWorking("appNotWorking"),
-
-    @SerialName(value = "experimentalDaemon_202610")
-    experimentalDaemon_202610("experimentalDaemon_202610"),
-
-    @SerialName(value = "experimentalDaemonOpenVPN_202610")
-    experimentalDaemonOpenVPN_202610("experimentalDaemonOpenVPN_202610"),
-
-    @SerialName(value = "experimentalDaemonWireGuard_202610")
-    experimentalDaemonWireGuard_202610("experimentalDaemonWireGuard_202610"),
 
     @SerialName(value = "unknown")
     unknown("unknown");

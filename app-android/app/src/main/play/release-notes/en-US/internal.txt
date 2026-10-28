@@ -1,2 +1,1 @@
-* Fix regression in DNS fallback preference
-* OpenVPN: Restore support for inline auth-user-pass (#1959)
+Bump

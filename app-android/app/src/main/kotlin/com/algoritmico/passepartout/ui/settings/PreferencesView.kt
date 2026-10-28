@@ -66,11 +66,13 @@ fun PreferencesView(
                     }
                 )
             }
-            item {
-                ThemeNavigatingButton(
-                    title = stringResource(R.string.global_nouns_advanced),
-                    onClick = onAdvanced
-                )
+            if (advancedFlags.isNotEmpty()) {
+                item {
+                    ThemeNavigatingButton(
+                        title = stringResource(R.string.global_nouns_advanced),
+                        onClick = onAdvanced
+                    )
+                }
             }
         }
     }

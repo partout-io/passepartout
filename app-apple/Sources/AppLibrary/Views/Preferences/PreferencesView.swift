@@ -57,7 +57,9 @@ public struct PreferencesView: View {
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
-            NavigationLink(advancedTitle, destination: advancedView)
+            if !PreferencesAdvancedView.flags.isEmpty {
+                NavigationLink(advancedTitle, destination: advancedView)
+            }
         }
         .themeForm()
     }
