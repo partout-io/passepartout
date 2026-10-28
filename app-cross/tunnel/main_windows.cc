@@ -12,13 +12,12 @@
 #include <appmodel.h>
 #include <winstring.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
-#include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Management.Deployment.h>
-#include <winrt/Windows.Storage.h>
 
-static int register_package() {
+// FIXME: ###, Replace development registration with signed production packaging and updates.
+static int RegisterPackage() {
     try {
         winrt::init_apartment();
 
@@ -95,6 +94,7 @@ static int register_package() {
                                .c_str());
         return 0;
     } catch (winrt::hresult_error const &error) {
+        // FIXME: ###, Surface registration failures to users when no debugger is attached.
         std::wostringstream message;
         message
             << L"Plugin registration failed (0x" << std::hex
@@ -147,7 +147,7 @@ private:
 
 } // namespace
 
-static int run_host() {
+static int RunHost() {
     try {
         winrt::init_apartment();
         winrt::Windows::ApplicationModel::Core::CoreApplication::RunWithActivationFactories(
@@ -173,7 +173,7 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     UINT32 length = 0;
     const auto result = GetCurrentPackageFullName(&length, nullptr);
     if (result == APPMODEL_ERROR_NO_PACKAGE) {
-        return register_package();
+        return RegisterPackage();
     }
     if (result != ERROR_INSUFFICIENT_BUFFER) {
         OutputDebugStringW((std::wstring{L"Unable to determine package identity: "} +
@@ -181,5 +181,5 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
                                .c_str());
         return 1;
     }
-    return run_host();
+    return RunHost();
 }

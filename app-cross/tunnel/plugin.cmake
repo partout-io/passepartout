@@ -5,7 +5,7 @@ if(NOT MSVC)
     message(FATAL_ERROR "The VPN plugin requires MSVC and the Windows SDK with C++/WinRT.")
 endif()
 
-# The executable also runs unpackaged to register the VPN plugin.
+# The host loads the plugin dynamically; only the plugin links to Partout.
 add_library(passepartout-vpnplugin SHARED
     "${CMAKE_CURRENT_LIST_DIR}/plugin.cc"
     "${CMAKE_CURRENT_LIST_DIR}/plugin.def"
@@ -25,12 +25,12 @@ foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
     )
     target_compile_options(${PLUGIN_TARGET} PRIVATE /EHsc /permissive- /W4)
     target_link_options(${PLUGIN_TARGET} PRIVATE /APPCONTAINER)
-    # Resolve CRT startup locally before Partout's Zig import library, which
-    # also exports _DllMainCRTStartup and would bypass our CRT initialization.
-    target_link_libraries(${PLUGIN_TARGET} PRIVATE msvcrt)
-    target_link_partout(${PLUGIN_TARGET})
     target_link_libraries(${PLUGIN_TARGET} PRIVATE windowsapp runtimeobject)
 endforeach()
+# Resolve CRT startup before Partout's Zig import library, which also exports
+# _DllMainCRTStartup and would bypass the plugin's CRT initialization.
+target_link_libraries(passepartout-vpnplugin PRIVATE msvcrt)
+target_link_partout(passepartout-vpnplugin)
 set_target_properties(passepartout-vpnplugin PROPERTIES
     PREFIX ""
     OUTPUT_NAME "passepartout-vpnchannel"
@@ -51,16 +51,14 @@ if(NOT EXISTS "${PLUGIN_STORE_LIB_DIR}/msvcrt.lib")
 endif()
 target_link_directories(passepartout-vpnplugin BEFORE PRIVATE "${PLUGIN_STORE_LIB_DIR}")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/appxmanifest.xml"
-    "${CMAKE_CURRENT_BINARY_DIR}/tunnel/appxmanifest.xml" @ONLY)
-# Windows requires a logo even for a background-only package.
-set(PLUGIN_LOGO "${CMAKE_CURRENT_LIST_DIR}/logo.png")
-
+configure_file("${CMAKE_CURRENT_LIST_DIR}/AppxManifest.xml"
+    "${CMAKE_CURRENT_BINARY_DIR}/tunnel/AppxManifest.xml" @ONLY)
 add_dependencies(passepartout-tunnel passepartout-vpnplugin)
 install(TARGETS passepartout-vpnplugin
     RUNTIME DESTINATION .
 )
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tunnel/appxmanifest.xml"
-    DESTINATION . RENAME AppxManifest.xml
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tunnel/AppxManifest.xml"
+    DESTINATION .
 )
-install(FILES "${PLUGIN_LOGO}" DESTINATION . RENAME logo.png)
+# Windows requires a logo even for a background-only package.
+install(FILES "${CMAKE_CURRENT_LIST_DIR}/logo.png" DESTINATION .)

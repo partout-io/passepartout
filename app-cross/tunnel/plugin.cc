@@ -17,7 +17,6 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Networking.Vpn.h>
-#include <winrt/Windows.Networking.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/base.h>
 
@@ -27,7 +26,6 @@
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Networking;
 using namespace winrt::Windows::Networking::Vpn;
 using namespace winrt::Windows::Storage;
 
@@ -38,6 +36,7 @@ constexpr std::wstring_view kLogName = L"vpnchannel.log";
 
 std::mutex g_log_mutex;
 std::atomic_uint64_t g_log_sequence = 0;
+// FIXME: ###, Bound log size and retention, and filter verbose native logs for production.
 winrt::handle g_log_file;
 
 // Resolve package storage on the background-task thread, before native workers
@@ -49,8 +48,8 @@ void InitializeLog() noexcept {
         const auto folder = ApplicationData::Current().LocalFolder();
         const auto path = std::wstring{folder.Path()} + L"\\" + std::wstring{kLogName};
         const auto file = CreateFile2(path.c_str(), FILE_APPEND_DATA,
-                                      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                                      OPEN_ALWAYS, nullptr);
+                                     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                                     OPEN_ALWAYS, nullptr);
         if (file != INVALID_HANDLE_VALUE) g_log_file.attach(file);
     } catch (...) {
         OutputDebugStringW(L"Unable to open VPN log; debugger logging remains available.\n");
@@ -173,7 +172,7 @@ std::string ReadProfile(VpnChannel const &channel) {
     }
 }
 
-static void vpn_log(void *, int, const char *message) noexcept {
+void LogNative(void *, int, const char *message) noexcept {
     try {
         if (message) Log(winrt::to_hstring(message));
     } catch (...) {
@@ -184,12 +183,14 @@ static void vpn_log(void *, int, const char *message) noexcept {
 struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
     void Connect(VpnChannel const &channel) {
         Log(L"VPN connect requested", channel);
+        // FIXME: ###, Scope runtimes by channel or reject a second channel before resetting
+        // the active connection; the native daemon is currently process-wide.
         std::scoped_lock lock(runtime_mutex_);
         runtime_.reset();
         const auto profile = ReadProfile(channel);
 
         partout_init_args init_args{};
-        init_args.logger_fn = vpn_log;
+        init_args.logger_fn = LogNative;
         init_args.logs_private_data = false;
         const auto temp_dir = winrt::to_string(ApplicationData::Current().TemporaryFolder().Path());
         partout_daemon_options options{};
@@ -198,6 +199,10 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
         options.crypto = PartoutCryptoNative;
         auto runtime = std::make_unique<Partout::VpnChannelRuntime>(
             channel, profile.c_str(), init_args, options);
+        // FIXME: ###, Allow cancellation during startup and verify callback reentrancy:
+        // this mutex stays locked throughout the native connection wait and teardown.
+        // FIXME: ###, Complete native kill-switch and cancellation support before release
+        // (partout/cross/windows/src/platform.cc).
         runtime->Connect(channel);
         runtime_ = std::move(runtime);
     }
@@ -240,6 +245,8 @@ private:
 
 struct VpnBackgroundTask : winrt::implements<VpnBackgroundTask, IBackgroundTask> {
     void Run(IBackgroundTaskInstance const &task) {
+        // FIXME: ###, Handle background-task cancellation and verify reconnect after
+        // suspension, host termination, and network changes on x64 and ARM64.
         const auto deferral = task.GetDeferral();
         try {
             InitializeLog();
