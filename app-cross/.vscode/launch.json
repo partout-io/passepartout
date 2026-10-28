@@ -112,7 +112,7 @@
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "symbolSearchPath": "${workspaceFolder}/app-cross/out/build/windows-arm64/partout/bin;${workspaceFolder}/app-cross/out/build/windows-arm64/Debug",
+            "symbolSearchPath": "${workspaceFolder}/out/build/windows-arm64/partout/bin;${workspaceFolder}/out/build/windows-arm64/Debug",
             "logging": {
                 "moduleLoad": true,
                 "exceptions": true
@@ -123,7 +123,7 @@
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "symbolSearchPath": "${workspaceFolder}/app-cross/out/build/windows-x64/partout/bin;${workspaceFolder}/app-cross/out/build/windows-x64/Debug",
+            "symbolSearchPath": "${workspaceFolder}/out/build/windows-x64/partout/bin;${workspaceFolder}/out/build/windows-x64/Debug",
             "logging": {
                 "moduleLoad": true,
                 "exceptions": true
