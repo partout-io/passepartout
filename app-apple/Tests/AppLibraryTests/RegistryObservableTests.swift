@@ -54,6 +54,24 @@ struct RegistryObservableTests {
         }
     }
 
+    @Test(arguments: [
+        "2003:123:abc:4f00::1:52999",
+        "[2003:123:abc:4f00::1]:52999"
+    ])
+    func givenIPv6Endpoint_whenValidatingWireGuard_thenPassesBracketedEndpoint(endpoint: String) throws {
+        let sut = RegistryObservable(
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator(),
+            wireGuardValidateBlock: { text in
+                #expect(text.contains("Endpoint = [2003:123:abc:4f00::1]:52999"))
+            }
+        )
+        var configuration = WireGuard.Configuration.Builder(privateKey: "private-key")
+        var peer = WireGuard.RemoteInterface.Builder(publicKey: "public-key")
+        peer.endpoint = endpoint
+        configuration.peers = [peer]
+        try sut.validate(WireGuardModule.Builder(configurationBuilder: configuration))
+    }
+
     @Test
     func givenInvalidDNSServer_whenValidatingWireGuard_thenRejectsBeforeImporting() {
         let sut = RegistryObservable(

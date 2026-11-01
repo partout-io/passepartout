@@ -124,7 +124,8 @@ private extension WireGuard.Configuration.Builder {
                 lines.append("AllowedIPs = \($0.allowedIPs.wgJoined)")
             }
             if let endpoint = $0.endpoint {
-                lines.append("Endpoint = \(endpoint)")
+                let wireGuardEndpoint = Endpoint(rawValue: endpoint)?.wgRepresentation ?? endpoint
+                lines.append("Endpoint = \(wireGuardEndpoint)")
             }
             if let persistentKeepAlive = $0.keepAlive {
                 lines.append("PersistentKeepalive = \(persistentKeepAlive)")
