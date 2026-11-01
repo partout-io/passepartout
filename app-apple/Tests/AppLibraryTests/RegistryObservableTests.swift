@@ -75,6 +75,67 @@ struct RegistryObservableTests {
     }
 
     @Test
+    func givenPeerWithoutEndpointOrAllowedIPs_whenValidating_thenReachesValidator() {
+        let sut = RegistryObservable(
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator(),
+            wireGuardValidateBlock: { module in
+                let configuration = try #require(module.configuration)
+                #expect(configuration.interface.addresses.isEmpty)
+                let peer = try #require(configuration.peers.first)
+                #expect(peer.endpoint == nil)
+                #expect(peer.allowedIPs.isEmpty)
+                throw ValidationError.rejected
+            }
+        )
+        var configuration = WireGuard.Configuration.Builder(privateKey: privateKey)
+        configuration.peers = [WireGuard.RemoteInterface.Builder(publicKey: publicKey)]
+        #expect(throws: ValidationError.rejected) {
+            try sut.validate(WireGuardModule.Builder(configurationBuilder: configuration))
+        }
+    }
+
+    @Test
+    func givenConfigurationWithoutPeers_whenValidating_thenRejectsBeforeExport() {
+        let sut = RegistryObservable(
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator(),
+            wireGuardValidateBlock: { _ in Issue.record("Empty peers reached the exporter") }
+        )
+        let builder = WireGuardModule.Builder(
+            configurationBuilder: WireGuard.Configuration.Builder(privateKey: privateKey)
+        )
+        #expect {
+            try sut.validate(builder)
+        } throws: { error in
+            guard let error = error as? PartoutError else { return false }
+            return error.code == .wireGuard && error.subCode == "emptyPeers"
+        }
+    }
+
+    @Test
+    func givenConfigurationWithoutPeers_whenBuildingEditableProfile_thenRejectsWithoutValidator() {
+        let builder = WireGuardModule.Builder(
+            configurationBuilder: WireGuard.Configuration.Builder(privateKey: privateKey)
+        )
+        let profile = EditableProfile(name: "Incomplete", modules: [builder], activeModulesIds: [builder.id])
+        #expect {
+            _ = try profile.builder()
+        } throws: { error in
+            guard case ABI.AppError.malformedModule(let module, let reason) = error,
+                  let reason = reason as? PartoutError else { return false }
+            return module.id == builder.id && reason.code == .wireGuard && reason.subCode == "emptyPeers"
+        }
+    }
+
+    @Test
+    func givenNoConfiguration_whenValidating_thenSkipsExporter() throws {
+        let sut = RegistryObservable(
+            wireGuardKeyGenerator: FakeWireGuardKeyGenerator(),
+            wireGuardValidateBlock: { _ in Issue.record("Missing configuration reached the exporter") }
+        )
+        try sut.validate(WireGuardModule.Builder())
+    }
+
+    @Test
     func givenInvalidDNSServer_whenValidatingWireGuard_thenRejectsBeforeImporting() {
         let sut = RegistryObservable(
             wireGuardKeyGenerator: FakeWireGuardKeyGenerator(),
