@@ -91,9 +91,10 @@ public final class AppContext {
         profileObservable = ProfileObservable(profileManager: profileManager)
         registryObservable = RegistryObservable(
             wireGuardKeyGenerator: wireGuardKeyGenerator,
-            wireGuardValidateBlock: {
+            wireGuardValidateBlock: { module in
+                let text = try appImportExport.exportedModule(from: module)
                 _ = try appImportExport.importedModule(
-                    from: .contents(filename: "", data: $0),
+                    from: .contents(filename: "", data: text),
                     context: nil
                 )
             }
