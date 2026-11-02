@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     const partout_daemon_start_args start_args = {
         .profile = profile,
         .options = {
+            .crypto = PartoutCryptoNative,
             .is_daemon = true
         },
         .bindings = NULL

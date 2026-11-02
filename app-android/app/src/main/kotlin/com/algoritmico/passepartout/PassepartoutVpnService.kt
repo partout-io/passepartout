@@ -100,7 +100,8 @@ class PassepartoutVpnService: VpnService() {
                 dnsFallbackServers,
                 logsSnapshots
             )
-            val cryptoBackend = CryptoBackend.decode(preferences?.cryptoBackend)
+            // Ignore legacy backend preferences: Android always uses mbedTLS.
+            val cryptoBackend = CryptoBackend.mbedtls
             AppLog.d(logTag, "Crypto backend: $cryptoBackend")
             val featureFlags = preferences?.enabledFlags()?.daemonFeatureFlags ?: emptySet()
             AppLog.d(logTag, "Daemon feature flags: $featureFlags")

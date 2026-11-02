@@ -33,7 +33,8 @@ endif()
 
 # Depend on Partout
 set(PP_BUILD_OUTPUT ${OUTPUT_DIR})
-set(PP_BUILD_USE_OPENSSL ON)
+# Use native cryptography backed by mbedTLS; do not build OpenSSL.
+set(PP_BUILD_USE_OPENSSL OFF)
 set(PP_BUILD_USE_MBEDTLS ON)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
