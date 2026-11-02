@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.28)
+project(PassepartoutModelTests LANGUAGES CXX)
+
+find_package(nlohmann_json CONFIG REQUIRED)
+get_filename_component(APP_CROSS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+file(GLOB model_sources CONFIGURE_DEPENDS "${APP_CROSS_ROOT}/models/*.cpp")
+add_library(passepartout-models STATIC ${model_sources})
+target_compile_features(passepartout-models PUBLIC cxx_std_17)
+target_compile_definitions(passepartout-models PUBLIC NOMINMAX)
+target_link_libraries(passepartout-models PUBLIC nlohmann_json::nlohmann_json)
+
+include("${APP_CROSS_ROOT}/../partout/cmake/models.cmake")
+target_link_libraries(passepartout-models PUBLIC Partout::Models)
+
+add_executable(passepartout-models-test models.cc)
+target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
+if(MSVC)
+    target_compile_options(passepartout-models-test PRIVATE /UNDEBUG)
+else()
+    target_compile_options(passepartout-models-test PRIVATE -UNDEBUG)
+endif()
+enable_testing()
+add_test(NAME passepartout-models COMMAND passepartout-models-test)

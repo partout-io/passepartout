@@ -7,7 +7,7 @@ codegen="$root_dir/node_modules/.bin/openapi-generator-cli"
 cd "$root_dir"
 
 usage() {
-    echo "Usage: $0 [all|swift|kotlin]"
+    echo "Usage: $0 [all|swift|kotlin|cpp]"
     exit 1
 }
 
@@ -118,11 +118,18 @@ generate_kotlin_models() {
     popd
 }
 
+generate_cpp_models() {
+    "$root_dir/partout/scripts/gen-models.sh" \
+        "$root_dir/scripts/openapi.yaml" cpp "$root_dir/app-cross/models" \
+        Passepartout.Models "ConnectionStatus,ModuleType,TaggedProfile"
+}
+
 case $mode in
     all)
         generate_partout_models
         generate_swift_models
         generate_kotlin_models
+        generate_cpp_models
         ;;
     swift)
         generate_partout_models
@@ -131,6 +138,9 @@ case $mode in
     kotlin)
         generate_partout_models
         generate_kotlin_models
+        ;;
+    cpp)
+        generate_cpp_models
         ;;
     -*|--*|*)
         usage
