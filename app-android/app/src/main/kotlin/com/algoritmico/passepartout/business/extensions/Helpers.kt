@@ -20,6 +20,10 @@ data class GenericException(
     override val message: String?,
     override val cause: Throwable? = null
 ): Exception() {
+    override fun toString(): String =
+        if (AppLog.logsPrivateData) "GenericException(message=$message, cause=$cause)"
+        else "GenericException"
+
     override fun getLocalizedMessage(): String? {
         return cause?.localizedMessage ?: message
     }

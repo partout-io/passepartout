@@ -43,7 +43,11 @@ import kotlin.coroutines.resumeWithException
 
 sealed class TunnelObservableException: Exception() {
     data object Generic: TunnelObservableException()
-    data class Interactive(val profile: TaggedProfile): TunnelObservableException()
+    data class Interactive(val profile: TaggedProfile): TunnelObservableException() {
+        override fun toString(): String =
+            if (AppLog.logsPrivateData) "Interactive(profile=$profile)"
+            else "Interactive(profileId=${profile.id})"
+    }
     data object VpnPermissionDenied: TunnelObservableException()
 }
 
