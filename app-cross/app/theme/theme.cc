@@ -54,12 +54,12 @@ ThemeProfileList::ThemeProfileList(wxWindow *parent)
     AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(320));
     AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(160));
 #ifdef __WXMSW__
-    AppendColumn(new wxDataViewColumn(Localized(StringKey::EntitiesTunnelStatusActive),
+    AppendColumn(new wxDataViewColumn(wxString(),
         new ThemeSwitchRenderer(Localized(StringKey::EntitiesTunnelStatusActive),
                                 Localized(StringKey::EntitiesTunnelStatusInactive)),
         ToggleColumn, parent->FromDIP(90), wxALIGN_CENTER), "bool");
 #else
-    AppendToggleColumn(Localized(StringKey::EntitiesTunnelStatusActive), wxDATAVIEW_CELL_ACTIVATABLE,
+    AppendToggleColumn(wxString(), wxDATAVIEW_CELL_ACTIVATABLE,
                        parent->FromDIP(90), wxALIGN_CENTER);
 #endif
 }
