@@ -34,7 +34,7 @@ The corresponding `Launch packaged app offline` tasks add `--demo`, using a fake
 tunnel and separate profile storage. All four tasks activate through Windows,
 print the process ID, and do not build, install, register, or stop the tunnel
 host. Quit any previously launched unpackaged instance first. For debugging,
-launch with the appropriate task, then select `CMake: Attach to packaged app (Windows)`
+launch with the appropriate task, then select `Windows: Attach debugger to packaged app`
 and choose that `passepartout.exe` process ID. Attach and pause were verified with
 native VS Code debugging and package identity present on the earlier installed
 binary. The packaged resume/normal-Quit cycle was interrupted, so it is not yet
@@ -62,6 +62,24 @@ packaged tasks followed by attach, including for demo debugging; CMake Tools'
 generic Run/Debug target commands bypass this workflow. Install tasks are separate
 and may stop the tunnel host. The Windows VPN host is debugged by attaching to
 the system-activated process, not by launching its EXE directly.
+
+### VS Code commands
+
+1. **Tasks: Run Task** → **CMake: Install Windows ARM64 Debug** (or the matching
+   x64/configuration task) builds and installs files. It does not launch the app.
+2. **Tasks: Run Task** → **Windows: Launch packaged app (ARM64)** (or x64/offline
+   variant) starts the registered package and prints its PID.
+3. For debugging, use **Debug: Select and Start Debugging** →
+   **Windows: Attach debugger to packaged app**, then choose that PID. This uses
+   the C/C++ extension's native Windows debugger (`cppvsdbg`), not GDB or LLDB.
+
+CMake Tools' separate Run/Debug target buttons do not execute these task
+definitions. A selected target labelled `(Install)` can install and then launch
+the EXE unpackaged. Their status-bar and Project Status buttons are hidden in
+the folder and workspace settings to avoid this misleading alternative.
+The packaged launch tasks themselves never request a debugger path. If a
+debugger-path error appears, check that the selected debug configuration is the
+Windows attach entry, not a macOS LLDB entry or CMake's automatic debugger.
 
 The local development registration was repaired by updating version `1.0.0.0` to
 `1.0.0.1` and registering the manifest again with `Add-AppxPackage -Register`.

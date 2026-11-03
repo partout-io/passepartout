@@ -1,5 +1,15 @@
 {
     "cmake.useCMakePresets": "always",
     "cmake.useVsDeveloperEnvironment": "always",
+    "cmake.options.advanced": {
+        "debug": {
+            "statusBarVisibility": "hidden",
+            "projectStatusVisibility": "hidden"
+        },
+        "launch": {
+            "statusBarVisibility": "hidden",
+            "projectStatusVisibility": "hidden"
+        }
+    },
     "files.eol": "\n"
 }

@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "CMake: Attach to packaged app (Windows)",
+            "name": "Windows: Attach debugger to packaged app",
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}"
@@ -46,7 +46,7 @@
             "preLaunchTask": "CMake: Install macOS Release"
         },
         {
-            "name": "CMake: Attach to VPN plugin (Windows ARM64)",
+            "name": "Windows: Attach debugger to VPN plugin (ARM64)",
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
@@ -57,7 +57,7 @@
             }
         },
         {
-            "name": "CMake: Attach to VPN plugin (Windows x64)",
+            "name": "Windows: Attach debugger to VPN plugin (x64)",
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
