@@ -174,8 +174,8 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
         tray_ = std::make_unique<Tray>(*this);
         if (!tray_->SetIcon(icon, wxTheApp->GetAppName())) tray_.reset();
     }
-    SetMinSize(FromDIP(wxSize(720, 420)));
-    SetSize(FromDIP(wxSize(820, 560)));
+    SetMinSize(FromDIP(wxSize(640, 360)));
+    SetSize(FromDIP(wxSize(720, 480)));
     Centre();
     snapshot_ = context_.profiles.Snapshot();
     Render();
