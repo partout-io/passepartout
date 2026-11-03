@@ -6,8 +6,8 @@
   IgnorableNamespaces="uap rescap">
   <Identity
     Name="Passepartout.VpnChannel"
-    Publisher="CN=Passepartout VpnChannel"
-    Version="1.0.0.0"
+    Publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
+    Version="@PASSEPARTOUT_PACKAGE_VERSION@"
     ProcessorArchitecture="@PLUGIN_ARCH@" />
   <Properties>
     <DisplayName>Passepartout</DisplayName>
@@ -17,7 +17,7 @@
   <Dependencies>
     <TargetDeviceFamily
       Name="Windows.Desktop"
-      MinVersion="10.0.20348.0"
+      MinVersion="10.0.22000.0"
       MaxVersionTested="10.0.26100.0" />
     <PackageDependency
       Name="Microsoft.VCLibs.140.00"
@@ -28,6 +28,7 @@
     <Resource Language="en-us" />
   </Resources>
   <Applications>
+@PASSEPARTOUT_FRONTEND_MANIFEST@
     <Application Id="VpnPlugin">
       <uap:VisualElements
         AppListEntry="none"
@@ -49,6 +50,7 @@
     </Application>
   </Applications>
   <Capabilities>
+@PASSEPARTOUT_FRONTEND_CAPABILITY@
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
     <rescap:Capability Name="networkingVpnProvider" />

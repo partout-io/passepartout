@@ -1,5 +1,11 @@
 set(APP_SOURCES
-app/abi.cc
-app/app.cc
-app/main.cc
+    app/app.cc
+    app/context/app_context.cc
+    app/main.cc
+    app/theme/theme.cc
 )
+if(WIN32)
+    list(APPEND APP_SOURCES
+        app/platform/windows_tunnel.cc
+    )
+endif()

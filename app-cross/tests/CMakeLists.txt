@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
-project(PassepartoutModelTests LANGUAGES CXX)
+project(PassepartoutTests LANGUAGES CXX)
 
-find_package(nlohmann_json CONFIG REQUIRED)
-get_filename_component(APP_CROSS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
-file(GLOB model_sources CONFIGURE_DEPENDS "${APP_CROSS_ROOT}/models/*.cpp")
-add_library(passepartout-models STATIC ${model_sources})
-target_compile_features(passepartout-models PUBLIC cxx_std_17)
-target_compile_definitions(passepartout-models PUBLIC NOMINMAX)
-target_link_libraries(passepartout-models PUBLIC nlohmann_json::nlohmann_json)
+find_package(nlohmann_json CONFIG QUIET)
+if(NOT TARGET nlohmann_json::nlohmann_json)
+    include(FetchContent)
+    FetchContent_Declare(json
+        URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+        URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+    )
+    FetchContent_MakeAvailable(json)
+endif()
 
-include("${APP_CROSS_ROOT}/../partout/cmake/models.cmake")
-target_link_libraries(passepartout-models PUBLIC Partout::Models)
+include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
 add_executable(passepartout-models-test models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
@@ -21,3 +22,20 @@ else()
 endif()
 enable_testing()
 add_test(NAME passepartout-models COMMAND passepartout-models-test)
+
+add_executable(passepartout-application-test application.cc)
+target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
+if(MSVC)
+    target_compile_options(passepartout-application-test PRIVATE /UNDEBUG)
+else()
+    target_compile_options(passepartout-application-test PRIVATE -UNDEBUG)
+endif()
+add_test(NAME passepartout-application COMMAND passepartout-application-test)
+
+# Compile the native adapter on Windows without requiring wxWidgets or a VPN.
+if(WIN32)
+    add_library(passepartout-windows-integration-check OBJECT ../app/platform/windows_tunnel.cc)
+    target_link_libraries(passepartout-windows-integration-check PRIVATE passepartout-core windowsapp)
+    target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
+    target_compile_options(passepartout-application-test PRIVATE /utf-8)
+endif()

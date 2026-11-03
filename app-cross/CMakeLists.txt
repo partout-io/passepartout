@@ -65,6 +65,7 @@ include("files.cmake")
 
 # Define app target
 if(BUILD_APP)
+    include("core.cmake")
     add_executable(passepartout "")
     set_target_properties(passepartout PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
@@ -76,6 +77,12 @@ if(BUILD_APP)
         ${CMAKE_CURRENT_SOURCE_DIR}/app/include
     )
     target_link_partout(passepartout)
+    target_link_libraries(passepartout PRIVATE passepartout-core)
+    if(WIN32)
+        target_link_libraries(passepartout PRIVATE windowsapp runtimeobject)
+        target_compile_definitions(passepartout PRIVATE NOMINMAX UNICODE _UNICODE)
+        target_compile_options(passepartout PRIVATE /EHsc /permissive- /utf-8)
+    endif()
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
