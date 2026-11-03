@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "../business/tunnel.h"
-#include "../context/constants.h"
 #include "partout_winrt.h"
 #include <partout/models/TunnelSnapshot.h>
 #include <stdexcept>
@@ -12,7 +11,6 @@ namespace Passepartout {
 namespace {
 class WindowsTunnelStrategy final : public TunnelStrategy {
 public:
-    WindowsTunnelStrategy() : tunnel_(defaultCrossConstants.tunnel.profilePrefix) {}
     std::vector<Models::AppTunnelInfo> Fetch() override {
         std::vector<Models::AppTunnelInfo> result;
         for (const auto &snapshot : tunnel_.Fetch()) {
