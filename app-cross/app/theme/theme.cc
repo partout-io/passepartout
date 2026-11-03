@@ -4,7 +4,7 @@
 
 #include "theme.h"
 #ifdef __WXMSW__
-#include "windows/switch.h"
+#include "switch.h"
 #endif
 #include "app_icon_resource.h"
 #include "../strings/strings.h"
