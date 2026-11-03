@@ -114,7 +114,8 @@ distribution validation.
 - Window close hides to the tray when available. Quit exits the frontend and
   leaves any system-managed VPN running; use Disconnect to stop it.
 - A single tray click shows the window. The tray menu has Disconnect and Quit.
-- Profile rows use a stock checkbox toggle alongside name and status. Toggles
+- Profile rows use a custom DPI-scaled Theme switch on Windows and a stock
+  toggle on other platforms, alongside name and status. Toggles
   act through the tunnel observable, reflect observed state, and disable during
   pending actions or when VPN control is unavailable. Selection remains for
   deletion; connecting does not require selecting a row first.

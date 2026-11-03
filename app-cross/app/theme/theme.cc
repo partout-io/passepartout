@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "theme.h"
+#ifdef __WXMSW__
+#include "windows/switch.h"
+#endif
 #include "app_icon_resource.h"
 #include "../strings/strings.h"
 #include <wx/imagpng.h>
@@ -50,8 +53,15 @@ ThemeProfileList::ThemeProfileList(wxWindow *parent)
     SetName(Localized(StringKey::GlobalNounsProfiles));
     AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(320));
     AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(160));
+#ifdef __WXMSW__
+    AppendColumn(new wxDataViewColumn(Localized(StringKey::EntitiesTunnelStatusActive),
+        new ThemeSwitchRenderer(Localized(StringKey::EntitiesTunnelStatusActive),
+                                Localized(StringKey::EntitiesTunnelStatusInactive)),
+        ToggleColumn, parent->FromDIP(90), wxALIGN_CENTER), "bool");
+#else
     AppendToggleColumn(Localized(StringKey::EntitiesTunnelStatusActive), wxDATAVIEW_CELL_ACTIVATABLE,
                        parent->FromDIP(90), wxALIGN_CENTER);
+#endif
 }
 void ThemeProfileList::AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled) {
     wxVector<wxVariant> values;
