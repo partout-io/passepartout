@@ -34,12 +34,37 @@ void Theme::Apply(wxWindow *window) {
 wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
     return new wxActivityIndicator(parent, wxID_ANY);
 }
-wxListCtrl *ThemeList(wxWindow *parent) {
-    auto *list = new wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
-    list->SetName(Localized(StringKey::GlobalNounsProfiles));
-    list->AppendColumn(Localized(StringKey::GlobalNounsName), wxLIST_FORMAT_LEFT, parent->FromDIP(320));
-    list->AppendColumn(Localized(StringKey::GlobalNounsStatus), wxLIST_FORMAT_LEFT, parent->FromDIP(160));
-    return list;
+namespace {
+class ProfileListStore final : public wxDataViewListStore {
+public:
+    bool IsEnabledByRow(unsigned row, unsigned column) const override {
+        return column != ThemeProfileList::ToggleColumn || GetItemData(GetItem(row)) != 0;
+    }
+};
+}
+ThemeProfileList::ThemeProfileList(wxWindow *parent)
+    : wxDataViewListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_MULTIPLE | wxDV_ROW_LINES) {
+    auto *store = new ProfileListStore;
+    AssociateModel(store);
+    store->DecRef();
+    SetName(Localized(StringKey::GlobalNounsProfiles));
+    AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(320));
+    AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(160));
+    AppendToggleColumn(Localized(StringKey::EntitiesTunnelStatusActive), wxDATAVIEW_CELL_ACTIVATABLE,
+                       parent->FromDIP(90), wxALIGN_CENTER);
+}
+void ThemeProfileList::AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled) {
+    wxVector<wxVariant> values;
+    values.push_back(wxVariant(name));
+    values.push_back(wxVariant(status));
+    values.push_back(wxVariant(isOn));
+    AppendItem(values, enabled ? 1 : 0);
+}
+void ThemeProfileList::UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool isOn, bool enabled) {
+    SetItemData(RowToItem(row), enabled ? 1 : 0);
+    SetTextValue(name, row, 0);
+    SetTextValue(status, row, 1);
+    SetToggleValue(isOn, row, ToggleColumn);
 }
 wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message) {
     return new wxStaticText(parent, wxID_ANY, message, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);

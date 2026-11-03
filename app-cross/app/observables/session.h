@@ -74,7 +74,14 @@ private:
 };
 class TunnelObservable {
 public:
+    struct ToggleState {
+        bool isOn = false;
+        bool canInteract = false;
+        Status status = Status::disconnected;
+    };
     explicit TunnelObservable(AppSession &session) : session_(session) {}
+    static ToggleState StateForProfile(const AppSnapshot &state, const std::string &id);
+    void SetEnabled(const std::string &id, bool enabled);
     void Connect(std::string id);
     void Disconnect(std::string id);
     void Refresh();

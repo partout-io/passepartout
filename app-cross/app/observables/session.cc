@@ -224,6 +224,30 @@ void ProfileObservable::ClearError() {
 void TunnelObservable::Connect(std::string id) {
     session_.Connect(std::move(id));
 }
+TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapshot &state, const std::string &id) {
+    ToggleState result;
+    bool otherActive = false;
+    for (const auto &tunnel : state.tunnels) {
+        if (tunnel.id == id) {
+            result.isOn = tunnel.isEnabled;
+            result.status = tunnel.status.value;
+        } else if (tunnel.status.value != Status::disconnected) {
+            otherActive = true;
+        }
+    }
+    const bool exists = std::any_of(state.profiles.begin(), state.profiles.end(), [&](const auto &profile) {
+        return profile.id == id;
+    });
+    result.canInteract = exists && state.loaded && !state.busy && state.tunnelAvailable &&
+        result.status != Status::disconnecting && (result.isOn || !otherActive);
+    return result;
+}
+void TunnelObservable::SetEnabled(const std::string &id, bool enabled) {
+    const auto state = StateForProfile(Snapshot(), id);
+    if (!state.canInteract || state.isOn == enabled) return;
+    if (enabled) Connect(id);
+    else Disconnect(id);
+}
 void TunnelObservable::Disconnect(std::string id) {
     session_.Disconnect(std::move(id));
 }

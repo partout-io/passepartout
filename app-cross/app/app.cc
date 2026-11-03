@@ -38,20 +38,16 @@ wxString QuitTitle() {
 class Tray final : public wxTaskBarIcon {
 public:
     explicit Tray(MainView &view) : view_(view) {
-        Bind(wxEVT_TASKBAR_LEFT_DCLICK, [this](wxTaskBarIconEvent &) {
+        Bind(wxEVT_TASKBAR_LEFT_UP, [this](wxTaskBarIconEvent &) {
             view_.ShowWindow();
         });
     }
 private:
     wxMenu *CreatePopupMenu() override {
         auto *menu = new wxMenu;
-        menu->Append(wxID_OPEN, Localized(StringKey::GlobalActionsShow));
         menu->Append(wxID_STOP, Localized(StringKey::GlobalActionsDisconnect));
         menu->AppendSeparator();
         menu->Append(wxID_EXIT, QuitTitle());
-        menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-            view_.ShowWindow();
-        }, wxID_OPEN);
         menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
             view_.DisconnectActive();
         }, wxID_STOP);
@@ -116,17 +112,15 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     search_ = new wxSearchCtrl(panel, wxID_ANY);
     search_->ShowCancelButton(true);
     layout->Add(search_, 0, wxEXPAND | wxALL, gap);
-    list_ = ThemeList(panel);
+    list_ = new ThemeProfileList(panel);
     layout->Add(list_, 1, wxEXPAND | wxLEFT | wxRIGHT, gap);
     message_ = ThemeEmptyMessage(panel, Localized(StringKey::GlobalNounsLoading));
     layout->Add(message_, 0, wxEXPAND | wxALL, gap);
     auto *actions = new wxBoxSizer(wxHORIZONTAL);
     import_ = new wxButton(panel, wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile));
     remove_ = new wxButton(panel, wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
-    connect_ = new wxButton(panel, wxID_ANY, Localized(StringKey::GlobalActionsConnect));
-    disconnect_ = new wxButton(panel, wxID_STOP, Localized(StringKey::GlobalActionsDisconnect));
     progress_ = ThemeProgressView(panel);
-    for (auto *button : {import_, remove_, connect_, disconnect_}) {
+    for (auto *button : {import_, remove_}) {
         actions->Add(button, 0, wxRIGHT, gap);
     }
     actions->AddStretchSpacer();
@@ -161,21 +155,13 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     remove_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         Remove();
     });
-    connect_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        Connect();
-    });
-    disconnect_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        DisconnectActive();
-    });
     search_->Bind(wxEVT_TEXT, [this](wxCommandEvent &) {
         Render();
     });
-    list_->Bind(wxEVT_LIST_ITEM_SELECTED, [this](wxListEvent &) {
+    list_->Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [this](wxDataViewEvent &) {
         UpdateActions();
     });
-    list_->Bind(wxEVT_LIST_ITEM_DESELECTED, [this](wxListEvent &) {
-        UpdateActions();
-    });
+    list_->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &MainView::ToggleProfile, this);
     Bind(wxEVT_TIMER, &MainView::Tick, this);
     Bind(wxEVT_CLOSE_WINDOW, &MainView::CloseWindow, this);
     Bind(wxEVT_SYS_COLOUR_CHANGED, [panel](wxSysColourChangedEvent &event) {
@@ -201,31 +187,39 @@ MainView::~MainView() {
 }
 std::vector<std::string> MainView::SelectedIds() const {
     std::vector<std::string> ids;
-    long item = -1;
-    while ((item = list_->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != -1) {
-        if (static_cast<std::size_t>(item) < visibleIds_.size()) ids.push_back(visibleIds_[item]);
+    wxDataViewItemArray selected;
+    list_->GetSelections(selected);
+    for (const auto &item : selected) {
+        const auto row = list_->ItemToRow(item);
+        if (row >= 0 && static_cast<std::size_t>(row) < visibleIds_.size()) ids.push_back(visibleIds_[row]);
     }
     return ids;
 }
 void MainView::Render() {
+    rendering_ = true;
     const auto selected = SelectedIds();
     list_->Freeze();
-    list_->DeleteAllItems();
-    visibleIds_.clear();
     const auto query = search_->GetValue().Lower();
+    std::vector<std::string> ids;
+    for (const auto &profile : snapshot_.profiles) {
+        if (query.empty() || Text(profile.name).Lower().Contains(query)) ids.push_back(profile.id);
+    }
+    const bool rebuild = ids != visibleIds_;
+    if (rebuild) list_->DeleteAllItems();
+    visibleIds_ = std::move(ids);
+    unsigned row = 0;
     for (const auto &profile : snapshot_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
-        const auto row = list_->InsertItem(list_->GetItemCount(), Text(profile.name));
-        auto status = snapshot_.tunnelAvailable ? Localized(StringKey::EntitiesTunnelStatusInactive) : wxString();
-        for (const auto &tunnel : snapshot_.tunnels) {
-            if (snapshot_.tunnelAvailable && tunnel.id == profile.id) status = StatusText(tunnel.status.value);
-        }
-        list_->SetItem(row, 1, status);
-        visibleIds_.push_back(profile.id);
-        if (std::find(selected.begin(), selected.end(), profile.id) != selected.end())
-            list_->SetItemState(row, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+        const auto toggle = TunnelObservable::StateForProfile(snapshot_, profile.id);
+        const auto status = snapshot_.tunnelAvailable ? StatusText(toggle.status) : wxString();
+        if (rebuild) list_->AppendProfile(Text(profile.name), status, toggle.isOn, toggle.canInteract);
+        else list_->UpdateProfile(row, Text(profile.name), status, toggle.isOn, toggle.canInteract);
+        if (rebuild && std::find(selected.begin(), selected.end(), profile.id) != selected.end())
+            list_->SelectRow(row);
+        ++row;
     }
     list_->Thaw();
+    rendering_ = false;
     message_->SetLabel(Localized(StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(snapshot_.loaded && snapshot_.profiles.empty());
     if (snapshot_.busy) progress_->Start();
@@ -236,14 +230,9 @@ void MainView::Render() {
 void MainView::UpdateActions() {
     const bool idle = !snapshot_.busy && snapshot_.loaded;
     const auto selected = SelectedIds();
-    const bool active = snapshot_.tunnelAvailable && std::any_of(snapshot_.tunnels.begin(), snapshot_.tunnels.end(), [](const auto &t) {
-        return t.status.value != Status::disconnected;
-    });
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
     remove_->Enable(idle && !selected.empty());
-    connect_->Enable(idle && snapshot_.tunnelAvailable && selected.size() == 1 && !active);
-    disconnect_->Enable(!snapshot_.busy && active);
 }
 void MainView::Tick(wxTimerEvent &) {
     const auto next = context_.profiles.Snapshot();
@@ -291,9 +280,15 @@ void MainView::Remove() {
     if (dialog.ShowModal() != wxID_OK) return;
     context_.profiles.Remove(ids);
 }
-void MainView::Connect() {
-    const auto ids = SelectedIds();
-    if (ids.size() == 1) context_.tunnel.Connect(ids.front());
+void MainView::ToggleProfile(wxDataViewEvent &event) {
+    if (rendering_ || event.GetColumn() != ThemeProfileList::ToggleColumn) return;
+    const auto row = list_->ItemToRow(event.GetItem());
+    if (row < 0 || static_cast<std::size_t>(row) >= visibleIds_.size()) return;
+    context_.tunnel.SetEnabled(visibleIds_[row], list_->GetToggleValue(row, ThemeProfileList::ToggleColumn));
+    // Restore observed state immediately; the next snapshot supplies completion
+    // or failure instead of displaying an optimistic connection as successful.
+    snapshot_.busy = context_.profiles.Snapshot().busy;
+    Render();
 }
 void MainView::DisconnectActive() {
     const auto state = context_.tunnel.Snapshot();

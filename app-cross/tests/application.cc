@@ -217,6 +217,7 @@ int main() {
         assert(tunnel.Fetch().empty());
 
         auto failed = std::make_unique<ControlledTunnel>();
+        auto *sessionStrategy = failed.get();
         failed->failConnect = true;
         AppSession session(std::make_unique<FileProfileRepository>(root / "profiles"), importer, std::move(failed));
         Wait(session);
@@ -291,6 +292,40 @@ int main() {
         assert(reopened.Fetch().size() == 1);
         assert(reopened.Fetch().at(0).id == p.id);
 
+        // Row toggles use observed state and reject unavailable or busy actions.
+        TunnelObservable toggle(session);
+        sessionStrategy->failConnect = false;
+        toggle.SetEnabled(p.id, true);
+        Wait(session);
+        auto toggleState = TunnelObservable::StateForProfile(session.Snapshot(), p.id);
+        assert(toggleState.isOn && toggleState.canInteract);
+        toggle.SetEnabled(p.id, false);
+        Wait(session);
+        toggleState = TunnelObservable::StateForProfile(session.Snapshot(), p.id);
+        assert(!toggleState.isOn && toggleState.canInteract);
+        auto unavailableState = session.Snapshot();
+        unavailableState.tunnelAvailable = false;
+        assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
+        unavailableState = session.Snapshot();
+        unavailableState.busy = true;
+        assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
+        assert(!TunnelObservable::StateForProfile(session.Snapshot(), "missing").canInteract);
+        auto transitioning = session.Snapshot();
+        transitioning.tunnels.at(0).status.value = Status::connecting;
+        transitioning.tunnels.at(0).isEnabled = true;
+        assert(TunnelObservable::StateForProfile(transitioning, p.id).canInteract);
+        transitioning.tunnels.at(0).status.value = Status::disconnecting;
+        assert(!TunnelObservable::StateForProfile(transitioning, p.id).canInteract);
+        transitioning.tunnels.at(0).id = "another-active-profile";
+        assert(!TunnelObservable::StateForProfile(transitioning, p.id).canInteract);
+        sessionStrategy->failConnect = true;
+        toggle.SetEnabled(p.id, true);
+        Wait(session);
+        assert(!session.Snapshot().error.empty());
+        assert(!TunnelObservable::StateForProfile(session.Snapshot(), p.id).isOn);
+        session.ClearError();
+        sessionStrategy->failConnect = false;
+
         auto gate = std::make_shared<Gate>();
         auto entered = gate->entered.get_future();
         AppSession queued(std::make_unique<FileProfileRepository>(root / "profiles"),
@@ -300,6 +335,7 @@ int main() {
         assert(entered.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
         queued.Disconnect(p.id);
         assert(queued.Snapshot().busy);
+        assert(!TunnelObservable::StateForProfile(queued.Snapshot(), p.id).canInteract);
         gate->release.set_value();
         Wait(queued);
         assert(queued.Snapshot().error.empty());
