@@ -119,6 +119,11 @@ if(BUILD_APP)
     install(TARGETS passepartout
         RUNTIME DESTINATION .
     )
+    if(MSVC)
+        install(FILES "$<TARGET_PDB_FILE:passepartout>"
+            DESTINATION . CONFIGURATIONS Debug RelWithDebInfo OPTIONAL
+        )
+    endif()
 endif()
 
 # Define tunnel target
