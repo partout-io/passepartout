@@ -3,67 +3,75 @@
     "configurations": [
         {
             "name": "Run Windows ARM64 Debug",
-            "type": "node-terminal",
+            "type": "cppvsdbg",
             "request": "launch",
-            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture arm64 -Configuration Debug",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows ARM64 Debug"
         },
         {
             "name": "Run Windows ARM64 Release",
-            "type": "node-terminal",
+            "type": "cppvsdbg",
             "request": "launch",
-            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture arm64 -Configuration Release",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows ARM64 Release"
         },
         {
             "name": "Run Windows X64 Debug",
-            "type": "node-terminal",
+            "type": "cppvsdbg",
             "request": "launch",
-            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture x64 -Configuration Debug",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows X64 Debug"
         },
         {
             "name": "Run Windows X64 Release",
-            "type": "node-terminal",
+            "type": "cppvsdbg",
             "request": "launch",
-            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture x64 -Configuration Release",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows X64 Release"
         },
         {
             "name": "Run macOS ARM64 Debug",
-            "type": "node-terminal",
+            "type": "lldb-dap",
             "request": "launch",
-            "command": "bash ./scripts/run-app.sh arm64 Debug",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/macos-arm64",
+            "program": "${workspaceFolder}/out/install/macos-arm64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS ARM64 Debug"
         },
         {
             "name": "Run macOS ARM64 Release",
-            "type": "node-terminal",
+            "type": "lldb-dap",
             "request": "launch",
-            "command": "bash ./scripts/run-app.sh arm64 Release",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/macos-arm64",
+            "program": "${workspaceFolder}/out/install/macos-arm64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS ARM64 Release"
         },
         {
             "name": "Run macOS X64 Debug",
-            "type": "node-terminal",
+            "type": "lldb-dap",
             "request": "launch",
-            "command": "bash ./scripts/run-app.sh x64 Debug",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/macos-x64",
+            "program": "${workspaceFolder}/out/install/macos-x64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS X64 Debug"
         },
         {
             "name": "Run macOS X64 Release",
-            "type": "node-terminal",
+            "type": "lldb-dap",
             "request": "launch",
-            "command": "bash ./scripts/run-app.sh x64 Release",
-            "cwd": "${workspaceFolder}",
-            "autoAttachChildProcesses": false
+            "cwd": "${workspaceFolder}/out/install/macos-x64",
+            "program": "${workspaceFolder}/out/install/macos-x64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS X64 Release"
         },
         {
             "name": "Attach Windows ARM64",

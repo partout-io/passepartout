@@ -104,6 +104,126 @@
                 "Release"
             ],
             "problemMatcher": []
+        },
+        {
+            "label": "Prepare Windows ARM64 Debug",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "arm64",
+                "-Configuration",
+                "Debug",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare Windows ARM64 Release",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "arm64",
+                "-Configuration",
+                "Release",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare Windows X64 Debug",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "x64",
+                "-Configuration",
+                "Debug",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare Windows X64 Release",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "x64",
+                "-Configuration",
+                "Release",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare macOS ARM64 Debug",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "arm64",
+                "Debug",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare macOS ARM64 Release",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "arm64",
+                "Release",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare macOS X64 Debug",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "x64",
+                "Debug",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
+        },
+        {
+            "label": "Prepare macOS X64 Release",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "x64",
+                "Release",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
         }
     ]
 }
