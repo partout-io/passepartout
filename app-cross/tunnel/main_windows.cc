@@ -117,20 +117,18 @@ namespace {
 
 struct PluginFactories : winrt::implements<PluginFactories, IGetActivationFactory> {
     PluginFactories() {
-        module_ = LoadPackagedLibrary(L"passepartout-vpnchannel.dll", 0);
-        if (!module_) {
+        // Keep one loader reference for the process lifetime, even if factory
+        // lookup fails. Unloading this dependency chain can leave Go runtime
+        // threads executing code from the unloaded WireGuard DLL.
+        static const HMODULE module = [] {
+            const auto loaded = LoadPackagedLibrary(L"passepartout-vpnchannel.dll", 0);
+            if (!loaded) winrt::throw_last_error();
+            return loaded;
+        }();
+        factory_ = reinterpret_cast<Factory>(GetProcAddress(module, "DllGetActivationFactory"));
+        if (!factory_) {
             winrt::throw_last_error();
         }
-        factory_ = reinterpret_cast<Factory>(GetProcAddress(module_, "DllGetActivationFactory"));
-        if (!factory_) {
-            const auto error = GetLastError();
-            FreeLibrary(module_);
-            winrt::throw_hresult(HRESULT_FROM_WIN32(error));
-        }
-    }
-
-    ~PluginFactories() {
-        FreeLibrary(module_);
     }
 
     IInspectable GetActivationFactory(winrt::hstring const &class_id) {
@@ -142,7 +140,6 @@ struct PluginFactories : winrt::implements<PluginFactories, IGetActivationFactor
 
 private:
     using Factory = HRESULT(__stdcall *)(HSTRING, void **);
-    HMODULE module_ = nullptr;
     Factory factory_ = nullptr;
 };
 
