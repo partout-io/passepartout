@@ -1,0 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+#pragma once
+
+namespace Passepartout {
+inline constexpr unsigned char appIconData[] = { @APP_ICON_BYTES@ };
+}

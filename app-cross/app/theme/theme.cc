@@ -3,9 +3,26 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "theme.h"
+#include "app_icon_resource.h"
 #include "../strings/strings.h"
+#include <wx/imagpng.h>
+#include <wx/mstream.h>
 #include <wx/settings.h>
 namespace Passepartout {
+wxIcon Theme::AppIcon(wxWindow *window) {
+    wxMemoryInputStream stream(appIconData, sizeof(appIconData));
+    wxPNGHandler decoder;
+    wxImage image;
+    if (!decoder.LoadFile(&image, stream)) return {};
+    const auto fallback = window->FromDIP(16);
+    const auto width = wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
+    const auto height = wxSystemSettings::GetMetric(wxSYS_SMALLICON_Y, window);
+    image.Rescale(width > 0 ? width : fallback, height > 0 ? height : fallback,
+                  wxIMAGE_QUALITY_HIGH);
+    wxIcon icon;
+    icon.CopyFromBitmap(wxBitmap(image));
+    return icon;
+}
 int Theme::Spacing(wxWindow *window) {
     return window->FromDIP(12);
 }

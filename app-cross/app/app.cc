@@ -5,7 +5,6 @@
 #include "app.h"
 #include "strings/strings.h"
 #include "partout.h"
-#include <wx/artprov.h>
 #include <wx/aboutdlg.h>
 #include <wx/stdpaths.h>
 #include <algorithm>
@@ -184,10 +183,10 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
         Theme::Apply(panel);
         event.Skip();
     });
-    if (wxTaskBarIcon::IsAvailable()) {
+    const auto icon = Theme::AppIcon(this);
+    if (icon.IsOk()) SetIcon(icon);
+    if (icon.IsOk() && wxTaskBarIcon::IsAvailable()) {
         tray_ = std::make_unique<Tray>(*this);
-        wxIcon icon;
-        icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_INFORMATION, wxART_OTHER, FromDIP(wxSize(32, 32))));
         if (!tray_->SetIcon(icon, wxTheApp->GetAppName())) tray_.reset();
     }
     SetMinSize(FromDIP(wxSize(720, 420)));
