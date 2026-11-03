@@ -2,15 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "CMake: Debug installed app offline (Windows ARM64)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "args": ["--demo"],
-            "stopAtEntry": true
-        },
-        {
             "name": "CMake: Attach to packaged app (Windows)",
             "type": "cppvsdbg",
             "request": "attach",
@@ -26,22 +17,6 @@
             "preLaunchTask": "CMake: Install macOS Debug"
         },
         {
-            "name": "CMake: Debug installed app (Windows ARM64)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "preLaunchTask": "CMake: Install Windows ARM64 Debug"
-        },
-        {
-            "name": "CMake: Debug installed app (Windows x64)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "preLaunchTask": "CMake: Install Windows x64 Debug"
-        },
-        {
             "name": "CMake: Run installed app (macOS Release)",
             "type": "cppdbg",
             "request": "launch",
@@ -49,22 +24,6 @@
             "cwd": "${workspaceFolder}/out/install/macos-clang",
             "MIMode": "lldb",
             "preLaunchTask": "CMake: Install macOS Release"
-        },
-        {
-            "name": "CMake: Run installed app (Windows ARM64 Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "preLaunchTask": "CMake: Install Windows ARM64 Release"
-        },
-        {
-            "name": "CMake: Run installed app (Windows x64 Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "preLaunchTask": "CMake: Install Windows x64 Release"
         },
         {
             "name": "CMake: Debug installed tunnel (macOS)",
@@ -77,24 +36,6 @@
             "preLaunchTask": "CMake: Install macOS Debug"
         },
         {
-            "name": "CMake: Debug installed tunnel (Windows ARM64)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout-tunnel.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "preLaunchTask": "CMake: Install Windows ARM64 Debug"
-        },
-        {
-            "name": "CMake: Debug installed tunnel (Windows x64)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-x64/passepartout-tunnel.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "preLaunchTask": "CMake: Install Windows x64 Debug"
-        },
-        {
             "name": "CMake: Run installed tunnel (macOS Release)",
             "type": "cppdbg",
             "request": "launch",
@@ -103,24 +44,6 @@
             "cwd": "${workspaceFolder}/out/install/macos-clang",
             "MIMode": "lldb",
             "preLaunchTask": "CMake: Install macOS Release"
-        },
-        {
-            "name": "CMake: Run installed tunnel (Windows ARM64 Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout-tunnel.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "preLaunchTask": "CMake: Install Windows ARM64 Release"
-        },
-        {
-            "name": "CMake: Run installed tunnel (Windows x64 Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-x64/passepartout-tunnel.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "preLaunchTask": "CMake: Install Windows x64 Release"
         },
         {
             "name": "CMake: Attach to VPN plugin (Windows ARM64)",

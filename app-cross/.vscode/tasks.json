@@ -22,6 +22,26 @@
             "problemMatcher": []
         },
         {
+            "label": "Windows: Launch packaged app (x64)",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile", "-File", "${workspaceFolder}/scripts/launch-packaged-app.ps1",
+                "-InstallDirectory", "${workspaceFolder}/out/install/windows-x64"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Windows: Launch packaged app offline (x64)",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile", "-File", "${workspaceFolder}/scripts/launch-packaged-app.ps1",
+                "-InstallDirectory", "${workspaceFolder}/out/install/windows-x64", "-Demo"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "CMake: Configure macOS",
             "type": "cmake",
             "command": "configure",
