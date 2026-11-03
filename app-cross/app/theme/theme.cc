@@ -15,9 +15,9 @@ wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
 }
 wxListCtrl *ThemeList(wxWindow *parent) {
     auto *list = new wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
-    list->SetName(_("Profiles"));
-    list->AppendColumn(_("Name"), wxLIST_FORMAT_LEFT, parent->FromDIP(320));
-    list->AppendColumn(_("Status"), wxLIST_FORMAT_LEFT, parent->FromDIP(160));
+    list->SetName(_(L"Profiles"));
+    list->AppendColumn(_(L"Name"), wxLIST_FORMAT_LEFT, parent->FromDIP(320));
+    list->AppendColumn(_(L"Status"), wxLIST_FORMAT_LEFT, parent->FromDIP(160));
     return list;
 }
 wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message) {

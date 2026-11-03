@@ -20,11 +20,11 @@ wxString Text(const std::string &value) {
 }
 wxString StatusText(Status status) {
     switch (status) {
-        case Status::disconnected: return _("Disconnected");
-        case Status::connecting: return _("Connecting…");
-        case Status::connected: return _("Connected");
-        case Status::disconnecting: return _("Disconnecting…");
-        default: return _("Unavailable");
+        case Status::disconnected: return _(L"Disconnected");
+        case Status::connecting: return _(L"Connecting…");
+        case Status::connected: return _(L"Connected");
+        case Status::disconnecting: return _(L"Disconnecting…");
+        default: return _(L"Unavailable");
     }
 }
 class Tray final : public wxTaskBarIcon {
@@ -37,10 +37,10 @@ public:
 private:
     wxMenu *CreatePopupMenu() override {
         auto *menu = new wxMenu;
-        menu->Append(wxID_OPEN, _("Open Passepartout"));
-        menu->Append(wxID_STOP, _("Disconnect"));
+        menu->Append(wxID_OPEN, _(L"Open Passepartout"));
+        menu->Append(wxID_STOP, _(L"Disconnect"));
         menu->AppendSeparator();
-        menu->Append(wxID_EXIT, _("Quit"));
+        menu->Append(wxID_EXIT, _(L"Quit"));
         menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
             view_.ShowWindow();
         }, wxID_OPEN);
@@ -71,8 +71,8 @@ bool PassepartoutApp::OnInit() {
     instance_ = std::make_unique<wxSingleInstanceChecker>(
         "Passepartout-" + wxGetUserId() + (demo ? "-demo" : ""));
     if (instance_->IsAnotherRunning()) {
-        wxMessageBox(_("Passepartout is already running. Open its window to import a configuration."),
-                     _("Passepartout"), wxOK | wxICON_INFORMATION);
+        wxMessageBox(_(L"Passepartout is already running. Open its window to import a configuration."),
+                     _(L"Passepartout"), wxOK | wxICON_INFORMATION);
         return false;
     }
     partout_init_args init{};
@@ -89,7 +89,7 @@ bool PassepartoutApp::OnInit() {
         view->Show();
         return true;
     } catch (...) {
-        wxMessageBox(_("Unable to open the application data directory."), _("Passepartout"), wxOK | wxICON_ERROR);
+        wxMessageBox(_(L"Unable to open the application data directory."), _(L"Passepartout"), wxOK | wxICON_ERROR);
         return false;
     }
 }
@@ -99,28 +99,28 @@ int PassepartoutApp::OnExit() {
     return wxApp::OnExit();
 }
 MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::path> files)
-    : wxFrame(nullptr, wxID_ANY, demo ? _("Passepartout — Demo (no VPN)") : _("Passepartout")),
+    : wxFrame(nullptr, wxID_ANY, demo ? _(L"Passepartout — Demo (no VPN)") : _(L"Passepartout")),
       context_(context), timer_(this), pendingFiles_(std::move(files)) {
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
     const auto gap = Theme::Spacing(panel);
     auto *layout = new wxBoxSizer(wxVERTICAL);
     search_ = new wxSearchCtrl(panel, wxID_ANY);
-    search_->SetDescriptiveText(_("Search profiles"));
+    search_->SetDescriptiveText(_(L"Search profiles"));
     search_->ShowCancelButton(true);
     layout->Add(search_, 0, wxEXPAND | wxALL, gap);
     list_ = ThemeList(panel);
     layout->Add(list_, 1, wxEXPAND | wxLEFT | wxRIGHT, gap);
-    message_ = ThemeEmptyMessage(panel, _("Loading profiles…"));
+    message_ = ThemeEmptyMessage(panel, _(L"Loading profiles…"));
     layout->Add(message_, 0, wxEXPAND | wxALL, gap);
     error_ = new wxStaticText(panel, wxID_ANY, "");
     layout->Add(error_, 0, wxEXPAND | wxLEFT | wxRIGHT, gap);
     auto *actions = new wxBoxSizer(wxHORIZONTAL);
-    import_ = new wxButton(panel, wxID_ADD, _("Import…"));
-    remove_ = new wxButton(panel, wxID_DELETE, _("Remove"));
-    connect_ = new wxButton(panel, wxID_ANY, _("Connect"));
-    disconnect_ = new wxButton(panel, wxID_STOP, _("Disconnect"));
-    retry_ = new wxButton(panel, wxID_REFRESH, _("Retry"));
+    import_ = new wxButton(panel, wxID_ADD, _(L"Import…"));
+    remove_ = new wxButton(panel, wxID_DELETE, _(L"Remove"));
+    connect_ = new wxButton(panel, wxID_ANY, _(L"Connect"));
+    disconnect_ = new wxButton(panel, wxID_STOP, _(L"Disconnect"));
+    retry_ = new wxButton(panel, wxID_REFRESH, _(L"Retry"));
     progress_ = ThemeProgressView(panel);
     for (auto *button : {import_, remove_, connect_, disconnect_, retry_}) {
         actions->Add(button, 0, wxRIGHT, gap);
@@ -131,13 +131,13 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     panel->SetSizer(layout);
     auto *menus = new wxMenuBar;
     auto *file = new wxMenu;
-    file->Append(wxID_ADD, _("Import…\tCtrl+O"));
+    file->Append(wxID_ADD, _(L"Import…\tCtrl+O"));
     file->AppendSeparator();
-    file->Append(wxID_EXIT, _("Quit\tCtrl+Q"));
-    menus->Append(file, _("File"));
+    file->Append(wxID_EXIT, _(L"Quit\tCtrl+Q"));
+    menus->Append(file, _(L"File"));
     auto *help = new wxMenu;
-    help->Append(wxID_ABOUT, _("About"));
-    menus->Append(help, _("Help"));
+    help->Append(wxID_ABOUT, _(L"About"));
+    menus->Append(help, _(L"Help"));
     SetMenuBar(menus);
     CreateStatusBar();
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
@@ -147,7 +147,7 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
         Quit();
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        wxMessageBox(_("Passepartout\n") + Text(partout_version()), _("About Passepartout"), wxOK, this);
+        wxMessageBox(_(L"Passepartout\n") + Text(partout_version()), _(L"About Passepartout"), wxOK, this);
     }, wxID_ABOUT);
     import_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         Import();
@@ -184,7 +184,7 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
         tray_ = std::make_unique<Tray>(*this);
         wxIcon icon;
         icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_INFORMATION, wxART_OTHER, FromDIP(wxSize(32, 32))));
-        if (!tray_->SetIcon(icon, _("Passepartout"))) tray_.reset();
+        if (!tray_->SetIcon(icon, _(L"Passepartout"))) tray_.reset();
     }
     SetMinSize(FromDIP(wxSize(720, 420)));
     SetSize(FromDIP(wxSize(820, 560)));
@@ -214,7 +214,7 @@ void MainView::Render() {
     for (const auto &profile : snapshot_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto row = list_->InsertItem(list_->GetItemCount(), Text(profile.name));
-        auto status = snapshot_.tunnelAvailable ? _("Disconnected") : _("Unavailable");
+        auto status = snapshot_.tunnelAvailable ? _(L"Disconnected") : _(L"Unavailable");
         for (const auto &tunnel : snapshot_.tunnels) {
             if (snapshot_.tunnelAvailable && tunnel.id == profile.id) status = StatusText(tunnel.status.value);
         }
@@ -225,8 +225,8 @@ void MainView::Render() {
     }
     list_->Thaw();
     message_->SetLabel(!snapshot_.loaded ?
-        (snapshot_.busy ? _("Loading profiles…") : _("Unable to load profiles.")) :
-        (snapshot_.profiles.empty() ? _("Import a configuration to get started.") : _("No matching profiles.")));
+        (snapshot_.busy ? _(L"Loading profiles…") : _(L"Unable to load profiles.")) :
+        (snapshot_.profiles.empty() ? _(L"Import a configuration to get started.") : _(L"No matching profiles.")));
     message_->Show(visibleIds_.empty());
     error_->SetLabel(Text(snapshot_.error));
     error_->Wrap(std::max(200, GetClientSize().x - FromDIP(40)));
@@ -234,7 +234,7 @@ void MainView::Render() {
     retry_->Show(!snapshot_.error.empty());
     if (snapshot_.busy) progress_->Start();
     else progress_->Stop();
-    wxString connection = snapshot_.tunnelAvailable ? _("Disconnected") : _("VPN status unavailable");
+    wxString connection = snapshot_.tunnelAvailable ? _(L"Disconnected") : _(L"VPN status unavailable");
     if (snapshot_.tunnelAvailable) {
         for (const auto &tunnel : snapshot_.tunnels) {
             if (tunnel.status.value == Status::disconnected) continue;
@@ -242,7 +242,7 @@ void MainView::Render() {
             for (const auto &profile : snapshot_.profiles) {
                 if (profile.id == tunnel.id) name = Text(profile.name);
             }
-            connection = name + " — " + StatusText(tunnel.status.value);
+            connection = name + L" — " + StatusText(tunnel.status.value);
             break;
         }
     }
@@ -279,8 +279,8 @@ void MainView::Tick(wxTimerEvent &) {
 }
 void MainView::Import() {
     if (context_.profiles.Snapshot().busy) return;
-    wxFileDialog dialog(this, _("Import configuration"), "", "",
-        _("VPN configurations (*.ovpn;*.conf;*.json)|*.ovpn;*.conf;*.json|All files|*.*"),
+    wxFileDialog dialog(this, _(L"Import configuration"), "", "",
+        _(L"VPN configurations (*.ovpn;*.conf;*.json)|*.ovpn;*.conf;*.json|All files|*.*"),
         wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
     if (dialog.ShowModal() != wxID_OK) return;
     wxArrayString paths;
@@ -290,8 +290,8 @@ void MainView::Import() {
 void MainView::Remove() {
     const auto ids = SelectedIds();
     if (ids.empty() || context_.profiles.Snapshot().busy) return;
-    if (wxMessageBox(_("Remove the selected profiles? Active connections will be disconnected."),
-                     _("Remove profiles"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) != wxYES) return;
+    if (wxMessageBox(_(L"Remove the selected profiles? Active connections will be disconnected."),
+                     _(L"Remove profiles"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) != wxYES) return;
     context_.profiles.Remove(ids);
 }
 void MainView::Connect() {
@@ -315,15 +315,15 @@ void MainView::ShowWindow() {
 }
 void MainView::Quit() {
     if (context_.profiles.Snapshot().busy) {
-        wxMessageBox(_("Wait for the current operation to finish before quitting."), _("Passepartout"), wxOK, this);
+        wxMessageBox(_(L"Wait for the current operation to finish before quitting."), _(L"Passepartout"), wxOK, this);
         return;
     }
     const auto state = context_.tunnel.Snapshot();
     const bool active = std::any_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &t) {
         return t.status.value != Status::disconnected;
     });
-    if (active && wxMessageBox(_("Quit Passepartout? The VPN will remain connected."),
-                               _("Quit"), wxYES_NO | wxNO_DEFAULT, this) != wxYES) return;
+    if (active && wxMessageBox(_(L"Quit Passepartout? The VPN will remain connected."),
+                               _(L"Quit"), wxYES_NO | wxNO_DEFAULT, this) != wxYES) return;
     quitting_ = true;
     Close();
 }
