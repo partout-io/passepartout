@@ -20,6 +20,35 @@ Omitting the thumbprint produces an unsigned prototype. VCLibs is a declared
 framework dependency; clean-system delivery must supply it or use a distribution
 channel that resolves it.
 
+## Development launch and debugger attach
+
+For an already registered ARM64 development package, run the VS Code task
+`Windows: Launch packaged app offline (ARM64)`. It activates the frontend through
+Windows with `--demo`, prints its process ID, and does not build, install, register,
+or stop the tunnel host. Then select `CMake: Attach to packaged app (Windows)`
+and choose that `passepartout.exe` process ID. Pause/continue and normal Quit were
+verified with native VS Code debugging and package identity present.
+
+The equivalent launch from the repository root is:
+
+```powershell
+./app-cross/scripts/launch-packaged-app.ps1 `
+    -InstallDirectory app-cross/out/install/windows-arm64 -Demo
+```
+
+Direct EXE launch, including `CMake: Debug installed app offline (Windows ARM64)`,
+does not provide package identity. Use package activation followed by attach for
+identity-dependent checks. Ordinary install/debug tasks may stop the tunnel host.
+
+The local development registration was repaired by updating version `1.0.0.0` to
+`1.0.0.1` and registering the manifest again with `Add-AppxPackage -Register`.
+The package name and publisher stayed unchanged, preserving the package family.
+Same-version registration had failed in the indexed-state handler with
+`0x80070490`. The new registration exposes the frontend in Start apps. Existing
+CMake caches must also set `PASSEPARTOUT_PACKAGE_VERSION` to `1.0.0.1` or newer;
+changing the default does not override a cached value. This loose-package repair
+does not establish signed-package installation or upgrade behavior.
+
 ## Current behavior
 
 - `PassepartoutApp` composes repositories, managers, observables, and the wxWidgets

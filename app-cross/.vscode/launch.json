@@ -2,6 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "CMake: Debug installed app offline (Windows ARM64)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "args": ["--demo"],
+            "stopAtEntry": true
+        },
+        {
+            "name": "CMake: Attach to packaged app (Windows)",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
             "name": "CMake: Debug installed app (macOS)",
             "type": "cppdbg",
             "request": "launch",
