@@ -67,6 +67,9 @@ string(REPLACE "\"" "&quot;" PASSEPARTOUT_PACKAGE_PUBLISHER_XML "${PASSEPARTOUT_
 set(PASSEPARTOUT_FRONTEND_MANIFEST "")
 set(PASSEPARTOUT_FRONTEND_CAPABILITY "")
 if(BUILD_APP)
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/../frontend.manifest.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest" @ONLY)
+    target_sources(passepartout PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest")
     file(READ "${CMAKE_CURRENT_LIST_DIR}/../frontend.xml.in" PASSEPARTOUT_FRONTEND_MANIFEST)
     set(PASSEPARTOUT_FRONTEND_CAPABILITY "    <rescap:Capability Name=\"runFullTrust\" />")
 endif()

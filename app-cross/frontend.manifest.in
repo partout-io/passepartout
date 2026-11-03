@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- SPDX-FileCopyrightText: 2026 Davide De Rosa
+     SPDX-License-Identifier: GPL-3.0 -->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <msix xmlns="urn:schemas-microsoft-com:msix.v1"
+    publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
+    packageName="Passepartout.VpnChannel"
+    applicationId="Passepartout" />
+</assembly>
