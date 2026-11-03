@@ -33,9 +33,7 @@ wxString StatusText(Status status) {
     }
 }
 wxString QuitTitle() {
-    auto title = Localized(StringKey::ViewsAppMenuItemsQuit);
-    title.Replace("%@", Text(defaultCrossConstants.tags.app));
-    return title;
+    return wxGetStockLabel(wxID_EXIT) + "\tCtrl+Q";
 }
 class Tray final : public wxTaskBarIcon {
 public:
@@ -139,8 +137,7 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     auto *file = new wxMenu;
     file->Append(wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile) + "\tCtrl+O");
     file->AppendSeparator();
-    file->Append(wxID_EXIT, wxGetStockLabel(wxID_EXIT,
-        wxSTOCK_WITH_MNEMONIC | wxSTOCK_WITH_ACCELERATOR));
+    file->Append(wxID_EXIT, QuitTitle());
     menus->Append(file, wxGetStockLabel(wxID_FILE));
     auto *help = new wxMenu;
     help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
