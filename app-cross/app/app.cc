@@ -7,6 +7,7 @@
 #include "partout.h"
 #include <wx/aboutdlg.h>
 #include <wx/stdpaths.h>
+#include <wx/stockitem.h>
 #include <algorithm>
 #include <set>
 
@@ -138,11 +139,12 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     auto *file = new wxMenu;
     file->Append(wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile) + "\tCtrl+O");
     file->AppendSeparator();
-    file->Append(wxID_EXIT);
-    menus->Append(file, wxGetTranslation("&File"));
+    file->Append(wxID_EXIT, wxGetStockLabel(wxID_EXIT,
+        wxSTOCK_WITH_MNEMONIC | wxSTOCK_WITH_ACCELERATOR));
+    menus->Append(file, wxGetStockLabel(wxID_FILE));
     auto *help = new wxMenu;
     help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
-    menus->Append(help, wxGetTranslation("&Help"));
+    menus->Append(help, wxGetStockLabel(wxID_HELP));
     SetMenuBar(menus);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         Import();
