@@ -34,7 +34,7 @@ wxString StatusText(Status status) {
 }
 wxString QuitTitle() {
     auto title = Localized(StringKey::ViewsAppMenuItemsQuit);
-    title.Replace("%@", "Passepartout");
+    title.Replace("%@", Text(defaultCrossConstants.tags.app));
     return title;
 }
 class Tray final : public wxTaskBarIcon {
@@ -67,29 +67,28 @@ private:
 }
 
 bool PassepartoutApp::OnInit() {
-    SetAppName("Passepartout");
+    SetAppName(Text(defaultCrossConstants.tags.app));
     bool demo = false;
     std::vector<std::filesystem::path> files;
     for (int i = 1; i < argc; ++i) {
         const wxString arg(argv[i]);
-        if (arg == "--demo") demo = true;
+        if (arg == Text(defaultCrossConstants.commandLine.demoArgument)) demo = true;
         else files.push_back(FilePath(arg));
     }
-    // Isolate fake connections and imported test data from real application data.
-    const auto directory = FilePath(wxStandardPaths::Get().GetUserLocalDataDir()) /
-        (demo ? "demo-local" : "local");
+    const auto dataRoot = FilePath(wxStandardPaths::Get().GetUserLocalDataDir());
     instance_ = std::make_unique<wxSingleInstanceChecker>(
-        "Passepartout-" + wxGetUserId() + (demo ? "-demo" : ""));
+        Text(defaultCrossConstants.tags.app) + "-" + wxGetUserId() +
+        (demo ? Text(defaultCrossConstants.commandLine.demoArgument) : wxString()));
     if (instance_->IsAnotherRunning()) {
         wxMessageBox(Localized(StringKey::ErrorsAppOther),
-                     "Passepartout", wxOK | wxICON_INFORMATION);
+                     wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
         return false;
     }
     partout_init_args init{};
     init.logs_private_data = false;
     partout_init(&init);
     try {
-        context_ = std::make_unique<AppContext>(directory, demo);
+        context_ = std::make_unique<AppContext>(dataRoot, demo);
         auto *view = new MainView(*context_, demo, std::move(files));
         SetTopWindow(view);
         Bind(wxEVT_ACTIVATE_APP, [this](wxActivateEvent &event) {
@@ -99,7 +98,7 @@ bool PassepartoutApp::OnInit() {
         view->Show();
         return true;
     } catch (...) {
-        wxMessageBox(Localized(StringKey::ErrorsAppOther), "Passepartout", wxOK | wxICON_ERROR);
+        wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
         return false;
     }
 }
@@ -109,7 +108,8 @@ int PassepartoutApp::OnExit() {
     return wxApp::OnExit();
 }
 MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::path> files)
-    : wxFrame(nullptr, wxID_ANY, demo ? "Passepartout (--demo)" : "Passepartout"),
+    : wxFrame(nullptr, wxID_ANY, Text(context.crossConstants.tags.app) +
+          (demo ? " (" + Text(context.crossConstants.commandLine.demoArgument) + ")" : wxString())),
       context_(context), timer_(this), pendingFiles_(std::move(files)) {
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
@@ -153,7 +153,7 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         wxAboutDialogInfo info;
-        info.SetName("Passepartout");
+        info.SetName(wxTheApp->GetAppName());
         info.SetVersion(Text(partout_version()));
         wxAboutBox(info, this);
     }, wxID_ABOUT);
@@ -188,7 +188,7 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
         tray_ = std::make_unique<Tray>(*this);
         wxIcon icon;
         icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_INFORMATION, wxART_OTHER, FromDIP(wxSize(32, 32))));
-        if (!tray_->SetIcon(icon, "Passepartout")) tray_.reset();
+        if (!tray_->SetIcon(icon, wxTheApp->GetAppName())) tray_.reset();
     }
     SetMinSize(FromDIP(wxSize(720, 420)));
     SetSize(FromDIP(wxSize(820, 560)));
@@ -260,7 +260,7 @@ void MainView::Tick(wxTimerEvent &) {
             const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
                 snapshot_.error.empty() || snapshot_.errorContext == AppErrorContext::tunnel ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
             wxMessageDialog dialog(this, message,
-                importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxString("Passepartout"), wxOK | wxICON_ERROR);
+                importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
             dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
             dialog.ShowModal();
             timer_.Start(200);

@@ -4,6 +4,7 @@
 
 #include "business/profiles.h"
 #include "context/import_result.h"
+#include "context/dependencies.h"
 #include "business/tunnel.h"
 #include "observables/session.h"
 #include <cassert>
@@ -93,6 +94,16 @@ void Wait(AppSession &session) {
 }
 }
 int main() {
+    auto constants = LoadAppConstants();
+    assert(constants.containers.local == "Local");
+    assert(ProfileDirectory("root", constants, defaultCrossConstants, false) == std::filesystem::path("root/local"));
+    assert(ProfileDirectory("root", constants, defaultCrossConstants, true) == std::filesystem::path("root/demo-local"));
+    constants.containers.local = "Testing";
+    auto frontendConstants = defaultCrossConstants;
+    frontendConstants.storage.demoPrefix = "preview-";
+    assert(ProfileDirectory("root", constants, frontendConstants, true) == std::filesystem::path("root/preview-testing"));
+    constants.containers.local = "../outside";
+    Rejects([&] { ProfileDirectory("root", constants, frontendConstants, false); });
     const auto imported = Example();
     const auto success = nlohmann::json{{"payload", imported.ToJson()}};
     assert(DecodeImportResult(success.dump().c_str()) == imported);

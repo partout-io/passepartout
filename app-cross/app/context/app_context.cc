@@ -46,8 +46,11 @@ std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo) {
 #endif
 }
 }
-AppContext::AppContext(const std::filesystem::path &directory, bool demo)
-    : session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(directory),
+AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
+                       Models::AppConstants appConstants, CrossConstants frontendConstants)
+    : constants(std::move(appConstants)), crossConstants(std::move(frontendConstants)),
+      session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
+          ProfileDirectory(dataRoot, constants, crossConstants, demo)),
                                           ImportProfile, MakeTunnel(demo))),
       profiles(*session_), tunnel(*session_) {}
 }

@@ -4,13 +4,19 @@
 
 #pragma once
 #include "../observables/session.h"
+#include "dependencies.h"
 
 namespace Passepartout {
 class AppContext {
+public:
+    const Models::AppConstants constants;
+    const CrossConstants crossConstants;
 private:
     std::unique_ptr<AppSession> session_;
 public:
-    AppContext(const std::filesystem::path &directory, bool demo);
+    AppContext(const std::filesystem::path &dataRoot, bool demo,
+               Models::AppConstants constants = LoadAppConstants(),
+               CrossConstants crossConstants = defaultCrossConstants);
     ProfileObservable profiles;
     TunnelObservable tunnel;
 };

@@ -25,9 +25,15 @@ set_target_properties(passepartout-models partout-models PROPERTIES
 )
 
 find_package(Threads REQUIRED)
+set(APP_CONSTANTS_PATH "${CMAKE_CURRENT_LIST_DIR}/../app-apple/Sources/AppResources/Resources/constants.json")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CONSTANTS_PATH}")
+file(READ "${APP_CONSTANTS_PATH}" APP_CONSTANTS_JSON)
+configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/app_constants_resource.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/app_constants_resource.h" @ONLY)
 add_library(passepartout-core STATIC ${CORE_SOURCES})
 target_link_libraries(passepartout-core PUBLIC passepartout-models Threads::Threads)
-target_include_directories(passepartout-core PUBLIC "${CMAKE_CURRENT_LIST_DIR}/app")
+target_include_directories(passepartout-core PUBLIC "${CMAKE_CURRENT_LIST_DIR}/app"
+    "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 if(MSVC)
     target_compile_options(passepartout-core PRIVATE /EHsc /permissive- /utf-8 /W4)
