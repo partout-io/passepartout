@@ -165,3 +165,4 @@ install(TARGETS passepartout-tunnel
 )
 
 include("tunnel/plugin.cmake")
+include("package.cmake")

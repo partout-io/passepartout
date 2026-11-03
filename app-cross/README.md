@@ -1,7 +1,11 @@
 # Windows integration checkpoint
 
-The frontend and VPN plugin share an MSIX identity. The initial target is Windows
-11, with the existing x64 and ARM64 builds. Distribution and signing identity
+The frontend and VPN plugin share an MSIX identity. Root-level `package.cmake`
+assembles `AppxManifest.xml.in` with the optional `frontend.xml.in` entry and
+installs the shared package assets. `frontend.manifest.in` supplies matching EXE
+identity metadata; `tunnel/plugin.cmake` only builds the VPN plugin.
+
+The initial target is Windows 11, with the existing x64 and ARM64 builds. Distribution and signing identity
 still require a release decision. Changing the publisher changes package identity.
 
 Configure with `BUILD_APP=ON`, `PASSEPARTOUT_PACKAGE_VERSION` (four numeric parts),

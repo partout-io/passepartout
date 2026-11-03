@@ -62,7 +62,7 @@ try {
     InvokeCMake -Arguments @('--preset', "windows-$Architecture", "-DCMAKE_INSTALL_PREFIX=$install")
     InvokeCMake -Arguments @('--build', '--preset', "windows-$Architecture-$($Configuration.ToLowerInvariant())")
     AssertProcessesClosed
-    [xml]$manifest = Get-Content -LiteralPath (Join-Path $build 'tunnel/AppxManifest.xml') -Raw
+    [xml]$manifest = Get-Content -LiteralPath (Join-Path $build 'AppxManifest.xml') -Raw
     $identity = $manifest.Package.Identity
     if (-not $identity.Version.StartsWith('0.')) { throw 'Development packages must use a 0.* version.' }
     $registered = @(Get-AppxPackage -Name $identity.Name | Where-Object { $_.Publisher -eq $identity.Publisher })
