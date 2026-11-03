@@ -37,6 +37,15 @@ native VS Code debugging and package identity present on the earlier installed
 binary. The packaged resume/normal-Quit cycle was interrupted, so it is not yet
 verified. Current-binary verification must be recorded separately.
 
+On 3 November 2026, the current ARM64 Debug EXE and matching PDB were deployed
+and registered as `0.1.0.0`. The installed EXE hash matched the build. The
+package-aware launcher succeeded under Windows PowerShell with `-Demo`, and both
+package-full-name and application-ID queries returned success. VPN connection
+state stayed unchanged and no tunnel host was running. Current-build VS Code
+attach, source breakpoints, and normal Quit remain manual verification steps;
+UI automation is prohibited for this workspace. Debug installs now include the
+frontend PDB beside its EXE.
+
 The equivalent launch from the repository root is:
 
 ```powershell
