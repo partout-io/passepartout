@@ -11,6 +11,7 @@ if(NOT TARGET nlohmann_json::nlohmann_json)
     FetchContent_MakeAvailable(json)
 endif()
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/../files.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
 add_executable(passepartout-models-test models.cc)
