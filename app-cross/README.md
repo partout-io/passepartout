@@ -66,8 +66,12 @@ bash app-cross/scripts/run-app.sh arm64 Debug
 Both accept arm64/x64 and Debug/Release. Optional `-Demo` on Windows or `--demo`
 on macOS uses the fake tunnel and separate profile storage. For F5 demo runs,
 select the matching **Demo** configuration; it passes `--demo` and reuses the
-same preparation task. Agent verification must remain in demo mode. Quit the frontend
-before reinstalling; Windows refuses to stop a running VPN host.
+same preparation task. Agent verification must remain offline/read-only; preparation
+can stop a real VPN host even for demo launches. Quit the frontend
+before reinstalling. On Windows, preparation stops VPN hosts in the selected
+install directory and configuration's build directory before building, then
+checks again during installation and any needed registration. This can interrupt
+their VPN connections. F5 preparation and terminal launches share the same stop script.
 
 Windows initializes the matching MSVC environment, configures the explicit
 architecture preset, builds, installs EXE/PDB/runtime files, registers the local

@@ -39,9 +39,9 @@ function SetDevelopmentManifest {
     try { $manifest.Save($writer) } finally { $writer.Dispose() }
 }
 
-function AssertProcessesClosed {
-    if (Get-Process -Name passepartout,passepartout-tunnel -ErrorAction SilentlyContinue) {
-        throw 'Quit the frontend before installing. The VPN host must also be idle and closed; this workflow never stops it.'
+function AssertFrontendClosed {
+    if (Get-Process -Name passepartout -ErrorAction SilentlyContinue) {
+        throw 'Quit the frontend before installing.'
     }
 }
 function InvokeCMake {
@@ -50,7 +50,7 @@ function InvokeCMake {
     if ($LASTEXITCODE -ne 0) { throw "CMake failed with exit code $LASTEXITCODE." }
 }
 
-AssertProcessesClosed
+AssertFrontendClosed
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
 $visualStudio = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if (-not $visualStudio) { throw 'Visual Studio C++ build tools were not found.' }
@@ -60,8 +60,6 @@ Enter-VsDevShell -VsInstallPath $visualStudio -SkipAutomaticLocation -DevCmdArgu
 Push-Location $source
 try {
     InvokeCMake -Arguments @('--preset', "windows-$Architecture", "-DCMAKE_INSTALL_PREFIX=$install")
-    InvokeCMake -Arguments @('--build', '--preset', "windows-$Architecture-$($Configuration.ToLowerInvariant())")
-    AssertProcessesClosed
     [xml]$manifest = Get-Content -LiteralPath (Join-Path $build 'AppxManifest.xml') -Raw
     $identity = $manifest.Package.Identity
     if (-not $identity.Version.StartsWith('0.')) { throw 'Development packages must use a 0.* version.' }
@@ -74,16 +72,24 @@ try {
         $external = $registeredManifest.SelectSingleNode("//*[local-name()='AllowExternalContent']")
         $external -and $external.InnerText -eq 'true'
     } | ForEach-Object { $_.PackageFullName })
-    # The install-time guard also checks for a host appearing after preflight.
-    InvokeCMake -Arguments @("-DCMAKE_INSTALL_PREFIX=$install", "-DCMAKE_INSTALL_CONFIG_NAME=$Configuration",
-        '-DPASSEPARTOUT_INSTALL_NO_STOP_HOST=ON', '-P', (Join-Path $build 'cmake_install.cmake'))
+    # Release loaded DLLs before rebuilding, not only before installation.
+    # Include a host launched directly from this configuration's build output.
+    $stopPlugin = Join-Path $source 'tunnel/stop-plugin.ps1'
+    & $stopPlugin -InstallDirectory $install
+    & $stopPlugin -InstallDirectory (Join-Path $build $Configuration)
+    InvokeCMake -Arguments @('--build', '--preset', "windows-$Architecture-$($Configuration.ToLowerInvariant())")
+    AssertFrontendClosed
+    # The shared install hook stops only the host in this install directory
+    # before replacing its dependencies, including for F5 preparation.
+    InvokeCMake -Arguments @('--install', $build, '--config', $Configuration, '--prefix', $install)
     SetDevelopmentManifest -ManifestPath (Join-Path $install 'AppxManifest.xml')
     $matches = @($registered | Where-Object {
         $_.PackageFullName -in $externalPackages -and $_.Version.ToString() -eq $identity.Version -and
         $_.Architecture.ToString() -eq $Architecture -and $_.InstallLocation -eq $install -and $_.Status -eq 'Ok'
     })
     if ($matches.Count -ne 1) {
-        AssertProcessesClosed
+        AssertFrontendClosed
+        & $stopPlugin -InstallDirectory $install
         if (@($registered | Where-Object { $_.Version.ToString() -eq $identity.Version }).Count) {
             throw 'The existing package uses this version with a different layout. Change PASSEPARTOUT_PACKAGE_VERSION to another 0.* version in the CMake cache and retry.'
         }
