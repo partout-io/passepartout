@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Davide De Rosa
+#
+# SPDX-License-Identifier: GPL-3.0
+
 if(NOT WIN32)
     return()
 endif()

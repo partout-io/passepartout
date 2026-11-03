@@ -1,4 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
 // SPDX-License-Identifier: GPL-3.0
+
 #include "theme.h"
 #include "../strings/strings.h"
 #include <wx/settings.h>

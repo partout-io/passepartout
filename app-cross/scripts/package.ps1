@@ -1,4 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Davide De Rosa
+#
 # SPDX-License-Identifier: GPL-3.0
+
 # Build/package locally; never install certificates, enable Developer Mode, or publish.
 [CmdletBinding()]
 param(

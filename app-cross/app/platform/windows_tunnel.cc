@@ -1,4 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
 // SPDX-License-Identifier: GPL-3.0
+
 #include "../business/tunnel.h"
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Data.Xml.Dom.h>

@@ -1,4 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
 // SPDX-License-Identifier: GPL-3.0
+
 #include "app_context.h"
 #include "partout.h"
 #include <cstdlib>
