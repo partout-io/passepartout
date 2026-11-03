@@ -3,6 +3,7 @@ set(APP_SOURCES
     app/app.cc
     app/context/app_context.cc
     app/main.cc
+    app/strings/strings.cc
     app/theme/theme.cc
 )
 if(WIN32)

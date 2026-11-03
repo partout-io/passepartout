@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 #include "app.h"
+#include "strings/strings.h"
 #include "partout.h"
 #include <wx/artprov.h>
 #include <wx/stdpaths.h>
@@ -38,7 +39,7 @@ private:
     wxMenu *CreatePopupMenu() override {
         auto *menu = new wxMenu;
         menu->Append(wxID_OPEN, _(L"Open Passepartout"));
-        menu->Append(wxID_STOP, _(L"Disconnect"));
+        menu->Append(wxID_STOP, Localized("global.actions.disconnect"));
         menu->AppendSeparator();
         menu->Append(wxID_EXIT, _(L"Quit"));
         menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
@@ -116,10 +117,10 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     error_ = new wxStaticText(panel, wxID_ANY, "");
     layout->Add(error_, 0, wxEXPAND | wxLEFT | wxRIGHT, gap);
     auto *actions = new wxBoxSizer(wxHORIZONTAL);
-    import_ = new wxButton(panel, wxID_ADD, _(L"Import…"));
-    remove_ = new wxButton(panel, wxID_DELETE, _(L"Remove"));
-    connect_ = new wxButton(panel, wxID_ANY, _(L"Connect"));
-    disconnect_ = new wxButton(panel, wxID_STOP, _(L"Disconnect"));
+    import_ = new wxButton(panel, wxID_ADD, Localized("global.actions.import") + L"…");
+    remove_ = new wxButton(panel, wxID_DELETE, Localized("global.actions.remove"));
+    connect_ = new wxButton(panel, wxID_ANY, Localized("global.actions.connect"));
+    disconnect_ = new wxButton(panel, wxID_STOP, Localized("global.actions.disconnect"));
     retry_ = new wxButton(panel, wxID_REFRESH, _(L"Retry"));
     progress_ = ThemeProgressView(panel);
     for (auto *button : {import_, remove_, connect_, disconnect_, retry_}) {
@@ -131,12 +132,12 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     panel->SetSizer(layout);
     auto *menus = new wxMenuBar;
     auto *file = new wxMenu;
-    file->Append(wxID_ADD, _(L"Import…\tCtrl+O"));
+    file->Append(wxID_ADD, Localized("global.actions.import") + L"…\tCtrl+O");
     file->AppendSeparator();
     file->Append(wxID_EXIT, _(L"Quit\tCtrl+Q"));
     menus->Append(file, _(L"File"));
     auto *help = new wxMenu;
-    help->Append(wxID_ABOUT, _(L"About"));
+    help->Append(wxID_ABOUT, Localized("global.nouns.about"));
     menus->Append(help, _(L"Help"));
     SetMenuBar(menus);
     CreateStatusBar();
@@ -279,7 +280,7 @@ void MainView::Tick(wxTimerEvent &) {
 }
 void MainView::Import() {
     if (context_.profiles.Snapshot().busy) return;
-    wxFileDialog dialog(this, _(L"Import configuration"), "", "",
+    wxFileDialog dialog(this, Localized("views.app.toolbar.import_file"), "", "",
         _(L"VPN configurations (*.ovpn;*.conf;*.json)|*.ovpn;*.conf;*.json|All files|*.*"),
         wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
     if (dialog.ShowModal() != wxID_OK) return;
