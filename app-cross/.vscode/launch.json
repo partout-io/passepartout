@@ -2,6 +2,70 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run Windows ARM64 Debug",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture arm64 -Configuration Debug",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run Windows ARM64 Release",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture arm64 -Configuration Release",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run Windows X64 Debug",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture x64 -Configuration Debug",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run Windows X64 Release",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "powershell.exe -NoProfile -File ./scripts/run-app.ps1 -Architecture x64 -Configuration Release",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run macOS ARM64 Debug",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bash ./scripts/run-app.sh arm64 Debug",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run macOS ARM64 Release",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bash ./scripts/run-app.sh arm64 Release",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run macOS X64 Debug",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bash ./scripts/run-app.sh x64 Debug",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
+            "name": "Run macOS X64 Release",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bash ./scripts/run-app.sh x64 Release",
+            "cwd": "${workspaceFolder}",
+            "autoAttachChildProcesses": false
+        },
+        {
             "name": "Attach Windows ARM64",
             "type": "cppvsdbg",
             "request": "attach",

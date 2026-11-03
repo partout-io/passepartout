@@ -28,7 +28,8 @@ Set the version explicitly in existing CMake caches, for example
 
 ## Run and attach
 
-VS Code has exactly eight run tasks and four attach configurations:
+VS Code has eight Run configurations (also available as tasks) and four separate
+Attach configurations:
 
 | Platform | Run tasks | Attach configuration |
 | --- | --- | --- |
@@ -37,11 +38,16 @@ VS Code has exactly eight run tasks and four attach configurations:
 | macOS ARM64 | Run macOS ARM64 Debug / Release | Attach macOS ARM64 |
 | macOS x64 | Run macOS X64 Debug / Release | Attach macOS X64 |
 
-Use **Tasks: Run Task** to build, install, and launch. Use **Run and Debug** to
-select an attach configuration, press F5, and choose the running process. There
-is no custom extension, automatic F5 launcher, process-ID file, or separate
-configure/install/launch task chain. CMake Tools' raw EXE Run/Debug buttons are
-hidden because they bypass Windows package activation.
+In **Run and Debug**, select **Run Windows ARM64 Debug** (or the matching
+platform, architecture, and configuration), then press **F5**. It builds,
+installs, and launches the packaged app without a process picker. These Run
+entries use VS Code's built-in terminal launcher to call the same run scripts
+as the tasks; no custom extension or extra script is needed.
+
+To debug native code, select a separate **Attach** entry, press F5, and choose
+the running process. Run entries do not attach a C++ debugger. There is no
+process-ID file or separate configure/install/launch task chain. CMake Tools'
+raw EXE Run/Debug buttons remain hidden because they bypass Windows activation.
 
 The run tasks call one script per platform, with the same responsibility:
 
