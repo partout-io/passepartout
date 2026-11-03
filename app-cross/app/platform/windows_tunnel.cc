@@ -11,7 +11,7 @@ namespace Passepartout {
 namespace {
 class WindowsTunnelStrategy final : public TunnelStrategy {
 public:
-    explicit WindowsTunnelStrategy(const std::string &serverAddress) : tunnel_(serverAddress) {}
+    explicit WindowsTunnelStrategy(const std::string &serverUri) : tunnel_(serverUri) {}
     std::vector<Models::AppTunnelInfo> Fetch() override {
         std::vector<Models::AppTunnelInfo> result;
         for (const auto &snapshot : tunnel_.Fetch()) {
@@ -54,7 +54,7 @@ private:
     Partout::Tunnel tunnel_;
 };
 }
-std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverAddress) {
-    return std::make_unique<WindowsTunnelStrategy>(serverAddress);
+std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri) {
+    return std::make_unique<WindowsTunnelStrategy>(serverUri);
 }
 }

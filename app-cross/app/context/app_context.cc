@@ -40,7 +40,7 @@ private:
 std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo, const CrossConstants &constants) {
     if (demo) return std::make_unique<FakeTunnelStrategy>();
 #ifdef _WIN32
-    return MakeWindowsTunnelStrategy(constants.tunnel.serverAddress);
+    return MakeWindowsTunnelStrategy(constants.tunnel.serverUri);
 #else
     return std::make_unique<UnavailableTunnelStrategy>();
 #endif
