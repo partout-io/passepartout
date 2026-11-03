@@ -20,14 +20,22 @@ Omitting the thumbprint produces an unsigned prototype. VCLibs is a declared
 framework dependency; clean-system delivery must supply it or use a distribution
 channel that resolves it.
 
+Development defaults to `0.1.0.0`; increment within `0.*` during development and
+reserve `1.0.0.0` for the first production release. The package family derives
+from name and publisher, not version. Versions order updates within that family.
+Set the version explicitly in existing CMake caches, for example
+`cmake -S app-cross -B app-cross/out/build/windows-arm64 '-DPASSEPARTOUT_PACKAGE_VERSION=0.1.0.0'`.
+
 ## Development launch and debugger attach
 
 For an already registered ARM64 development package, run the VS Code task
 `Windows: Launch packaged app offline (ARM64)`. It activates the frontend through
 Windows with `--demo`, prints its process ID, and does not build, install, register,
 or stop the tunnel host. Then select `CMake: Attach to packaged app (Windows)`
-and choose that `passepartout.exe` process ID. Pause/continue and normal Quit were
-verified with native VS Code debugging and package identity present.
+and choose that `passepartout.exe` process ID. Attach and pause were verified with
+native VS Code debugging and package identity present on the earlier installed
+binary. The packaged resume/normal-Quit cycle was interrupted, so it is not yet
+verified. Current-binary verification must be recorded separately.
 
 The equivalent launch from the repository root is:
 
@@ -45,9 +53,12 @@ The local development registration was repaired by updating version `1.0.0.0` to
 The package name and publisher stayed unchanged, preserving the package family.
 Same-version registration had failed in the indexed-state handler with
 `0x80070490`. The new registration exposes the frontend in Start apps. Existing
-CMake caches must also set `PASSEPARTOUT_PACKAGE_VERSION` to `1.0.0.1` or newer;
-changing the default does not override a cached value. This loose-package repair
-does not establish signed-package installation or upgrade behavior.
+Those `1.*` versions were temporary development checks; development now uses
+`0.*`. Moving an existing development registration back to `0.*` requires the
+explicit `Add-AppxPackage -Register <manifest> -ForceUpdateFromAnyVersion` option.
+Do this only with the frontend and tunnel host closed; do not use application
+shutdown flags or remove the package. This loose-package repair does not
+establish signed-package installation or upgrade behavior.
 
 ## Current behavior
 
