@@ -19,8 +19,12 @@ struct AppSnapshot {
     bool loaded = false;
     bool busy = true;
     bool tunnelAvailable = false;
+    bool foregroundBusy = false;
+    std::optional<std::string> pendingProfile;
+    bool HasActivity() const;
     std::string error;
     std::string tunnelError;
+    std::string reconciliationError;
     AppErrorContext errorContext = AppErrorContext::general;
     std::uint64_t revision = 0;
 };
@@ -30,7 +34,8 @@ struct AppSnapshot {
 class AppSession {
 public:
     AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-               std::unique_ptr<TunnelStrategy> tunnel);
+               std::unique_ptr<TunnelStrategy> tunnel,
+               std::shared_ptr<AppLogger> logger = std::make_shared<AppLogger>());
     ~AppSession();
     AppSession(const AppSession &) = delete;
     AppSession &operator=(const AppSession &) = delete;
@@ -44,9 +49,13 @@ public:
     void ClearError();
     bool WaitIdle(std::chrono::milliseconds timeout);
 private:
-    bool Post(std::function<void()> operation, AppErrorContext context = AppErrorContext::general);
+    bool Post(std::function<void()> operation, AppErrorContext context = AppErrorContext::general,
+              bool foreground = true);
     void Run();
     void Publish();
+    std::shared_ptr<AppLogger> logger_;
+    std::string lastObservationError_;
+    std::string lastReconciliationError_;
     ProfileManager profiles_;
     TunnelManager tunnel_;
     mutable std::mutex mutex_;
@@ -54,6 +63,7 @@ private:
     struct Operation {
         std::function<void()> run;
         AppErrorContext context;
+        bool foreground;
     };
     std::deque<Operation> operations_;
     AppSnapshot snapshot_;

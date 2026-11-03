@@ -7,26 +7,85 @@
 #include <stdexcept>
 
 namespace Passepartout {
-TunnelManager::TunnelManager(std::unique_ptr<TunnelStrategy> strategy)
-    : strategy_(std::move(strategy)) {}
+TunnelManager::TunnelManager(std::unique_ptr<TunnelStrategy> strategy, std::shared_ptr<AppLogger> logger,
+                             std::chrono::milliseconds handoverTimeout)
+    : strategy_(std::move(strategy)), logger_(std::move(logger)), handoverTimeout_(handoverTimeout) {}
 std::vector<Models::AppTunnelInfo> TunnelManager::Fetch() {
     return strategy_->Fetch();
 }
 void TunnelManager::Connect(const Profile &profile) {
-    for (const auto &tunnel : Fetch()) {
-        if (tunnel.status.value == Status::disconnected) continue;
+    logger_->Write(LogLevel::info, "tunnel", "Connect to profile " + profile.id + "...");
+    pending_.reset();
+    connectionRequested_ = false;
+    sawConnecting_ = false;
+    const auto tunnels = Fetch();
+    for (const auto &tunnel : tunnels) {
         if (tunnel.id == profile.id && tunnel.status.value == Status::connected) return;
-        throw std::runtime_error("Disconnect the active VPN before connecting another profile.");
     }
-    // Local profiles are authoritative. Recreate missing Windows profiles and
-    // replace stale configuration only while disconnected.
-    strategy_->Save(profile);
-    strategy_->Connect(profile.id);
+    for (const auto &tunnel : tunnels) {
+        if (tunnel.status.value == Status::disconnected || tunnel.status.value == Status::disconnecting) continue;
+        logger_->Write(LogLevel::info, "tunnel", "Disconnect profile " + tunnel.id + " before handover");
+        strategy_->Disconnect(tunnel.id);
+    }
+    pending_ = profile;
+    handoverStarted_ = std::chrono::steady_clock::now();
+    Advance();
+}
+void TunnelManager::Advance() {
+    if (!pending_) return;
+    try {
+        const auto tunnels = Fetch();
+        if (connectionRequested_) {
+            const auto target = std::find_if(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
+                return tunnel.id == pending_->id;
+            });
+            if (target != tunnels.end() && target->status.value == Status::connected) {
+                logger_->Write(LogLevel::info, "tunnel", "Connected to profile " + pending_->id);
+                pending_.reset();
+                return;
+            }
+            if (target != tunnels.end() && target->status.value == Status::connecting) sawConnecting_ = true;
+            if (sawConnecting_ && (target == tunnels.end() || target->status.value == Status::disconnected))
+                throw std::runtime_error("The VPN disconnected before activation completed.");
+            if (std::chrono::steady_clock::now() - handoverStarted_ >= handoverTimeout_)
+                throw std::runtime_error("Timed out waiting for the requested VPN to connect.");
+            return;
+        }
+        const bool active = std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
+            return tunnel.status.value != Status::disconnected;
+        });
+        if (active) {
+            if (std::chrono::steady_clock::now() - handoverStarted_ >= handoverTimeout_)
+                throw std::runtime_error("Timed out waiting for the active VPN to disconnect.");
+            return;
+        }
+        // Configuration is saved only after every old connection is inactive.
+        logger_->Write(LogLevel::info, "tunnel", "Install profile " + pending_->id + "...");
+        strategy_->Save(*pending_);
+        strategy_->Connect(pending_->id);
+        logger_->Write(LogLevel::info, "tunnel", "Connect request accepted for profile " + pending_->id);
+        connectionRequested_ = true;
+        handoverStarted_ = std::chrono::steady_clock::now();
+        Advance();
+    } catch (...) {
+        pending_.reset();
+        throw;
+    }
+}
+std::optional<std::string> TunnelManager::PendingProfile() const {
+    if (!pending_) return std::nullopt;
+    return pending_->id;
+}
+void TunnelManager::CancelPending(const std::string &id) {
+    if (pending_ && pending_->id == id) pending_.reset();
 }
 void TunnelManager::Disconnect(const std::string &id) {
+    pending_.reset();
+    logger_->Write(LogLevel::info, "tunnel", "Disconnect profile " + id);
     strategy_->Disconnect(id);
 }
 void TunnelManager::Remove(const std::string &id) {
+    if (pending_ && pending_->id == id) pending_.reset();
     for (const auto &tunnel : Fetch()) {
         if (tunnel.id != id || tunnel.status.value == Status::disconnected) continue;
         strategy_->Disconnect(id);

@@ -49,8 +49,11 @@ std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo) {
 AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
                        Models::AppConstants appConstants, CrossConstants frontendConstants)
     : constants(std::move(appConstants)), crossConstants(std::move(frontendConstants)),
+      logger_(std::make_shared<AppLogger>()),
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
           ProfileDirectory(dataRoot, constants, crossConstants, demo)),
-                                          ImportProfile, MakeTunnel(demo))),
-      profiles(*session_), tunnel(*session_) {}
+                                          ImportProfile, MakeTunnel(demo), logger_)),
+      profiles(*session_), tunnel(*session_) {
+    logger_->Write(LogLevel::info, "core", demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+}
 }

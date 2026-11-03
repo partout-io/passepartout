@@ -38,6 +38,8 @@ endforeach()
 # Compile the native adapter on Windows without requiring wxWidgets or a VPN.
 if(WIN32)
     add_library(passepartout-windows-integration-check OBJECT ../app/platform/windows_tunnel.cc)
+    target_include_directories(passepartout-windows-integration-check PRIVATE
+        ../../partout/cross/windows/include ../../partout/src)
     target_link_libraries(passepartout-windows-integration-check PRIVATE passepartout-core windowsapp)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
 endif()

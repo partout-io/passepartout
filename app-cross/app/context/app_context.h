@@ -12,6 +12,7 @@ public:
     const Models::AppConstants constants;
     const CrossConstants crossConstants;
 private:
+    std::shared_ptr<AppLogger> logger_;
     std::unique_ptr<AppSession> session_;
 public:
     AppContext(const std::filesystem::path &dataRoot, bool demo,

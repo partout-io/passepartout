@@ -16,6 +16,7 @@ if(WIN32)
     )
 endif()
 set(CORE_SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/logging.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/profiles.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/tunnel.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/session.cc"

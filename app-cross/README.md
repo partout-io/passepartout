@@ -92,16 +92,32 @@ Build outputs are `out/build/<platform>-<architecture>` and installed output is
 `out/install/<platform>-<architecture>`. Debug and Release share the installation
 for that architecture; each run installs the chosen configuration.
 
-Windows ARM64 Debug preparation and direct demo launch with package identity were
-verified. Current macOS bundle runs, x64 native execution, and end-to-end debugger
-attach remain platform/manual checks. No UI automation or live VPN connection
-checks were performed. This is a development workflow, not signed production
-distribution validation.
+Windows ARM64 Debug/Release builds and Debug preparation passed. Native debugger
+launch and attach captured application/Partout output from the packaged demo,
+and a consumer of the installed headers/exported DLL passed ten read-only VPN
+enumerations. The diagnostic demo processes were terminated after log capture;
+this does not verify graceful GUI shutdown. Actual VS Code F5, macOS bundle runs,
+x64 execution, and live VPN lifecycle remain manual/platform checks. No UI
+automation or live VPN changes were performed. This is a development workflow,
+not signed production distribution validation.
 
 ## Current behavior
 
 - `PassepartoutApp` composes repositories, managers, observables, and the wxWidgets
   frontend. `--demo` uses a fake tunnel and a separate profile directory.
+- Normal Windows launches use the public `Partout::Tunnel` management API from
+  `partout_winrt.h`. The frontend adapter only maps presentation state.
+- Enabling another profile requests disconnection of the current profile and
+  waits for observed inactivity before installing and connecting the next one.
+  Pending activation ends only after observed connection, failure, or timeout.
+- The footer activity indicator represents foreground work, pending handover,
+  or observed connection transitions. Idle background polling does not animate it.
+- Application and Partout diagnostics go to the Windows debugger output stream
+  (`OutputDebugString`), including startup, profile operations, tunnel requests,
+  state changes, and failures with native operation/status codes. Repeated
+  observation failures are suppressed until their message changes or recovery.
+  Private Partout logging remains disabled; profile payloads are not logged.
+  Orphan-cleanup failures remain separate from successful state observation.
 - Profile objects are authoritative. A Windows VPN entry is created or refreshed
   from the saved object when connecting. Entries use a stable ID-based name and
   are only managed when they belong to this package.

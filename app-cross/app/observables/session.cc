@@ -8,9 +8,18 @@
 #include <type_traits>
 
 namespace Passepartout {
+bool AppSnapshot::HasActivity() const {
+    if (foregroundBusy || pendingProfile) return true;
+    return tunnelAvailable && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
+        return tunnel.status.value == Status::connecting || tunnel.status.value == Status::disconnecting;
+    });
+}
+
 AppSession::AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-                       std::unique_ptr<TunnelStrategy> tunnel)
-    : profiles_(std::move(repository), std::move(importer)), tunnel_(std::move(tunnel)) {
+                       std::unique_ptr<TunnelStrategy> tunnel, std::shared_ptr<AppLogger> logger)
+    : logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer)),
+      tunnel_(std::move(tunnel), logger_) {
+    logger_->Write(LogLevel::info, "core", "Start application session");
     snapshot_.busy = false;
     worker_ = std::thread([this] {
         Run();
@@ -25,19 +34,21 @@ AppSession::~AppSession() {
     }
     wake_.notify_all();
     worker_.join();
+    logger_->Write(LogLevel::info, "core", "Finished application session");
 }
 AppSnapshot AppSession::Snapshot() const {
     std::lock_guard lock(mutex_);
     return snapshot_;
 }
-bool AppSession::Post(std::function<void()> operation, AppErrorContext context) {
+bool AppSession::Post(std::function<void()> operation, AppErrorContext context, bool foreground) {
     {
         std::lock_guard lock(mutex_);
         if (stopping_) return false;
         snapshot_.busy = true;
+        snapshot_.foregroundBusy = snapshot_.foregroundBusy || foreground;
         snapshot_.error.clear();
         ++snapshot_.revision;
-        operations_.push_back({std::move(operation), context});
+        operations_.push_back({std::move(operation), context, foreground});
     }
     wake_.notify_all();
     return true;
@@ -57,11 +68,16 @@ void AppSession::Run() {
         std::string error;
         try {
             operation.run();
+            if (tunnel_.PendingProfile()) {
+                operation.context = AppErrorContext::tunnel;
+                tunnel_.Advance();
+            }
         } catch (const std::exception &e) {
             error = e.what();
         } catch (...) {
             error = "The operation failed.";
         }
+        if (!error.empty()) logger_->Write(LogLevel::error, "core", "Unable to execute operation: " + error);
         // A failed state refresh must not turn a committed import into a
         // failed import. Keep operation and observation failures separate.
         std::string tunnelError;
@@ -72,12 +88,22 @@ void AppSession::Run() {
         } catch (...) {
             tunnelError = "Unable to read VPN state.";
         }
+        if (tunnelError != lastObservationError_) {
+            logger_->Write(tunnelError.empty() ? LogLevel::info : LogLevel::error, "tunnel",
+                tunnelError.empty() ? "Tunnel observation recovered" : "Unable to fetch tunnel state: " + tunnelError);
+            lastObservationError_ = tunnelError;
+        }
         {
             std::lock_guard lock(mutex_);
+            if (!tunnelError.empty()) snapshot_.tunnelAvailable = false;
+            snapshot_.pendingProfile = tunnel_.PendingProfile();
             snapshot_.error = std::move(error);
             snapshot_.tunnelError = std::move(tunnelError);
             snapshot_.errorContext = operation.context;
             snapshot_.busy = !operations_.empty();
+            snapshot_.foregroundBusy = std::any_of(operations_.begin(), operations_.end(), [](const auto &queued) {
+                return queued.foreground;
+            });
             ++snapshot_.revision;
         }
         wake_.notify_all();
@@ -126,12 +152,9 @@ void AppSession::Publish() {
     {
         std::lock_guard lock(mutex_);
         snapshot_.profiles = std::move(headers);
-        snapshot_.tunnelAvailable = false;
     }
     auto tunnels = tunnel_.Fetch();
-    // Local profiles are authoritative. Reconcile deleted profiles separately
-    // from the local transaction, including after a restart or VPN outage.
-    // Never reconcile against an empty store when loading that store failed.
+    std::string reconciliationError;
     if (Snapshot().loaded) {
         bool removed = false;
         for (const auto &tunnel : tunnels) {
@@ -140,18 +163,42 @@ void AppSession::Publish() {
                 return profile.id == tunnel.id;
             });
             if (exists) continue;
-            tunnel_.Remove(tunnel.id);
-            removed = true;
+            try {
+                if (lastReconciliationError_.empty())
+                    logger_->Write(LogLevel::info, "profiles", "Remove orphaned profile registration " + tunnel.id + "...");
+                tunnel_.Remove(tunnel.id);
+                removed = true;
+            } catch (const std::exception &e) {
+                reconciliationError = "Unable to remove orphaned profile " + tunnel.id + ": " + e.what();
+                break;
+            }
         }
         if (removed) tunnels = tunnel_.Fetch();
+    }
+    if (reconciliationError != lastReconciliationError_) {
+        logger_->Write(reconciliationError.empty() ? LogLevel::info : LogLevel::error, "profiles",
+            reconciliationError.empty() ? "Profile reconciliation recovered" : reconciliationError);
+        lastReconciliationError_ = reconciliationError;
+    }
+    const auto previous = Snapshot();
+    for (const auto &tunnel : tunnels) {
+        const auto old = std::find_if(previous.tunnels.begin(), previous.tunnels.end(), [&](const auto &value) {
+            return value.id == tunnel.id;
+        });
+        if (old == previous.tunnels.end() || old->status != tunnel.status)
+            logger_->Write(LogLevel::info, "tunnel", "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().dump());
     }
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
     snapshot_.tunnelAvailable = true;
+    snapshot_.reconciliationError = std::move(reconciliationError);
 }
+
 void AppSession::Load() {
     Post([this] {
+        logger_->Write(LogLevel::info, "profiles", "Reload local profiles...");
         profiles_.Load();
+        logger_->Write(LogLevel::info, "profiles", "Reloaded local profiles: " + std::to_string(profiles_.Profiles().size()));
         std::lock_guard lock(mutex_);
         snapshot_.loaded = true;
     });
@@ -162,7 +209,9 @@ void AppSession::Import(std::vector<std::filesystem::path> paths) {
         std::size_t failures = 0;
         for (const auto &path : paths) {
             try {
-                profiles_.Import(path);
+                logger_->Write(LogLevel::info, "profiles", "Import profile...");
+                const auto profile = profiles_.Import(path);
+                logger_->Write(LogLevel::info, "profiles", "Finished saving profile " + profile.id);
             } catch (...) {
                 ++failures;
             }
@@ -175,7 +224,9 @@ void AppSession::Remove(std::vector<std::string> ids) {
     Post([this, ids = std::move(ids)] {
         for (const auto &id : ids) {
             profiles_.Find(id);
+            logger_->Write(LogLevel::info, "profiles", "Remove profile " + id + "...");
             profiles_.Remove(id);
+            tunnel_.CancelPending(id);
         }
     });
 }
@@ -193,7 +244,7 @@ void AppSession::Refresh() {
     // Keep an actionable error visible until acknowledged or a user action.
     const auto state = Snapshot();
     if (state.busy || !state.error.empty()) return;
-    Post([] {});
+    Post([] {}, AppErrorContext::general, false);
 }
 void AppSession::ClearError() {
     std::lock_guard lock(mutex_);
@@ -226,20 +277,17 @@ void TunnelObservable::Connect(std::string id) {
 }
 TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapshot &state, const std::string &id) {
     ToggleState result;
-    bool otherActive = false;
     for (const auto &tunnel : state.tunnels) {
         if (tunnel.id == id) {
             result.isOn = tunnel.isEnabled;
             result.status = tunnel.status.value;
-        } else if (tunnel.status.value != Status::disconnected) {
-            otherActive = true;
         }
     }
     const bool exists = std::any_of(state.profiles.begin(), state.profiles.end(), [&](const auto &profile) {
         return profile.id == id;
     });
-    result.canInteract = exists && state.loaded && !state.busy && state.tunnelAvailable &&
-        result.status != Status::disconnecting && (result.isOn || !otherActive);
+    result.canInteract = exists && state.loaded && !state.foregroundBusy && !state.pendingProfile && state.tunnelAvailable &&
+        result.status != Status::disconnecting;
     return result;
 }
 void TunnelObservable::SetEnabled(const std::string &id, bool enabled) {

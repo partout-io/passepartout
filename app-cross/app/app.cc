@@ -80,6 +80,7 @@ bool PassepartoutApp::OnInit() {
     }
     partout_init_args init{};
     init.logs_private_data = false;
+    init.logger_fn = AppLogger::PartoutMessage;
     partout_init(&init);
     try {
         context_ = std::make_unique<AppContext>(dataRoot, demo);
@@ -220,16 +221,18 @@ void MainView::Render() {
     }
     list_->Thaw();
     rendering_ = false;
-    const bool tunnelUnavailable = !snapshot_.tunnelError.empty();
+    const bool tunnelUnavailable = !snapshot_.tunnelError.empty() || !snapshot_.reconciliationError.empty();
     message_->SetLabel(Localized(tunnelUnavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(tunnelUnavailable || (snapshot_.loaded && snapshot_.profiles.empty()));
-    if (snapshot_.busy) progress_->Start();
+    const bool activity = snapshot_.HasActivity();
+    if (activity) progress_->Start();
     else progress_->Stop();
+    progress_->Show(activity);
     UpdateActions();
     GetChildren().GetFirst()->GetData()->Layout();
 }
 void MainView::UpdateActions() {
-    const bool idle = !snapshot_.busy && snapshot_.loaded;
+    const bool idle = !snapshot_.foregroundBusy && !snapshot_.pendingProfile && snapshot_.loaded;
     const auto selected = SelectedIds();
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);

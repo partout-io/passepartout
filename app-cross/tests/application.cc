@@ -40,24 +40,36 @@ class ControlledTunnel final : public TunnelStrategy {
 public:
     FakeTunnelStrategy fake;
     bool failConnect = false;
+    bool delayedConnect = false;
     bool failFetch = false;
     bool delayedDisconnect = false;
+    bool failDisconnect = false;
+    bool failRemove = false;
+    std::vector<std::string> events;
     std::vector<Models::AppTunnelInfo> Fetch() override {
         if (failFetch) throw std::runtime_error("VPN state unavailable");
         return fake.Fetch();
     }
     void Save(const Profile &p) override {
+        events.push_back("save:" + p.id);
         fake.Save(p);
     }
     void Connect(const std::string &id) override {
+        events.push_back("connect:" + id);
         if (failConnect) throw std::runtime_error("Connection rejected");
-        fake.Connect(id);
+        if (delayedConnect) fake.SetStatus(id, Status::connecting);
+        else fake.Connect(id);
     }
     void Disconnect(const std::string &id) override {
-        if (delayedDisconnect) fake.SetStatus(id, Status::disconnecting);
+        events.push_back("disconnect:" + id);
+        if (failDisconnect) throw std::runtime_error("Disconnect rejected");
+        const auto states = fake.Fetch();
+        const bool exists = std::any_of(states.begin(), states.end(), [&](const auto &state) { return state.id == id; });
+        if (delayedDisconnect && exists) fake.SetStatus(id, Status::disconnecting);
         else fake.Disconnect(id);
     }
     void Remove(const std::string &id) override {
+        if (failRemove) throw std::runtime_error("Removal rejected");
         fake.Remove(id);
     }
 };
@@ -204,9 +216,13 @@ int main() {
         TunnelManager tunnel(std::move(controlled));
         tunnel.Connect(p);
         assert(tunnel.Fetch().at(0).status.value == Status::connected);
-        Rejects([&] {
-            tunnel.Connect(Example("second"));
-        });
+        tunnel.Connect(Example("second"));
+        assert(strategy->fake.Fetch().at(0).status.value == Status::disconnected);
+        assert(strategy->fake.Fetch().at(1).status.value == Status::connected);
+        assert((strategy->events == std::vector<std::string>{"save:" + p.id, "connect:" + p.id,
+            "disconnect:" + p.id, "save:second", "connect:second"}));
+        tunnel.Connect(p);
+        tunnel.Remove("second");
         strategy->delayedDisconnect = true;
         Rejects([&] {
             tunnel.Remove(p.id);
@@ -215,6 +231,121 @@ int main() {
         strategy->fake.SetStatus(p.id, Status::disconnected);
         tunnel.Remove(p.id);
         assert(tunnel.Fetch().empty());
+
+        // Handover waits for observed deactivation, and a new accepted target replaces the old one.
+        auto handoverBackend = std::make_unique<ControlledTunnel>();
+        auto *handoverStrategy = handoverBackend.get();
+        handoverStrategy->fake.Save(p);
+        handoverStrategy->fake.Connect(p.id);
+        handoverStrategy->delayedDisconnect = true;
+        TunnelManager handover(std::move(handoverBackend));
+        handover.Connect(Example("next"));
+        assert(handover.PendingProfile() == "next");
+        handover.Advance();
+        assert(handoverStrategy->events == std::vector<std::string>{"disconnect:" + p.id});
+        handover.Connect(Example("latest"));
+        handoverStrategy->fake.SetStatus(p.id, Status::disconnected);
+        handover.Advance();
+        assert(!handover.PendingProfile());
+        assert((handoverStrategy->events == std::vector<std::string>{"disconnect:" + p.id, "save:latest", "connect:latest"}));
+        handoverStrategy->failDisconnect = true;
+        Rejects([&] { handover.Connect(Example("failed")); });
+        assert(!handover.PendingProfile());
+        assert(handoverStrategy->fake.Fetch().at(1).status.value == Status::connected);
+        handoverStrategy->failDisconnect = false;
+        handover.Connect(Example("cancelled"));
+        handover.Disconnect("cancelled");
+        assert(!handover.PendingProfile());
+        handoverStrategy->fake.SetStatus("latest", Status::disconnected);
+        handover.Advance();
+        assert(handoverStrategy->fake.Fetch().size() == 2);
+        handoverStrategy->failConnect = true;
+        Rejects([&] { handover.Connect(Example("connection-failure")); });
+        assert(!handover.PendingProfile());
+        for (const auto &state : handover.Fetch()) assert(state.status.value == Status::disconnected);
+
+        auto activationBackend = std::make_unique<ControlledTunnel>();
+        auto *activationStrategy = activationBackend.get();
+        activationStrategy->delayedConnect = true;
+        TunnelManager activation(std::move(activationBackend));
+        activation.Connect(Example("activation"));
+        assert(activation.PendingProfile() == "activation");
+        activation.Advance();
+        assert(activation.PendingProfile() == "activation");
+        activationStrategy->fake.SetStatus("activation", Status::connected);
+        activation.Advance();
+        assert(!activation.PendingProfile());
+        activationStrategy->fake.Disconnect("activation");
+        activation.Connect(Example("activation"));
+        activationStrategy->fake.Disconnect("activation");
+        Rejects([&] { activation.Advance(); });
+        assert(!activation.PendingProfile());
+
+        auto timeoutBackend = std::make_unique<ControlledTunnel>();
+        timeoutBackend->fake.Save(p);
+        timeoutBackend->fake.Connect(p.id);
+        timeoutBackend->delayedDisconnect = true;
+        TunnelManager timeout(std::move(timeoutBackend), std::make_shared<AppLogger>(), std::chrono::milliseconds(0));
+        Rejects([&] { timeout.Connect(Example("timeout")); });
+        assert(!timeout.PendingProfile());
+
+        // Polling does not show activity; foreground work and observed transitions do.
+        AppSnapshot activity;
+        activity.busy = true;
+        assert(!activity.HasActivity());
+        activity.foregroundBusy = true;
+        assert(activity.HasActivity());
+        activity.foregroundBusy = false;
+        activity.pendingProfile = "next";
+        assert(activity.HasActivity());
+        activity.pendingProfile.reset();
+        Models::AppTunnelInfo transition{};
+        transition.status.value = Status::connecting;
+        activity.tunnels.push_back(transition);
+        activity.tunnelAvailable = true;
+        assert(activity.HasActivity());
+        activity.tunnels[0].status.value = Status::disconnecting;
+        assert(activity.HasActivity());
+        activity.tunnels[0].status.value = Status::connected;
+        assert(!activity.HasActivity());
+
+        // Record background errors once, preserve actual availability on cleanup failure, and log recovery/shutdown.
+        std::vector<std::string> messages;
+        auto logger = std::make_shared<AppLogger>([&](LogLevel, const std::string &, const std::string &message) {
+            messages.push_back(message);
+        });
+        {
+            auto loggingBackend = std::make_unique<ControlledTunnel>();
+            auto *backend = loggingBackend.get();
+            backend->failFetch = true;
+            AppSession logged(std::make_unique<FileProfileRepository>(root / "logging"), importer, std::move(loggingBackend), logger);
+            Wait(logged);
+            const auto count = messages.size();
+            logged.Refresh();
+            Wait(logged);
+            assert(messages.size() == count);
+            backend->failFetch = false;
+            backend->fake.Save(Example("orphan"));
+            backend->failRemove = true;
+            logged.Refresh();
+            Wait(logged);
+            assert(logged.Snapshot().tunnelAvailable);
+            assert(logged.Snapshot().tunnelError.empty());
+            assert(!logged.Snapshot().reconciliationError.empty());
+            backend->failRemove = false;
+            logged.Refresh();
+            Wait(logged);
+            assert(logged.Snapshot().reconciliationError.empty());
+        }
+        const auto containsLog = [&](const std::string &part) {
+            return std::any_of(messages.begin(), messages.end(), [&](const auto &message) { return message.find(part) != std::string::npos; });
+        };
+        assert(containsLog("Reload local profiles"));
+        assert(containsLog("Unable to fetch tunnel state"));
+        assert(containsLog("Tunnel observation recovered"));
+        assert(containsLog("Unable to remove orphaned profile orphan"));
+        assert(containsLog("Profile reconciliation recovered"));
+        assert(containsLog("Finished application session"));
 
         auto failed = std::make_unique<ControlledTunnel>();
         auto *sessionStrategy = failed.get();
@@ -319,7 +450,7 @@ int main() {
         unavailableState.tunnelAvailable = false;
         assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
         unavailableState = session.Snapshot();
-        unavailableState.busy = true;
+        unavailableState.foregroundBusy = true;
         assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
         assert(!TunnelObservable::StateForProfile(session.Snapshot(), "missing").canInteract);
         auto transitioning = session.Snapshot();
@@ -329,7 +460,7 @@ int main() {
         transitioning.tunnels.at(0).status.value = Status::disconnecting;
         assert(!TunnelObservable::StateForProfile(transitioning, p.id).canInteract);
         transitioning.tunnels.at(0).id = "another-active-profile";
-        assert(!TunnelObservable::StateForProfile(transitioning, p.id).canInteract);
+        assert(TunnelObservable::StateForProfile(transitioning, p.id).canInteract);
         sessionStrategy->failConnect = true;
         toggle.SetEnabled(p.id, true);
         Wait(session);
@@ -364,7 +495,9 @@ int main() {
         removal.Remove({p.id});
         Wait(removal);
         assert(removal.Snapshot().error.empty());
-        assert(!removal.Snapshot().tunnelError.empty());
+        assert(removal.Snapshot().tunnelError.empty());
+        assert(removal.Snapshot().tunnelAvailable);
+        assert(!removal.Snapshot().reconciliationError.empty());
         assert(removal.Snapshot().profiles.empty());
         assert(reopened.Fetch().empty());
         // Keep the Windows registration until disconnect actually finishes.
@@ -374,6 +507,7 @@ int main() {
         Wait(removal);
         assert(removal.Snapshot().tunnelError.empty());
         assert(removal.Snapshot().tunnels.empty());
+        assert(removal.Snapshot().reconciliationError.empty());
     } catch (...) {
         std::filesystem::remove_all(root);
         throw;
