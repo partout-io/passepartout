@@ -99,6 +99,9 @@ if(BUILD_APP)
     if(APPLE)
         # Mangle macOS @rpath
         set_target_properties(passepartout PROPERTIES
+            MACOSX_BUNDLE TRUE
+            MACOSX_BUNDLE_BUNDLE_NAME "Passepartout"
+            MACOSX_BUNDLE_GUI_IDENTIFIER "io.partout.passepartout.cross"
             MACOSX_RPATH ON
             BUILD_WITH_INSTALL_RPATH TRUE
             INSTALL_RPATH "@loader_path"
@@ -118,7 +121,15 @@ if(BUILD_APP)
 
     install(TARGETS passepartout
         RUNTIME DESTINATION .
+        BUNDLE DESTINATION .
     )
+    if(APPLE)
+        # Bundle the installed Partout runtime and wxWidgets dependencies.
+        install(CODE [[
+            include(BundleUtilities)
+            fixup_bundle("${CMAKE_INSTALL_PREFIX}/passepartout.app" "" "${CMAKE_INSTALL_PREFIX}")
+        ]])
+    endif()
     if(MSVC)
         install(FILES "$<TARGET_PDB_FILE:passepartout>"
             DESTINATION . CONFIGURATIONS Debug RelWithDebInfo OPTIONAL

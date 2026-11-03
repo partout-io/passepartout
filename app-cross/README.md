@@ -26,72 +26,61 @@ from name and publisher, not version. Versions order updates within that family.
 Set the version explicitly in existing CMake caches, for example
 `cmake -S app-cross -B app-cross/out/build/windows-arm64 '-DPASSEPARTOUT_PACKAGE_VERSION=0.1.0.0'`.
 
-## Development launch and debugger attach
+## Run and attach
 
-For an already registered development package, use the VS Code tasks
-`Windows: Launch packaged app (ARM64)` or `Windows: Launch packaged app (x64)`.
-The corresponding `Launch packaged app offline` tasks add `--demo`, using a fake
-tunnel and separate profile storage. All four tasks activate through Windows,
-print the process ID, and do not build, install, register, or stop the tunnel
-host. Quit any previously launched unpackaged instance first. For debugging,
-launch with the appropriate task, then select `Windows: Attach debugger to packaged app`
-and choose that `passepartout.exe` process ID. Attach and pause were verified with
-native VS Code debugging and package identity present on the earlier installed
-binary. The packaged resume/normal-Quit cycle was interrupted, so it is not yet
-verified. Current-binary verification must be recorded separately.
+VS Code has exactly eight run tasks and four attach configurations:
 
-On 3 November 2026, the current ARM64 Debug EXE and matching PDB were deployed
-and registered as `0.1.0.0`. The installed EXE hash matched the build. The
-package-aware launcher succeeded under Windows PowerShell with `-Demo`, and both
-package-full-name and application-ID queries returned success. VPN connection
-state stayed unchanged and no tunnel host was running. Current-build VS Code
-attach, source breakpoints, and normal Quit remain manual verification steps;
-UI automation is prohibited for this workspace. Debug installs now include the
-frontend PDB beside its EXE.
+| Platform | Run tasks | Attach configuration |
+| --- | --- | --- |
+| Windows ARM64 | Run Windows ARM64 Debug / Release | Attach Windows ARM64 |
+| Windows x64 | Run Windows X64 Debug / Release | Attach Windows X64 |
+| macOS ARM64 | Run macOS ARM64 Debug / Release | Attach macOS ARM64 |
+| macOS x64 | Run macOS X64 Debug / Release | Attach macOS X64 |
 
-The equivalent launch from the repository root is:
+Use **Tasks: Run Task** to build, install, and launch. Use **Run and Debug** to
+select an attach configuration, press F5, and choose the running process. There
+is no custom extension, automatic F5 launcher, process-ID file, or separate
+configure/install/launch task chain. CMake Tools' raw EXE Run/Debug buttons are
+hidden because they bypass Windows package activation.
+
+The run tasks call one script per platform, with the same responsibility:
 
 ```powershell
-./app-cross/scripts/launch-packaged-app.ps1 `
-    -InstallDirectory app-cross/out/install/windows-arm64 -Demo
+./app-cross/scripts/run-app.ps1 -Architecture arm64 -Configuration Debug
 ```
 
-Direct EXE launch does not provide package identity and leaves VPN controls
-unavailable. Unpackaged Windows launch configurations have been removed. Use the
-packaged tasks followed by attach, including for demo debugging; CMake Tools'
-generic Run/Debug target commands bypass this workflow. Install tasks are separate
-and may stop the tunnel host. The Windows VPN host is debugged by attaching to
-the system-activated process, not by launching its EXE directly.
+```bash
+bash app-cross/scripts/run-app.sh arm64 Debug
+```
 
-### VS Code commands
+Both accept arm64/x64 and Debug/Release. Optional `-Demo` on Windows or `--demo`
+on macOS uses the fake tunnel and separate profile storage. Run tasks use the
+regular backend. Agent verification must remain in demo mode. Quit the frontend
+before reinstalling; Windows refuses to stop a running VPN host.
 
-1. **Tasks: Run Task** → **CMake: Install Windows ARM64 Debug** (or the matching
-   x64/configuration task) builds and installs files. It does not launch the app.
-2. **Tasks: Run Task** → **Windows: Launch packaged app (ARM64)** (or x64/offline
-   variant) starts the registered package and prints its PID.
-3. For debugging, use **Debug: Select and Start Debugging** →
-   **Windows: Attach debugger to packaged app**, then choose that PID. This uses
-   the C/C++ extension's native Windows debugger (`cppvsdbg`), not GDB or LLDB.
+Windows initializes the matching MSVC environment, configures the explicit
+architecture preset, builds, installs EXE/PDB/runtime files, registers the local
+0.* development package when needed, and activates it through Windows. Direct
+EXE launch is not supported for VPN control. The native attach backend is
+`cppvsdbg`, supplied by Microsoft's C/C++ extension.
 
-CMake Tools' separate Run/Debug target buttons do not execute these task
-definitions. A selected target labelled `(Install)` can install and then launch
-the EXE unpackaged. Their status-bar and Project Status buttons are hidden in
-the folder and workspace settings to avoid this misleading alternative.
-The packaged launch tasks themselves never request a debugger path. If a
-debugger-path error appears, check that the selected debug configuration is the
-Windows attach entry, not a macOS LLDB entry or CMake's automatic debugger.
+macOS uses distinct macos-arm64 and macos-x64 presets, installs a
+`passepartout.app` bundle with its dependencies, signs it locally, and launches
+through `open`. It rejects non-macOS hosts before building or installing. The
+attach backend is `lldb-dap`, supplied by the LLVM extension and an installed
+LLDB DAP executable. wxWidgets and the build toolchain must support the requested
+architecture. The old macos-clang directory is not used by any task or preset;
+misplaced output there is left intact.
 
-The local development registration was repaired by updating version `1.0.0.0` to
-`1.0.0.1` and registering the manifest again with `Add-AppxPackage -Register`.
-The package name and publisher stayed unchanged, preserving the package family.
-Same-version registration had failed in the indexed-state handler with
-`0x80070490`. The new registration exposes the frontend in Start apps.
-Those `1.*` versions were temporary development checks; development now uses
-`0.*`. Moving an existing development registration back to `0.*` requires the
-explicit `Add-AppxPackage -Register <manifest> -ForceUpdateFromAnyVersion` option.
-Do this only with the frontend and tunnel host closed; do not use application
-shutdown flags or remove the package. This loose-package repair does not
-establish signed-package installation or upgrade behavior.
+Build outputs are `out/build/<platform>-<architecture>` and installed output is
+`out/install/<platform>-<architecture>`. Debug and Release share the installation
+for that architecture; each run installs the chosen configuration.
+
+Windows ARM64 Debug build/install/demo activation and package identity were
+verified. Current macOS bundle runs, x64 native execution, and end-to-end debugger
+attach remain platform/manual checks. No UI automation or live VPN connection
+checks were performed. This is a development workflow, not signed production
+distribution validation.
 
 ## Current behavior
 

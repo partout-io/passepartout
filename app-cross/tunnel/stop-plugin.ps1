@@ -1,6 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Davide De Rosa
+#
+# SPDX-License-Identifier: GPL-3.0
+
 param(
     [Parameter(Mandatory = $true)]
-    [string] $InstallDirectory
+    [string] $InstallDirectory,
+    [switch] $FailIfRunning
 )
 
 $ErrorActionPreference = "Stop"
@@ -16,6 +21,9 @@ foreach ($hostProcess in @(Get-Process -Name "passepartout-tunnel" -ErrorAction 
         }
         if (-not [string]::Equals($processPath, $hostPath, [StringComparison]::OrdinalIgnoreCase)) {
             continue
+        }
+        if ($FailIfRunning) {
+            throw "VPN host $($hostProcess.Id) is running. Installation was cancelled without stopping it."
         }
         Write-Host "Stopping VPN host $($hostProcess.Id) before installing $InstallDirectory"
         Stop-Process -InputObject $hostProcess -Force

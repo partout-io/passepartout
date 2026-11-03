@@ -2,70 +2,32 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Windows: Attach debugger to packaged app",
+            "name": "Attach Windows ARM64",
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "CMake: Debug installed app (macOS)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
-            "cwd": "${workspaceFolder}/out/install/macos-clang",
-            "MIMode": "lldb",
-            "preLaunchTask": "CMake: Install macOS Debug"
-        },
-        {
-            "name": "CMake: Run installed app (macOS Release)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
-            "cwd": "${workspaceFolder}/out/install/macos-clang",
-            "MIMode": "lldb",
-            "preLaunchTask": "CMake: Install macOS Release"
-        },
-        {
-            "name": "CMake: Debug installed tunnel (macOS)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/macos-clang/passepartout-tunnel",
-            "args": [],
-            "cwd": "${workspaceFolder}/out/install/macos-clang",
-            "MIMode": "lldb",
-            "preLaunchTask": "CMake: Install macOS Debug"
-        },
-        {
-            "name": "CMake: Run installed tunnel (macOS Release)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/macos-clang/passepartout-tunnel",
-            "args": [],
-            "cwd": "${workspaceFolder}/out/install/macos-clang",
-            "MIMode": "lldb",
-            "preLaunchTask": "CMake: Install macOS Release"
-        },
-        {
-            "name": "Windows: Attach debugger to VPN plugin (ARM64)",
+            "name": "Attach Windows X64",
             "type": "cppvsdbg",
             "request": "attach",
-            "processId": "${command:pickProcess}",
-            "symbolSearchPath": "${workspaceFolder}/out/build/windows-arm64/partout/bin;${workspaceFolder}/out/build/windows-arm64/Debug",
-            "logging": {
-                "moduleLoad": true,
-                "exceptions": true
-            }
+            "processId": "${command:pickProcess}"
         },
         {
-            "name": "Windows: Attach debugger to VPN plugin (x64)",
-            "type": "cppvsdbg",
+            "name": "Attach macOS ARM64",
+            "type": "lldb-dap",
             "request": "attach",
-            "processId": "${command:pickProcess}",
-            "symbolSearchPath": "${workspaceFolder}/out/build/windows-x64/partout/bin;${workspaceFolder}/out/build/windows-x64/Debug",
-            "logging": {
-                "moduleLoad": true,
-                "exceptions": true
-            }
+            "attachCommands": [
+                "process attach --pid ${command:pickProcess}"
+            ]
+        },
+        {
+            "name": "Attach macOS X64",
+            "type": "lldb-dap",
+            "request": "attach",
+            "attachCommands": [
+                "process attach --pid ${command:pickProcess}"
+            ]
         }
     ]
 }
