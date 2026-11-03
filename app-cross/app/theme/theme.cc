@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "theme.h"
+#include StringKey::ThemeH
 #include "../strings/strings.h"
 #include <wx/settings.h>
 namespace Passepartout {
@@ -19,9 +19,9 @@ wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
 }
 wxListCtrl *ThemeList(wxWindow *parent) {
     auto *list = new wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
-    list->SetName(Localized("global.nouns.profiles"));
-    list->AppendColumn(Localized("global.nouns.name"), wxLIST_FORMAT_LEFT, parent->FromDIP(320));
-    list->AppendColumn(Localized("global.nouns.status"), wxLIST_FORMAT_LEFT, parent->FromDIP(160));
+    list->SetName(Localized(StringKey::GlobalNounsProfiles));
+    list->AppendColumn(Localized(StringKey::GlobalNounsName), wxLIST_FORMAT_LEFT, parent->FromDIP(320));
+    list->AppendColumn(Localized(StringKey::GlobalNounsStatus), wxLIST_FORMAT_LEFT, parent->FromDIP(160));
     return list;
 }
 wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message) {

@@ -30,7 +30,7 @@ const std::map<std::string, Catalog> &Catalogs() {
 }
 }
 
-wxString Localized(const char *key, const wxString &locale) {
+wxString Localized(StringKey key, const wxString &locale) {
     auto language = locale;
     language.Replace("-", "_");
     // Apple uses a script identifier for Simplified Chinese.
@@ -39,13 +39,13 @@ wxString Localized(const char *key, const wxString &locale) {
     for (const auto &candidate : {language, language.BeforeFirst('_'), wxString("en")}) {
         const auto catalog = catalogs.find(candidate.ToStdString(wxConvUTF8));
         if (catalog == catalogs.end()) continue;
-        const auto entry = catalog->second.find(key);
+        const auto entry = catalog->second.find(StringKeyName(key));
         if (entry != catalog->second.end()) return entry->second;
     }
-    return wxString::FromUTF8(key);
+    return wxString::FromUTF8(StringKeyName(key));
 }
 
-wxString Localized(const char *key) {
+wxString Localized(StringKey key) {
     static const auto locale = [] {
         const auto *info = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage());
         return info ? info->CanonicalName : wxString("en");

@@ -25,15 +25,15 @@ wxString Text(const std::string &value) {
 }
 wxString StatusText(Status status) {
     switch (status) {
-        case Status::disconnected: return Localized("entities.tunnel_status.inactive");
-        case Status::connecting: return Localized("entities.tunnel_status.activating");
-        case Status::connected: return Localized("entities.tunnel_status.active");
-        case Status::disconnecting: return Localized("entities.tunnel_status.deactivating");
-        default: return Localized("global.nouns.unknown");
+        case Status::disconnected: return Localized(StringKey::EntitiesTunnelStatusInactive);
+        case Status::connecting: return Localized(StringKey::EntitiesTunnelStatusActivating);
+        case Status::connected: return Localized(StringKey::EntitiesTunnelStatusActive);
+        case Status::disconnecting: return Localized(StringKey::EntitiesTunnelStatusDeactivating);
+        default: return Localized(StringKey::GlobalNounsUnknown);
     }
 }
 wxString QuitTitle() {
-    auto title = Localized("views.app_menu.items.quit");
+    auto title = Localized(StringKey::ViewsAppMenuItemsQuit);
     title.Replace("%@", "Passepartout");
     return title;
 }
@@ -47,8 +47,8 @@ public:
 private:
     wxMenu *CreatePopupMenu() override {
         auto *menu = new wxMenu;
-        menu->Append(wxID_OPEN, Localized("global.actions.show"));
-        menu->Append(wxID_STOP, Localized("global.actions.disconnect"));
+        menu->Append(wxID_OPEN, Localized(StringKey::GlobalActionsShow));
+        menu->Append(wxID_STOP, Localized(StringKey::GlobalActionsDisconnect));
         menu->AppendSeparator();
         menu->Append(wxID_EXIT, QuitTitle());
         menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
@@ -81,7 +81,7 @@ bool PassepartoutApp::OnInit() {
     instance_ = std::make_unique<wxSingleInstanceChecker>(
         "Passepartout-" + wxGetUserId() + (demo ? "-demo" : ""));
     if (instance_->IsAnotherRunning()) {
-        wxMessageBox(Localized("errors.app.other"),
+        wxMessageBox(Localized(StringKey::ErrorsAppOther),
                      "Passepartout", wxOK | wxICON_INFORMATION);
         return false;
     }
@@ -99,7 +99,7 @@ bool PassepartoutApp::OnInit() {
         view->Show();
         return true;
     } catch (...) {
-        wxMessageBox(Localized("errors.app.other"), "Passepartout", wxOK | wxICON_ERROR);
+        wxMessageBox(Localized(StringKey::ErrorsAppOther), "Passepartout", wxOK | wxICON_ERROR);
         return false;
     }
 }
@@ -120,13 +120,13 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     layout->Add(search_, 0, wxEXPAND | wxALL, gap);
     list_ = ThemeList(panel);
     layout->Add(list_, 1, wxEXPAND | wxLEFT | wxRIGHT, gap);
-    message_ = ThemeEmptyMessage(panel, Localized("global.nouns.loading"));
+    message_ = ThemeEmptyMessage(panel, Localized(StringKey::GlobalNounsLoading));
     layout->Add(message_, 0, wxEXPAND | wxALL, gap);
     auto *actions = new wxBoxSizer(wxHORIZONTAL);
-    import_ = new wxButton(panel, wxID_ADD, Localized("views.app.toolbar.import_file"));
-    remove_ = new wxButton(panel, wxID_DELETE, Localized("global.actions.remove"));
-    connect_ = new wxButton(panel, wxID_ANY, Localized("global.actions.connect"));
-    disconnect_ = new wxButton(panel, wxID_STOP, Localized("global.actions.disconnect"));
+    import_ = new wxButton(panel, wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile));
+    remove_ = new wxButton(panel, wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
+    connect_ = new wxButton(panel, wxID_ANY, Localized(StringKey::GlobalActionsConnect));
+    disconnect_ = new wxButton(panel, wxID_STOP, Localized(StringKey::GlobalActionsDisconnect));
     progress_ = ThemeProgressView(panel);
     for (auto *button : {import_, remove_, connect_, disconnect_}) {
         actions->Add(button, 0, wxRIGHT, gap);
@@ -137,11 +137,11 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     panel->SetSizer(layout);
     auto *menus = new wxMenuBar;
     auto *file = new wxMenu;
-    file->Append(wxID_ADD, Localized("views.app.toolbar.import_file") + "\tCtrl+O");
+    file->Append(wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile) + "\tCtrl+O");
     file->AppendSeparator();
     file->Append(wxID_EXIT, QuitTitle() + "\tCtrl+Q");
     file->AppendSeparator();
-    file->Append(wxID_ABOUT, Localized("global.nouns.about"));
+    file->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
     menus->Append(file, "Passepartout");
     SetMenuBar(menus);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
@@ -217,7 +217,7 @@ void MainView::Render() {
     for (const auto &profile : snapshot_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto row = list_->InsertItem(list_->GetItemCount(), Text(profile.name));
-        auto status = snapshot_.tunnelAvailable ? Localized("entities.tunnel_status.inactive") : wxString();
+        auto status = snapshot_.tunnelAvailable ? Localized(StringKey::EntitiesTunnelStatusInactive) : wxString();
         for (const auto &tunnel : snapshot_.tunnels) {
             if (snapshot_.tunnelAvailable && tunnel.id == profile.id) status = StatusText(tunnel.status.value);
         }
@@ -227,7 +227,7 @@ void MainView::Render() {
             list_->SetItemState(row, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
     }
     list_->Thaw();
-    message_->SetLabel(Localized("views.app.folders.no_profiles"));
+    message_->SetLabel(Localized(StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(snapshot_.loaded && snapshot_.profiles.empty());
     if (snapshot_.busy) progress_->Start();
     else progress_->Stop();
@@ -256,11 +256,11 @@ void MainView::Tick(wxTimerEvent &) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
             const bool importing = !snapshot_.error.empty() && snapshot_.errorContext == AppErrorContext::import;
-            const auto message = Localized(importing ? "errors.app.import.generic" :
-                snapshot_.error.empty() || snapshot_.errorContext == AppErrorContext::tunnel ? "errors.app.tunnel" : "errors.app.other");
+            const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
+                snapshot_.error.empty() || snapshot_.errorContext == AppErrorContext::tunnel ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
             wxMessageDialog dialog(this, message,
-                importing ? Localized("views.app.toolbar.import_file") : wxString("Passepartout"), wxOK | wxICON_ERROR);
-            dialog.SetOKLabel(Localized("global.nouns.ok"));
+                importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxString("Passepartout"), wxOK | wxICON_ERROR);
+            dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
             dialog.ShowModal();
             timer_.Start(200);
         }
@@ -275,7 +275,7 @@ void MainView::Tick(wxTimerEvent &) {
 }
 void MainView::Import() {
     if (context_.profiles.Snapshot().busy) return;
-    wxFileDialog dialog(this, Localized("views.app.toolbar.import_file"), "", "",
+    wxFileDialog dialog(this, Localized(StringKey::ViewsAppToolbarImportFile), "", "",
         wxFileSelectorDefaultWildcardStr,
         wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
     if (dialog.ShowModal() != wxID_OK) return;
@@ -286,9 +286,9 @@ void MainView::Import() {
 void MainView::Remove() {
     const auto ids = SelectedIds();
     if (ids.empty() || context_.profiles.Snapshot().busy) return;
-    wxMessageDialog dialog(this, Localized("theme.confirmation.message"),
-        Localized("global.actions.remove"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
-    dialog.SetYesNoLabels(Localized("theme.confirmation.ok"), Localized("theme.confirmation.cancel"));
+    wxMessageDialog dialog(this, Localized(StringKey::ThemeConfirmationMessage),
+        Localized(StringKey::GlobalActionsRemove), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
+    dialog.SetYesNoLabels(Localized(StringKey::ThemeConfirmationOk), Localized(StringKey::ThemeConfirmationCancel));
     if (dialog.ShowModal() != wxID_YES) return;
     context_.profiles.Remove(ids);
 }
