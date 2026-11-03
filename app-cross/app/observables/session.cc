@@ -129,6 +129,22 @@ void AppSession::Publish() {
         snapshot_.tunnelAvailable = false;
     }
     auto tunnels = tunnel_.Fetch();
+    // Local profiles are authoritative. Reconcile deleted profiles separately
+    // from the local transaction, including after a restart or VPN outage.
+    // Never reconcile against an empty store when loading that store failed.
+    if (Snapshot().loaded) {
+        bool removed = false;
+        for (const auto &tunnel : tunnels) {
+            const auto &profiles = profiles_.Profiles();
+            const bool exists = std::any_of(profiles.begin(), profiles.end(), [&](const auto &profile) {
+                return profile.id == tunnel.id;
+            });
+            if (exists) continue;
+            tunnel_.Remove(tunnel.id);
+            removed = true;
+        }
+        if (removed) tunnels = tunnel_.Fetch();
+    }
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
     snapshot_.tunnelAvailable = true;
@@ -159,7 +175,6 @@ void AppSession::Remove(std::vector<std::string> ids) {
     Post([this, ids = std::move(ids)] {
         for (const auto &id : ids) {
             profiles_.Find(id);
-            tunnel_.Remove(id);
             profiles_.Remove(id);
         }
     });

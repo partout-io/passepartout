@@ -242,7 +242,7 @@ void MainView::UpdateActions() {
     });
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
-    remove_->Enable(idle && snapshot_.tunnelAvailable && !selected.empty());
+    remove_->Enable(idle && !selected.empty());
     connect_->Enable(idle && snapshot_.tunnelAvailable && selected.size() == 1 && !active);
     disconnect_->Enable(!snapshot_.busy && active);
 }

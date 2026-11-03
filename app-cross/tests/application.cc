@@ -201,12 +201,36 @@ int main() {
         Wait(offline);
         assert(!offline.Snapshot().error.empty());
         assert(offline.Snapshot().errorContext == AppErrorContext::import);
+        offline.Remove({"batch-id"});
+        Wait(offline);
+        assert(offline.Snapshot().error.empty());
+        assert(offline.Snapshot().profiles.empty());
+        assert(FileProfileRepository(root / "offline").Fetch().empty());
+        // A registration left during an outage is reconciled on recovery.
+        unavailableStrategy->fake.Save(Example("batch-id"));
         offline.ClearError();
         unavailableStrategy->failFetch = false;
         offline.Refresh();
         Wait(offline);
         assert(offline.Snapshot().tunnelError.empty());
         assert(offline.Snapshot().tunnelAvailable);
+        assert(offline.Snapshot().tunnels.empty());
+        // Startup also reconciles registrations left by a previous process.
+        auto orphaned = std::make_unique<ControlledTunnel>();
+        orphaned->fake.Save(Example("orphaned"));
+        AppSession restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(orphaned));
+        Wait(restarted);
+        assert(restarted.Snapshot().tunnels.empty());
+        // Failed local loading is not evidence that all profiles were deleted.
+        auto corruptRepository = std::make_unique<FileProfileRepository>(root / "corrupt");
+        std::ofstream(root / "corrupt" / "objects" / "profile-broken.json") << "invalid";
+        auto retained = std::make_unique<ControlledTunnel>();
+        retained->fake.Save(Example("retained"));
+        AppSession corrupt(std::move(corruptRepository), importer, std::move(retained));
+        Wait(corrupt);
+        assert(!corrupt.Snapshot().loaded);
+        assert(!corrupt.Snapshot().error.empty());
+        assert(corrupt.Snapshot().tunnels.size() == 1);
         session.Import({root / "missing.conf", another});
         Wait(session);
         assert(!session.Snapshot().error.empty());
@@ -237,14 +261,23 @@ int main() {
         delayed->fake.Save(p);
         delayed->fake.Connect(p.id);
         delayed->delayedDisconnect = true;
+        auto *delayedStrategy = delayed.get();
         AppSession removal(std::make_unique<FileProfileRepository>(root / "profiles"),
                            importer, std::move(delayed));
         Wait(removal);
         removal.Remove({p.id});
         Wait(removal);
-        assert(!removal.Snapshot().error.empty());
-        assert(removal.Snapshot().profiles.size() == 1);
-        assert(reopened.Fetch().size() == 1);
+        assert(removal.Snapshot().error.empty());
+        assert(!removal.Snapshot().tunnelError.empty());
+        assert(removal.Snapshot().profiles.empty());
+        assert(reopened.Fetch().empty());
+        // Keep the Windows registration until disconnect actually finishes.
+        assert(delayedStrategy->fake.Fetch().size() == 1);
+        delayedStrategy->fake.SetStatus(p.id, Status::disconnected);
+        removal.Refresh();
+        Wait(removal);
+        assert(removal.Snapshot().tunnelError.empty());
+        assert(removal.Snapshot().tunnels.empty());
     } catch (...) {
         std::filesystem::remove_all(root);
         throw;
