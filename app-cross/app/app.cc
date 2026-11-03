@@ -138,7 +138,7 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     auto *file = new wxMenu;
     file->Append(wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile) + "\tCtrl+O");
     file->AppendSeparator();
-    file->Append(wxID_EXIT, wxGetTranslation("E&xit"));
+    file->Append(wxID_EXIT);
     menus->Append(file, wxGetTranslation("&File"));
     auto *help = new wxMenu;
     help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
