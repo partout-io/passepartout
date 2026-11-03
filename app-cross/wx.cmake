@@ -112,6 +112,10 @@ function(target_link_windows_wxwidgets TARGET_NAME)
     endforeach()
 
     message(STATUS "Using wxWidgets Windows ${WX_PREBUILT_ARCH} prebuilt: ${WX_PREBUILT_DIR}")
+    # Opt into native per-monitor scaling instead of Windows bitmap scaling.
+    target_sources(${TARGET_NAME} PRIVATE
+        "${WX_INCLUDE_DIR}/wx/msw/wx_dpi_aware_pmv2.manifest"
+    )
     target_include_directories(${TARGET_NAME} PRIVATE
         "${WX_LIB_DIR}/mswu"
         "${WX_INCLUDE_DIR}"
