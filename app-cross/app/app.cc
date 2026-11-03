@@ -144,7 +144,6 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     file->Append(wxID_ABOUT, Localized("global.nouns.about"));
     menus->Append(file, "Passepartout");
     SetMenuBar(menus);
-    CreateStatusBar();
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         Import();
     }, wxID_ADD);
@@ -218,7 +217,7 @@ void MainView::Render() {
     for (const auto &profile : snapshot_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto row = list_->InsertItem(list_->GetItemCount(), Text(profile.name));
-        auto status = snapshot_.tunnelAvailable ? Localized("entities.tunnel_status.inactive") : Localized("global.nouns.unknown");
+        auto status = snapshot_.tunnelAvailable ? Localized("entities.tunnel_status.inactive") : wxString();
         for (const auto &tunnel : snapshot_.tunnels) {
             if (snapshot_.tunnelAvailable && tunnel.id == profile.id) status = StatusText(tunnel.status.value);
         }
@@ -232,19 +231,6 @@ void MainView::Render() {
     message_->Show(snapshot_.loaded && snapshot_.profiles.empty());
     if (snapshot_.busy) progress_->Start();
     else progress_->Stop();
-    wxString connection = snapshot_.tunnelAvailable ? Localized("entities.tunnel_status.inactive") : Localized("global.nouns.unknown");
-    if (snapshot_.tunnelAvailable) {
-        for (const auto &tunnel : snapshot_.tunnels) {
-            if (tunnel.status.value == Status::disconnected) continue;
-            auto name = Text(tunnel.id);
-            for (const auto &profile : snapshot_.profiles) {
-                if (profile.id == tunnel.id) name = Text(profile.name);
-            }
-            connection = name + L" — " + StatusText(tunnel.status.value);
-            break;
-        }
-    }
-    SetStatusText(connection);
     UpdateActions();
     GetChildren().GetFirst()->GetData()->Layout();
 }
@@ -263,14 +249,15 @@ void MainView::UpdateActions() {
 void MainView::Tick(wxTimerEvent &) {
     const auto next = context_.profiles.Snapshot();
     if (next.revision != snapshot_.revision) {
+        const bool newTunnelError = !next.tunnelError.empty() && next.tunnelError != snapshot_.tunnelError;
         snapshot_ = next;
         Render();
-        if (!snapshot_.error.empty() && !snapshot_.busy) {
+        if ((!snapshot_.error.empty() || newTunnelError) && !snapshot_.busy) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
-            const bool importing = snapshot_.errorContext == AppErrorContext::import;
+            const bool importing = !snapshot_.error.empty() && snapshot_.errorContext == AppErrorContext::import;
             const auto message = Localized(importing ? "errors.app.import.generic" :
-                snapshot_.errorContext == AppErrorContext::tunnel ? "errors.app.tunnel" : "errors.app.other");
+                snapshot_.error.empty() || snapshot_.errorContext == AppErrorContext::tunnel ? "errors.app.tunnel" : "errors.app.other");
             wxMessageDialog dialog(this, message,
                 importing ? Localized("views.app.toolbar.import_file") : wxString("Passepartout"), wxOK | wxICON_ERROR);
             dialog.SetOKLabel(Localized("global.nouns.ok"));

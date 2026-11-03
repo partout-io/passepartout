@@ -20,6 +20,7 @@ struct AppSnapshot {
     bool busy = true;
     bool tunnelAvailable = false;
     std::string error;
+    std::string tunnelError;
     AppErrorContext errorContext = AppErrorContext::general;
     std::uint64_t revision = 0;
 };

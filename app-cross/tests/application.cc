@@ -39,8 +39,10 @@ class ControlledTunnel final : public TunnelStrategy {
 public:
     FakeTunnelStrategy fake;
     bool failConnect = false;
+    bool failFetch = false;
     bool delayedDisconnect = false;
     std::vector<Models::AppTunnelInfo> Fetch() override {
+        if (failFetch) throw std::runtime_error("VPN state unavailable");
         return fake.Fetch();
     }
     void Save(const Profile &p) override {
@@ -182,6 +184,29 @@ int main() {
         // Failed files do not prevent the rest of a batch being processed.
         const auto another = root / "another.conf";
         std::ofstream(another) << "another configuration";
+        // Import success is independent of Windows VPN-state availability.
+        auto unavailable = std::make_unique<ControlledTunnel>();
+        auto *unavailableStrategy = unavailable.get();
+        unavailable->failFetch = true;
+        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(unavailable));
+        Wait(offline);
+        offline.Import({another});
+        Wait(offline);
+        assert(offline.Snapshot().error.empty());
+        assert(!offline.Snapshot().tunnelError.empty());
+        assert(!offline.Snapshot().tunnelAvailable);
+        assert(offline.Snapshot().profiles.size() == 1);
+        assert(FileProfileRepository(root / "offline").Fetch().size() == 1);
+        offline.Import({root / "missing.conf"});
+        Wait(offline);
+        assert(!offline.Snapshot().error.empty());
+        assert(offline.Snapshot().errorContext == AppErrorContext::import);
+        offline.ClearError();
+        unavailableStrategy->failFetch = false;
+        offline.Refresh();
+        Wait(offline);
+        assert(offline.Snapshot().tunnelError.empty());
+        assert(offline.Snapshot().tunnelAvailable);
         session.Import({root / "missing.conf", another});
         Wait(session);
         assert(!session.Snapshot().error.empty());

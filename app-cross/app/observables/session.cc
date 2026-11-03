@@ -62,18 +62,20 @@ void AppSession::Run() {
         } catch (...) {
             error = "The operation failed.";
         }
-        // Refresh even after partial deletion or a failed connection. Never
-        // publish a successful state merely because a request was accepted.
+        // A failed state refresh must not turn a committed import into a
+        // failed import. Keep operation and observation failures separate.
+        std::string tunnelError;
         try {
             Publish();
         } catch (const std::exception &e) {
-            if (error.empty()) error = e.what();
+            tunnelError = e.what();
         } catch (...) {
-            if (error.empty()) error = "Unable to read VPN state.";
+            tunnelError = "Unable to read VPN state.";
         }
         {
             std::lock_guard lock(mutex_);
             snapshot_.error = std::move(error);
+            snapshot_.tunnelError = std::move(tunnelError);
             snapshot_.errorContext = operation.context;
             snapshot_.busy = !operations_.empty();
             ++snapshot_.revision;
