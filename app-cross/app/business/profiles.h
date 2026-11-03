@@ -28,6 +28,10 @@ public:
     void Remove(const std::string &id) override;
 private:
     std::filesystem::path ObjectPath(const std::string &id) const;
+    std::vector<Profile> ReadObjects();
+    void PersistIndex(const std::vector<Profile> &profiles);
+    void WriteAtomically(const std::filesystem::path &path, const std::string &content);
+    std::filesystem::path root_;
     std::filesystem::path directory_;
 };
 

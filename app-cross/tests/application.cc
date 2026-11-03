@@ -110,6 +110,43 @@ int main() {
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
     try {
+        const auto storageRoot = root / "layout";
+        FileProfileRepository storage(storageRoot);
+        assert(std::filesystem::is_directory(storageRoot / "tmp"));
+        assert(nlohmann::json::parse(ReadConfiguration(storageRoot / "index.json")).at("version") == 1);
+        auto earlier = Example("earlier", "ALPHA");
+        earlier.userInfo = {{"lastUpdate", 1}, {"fingerprint", "first"}};
+        auto later = Example("later", "alpha");
+        later.userInfo = {{"lastUpdate", "2"}, {"fingerprint", "second"}};
+        storage.Save(Example("zulu", "Zulu"));
+        storage.Save(earlier);
+        storage.Save(later);
+        assert(std::filesystem::exists(storageRoot / "objects" / "later.json"));
+        assert(std::filesystem::is_empty(storageRoot / "tmp"));
+        assert(storage.Fetch().at(0).id == "later");
+        auto index = nlohmann::json::parse(ReadConfiguration(storageRoot / "index.json"));
+        assert(index.at("profiles").at(0).at("fingerprint") == "second");
+        assert(index.at("profiles").at(0).at("lastUpdate") == "2");
+        // A valid index defines fetch order, as on Android.
+        std::reverse(index["profiles"].begin(), index["profiles"].end());
+        std::ofstream(storageRoot / "index.json") << index.dump();
+        assert(storage.Fetch().at(0).id == "zulu");
+        // Interrupted index writes and missing indexes recover from objects.
+        std::ofstream(storageRoot / "index.json") << "broken index";
+        assert(storage.Fetch().at(0).id == "later");
+        std::filesystem::remove(storageRoot / "index.json");
+        assert(storage.Fetch().size() == 3);
+        std::ofstream(storageRoot / "objects" / "unindexed.json") << Example("unindexed", "Beta").ToJson().dump();
+        assert(storage.Fetch().size() == 4);
+        // Missing indexed objects must not be silently treated as deletion.
+        std::filesystem::remove(storageRoot / "objects" / "unindexed.json");
+        Rejects([&] { storage.Fetch(); });
+        storage.Remove("unindexed");
+        assert(storage.Fetch().size() == 3);
+        storage.Remove("later");
+        assert(FileProfileRepository(storageRoot).Fetch().size() == 2);
+        Rejects([&] { storage.Save(Example("CON")); });
+        Rejects([&] { storage.Save(Example("../escape")); });
         FileProfileRepository repository(root / "profiles");
         auto p = Example();
         repository.Save(p);
@@ -125,7 +162,7 @@ int main() {
             repository.Remove("../escape");
         });
         // Corruption must be reported and preserved, not treated as an empty store.
-        const auto damaged = root / "profiles/objects/profile-broken.json";
+        const auto damaged = root / "profiles/objects/broken.json";
         std::ofstream(damaged) << "secret invalid configuration";
         Rejects([&] {
             repository.Fetch();
@@ -223,7 +260,7 @@ int main() {
         assert(restarted.Snapshot().tunnels.empty());
         // Failed local loading is not evidence that all profiles were deleted.
         auto corruptRepository = std::make_unique<FileProfileRepository>(root / "corrupt");
-        std::ofstream(root / "corrupt" / "objects" / "profile-broken.json") << "invalid";
+        std::ofstream(root / "corrupt" / "objects" / "broken.json") << "invalid";
         auto retained = std::make_unique<ControlledTunnel>();
         retained->fake.Save(Example("retained"));
         AppSession corrupt(std::move(corruptRepository), importer, std::move(retained));

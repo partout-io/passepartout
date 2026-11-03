@@ -27,9 +27,14 @@ channel that resolves it.
 - Profile objects are authoritative. A Windows VPN entry is created or refreshed
   from the saved object when connecting. Entries use a stable ID-based name and
   are only managed when they belong to this package.
-- Removal disconnects first and checks the observed state. If disconnect is still
-  pending, the saved profile remains and the user can retry. Other applications'
-  entries are never removed. Orphan Windows entries are not automatically deleted.
+- Local profile deletion is independent of VPN availability. Reconciliation
+  disconnects/removes owned Windows entries without local profiles, retrying
+  after outages or restart. Failed local loading suppresses orphan cleanup.
+- Storage follows Android: `local/index.json`, `local/objects/<id>.json`, and
+  `local/tmp/<uuid>.tmp` under the application's local data directory. The
+  version-1 index stores IDs, names, and optional lastUpdate/fingerprint metadata.
+  Missing/corrupt indexes rebuild from objects. Demo mode uses `demo-local`.
+  The previous `profiles` layout is not migrated; its files remain untouched.
 - Configuration content is embedded in the plugin's existing XML envelope, so
   connecting does not depend on the original imported file remaining accessible.
 - Window close hides to the tray when available. Quit exits the frontend and

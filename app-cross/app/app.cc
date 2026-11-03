@@ -77,7 +77,7 @@ bool PassepartoutApp::OnInit() {
     }
     // Isolate fake connections and imported test data from real application data.
     const auto directory = FilePath(wxStandardPaths::Get().GetUserLocalDataDir()) /
-        (demo ? "demo-profiles" : "profiles");
+        (demo ? "demo-local" : "local");
     instance_ = std::make_unique<wxSingleInstanceChecker>(
         "Passepartout-" + wxGetUserId() + (demo ? "-demo" : ""));
     if (instance_->IsAnotherRunning()) {
@@ -139,10 +139,11 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     auto *file = new wxMenu;
     file->Append(wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile) + "\tCtrl+O");
     file->AppendSeparator();
-    file->Append(wxID_EXIT, QuitTitle() + "\tCtrl+Q");
-    file->AppendSeparator();
-    file->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
-    menus->Append(file, "Passepartout");
+    file->Append(wxID_EXIT, wxGetTranslation("E&xit"));
+    menus->Append(file, wxGetTranslation("&File"));
+    auto *help = new wxMenu;
+    help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
+    menus->Append(help, wxGetTranslation("&Help"));
     SetMenuBar(menus);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         Import();
@@ -287,9 +288,9 @@ void MainView::Remove() {
     const auto ids = SelectedIds();
     if (ids.empty() || context_.profiles.Snapshot().busy) return;
     wxMessageDialog dialog(this, Localized(StringKey::ThemeConfirmationMessage),
-        Localized(StringKey::GlobalActionsRemove), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
-    dialog.SetYesNoLabels(Localized(StringKey::ThemeConfirmationOk), Localized(StringKey::ThemeConfirmationCancel));
-    if (dialog.ShowModal() != wxID_YES) return;
+        Localized(StringKey::GlobalActionsRemove), wxOK | wxCANCEL | wxCANCEL_DEFAULT | wxICON_QUESTION);
+    dialog.SetOKCancelLabels(Localized(StringKey::ThemeConfirmationOk), Localized(StringKey::ThemeConfirmationCancel));
+    if (dialog.ShowModal() != wxID_OK) return;
     context_.profiles.Remove(ids);
 }
 void MainView::Connect() {
