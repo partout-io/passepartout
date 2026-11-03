@@ -13,6 +13,10 @@ if(POLICY CMP0177)
 endif()
 project(Passepartout LANGUAGES C CXX)
 
+# No target uses C++ modules, including the C++20 WinRT bridge. Avoid
+# unnecessary dyndep scanning, which can assert in Ninja on rebuilds.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 if(WIN32 AND CMAKE_VERSION VERSION_LESS 4.0)
     message(FATAL_ERROR "The Windows WinRT build requires CMake 4.0 or newer")
 endif()
