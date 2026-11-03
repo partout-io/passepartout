@@ -28,10 +28,13 @@ Set the version explicitly in existing CMake caches, for example
 
 ## Development launch and debugger attach
 
-For an already registered ARM64 development package, run the VS Code task
-`Windows: Launch packaged app offline (ARM64)`. It activates the frontend through
-Windows with `--demo`, prints its process ID, and does not build, install, register,
-or stop the tunnel host. Then select `CMake: Attach to packaged app (Windows)`
+For an already registered development package, use the VS Code tasks
+`Windows: Launch packaged app (ARM64)` or `Windows: Launch packaged app (x64)`.
+The corresponding `Launch packaged app offline` tasks add `--demo`, using a fake
+tunnel and separate profile storage. All four tasks activate through Windows,
+print the process ID, and do not build, install, register, or stop the tunnel
+host. Quit any previously launched unpackaged instance first. For debugging,
+launch with the appropriate task, then select `CMake: Attach to packaged app (Windows)`
 and choose that `passepartout.exe` process ID. Attach and pause were verified with
 native VS Code debugging and package identity present on the earlier installed
 binary. The packaged resume/normal-Quit cycle was interrupted, so it is not yet
@@ -53,15 +56,18 @@ The equivalent launch from the repository root is:
     -InstallDirectory app-cross/out/install/windows-arm64 -Demo
 ```
 
-Direct EXE launch, including `CMake: Debug installed app offline (Windows ARM64)`,
-does not provide package identity. Use package activation followed by attach for
-identity-dependent checks. Ordinary install/debug tasks may stop the tunnel host.
+Direct EXE launch does not provide package identity and leaves VPN controls
+unavailable. Unpackaged Windows launch configurations have been removed. Use the
+packaged tasks followed by attach, including for demo debugging; CMake Tools'
+generic Run/Debug target commands bypass this workflow. Install tasks are separate
+and may stop the tunnel host. The Windows VPN host is debugged by attaching to
+the system-activated process, not by launching its EXE directly.
 
 The local development registration was repaired by updating version `1.0.0.0` to
 `1.0.0.1` and registering the manifest again with `Add-AppxPackage -Register`.
 The package name and publisher stayed unchanged, preserving the package family.
 Same-version registration had failed in the indexed-state handler with
-`0x80070490`. The new registration exposes the frontend in Start apps. Existing
+`0x80070490`. The new registration exposes the frontend in Start apps.
 Those `1.*` versions were temporary development checks; development now uses
 `0.*`. Moving an existing development registration back to `0.*` requires the
 explicit `Add-AppxPackage -Register <manifest> -ForceUpdateFromAnyVersion` option.
@@ -88,6 +94,11 @@ establish signed-package installation or upgrade behavior.
   connecting does not depend on the original imported file remaining accessible.
 - Window close hides to the tray when available. Quit exits the frontend and
   leaves any system-managed VPN running; use Disconnect to stop it.
+- A single tray click shows the window. The tray menu has Disconnect and Quit.
+- Profile rows use a stock checkbox toggle alongside name and status. Toggles
+  act through the tunnel observable, reflect observed state, and disable during
+  pending actions or when VPN control is unavailable. Selection remains for
+  deletion; connecting does not require selecting a row first.
 - The file picker and initial command-line paths share the import flow. Import
   never connects automatically. **File associations are not registered yet:**
   standard Windows activation redirection must be verified before enabling them.
