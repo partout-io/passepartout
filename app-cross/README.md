@@ -32,10 +32,10 @@ Set the version explicitly in existing CMake caches, for example
 
 ## Run and attach
 
-VS Code has eight Run configurations (also available as tasks) and four separate
-Attach configurations:
+VS Code has eight Run configurations, eight matching Demo configurations, and
+four separate Attach configurations. Tasks only prepare the selected build.
 
-| Platform | Run tasks | Attach configuration |
+| Platform | Run configuration (also available as Demo) | Attach configuration |
 | --- | --- | --- |
 | Windows ARM64 | Run Windows ARM64 Debug / Release | Attach Windows ARM64 |
 | Windows x64 | Run Windows X64 Debug / Release | Attach Windows X64 |
@@ -53,7 +53,7 @@ To debug native code, select a separate **Attach** entry, press F5, and choose
 the running process. Attach does not build or reinstall. CMake Tools' raw EXE
 Run/Debug buttons remain hidden because they bypass package preparation.
 
-The run tasks call one script per platform, with the same responsibility:
+For launching from a terminal, use the same platform scripts:
 
 ```powershell
 ./app-cross/scripts/run-app.ps1 -Architecture arm64 -Configuration Debug
@@ -65,8 +65,8 @@ bash app-cross/scripts/run-app.sh arm64 Debug
 
 Both accept arm64/x64 and Debug/Release. Optional `-Demo` on Windows or `--demo`
 on macOS uses the fake tunnel and separate profile storage. For F5 demo runs,
-set the selected launch configuration's args to ["--demo"]. Run tasks use the
-regular backend. Agent verification must remain in demo mode. Quit the frontend
+select the matching **Demo** configuration; it passes `--demo` and reuses the
+same preparation task. Agent verification must remain in demo mode. Quit the frontend
 before reinstalling; Windows refuses to stop a running VPN host.
 
 Windows initializes the matching MSVC environment, configures the explicit
