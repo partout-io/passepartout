@@ -239,6 +239,18 @@ int main() {
         unavailable->failFetch = true;
         AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(unavailable));
         Wait(offline);
+        // A transient startup observation failure is not a failed user action.
+        assert(offline.Snapshot().loaded);
+        assert(offline.Snapshot().error.empty());
+        assert(!offline.Snapshot().tunnelError.empty());
+        assert(!offline.Snapshot().tunnelAvailable);
+        unavailableStrategy->failFetch = false;
+        offline.Refresh();
+        Wait(offline);
+        assert(offline.Snapshot().error.empty());
+        assert(offline.Snapshot().tunnelError.empty());
+        assert(offline.Snapshot().tunnelAvailable);
+        unavailableStrategy->failFetch = true;
         offline.Import({another});
         Wait(offline);
         assert(offline.Snapshot().error.empty());
