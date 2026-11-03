@@ -1,4 +1,5 @@
 {
+    "debug.showInStatusBar": "always",
     "cmake.useCMakePresets": "always",
     "cmake.useVsDeveloperEnvironment": "always",
     "cmake.options.advanced": {
