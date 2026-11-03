@@ -42,13 +42,11 @@ private:
     wxSearchCtrl *search_;
     wxListCtrl *list_;
     wxStaticText *message_;
-    wxStaticText *error_;
     wxActivityIndicator *progress_;
     wxButton *import_;
     wxButton *remove_;
     wxButton *connect_;
     wxButton *disconnect_;
-    wxButton *retry_;
     std::unique_ptr<wxTaskBarIcon> tray_;
     wxTimer timer_;
     std::vector<std::string> visibleIds_;

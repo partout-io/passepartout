@@ -176,6 +176,7 @@ int main() {
         session.Connect(p.id);
         Wait(session);
         assert(!session.Snapshot().error.empty());
+        assert(session.Snapshot().errorContext == AppErrorContext::tunnel);
         assert(session.Snapshot().tunnels.at(0).status.value == Status::disconnected);
         session.ClearError();
         // Failed files do not prevent the rest of a batch being processed.
@@ -184,6 +185,7 @@ int main() {
         session.Import({root / "missing.conf", another});
         Wait(session);
         assert(!session.Snapshot().error.empty());
+        assert(session.Snapshot().errorContext == AppErrorContext::import);
         assert(session.Snapshot().profiles.size() == 3);
         session.Remove({"imported", "batch-id"});
         Wait(session);

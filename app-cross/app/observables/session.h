@@ -11,6 +11,8 @@
 #include <thread>
 
 namespace Passepartout {
+enum class AppErrorContext { general, import, tunnel };
+
 struct AppSnapshot {
     std::vector<Models::AppProfileHeader> profiles;
     std::vector<Models::AppTunnelInfo> tunnels;
@@ -18,6 +20,7 @@ struct AppSnapshot {
     bool busy = true;
     bool tunnelAvailable = false;
     std::string error;
+    AppErrorContext errorContext = AppErrorContext::general;
     std::uint64_t revision = 0;
 };
 
@@ -40,14 +43,18 @@ public:
     void ClearError();
     bool WaitIdle(std::chrono::milliseconds timeout);
 private:
-    bool Post(std::function<void()> operation);
+    bool Post(std::function<void()> operation, AppErrorContext context = AppErrorContext::general);
     void Run();
     void Publish();
     ProfileManager profiles_;
     TunnelManager tunnel_;
     mutable std::mutex mutex_;
     std::condition_variable wake_;
-    std::deque<std::function<void()>> operations_;
+    struct Operation {
+        std::function<void()> run;
+        AppErrorContext context;
+    };
+    std::deque<Operation> operations_;
     AppSnapshot snapshot_;
     bool stopping_ = false;
     std::thread worker_;

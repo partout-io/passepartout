@@ -30,21 +30,21 @@ AppSnapshot AppSession::Snapshot() const {
     std::lock_guard lock(mutex_);
     return snapshot_;
 }
-bool AppSession::Post(std::function<void()> operation) {
+bool AppSession::Post(std::function<void()> operation, AppErrorContext context) {
     {
         std::lock_guard lock(mutex_);
         if (stopping_) return false;
         snapshot_.busy = true;
         snapshot_.error.clear();
         ++snapshot_.revision;
-        operations_.push_back(std::move(operation));
+        operations_.push_back({std::move(operation), context});
     }
     wake_.notify_all();
     return true;
 }
 void AppSession::Run() {
     for (;;) {
-        std::function<void()> operation;
+        Operation operation;
         {
             std::unique_lock lock(mutex_);
             wake_.wait(lock, [&] {
@@ -56,7 +56,7 @@ void AppSession::Run() {
         }
         std::string error;
         try {
-            operation();
+            operation.run();
         } catch (const std::exception &e) {
             error = e.what();
         } catch (...) {
@@ -74,6 +74,7 @@ void AppSession::Run() {
         {
             std::lock_guard lock(mutex_);
             snapshot_.error = std::move(error);
+            snapshot_.errorContext = operation.context;
             snapshot_.busy = !operations_.empty();
             ++snapshot_.revision;
         }
@@ -150,7 +151,7 @@ void AppSession::Import(std::vector<std::filesystem::path> paths) {
         }
         if (failures) throw std::runtime_error(std::to_string(failures) +
             " configuration(s) could not be imported. Valid imports were saved; existing profiles were preserved.");
-    });
+    }, AppErrorContext::import);
 }
 void AppSession::Remove(std::vector<std::string> ids) {
     Post([this, ids = std::move(ids)] {
@@ -164,12 +165,12 @@ void AppSession::Remove(std::vector<std::string> ids) {
 void AppSession::Connect(std::string id) {
     Post([this, id = std::move(id)] {
         tunnel_.Connect(profiles_.Find(id));
-    });
+    }, AppErrorContext::tunnel);
 }
 void AppSession::Disconnect(std::string id) {
     Post([this, id = std::move(id)] {
         tunnel_.Disconnect(id);
-    });
+    }, AppErrorContext::tunnel);
 }
 void AppSession::Refresh() {
     // Keep an actionable error visible until acknowledged or a user action.
