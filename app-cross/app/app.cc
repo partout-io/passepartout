@@ -293,7 +293,7 @@ void MainView::Remove() {
     const auto ids = SelectedIds();
     if (ids.empty() || context_.profiles.Snapshot().busy) return;
     wxMessageDialog dialog(this, Localized(StringKey::ThemeConfirmationMessage),
-        Localized(StringKey::GlobalActionsRemove), wxOK | wxCANCEL | wxCANCEL_DEFAULT | wxICON_QUESTION);
+        Localized(StringKey::GlobalActionsRemove), wxOK | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING);
     dialog.SetOKCancelLabels(Localized(StringKey::ThemeConfirmationOk), Localized(StringKey::ThemeConfirmationCancel));
     if (dialog.ShowModal() != wxID_OK) return;
     context_.profiles.Remove(ids);
