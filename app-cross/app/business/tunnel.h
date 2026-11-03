@@ -56,5 +56,5 @@ public:
 private:
     std::vector<Models::AppTunnelInfo> tunnels_;
 };
-std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy();
+std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverAddress);
 }

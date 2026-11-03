@@ -37,10 +37,10 @@ private:
         throw std::runtime_error("VPN control is unavailable.");
     }
 };
-std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo) {
+std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo, const CrossConstants &constants) {
     if (demo) return std::make_unique<FakeTunnelStrategy>();
 #ifdef _WIN32
-    return MakeWindowsTunnelStrategy();
+    return MakeWindowsTunnelStrategy(constants.tunnel.serverAddress);
 #else
     return std::make_unique<UnavailableTunnelStrategy>();
 #endif
@@ -52,7 +52,7 @@ AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
       logger_(std::make_shared<AppLogger>()),
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
           ProfileDirectory(dataRoot, constants, crossConstants, demo)),
-                                          ImportProfile, MakeTunnel(demo), logger_)),
+                                          ImportProfile, MakeTunnel(demo, crossConstants), logger_)),
       profiles(*session_), tunnel(*session_) {
     logger_->Write(LogLevel::info, "core", demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
 }
