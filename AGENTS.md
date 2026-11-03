@@ -9,6 +9,15 @@ scoped to Partout.
 Apply these rules to new or changed code. Existing deviations do not authorize
 unrelated refactoring; keep changes within the task's scope.
 
+## Text files
+
+- Use UTF-8 and LF line endings on every platform, including Windows. Never
+  introduce CRLF or stray carriage returns (`^M`) into source, configuration,
+  scripts, generated text, or documentation.
+- Preserve LF when writing files with PowerShell or generators. Check changed
+  text files for carriage returns before finishing; normalize only files within
+  the task's scope. Follow `.gitattributes` and `.editorconfig`.
+
 ## Application architecture
 
 - Use the same domain names and meanings across frontends. The shared application
