@@ -51,8 +51,9 @@ ThemeProfileList::ThemeProfileList(wxWindow *parent)
     AssociateModel(store);
     store->DecRef();
     SetName(Localized(StringKey::GlobalNounsProfiles));
-    AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(320));
-    AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(160));
+    AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(230));
+    AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(140));
+    AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, parent->FromDIP(190));
 #ifdef __WXMSW__
     AppendColumn(new wxDataViewColumn(wxString(),
         new ThemeSwitchRenderer(Localized(StringKey::EntitiesTunnelStatusActive),
@@ -63,18 +64,20 @@ ThemeProfileList::ThemeProfileList(wxWindow *parent)
                        parent->FromDIP(90), wxALIGN_CENTER);
 #endif
 }
-void ThemeProfileList::AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled) {
+void ThemeProfileList::AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer) {
     wxVector<wxVariant> values;
     values.push_back(wxVariant(name));
     values.push_back(wxVariant(status));
+    values.push_back(wxVariant(transfer));
     values.push_back(wxVariant(isOn));
     AppendItem(values, enabled ? 1 : 0);
 }
-void ThemeProfileList::UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool isOn, bool enabled) {
+void ThemeProfileList::UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer) {
     SetItemData(RowToItem(row), enabled ? 1 : 0);
     SetTextValue(name, row, 0);
     SetTextValue(status, row, 1);
     SetToggleValue(isOn, row, ToggleColumn);
+    SetTextValue(transfer, row, TransferColumn);
 }
 wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message) {
     return new wxStaticText(parent, wxID_ANY, message, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);

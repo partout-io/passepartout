@@ -158,5 +158,9 @@ not signed production distribution validation.
 
 The current adapter uses [VpnManagementAgent](https://learn.microsoft.com/en-us/uwp/api/windows.networking.vpn.vpnmanagementagent)
 for management and [VpnPlugInProfile.ConnectionStatus](https://learn.microsoft.com/en-us/uwp/api/windows.networking.vpn.vpnpluginprofile.connectionstatus)
-for observation. Transfer counters and detailed tunnel errors remain unavailable
-through this adapter; missing values are left absent.
+for observation. `Partout::Tunnel` supplies available 64-bit VPN interface
+counters through the typed snapshot environment. The column before the profile
+toggle shows `↓received ↑sent` totals using Apple's data-unit formatting, not
+bytes per second. Disconnected profiles and unavailable counters have blank
+cells; zero is displayed only when actually reported. Detailed engine errors
+remain unavailable. Live counter movement still requires authorized VPN testing.

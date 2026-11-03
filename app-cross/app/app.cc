@@ -4,6 +4,7 @@
 
 #include "app.h"
 #include "strings/strings.h"
+#include "ui/extensions/app_profile.h"
 #include "partout.h"
 #include <wx/aboutdlg.h>
 #include <wx/stdpaths.h>
@@ -31,6 +32,16 @@ wxString StatusText(Status status) {
         case Status::disconnecting: return Localized(StringKey::EntitiesTunnelStatusDeactivating);
         default: return Localized(StringKey::GlobalNounsUnknown);
     }
+}
+wxString TransferText(const AppSnapshot &state, const std::string &id) {
+    if (!state.tunnelAvailable) return {};
+    for (const auto &tunnel : state.tunnels) {
+        if (tunnel.id != id || tunnel.status.value != Status::connected || !tunnel.transfer) continue;
+        const auto &transfer = *tunnel.transfer;
+        if (transfer.received < 0 || transfer.sent < 0) return {};
+        return Text(Passepartout::TransferText(transfer));
+    }
+    return {};
 }
 wxString QuitTitle() {
     return wxGetStockLabel(wxID_EXIT) + "\tCtrl+Q";
@@ -213,8 +224,9 @@ void MainView::Render() {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto toggle = TunnelObservable::StateForProfile(snapshot_, profile.id);
         const auto status = snapshot_.tunnelAvailable ? StatusText(toggle.status) : wxString();
-        if (rebuild) list_->AppendProfile(Text(profile.name), status, toggle.isOn, toggle.canInteract);
-        else list_->UpdateProfile(row, Text(profile.name), status, toggle.isOn, toggle.canInteract);
+        const auto transfer = TransferText(snapshot_, profile.id);
+        if (rebuild) list_->AppendProfile(Text(profile.name), status, toggle.isOn, toggle.canInteract, transfer);
+        else list_->UpdateProfile(row, Text(profile.name), status, toggle.isOn, toggle.canInteract, transfer);
         if (rebuild && std::find(selected.begin(), selected.end(), profile.id) != selected.end())
             list_->SelectRow(row);
         ++row;

@@ -17,9 +17,10 @@ wxActivityIndicator *ThemeProgressView(wxWindow *parent);
 class ThemeProfileList final : public wxDataViewListCtrl {
 public:
     explicit ThemeProfileList(wxWindow *parent);
-    void AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled);
-    void UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool isOn, bool enabled);
-    static constexpr unsigned ToggleColumn = 2;
+    void AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer);
+    void UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer);
+    static constexpr unsigned TransferColumn = 2;
+    static constexpr unsigned ToggleColumn = 3;
 };
 wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message);
 }

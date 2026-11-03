@@ -23,9 +23,12 @@ add_executable(passepartout-models-test models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
 add_executable(passepartout-application-test application.cc)
 target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
+add_executable(passepartout-presentation-test presentation.cc
+    ../app/ui/extensions/app_profile.cc ../app/ui/extensions/data_helpers.cc)
+target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
 enable_testing()
-foreach(TEST_NAME IN ITEMS models application)
+foreach(TEST_NAME IN ITEMS models application presentation)
     set(TEST_TARGET passepartout-${TEST_NAME}-test)
     if(MSVC)
         target_compile_options(${TEST_TARGET} PRIVATE /UNDEBUG /utf-8)

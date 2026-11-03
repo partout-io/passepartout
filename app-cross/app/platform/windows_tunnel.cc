@@ -18,6 +18,13 @@ public:
             info.id = snapshot.id;
             info.isEnabled = snapshot.isEnabled;
             info.onDemand = snapshot.onDemand;
+            if (snapshot.environment) {
+                Models::ProfileTransfer transfer{};
+                transfer.received = snapshot.environment->dataCount.received;
+                transfer.sent = snapshot.environment->dataCount.sent;
+                info.transfer = transfer;
+                info.lastErrorCode = snapshot.environment->lastErrorCode;
+            }
             switch (snapshot.status.value) {
                 case Partout::Models::TunnelStatus::inactive: info.status.value = Status::disconnected; break;
                 case Partout::Models::TunnelStatus::activating: info.status.value = Status::connecting; break;

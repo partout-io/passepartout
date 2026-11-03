@@ -9,6 +9,8 @@ set(APP_SOURCES
     app/main.cc
     app/strings/strings.cc
     app/theme/theme.cc
+    app/ui/extensions/app_profile.cc
+    app/ui/extensions/data_helpers.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES
