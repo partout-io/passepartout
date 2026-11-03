@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "app_context.h"
+#include "import_result.h"
 #include "partout.h"
 #include <cstdlib>
 #include <stdexcept>
@@ -12,12 +13,7 @@ namespace {
 Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
         partout_import_profile(text.c_str(), name.c_str()), &std::free);
-    if (!json) throw std::runtime_error("Partout could not import this configuration.");
-    try {
-        return Profile::FromJson(nlohmann::json::parse(json.get()));
-    } catch (...) {
-        throw std::runtime_error("Partout returned an invalid profile.");
-    }
+    return DecodeImportResult(json.get());
 }
 class UnavailableTunnelStrategy final : public TunnelStrategy {
 public:

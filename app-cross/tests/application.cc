@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "business/profiles.h"
+#include "context/import_result.h"
 #include "business/tunnel.h"
 #include "observables/session.h"
 #include <cassert>
@@ -90,6 +91,19 @@ void Wait(AppSession &session) {
 }
 }
 int main() {
+    const auto imported = Example();
+    const auto success = nlohmann::json{{"payload", imported.ToJson()}};
+    assert(DecodeImportResult(success.dump().c_str()) == imported);
+    auto explicitSuccess = success;
+    explicitSuccess["code"] = nullptr;
+    assert(DecodeImportResult(explicitSuccess.dump().c_str()) == imported);
+    auto failure = success;
+    failure["code"] = "parsing";
+    Rejects([&] { DecodeImportResult(failure.dump().c_str()); });
+    Rejects([] { DecodeImportResult(nullptr); });
+    Rejects([] { DecodeImportResult("not JSON"); });
+    Rejects([] { DecodeImportResult("{}"); });
+    Rejects([&] { DecodeImportResult(imported.ToJson().dump().c_str()); });
     const auto root = std::filesystem::temp_directory_path() /
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
