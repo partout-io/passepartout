@@ -8,7 +8,7 @@
     Name="Passepartout.VpnChannel"
     Publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
     Version="@PASSEPARTOUT_PACKAGE_VERSION@"
-    ProcessorArchitecture="@PLUGIN_ARCH@" />
+    ProcessorArchitecture="@PASSEPARTOUT_WINDOWS_ARCH@" />
   <Properties>
     <DisplayName>Passepartout</DisplayName>
     <PublisherDisplayName>Passepartout VpnChannel</PublisherDisplayName>

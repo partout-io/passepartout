@@ -26,5 +26,6 @@ Path("files.cmake").write_text(
     "".join("        " + p + "\n" for p in windows) + "    )\nendif()\n" +
     "".join("set(" + name + "\n" +
             "".join('    "${CMAKE_CURRENT_LIST_DIR}/' + p + '"\n' for p in paths) +
-            ")\n" for name, paths in (("CORE_SOURCES", core), ("MODEL_SOURCES", models))))
+            ")\n" for name, paths in (("CORE_SOURCES", core), ("MODEL_SOURCES", models))),
+    encoding="utf-8", newline="\n")
 PYTHON

@@ -71,7 +71,8 @@ try {
     }
     $externalPackages = @($registered | Where-Object {
         $registeredManifest = Get-AppxPackageManifest -Package $_.PackageFullName
-        $registeredManifest.SelectSingleNode("//*[local-name()='AllowExternalContent']").InnerText -eq 'true'
+        $external = $registeredManifest.SelectSingleNode("//*[local-name()='AllowExternalContent']")
+        $external -and $external.InnerText -eq 'true'
     } | ForEach-Object { $_.PackageFullName })
     # The install-time guard also checks for a host appearing after preflight.
     InvokeCMake -Arguments @("-DCMAKE_INSTALL_PREFIX=$install", "-DCMAKE_INSTALL_CONFIG_NAME=$Configuration",

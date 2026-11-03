@@ -5,9 +5,6 @@
 if(NOT WIN32)
     return()
 endif()
-if(NOT MSVC)
-    message(FATAL_ERROR "The VPN plugin requires MSVC and the Windows SDK with C++/WinRT.")
-endif()
 
 # The host loads the plugin dynamically; only the plugin links to Partout.
 add_library(passepartout-vpnplugin SHARED
@@ -21,7 +18,6 @@ foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
         CXX_EXTENSIONS OFF
         MSVC_RUNTIME_LIBRARY MultiThreadedDLL
         MSVC_RUNTIME_CHECKS ""
-        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
     )
     target_compile_definitions(${PLUGIN_TARGET} PRIVATE
         NOMINMAX UNICODE _UNICODE WINRT_LEAN_AND_MEAN
@@ -40,16 +36,10 @@ set_target_properties(passepartout-vpnplugin PROPERTIES
     OUTPUT_NAME "passepartout-vpnchannel"
 )
 
-string(TOLOWER "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" PLUGIN_ARCH)
-if(PLUGIN_ARCH MATCHES "^(x64|amd64)$")
-    set(PLUGIN_ARCH x64)
-elseif(NOT PLUGIN_ARCH STREQUAL "arm64")
-    message(FATAL_ERROR "Unsupported VPN plugin architecture: ${PLUGIN_ARCH}")
-endif()
 # The AppContainer CRT import libraries resolve to the VCLibs framework DLLs.
 get_filename_component(PLUGIN_COMPILER_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
 get_filename_component(PLUGIN_STORE_LIB_DIR
-    "${PLUGIN_COMPILER_DIR}/../../../lib/${PLUGIN_ARCH}/store" ABSOLUTE)
+    "${PLUGIN_COMPILER_DIR}/../../../lib/${PASSEPARTOUT_WINDOWS_ARCH}/store" ABSOLUTE)
 if(NOT EXISTS "${PLUGIN_STORE_LIB_DIR}/msvcrt.lib")
     message(FATAL_ERROR "MSVC AppContainer libraries are missing: ${PLUGIN_STORE_LIB_DIR}")
 endif()
@@ -70,6 +60,8 @@ if(BUILD_APP)
     configure_file("${CMAKE_CURRENT_LIST_DIR}/../frontend.manifest.in"
         "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest" @ONLY)
     target_sources(passepartout PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_LIST_DIR}/../frontend.xml.in")
     file(READ "${CMAKE_CURRENT_LIST_DIR}/../frontend.xml.in" PASSEPARTOUT_FRONTEND_MANIFEST)
     set(PASSEPARTOUT_FRONTEND_CAPABILITY "    <rescap:Capability Name=\"runFullTrust\" />")
 endif()

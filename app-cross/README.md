@@ -40,14 +40,14 @@ Attach configurations:
 
 In **Run and Debug**, select **Run Windows ARM64 Debug** (or the matching
 platform, architecture, and configuration), then press **F5**. It builds,
-installs, and launches the packaged app without a process picker. These Run
-entries use VS Code's built-in terminal launcher to call the same run scripts
-as the tasks; no custom extension or extra script is needed.
+installs, and launches the installed app under the native C++ debugger without a
+process picker. Windows uses cppvsdbg; macOS uses lldb-dap. Hidden Prepare tasks
+call the same run scripts with -PrepareOnly/--prepare-only. No terminal debugger
+or custom extension is involved.
 
 To debug native code, select a separate **Attach** entry, press F5, and choose
-the running process. Run entries do not attach a C++ debugger. There is no
-process-ID file or separate configure/install/launch task chain. CMake Tools'
-raw EXE Run/Debug buttons remain hidden because they bypass Windows activation.
+the running process. Attach does not build or reinstall. CMake Tools' raw EXE
+Run/Debug buttons remain hidden because they bypass package preparation.
 
 The run tasks call one script per platform, with the same responsibility:
 
@@ -60,15 +60,21 @@ bash app-cross/scripts/run-app.sh arm64 Debug
 ```
 
 Both accept arm64/x64 and Debug/Release. Optional `-Demo` on Windows or `--demo`
-on macOS uses the fake tunnel and separate profile storage. Run tasks use the
+on macOS uses the fake tunnel and separate profile storage. For F5 demo runs,
+set the selected launch configuration's args to ["--demo"]. Run tasks use the
 regular backend. Agent verification must remain in demo mode. Quit the frontend
 before reinstalling; Windows refuses to stop a running VPN host.
 
 Windows initializes the matching MSVC environment, configures the explicit
 architecture preset, builds, installs EXE/PDB/runtime files, registers the local
-0.* development package when needed, and activates it through Windows. Direct
-EXE launch is not supported for VPN control. The native attach backend is
-`cppvsdbg`, supplied by Microsoft's C/C++ extension.
+0.* development package with external location when needed. The installed
+frontend embeds matching identity metadata, so native debugger launch preserves
+the same package family and application ID. Only the installed development
+manifest is adapted; the distribution manifest and VPN plugin entries remain
+unchanged. An existing registration with the same version but a different layout
+requires another 0.* PASSEPARTOUT_PACKAGE_VERSION in the CMake cache. See
+[Microsoft's identity documentation](https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/grant-identity-to-nonpackaged-apps).
+Microsoft's C/C++ extension supplies cppvsdbg.
 
 macOS uses distinct macos-arm64 and macos-x64 presets, installs a
 `passepartout.app` bundle with its dependencies, signs it locally, and launches
@@ -82,7 +88,7 @@ Build outputs are `out/build/<platform>-<architecture>` and installed output is
 `out/install/<platform>-<architecture>`. Debug and Release share the installation
 for that architecture; each run installs the chosen configuration.
 
-Windows ARM64 Debug build/install/demo activation and package identity were
+Windows ARM64 Debug preparation and direct demo launch with package identity were
 verified. Current macOS bundle runs, x64 native execution, and end-to-end debugger
 attach remain platform/manual checks. No UI automation or live VPN connection
 checks were performed. This is a development workflow, not signed production
