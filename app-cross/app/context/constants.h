@@ -16,7 +16,7 @@ struct CrossConstants {
         std::string demoPrefix = "demo-";
     } storage;
     struct Tunnel {
-        std::string serverUri = "https://passepartout.profile";
+        std::string serverUri = "passepartout.profile";
     } tunnel;
     struct CommandLine {
         std::string demoArgument = "--demo";
