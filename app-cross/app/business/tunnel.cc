@@ -20,6 +20,18 @@ void TunnelManager::Save(const Profile &profile) {
     logger_->Write(LogLevel::info, "tunnel", "Install profile " + profile.id + "...");
     strategy_->Save(profile);
 }
+void TunnelManager::Register(const Profile &profile) {
+    const auto existing = Fetch();
+    if (ObservationErrors().count(profile.id) || std::any_of(existing.begin(), existing.end(), [&](const auto &info) {
+        return info.id == profile.id;
+    })) throw std::runtime_error("The VPN profile is already registered.");
+    Save(profile);
+}
+void TunnelManager::RollbackRegistration(const std::string &id) {
+    logger_->Write(LogLevel::info, "tunnel", "Roll back imported VPN registration " + id);
+    // Never disconnect a connection as a side effect of import rollback.
+    strategy_->Remove(id);
+}
 void TunnelManager::Connect(const Profile &profile) {
     logger_->Write(LogLevel::info, "tunnel", "Connect to profile " + profile.id + "...");
     pending_.reset();

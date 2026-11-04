@@ -295,7 +295,9 @@ void ProfileManager::Load() {
     profiles_ = std::move(profiles);
     loaded_ = true;
 }
-Profile ProfileManager::Import(const std::filesystem::path &path) {
+Profile ProfileManager::Import(const std::filesystem::path &path,
+    std::function<void(const Profile &)> registerProfile,
+    std::function<void(const std::string &)> rollbackRegistration) {
     if (!loaded_) throw std::runtime_error("Load the saved profiles before importing.");
     auto profile = importer_(ReadConfiguration(path), path.stem().u8string());
     if (profile.name.empty()) profile.name = path.stem().u8string();
@@ -305,9 +307,31 @@ Profile ProfileManager::Import(const std::filesystem::path &path) {
     for (const auto &existing : profiles_) {
         if (existing.id == profile.id) throw std::runtime_error("This profile is already imported.");
     }
-    repository_->Save(profile);
-    profiles_.push_back(profile);
-    Sort(profiles_);
+    // Prepare the published collection before any external side effects.
+    auto committed = profiles_;
+    committed.push_back(profile);
+    Sort(committed);
+    if (registerProfile) registerProfile(profile);
+    try {
+        repository_->Save(profile);
+    } catch (...) {
+        const auto failure = std::current_exception();
+        std::string cleanupError;
+        try {
+            // Save may have written the object before failing on the index.
+            repository_->Remove(profile.id);
+        } catch (...) {
+            cleanupError = " Local import rollback failed.";
+        }
+        try {
+            if (rollbackRegistration) rollbackRegistration(profile.id);
+        } catch (...) {
+            cleanupError += " VPN registration rollback failed for " + profile.id + ".";
+        }
+        if (!cleanupError.empty()) throw std::runtime_error("Unable to commit imported profile." + cleanupError);
+        std::rethrow_exception(failure);
+    }
+    profiles_.swap(committed);
     return profile;
 }
 void ProfileManager::Remove(const std::string &id) {

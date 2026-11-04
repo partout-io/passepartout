@@ -8,12 +8,6 @@
 #include <type_traits>
 
 namespace Passepartout {
-namespace {
-class TunnelRegistrationError : public std::runtime_error {
-public:
-    using std::runtime_error::runtime_error;
-};
-}
 bool AppSnapshot::HasActivity() const {
     if (foregroundBusy || pendingProfile) return true;
     return tunnelAvailable && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
@@ -78,9 +72,6 @@ void AppSession::Run() {
                 operation.context = AppErrorContext::tunnel;
                 tunnel_.Advance();
             }
-        } catch (const TunnelRegistrationError &e) {
-            operation.context = AppErrorContext::tunnel;
-            error = e.what();
         } catch (const std::exception &e) {
             error = e.what();
         } catch (...) {
@@ -246,26 +237,24 @@ void AppSession::Import(std::vector<std::filesystem::path> paths) {
     Post([this, paths = std::move(paths)] {
         // Process every supplied activation, even if one configuration fails.
         std::size_t failures = 0;
-        std::size_t registrationFailures = 0;
         for (const auto &path : paths) {
             try {
                 logger_->Write(LogLevel::info, "profiles", "Import profile...");
-                const auto profile = profiles_.Import(path);
+                const auto profile = profiles_.Import(path, [this](const Profile &value) {
+                    tunnel_.Register(value);
+                }, [this](const std::string &id) {
+                    tunnel_.RollbackRegistration(id);
+                });
                 logger_->Write(LogLevel::info, "profiles", "Finished saving profile " + profile.id);
-                try {
-                    tunnel_.Save(profile);
-                } catch (const std::exception &error) {
-                    logger_->Write(LogLevel::error, "tunnel", "Unable to install imported profile " + profile.id + ": " + error.what());
-                    ++registrationFailures;
-                }
+            } catch (const std::exception &error) {
+                logger_->Write(LogLevel::error, "profiles", "Unable to import profile: " + std::string(error.what()));
+                ++failures;
             } catch (...) {
                 ++failures;
             }
         }
         if (failures) throw std::runtime_error(std::to_string(failures) +
             " configuration(s) could not be imported. Valid imports were saved; existing profiles were preserved.");
-        if (registrationFailures) throw TunnelRegistrationError(std::to_string(registrationFailures) +
-            " imported profile(s) were saved locally but could not be registered with the VPN service.");
     }, AppErrorContext::import);
 }
 void AppSession::Remove(std::vector<std::string> ids) {

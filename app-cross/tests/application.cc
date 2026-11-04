@@ -87,6 +87,20 @@ struct Gate {
     std::promise<void> entered;
     std::promise<void> release;
 };
+class FailingImportRepository final : public ProfileRepository {
+public:
+    bool failRemove = false;
+    std::vector<Profile> stored;
+    std::vector<Profile> Fetch() override { return stored; }
+    void Save(const Profile &profile) override {
+        stored.push_back(profile);
+        throw std::runtime_error("Index commit failed");
+    }
+    void Remove(const std::string &) override {
+        if (failRemove) throw std::runtime_error("Local rollback failed");
+        stored.clear();
+    }
+};
 class BlockingTunnel final : public TunnelStrategy {
 public:
     explicit BlockingTunnel(std::shared_ptr<Gate> gate) : gate_(std::move(gate)) {}
@@ -235,6 +249,40 @@ int main() {
             manager.Import(config);
         });
         assert(manager.Profiles().size() == 2);
+        {
+            auto repository = std::make_unique<FailingImportRepository>();
+            auto *storage = repository.get();
+            ProfileManager transaction(std::move(repository), importer);
+            transaction.Load();
+            bool registered = false;
+            bool rollbackAttempted = false;
+            Rejects([&] {
+                transaction.Import(config, [&](const Profile &) { registered = true; }, [&](const std::string &) {
+                    rollbackAttempted = true;
+                    registered = false;
+                });
+            });
+            assert(!registered && rollbackAttempted && storage->stored.empty() && transaction.Profiles().empty());
+            rollbackAttempted = false;
+            Rejects([&] {
+                transaction.Import(config, [](const Profile &) { throw std::runtime_error("Rejected"); },
+                    [&](const std::string &) { rollbackAttempted = true; });
+            });
+            assert(!rollbackAttempted && storage->stored.empty());
+            storage->failRemove = true;
+            std::string error;
+            try {
+                transaction.Import(config, [](const Profile &) {}, [&](const std::string &) {
+                    rollbackAttempted = true;
+                    throw std::runtime_error("Native rollback failed");
+                });
+            } catch (const std::exception &failure) {
+                error = failure.what();
+            }
+            assert(rollbackAttempted && transaction.Profiles().empty());
+            assert(error.find("Local import rollback failed") != std::string::npos);
+            assert(error.find("VPN registration rollback failed") != std::string::npos);
+        }
 
         auto controlled = std::make_unique<ControlledTunnel>();
         auto *strategy = controlled.get();
@@ -413,17 +461,18 @@ int main() {
             imported.Import({another});
             Wait(imported);
             assert(!imported.Snapshot().error.empty());
-            assert(imported.Snapshot().errorContext == AppErrorContext::tunnel);
-            assert(FileProfileRepository(root / "registration").Fetch().size() == 2);
+            assert(imported.Snapshot().errorContext == AppErrorContext::import);
+            assert(FileProfileRepository(root / "registration").Fetch().size() == 1);
+            assert(imported.Snapshot().profiles.size() == 1);
             registration->failSave = false;
-            imported.Load();
+            imported.Import({another});
             Wait(imported);
             assert(imported.Snapshot().error.empty());
             assert(imported.Snapshot().tunnels.size() == 2);
             assert(std::count(registration->events.begin(), registration->events.end(), "save:imported") == 1);
             assert(std::count(registration->events.begin(), registration->events.end(), "save:batch-id") == 2);
         }
-        // Import success is independent of Windows VPN-state availability.
+        // Import requires native registration; failed observation must not save locally.
         auto unavailable = std::make_unique<ControlledTunnel>();
         auto *unavailableStrategy = unavailable.get();
         unavailable->failFetch = true;
@@ -443,11 +492,17 @@ int main() {
         unavailableStrategy->failFetch = true;
         offline.Import({another});
         Wait(offline);
-        assert(offline.Snapshot().error.empty());
+        assert(!offline.Snapshot().error.empty());
         assert(!offline.Snapshot().tunnelError.empty());
         assert(!offline.Snapshot().tunnelAvailable);
+        assert(offline.Snapshot().profiles.empty());
+        assert(FileProfileRepository(root / "offline").Fetch().empty());
+        unavailableStrategy->failFetch = false;
+        offline.Import({another});
+        Wait(offline);
+        assert(offline.Snapshot().error.empty());
         assert(offline.Snapshot().profiles.size() == 1);
-        assert(FileProfileRepository(root / "offline").Fetch().size() == 1);
+        unavailableStrategy->failFetch = true;
         offline.Import({root / "missing.conf"});
         Wait(offline);
         assert(!offline.Snapshot().error.empty());

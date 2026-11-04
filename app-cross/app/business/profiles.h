@@ -41,7 +41,9 @@ class ProfileManager {
 public:
     ProfileManager(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer);
     void Load();
-    Profile Import(const std::filesystem::path &path);
+    Profile Import(const std::filesystem::path &path,
+        std::function<void(const Profile &)> registerProfile = {},
+        std::function<void(const std::string &)> rollbackRegistration = {});
     void Remove(const std::string &id);
     const Profile &Find(const std::string &id) const;
     const std::vector<Profile> &Profiles() const;

@@ -37,6 +37,8 @@ public:
     std::vector<Models::AppTunnelInfo> Fetch();
     std::map<std::string, std::string> ObservationErrors() const;
     void Save(const Profile &profile);
+    void Register(const Profile &profile);
+    void RollbackRegistration(const std::string &id);
     void Connect(const Profile &profile);
     void Disconnect(const std::string &id);
     void Remove(const std::string &id);
