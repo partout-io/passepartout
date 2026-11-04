@@ -155,7 +155,23 @@ void AppSession::Publish() {
     }
     auto tunnels = tunnel_.Fetch();
     std::string reconciliationError;
-    if (Snapshot().loaded) {
+    if (registerMissingProfiles_) {
+        const auto unavailable = tunnel_.ObservationErrors();
+        try {
+            for (const auto &profile : profiles_.Profiles()) {
+                if (unavailable.find(profile.id) != unavailable.end()) continue;
+                const bool exists = std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
+                    return tunnel.id == profile.id;
+                });
+                if (!exists) tunnel_.Save(profile);
+            }
+            tunnels = tunnel_.Fetch();
+            registerMissingProfiles_ = false;
+        } catch (const std::exception &error) {
+            reconciliationError = "Unable to register saved profiles: " + std::string(error.what());
+        }
+    }
+    if (Snapshot().loaded && reconciliationError.empty()) {
         bool removed = false;
         for (const auto &tunnel : tunnels) {
             const auto &profiles = profiles_.Profiles();
@@ -210,8 +226,11 @@ void AppSession::Load() {
         logger_->Write(LogLevel::info, "profiles", "Reload local profiles...");
         profiles_.Load();
         logger_->Write(LogLevel::info, "profiles", "Reloaded local profiles: " + std::to_string(profiles_.Profiles().size()));
-        std::lock_guard lock(mutex_);
-        snapshot_.loaded = true;
+        {
+            std::lock_guard lock(mutex_);
+            snapshot_.loaded = true;
+        }
+        registerMissingProfiles_ = true;
     });
 }
 void AppSession::Import(std::vector<std::filesystem::path> paths) {
@@ -223,6 +242,12 @@ void AppSession::Import(std::vector<std::filesystem::path> paths) {
                 logger_->Write(LogLevel::info, "profiles", "Import profile...");
                 const auto profile = profiles_.Import(path);
                 logger_->Write(LogLevel::info, "profiles", "Finished saving profile " + profile.id);
+                try {
+                    tunnel_.Save(profile);
+                } catch (const std::exception &error) {
+                    logger_->Write(LogLevel::error, "tunnel", "Unable to install imported profile " + profile.id + ": " + error.what());
+                    throw;
+                }
             } catch (...) {
                 ++failures;
             }

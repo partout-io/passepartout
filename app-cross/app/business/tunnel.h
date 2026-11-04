@@ -36,6 +36,7 @@ public:
     std::optional<std::string> PendingProfile() const;
     std::vector<Models::AppTunnelInfo> Fetch();
     std::map<std::string, std::string> ObservationErrors() const;
+    void Save(const Profile &profile);
     void Connect(const Profile &profile);
     void Disconnect(const std::string &id);
     void Remove(const std::string &id);

@@ -45,6 +45,7 @@ public:
     bool delayedDisconnect = false;
     bool failDisconnect = false;
     bool failRemove = false;
+    bool failSave = false;
     std::map<std::string, std::string> observationErrors;
     std::vector<std::string> events;
     std::vector<Models::AppTunnelInfo> Fetch() override {
@@ -60,6 +61,7 @@ public:
     }
     void Save(const Profile &p) override {
         events.push_back("save:" + p.id);
+        if (failSave) throw std::runtime_error("Registration rejected");
         fake.Save(p);
     }
     void Connect(const std::string &id) override {
@@ -120,6 +122,7 @@ int main() {
         control->fake.Save(Example("broken"));
         control->observationErrors.emplace("broken", "Invalid handle");
         TunnelManager manager(std::move(strategy));
+        manager.Save(Example("healthy"));
         manager.Connect(Example("healthy"));
         assert(!manager.PendingProfile());
         assert((control->events == std::vector<std::string>{"save:healthy", "connect:healthy"}));
@@ -236,13 +239,15 @@ int main() {
         auto controlled = std::make_unique<ControlledTunnel>();
         auto *strategy = controlled.get();
         TunnelManager tunnel(std::move(controlled));
+        tunnel.Save(p);
         tunnel.Connect(p);
         assert(tunnel.Fetch().at(0).status.value == Status::connected);
+        tunnel.Save(Example("second"));
         tunnel.Connect(Example("second"));
         assert(strategy->fake.Fetch().at(0).status.value == Status::disconnected);
         assert(strategy->fake.Fetch().at(1).status.value == Status::connected);
         assert((strategy->events == std::vector<std::string>{"save:" + p.id, "connect:" + p.id,
-            "disconnect:" + p.id, "save:second", "connect:second"}));
+            "save:second", "disconnect:" + p.id, "connect:second"}));
         tunnel.Connect(p);
         tunnel.Remove("second");
         strategy->delayedDisconnect = true;
@@ -258,6 +263,8 @@ int main() {
         auto handoverBackend = std::make_unique<ControlledTunnel>();
         auto *handoverStrategy = handoverBackend.get();
         handoverStrategy->fake.Save(p);
+        for (const auto *id : {"latest", "next", "failed", "cancelled", "connection-failure"})
+            handoverStrategy->fake.Save(Example(id));
         handoverStrategy->fake.Connect(p.id);
         handoverStrategy->delayedDisconnect = true;
         TunnelManager handover(std::move(handoverBackend));
@@ -269,7 +276,7 @@ int main() {
         handoverStrategy->fake.SetStatus(p.id, Status::disconnected);
         handover.Advance();
         assert(!handover.PendingProfile());
-        assert((handoverStrategy->events == std::vector<std::string>{"disconnect:" + p.id, "save:latest", "connect:latest"}));
+        assert((handoverStrategy->events == std::vector<std::string>{"disconnect:" + p.id, "connect:latest"}));
         handoverStrategy->failDisconnect = true;
         Rejects([&] { handover.Connect(Example("failed")); });
         assert(!handover.PendingProfile());
@@ -280,7 +287,7 @@ int main() {
         assert(!handover.PendingProfile());
         handoverStrategy->fake.SetStatus("latest", Status::disconnected);
         handover.Advance();
-        assert(handoverStrategy->fake.Fetch().size() == 2);
+        assert(handoverStrategy->fake.Fetch().size() == 6);
         handoverStrategy->failConnect = true;
         Rejects([&] { handover.Connect(Example("connection-failure")); });
         assert(!handover.PendingProfile());
@@ -290,6 +297,7 @@ int main() {
         auto *activationStrategy = activationBackend.get();
         activationStrategy->delayedConnect = true;
         TunnelManager activation(std::move(activationBackend));
+        activation.Save(Example("activation"));
         activation.Connect(Example("activation"));
         assert(activation.PendingProfile() == "activation");
         activation.Advance();
@@ -305,6 +313,7 @@ int main() {
 
         auto timeoutBackend = std::make_unique<ControlledTunnel>();
         timeoutBackend->fake.Save(p);
+        timeoutBackend->fake.Save(Example("timeout"));
         timeoutBackend->fake.Connect(p.id);
         timeoutBackend->delayedDisconnect = true;
         TunnelManager timeout(std::move(timeoutBackend), std::make_shared<AppLogger>(), std::chrono::milliseconds(0));
@@ -386,6 +395,33 @@ int main() {
         // Failed files do not prevent the rest of a batch being processed.
         const auto another = root / "another.conf";
         std::ofstream(another) << "another configuration";
+        {
+            auto backend = std::make_unique<ControlledTunnel>();
+            auto *registration = backend.get();
+            AppSession imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::move(backend));
+            Wait(imported);
+            imported.Import({config});
+            Wait(imported);
+            assert(imported.Snapshot().error.empty());
+            assert(registration->events == std::vector<std::string>{"save:imported"});
+            assert(imported.Snapshot().tunnels.at(0).status.value == Status::disconnected);
+            imported.Connect("imported");
+            Wait(imported);
+            assert((registration->events == std::vector<std::string>{"save:imported", "connect:imported"}));
+            registration->failSave = true;
+            imported.Import({another});
+            Wait(imported);
+            assert(!imported.Snapshot().error.empty());
+            assert(imported.Snapshot().errorContext == AppErrorContext::import);
+            assert(FileProfileRepository(root / "registration").Fetch().size() == 2);
+            registration->failSave = false;
+            imported.Load();
+            Wait(imported);
+            assert(imported.Snapshot().error.empty());
+            assert(imported.Snapshot().tunnels.size() == 2);
+            assert(std::count(registration->events.begin(), registration->events.end(), "save:imported") == 1);
+            assert(std::count(registration->events.begin(), registration->events.end(), "save:batch-id") == 2);
+        }
         // Import success is independent of Windows VPN-state availability.
         auto unavailable = std::make_unique<ControlledTunnel>();
         auto *unavailableStrategy = unavailable.get();

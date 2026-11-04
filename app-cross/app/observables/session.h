@@ -57,6 +57,7 @@ private:
     std::shared_ptr<AppLogger> logger_;
     std::string lastObservationError_;
     std::string lastReconciliationError_;
+    bool registerMissingProfiles_ = false;
     ProfileManager profiles_;
     TunnelManager tunnel_;
     mutable std::mutex mutex_;

@@ -16,6 +16,10 @@ std::vector<Models::AppTunnelInfo> TunnelManager::Fetch() {
 std::map<std::string, std::string> TunnelManager::ObservationErrors() const {
     return strategy_->ObservationErrors();
 }
+void TunnelManager::Save(const Profile &profile) {
+    logger_->Write(LogLevel::info, "tunnel", "Install profile " + profile.id + "...");
+    strategy_->Save(profile);
+}
 void TunnelManager::Connect(const Profile &profile) {
     logger_->Write(LogLevel::info, "tunnel", "Connect to profile " + profile.id + "...");
     pending_.reset();
@@ -25,6 +29,8 @@ void TunnelManager::Connect(const Profile &profile) {
     const auto errors = ObservationErrors();
     if (const auto failure = errors.find(profile.id); failure != errors.end())
         throw std::runtime_error(failure->second);
+    if (std::none_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) { return tunnel.id == profile.id; }))
+        throw std::runtime_error("The Windows VPN profile is missing. Reload profiles to register it.");
     for (const auto &tunnel : tunnels) {
         if (tunnel.id == profile.id && tunnel.status.value == Status::connected) return;
     }
@@ -70,8 +76,6 @@ void TunnelManager::Advance() {
         }
         // Wait for observed connections; unavailable registrations are neither
         // treated as disconnected nor selected for automatic disconnection.
-        logger_->Write(LogLevel::info, "tunnel", "Install profile " + pending_->id + "...");
-        strategy_->Save(*pending_);
         strategy_->Connect(pending_->id);
         logger_->Write(LogLevel::info, "tunnel", "Connect request accepted for profile " + pending_->id);
         connectionRequested_ = true;
