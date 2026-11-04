@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <fstream>
 #include <stdexcept>
+#include <exception>
 #include <set>
 #include <limits>
 #include <locale>

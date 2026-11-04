@@ -91,7 +91,9 @@ class FailingImportRepository final : public ProfileRepository {
 public:
     bool failRemove = false;
     std::vector<Profile> stored;
-    std::vector<Profile> Fetch() override { return stored; }
+    std::vector<Profile> Fetch() override {
+        return stored;
+    }
     void Save(const Profile &profile) override {
         stored.push_back(profile);
         throw std::runtime_error("Index commit failed");
