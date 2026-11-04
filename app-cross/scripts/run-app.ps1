@@ -49,6 +49,12 @@ function InvokeCMake {
     & cmake @Arguments
     if ($LASTEXITCODE -ne 0) { throw "CMake failed with exit code $LASTEXITCODE." }
 }
+function TestExternalPackage {
+    param([string]$PackageFullName)
+    $registeredManifest = Get-AppxPackageManifest -Package $PackageFullName -ErrorAction Stop
+    $external = $registeredManifest.SelectSingleNode("//*[local-name()='AllowExternalContent']")
+    return $external -and $external.InnerText -eq 'true'
+}
 
 AssertFrontendClosed
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
@@ -67,11 +73,20 @@ try {
     if (@($registered | Where-Object { -not $_.IsDevelopmentMode }).Count) {
         throw 'Refusing to replace a production package with a development registration.'
     }
-    $externalPackages = @($registered | Where-Object {
-        $registeredManifest = Get-AppxPackageManifest -Package $_.PackageFullName
-        $external = $registeredManifest.SelectSingleNode("//*[local-name()='AllowExternalContent']")
-        $external -and $external.InnerText -eq 'true'
-    } | ForEach-Object { $_.PackageFullName })
+    $missingManifests = @()
+    $externalPackages = @(foreach ($package in $registered) {
+        try {
+            if (TestExternalPackage -PackageFullName $package.PackageFullName) { $package.PackageFullName }
+        } catch [System.IO.FileNotFoundException] {
+            # Cleaning out/install leaves the development registration behind.
+            # Only this install can restore its manifest; do not reinterpret a
+            # different registration or suppress other package access errors.
+            if ($package.InstallLocation -ne $install -or
+                $package.Architecture.ToString() -ne $Architecture -or
+                $package.Version.ToString() -ne $identity.Version) { throw }
+            $missingManifests += $package.PackageFullName
+        }
+    })
     # Release loaded DLLs before rebuilding, not only before installation.
     # Include a host launched directly from this configuration's build output.
     $stopPlugin = Join-Path $source 'tunnel/stop-plugin.ps1'
@@ -83,6 +98,13 @@ try {
     # before replacing its dependencies, including for F5 preparation.
     InvokeCMake -Arguments @('--install', $build, '--config', $Configuration, '--prefix', $install)
     SetDevelopmentManifest -ManifestPath (Join-Path $install 'AppxManifest.xml')
+    foreach ($packageFullName in $missingManifests) {
+        # Retry through Windows after installation. A still-unreadable manifest
+        # must fail rather than launch an executable with unverified identity.
+        if (TestExternalPackage -PackageFullName $packageFullName) {
+            $externalPackages += $packageFullName
+        }
+    }
     $matches = @($registered | Where-Object {
         $_.PackageFullName -in $externalPackages -and $_.Version.ToString() -eq $identity.Version -and
         $_.Architecture.ToString() -eq $Architecture -and $_.InstallLocation -eq $install -and $_.Status -eq 'Ok'
