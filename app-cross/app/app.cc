@@ -72,6 +72,8 @@ private:
 }
 
 bool PassepartoutApp::OnInit() {
+    AppLogger startupLogger;
+    startupLogger.Write(LogLevel::info, "core", "Start application");
     SetAppName(Text(defaultCrossConstants.tags.app));
     bool demo = false;
     std::vector<std::filesystem::path> files;
@@ -85,6 +87,7 @@ bool PassepartoutApp::OnInit() {
         Text(defaultCrossConstants.tags.app) + "-" + wxGetUserId() +
         (demo ? Text(defaultCrossConstants.commandLine.demoArgument) : wxString()));
     if (instance_->IsAnotherRunning()) {
+        startupLogger.Write(LogLevel::error, "core", "Application startup rejected: another instance is running");
         wxMessageBox(Localized(StringKey::ErrorsAppOther),
                      wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
         return false;
@@ -93,20 +96,28 @@ bool PassepartoutApp::OnInit() {
     init.logs_private_data = false;
     init.logger_fn = AppLogger::PartoutMessage;
     partout_init(&init);
+    const char *stage = "creating application context";
     try {
         context_ = std::make_unique<AppContext>(dataRoot, demo);
+        stage = "creating main window";
+        startupLogger.Write(LogLevel::debug, "core", "Create main window");
         auto *view = new MainView(*context_, demo, std::move(files));
         SetTopWindow(view);
         Bind(wxEVT_ACTIVATE_APP, [this](wxActivateEvent &event) {
             if (event.GetActive()) context_->tunnel.Refresh();
             event.Skip();
         });
+        stage = "showing main window";
         view->Show();
+        startupLogger.Write(LogLevel::info, "core", "Main window shown");
         return true;
+    } catch (const std::exception &error) {
+        startupLogger.Write(LogLevel::error, "core", std::string("Application startup failed while ") + stage + ": " + error.what());
     } catch (...) {
-        wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
-        return false;
+        startupLogger.Write(LogLevel::error, "core", std::string("Application startup failed while ") + stage);
     }
+    wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
+    return false;
 }
 int PassepartoutApp::OnExit() {
     context_.reset();
