@@ -286,6 +286,7 @@ int main() {
         handover.Disconnect("cancelled");
         assert(!handover.PendingProfile());
         handoverStrategy->fake.SetStatus("latest", Status::disconnected);
+        handoverStrategy->fake.SetStatus("cancelled", Status::disconnected);
         handover.Advance();
         assert(handoverStrategy->fake.Fetch().size() == 6);
         handoverStrategy->failConnect = true;
