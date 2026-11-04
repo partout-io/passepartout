@@ -413,7 +413,7 @@ int main() {
             imported.Import({another});
             Wait(imported);
             assert(!imported.Snapshot().error.empty());
-            assert(imported.Snapshot().errorContext == AppErrorContext::import);
+            assert(imported.Snapshot().errorContext == AppErrorContext::tunnel);
             assert(FileProfileRepository(root / "registration").Fetch().size() == 2);
             registration->failSave = false;
             imported.Load();
