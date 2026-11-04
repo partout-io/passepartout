@@ -7,6 +7,7 @@
 #include "logging.h"
 #include <chrono>
 #include <optional>
+#include <map>
 #include "AppTunnelInfo.h"
 
 namespace Passepartout {
@@ -16,6 +17,9 @@ public:
     virtual ~TunnelStrategy() = default;
     // All calls run on the same background worker, never the UI thread.
     virtual std::vector<Models::AppTunnelInfo> Fetch() = 0;
+    virtual std::map<std::string, std::string> ObservationErrors() const {
+        return {};
+    }
     virtual void Save(const Profile &profile) = 0;
     virtual void Connect(const std::string &id) = 0;
     virtual void Disconnect(const std::string &id) = 0;
@@ -31,6 +35,7 @@ public:
     void CancelPending(const std::string &id);
     std::optional<std::string> PendingProfile() const;
     std::vector<Models::AppTunnelInfo> Fetch();
+    std::map<std::string, std::string> ObservationErrors() const;
     void Connect(const Profile &profile);
     void Disconnect(const std::string &id);
     void Remove(const std::string &id);

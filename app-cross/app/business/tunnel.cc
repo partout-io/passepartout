@@ -13,12 +13,18 @@ TunnelManager::TunnelManager(std::unique_ptr<TunnelStrategy> strategy, std::shar
 std::vector<Models::AppTunnelInfo> TunnelManager::Fetch() {
     return strategy_->Fetch();
 }
+std::map<std::string, std::string> TunnelManager::ObservationErrors() const {
+    return strategy_->ObservationErrors();
+}
 void TunnelManager::Connect(const Profile &profile) {
     logger_->Write(LogLevel::info, "tunnel", "Connect to profile " + profile.id + "...");
     pending_.reset();
     connectionRequested_ = false;
     sawConnecting_ = false;
     const auto tunnels = Fetch();
+    const auto errors = ObservationErrors();
+    if (const auto failure = errors.find(profile.id); failure != errors.end())
+        throw std::runtime_error(failure->second);
     for (const auto &tunnel : tunnels) {
         if (tunnel.id == profile.id && tunnel.status.value == Status::connected) return;
     }
@@ -35,6 +41,9 @@ void TunnelManager::Advance() {
     if (!pending_) return;
     try {
         const auto tunnels = Fetch();
+        const auto errors = ObservationErrors();
+        if (const auto failure = errors.find(pending_->id); failure != errors.end())
+            throw std::runtime_error(failure->second);
         if (connectionRequested_) {
             const auto target = std::find_if(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
                 return tunnel.id == pending_->id;
@@ -59,7 +68,8 @@ void TunnelManager::Advance() {
                 throw std::runtime_error("Timed out waiting for the active VPN to disconnect.");
             return;
         }
-        // Configuration is saved only after every old connection is inactive.
+        // Wait for observed connections; unavailable registrations are neither
+        // treated as disconnected nor selected for automatic disconnection.
         logger_->Write(LogLevel::info, "tunnel", "Install profile " + pending_->id + "...");
         strategy_->Save(*pending_);
         strategy_->Connect(pending_->id);

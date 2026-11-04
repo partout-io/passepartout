@@ -234,7 +234,9 @@ void MainView::Render() {
     for (const auto &profile : snapshot_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto toggle = TunnelObservable::StateForProfile(snapshot_, profile.id);
-        const auto status = snapshot_.tunnelAvailable ? StatusText(toggle.status) : wxString();
+        const auto status = snapshot_.tunnelAvailable &&
+            snapshot_.tunnelObservationErrors.find(profile.id) == snapshot_.tunnelObservationErrors.end()
+            ? StatusText(toggle.status) : wxString();
         const auto transfer = TransferText(snapshot_, profile.id);
         if (rebuild) list_->AppendProfile(Text(profile.name), status, toggle.isOn, toggle.canInteract, transfer);
         else list_->UpdateProfile(row, Text(profile.name), status, toggle.isOn, toggle.canInteract, transfer);

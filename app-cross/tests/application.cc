@@ -45,10 +45,18 @@ public:
     bool delayedDisconnect = false;
     bool failDisconnect = false;
     bool failRemove = false;
+    std::map<std::string, std::string> observationErrors;
     std::vector<std::string> events;
     std::vector<Models::AppTunnelInfo> Fetch() override {
         if (failFetch) throw std::runtime_error("VPN state unavailable");
-        return fake.Fetch();
+        auto result = fake.Fetch();
+        result.erase(std::remove_if(result.begin(), result.end(), [&](const auto &info) {
+            return observationErrors.find(info.id) != observationErrors.end();
+        }), result.end());
+        return result;
+    }
+    std::map<std::string, std::string> ObservationErrors() const override {
+        return observationErrors;
     }
     void Save(const Profile &p) override {
         events.push_back("save:" + p.id);
@@ -106,6 +114,20 @@ void Wait(AppSession &session) {
 }
 }
 int main() {
+    {
+        auto strategy = std::make_unique<ControlledTunnel>();
+        auto *control = strategy.get();
+        control->fake.Save(Example("broken"));
+        control->observationErrors.emplace("broken", "Invalid handle");
+        TunnelManager manager(std::move(strategy));
+        manager.Connect(Example("healthy"));
+        assert(!manager.PendingProfile());
+        assert((control->events == std::vector<std::string>{"save:healthy", "connect:healthy"}));
+        assert(manager.Fetch().at(0).status.value == Status::connected);
+        assert(manager.ObservationErrors().count("broken") == 1);
+        Rejects([&] { manager.Connect(Example("broken")); });
+        assert(control->events.size() == 2);
+    }
     auto constants = LoadAppConstants();
     assert(constants.containers.local == "Local");
     assert(ProfileDirectory("root", constants, defaultCrossConstants, false) == std::filesystem::path("root/local"));
@@ -436,6 +458,25 @@ int main() {
         assert(reopened.Fetch().at(0).id == p.id);
 
         // Row toggles use observed state and reject unavailable or busy actions.
+        sessionStrategy->fake.Save(Example("broken-orphan"));
+        sessionStrategy->observationErrors.emplace("broken-orphan", "Invalid handle");
+        sessionStrategy->observationErrors.emplace(p.id, "Invalid handle");
+        session.Refresh();
+        Wait(session);
+        assert(session.Snapshot().tunnelAvailable);
+        assert(session.Snapshot().tunnelError.empty());
+        assert(session.Snapshot().reconciliationError.empty());
+        assert(session.Snapshot().tunnelObservationErrors.size() == 2);
+        assert(!TunnelObservable::StateForProfile(session.Snapshot(), p.id).canInteract);
+        sessionStrategy->observationErrors.erase(p.id);
+        session.Refresh();
+        Wait(session);
+        assert(TunnelObservable::StateForProfile(session.Snapshot(), p.id).canInteract);
+        assert(session.Snapshot().tunnelObservationErrors.size() == 1);
+        const auto retainedRegistrations = sessionStrategy->fake.Fetch();
+        assert(std::any_of(retainedRegistrations.begin(), retainedRegistrations.end(), [](const auto &info) {
+            return info.id == "broken-orphan";
+        }));
         TunnelObservable toggle(session);
         sessionStrategy->failConnect = false;
         toggle.SetEnabled(p.id, true);
@@ -449,6 +490,12 @@ int main() {
         auto unavailableState = session.Snapshot();
         unavailableState.tunnelAvailable = false;
         assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
+        unavailableState = session.Snapshot();
+        unavailableState.tunnelObservationErrors.emplace(p.id, "Invalid handle");
+        assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
+        unavailableState.tunnelObservationErrors.clear();
+        unavailableState.tunnelObservationErrors.emplace("broken-orphan", "Invalid handle");
+        assert(TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);
         unavailableState = session.Snapshot();
         unavailableState.foregroundBusy = true;
         assert(!TunnelObservable::StateForProfile(unavailableState, p.id).canInteract);

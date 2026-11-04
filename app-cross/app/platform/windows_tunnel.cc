@@ -14,7 +14,7 @@ public:
     explicit WindowsTunnelStrategy(const std::string &serverUri) : tunnel_(serverUri) {}
     std::vector<Models::AppTunnelInfo> Fetch() override {
         std::vector<Models::AppTunnelInfo> result;
-        for (const auto &snapshot : tunnel_.Fetch()) {
+        for (const auto &snapshot : tunnel_.Fetch(&observationErrors_)) {
             Models::AppTunnelInfo info{};
             info.id = snapshot.id;
             info.isEnabled = snapshot.isEnabled;
@@ -41,6 +41,9 @@ public:
         ValidateProfileIdentity(profile);
         tunnel_.Save(profile);
     }
+    std::map<std::string, std::string> ObservationErrors() const override {
+        return observationErrors_;
+    }
     void Connect(const std::string &id) override {
         tunnel_.Connect(id);
     }
@@ -52,6 +55,7 @@ public:
     }
 private:
     Partout::Tunnel tunnel_;
+    std::map<std::string, std::string> observationErrors_;
 };
 }
 std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri) {

@@ -181,6 +181,16 @@ void AppSession::Publish() {
         lastReconciliationError_ = reconciliationError;
     }
     const auto previous = Snapshot();
+    const auto observationErrors = tunnel_.ObservationErrors();
+    for (const auto &[id, error] : observationErrors) {
+        const auto old = previous.tunnelObservationErrors.find(id);
+        if (old == previous.tunnelObservationErrors.end() || old->second != error)
+            logger_->Write(LogLevel::error, "tunnel", "Unable to observe profile " + id + ": " + error);
+    }
+    for (const auto &[id, error] : previous.tunnelObservationErrors) {
+        if (observationErrors.find(id) == observationErrors.end())
+            logger_->Write(LogLevel::info, "tunnel", "Profile observation error cleared: " + id);
+    }
     for (const auto &tunnel : tunnels) {
         const auto old = std::find_if(previous.tunnels.begin(), previous.tunnels.end(), [&](const auto &value) {
             return value.id == tunnel.id;
@@ -191,6 +201,7 @@ void AppSession::Publish() {
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
     snapshot_.tunnelAvailable = true;
+    snapshot_.tunnelObservationErrors = observationErrors;
     snapshot_.reconciliationError = std::move(reconciliationError);
 }
 
@@ -287,6 +298,7 @@ TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapsho
         return profile.id == id;
     });
     result.canInteract = exists && state.loaded && !state.foregroundBusy && !state.pendingProfile && state.tunnelAvailable &&
+        state.tunnelObservationErrors.find(id) == state.tunnelObservationErrors.end() &&
         result.status != Status::disconnecting;
     return result;
 }

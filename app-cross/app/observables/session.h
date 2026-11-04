@@ -16,6 +16,7 @@ enum class AppErrorContext { general, import, tunnel };
 struct AppSnapshot {
     std::vector<Models::AppProfileHeader> profiles;
     std::vector<Models::AppTunnelInfo> tunnels;
+    std::map<std::string, std::string> tunnelObservationErrors;
     bool loaded = false;
     bool busy = true;
     bool tunnelAvailable = false;
