@@ -2,16 +2,6 @@ cmake_minimum_required(VERSION 3.28)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 project(PassepartoutTests LANGUAGES CXX)
 
-find_package(nlohmann_json CONFIG QUIET)
-if(NOT TARGET nlohmann_json::nlohmann_json)
-    include(FetchContent)
-    FetchContent_Declare(json
-        URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
-        URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
-    )
-    FetchContent_MakeAvailable(json)
-endif()
-
 include("${CMAKE_CURRENT_SOURCE_DIR}/../files.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
