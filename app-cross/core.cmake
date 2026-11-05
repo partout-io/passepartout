@@ -14,13 +14,12 @@ target_include_directories(passepartout-models PUBLIC "${CMAKE_CURRENT_LIST_DIR}
 target_link_libraries(passepartout-models PUBLIC Partout::Models)
 
 # Generated models repeatedly parse the same JSON and model headers. Compile
-# each model library as one unit, while keeping handwritten sources independent.
+# the application models as one unit, keeping handwritten sources independent.
 option(PASSEPARTOUT_MODEL_UNITY_BUILD "Batch generated model compilation" ON)
-set_target_properties(passepartout-models partout-models PROPERTIES
+set_target_properties(passepartout-models PROPERTIES
     UNITY_BUILD ${PASSEPARTOUT_MODEL_UNITY_BUILD}
     UNITY_BUILD_BATCH_SIZE 0
-    # These generated sources use headers, not C++20 modules. Module scanning
-    # otherwise excludes them from unity builds in the Windows bridge.
+    # These generated sources use headers, not C++20 modules.
     CXX_SCAN_FOR_MODULES OFF
 )
 

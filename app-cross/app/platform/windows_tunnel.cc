@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "../business/tunnel.h"
-#include "partout_winrt.h"
+#include "partout_windows.h"
 #include <partout/models/TunnelSnapshot.h>
 #include <stdexcept>
 

@@ -110,7 +110,7 @@ not signed production distribution validation.
 - `PassepartoutApp` composes repositories, managers, observables, and the wxWidgets
   frontend. `--demo` uses a fake tunnel and a separate profile directory.
 - Normal Windows launches use the public `Partout::Tunnel` management API from
-  `partout_winrt.h`. The frontend adapter only maps presentation state.
+  `partout_windows.h`. The frontend adapter only maps presentation state.
 - Enabling another profile requests disconnection of the current profile and
   waits for observed inactivity before installing and connecting the next one.
   Pending activation ends only after observed connection, failure, or timeout.

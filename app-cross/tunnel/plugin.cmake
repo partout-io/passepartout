@@ -27,9 +27,6 @@ foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
     target_link_options(${PLUGIN_TARGET} PRIVATE /APPCONTAINER)
     target_link_libraries(${PLUGIN_TARGET} PRIVATE windowsapp runtimeobject)
 endforeach()
-# Resolve CRT startup before Partout's Zig import library, which also exports
-# _DllMainCRTStartup and would bypass the plugin's CRT initialization.
-target_link_libraries(passepartout-vpnplugin PRIVATE msvcrt)
 target_link_partout(passepartout-vpnplugin)
 set_target_properties(passepartout-vpnplugin PROPERTIES
     PREFIX ""

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "partout.h"
+#include "partout_posix.h"
 
 static void stdio_logger(void *ctx, int level, const char *message) {
     (void)ctx;
@@ -56,13 +57,16 @@ int main(int argc, char *argv[]) {
     // FIXME: #209/notes, Cross UI, hardcoded values
     const char *preferences = "{\"deviceId\":\"abcdef\"}";
 
+    const partout_daemon_bindings bindings = {
+        .controller_functions = partout_posix_controller_functions()
+    };
     const partout_daemon_start_args start_args = {
         .profile = profile,
         .options = {
             .crypto = PartoutCryptoNative,
             .is_daemon = true
         },
-        .bindings = NULL
+        .bindings = &bindings
     };
 
     /* Will block indefinitely. */
