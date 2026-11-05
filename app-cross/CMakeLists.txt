@@ -69,11 +69,11 @@ add_subdirectory(../partout partout)
 # App and plugin runtime outputs share the selected directory.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 
-function(target_link_partout target)
+function(target_link_partout_runtime target)
     if(WIN32)
         target_link_libraries(${target} PRIVATE Partout::WindowsRuntime)
     else()
-        target_link_libraries(${target} PRIVATE Partout::Partout)
+        target_link_libraries(${target} PRIVATE Partout::PosixRuntime)
     endif()
     if(LINUX)
         target_link_options(${target} PRIVATE
@@ -92,7 +92,7 @@ if(BUILD_APP)
     target_include_directories(passepartout PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/app/include"
     )
-    target_link_partout(passepartout)
+    target_link_partout_runtime(passepartout)
     target_link_libraries(passepartout PRIVATE passepartout-core)
     if(WIN32)
         target_link_libraries(passepartout PRIVATE windowsapp runtimeobject)
@@ -138,8 +138,7 @@ else()
     target_sources(passepartout-tunnel PRIVATE tunnel/main_posix.c tunnel/common.c)
 endif()
 if(NOT WIN32)
-    target_link_partout(passepartout-tunnel)
-    target_link_libraries(passepartout-tunnel PRIVATE Partout::PosixRuntime)
+    target_link_partout_runtime(passepartout-tunnel)
 endif()
 # Apply native executable settings once to both entry points.
 set(APP_TARGETS passepartout-tunnel)

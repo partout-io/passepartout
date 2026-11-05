@@ -27,7 +27,7 @@ foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
     target_link_options(${PLUGIN_TARGET} PRIVATE /APPCONTAINER)
     target_link_libraries(${PLUGIN_TARGET} PRIVATE windowsapp runtimeobject)
 endforeach()
-target_link_partout(passepartout-vpnplugin)
+target_link_partout_runtime(passepartout-vpnplugin)
 set_target_properties(passepartout-vpnplugin PROPERTIES
     PREFIX ""
     OUTPUT_NAME "passepartout-vpnchannel"
