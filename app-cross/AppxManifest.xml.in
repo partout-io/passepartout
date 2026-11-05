@@ -28,7 +28,10 @@
     <Resource Language="en-us" />
   </Resources>
   <Applications>
-@PASSEPARTOUT_FRONTEND_MANIFEST@
+    <Application Id="Passepartout" Executable="passepartout.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="Passepartout" Description="Passepartout VPN"
+        BackgroundColor="transparent" Square150x150Logo="logo.png" Square44x44Logo="logo.png" />
+    </Application>
     <Application Id="VpnPlugin">
       <uap:VisualElements
         AppListEntry="none"
@@ -50,7 +53,7 @@
     </Application>
   </Applications>
   <Capabilities>
-@PASSEPARTOUT_FRONTEND_CAPABILITY@
+    <rescap:Capability Name="runFullTrust" />
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
     <rescap:Capability Name="networkingVpnProvider" />

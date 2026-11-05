@@ -52,6 +52,11 @@ set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 if(WIN32)
     set(PP_BUILD_WINDOWS ON)
+    if(NOT BUILD_APP)
+        install(CODE [[
+            message(FATAL_ERROR "Windows installations require app and plugin. Configure with BUILD_APP=ON.")
+        ]])
+    endif()
     # Stop the packaged host before replacing its shared dependencies.
     find_program(PLUGIN_POWERSHELL NAMES powershell.exe REQUIRED)
     set(PLUGIN_STOP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tunnel/stop-plugin.ps1")

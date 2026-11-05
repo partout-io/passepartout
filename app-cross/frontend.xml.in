@@ -1,4 +1,0 @@
-    <Application Id="Passepartout" Executable="passepartout.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Passepartout" Description="Passepartout VPN"
-        BackgroundColor="transparent" Square150x150Logo="logo.png" Square44x44Logo="logo.png" />
-    </Application>
