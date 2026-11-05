@@ -122,11 +122,12 @@ not signed production distribution validation.
   observation failures are suppressed until their message changes or recovery.
   Private Partout logging remains disabled; profile payloads are not logged.
   Orphan-cleanup failures remain separate from successful state observation.
-- Profile objects are authoritative. A Windows VPN entry is created or refreshed
-  from the saved object when connecting. Entry names match the app's profile
-  names; stable IDs remain in their typed configuration. Only this package's
-  recognized profiles are managed. Existing UUID-named entries are replaced on
-  the next Connect, while disconnected; another profile's name cannot be reused.
+- Profile objects are authoritative. Import registers the Windows VPN entry
+  before committing the local object, with rollback if local persistence fails.
+  Loading registers missing entries; Connect uses an existing registration.
+  Entry names match the app's profile names; stable IDs remain in their typed
+  configuration. Only this package's recognized profiles are managed, and
+  another profile's name cannot be reused.
 - Local profile deletion is independent of VPN availability. Reconciliation
   disconnects/removes owned Windows entries without local profiles, retrying
   after outages or restart. Failed local loading suppresses orphan cleanup.

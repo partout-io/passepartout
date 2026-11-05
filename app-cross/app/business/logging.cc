@@ -31,6 +31,7 @@ void AppLogger::Write(LogLevel level, const std::string &category, const std::st
         std::ostringstream line;
         line << timestamp << " [" << category << "] [" << name << "] " << message << '\n';
 #ifdef _WIN32
+        // FIXME: ### Add bounded, redacted persistent diagnostics for failures outside a debugger session.
         OutputDebugStringA(line.str().c_str());
 #else
         std::clog << line.str();

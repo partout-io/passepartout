@@ -312,6 +312,7 @@ Profile ProfileManager::Import(const std::filesystem::path &path,
     auto committed = profiles_;
     committed.push_back(profile);
     Sort(committed);
+    // FIXME: ### Journal the native/local commit so interrupted imports and failed rollback can recover after restart.
     if (registerProfile) registerProfile(profile);
     try {
         repository_->Save(profile);

@@ -33,6 +33,7 @@ AppSession::~AppSession() {
         operations_.clear();
     }
     wake_.notify_all();
+    // FIXME: ### Cancel outstanding native operations before joining; their timeouts can delay UI shutdown.
     worker_.join();
     logger_->Write(LogLevel::info, "core", "Finished application session");
 }
@@ -171,6 +172,7 @@ void AppSession::Publish() {
             reconciliationError = "Unable to register saved profiles: " + std::string(error.what());
         }
     }
+    // FIXME: ### Persist deletion intent and back off failed cleanup before expanding automatic orphan reconciliation.
     if (Snapshot().loaded && reconciliationError.empty()) {
         bool removed = false;
         for (const auto &tunnel : tunnels) {

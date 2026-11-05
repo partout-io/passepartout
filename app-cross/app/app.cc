@@ -274,6 +274,7 @@ void MainView::Tick(wxTimerEvent &) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
             const bool importing = !snapshot_.error.empty() && snapshot_.errorContext == AppErrorContext::import;
+            // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
             const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
                 snapshot_.errorContext == AppErrorContext::tunnel ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
             wxMessageDialog dialog(this, message,
