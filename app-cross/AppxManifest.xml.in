@@ -17,7 +17,7 @@
   <Dependencies>
     <TargetDeviceFamily
       Name="Windows.Desktop"
-      MinVersion="10.0.22000.0"
+      MinVersion="10.0.20348.0"
       MaxVersionTested="10.0.26100.0" />
     <PackageDependency
       Name="Microsoft.VCLibs.140.00"
