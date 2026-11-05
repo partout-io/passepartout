@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(Passepartout LANGUAGES C)
 
-add_library(passepartout_wrapper SHARED jvm.c)
+add_library(passepartout_wrapper SHARED)
 target_compile_options(passepartout_wrapper PRIVATE -W -Wall -Werror -pedantic)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../cmake/prebuilts.cmake")
@@ -21,8 +21,4 @@ if(NOT PP_BUILD_VENDOR_PREBUILT_URL)
 endif()
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../partout" partout)
 
-target_link_libraries(passepartout_wrapper PRIVATE
-    Partout::Partout
-    android
-    log
-)
+target_link_libraries(passepartout_wrapper PRIVATE Partout::AndroidRuntime)
