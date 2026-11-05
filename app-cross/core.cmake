@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2026 Davide De Rosa
-#
-# SPDX-License-Identifier: GPL-3.0
-
 # Shared domain, persistence, and state handling; no wxWidgets or WinRT dependency.
 include_guard(GLOBAL)
 if(NOT TARGET nlohmann_json::nlohmann_json)

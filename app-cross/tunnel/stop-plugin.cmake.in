@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2026 Davide De Rosa
-#
-# SPDX-License-Identifier: GPL-3.0
-
 # Runs at install time, so --prefix overrides select the correct running host.
 set(PLUGIN_STOP_OPTIONS)
 if(PASSEPARTOUT_INSTALL_NO_STOP_HOST)

@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2026 Davide De Rosa
-#
-# SPDX-License-Identifier: GPL-3.0
-
 set(PASSEPARTOUT_WX_PREBUILT_DIR "" CACHE PATH "Path to an extracted wxWidgets Windows prebuilt.")
 set(PASSEPARTOUT_WX_PREBUILT_BASE_URL "" CACHE STRING
     "Base URL for wxWidgets Windows prebuilts.")

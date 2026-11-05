@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2026 Davide De Rosa
-#
-# SPDX-License-Identifier: GPL-3.0
-
 cmake_minimum_required(VERSION 3.28)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 project(PassepartoutTests LANGUAGES CXX)

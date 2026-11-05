@@ -1,8 +1,4 @@
 #!/bin/bash
-# SPDX-FileCopyrightText: 2026 Davide De Rosa
-#
-# SPDX-License-Identifier: GPL-3.0
-
 set -euo pipefail
 if [[ "$(uname -s)" != Darwin ]]; then
     echo 'This task requires macOS; use the Windows run tasks on Windows.' >&2
