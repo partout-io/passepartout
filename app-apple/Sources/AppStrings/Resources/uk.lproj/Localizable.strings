@@ -44,6 +44,7 @@
 "errors.app.incompatible_modules" = "Деякі активні модулі несумісні, спробуйте активувати лише один.";
 "errors.app.incomplete_module" = "Будь ласка, завершіть налаштування модуля %@.";
 "errors.app.ineligible" = "Потрібна покупка";
+"errors.app.interactive_login" = "Open Passepartout to enter the credentials required for this VPN.";
 "errors.app.invalid_fields" = "Некоректні поля.";
 "errors.app.malformed_module" = "Модуль %@ некоректний. %@";
 "errors.app.missing_provider_entity" = "Не вибрано сервер у постачальника.";
