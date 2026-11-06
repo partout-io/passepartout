@@ -1,5 +1,11 @@
 #!/bin/bash
 set -euo pipefail
+
+# Constants
+readonly app_process_name='passepartout'
+readonly app_bundle_name='passepartout.app'
+readonly signing_identity='-'
+
 if [[ "$(uname -s)" != Darwin ]]; then
     echo 'This task requires macOS; use the Windows run tasks on Windows.' >&2
     exit 1
@@ -16,7 +22,7 @@ source_dir="$(cd "$(dirname "$0")/.." && pwd)"
 preset="macos-$architecture"
 build_dir="$source_dir/out/build/$preset"
 install_dir="$source_dir/out/install/$preset"
-if pgrep -x passepartout >/dev/null; then
+if pgrep -x "$app_process_name" >/dev/null; then
     echo 'Quit the frontend before installing.' >&2
     exit 1
 fi
@@ -24,8 +30,8 @@ cd "$source_dir"
 cmake --preset "$preset" "-DCMAKE_INSTALL_PREFIX=$install_dir"
 cmake --build "$build_dir" --config "$configuration"
 cmake --install "$build_dir" --config "$configuration" --prefix "$install_dir"
-bundle="$install_dir/passepartout.app"
-codesign --force --deep --sign - "$bundle"
+bundle="$install_dir/$app_bundle_name"
+codesign --force --deep --sign "$signing_identity" "$bundle"
 if [[ "${3:-}" == --prepare-only ]]; then
     exit 0
 fi

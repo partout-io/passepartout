@@ -7,24 +7,33 @@ param(
     [string]$CertificateThumbprint,
     [string]$TimestampUrl = "http://timestamp.digicert.com"
 )
+# Constants
+$manifestName = 'AppxManifest.xml'
+$stagingPrefix = 'passepartout-package-'
+$digestAlgorithm = 'SHA256'
+$requiredFiles = @(
+    'passepartout.exe', 'passepartout-tunnel.exe', 'passepartout-vpnchannel.dll',
+    'partout.dll', $manifestName, 'logo.png'
+)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $build = (Resolve-Path -LiteralPath $BuildDirectory).Path
 $output = [IO.Path]::GetFullPath($OutputPath)
 $makeappx = (Get-Command makeappx.exe -ErrorAction Stop).Source
-$stage = Join-Path ([IO.Path]::GetTempPath()) ("passepartout-package-" + [guid]::NewGuid())
+$stage = Join-Path ([IO.Path]::GetTempPath()) ($stagingPrefix + [guid]::NewGuid())
 try {
     New-Item -ItemType Directory -Path $stage | Out-Null
     cmake --build $build --config $Configuration
     if ($LASTEXITCODE -ne 0) { throw "Build failed." }
     cmake --install $build --config $Configuration --prefix $stage
     if ($LASTEXITCODE -ne 0) { throw "Staging failed." }
-    foreach ($required in @("passepartout.exe", "passepartout-tunnel.exe", "passepartout-vpnchannel.dll", "partout.dll", "AppxManifest.xml", "logo.png")) {
+    foreach ($required in $requiredFiles) {
         if (-not (Test-Path -LiteralPath (Join-Path $stage $required))) {
             throw "Missing package input: $required. Configure with BUILD_APP=ON."
         }
     }
-    [xml]$manifest = Get-Content -Raw -LiteralPath (Join-Path $stage "AppxManifest.xml")
+    [xml]$manifest = Get-Content -Raw -LiteralPath (Join-Path $stage $manifestName)
     if ($CertificateThumbprint) {
         $certificate = Get-Item -LiteralPath ("Cert:\CurrentUser\My\" + $CertificateThumbprint)
         if ($certificate.Subject -ne $manifest.Package.Identity.Publisher) {
@@ -36,7 +45,7 @@ try {
     & $makeappx pack /d $stage /p $output /o
     if ($LASTEXITCODE -ne 0) { throw "MSIX validation/packaging failed." }
     if ($CertificateThumbprint) {
-        & $signtool sign /sha1 $CertificateThumbprint /fd SHA256 /tr $TimestampUrl /td SHA256 $output
+        & $signtool sign /sha1 $CertificateThumbprint /fd $digestAlgorithm /tr $TimestampUrl /td $digestAlgorithm $output
         if ($LASTEXITCODE -ne 0) { throw "Package signing failed." }
         & $signtool verify /pa $output
         if ($LASTEXITCODE -ne 0) { throw "Signature verification failed." }

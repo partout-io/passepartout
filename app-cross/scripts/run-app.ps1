@@ -5,6 +5,19 @@ param(
     [switch]$Demo,
     [switch]$PrepareOnly
 )
+
+# Constants
+$applicationId = 'Passepartout'
+$processName = 'passepartout'
+$executableName = 'passepartout.exe'
+$manifestName = 'AppxManifest.xml'
+$manifestNamespace = 'http://schemas.microsoft.com/appx/manifest/uap/windows10/10'
+$developmentVersionPrefix = '0.'
+$vswhereRelativePath = 'Microsoft Visual Studio/Installer/vswhere.exe'
+$visualStudioComponent = 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64'
+$developerShellRelativePath = 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll'
+$stopPluginRelativePath = 'tunnel/stop-plugin.ps1'
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 if ($env:OS -ne 'Windows_NT') { throw 'Use run-app.sh on macOS.' }
@@ -17,16 +30,15 @@ $install = Join-Path $source "out/install/windows-$Architecture"
 function SetDevelopmentManifest {
     param([string]$ManifestPath)
     [xml]$manifest = Get-Content -LiteralPath $ManifestPath -Raw
-    $namespace = 'http://schemas.microsoft.com/appx/manifest/uap/windows10/10'
-    $manifest.Package.SetAttribute('xmlns:uap10', $namespace)
+    $manifest.Package.SetAttribute('xmlns:uap10', $manifestNamespace)
     $manifest.Package.SetAttribute('IgnorableNamespaces', 'uap rescap uap10')
-    $external = $manifest.CreateElement('uap10', 'AllowExternalContent', $namespace)
+    $external = $manifest.CreateElement('uap10', 'AllowExternalContent', $manifestNamespace)
     $external.InnerText = 'true'
     [void]$manifest.Package.Properties.AppendChild($external)
-    $frontend = $manifest.Package.Applications.Application | Where-Object { $_.Id -eq 'Passepartout' }
+    $frontend = $manifest.Package.Applications.Application | Where-Object { $_.Id -eq $applicationId }
     $frontend.RemoveAttribute('EntryPoint')
-    [void]$frontend.SetAttribute('RuntimeBehavior', $namespace, 'win32App')
-    [void]$frontend.SetAttribute('TrustLevel', $namespace, 'mediumIL')
+    [void]$frontend.SetAttribute('RuntimeBehavior', $manifestNamespace, 'win32App')
+    [void]$frontend.SetAttribute('TrustLevel', $manifestNamespace, 'mediumIL')
     $settings = [System.Xml.XmlWriterSettings]::new()
     $settings.Encoding = [System.Text.UTF8Encoding]::new($false)
     $settings.Indent = $true
@@ -36,7 +48,7 @@ function SetDevelopmentManifest {
 }
 
 function AssertFrontendClosed {
-    if (Get-Process -Name passepartout -ErrorAction SilentlyContinue) {
+    if (Get-Process -Name $processName -ErrorAction SilentlyContinue) {
         throw 'Quit the frontend before installing.'
     }
 }
@@ -53,18 +65,18 @@ function TestExternalPackage {
 }
 
 AssertFrontendClosed
-$vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
-$visualStudio = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$vswhere = Join-Path ${env:ProgramFiles(x86)} $vswhereRelativePath
+$visualStudio = & $vswhere -latest -products '*' -requires $visualStudioComponent -property installationPath
 if (-not $visualStudio) { throw 'Visual Studio C++ build tools were not found.' }
-Import-Module (Join-Path $visualStudio 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll')
+Import-Module (Join-Path $visualStudio $developerShellRelativePath)
 $hostArchitecture = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
 Enter-VsDevShell -VsInstallPath $visualStudio -SkipAutomaticLocation -DevCmdArguments "-arch=$Architecture -host_arch=$hostArchitecture"
 Push-Location $source
 try {
     InvokeCMake -Arguments @('--preset', "windows-$Architecture", "-DCMAKE_INSTALL_PREFIX=$install")
-    [xml]$manifest = Get-Content -LiteralPath (Join-Path $build 'AppxManifest.xml') -Raw
+    [xml]$manifest = Get-Content -LiteralPath (Join-Path $build $manifestName) -Raw
     $identity = $manifest.Package.Identity
-    if (-not $identity.Version.StartsWith('0.')) { throw 'Development packages must use a 0.* version.' }
+    if (-not $identity.Version.StartsWith($developmentVersionPrefix)) { throw 'Development packages must use a 0.* version.' }
     $registered = @(Get-AppxPackage -Name $identity.Name | Where-Object { $_.Publisher -eq $identity.Publisher })
     if (@($registered | Where-Object { -not $_.IsDevelopmentMode }).Count) {
         throw 'Refusing to replace a production package with a development registration.'
@@ -72,14 +84,14 @@ try {
     # Reject an incompatible same-version registration before replacing its files.
     foreach ($package in $registered | Where-Object { $_.Version.ToString() -eq $identity.Version }) {
         if ($package.Architecture.ToString() -ne $Architecture -or $package.InstallLocation -ne $install -or
-            ((Test-Path -LiteralPath (Join-Path $package.InstallLocation 'AppxManifest.xml')) -and
+            ((Test-Path -LiteralPath (Join-Path $package.InstallLocation $manifestName)) -and
                 -not (TestExternalPackage -PackageFullName $package.PackageFullName))) {
             throw 'The existing package uses this version with a different layout. Change PASSEPARTOUT_PACKAGE_VERSION to another 0.* version in the CMake cache and retry.'
         }
     }
     # Release loaded DLLs before rebuilding, not only before installation.
     # Include a host launched directly from this configuration's build output.
-    $stopPlugin = Join-Path $source 'tunnel/stop-plugin.ps1'
+    $stopPlugin = Join-Path $source $stopPluginRelativePath
     & $stopPlugin -InstallDirectory $install
     & $stopPlugin -InstallDirectory (Join-Path $build $Configuration)
     InvokeCMake -Arguments @('--build', '--preset', "windows-$Architecture-$($Configuration.ToLowerInvariant())")
@@ -87,7 +99,7 @@ try {
     # The shared install hook stops only the host in this install directory
     # before replacing its dependencies, including for F5 preparation.
     InvokeCMake -Arguments @('--install', $build, '--config', $Configuration, '--prefix', $install)
-    SetDevelopmentManifest -ManifestPath (Join-Path $install 'AppxManifest.xml')
+    SetDevelopmentManifest -ManifestPath (Join-Path $install $manifestName)
     # Installation restores a missing development manifest before we inspect it.
     $matches = @($registered | Where-Object {
         $_.Version.ToString() -eq $identity.Version -and
@@ -100,10 +112,10 @@ try {
         if (@($registered | Where-Object { $_.Version.ToString() -eq $identity.Version }).Count) {
             throw 'The existing development registration is not healthy. Inspect its package status before retrying.'
         }
-        Add-AppxPackage -Register (Join-Path $install 'AppxManifest.xml') -ExternalLocation $install -ForceUpdateFromAnyVersion
+        Add-AppxPackage -Register (Join-Path $install $manifestName) -ExternalLocation $install -ForceUpdateFromAnyVersion
     }
     if ($PrepareOnly) { return }
-    $launch = @{ FilePath = Join-Path $install 'passepartout.exe'; PassThru = $true }
+    $launch = @{ FilePath = Join-Path $install $executableName; PassThru = $true }
     if ($Demo) { $launch.ArgumentList = '--demo' }
     $process = Start-Process @launch
     if ($process.HasExited) { throw 'The packaged frontend exited.' }
