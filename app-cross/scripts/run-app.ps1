@@ -69,20 +69,14 @@ try {
     if (@($registered | Where-Object { -not $_.IsDevelopmentMode }).Count) {
         throw 'Refusing to replace a production package with a development registration.'
     }
-    $missingManifests = @()
-    $externalPackages = @(foreach ($package in $registered) {
-        try {
-            if (TestExternalPackage -PackageFullName $package.PackageFullName) { $package.PackageFullName }
-        } catch [System.IO.FileNotFoundException] {
-            # Cleaning out/install leaves the development registration behind.
-            # Only this install can restore its manifest; do not reinterpret a
-            # different registration or suppress other package access errors.
-            if ($package.InstallLocation -ne $install -or
-                $package.Architecture.ToString() -ne $Architecture -or
-                $package.Version.ToString() -ne $identity.Version) { throw }
-            $missingManifests += $package.PackageFullName
+    # Reject an incompatible same-version registration before replacing its files.
+    foreach ($package in $registered | Where-Object { $_.Version.ToString() -eq $identity.Version }) {
+        if ($package.Architecture.ToString() -ne $Architecture -or $package.InstallLocation -ne $install -or
+            ((Test-Path -LiteralPath (Join-Path $package.InstallLocation 'AppxManifest.xml')) -and
+                -not (TestExternalPackage -PackageFullName $package.PackageFullName))) {
+            throw 'The existing package uses this version with a different layout. Change PASSEPARTOUT_PACKAGE_VERSION to another 0.* version in the CMake cache and retry.'
         }
-    })
+    }
     # Release loaded DLLs before rebuilding, not only before installation.
     # Include a host launched directly from this configuration's build output.
     $stopPlugin = Join-Path $source 'tunnel/stop-plugin.ps1'
@@ -94,22 +88,17 @@ try {
     # before replacing its dependencies, including for F5 preparation.
     InvokeCMake -Arguments @('--install', $build, '--config', $Configuration, '--prefix', $install)
     SetDevelopmentManifest -ManifestPath (Join-Path $install 'AppxManifest.xml')
-    foreach ($packageFullName in $missingManifests) {
-        # Retry through Windows after installation. A still-unreadable manifest
-        # must fail rather than launch an executable with unverified identity.
-        if (TestExternalPackage -PackageFullName $packageFullName) {
-            $externalPackages += $packageFullName
-        }
-    }
+    # Installation restores a missing development manifest before we inspect it.
     $matches = @($registered | Where-Object {
-        $_.PackageFullName -in $externalPackages -and $_.Version.ToString() -eq $identity.Version -and
-        $_.Architecture.ToString() -eq $Architecture -and $_.InstallLocation -eq $install -and $_.Status -eq 'Ok'
+        $_.Version.ToString() -eq $identity.Version -and
+        $_.Architecture.ToString() -eq $Architecture -and $_.InstallLocation -eq $install -and
+        $_.Status -eq 'Ok' -and (TestExternalPackage -PackageFullName $_.PackageFullName)
     })
     if ($matches.Count -ne 1) {
         AssertFrontendClosed
         & $stopPlugin -InstallDirectory $install
         if (@($registered | Where-Object { $_.Version.ToString() -eq $identity.Version }).Count) {
-            throw 'The existing package uses this version with a different layout. Change PASSEPARTOUT_PACKAGE_VERSION to another 0.* version in the CMake cache and retry.'
+            throw 'The existing development registration is not healthy. Inspect its package status before retrying.'
         }
         Add-AppxPackage -Register (Join-Path $install 'AppxManifest.xml') -ExternalLocation $install -ForceUpdateFromAnyVersion
     }
