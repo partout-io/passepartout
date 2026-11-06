@@ -30,6 +30,10 @@ if(WIN32)
     add_test(NAME passepartout-development-registration
         COMMAND "${TEST_POWERSHELL}" -NoProfile -NonInteractive -ExecutionPolicy Bypass
             -File "${CMAKE_CURRENT_SOURCE_DIR}/development-registration.ps1")
+    # CTest may inherit PowerShell 7 module paths from CI. Let Windows
+    # PowerShell construct its own paths instead of loading incompatible modules.
+    set_tests_properties(passepartout-development-registration PROPERTIES
+        ENVIRONMENT_MODIFICATION "PSModulePath=unset:")
     add_library(passepartout-windows-integration-check OBJECT ../app/platform/windows_tunnel.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
