@@ -14,7 +14,8 @@ extension ErrorHandler {
                 ABI.AppError($0).localizedDescription(style: .errorHandler)
             },
             beforeAlert: {
-                pspLog(.core, .error, "Error handler being presented: \($0)")
+                let detail = $0.debugDescription(withSensitiveData: PartoutLogger.default.logsModules)
+                pspLog(.core, .error, "Error handler being presented: \(detail)")
             }
         )
     }

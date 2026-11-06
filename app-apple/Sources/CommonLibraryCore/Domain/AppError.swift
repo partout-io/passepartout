@@ -177,6 +177,37 @@ extension ABI.AppError {
     }
 }
 
+extension ABI.AppError: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        let prefix = "AppError.\(code.rawValue)"
+        let withSensitiveData = PartoutLogger.default.logsModules
+        switch self {
+        case .malformedModule(let module, let reason):
+            let description = LoggableModule(module).debugDescription(withSensitiveData: withSensitiveData)
+            let detail = withSensitiveData ? String(reflecting: reason) : ABI.AppError(reason).code.rawValue
+            return "\(prefix)(\(description), reason=\(detail))"
+        case .incompleteModule(let module):
+            let description = LoggableModule(module).debugDescription(withSensitiveData: withSensitiveData)
+            return "\(prefix)(\(description))"
+        case .incompatibleModules(let modules):
+            let descriptions = modules.map {
+                LoggableModule(.global, $0).debugDescription(withSensitiveData: withSensitiveData)
+            }
+            return "\(prefix)(\(descriptions))"
+        case .moduleRequiresConnection(let module):
+            let description = LoggableModule(.global, module).debugDescription(withSensitiveData: withSensitiveData)
+            return "\(prefix)(\(description))"
+        case .partout(let error):
+            return "\(prefix)(\(error.debugDescription(withSensitiveData: withSensitiveData)))"
+        default:
+            guard withSensitiveData else { return prefix }
+            // Reflect the associated values, not self (which would recurse here).
+            let details = Mirror(reflecting: self).children.map { String(reflecting: $0.value) }
+            return "\(prefix)(\(details.joined(separator: ", ")))"
+        }
+    }
+}
+
 extension ABI.AppErrorCode {
     public static func fromLastErrorCode(_ string: String) -> Self? {
         let comps = string.split(separator: ".")

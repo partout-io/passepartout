@@ -19,7 +19,10 @@ import kotlinx.coroutines.withContext
 sealed class ProfileImporterException: Exception() {
     data object Binary: ProfileImporterException()
     data object Null: ProfileImporterException()
-    data class Failure(override val cause: Throwable?): ProfileImporterException()
+    data class Failure(override val cause: Throwable?): ProfileImporterException() {
+        override fun toString(): String =
+            if (AppLog.logsPrivateData) "Failure(cause=$cause)" else "Failure"
+    }
 }
 
 class ProfileImporter(
