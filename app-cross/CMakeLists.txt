@@ -121,7 +121,8 @@ if(BUILD_APP)
         # Bundle the installed Partout runtime and wxWidgets dependencies.
         install(CODE [[
             include(BundleUtilities)
-            fixup_bundle("${CMAKE_INSTALL_PREFIX}/passepartout.app" "" "${CMAKE_INSTALL_PREFIX}")
+            fixup_bundle("${CMAKE_INSTALL_PREFIX}/passepartout.app" ""
+                "${CMAKE_INSTALL_PREFIX};$<TARGET_PROPERTY:wxWidgets::wxWidgets,INTERFACE_LINK_DIRECTORIES>")
         ]])
     endif()
     if(MSVC)
