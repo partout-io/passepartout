@@ -1,5 +1,23 @@
 {
+    "debug.showInStatusBar": "always",
     "cmake.useCMakePresets": "always",
     "cmake.useVsDeveloperEnvironment": "always",
-    "files.eol": "\n"
+    "cmake.options.advanced": {
+        "debug": {
+            "statusBarVisibility": "hidden",
+            "projectStatusVisibility": "hidden"
+        },
+        "launch": {
+            "statusBarVisibility": "hidden",
+            "projectStatusVisibility": "hidden"
+        }
+    },
+    "files.eol": "\n",
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:system",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }

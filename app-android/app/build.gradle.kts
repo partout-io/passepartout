@@ -91,7 +91,7 @@ android {
     }
     sourceSets {
         getByName("main") {
-            kotlin.directories += "../../partout/cross/android"
+            kotlin.directories += "../../partout/cross/android/src"
         }
     }
     buildToolsVersion = "36.0.0"

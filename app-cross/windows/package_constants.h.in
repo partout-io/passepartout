@@ -1,0 +1,13 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+// SPDX-License-Identifier: GPL-3.0
+
+#pragma once
+
+namespace Passepartout {
+namespace PackageConstants {
+inline constexpr wchar_t Name[] = L"@PASSEPARTOUT_PACKAGE_NAME_CPP@";
+inline constexpr wchar_t Publisher[] = L"@PASSEPARTOUT_PACKAGE_PUBLISHER_CPP@";
+inline constexpr wchar_t BackgroundTask[] = L"@PASSEPARTOUT_BACKGROUND_TASK_CPP@";
+inline constexpr wchar_t PluginFile[] = L"@PASSEPARTOUT_PLUGIN_FILE@";
+}
+}

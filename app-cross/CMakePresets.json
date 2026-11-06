@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 3,
   "configurePresets": [
     {
@@ -11,17 +11,33 @@
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
         "CMAKE_INSTALL_BINDIR": ".",
         "CMAKE_INSTALL_LIBDIR": ".",
-        "BUILD_APP": "OFF"
+        "BUILD_APP": "ON"
       }
     },
     {
-      "name": "macos-clang",
-      "displayName": "macOS clang",
+      "name": "macos-base",
       "inherits": "base",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
+      },
+      "hidden": true
+    },
+    {
+      "name": "macos-arm64",
+      "displayName": "macOS ARM64 clang",
+      "inherits": "macos-base",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "arm64"
+      }
+    },
+    {
+      "name": "macos-x64",
+      "displayName": "macOS X64 clang",
+      "inherits": "macos-base",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "x86_64"
       }
     },
     {
@@ -55,13 +71,23 @@
   ],
   "buildPresets": [
     {
-      "name": "macos-debug",
-      "configurePreset": "macos-clang",
+      "name": "macos-arm64-debug",
+      "configurePreset": "macos-arm64",
       "configuration": "Debug"
     },
     {
-      "name": "macos-release",
-      "configurePreset": "macos-clang",
+      "name": "macos-arm64-release",
+      "configurePreset": "macos-arm64",
+      "configuration": "Release"
+    },
+    {
+      "name": "macos-x64-debug",
+      "configurePreset": "macos-x64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "macos-x64-release",
+      "configurePreset": "macos-x64",
       "configuration": "Release"
     },
     {

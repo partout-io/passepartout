@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+  <Identity
+    Name="@PASSEPARTOUT_PACKAGE_NAME_XML@"
+    Publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
+    Version="@PASSEPARTOUT_PACKAGE_VERSION@"
+    ProcessorArchitecture="@PASSEPARTOUT_WINDOWS_ARCH@" />
+  <Properties>
+    <DisplayName>@PASSEPARTOUT_DISPLAY_NAME_XML@</DisplayName>
+    <PublisherDisplayName>@PASSEPARTOUT_PUBLISHER_DISPLAY_NAME_XML@</PublisherDisplayName>
+    <Logo>@PASSEPARTOUT_PACKAGE_LOGO_XML@</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily
+      Name="Windows.Desktop"
+      MinVersion="10.0.20348.0"
+      MaxVersionTested="10.0.26100.0" />
+    <PackageDependency
+      Name="Microsoft.VCLibs.140.00"
+      Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+      MinVersion="14.0.0.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="@PASSEPARTOUT_APPLICATION_ID_XML@" Executable="@PASSEPARTOUT_FRONTEND_FILE@" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@" Description="@PASSEPARTOUT_PACKAGE_DESCRIPTION_XML@"
+        BackgroundColor="transparent" Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
+    </Application>
+    <Application Id="VpnPlugin">
+      <uap:VisualElements
+        AppListEntry="none"
+        DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@"
+        Description="@PASSEPARTOUT_DISPLAY_NAME_XML@"
+        BackgroundColor="transparent"
+        Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@"
+        Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
+      <Extensions>
+        <Extension
+          Category="windows.backgroundTasks"
+          Executable="@PASSEPARTOUT_TUNNEL_FILE@"
+          EntryPoint="@PASSEPARTOUT_BACKGROUND_TASK_XML@">
+          <BackgroundTasks>
+            <uap:Task Type="vpnClient" />
+          </BackgroundTasks>
+        </Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClientServer" />
+    <Capability Name="privateNetworkClientServer" />
+    <rescap:Capability Name="networkingVpnProvider" />
+  </Capabilities>
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>@PASSEPARTOUT_PLUGIN_FILE@</Path>
+        <ActivatableClass
+          ActivatableClassId="@PASSEPARTOUT_BACKGROUND_TASK_XML@"
+          ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+  </Extensions>
+</Package>

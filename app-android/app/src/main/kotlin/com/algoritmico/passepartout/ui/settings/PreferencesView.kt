@@ -50,6 +50,8 @@ fun PreferencesView(
                     checked = AppPreferences::dnsFallsBack,
                     onCheckedChange = UserPreferencesObservable::updateDnsFallback
                 )
+                // Crypto is fixed to mbedTLS; keep the selector for future use.
+                /*
                 PreferenceDropdownRow(
                     title = stringResource(R.string.views_preferences_crypto_backend),
                     values = cryptoBackends,
@@ -65,6 +67,7 @@ fun PreferencesView(
                         updateCryptoBackend(it?.value ?: 0)
                     }
                 )
+                */
             }
             if (advancedFlags.isNotEmpty()) {
                 item {
