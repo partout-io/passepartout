@@ -26,7 +26,6 @@ endforeach()
 target_link_partout_runtime(passepartout-vpnplugin)
 set_target_properties(passepartout-vpnplugin PROPERTIES
     PREFIX ""
-    OUTPUT_NAME "passepartout-vpnchannel"
 )
 
 # The AppContainer CRT import libraries resolve to the VCLibs framework DLLs.
