@@ -172,5 +172,5 @@ install(TARGETS passepartout-tunnel
 
 if(WIN32)
     include("tunnel/windows/plugin.cmake")
-    include("package-windows.cmake")
+    include("windows/package.cmake")
 endif()

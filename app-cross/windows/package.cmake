@@ -31,7 +31,7 @@ foreach(name IN ITEMS DISPLAY_NAME PACKAGE_DESCRIPTION PACKAGE_NAME APPLICATION_
 endforeach()
 set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
 set(PASSEPARTOUT_TUNNEL_FILE "$<TARGET_FILE_NAME:passepartout-tunnel>")
-configure_file("${CMAKE_CURRENT_LIST_DIR}/windows/package_constants.h.in"
+configure_file("${CMAKE_CURRENT_LIST_DIR}/package_constants.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/package_constants.h.in" @ONLY)
 file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/package_constants.h"
     INPUT "${CMAKE_CURRENT_BINARY_DIR}/package_constants.h.in")
@@ -42,11 +42,11 @@ if(NOT BUILD_APP)
     return()
 endif()
 set(PASSEPARTOUT_FRONTEND_FILE "$<TARGET_FILE_NAME:passepartout>")
-configure_file("${CMAKE_CURRENT_LIST_DIR}/windows/frontend.manifest.in"
+configure_file("${CMAKE_CURRENT_LIST_DIR}/frontend.manifest.in"
     "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest" @ONLY)
 target_sources(passepartout PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/windows/AppxManifest.xml.in"
+configure_file("${CMAKE_CURRENT_LIST_DIR}/AppxManifest.xml.in"
     "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml.in" @ONLY)
 file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml"
     INPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml.in")
