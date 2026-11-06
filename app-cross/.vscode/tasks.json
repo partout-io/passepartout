@@ -8,7 +8,7 @@
             "args": [
                 "-NoProfile",
                 "-File",
-                "${workspaceFolder}/scripts/run-app-windows.ps1",
+                "${workspaceFolder}/scripts/run-app.ps1",
                 "-Architecture",
                 "arm64",
                 "-Configuration",
@@ -25,7 +25,7 @@
             "args": [
                 "-NoProfile",
                 "-File",
-                "${workspaceFolder}/scripts/run-app-windows.ps1",
+                "${workspaceFolder}/scripts/run-app.ps1",
                 "-Architecture",
                 "arm64",
                 "-Configuration",
@@ -42,7 +42,7 @@
             "args": [
                 "-NoProfile",
                 "-File",
-                "${workspaceFolder}/scripts/run-app-windows.ps1",
+                "${workspaceFolder}/scripts/run-app.ps1",
                 "-Architecture",
                 "x64",
                 "-Configuration",
@@ -59,7 +59,7 @@
             "args": [
                 "-NoProfile",
                 "-File",
-                "${workspaceFolder}/scripts/run-app-windows.ps1",
+                "${workspaceFolder}/scripts/run-app.ps1",
                 "-Architecture",
                 "x64",
                 "-Configuration",
