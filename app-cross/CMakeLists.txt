@@ -26,6 +26,7 @@ if(WIN32)
 endif()
 
 option(BUILD_APP "Build app executable" OFF)
+set(PASSEPARTOUT_APP_ICON "${CMAKE_CURRENT_SOURCE_DIR}/logo.png")
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/prebuilts.cmake")
 if(NOT PP_BUILD_VENDOR_PREBUILT_URL)
@@ -59,8 +60,8 @@ if(WIN32)
     endif()
     # Stop the packaged host before replacing its shared dependencies.
     find_program(PLUGIN_POWERSHELL NAMES powershell.exe REQUIRED)
-    set(PLUGIN_STOP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tunnel/stop-plugin.ps1")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/tunnel/stop-plugin.cmake.in"
+    set(PLUGIN_STOP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tunnel/windows/stop-plugin.ps1")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/tunnel/windows/stop-plugin.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake" @ONLY)
     install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake")
 endif()
@@ -135,7 +136,7 @@ endif()
 # Define tunnel target
 add_executable(passepartout-tunnel "")
 if(WIN32)
-    target_sources(passepartout-tunnel PRIVATE tunnel/main_windows.cc)
+    target_sources(passepartout-tunnel PRIVATE tunnel/windows/main.cc)
 else()
     target_sources(passepartout-tunnel PRIVATE tunnel/main_posix.c tunnel/common.c)
 endif()
@@ -169,5 +170,7 @@ install(TARGETS passepartout-tunnel
     RUNTIME DESTINATION .
 )
 
-include("tunnel/plugin.cmake")
-include("package.cmake")
+if(WIN32)
+    include("tunnel/windows/plugin.cmake")
+    include("package-windows.cmake")
+endif()

@@ -5,14 +5,14 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
   <Identity
-    Name="Passepartout.VpnChannel"
+    Name="@PASSEPARTOUT_PACKAGE_NAME_XML@"
     Publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
     Version="@PASSEPARTOUT_PACKAGE_VERSION@"
     ProcessorArchitecture="@PASSEPARTOUT_WINDOWS_ARCH@" />
   <Properties>
-    <DisplayName>Passepartout</DisplayName>
-    <PublisherDisplayName>Passepartout VpnChannel</PublisherDisplayName>
-    <Logo>logo.png</Logo>
+    <DisplayName>@PASSEPARTOUT_DISPLAY_NAME_XML@</DisplayName>
+    <PublisherDisplayName>@PASSEPARTOUT_PUBLISHER_DISPLAY_NAME_XML@</PublisherDisplayName>
+    <Logo>@PASSEPARTOUT_PACKAGE_LOGO_XML@</Logo>
   </Properties>
   <Dependencies>
     <TargetDeviceFamily
@@ -28,23 +28,23 @@
     <Resource Language="en-us" />
   </Resources>
   <Applications>
-    <Application Id="Passepartout" Executable="passepartout.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Passepartout" Description="Passepartout VPN"
-        BackgroundColor="transparent" Square150x150Logo="logo.png" Square44x44Logo="logo.png" />
+    <Application Id="@PASSEPARTOUT_APPLICATION_ID_XML@" Executable="@PASSEPARTOUT_FRONTEND_FILE@" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@" Description="@PASSEPARTOUT_PACKAGE_DESCRIPTION_XML@"
+        BackgroundColor="transparent" Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
     </Application>
     <Application Id="VpnPlugin">
       <uap:VisualElements
         AppListEntry="none"
-        DisplayName="Passepartout"
-        Description="Passepartout"
+        DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@"
+        Description="@PASSEPARTOUT_DISPLAY_NAME_XML@"
         BackgroundColor="transparent"
-        Square150x150Logo="logo.png"
-        Square44x44Logo="logo.png" />
+        Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@"
+        Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
       <Extensions>
         <Extension
           Category="windows.backgroundTasks"
-          Executable="passepartout-tunnel.exe"
-          EntryPoint="Passepartout.VpnChannel.BackgroundTask">
+          Executable="@PASSEPARTOUT_TUNNEL_FILE@"
+          EntryPoint="@PASSEPARTOUT_BACKGROUND_TASK_XML@">
           <BackgroundTasks>
             <uap:Task Type="vpnClient" />
           </BackgroundTasks>
@@ -61,9 +61,9 @@
   <Extensions>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>passepartout-vpnchannel.dll</Path>
+        <Path>@PASSEPARTOUT_PLUGIN_FILE@</Path>
         <ActivatableClass
-          ActivatableClassId="Passepartout.VpnChannel.BackgroundTask"
+          ActivatableClassId="@PASSEPARTOUT_BACKGROUND_TASK_XML@"
           ThreadingModel="both" />
       </InProcessServer>
     </Extension>

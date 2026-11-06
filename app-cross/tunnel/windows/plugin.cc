@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "package_constants.h"
+
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -31,7 +33,7 @@ using namespace winrt::Windows::Storage;
 
 namespace {
 
-constexpr std::wstring_view kBackgroundTaskClass = L"Passepartout.VpnChannel.BackgroundTask";
+constexpr std::wstring_view kBackgroundTaskClass = Passepartout::PackageConstants::BackgroundTask;
 constexpr std::wstring_view kLogName = L"vpnchannel.log";
 
 std::mutex g_log_mutex;

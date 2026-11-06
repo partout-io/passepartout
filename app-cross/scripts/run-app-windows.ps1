@@ -7,16 +7,13 @@ param(
 )
 
 # Constants
-$applicationId = 'Passepartout'
-$processName = 'passepartout'
-$executableName = 'passepartout.exe'
 $manifestName = 'AppxManifest.xml'
 $manifestNamespace = 'http://schemas.microsoft.com/appx/manifest/uap/windows10/10'
 $developmentVersionPrefix = '0.'
 $vswhereRelativePath = 'Microsoft Visual Studio/Installer/vswhere.exe'
 $visualStudioComponent = 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64'
 $developerShellRelativePath = 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll'
-$stopPluginRelativePath = 'tunnel/stop-plugin.ps1'
+$stopPluginRelativePath = 'tunnel/windows/stop-plugin.ps1'
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -64,7 +61,6 @@ function TestExternalPackage {
     return $external -and $external.InnerText -eq 'true'
 }
 
-AssertFrontendClosed
 $vswhere = Join-Path ${env:ProgramFiles(x86)} $vswhereRelativePath
 $visualStudio = & $vswhere -latest -products '*' -requires $visualStudioComponent -property installationPath
 if (-not $visualStudio) { throw 'Visual Studio C++ build tools were not found.' }
@@ -76,6 +72,11 @@ try {
     InvokeCMake -Arguments @('--preset', "windows-$Architecture", "-DCMAKE_INSTALL_PREFIX=$install")
     [xml]$manifest = Get-Content -LiteralPath (Join-Path $build $manifestName) -Raw
     $identity = $manifest.Package.Identity
+    $frontend = $manifest.Package.Applications.Application | Where-Object { $_.GetAttribute('EntryPoint') -eq 'Windows.FullTrustApplication' }
+    $applicationId = $frontend.Id
+    $executableName = $frontend.Executable
+    $processName = [IO.Path]::GetFileNameWithoutExtension($executableName)
+    AssertFrontendClosed
     if (-not $identity.Version.StartsWith($developmentVersionPrefix)) { throw 'Development packages must use a 0.* version.' }
     $registered = @(Get-AppxPackage -Name $identity.Name | Where-Object { $_.Publisher -eq $identity.Publisher })
     if (@($registered | Where-Object { -not $_.IsDevelopmentMode }).Count) {

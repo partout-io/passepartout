@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "package_constants.h"
+
 #include <filesystem>
 #include <sstream>
 #include <stdexcept>
@@ -42,8 +44,9 @@ static int RegisterPackage() {
         const PackageManager manager;
         auto refresh_registration = [&](bool changed_manifest) {
             std::vector<winrt::hstring> packages;
-            for (const auto &package : manager.FindPackagesForUser(L"", L"Passepartout.VpnChannel",
-                                                                   L"CN=Passepartout VpnChannel")) {
+            for (const auto &package : manager.FindPackagesForUser(
+                     L"", Passepartout::PackageConstants::Name,
+                     Passepartout::PackageConstants::Publisher)) {
                 const auto installed =
                     std::filesystem::path{package.InstalledLocation().Path().c_str()};
                 std::error_code error;
@@ -91,7 +94,8 @@ static int RegisterPackage() {
             register_package();
         }
         OutputDebugStringW((std::wstring{L"VPN plugin registered from "} + manifest.wstring() +
-                            L"\nWindows can now activate Passepartout.VpnChannel.BackgroundTask.\n")
+                            L"\nWindows can now activate " +
+                            Passepartout::PackageConstants::BackgroundTask + L".\n")
                                .c_str());
         return 0;
     } catch (winrt::hresult_error const &error) {
@@ -121,7 +125,7 @@ struct PluginFactories : winrt::implements<PluginFactories, IGetActivationFactor
         // lookup fails. Unloading this dependency chain can leave Go runtime
         // threads executing code from the unloaded WireGuard DLL.
         static const HMODULE module = [] {
-            const auto loaded = LoadPackagedLibrary(L"passepartout-vpnchannel.dll", 0);
+            const auto loaded = LoadPackagedLibrary(Passepartout::PackageConstants::PluginFile, 0);
             if (!loaded) winrt::throw_last_error();
             return loaded;
         }();

@@ -3,9 +3,8 @@ set(PASSEPARTOUT_WX_PREBUILT_BASE_URL "" CACHE STRING
     "Base URL for wxWidgets Windows prebuilts.")
 
 # Embed the package logo so desktop icons do not depend on runtime file paths.
-set(APP_ICON_PATH "${CMAKE_CURRENT_LIST_DIR}/logo.png")
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_ICON_PATH}")
-file(READ "${APP_ICON_PATH}" APP_ICON_HEX HEX)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
+file(READ "${PASSEPARTOUT_APP_ICON}" APP_ICON_HEX HEX)
 string(REGEX REPLACE "(..)" "0x\\1," APP_ICON_BYTES "${APP_ICON_HEX}")
 configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/app_icon_resource.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon_resource.h" @ONLY)

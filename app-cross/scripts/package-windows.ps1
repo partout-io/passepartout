@@ -11,10 +11,7 @@ param(
 $manifestName = 'AppxManifest.xml'
 $stagingPrefix = 'passepartout-package-'
 $digestAlgorithm = 'SHA256'
-$requiredFiles = @(
-    'passepartout.exe', 'passepartout-tunnel.exe', 'passepartout-vpnchannel.dll',
-    'partout.dll', $manifestName, 'logo.png'
-)
+$requiredFilesName = 'package-files.txt'
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
@@ -28,6 +25,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Build failed." }
     cmake --install $build --config $Configuration --prefix $stage
     if ($LASTEXITCODE -ne 0) { throw "Staging failed." }
+    $requiredFiles = Get-Content -LiteralPath (Join-Path (Join-Path $build $Configuration) $requiredFilesName)
     foreach ($required in $requiredFiles) {
         if (-not (Test-Path -LiteralPath (Join-Path $stage $required))) {
             throw "Missing package input: $required. Configure with BUILD_APP=ON."
