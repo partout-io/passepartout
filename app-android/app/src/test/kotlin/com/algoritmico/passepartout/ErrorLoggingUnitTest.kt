@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout
 
 import com.algoritmico.passepartout.business.extensions.GenericException
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.AppLogBackend
 import com.algoritmico.passepartout.context.AppLogLevel
@@ -73,6 +74,20 @@ class ErrorLoggingUnitTest {
                 }
                 AppLog.i("test", "Plain message")
                 assertEquals(Entry(AppLogLevel.INFO, "test", "Plain message", null), entries.last())
+                for (error in listOf(nested, failure)) {
+                    entries.clear()
+                    runCatchingNonFatal { throw error }.onFailure { assertSame(error, it) }
+                    val entry = entries.single()
+                    assertEquals(AppLogLevel.DEBUG, entry.level)
+                    if (enabled) {
+                        assertSame(error, entry.error)
+                    } else {
+                        assertNull(entry.error)
+                    }
+                    val output = entry.message + (entry.error?.stackTraceToString() ?: "")
+                    assertEquals(enabled, output.contains("private-parser-input"))
+                    assertEquals(enabled && error === failure, output.contains("private-wrapper-message"))
+                }
                 assertSame(nested, failure.cause)
                 assertEquals("private-parser-input", nested.message)
             }
