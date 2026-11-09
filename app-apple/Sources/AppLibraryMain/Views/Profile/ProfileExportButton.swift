@@ -59,6 +59,7 @@ private extension ProfileExportButton {
         Text(Strings.Views.Profile.Buttons.export)
 #else
         Text(Strings.Global.Actions.export.withTrailingDots)
+            .themeToolbarLabel()
 #endif
     }
 

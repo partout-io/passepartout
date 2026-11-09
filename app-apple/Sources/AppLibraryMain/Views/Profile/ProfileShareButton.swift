@@ -48,7 +48,9 @@ private extension ProfileShareButton {
 #if os(iOS)
         Text(Strings.Views.Profile.Buttons.share)
 #else
-        ThemeImage(.share)
+        ThemeImageLabel(Strings.Global.Actions.share, .share)
+            .labelStyle(.iconOnly)
+            .themeToolbarLabel()
 #endif
     }
 
