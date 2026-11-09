@@ -44,7 +44,7 @@ extension PassepartoutApp {
         .commands {
             SettingsWindowCommands()
         }
-        Window(Strings.Views.Settings.title, id: AppWindow.settingsId) {
+        Window(Strings.Views.Settings.title, id: SettingsCoordinator.windowId) {
             SettingsCoordinator(
                 profileObservable: context.profileObservable,
                 tunnel: context.tunnelObservable
@@ -66,7 +66,7 @@ private struct SettingsWindowCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .appSettings) {
             Button(Strings.Global.Nouns.settings.withTrailingDots) {
-                openWindow(id: AppWindow.settingsId)
+                openWindow(id: SettingsCoordinator.windowId)
             }
             .keyboardShortcut(",", modifiers: .command)
         }

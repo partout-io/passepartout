@@ -39,7 +39,7 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
         }
         .toolbar {
             // Keep native window-toolbar spacing even without action buttons.
-            ToolbarItem(placement: .automatic) {
+            ToolbarItem {
                 Spacer()
             }
         }

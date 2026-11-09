@@ -8,8 +8,6 @@ import AppKit
 
 @MainActor
 public final class AppWindow {
-    public static let settingsId = "settings"
-
     public static let shared = AppWindow()
 
     public var isVisible: Bool {

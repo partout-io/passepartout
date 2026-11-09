@@ -6,6 +6,10 @@ import CommonLibrary
 import SwiftUI
 
 public struct SettingsCoordinator: View {
+#if os(macOS)
+    public static let windowId = "settings"
+#endif
+
     @Environment(IAPObservable.self)
     private var iapObservable
 

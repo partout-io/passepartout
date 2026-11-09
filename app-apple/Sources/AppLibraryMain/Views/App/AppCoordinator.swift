@@ -151,7 +151,7 @@ extension AppCoordinator {
             importAction: importActionBinding,
             onSettings: {
 #if os(macOS)
-                openWindow(id: AppWindow.settingsId)
+                openWindow(id: SettingsCoordinator.windowId)
 #else
                 present(.settings)
 #endif
