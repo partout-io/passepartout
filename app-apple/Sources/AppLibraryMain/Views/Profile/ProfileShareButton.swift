@@ -12,31 +12,34 @@ struct ProfileShareButton: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
-    private let profile: Profile
+    private let profile: Profile?
 
-    init(profile: Profile) {
+    init(profile: Profile?) {
         self.profile = profile
     }
 
-    init?(editor: ProfileEditor) {
+    init(editor: ProfileEditor) {
         do {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
             pspLog(.profiles, .debug, "Unable to build profile from editor: \(error)")
-            return nil
+            self.init(profile: nil)
         }
     }
 
     var body: some View {
-        ShareLink(
-            item: ProfileRepresentation { [appImportExport, profile] in
+        let items = profile.map { profile in
+            [ProfileRepresentation(name: profile.name) { [appImportExport, profile] in
                 try Self.toURL(profile: profile, appImportExport: appImportExport)
-            },
-            preview: .init(profile.name),
+            }]
+        } ?? []
+        return ShareLink(
+            items: items,
+            preview: { .init($0.name) },
             label: shareLabel
         )
-        .disabled(!iapObservable.isEligible(for: .sharing))
+        .disabled(profile == nil || !iapObservable.isEligible(for: .sharing))
     }
 }
 
@@ -63,6 +66,8 @@ private extension ProfileShareButton {
 }
 
 private struct ProfileRepresentation: Transferable {
+    let name: String
+
     let encoder: @Sendable () throws -> URL
 
     static var transferRepresentation: some TransferRepresentation {

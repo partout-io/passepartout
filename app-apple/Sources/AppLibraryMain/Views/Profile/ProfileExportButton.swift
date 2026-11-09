@@ -17,7 +17,7 @@ struct ProfileExportButton: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
-    private let profile: Profile
+    private let profile: Profile?
 
     @State
     private var viewModel = ViewModel()
@@ -25,28 +25,28 @@ struct ProfileExportButton: View {
     @State
     private var errorHandler: ErrorHandler = .default()
 
-    init(profile: Profile) {
+    init(profile: Profile?) {
         self.profile = profile
     }
 
-    init?(editor: ProfileEditor) {
+    init(editor: ProfileEditor) {
         do {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
             pspLog(.profiles, .debug, "Unable to build profile from editor: \(error)")
-            return nil
+            self.init(profile: nil)
         }
     }
 
     var body: some View {
         Button(action: exportProfiles, label: exportLabel)
-            .disabled(!iapObservable.isEligible(for: .sharing))
+            .disabled(profile == nil || !iapObservable.isEligible(for: .sharing))
             .fileExporter(
                 isPresented: $viewModel.isExporting,
                 document: viewModel.jsonString.map(TextFile.init),
                 contentType: .json,
-                defaultFilename: appImportExport.defaultFilename(for: profile),
+                defaultFilename: profile.map { appImportExport.defaultFilename(for: $0) },
                 onCompletion: { _ in }
             )
             .withErrorHandler(errorHandler)
@@ -63,6 +63,9 @@ private extension ProfileExportButton {
     }
 
     func exportProfiles() {
+        guard let profile else {
+            return
+        }
         do {
             viewModel.jsonString = try appImportExport.json(fromProfile: profile)
             viewModel.isExporting = true
