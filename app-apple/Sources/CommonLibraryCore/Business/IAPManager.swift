@@ -318,7 +318,7 @@ extension IAPManager {
         precondition(!isObserving)
         isObserving = true
         let inAppEvents = inAppHelper.didUpdate
-        Task {
+        Task { [self] in
             await inAppHelper.startObserving()
             await fetchLevelIfNeeded()
             do {
@@ -336,7 +336,7 @@ extension IAPManager {
                     pspLog(.iap, .info, "Available in-app products: \(products.map(\.key))")
                 }
             } catch is TaskTimeoutError {
-                throw ABI.AppError.timeout
+                pspLog(.iap, .error, "Unable to fetch in-app products: \(ABI.AppError.timeout)")
             } catch {
                 pspLog(.iap, .error, "Unable to fetch in-app products: \(error)")
             }

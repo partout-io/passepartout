@@ -88,7 +88,11 @@ extension ViewModifier {
 public func enableLater(millis: Int = 50, block: @escaping (Bool) -> Void) {
     Task {
         block(false)
-        try await Task.sleep(for: .milliseconds(millis))
+        do {
+            try await Task.sleep(for: .milliseconds(millis))
+        } catch {
+            return
+        }
         block(true)
     }
 }
@@ -97,7 +101,11 @@ public func enableLater(millis: Int = 50, block: @escaping (Bool) -> Void) {
 public func setLater<T>(_ value: T?, millis: Int = 50, block: @escaping (T?) -> Void) {
     Task {
         block(nil)
-        try await Task.sleep(for: .milliseconds(millis))
+        do {
+            try await Task.sleep(for: .milliseconds(millis))
+        } catch {
+            return
+        }
         block(value)
     }
 }

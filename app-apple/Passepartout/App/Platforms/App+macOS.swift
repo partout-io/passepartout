@@ -45,8 +45,12 @@ extension PassepartoutApp {
             CommandGroup(replacing: .appSettings) {
                 Button(Strings.Global.Nouns.settings) {
                     Task {
-                        try await AppWindow.shared.show()
-                        AppPipe.settings.send()
+                        do {
+                            try await AppWindow.shared.show()
+                            AppPipe.settings.send()
+                        } catch {
+                            pspLog(.core, .error, "Unable to show settings: \(error)")
+                        }
                     }
                 }
                 .keyboardShortcut(",", modifiers: .command)

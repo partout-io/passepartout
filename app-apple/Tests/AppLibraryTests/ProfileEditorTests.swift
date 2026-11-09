@@ -251,7 +251,7 @@ extension ProfileEditorTests {
                         let rhs = try profile.withoutUserInfo()
                         #expect(lhs == rhs)
                     } catch {
-                        throw error
+                        Issue.record(error)
                     }
                     await exp.fulfill()
                 default:
