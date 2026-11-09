@@ -1,5 +1,5 @@
-MARKETING_VERSION = 3.12.5
-CURRENT_PROJECT_VERSION = 4187
+MARKETING_VERSION = 3.12.6
+CURRENT_PROJECT_VERSION = 4188
 
 // Tweak these based on app and team
 CFG_APP_ID = com.algoritmico.ios.Passepartout
@@ -9,6 +9,7 @@ CFG_RAW_GROUP_ID = group.com.algoritmico.Passepartout
 CFG_TEAM_ID = DTDYD63ZX9
 
 // Metadata
+LM_SKIP_METADATA_EXTRACTION = YES
 CFG_COPYRIGHT = Copyright © 2026 Davide De Rosa. All rights reserved.
 CFG_DISPLAY_NAME = Passepartout
 CFG_ENTITLEMENTS = Passepartout/App/App.entitlements
