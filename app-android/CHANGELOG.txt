@@ -1,3 +1,1 @@
-* Add support for iPhone Duo
-* Core: Fix module details potentially leaking into logs (#1975)
-* WireGuard: Fix re-save failure of IPv6 endpoints (#1972)
+* Partout: Upgrade to Zig 0.17
