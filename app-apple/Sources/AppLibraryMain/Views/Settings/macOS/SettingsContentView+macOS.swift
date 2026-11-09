@@ -30,18 +30,11 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
     var body: some View {
         NavigationSplitView {
             listView
-                .toolbar(removing: .sidebarToggle)
         } detail: {
             settingsDestination(navigationRoute)
                 .navigationDestination(for: SettingsCoordinatorRoute.self, destination: settingsDestination)
                 .navigationDestination(for: DiagnosticsRoute.self, destination: diagnosticsDestination)
                 .themeNavigationStack(closable: false, path: $path)
-        }
-        .toolbar {
-            // Keep native window-toolbar spacing even without action buttons.
-            ToolbarItem {
-                Spacer()
-            }
         }
         .onLoad {
             navigationRoute = .preferences
