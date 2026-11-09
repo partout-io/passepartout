@@ -30,7 +30,7 @@ struct AppCoordinatorRegressionTests {
 
 @MainActor
 private final class RecordingCoordinator: AppCoordinatorConforming {
-    let iapObservable = IAPObservable(iapManager: IAPManager(), supportsIAP: false)
+    let iapObservable = IAPObservable(iapManager: IAPManager(), usesInAppPurchases: false)
     let tunnel = TunnelObservable(tunnel: PartoutTunnel(
         .global,
         strategy: FakeTunnelStrategy(delay: 0),

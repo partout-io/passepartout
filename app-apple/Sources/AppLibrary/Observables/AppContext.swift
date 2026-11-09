@@ -79,14 +79,14 @@ public final class AppContext {
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
         subscriptions = []
 
-        let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !preferences[\.skipsPurchases]
+        let usesInAppPurchases = appConfiguration.bundle.distributionTarget.usesInAppPurchases
+        iapManager.isEnabled = usesInAppPurchases && !preferences[\.skipsPurchases]
 
         // Manager-backed observables
         configObservable = ConfigObservable()
         iapObservable = IAPObservable(
             iapManager: iapManager,
-            supportsIAP: supportsIAP
+            usesInAppPurchases: usesInAppPurchases
         )
         profileObservable = ProfileObservable(profileManager: profileManager)
         registryObservable = RegistryObservable(

@@ -79,7 +79,7 @@ private extension PurchasedView {
             downloadSection
             productsSection
             featuresSection
-            if appConfiguration.bundle.distributionTarget.supportsIAP && !iapObservable.isBeta {
+            if appConfiguration.bundle.distributionTarget.usesInAppPurchases && !iapObservable.isBeta {
                 restoreSection
             }
         }

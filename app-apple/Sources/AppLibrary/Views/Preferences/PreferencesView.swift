@@ -48,7 +48,7 @@ public struct PreferencesView: View {
 #endif
             pinActiveProfileSection
             dnsFallsBackSection
-            if appConfiguration.bundle.distributionTarget.supportsIAP {
+            if appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                 enablesPurchasesSection
             }
             if iapObservable.isBeta {

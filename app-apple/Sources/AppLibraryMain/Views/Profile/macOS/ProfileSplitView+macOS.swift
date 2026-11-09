@@ -70,7 +70,7 @@ extension ProfileSplitView {
 
     @ToolbarContentBuilder
     func toolbarContent() -> some ToolbarContent {
-        if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
+        if appConfiguration.bundle.distributionTarget.supportsAllFeatures {
             ToolbarItemGroup {
                 ProfileExportButton(editor: profileEditor)
                 ProfileShareButton(editor: profileEditor)

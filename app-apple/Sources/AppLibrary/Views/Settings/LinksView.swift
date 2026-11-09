@@ -33,10 +33,10 @@ private extension LinksView {
     var supportSection: some View {
         Group {
             Link(Strings.Views.Settings.Links.Rows.openDiscussion, destination: constants.github.discussionsURL)
-//            if distributionTarget.supportsIAP && iapManager.isPayingUser {
+//            if distributionTarget.usesInAppPurchases && iapManager.isPayingUser {
 //                Link(Strings.Views.Settings.Links.Rows.writeReview, destination: appConfiguration.urlForReview)
 //            }
-            if !appConfiguration.bundle.distributionTarget.supportsIAP && !isBeta {
+            if !appConfiguration.bundle.distributionTarget.usesInAppPurchases && !isBeta {
                 WebDonationLink()
             }
         }

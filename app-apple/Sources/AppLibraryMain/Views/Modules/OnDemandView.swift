@@ -40,7 +40,7 @@ struct OnDemandView: View, ModuleDraftEditing {
 
 private extension OnDemandView {
     var allPolicies: [OnDemandModule.Policy] {
-        if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
+        if appConfiguration.bundle.distributionTarget.supportsAllFeatures {
             return [.any, .excluding, .including]
         } else {
             return [.any]

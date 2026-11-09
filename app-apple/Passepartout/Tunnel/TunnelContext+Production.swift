@@ -64,7 +64,7 @@ extension TunnelContext {
             betaChecker: appConfiguration.makeBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
-        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
+        let skipsPurchases = !appConfiguration.bundle.distributionTarget.usesInAppPurchases || preferences[\.skipsPurchases]
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         let iap = TunnelContext.IAP(
             manager: iapManager,

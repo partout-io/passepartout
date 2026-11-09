@@ -63,7 +63,7 @@ private extension SettingsContentView {
                 linkContent(.version)
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && appConfiguration.bundle.distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                     linkContent(.donate)
                 }
             }
@@ -75,7 +75,7 @@ private extension SettingsContentView {
                     linkContent(.systemExtension)
                 }
                 linkContent(.diagnostics)
-                if appConfiguration.bundle.distributionTarget.supportsIAP {
+                if appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                     linkContent(.purchased)
                 }
             }

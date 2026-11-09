@@ -51,7 +51,7 @@ private extension SettingsContentView {
             Group {
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && appConfiguration.bundle.distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                     linkContent(.donate)
                 }
             }
@@ -60,7 +60,7 @@ private extension SettingsContentView {
                 .themeSection(header: Strings.Global.Nouns.troubleshooting)
             Group {
                 linkContent(.diagnostics)
-                if appConfiguration.bundle.distributionTarget.supportsIAP {
+                if appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                     linkContent(.purchased)
                 }
             }
