@@ -68,8 +68,11 @@ extension ProfileManager {
                     let profile = try builder.build()
                     try await manager.save(profile, isLocal: true, remotelyShared: parameters.isShared)
                 }
+            } catch is CancellationError {
+                return
             } catch {
                 pspLog(.profiles, .error, "Unable to build ProfileManager for UI testing: \(error)")
+                assertionFailure("Unable to build ProfileManager for UI testing: \(error)")
             }
         }
 
