@@ -45,7 +45,7 @@ public final class NIOWebReceiver: WebReceiver, @unchecked Sendable {
             let bootstrap = ServerBootstrap(group: group)
                 .serverChannelOption(.backlog, value: 256)
                 .serverChannelOption(.socketOption(.so_reuseaddr), value: 1)
-                .childChannelInitializer { channel in
+                .childChannelInitializer { [weak self] channel in
                     channel.pipeline.configureHTTPServerPipeline().flatMap { [weak self] in
                         guard let self else {
                             return channel.eventLoop.makeSucceededFuture(())

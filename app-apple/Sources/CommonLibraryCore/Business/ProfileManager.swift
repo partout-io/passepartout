@@ -125,7 +125,11 @@ extension ProfileManager {
                 try await repository.saveProfile(profile)
                 if let backupRepository {
                     Task.detached {
-                        try await backupRepository.saveProfile(profile)
+                        do {
+                            try await backupRepository.saveProfile(profile)
+                        } catch {
+                            pspLog(.profiles, .error, "Unable to back up profile \(profile.id): \(error)")
+                        }
                     }
                 }
                 didChange.send(.save(.init(
@@ -283,8 +287,12 @@ private extension ProfileManager {
         if !excludedIds.isEmpty {
             pspLog(.profiles, .info, "Delete excluded profiles from repository: \(excludedIds)")
             Task {
-                // XXX: ignore this published value
-                try await repository.removeProfiles(withIds: Array(excludedIds))
+                do {
+                    // XXX: ignore this published value
+                    try await repository.removeProfiles(withIds: Array(excludedIds))
+                } catch {
+                    pspLog(.profiles, .error, "Unable to remove excluded profiles: \(error)")
+                }
             }
         }
     }

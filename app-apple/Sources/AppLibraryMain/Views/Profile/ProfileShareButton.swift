@@ -30,7 +30,9 @@ struct ProfileShareButton: View {
 
     var body: some View {
         ShareLink(
-            item: ProfileRepresentation(encoder: toURL),
+            item: ProfileRepresentation { [appImportExport, profile] in
+                try Self.toURL(profile: profile, appImportExport: appImportExport)
+            },
             preview: .init(profile.name),
             label: shareLabel
         )
@@ -47,7 +49,7 @@ private extension ProfileShareButton {
 #endif
     }
 
-    nonisolated func toURL() throws -> URL {
+    nonisolated static func toURL(profile: Profile, appImportExport: AppImportExport) throws -> URL {
         do {
             pspLog(.profiles, .debug, "Writing profile \(profile.id) for sharing...")
             let url = try appImportExport.writeToURL(profile)

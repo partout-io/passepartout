@@ -125,8 +125,12 @@ public final class AppContext {
 extension AppContext {
     public func onApplicationActive() {
         Task {
-            // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
-            try await onForeground()
+            do {
+                try await onForeground()
+            } catch {
+                pspLog(.core, .fault, "Unable to activate application: \(error)")
+                return
+            }
 
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
