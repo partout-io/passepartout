@@ -16,7 +16,8 @@ public struct SystemInformation {
     public init() {
 #if os(macOS)
         let os = ProcessInfo().operatingSystemVersion
-        osString = "macOS \(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
+        let osName = "macOS"
+        let osVersion = "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
         deviceString = nil
 #elseif os(iOS) || os(tvOS)
         let deviceInfo = if Thread.isMainThread {
@@ -24,21 +25,34 @@ public struct SystemInformation {
         } else {
             DispatchQueue.main.sync { Self.deviceInformation() }
         }
-        osString = deviceInfo.osString
+        let osName = deviceInfo.systemName
+        let osVersion = deviceInfo.systemVersion
         deviceString = deviceInfo.model
 #else
-        osString = "Unknown 0.0.0"
+        let osName = "Unknown"
+        let osVersion = "0.0.0"
         deviceString = nil
 #endif
+        osString = "\(osName) \(osVersion)"
     }
 }
 
 #if os(iOS) || os(tvOS)
 private extension SystemInformation {
+    struct DeviceInformation {
+        let systemName: String
+        let systemVersion: String
+        let model: String
+    }
+
     @MainActor
-    static func deviceInformation() -> (osString: String, model: String) {
+    static func deviceInformation() -> DeviceInformation {
         let device = UIDevice.current
-        return ("\(device.systemName) \(device.systemVersion)", device.model)
+        return DeviceInformation(
+            systemName: device.systemName,
+            systemVersion: device.systemVersion,
+            model: device.model
+        )
     }
 }
 #endif
