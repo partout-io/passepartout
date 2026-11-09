@@ -55,9 +55,9 @@ struct ProfileSplitView: View, Routable {
                 }
             }
             .themeNavigationStack(path: $detailPath)
-            .toolbar(content: toolbarContent)
             .environment(\.navigationPath, $detailPath)
         }
+        .toolbar(content: toolbarContent)
     }
 }
 

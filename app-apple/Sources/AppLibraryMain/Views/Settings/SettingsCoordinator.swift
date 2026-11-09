@@ -5,19 +5,16 @@
 import CommonLibrary
 import SwiftUI
 
-struct SettingsCoordinator: View {
+public struct SettingsCoordinator: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.dismiss)
-    private var dismiss
+    private let profileObservable: ProfileObservable
 
-    let profileObservable: ProfileObservable
-
-    let tunnel: TunnelObservable
+    private let tunnel: TunnelObservable
 
     @State
     private var path = NavigationPath()
@@ -25,7 +22,12 @@ struct SettingsCoordinator: View {
     @State
     private var navigationRoute: SettingsCoordinatorRoute?
 
-    var body: some View {
+    public init(profileObservable: ProfileObservable, tunnel: TunnelObservable) {
+        self.profileObservable = profileObservable
+        self.tunnel = tunnel
+    }
+
+    public var body: some View {
         SettingsContentView(
             profileObservable: profileObservable,
             isBeta: iapObservable.isBeta,
