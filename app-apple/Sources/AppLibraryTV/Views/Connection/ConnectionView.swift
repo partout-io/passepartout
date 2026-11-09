@@ -52,7 +52,7 @@ struct ConnectionView: View, Routable {
         .themeGradient()
         .themeAnimation(on: showsSidePanel, category: .profiles)
         .defaultFocus($focusedField, .switchProfile)
-        .onChange(of: tunnel.activeProfile, onTunnelActiveProfile)
+        .onChange(of: tunnel.activeProfile?.status, onTunnelStatus)
         .onChange(of: interactiveObservable.isPresented, onInteractivePresented)
         .onChange(of: focusedField, onFocus)
     }
@@ -117,17 +117,17 @@ private extension ConnectionView {
 }
 
 private extension ConnectionView {
-    func onTunnelActiveProfile(
-        old: ABI.AppTunnelInfo?,
-        new: ABI.AppTunnelInfo?
+    func onTunnelStatus(
+        old: ABI.AppProfileStatus?,
+        new: ABI.AppProfileStatus?
     ) {
-        // on profile connection, hide side panel and focus on connect button
-        if new?.status == .connecting {
+        // Handle a fast connection even if SwiftUI coalesces the connecting update.
+        if new == .connecting || new == .connected {
             showsSidePanel = false
             focusedField = .connect
         }
         // if connect button is focused and no profile is active, focus on switch profile
-        if focusedField == .connect && (new == nil || new?.status == .disconnected) {
+        if focusedField == .connect && (new == nil || new == .disconnected) {
             focusedField = .switchProfile
         }
     }
