@@ -10,6 +10,7 @@ import SwiftUI
 public final class UserPreferencesObservable {
     private let preferences: AppPreferencesStore
     private let ui: UserDefaults
+    public var onLogPrivacyChange: (() -> Void)?
 
     public init(preferences: AppPreferencesStore, ui: UserDefaults) {
         self.preferences = preferences
@@ -95,9 +96,11 @@ public final class UserPreferencesObservable {
 
     public var logsPrivateData: Bool {
         didSet {
+            guard logsPrivateData != oldValue else { return }
             preferences.overwrite {
                 $0.logsPrivateData = logsPrivateData
             }
+            onLogPrivacyChange?()
         }
     }
 

@@ -1022,6 +1022,8 @@ public enum Strings {
           public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.extensive_logging.subtitle", fallback: "Very, very verbose. Keep this off except for troubleshooting.")
         }
         public enum IncludePrivateData {
+          /// Disable all profiles to change this setting.
+          public static let disableProfiles = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data.disable_profiles", fallback: "Disable all profiles to change this setting.")
           /// Only use for local inspection.
           public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data.subtitle", fallback: "Only use for local inspection.")
         }

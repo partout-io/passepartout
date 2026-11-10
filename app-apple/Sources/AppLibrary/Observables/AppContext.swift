@@ -109,6 +109,9 @@ public final class AppContext {
         userPreferences = UserPreferencesObservable(preferences: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
         self.wireGuardKeyGenerator = wireGuardKeyGenerator
+        userPreferences.onLogPrivacyChange = { [weak self] in
+            self?.onLogPrivacyChange()
+        }
 
         observeManagerEvents()
         tunnelObservable.observeObjects()
@@ -138,6 +141,25 @@ extension AppContext {
             preferences.overwrite {
                 // Propagate active config flags to tunnel via preferences
                 $0.configFlags = Array(configManager.activeFlags)
+            }
+        }
+    }
+}
+
+private extension AppContext {
+    func onLogPrivacyChange() {
+        pspLogRegister(
+            for: .app,
+            with: appConfiguration,
+            preferences: preferences,
+            localURL: appConfiguration.urlForAppLog,
+            localMapper: appConfiguration.makeLogFormatter().localMapper
+        )
+        if !preferences[\.logsPrivateData] {
+            do {
+                try pspLogFileStrategy.reset(at: appConfiguration.urlForTunnelLog)
+            } catch {
+                pspLog(.core, .error, "Unable to reset tunnel log: \(error)")
             }
         }
     }
