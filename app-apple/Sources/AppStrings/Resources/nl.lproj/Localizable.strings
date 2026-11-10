@@ -451,3 +451,5 @@
 "web_uploader.submit" = "Uploaden";
 "web_uploader.success" = "Upload voltooid!";
 "web_uploader.title" = "Uploaden naar Apple TV";
+"views.tv.connection_profiles.web_import" = "Profiel importeren";
+"views.tv.connection_profiles.web_import_description" = "Deel een profiel via iCloud of selecteer ‘Profiel importeren’ om een QR-code weer te geven. Scan deze met Passepartout op je iPhone, iPad of Mac om een profiel naar deze tv te sturen, of gebruik een webbrowser om een configuratiebestand te uploaden.";

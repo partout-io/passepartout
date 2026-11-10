@@ -451,3 +451,5 @@
 "web_uploader.submit" = "Téléverser";
 "web_uploader.success" = "Téléversement terminé !";
 "web_uploader.title" = "Téléverser vers Apple TV";
+"views.tv.connection_profiles.web_import" = "Importer un profil";
+"views.tv.connection_profiles.web_import_description" = "Partagez un profil via iCloud ou sélectionnez « Importer un profil » pour afficher un code QR. Scannez-le avec Passepartout sur votre iPhone, iPad ou Mac pour envoyer un profil à ce téléviseur, ou utilisez un navigateur web pour envoyer un fichier de configuration.";
