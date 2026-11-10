@@ -133,7 +133,8 @@
     <string name="views_vpn_no_servers">Brak serwerów</string>
     <string name="views_tv_connection_profiles_header_share">Otwórz %1$s na swoim urządzeniu z iOS lub macOS i włącz przełącznik \"%2$s\" w profilu, aby pojawił się tutaj.</string>
     <string name="views_tv_connection_profiles_header_import">Alternatywnie znajdziesz inne opcje na karcie „Profile”.</string>
-    <string name="views_tv_profiles_import_local">Importuj lokalny profil</string>
+    <string name="views_tv_profiles_import_local">Importuj profil</string>
+    <string name="views_tv_connection_profiles_web_import_description">Udostępnij profil przez iCloud lub wybierz „Importuj profil”, aby wyświetlić kod QR. Zeskanuj go za pomocą Passepartout na iPhonie, iPadzie lub Macu, aby wysłać profil do tego telewizora, albo użyj przeglądarki internetowej, aby przesłać plik konfiguracji.</string>
     <string name="views_tv_profiles_detail_profiles">Przytrzymaj, aby wyświetlić dostępne akcje dla profilu.</string>
     <string name="views_tv_web_receiver_toggle">Przełącz, aby zaimportować lokalny profil na swój telewizor za pomocą przeglądarki internetowej.</string>
     <string name="views_tv_web_receiver_qr">Zeskanuj kod QR aparatem, aby otworzyć stronę internetową, na której możesz przesłać swój profil. Upewnij się, że jesteś połączony z tą samą siecią.</string>

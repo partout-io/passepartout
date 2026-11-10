@@ -430,7 +430,6 @@
 "views.tv.connection_profiles.header.import" = "Alternativamente, você encontrará outras opções na aba \"Perfis\".";
 "views.tv.connection_profiles.header.share" = "Abra o %@ no seu dispositivo iOS ou macOS e ative a opção \"%@\" de um perfil para que ele apareça aqui.";
 "views.tv.profiles.detail.profiles" = "Pressione e segure para ver as ações disponíveis para um perfil.";
-"views.tv.profiles.import_local" = "Importar perfil local";
 "views.tv.web_receiver.qr" = "Escaneie o QR com sua câmera para abrir uma página web onde você pode enviar seu perfil. Certifique-se de que está conectado à mesma rede.";
 "views.tv.web_receiver.toggle" = "Alterne para importar um perfil local na sua TV via navegador web.";
 "views.ui.connection_status.on_demand_suffix" = " (sob demanda)";
@@ -451,3 +450,5 @@
 "web_uploader.submit" = "Enviar";
 "web_uploader.success" = "Envio concluído!";
 "web_uploader.title" = "Enviar para Apple TV";
+"views.tv.profiles.import_local" = "Importar perfil";
+"views.tv.connection_profiles.web_import_description" = "Compartilhe um perfil pelo iCloud ou selecione “Importar perfil” para exibir um código QR. Escaneie-o com o Passepartout no iPhone, iPad ou Mac para enviar um perfil para esta TV, ou use um navegador web para carregar um arquivo de configuração.";

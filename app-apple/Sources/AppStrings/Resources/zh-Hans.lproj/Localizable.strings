@@ -430,7 +430,6 @@
 "views.tv.connection_profiles.header.import" = "或者，你可以在“配置文件”标签页找到其他选项。";
 "views.tv.connection_profiles.header.share" = "在你的 iOS 或 macOS 设备上打开 %@ 并启用某个配置文件的“%@”开关以在此处显示。";
 "views.tv.profiles.detail.profiles" = "长按以显示配置文件的可用操作。";
-"views.tv.profiles.import_local" = "导入本地配置文件";
 "views.tv.web_receiver.qr" = "使用相机扫描二维码以打开网页，上传您的配置文件。确保您连接到同一网络。";
 "views.tv.web_receiver.toggle" = "切换以通过网页浏览器将本地配置文件导入电视。";
 "views.ui.connection_status.on_demand_suffix" = "（按需）";
@@ -451,3 +450,5 @@
 "web_uploader.submit" = "上传";
 "web_uploader.success" = "上传完成！";
 "web_uploader.title" = "上传到 Apple TV";
+"views.tv.profiles.import_local" = "导入配置";
+"views.tv.connection_profiles.web_import_description" = "通过 iCloud 共享配置，或选择“导入配置”以显示二维码。使用 iPhone、iPad 或 Mac 上的 Passepartout 扫描该二维码，将配置发送到此电视，也可以使用网页浏览器上传配置文件。";

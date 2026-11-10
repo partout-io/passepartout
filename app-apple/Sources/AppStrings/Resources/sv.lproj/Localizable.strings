@@ -430,7 +430,6 @@
 "views.tv.connection_profiles.header.import" = "Alternativt hittar du andra alternativ i fliken \"Profiler\".";
 "views.tv.connection_profiles.header.share" = "Öppna %@ på din iOS- eller macOS-enhet och aktivera växeln \"%@\" för en profil så visas den här.";
 "views.tv.profiles.detail.profiles" = "Tryck länge för att visa tillgängliga åtgärder för en profil.";
-"views.tv.profiles.import_local" = "Importera lokal profil";
 "views.tv.web_receiver.qr" = "Skanna QR-koden med din kamera för att öppna en webbsida där du kan ladda upp din profil. Se till att du är ansluten till samma nätverk.";
 "views.tv.web_receiver.toggle" = "Växla för att importera en lokal profil till din TV via en webbläsare.";
 "views.ui.connection_status.on_demand_suffix" = " (på begäran)";
@@ -451,3 +450,5 @@
 "web_uploader.submit" = "Ladda upp";
 "web_uploader.success" = "Uppladdningen klar!";
 "web_uploader.title" = "Ladda upp till Apple TV";
+"views.tv.profiles.import_local" = "Importera profil";
+"views.tv.connection_profiles.web_import_description" = "Dela en profil via iCloud eller välj ”Importera profil” för att visa en QR-kod. Skanna den med Passepartout på din iPhone, iPad eller Mac för att skicka en profil till denna TV, eller använd en webbläsare för att ladda upp en konfigurationsfil.";
