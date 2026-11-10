@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Journalisation étendue</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Très, très verbeux. À activer uniquement pour le dépannage.</string>
     <string name="views_diagnostics_rows_include_private_data">Inclure les données privées</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Désactivez tous les profils pour modifier ce réglage.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">À utiliser uniquement pour une inspection locale.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Supprimer tous les journaux</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Configuration du serveur</string>

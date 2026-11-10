@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Szczegółowe logowanie</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Bardzo, bardzo szczegółowe. Włączaj tylko do rozwiązywania problemów.</string>
     <string name="views_diagnostics_rows_include_private_data">Uwzględnij dane prywatne</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Wyłącz wszystkie profile, aby zmienić to ustawienie.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Używaj tylko do lokalnej inspekcji.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Usuń wszystkie dzienniki</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Konfiguracja serwera</string>

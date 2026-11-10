@@ -326,6 +326,7 @@
 "views.diagnostics.rows.app" = "Aplikacja";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Bardzo, bardzo szczegółowe. Włączaj tylko do rozwiązywania problemów.";
 "views.diagnostics.rows.extensive_logging" = "Szczegółowe logowanie";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Wyłącz wszystkie profile, aby zmienić to ustawienie.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Używaj tylko do lokalnej inspekcji.";
 "views.diagnostics.rows.include_private_data" = "Uwzględnij dane prywatne";
 "views.diagnostics.rows.remove_tunnel_logs" = "Usuń wszystkie dzienniki";

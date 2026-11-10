@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Εκτενής καταγραφή</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Πολύ, πολύ αναλυτικό. Διατηρήστε το απενεργοποιημένο εκτός για αντιμετώπιση προβλημάτων.</string>
     <string name="views_diagnostics_rows_include_private_data">Συμπερίληψη ιδιωτικών δεδομένων</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Απενεργοποιήστε όλα τα προφίλ για να αλλάξετε αυτήν τη ρύθμιση.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Χρησιμοποιήστε το μόνο για τοπικό έλεγχο.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Διαγραφή όλων των ημερολογίων</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Διαμόρφωση διακομιστή</string>

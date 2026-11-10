@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Registo detalhado</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Muito, muito verboso. Mantenha desativado exceto para resolução de problemas.</string>
     <string name="views_diagnostics_rows_include_private_data">Incluir dados privados</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Desative todos os perfis para alterar esta definição.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Use apenas para inspeção local.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Excluir todos os registros</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Configuração do servidor</string>

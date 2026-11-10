@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Ausführliche Protokollierung</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Sehr, sehr ausführlich. Nur zur Fehlersuche aktivieren.</string>
     <string name="views_diagnostics_rows_include_private_data">Private Daten einbeziehen</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Deaktiviere alle Profile, um diese Einstellung zu ändern.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Nur für lokale Inspektion verwenden.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Alle Protokolle löschen</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Serverkonfiguration</string>

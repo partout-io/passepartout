@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Extensive logging</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Very, very verbose. Keep this off except for troubleshooting.</string>
     <string name="views_diagnostics_rows_include_private_data">Include private data</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Disable all profiles to change this setting.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Only use for local inspection.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Delete all logs</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Server configuration</string>

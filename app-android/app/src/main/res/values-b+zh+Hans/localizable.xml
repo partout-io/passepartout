@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">详细日志</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">非常非常详细。仅在故障排查时开启。</string>
     <string name="views_diagnostics_rows_include_private_data">包含私人数据</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">请停用所有配置文件以更改此设置。</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">仅用于本地检查。</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">删除所有日志</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">服务器配置</string>

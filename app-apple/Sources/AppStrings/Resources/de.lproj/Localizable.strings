@@ -326,6 +326,7 @@
 "views.diagnostics.rows.app" = "App";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Sehr, sehr ausführlich. Nur zur Fehlersuche aktivieren.";
 "views.diagnostics.rows.extensive_logging" = "Ausführliche Protokollierung";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Deaktiviere alle Profile, um diese Einstellung zu ändern.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Nur für lokale Inspektion verwenden.";
 "views.diagnostics.rows.include_private_data" = "Private Daten einbeziehen";
 "views.diagnostics.rows.remove_tunnel_logs" = "Alle Protokolle löschen";

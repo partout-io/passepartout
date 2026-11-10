@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Utförlig loggning</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Mycket, mycket utförligt. Håll detta avstängt utom vid felsökning.</string>
     <string name="views_diagnostics_rows_include_private_data">Inkludera privata data</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Inaktivera alla profiler för att ändra den här inställningen.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Använd endast för lokal inspektion.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Ta bort alla loggar</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Serverkonfiguration</string>
