@@ -240,22 +240,6 @@ extension ABI.AppConfiguration {
         let upperBound = Int(pow(10, Double(length)))
         return String(format: "%0\(length)d", Int.random(in: 0..<upperBound))
     }
-
-#if os(tvOS)
-    public func makeWebReceiverManager(
-        htmlPath: String,
-        stringsBundle: Bundle
-    ) -> WebReceiverManager {
-        let receiver = NIOWebReceiver(
-            htmlPath: htmlPath,
-            stringsBundle: stringsBundle,
-            port: constants.webReceiver.port
-        )
-        return WebReceiverManager(webReceiver: receiver) {
-            makeWebPasscodeGenerator()
-        }
-    }
-#endif
 }
 
 // MARK: - EnvironmentFetcher
