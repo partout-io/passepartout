@@ -4,7 +4,7 @@
 
 #pragma once
 #include <wx/string.h>
-#include "apple_string_keys.h"
+#include "strings_keys.h"
 
 namespace Passepartout {
 // Apple resource keys, with the system language and then English as fallback.

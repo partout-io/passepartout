@@ -15,7 +15,7 @@ struct Entry {
     const char *value;
 };
 const Entry entries[] = {
-#include "apple_strings.inc"
+#include "strings.inc"
 };
 using Catalog = std::map<std::string, wxString>;
 const std::map<std::string, Catalog> &Catalogs() {
