@@ -24,7 +24,7 @@ public final class IAPObservable {
         self.iapManager = iapManager
         self.usesInAppPurchases = usesInAppPurchases
         isEnabled = true
-        isLoadingReceipt = true
+        isLoadingReceipt = usesInAppPurchases && iapManager.isEnabled
         isBeta = false
         purchasedProducts = []
         eligibleFeatures = []
