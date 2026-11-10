@@ -11,9 +11,6 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.dismiss)
-    private var dismiss
-
     let profileObservable: ProfileObservable
 
     let isBeta: Bool
@@ -38,13 +35,6 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
                 .navigationDestination(for: SettingsCoordinatorRoute.self, destination: settingsDestination)
                 .navigationDestination(for: DiagnosticsRoute.self, destination: diagnosticsDestination)
                 .themeNavigationStack(closable: false, path: $path)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button(Strings.Global.Nouns.ok) {
-                            dismiss()
-                        }
-                    }
-                }
         }
         .onLoad {
             navigationRoute = .preferences

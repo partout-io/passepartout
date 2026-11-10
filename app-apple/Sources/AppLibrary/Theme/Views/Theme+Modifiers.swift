@@ -210,6 +210,16 @@ extension View {
             .font(.subheadline)
     }
 
+    public func themeToolbarLabel() -> some View {
+#if os(macOS)
+        // Match the native menu height while preserving the full label width.
+        fixedSize()
+            .frame(height: 16)
+#else
+        self
+#endif
+    }
+
     public func themeTrailingValue(_ value: CustomStringConvertible?, truncationMode: Text.TruncationMode = .tail) -> some View {
         modifier(ThemeTrailingValueModifier(value: value, truncationMode: truncationMode))
     }
