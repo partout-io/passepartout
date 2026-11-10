@@ -450,5 +450,5 @@
 "web_uploader.submit" = "Subir";
 "web_uploader.success" = "¡Subida completada!";
 "web_uploader.title" = "Subir a Apple TV";
-"views.tv.connection_profiles.web_import" = "Importar perfil";
+"views.tv.profiles.import_local" = "Importar perfil";
 "views.tv.connection_profiles.web_import_description" = "Comparte un perfil mediante iCloud o selecciona «Importar perfil» para mostrar un código QR. Escanéalo con Passepartout en tu iPhone, iPad o Mac para enviar un perfil a este televisor, o utiliza un navegador web para subir un archivo de configuración.";

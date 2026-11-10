@@ -133,7 +133,7 @@
     <string name="views_vpn_no_servers">Geen servers</string>
     <string name="views_tv_connection_profiles_header_share">Open %1$s op je iOS- of macOS-apparaat en schakel de \"%2$s\"-optie van een profiel in om het hier te laten verschijnen.</string>
     <string name="views_tv_connection_profiles_header_import">Alternatief vind je andere opties in het tabblad \"Profielen\".</string>
-    <string name="views_tv_connection_profiles_web_import">Profiel importeren</string>
+    <string name="views_tv_profiles_import_local">Profiel importeren</string>
     <string name="views_tv_connection_profiles_web_import_description">Deel een profiel via iCloud of selecteer ‘Profiel importeren’ om een QR-code weer te geven. Scan deze met Passepartout op je iPhone, iPad of Mac om een profiel naar deze tv te sturen, of gebruik een webbrowser om een configuratiebestand te uploaden.</string>
     <string name="views_tv_profiles_detail_profiles">Houd lang ingedrukt om de beschikbare acties voor een profiel weer te geven.</string>
     <string name="views_tv_web_receiver_toggle">Schakel om een lokaal profiel via een webbrowser op je TV te importeren.</string>

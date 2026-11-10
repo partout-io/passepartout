@@ -54,7 +54,7 @@ private extension ProfilesView {
     }
 
     var webReceiverButton: some View {
-        Toggle(Strings.Views.Tv.ConnectionProfiles.webImport, isOn: isImporterEnabled)
+        Toggle(Strings.Views.Tv.Profiles.importLocal, isOn: isImporterEnabled)
             .focused($detail, equals: .import)
     }
 

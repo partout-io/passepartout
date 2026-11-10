@@ -96,7 +96,7 @@ private extension AppCoordinator {
                     .padding(.vertical)
                     .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
-                Button(showsImporter ? Strings.Global.Actions.cancel : Strings.Views.Tv.ConnectionProfiles.webImport) {
+                Button(showsImporter ? Strings.Global.Actions.cancel : Strings.Views.Tv.Profiles.importLocal) {
                     if showsImporter {
                         showsImporter = false
                         return

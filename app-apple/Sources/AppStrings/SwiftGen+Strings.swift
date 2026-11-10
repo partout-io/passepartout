@@ -1385,8 +1385,6 @@ public enum Strings {
     }
     public enum Tv {
       public enum ConnectionProfiles {
-        /// Import profile
-        public static let webImport = Strings.tr("Localizable", "views.tv.connection_profiles.web_import", fallback: "Import profile")
         /// Share a profile via iCloud, or select “Import profile” to display a QR code. Scan it with Passepartout on your iPhone, iPad, or Mac to send a profile to this TV, or use a web browser to upload a configuration file.
         public static let webImportDescription = Strings.tr("Localizable", "views.tv.connection_profiles.web_import_description", fallback: "Share a profile via iCloud, or select “Import profile” to display a QR code. Scan it with Passepartout on your iPhone, iPad, or Mac to send a profile to this TV, or use a web browser to upload a configuration file.")
         public enum Header {
@@ -1399,6 +1397,8 @@ public enum Strings {
         }
       }
       public enum Profiles {
+        /// Import profile
+        public static let importLocal = Strings.tr("Localizable", "views.tv.profiles.import_local", fallback: "Import profile")
         public enum Detail {
           /// Use the long press to present the available actions for a profile.
           public static let profiles = Strings.tr("Localizable", "views.tv.profiles.detail.profiles", fallback: "Use the long press to present the available actions for a profile.")

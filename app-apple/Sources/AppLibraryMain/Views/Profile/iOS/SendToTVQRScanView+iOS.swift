@@ -69,7 +69,7 @@ private extension SendToTVQRScanView {
     var messageView: some View {
         Text(Strings.Views.Profile.SendTv.Qr.message(
             Strings.Global.Nouns.profiles,
-            Strings.Views.Tv.ConnectionProfiles.webImport,
+            Strings.Views.Tv.Profiles.importLocal,
             Strings.Unlocalized.appleTV
         ))
         .multilineTextAlignment(.center)

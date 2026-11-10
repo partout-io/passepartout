@@ -450,5 +450,5 @@
 "web_uploader.submit" = "上传";
 "web_uploader.success" = "上传完成！";
 "web_uploader.title" = "上传到 Apple TV";
-"views.tv.connection_profiles.web_import" = "导入配置";
+"views.tv.profiles.import_local" = "导入配置";
 "views.tv.connection_profiles.web_import_description" = "通过 iCloud 共享配置，或选择“导入配置”以显示二维码。使用 iPhone、iPad 或 Mac 上的 Passepartout 扫描该二维码，将配置发送到此电视，也可以使用网页浏览器上传配置文件。";

@@ -133,7 +133,7 @@
     <string name="views_vpn_no_servers">Немає серверів</string>
     <string name="views_tv_connection_profiles_header_share">Відкрий %1$s на своєму пристрої iOS або macOS і увімкни перемикач \"%2$s\" у профілі, щоб він з’явився тут.</string>
     <string name="views_tv_connection_profiles_header_import">Або знайдеш інші опції на вкладці «Профілі».</string>
-    <string name="views_tv_connection_profiles_web_import">Імпортувати профіль</string>
+    <string name="views_tv_profiles_import_local">Імпортувати профіль</string>
     <string name="views_tv_connection_profiles_web_import_description">Поділіться профілем через iCloud або виберіть «Імпортувати профіль», щоб відобразити QR-код. Відскануйте його за допомогою Passepartout на iPhone, iPad чи Mac, щоб надіслати профіль на цей телевізор, або завантажте файл конфігурації через веббраузер.</string>
     <string name="views_tv_profiles_detail_profiles">Утримуйте, щоб побачити доступні дії для профілю.</string>
     <string name="views_tv_web_receiver_toggle">Перемикач для імпорту локального профілю на телевізор через веб-браузер.</string>

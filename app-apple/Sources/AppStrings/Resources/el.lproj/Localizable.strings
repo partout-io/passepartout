@@ -450,5 +450,5 @@
 "web_uploader.submit" = "Αποστολή";
 "web_uploader.success" = "Η αποστολ ολοκληρώθηκε!";
 "web_uploader.title" = "Αποστολή στο Apple TV";
-"views.tv.connection_profiles.web_import" = "Εισαγωγή προφίλ";
+"views.tv.profiles.import_local" = "Εισαγωγή προφίλ";
 "views.tv.connection_profiles.web_import_description" = "Μοιραστείτε ένα προφίλ μέσω iCloud ή επιλέξτε «Εισαγωγή προφίλ» για να εμφανιστεί ένας κωδικός QR. Σαρώστε τον με το Passepartout στο iPhone, το iPad ή το Mac σας για να στείλετε ένα προφίλ σε αυτή την τηλεόραση ή χρησιμοποιήστε ένα πρόγραμμα περιήγησης για να ανεβάσετε ένα αρχείο διαμόρφωσης.";

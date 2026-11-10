@@ -35,7 +35,7 @@ private extension SendToTVFormView {
         }
         .themeSection(footer: Strings.Views.Profile.SendTv.Form.message(
             Strings.Global.Nouns.profiles,
-            Strings.Views.Tv.ConnectionProfiles.webImport,
+            Strings.Views.Tv.Profiles.importLocal,
             Strings.Unlocalized.appleTV
         ))
     }
