@@ -39,7 +39,9 @@ Tailored for Apple platforms:
 - Xcode 26
 - Swift 6
 - Git (preinstalled with the Xcode Command Line Tools)
-- Java (optional, for the OpenAPI Generator)
+- [Partout build requirements](partout/README.md#requirements), including Zig, Go, and CMake
+
+The Xcode prebuild script builds Partout locally as `PartoutNative.xcframework`.
 
 It's highly recommended that you use the Git and Ruby packages provided by [Homebrew][dep-brew].
 

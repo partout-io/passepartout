@@ -47,5 +47,3 @@ public struct OpenAPIAppTunnelInfo: Sendable, Codable, Hashable {
     }
 }
 
-
-extension OpenAPIAppTunnelInfo: Identifiable {}

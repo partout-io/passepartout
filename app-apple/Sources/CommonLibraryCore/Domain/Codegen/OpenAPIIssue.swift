@@ -51,5 +51,3 @@ public struct OpenAPIIssue: Sendable, Codable, Hashable {
     }
 }
 
-
-extension OpenAPIIssue: Identifiable {}

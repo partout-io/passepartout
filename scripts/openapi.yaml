@@ -740,7 +740,6 @@ components:
       - id
       - comment
       - purchasedProducts
-      - providerLastUpdates
       - attachments
       - osLine
     IssueAttachment:

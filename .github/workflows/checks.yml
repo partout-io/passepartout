@@ -75,6 +75,12 @@ jobs:
         if: matrix.suite == 'partout'
         run: ci/run-partout-swift-tests.sh
 
+      - name: Verify model generation in both repositories
+        if: matrix.suite == 'partout'
+        run: |
+          python3 partout/tests/codegen/test_codegen.py
+          python3 partout/tests/codegen/test_parent_codegen.py .
+
       - name: Run Partout tests
         if: matrix.suite == 'partout'
         run: ci/run-partout-tests.sh

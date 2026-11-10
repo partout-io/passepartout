@@ -55,5 +55,3 @@ public struct OpenAPIAppProfileHeader: Sendable, Codable, Hashable {
     }
 }
 
-
-extension OpenAPIAppProfileHeader: Identifiable {}
