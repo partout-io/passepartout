@@ -57,9 +57,12 @@ private extension GenericCreditsView {
         @Binding
         var content: String?
 
+        @State
+        private var loadingError: String?
+
         var body: some View {
             ZStack {
-                content.map { unwrapped in
+                (content ?? loadingError).map { unwrapped in
                     ScrollView(.vertical) {
                         LazyVStack(alignment: .leading) {
                             let rows = unwrapped.components(separatedBy: .newlines)
@@ -73,12 +76,14 @@ private extension GenericCreditsView {
                         .padding()
                     }
                 }
-                if content == nil {
+                if content == nil && loadingError == nil {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .onAppear(perform: loadURL)
+            .task {
+                await loadURL()
+            }
         }
     }
 }
@@ -177,22 +182,29 @@ private extension GenericCreditsView {
 
 @MainActor
 private extension GenericCreditsView.LicenseView {
-    func loadURL() {
+    func loadURL() async {
         guard content == nil else {
             return
         }
-        Task {
-            do {
-                let session = URLSession(configuration: .ephemeral)
-                let response = try await session.data(from: url)
-                let string = String(data: response.0, encoding: .utf8)
-                withAnimation {
-                    content = string
-                }
-            } catch {
-                withAnimation {
-                    content = errorDescription(error)
-                }
+        loadingError = nil
+        do {
+            let session = URLSession(configuration: .ephemeral)
+            let (data, response) = try await session.data(from: url)
+            try Task.checkCancellation()
+            if let response = response as? HTTPURLResponse,
+               !(200..<300).contains(response.statusCode) {
+                throw URLError(.badServerResponse)
+            }
+            guard let string = String(data: data, encoding: .utf8) else {
+                throw URLError(.cannotDecodeContentData)
+            }
+            withAnimation {
+                content = string
+            }
+        } catch {
+            guard !Task.isCancelled else { return }
+            withAnimation {
+                loadingError = errorDescription(error)
             }
         }
     }
