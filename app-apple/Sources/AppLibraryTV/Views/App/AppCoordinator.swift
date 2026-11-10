@@ -91,7 +91,12 @@ private extension AppCoordinator {
             VStack {
                 Text(Strings.Views.App.Folders.noProfiles)
                     .font(.title)
-                Button(showsImporter ? Strings.Global.Actions.cancel : Strings.Views.Tv.Profiles.importLocal) {
+                Text(Strings.Views.Tv.ConnectionProfiles.webImportDescription)
+                    .font(.body)
+                    .padding(.vertical)
+                    .lineLimit(nil)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button(showsImporter ? Strings.Global.Actions.cancel : Strings.Views.Tv.ConnectionProfiles.webImport) {
                     if showsImporter {
                         showsImporter = false
                         return
