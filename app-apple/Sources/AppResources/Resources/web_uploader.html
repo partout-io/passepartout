@@ -6,16 +6,17 @@
         <title>Passepartout — Upload</title>
         <style type="text/css">
             body {
-                font-family: sans-serif;
-                background-color: #515d71;
-                color: #fff;
+                font-family: "Helvetica Neue", Helvetica, system-ui, sans-serif;
+                line-height: 1.5;
+                background-color: #171717;
+                color: #515d71;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }
 
             h1 {
-                color: #f0d192;
+                color: #171717;
             }
 
             form {
@@ -35,10 +36,11 @@
             }
 
             input, #upload-file-label {
-                border-radius: 0.3rem;
+                border-radius: .55rem;
             }
 
             input[type="text"] {
+                border: 1px solid #e5e7eb;
                 padding: 0.5rem;
             }
 
@@ -54,8 +56,8 @@
 
             #upload-file-label {
                 cursor: pointer;
-                background-color: #ccc;
-                color: #000;
+                background-color: #f1f3f6;
+                color: #515d71;
                 padding: 0.5rem 1rem;
             }
 
@@ -64,16 +66,17 @@
 
             #upload-submit {
                 cursor: pointer;
-                background-color: #2563eb;
-                color: #fff;
+                background-color: #f1f3f6;
+                color: #515d71;
                 font-weight: bold;
                 margin-top: 1rem;
                 padding: 0.75rem;
                 transition: background-color 0.2s ease-in-out;
             }
 
-            #upload-submit:hover {
-                background-color: #1d4ed8;
+            #upload-file-label:hover, #upload-submit:hover {
+                background-color: #fff9ee;
+                color: #bd6d13;
             }
         </style>
     </head>
