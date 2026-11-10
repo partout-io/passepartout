@@ -16,3 +16,10 @@ extension ABI {
         }
     }
 }
+
+extension ABI.OriginalPurchase: CustomStringConvertible {
+    public var description: String {
+        let build = buildNumber == .max ? "unknown" : String(buildNumber)
+        return "OriginalPurchase(buildNumber: \(build), purchaseDate: \(purchaseDate))"
+    }
+}
