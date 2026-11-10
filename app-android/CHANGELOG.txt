@@ -1,1 +1,2 @@
-* Partout: Upgrade to Zig 0.17
+* Fix minor UI glitches (#1979)
+* Strip tunnel from dup NIO dependency (-2MB) (#1981)
