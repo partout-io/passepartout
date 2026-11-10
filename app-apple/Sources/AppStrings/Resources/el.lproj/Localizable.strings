@@ -430,7 +430,6 @@
 "views.tv.connection_profiles.header.import" = "Εναλλακτικά, θα βρεις άλλες επιλογές στην καρτέλα \"Προφίλ\".";
 "views.tv.connection_profiles.header.share" = "Άνοιξε το %@ στη συσκευή σου iOS ή macOS και ενεργοποίησε την εναλλαγή \"%@\" σε ένα προφίλ για να εμφανιστεί εδώ.";
 "views.tv.profiles.detail.profiles" = "Πατήστε παρατεταμένα για να εμφανίσετε τις διαθέσιμες ενέργειες για ένα προφίλ.";
-"views.tv.profiles.import_local" = "Εισαγωγή τοπικού προφίλ";
 "views.tv.web_receiver.qr" = "Σαρώστε το QR με την κάμερά σας για να ανοίξετε μια ιστοσελίδα όπου μπορείτε να ανεβάσετε το προφίλ σας. Βεβαιωθείτε ότι είστε συνδεδεμένοι στο ίδιο δίκτυο.";
 "views.tv.web_receiver.toggle" = "Εναλλαγή για εισαγωγή τοπικού προφίλ στην τηλεόρασή σου μέσω web browser.";
 "views.ui.connection_status.on_demand_suffix" = " (κατ' απαίτηση)";

@@ -135,7 +135,6 @@
     <string name="views_tv_connection_profiles_header_import">Εναλλακτικά, θα βρεις άλλες επιλογές στην καρτέλα \"Προφίλ\".</string>
     <string name="views_tv_connection_profiles_web_import">Εισαγωγή προφίλ</string>
     <string name="views_tv_connection_profiles_web_import_description">Μοιραστείτε ένα προφίλ μέσω iCloud ή επιλέξτε «Εισαγωγή προφίλ» για να εμφανιστεί ένας κωδικός QR. Σαρώστε τον με το Passepartout στο iPhone, το iPad ή το Mac σας για να στείλετε ένα προφίλ σε αυτή την τηλεόραση ή χρησιμοποιήστε ένα πρόγραμμα περιήγησης για να ανεβάσετε ένα αρχείο διαμόρφωσης.</string>
-    <string name="views_tv_profiles_import_local">Εισαγωγή τοπικού προφίλ</string>
     <string name="views_tv_profiles_detail_profiles">Πατήστε παρατεταμένα για να εμφανίσετε τις διαθέσιμες ενέργειες για ένα προφίλ.</string>
     <string name="views_tv_web_receiver_toggle">Εναλλαγή για εισαγωγή τοπικού προφίλ στην τηλεόρασή σου μέσω web browser.</string>
     <string name="views_tv_web_receiver_qr">Σαρώστε το QR με την κάμερά σας για να ανοίξετε μια ιστοσελίδα όπου μπορείτε να ανεβάσετε το προφίλ σας. Βεβαιωθείτε ότι είστε συνδεδεμένοι στο ίδιο δίκτυο.</string>

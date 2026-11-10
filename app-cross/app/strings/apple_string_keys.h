@@ -139,7 +139,6 @@ enum class StringKey {
     ViewsTvConnectionProfilesHeaderImport,
     ViewsTvConnectionProfilesWebImport,
     ViewsTvConnectionProfilesWebImportDescription,
-    ViewsTvProfilesImportLocal,
     ViewsTvProfilesDetailProfiles,
     ViewsTvWebReceiverToggle,
     ViewsTvWebReceiverQr,
@@ -597,7 +596,6 @@ constexpr const char *StringKeyName(StringKey key) {
         case StringKey::ViewsTvConnectionProfilesHeaderImport: return "views.tv.connection_profiles.header.import";
         case StringKey::ViewsTvConnectionProfilesWebImport: return "views.tv.connection_profiles.web_import";
         case StringKey::ViewsTvConnectionProfilesWebImportDescription: return "views.tv.connection_profiles.web_import_description";
-        case StringKey::ViewsTvProfilesImportLocal: return "views.tv.profiles.import_local";
         case StringKey::ViewsTvProfilesDetailProfiles: return "views.tv.profiles.detail.profiles";
         case StringKey::ViewsTvWebReceiverToggle: return "views.tv.web_receiver.toggle";
         case StringKey::ViewsTvWebReceiverQr: return "views.tv.web_receiver.qr";

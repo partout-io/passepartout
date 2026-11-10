@@ -1399,8 +1399,6 @@ public enum Strings {
         }
       }
       public enum Profiles {
-        /// Import local profile
-        public static let importLocal = Strings.tr("Localizable", "views.tv.profiles.import_local", fallback: "Import local profile")
         public enum Detail {
           /// Use the long press to present the available actions for a profile.
           public static let profiles = Strings.tr("Localizable", "views.tv.profiles.detail.profiles", fallback: "Use the long press to present the available actions for a profile.")

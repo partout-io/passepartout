@@ -135,7 +135,6 @@
     <string name="views_tv_connection_profiles_header_import">Alternativt hittar du andra alternativ i fliken \"Profiler\".</string>
     <string name="views_tv_connection_profiles_web_import">Importera profil</string>
     <string name="views_tv_connection_profiles_web_import_description">Dela en profil via iCloud eller välj ”Importera profil” för att visa en QR-kod. Skanna den med Passepartout på din iPhone, iPad eller Mac för att skicka en profil till denna TV, eller använd en webbläsare för att ladda upp en konfigurationsfil.</string>
-    <string name="views_tv_profiles_import_local">Importera lokal profil</string>
     <string name="views_tv_profiles_detail_profiles">Tryck länge för att visa tillgängliga åtgärder för en profil.</string>
     <string name="views_tv_web_receiver_toggle">Växla för att importera en lokal profil till din TV via en webbläsare.</string>
     <string name="views_tv_web_receiver_qr">Skanna QR-koden med din kamera för att öppna en webbsida där du kan ladda upp din profil. Se till att du är ansluten till samma nätverk.</string>

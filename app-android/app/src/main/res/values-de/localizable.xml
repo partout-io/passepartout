@@ -135,7 +135,6 @@
     <string name="views_tv_connection_profiles_header_import">Alternativ findest du weitere Optionen im Tab „Profile“.</string>
     <string name="views_tv_connection_profiles_web_import">Profil importieren</string>
     <string name="views_tv_connection_profiles_web_import_description">Teile ein Profil über iCloud oder wähle „Profil importieren“, um einen QR-Code anzuzeigen. Scanne ihn mit Passepartout auf deinem iPhone, iPad oder Mac, um ein Profil an diesen Fernseher zu senden, oder lade eine Konfigurationsdatei über einen Webbrowser hoch.</string>
-    <string name="views_tv_profiles_import_local">Lokales Profil importieren</string>
     <string name="views_tv_profiles_detail_profiles">Verwenden Sie den langen Druck, um die verfügbaren Aktionen für ein Profil anzuzeigen.</string>
     <string name="views_tv_web_receiver_toggle">Umschalten, um ein lokales Profil über einen Webbrowser auf deinen Fernseher zu importieren.</string>
     <string name="views_tv_web_receiver_qr">Scannen Sie den QR-Code mit Ihrer Kamera, um eine Webseite zu öffnen, auf der Sie Ihr Profil hochladen können. Stellen Sie sicher, dass Sie mit demselben Netzwerk verbunden sind.</string>

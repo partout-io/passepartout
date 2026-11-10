@@ -135,7 +135,6 @@
     <string name="views_tv_connection_profiles_header_import">Або знайдеш інші опції на вкладці «Профілі».</string>
     <string name="views_tv_connection_profiles_web_import">Імпортувати профіль</string>
     <string name="views_tv_connection_profiles_web_import_description">Поділіться профілем через iCloud або виберіть «Імпортувати профіль», щоб відобразити QR-код. Відскануйте його за допомогою Passepartout на iPhone, iPad чи Mac, щоб надіслати профіль на цей телевізор, або завантажте файл конфігурації через веббраузер.</string>
-    <string name="views_tv_profiles_import_local">Імпортувати локальний профіль</string>
     <string name="views_tv_profiles_detail_profiles">Утримуйте, щоб побачити доступні дії для профілю.</string>
     <string name="views_tv_web_receiver_toggle">Перемикач для імпорту локального профілю на телевізор через веб-браузер.</string>
     <string name="views_tv_web_receiver_qr">Скануйте QR-код камерою, щоб відкрити веб-сторінку для завантаження вашого профілю. Переконайтеся, що ви підключені до тієї ж мережі.</string>

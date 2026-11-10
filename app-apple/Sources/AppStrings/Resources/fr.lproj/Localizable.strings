@@ -430,7 +430,6 @@
 "views.tv.connection_profiles.header.import" = "Sinon, tu trouveras d’autres options dans l’onglet « Profils ».";
 "views.tv.connection_profiles.header.share" = "Ouvre %@ sur ton appareil iOS ou macOS et active l’option \"%@\" d’un profil pour qu’il apparaisse ici.";
 "views.tv.profiles.detail.profiles" = "Appuyez longuement pour afficher les actions disponibles pour un profil.";
-"views.tv.profiles.import_local" = "Importer un profil local";
 "views.tv.web_receiver.qr" = "Scannez le QR avec votre caméra pour ouvrir une page web où télécharger votre profil. Assurez-vous d'être connecté au même réseau.";
 "views.tv.web_receiver.toggle" = "Basculez pour importer un profil local sur votre TV via un navigateur web.";
 "views.ui.connection_status.on_demand_suffix" = " (à la demande)";
