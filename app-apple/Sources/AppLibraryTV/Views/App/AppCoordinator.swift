@@ -71,11 +71,6 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
                 }
             }
             .navigationDestination(for: AppCoordinatorRoute.self, destination: pushDestination)
-            .onChange(of: profileObservable.hasProfiles) { _, hasProfiles in
-                if hasProfiles {
-                    showsImporter = false
-                }
-            }
             .modifier(DynamicPaywallModifier(
                 paywallReason: $paywallReason,
                 paywallContinuation: paywallContinuation
@@ -94,7 +89,6 @@ private extension AppCoordinator {
                 Text(Strings.Views.Tv.ConnectionProfiles.webImportDescription)
                     .font(.body)
                     .padding(.vertical)
-                    .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
                 Button(showsImporter ? Strings.Global.Actions.cancel : Strings.Views.Tv.Profiles.importLocal) {
                     if showsImporter {
