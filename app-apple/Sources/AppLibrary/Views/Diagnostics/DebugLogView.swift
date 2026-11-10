@@ -31,10 +31,15 @@ private extension DebugLogView {
     func toolbarContent() -> some View {
 #if !os(tvOS)
         copyButton
+        ShareLink(
+            item: DebugLogFile(lines: currentLines),
+            preview: SharePreview(Strings.Unlocalized.debugLogFilename)
+        ) {
+            ThemeImageLabel(Strings.Global.Actions.share, .share)
+                .labelStyle(.iconOnly)
+        }
+        .disabled(currentLines.isEmpty)
 #endif
-//        if !currentLines.isEmpty {
-//            shareButton
-//        }
     }
 
     var copyButton: some View {
@@ -45,11 +50,6 @@ private extension DebugLogView {
         }
         .disabled(currentLines.isEmpty)
     }
-
-    // TODO: #658, share as temporary URL (could enable email)
-//    var shareButton: some View {
-//        ShareLink(item: content)
-//    }
 }
 
 // MARK: - Shortcuts

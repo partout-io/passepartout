@@ -74,6 +74,8 @@ extension Strings {
 
         public static let changelog = "CHANGELOG"
 
+        public static let debugLogFilename = "debug-log.txt"
+
         public static let dns = "DNS"
 
         public static let eula = "EULA"
