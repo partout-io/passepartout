@@ -4,6 +4,9 @@
 
 import AppAccessibility
 import AppLibrary
+#if os(tvOS)
+import AppLibraryTV
+#endif
 import AppResources
 import CommonData
 import CommonDataPreferences

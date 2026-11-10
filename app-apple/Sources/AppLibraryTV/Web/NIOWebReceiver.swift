@@ -4,6 +4,7 @@
 
 #if os(tvOS)
 
+import CommonLibrary
 import NIO
 import NIOHTTP1
 import Partout

@@ -60,7 +60,11 @@ let package = Package(
         ),
         .target(
             name: "AppLibraryTV",
-            dependencies: ["AppLibrary"]
+            dependencies: [
+                "AppLibrary",
+                .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
+                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
+            ]
         ),
         .target(
             name: "AppLibraryTVWrapper",
@@ -86,7 +90,7 @@ let package = Package(
             name: "TunnelLibrary",
             dependencies: [
                 "AppResources",
-                .product(name: "partout", package: "partout")
+                "partout"
             ]
         ),
         .testTarget(
@@ -99,6 +103,13 @@ let package = Package(
         .testTarget(
             name: "AppLibraryMainTests",
             dependencies: ["AppLibraryMainWrapper"]
+        ),
+        .testTarget(
+            name: "AppLibraryTVTests",
+            dependencies: ["AppLibraryTVWrapper"],
+            resources: [
+                .process("Resources")
+            ]
         )
     ]
 )
@@ -153,17 +164,10 @@ package.targets.append(contentsOf: [
     ),
     .target(
         name: "CommonLibraryCore",
-        dependencies: [
-            "partout",
-            .product(name: "NIO", package: "swift-nio", condition: .when(platforms: [.tvOS])),
-            .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.tvOS]))
-        ]
+        dependencies: ["partout"]
     ),
     .testTarget(
         name: "CommonLibraryTests",
-        dependencies: ["CommonLibrary"],
-        resources: [
-            .process("Resources")
-        ]
+        dependencies: ["CommonLibrary"]
     )
 ])

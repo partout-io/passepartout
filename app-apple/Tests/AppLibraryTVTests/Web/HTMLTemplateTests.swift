@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#if canImport(CommonLibraryApple)
-@testable import CommonLibraryApple
+#if os(tvOS)
+@testable import AppLibraryTV
 import Testing
 
 struct HTMLTemplateTests {
