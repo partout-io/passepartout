@@ -14,6 +14,7 @@
 # update_fastlane
 
 load File.expand_path("Fastfile.hacks", __dir__) if RUBY_PLATFORM.include?("darwin")
+require "deliver"
 
 desc "Push a new beta build to TestFlight"
 lane :beta do
@@ -41,6 +42,7 @@ end
 desc "Update App Store metadata"
 lane :asc_metadata do
     deliver(
+        skip_app_version_update: true,
         skip_metadata: false,
         skip_screenshots: true
     )
@@ -49,23 +51,18 @@ end
 desc "Update App Store screenshots"
 lane :asc_screenshots do
     deliver(
+        skip_app_version_update: true,
         skip_metadata: true,
         skip_screenshots: false
     )
 end
 
-desc "Create the App Store version without uploading anything"
-lane :asc_version do
-    deliver(
-        skip_binary_upload: true,
-        skip_metadata: true,
-        skip_screenshots: true
-    )
-end
-
 desc "Submit a build to App Review"
-lane :asc_review do |options|
-    deliver(
+lane :asc_review do
+    config = FastlaneCore::Configuration.create(Deliver::Options.available_options,
+        app_version: ENV.fetch("DELIVER_APP_VERSION"),
+        build_number: ENV.fetch("DELIVER_BUILD_NUMBER"),
+        skip_app_version_update: true,
         submit_for_review: true,
         skip_binary_upload: true,
         skip_metadata: false,
@@ -75,4 +72,24 @@ lane :asc_review do |options|
             export_compliance_uses_encryption: false
         }
     )
+    config.load_configuration_file("Deliverfile")
+    UI.user_error!("An explicit version and build are required") if config[:app_version].empty? || config[:build_number].empty? || config[:build_number] == "latest"
+
+    runner = Deliver::Runner.new(config)
+    app = Deliver.cache[:app]
+    platform = Spaceship::ConnectAPI::Platform.map(config[:platform])
+    version = app.get_edit_app_store_version(platform: platform)
+    if version
+        UI.user_error!("Another release owns App Store draft #{version.version_string}") unless version.version_string == config[:app_version]
+        selected = version.get_build
+        UI.user_error!("App Store draft already selects another build") if selected && selected.version != config[:build_number]
+    else
+        # Create only: ensure_version! can rename another release's draft.
+        Spaceship::ConnectAPI.post_app_store_version(
+            app_id: app.id,
+            attributes: { versionString: config[:app_version], platform: platform }
+        )
+    end
+    # Deliver selects the build using both app_version and build_number.
+    runner.run
 end

@@ -46,34 +46,15 @@ jobs:
           PILOT_NOTIFY_EXTERNAL_TESTERS: ${{ vars.PILOT_NOTIFY_EXTERNAL_TESTERS }}
         run: bundle exec fastlane --env ${{ matrix.platform }} public_beta
 
-  create_app_versions:
-    name: Create App Store versions
-    runs-on: ubuntu-24.04
-    environment:
-      name: app_store
-    env:
-      DELIVER_APP_VERSION: ${{ inputs.version }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Create App Store versions
-        continue-on-error: true
-        run: |
-          status=0
-          for platform in iOS macOS tvOS; do
-            bundle exec fastlane --env "$platform" asc_version || status=1
-          done
-          exit "$status"
-
   submit_for_app_review:
     name: Submit to App Review (${{ matrix.platform }})
     runs-on: ubuntu-24.04
-    needs: create_app_versions
-    continue-on-error: true
+    # All release tags share each platform's editable App Store draft.
+    concurrency:
+      group: app-store-review-${{ matrix.platform }}
+      cancel-in-progress: false
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         platform: [iOS, macOS, tvOS]
     environment:
