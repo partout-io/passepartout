@@ -19,7 +19,9 @@ public struct DebugLogView<Content>: View where Content: View {
             .themeEmpty(if: currentLines.isEmpty, message: Strings.Global.Nouns.noContent)
             .toolbar(content: toolbarContent)
             .task {
-                currentLines = await fetchLines()
+                let lines = await fetchLines()
+                guard !Task.isCancelled else { return }
+                currentLines = lines
             }
     }
 }

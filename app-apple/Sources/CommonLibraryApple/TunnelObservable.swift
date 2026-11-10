@@ -32,6 +32,8 @@ public final class TunnelObservable {
 
     private let logging: Logging?
 
+    private let logRequest = TunnelLogRequest()
+
     private let willInstall: WillInstallBlock?
 
     public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
@@ -92,8 +94,15 @@ extension TunnelObservable {
 
     public func currentLog() async -> [String] {
         guard let logging else { return [] }
-        return await currentLog(logging: logging).map {
-            logging.formatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+        return await logRequest.fetch { [self] in
+            let lines = await currentLog(logging: logging)
+            guard !Task.isCancelled else { return [] }
+            var formatted: [String] = []
+            for line in lines {
+                guard !Task.isCancelled else { return [] }
+                formatted.append(logging.formatter?.formattedLog(timestamp: line.timestamp, message: line.message) ?? line.message)
+            }
+            return formatted
         }
     }
 
@@ -110,6 +119,7 @@ extension TunnelObservable {
             sinceLast: logging.sinceLast,
             maxLevel: maxLevel
         ), to: firstProfileId)
+        guard !Task.isCancelled else { return [] }
         switch output {
         case .debugLog(let log):
             return log.lines.map {
