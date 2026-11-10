@@ -18,8 +18,6 @@ struct WebReceiverView: View {
                 view(forWebsite: website)
             } else {
                 Text(Strings.Views.Tv.WebReceiver.toggle)
-                    .lineLimit(nil)
-                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .task(handleUploadFailure)
@@ -33,8 +31,6 @@ private extension WebReceiverView {
     func view(forWebsite website: ABI.WebsiteWithPasscode) -> some View {
         VStack {
             Text(Strings.Views.Tv.WebReceiver.qr)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
             QRCodeView(text: website.url)
                 .frame(width: 400)
                 .padding(.vertical)
