@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Розширене журналювання</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Дуже, дуже докладно. Увімкніть лише для усунення несправностей.</string>
     <string name="views_diagnostics_rows_include_private_data">Включити приватні дані</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Вимкніть усі профілі, щоб змінити це налаштування.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Використовуйте лише для локальної перевірки.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Видалити всі журнали</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Конфігурація сервера</string>

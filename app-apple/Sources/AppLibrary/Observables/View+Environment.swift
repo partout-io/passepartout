@@ -20,6 +20,7 @@ extension View {
             .environment(context.iapObservable)
             .environment(context.profileObservable)
             .environment(context.registryObservable)
+            .environment(context.tunnelObservable)
             .environment(context.versionObservable)
             // View concerns
             .environment(context.appFormatter)

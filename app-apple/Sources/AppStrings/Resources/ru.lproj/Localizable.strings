@@ -326,6 +326,7 @@
 "views.diagnostics.rows.app" = "Приложение";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Очень, очень подробное. Включайте только для устранения неполадок.";
 "views.diagnostics.rows.extensive_logging" = "Расширенное журналирование";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Отключите все профили, чтобы изменить эту настройку.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Используйте только для локальной проверки.";
 "views.diagnostics.rows.include_private_data" = "Включить личные данные";
 "views.diagnostics.rows.remove_tunnel_logs" = "Удалить все журналы";

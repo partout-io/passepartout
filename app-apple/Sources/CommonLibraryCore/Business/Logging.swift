@@ -4,6 +4,8 @@
 
 import Partout
 
+public let pspLogFileStrategy = LocalLogger.FileStrategy()
+
 public func pspLog(
     _ category: ABI.AppLogCategory,
     _ level: ABI.AppLogLevel,
@@ -33,7 +35,7 @@ public func pspLogFlush() {
 }
 
 public func pspLogEntriesAvailable(at url: URL) -> [ABI.LogEntry] {
-    LocalLogger.FileStrategy()
+    pspLogFileStrategy
         .availableLogs(at: url)
         .sorted {
             $0.key > $1.key
@@ -44,7 +46,7 @@ public func pspLogEntriesAvailable(at url: URL) -> [ABI.LogEntry] {
 }
 
 public func pspLogEntriesPurge(at url: URL) {
-    LocalLogger.FileStrategy()
+    pspLogFileStrategy
         .purgeLogs(at: url)
 }
 
@@ -69,22 +71,29 @@ public func pspLogRegister(
 ) -> PartoutLoggerContext {
     switch target {
     case .app:
-        if !isDefaultLoggerRegistered {
-            isDefaultLoggerRegistered = true
-            let logger = PartoutLogger.logger(
-                preferences: preferences,
-                parameters: appConfiguration.constants.log,
-                localURL: localURL,
-                localMapper: localMapper
-            )
-            PartoutLogger.register(logger)
-            logger.logPreamble(
-                versionString: appConfiguration.bundle.versionString,
-                parameters: appConfiguration.constants.log
-            )
+        let replacing = isDefaultLoggerRegistered
+        isDefaultLoggerRegistered = true
+        let logger = PartoutLogger.logger(
+            preferences: preferences,
+            parameters: appConfiguration.constants.log,
+            localURL: localURL,
+            localMapper: localMapper
+        )
+        PartoutLogger.register(logger, preservingLog: !replacing || preferences[\.logsPrivateData])
+        if replacing, !preferences[\.logsPrivateData] {
+            do {
+                try logger.resetLog()
+            } catch {
+                pspLog(.core, .error, "Unable to reset current log: \(error)")
+            }
         }
+        logger.logPreamble(
+            versionString: appConfiguration.bundle.versionString,
+            parameters: appConfiguration.constants.log
+        )
         return .global
     case .tunnelGlobal:
+        isDefaultLoggerRegistered = false
         let logger = PartoutLogger.tunnelLogger(
             preferences: preferences,
             parameters: appConfiguration.constants.log,

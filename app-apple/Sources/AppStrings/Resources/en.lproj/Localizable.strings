@@ -45,6 +45,7 @@
 "views.diagnostics.rows.extensive_logging" = "Extensive logging";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Very, very verbose. Keep this off except for troubleshooting.";
 "views.diagnostics.rows.include_private_data" = "Include private data";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Disable all profiles to change this setting.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Only use for local inspection.";
 "views.diagnostics.rows.remove_tunnel_logs" = "Delete all logs";
 "views.diagnostics.openvpn.rows.server_configuration" = "Server configuration";

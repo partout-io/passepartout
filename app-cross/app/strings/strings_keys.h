@@ -46,6 +46,7 @@ enum class StringKey {
     ViewsDiagnosticsRowsExtensiveLogging,
     ViewsDiagnosticsRowsExtensiveLoggingSubtitle,
     ViewsDiagnosticsRowsIncludePrivateData,
+    ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles,
     ViewsDiagnosticsRowsIncludePrivateDataSubtitle,
     ViewsDiagnosticsRowsRemoveTunnelLogs,
     ViewsDiagnosticsOpenvpnRowsServerConfiguration,
@@ -503,6 +504,7 @@ constexpr const char *StringKeyName(StringKey key) {
         case StringKey::ViewsDiagnosticsRowsExtensiveLogging: return "views.diagnostics.rows.extensive_logging";
         case StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle: return "views.diagnostics.rows.extensive_logging.subtitle";
         case StringKey::ViewsDiagnosticsRowsIncludePrivateData: return "views.diagnostics.rows.include_private_data";
+        case StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles: return "views.diagnostics.rows.include_private_data.disable_profiles";
         case StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle: return "views.diagnostics.rows.include_private_data.subtitle";
         case StringKey::ViewsDiagnosticsRowsRemoveTunnelLogs: return "views.diagnostics.rows.remove_tunnel_logs";
         case StringKey::ViewsDiagnosticsOpenvpnRowsServerConfiguration: return "views.diagnostics.openvpn.rows.server_configuration";
