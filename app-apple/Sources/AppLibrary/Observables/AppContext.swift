@@ -113,6 +113,14 @@ public final class AppContext {
             self?.onLogPrivacyChange()
         }
 
+        userPreferences.onLogLevelChange = { [weak self] in
+            guard let self else { return }
+            let level: DebugLog.Level = preferences[\.extensiveLogging]
+                ? .debug : appConfiguration.constants.log.options.maxDebugLogLevel
+            PartoutLogger.setMaxLevel(level)
+            tunnelObservable.updateLoggingLevel(level)
+        }
+
         observeManagerEvents()
         tunnelObservable.observeObjects()
     }

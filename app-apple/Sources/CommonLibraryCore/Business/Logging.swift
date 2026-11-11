@@ -9,24 +9,25 @@ public let pspLogFileStrategy = LocalLogger.FileStrategy()
 public func pspLog(
     _ category: ABI.AppLogCategory,
     _ level: ABI.AppLogLevel,
-    _ message: String
+    _ message: @autoclosure () -> String
 ) {
-    pp_log_g(category.partoutCategory, level.partoutLevel, message)
+    pp_log_g(category.partoutCategory, level.partoutLevel, message())
 }
 
 public func pspLog(
     _ profileId: Profile.ID? = nil,
     _ category: ABI.AppLogCategory,
     _ level: ABI.AppLogLevel,
-    _ message: String
+    _ message: @autoclosure () -> String
 ) {
-    pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
+    pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message())
 }
 
 public func pspLogCurrent(_ parameters: ABI.AppConstants.Log) -> [String] {
-    PartoutLogger.default.currentLog(
+    let logger = PartoutLogger.default
+    return logger.currentLog(
         sinceLast: parameters.sinceLast,
-        maxLevel: parameters.options.maxDebugLogLevel
+        maxLevel: logger.maxLevel
     )
 }
 
@@ -202,6 +203,7 @@ extension PartoutLogger.Builder {
         if preferences[\.extensiveLogging] {
             newOptions.maxLevel = .debug
         }
+        maxLevel = newOptions.maxDebugLogLevel
         if let localURL, let localMapper {
             setLocalLogger(
                 url: localURL,

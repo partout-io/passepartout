@@ -34,6 +34,10 @@ public final class TunnelObservable {
 
     private let logRequest = TunnelLogRequest()
 
+    private let logLevelRequest = TunnelLogLevelRequest()
+
+    private var loggingActiveProfiles: Set<Profile.ID> = []
+
     private let willInstall: WillInstallBlock?
 
     public private(set) var activeProfiles: [Profile.ID: ABI.AppTunnelInfo]
@@ -90,6 +94,24 @@ extension TunnelObservable {
     public func disconnect(from profileId: Profile.ID) async throws {
         pspLog(.core, .notice, "Disconnect...")
         try await tunnel.disconnect(from: profileId)
+    }
+
+    public func updateLoggingLevel(_ level: DebugLog.Level) {
+        logLevelRequest.submit(level) { [weak self] level in
+            guard let self else { return }
+            for (profileId, snapshot) in tunnel.snapshots where snapshot.status == .active {
+                guard !Task.isCancelled else { return }
+                do {
+                    let response = try await tunnel.sendMessage(.logLevel(maxLevel: level), to: profileId)
+                    guard case .logLevel(let applied) = response, applied == level else {
+                        throw PartoutError(.invalidValue)
+                    }
+                } catch {
+                    guard !Task.isCancelled else { return }
+                    pspLog(profileId, .core, .error, "Unable to update tunnel logging level: \(error)")
+                }
+            }
+        }
     }
 
     public func currentLog() async -> [String] {
@@ -182,6 +204,12 @@ extension TunnelObservable {
             for await snapshots in tunnelEvents {
                 guard let self else { return }
                 guard !Task.isCancelled else { break }
+                let activeIds = Set(snapshots.filter { $0.value.status == .active }.keys)
+                let newlyActive = activeIds.subtracting(loggingActiveProfiles)
+                loggingActiveProfiles = activeIds
+                if !newlyActive.isEmpty, let logging {
+                    updateLoggingLevel(preferences?[\.extensiveLogging] == true ? .debug : logging.maxDebugLogLevel)
+                }
                 // Copy locally for sync access
                 let newActiveProfiles = activeProfiles.with(
                     snapshots: snapshots,
