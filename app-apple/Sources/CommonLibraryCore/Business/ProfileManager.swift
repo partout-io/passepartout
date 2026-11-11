@@ -140,7 +140,7 @@ extension ProfileManager {
                 pspLog(.profiles, .notice, "\tProfile \(profile.id) not modified, not saving")
             }
         } catch {
-            pspLog(.profiles, .fault, "\tUnable to save profile \(profile.id): \(error)")
+            pspLog(.profiles, .error, "\tUnable to save profile \(profile.id): \(error)")
             throw error
         }
         if let remoteRepository {
@@ -155,7 +155,7 @@ extension ProfileManager {
                     try await remoteRepository.removeProfiles(withIds: [profile.id])
                 }
             } catch {
-                pspLog(.profiles, .fault, "\tUnable to save/remove remote profile \(profile.id): \(error)")
+                pspLog(.profiles, .error, "\tUnable to save/remove remote profile \(profile.id): \(error)")
                 throw error
             }
         }
@@ -199,7 +199,7 @@ extension ProfileManager {
             try? await remoteRepository?.removeProfiles(withIds: profileIds)
             didChange.send(.delete(.init(ids: profileIds)))
         } catch {
-            pspLog(.profiles, .fault, "Unable to remove profiles \(profileIds): \(error)")
+            pspLog(.profiles, .error, "Unable to remove profiles \(profileIds): \(error)")
         }
     }
 
@@ -262,7 +262,7 @@ extension ProfileManager {
 
 private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
-        pspLog(.profiles, .info, "Reload local profiles: \(result.map(\.id))")
+        pspLog(.profiles, .debug, "Reloaded local profiles: \(result.count)")
 
         let excludedIds = Set(result
             .filter {
@@ -278,7 +278,7 @@ private extension ProfileManager {
                 $0[$1.id] = $1
             }
 
-        pspLog(.profiles, .info, "Local profiles after exclusions: \(allProfiles.keys)")
+        pspLog(.profiles, .debug, "Local profiles after exclusions: \(allProfiles.count)")
 
         if waitingObservers.contains(.local) {
             waitingObservers.remove(.local)
@@ -298,7 +298,7 @@ private extension ProfileManager {
     }
 
     func reloadRemoteProfiles(_ result: [Profile]) {
-        pspLog(.profiles, .info, "Reload remote profiles: \(result.map(\.id))")
+        pspLog(.profiles, .debug, "Reloaded remote profiles: \(result.count)")
 
         remoteProfilesIds = Set(result.map(\.id))
         if waitingObservers.contains(.remote) {
@@ -359,7 +359,7 @@ private extension ProfileManager {
                     if let localFingerprint = localFingerprints[remoteProfile.id] {
                         guard let remoteFingerprint = remoteFingerprints[remoteProfile.id],
                               remoteFingerprint != localFingerprint else {
-                            pspLog(.profiles, .info, "Skip re-importing local profile \(remoteProfile.id)")
+                            pspLog(.profiles, .debug, "Skip re-importing local profile \(remoteProfile.id)")
                             continue
                         }
                     }

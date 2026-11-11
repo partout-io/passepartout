@@ -65,9 +65,12 @@ public final class ConfigManager {
         do {
             pspLog(.core, .debug, "Config: refreshing bundle...")
             let newBundle = try await strategy.bundle()
+            let previousFlags = activeFlags
             bundle = newBundle
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
-            pspLog(.core, .info, "Config: active flags = \(activeFlags)")
+            if activeFlags != previousFlags {
+                pspLog(.core, .info, "Config: active flags = \(activeFlags)")
+            }
             pspLog(.core, .debug, "Config: \(newBundle)")
         } catch ABI.AppError.rateLimit {
             pspLog(.core, .debug, "Config: TTL")

@@ -59,12 +59,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let preferences = AppPreferencesStore({
             let persistedPreferences = UserDefaultsAppPreferences(defaults: .standard)
             if let startPreferences {
-                pspLog(.core, .info, "PTP: Decoded preferences: \(startPreferences)")
+                pspLog(.core, .debug, "PTP: Apply start preferences")
                 persistedPreferences.copy(startPreferences)
                 assert(persistedPreferences.serialized() == startPreferences)
                 return startPreferences
             }
-            pspLog(.core, .info, "PTP: Existing preferences: \(persistedPreferences)")
+            pspLog(.core, .debug, "PTP: Use persisted preferences")
             return persistedPreferences
         }())
 
@@ -102,7 +102,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func handleAppMessage(_ messageData: Data) async -> Data? {
         guard let context else { return nil }
-        pspLog(.core, .debug, "Handle PTP message")
         let response = await context.sendMessage(messageData)
         if let response,
            let output = try? ABI.decode(Message.Output.self, from: response),

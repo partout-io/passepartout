@@ -98,7 +98,7 @@ public final class TunnelContext: TunnelContextProtocol {
                 )
             }
         } catch {
-            pspLog(.abi, .fault, "Unable to start tunnel: \(error)")
+            pspLog(.abi, .error, "Unable to start tunnel: \(error)")
             flushLogs()
             throw error
         }
@@ -116,18 +116,8 @@ public final class TunnelContext: TunnelContextProtocol {
 
     public func sendMessage(_ messageData: Data) async -> Data? {
         guard let backend else { return nil }
-        pspLog(.abi, .debug, "Handle tunnel message")
         do {
-            let input = try ABI.decode(Message.Input.self, from: messageData)
-            let encodedOutput = try await backend.sendMessage(messageData)
-            switch input {
-            case .environment:
-                break
-            default:
-                let outputDescription = encodedOutput.map { "\($0.count) bytes" } ?? "nil"
-                pspLog(.abi, .info, "Message handled and response encoded (\(outputDescription))")
-            }
-            return encodedOutput
+            return try await backend.sendMessage(messageData)
         } catch {
             pspLog(.abi, .error, "Unable to handle message: \(error)")
             return nil
@@ -189,7 +179,7 @@ private extension TunnelContext {
 
             // Perform periodic verification
             do {
-                pspLog(.iap, .info, "Verify profile, requires: \(profile.features)")
+                pspLog(.iap, .debug, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {
@@ -206,7 +196,7 @@ private extension TunnelContext {
 
                 let errorCode: ABI.AppErrorCode = .ineligibleProfile
                 environment.setEnvironmentValue(errorCode.toLastErrorCode, forKey: TunnelEnvironmentKeys.lastErrorCode)
-                pspLog(.iap, .fault, "Verification failed for profile \(profile.id), shutting down: \(error)")
+                pspLog(.iap, .error, "Verification failed for profile \(profile.id), shutting down: \(error)")
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
@@ -215,7 +205,7 @@ private extension TunnelContext {
             }
 
             // Retry in a while
-            pspLog(.iap, .info, "Will verify profile again in \(params.interval) seconds...")
+            pspLog(.iap, .debug, "Will verify profile again in \(params.interval) seconds...")
             try? await Task.sleep(interval: params.interval)
 
             // On successful verification, reset attempts for the next verification
