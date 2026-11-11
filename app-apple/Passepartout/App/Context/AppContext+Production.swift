@@ -4,6 +4,9 @@
 
 import AppAccessibility
 import AppLibrary
+#if os(tvOS)
+import AppLibraryTV
+#endif
 import AppResources
 import CommonData
 import CommonDataPreferences
@@ -197,7 +200,7 @@ extension AppContext {
             backupRepository: backupProfileRepository,
             mirrorsRemoteRepository: false
         )
-        let tunnel = Tunnel(
+        let tunnel = PartoutTunnel(
             ctx,
             strategy: tunnelStrategy,
             refreshInterval: Int(appConfiguration.constants.tunnel.refreshInterval * 1000.0),

@@ -79,7 +79,11 @@ private extension OnboardingModifier {
             return
         }
         Task {
-            try await Task.sleep(for: .milliseconds(300))
+            do {
+                try await Task.sleep(for: .milliseconds(300))
+            } catch {
+                return
+            }
             performCurrentStep()
         }
     }

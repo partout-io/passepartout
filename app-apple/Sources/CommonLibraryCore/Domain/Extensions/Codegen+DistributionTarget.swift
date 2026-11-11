@@ -15,16 +15,16 @@ extension ABI.DistributionTarget {
         self != .developerID
     }
 
-    public var supportsIAP: Bool {
+    public var usesInAppPurchases: Bool {
         self == .appStore
     }
 
-    // Differs from !supportsIAP because:
+    // Feature availability is independent of purchasing:
     //
-    // - .appStore supports paid features and IAP
-    // - .enterprise supports paid features but not IAP
-    // - .developerID supports neither
-    public var supportsPaidFeatures: Bool {
+    // - .appStore supports all features and uses in-app purchases
+    // - .enterprise supports all features without in-app purchases
+    // - .developerID supports a limited feature set without in-app purchases
+    public var supportsAllFeatures: Bool {
         self != .developerID
     }
 }

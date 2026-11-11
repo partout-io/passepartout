@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Расширенное журналирование</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Очень, очень подробное. Включайте только для устранения неполадок.</string>
     <string name="views_diagnostics_rows_include_private_data">Включить личные данные</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Отключите все профили, чтобы изменить эту настройку.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Используйте только для локальной проверки.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Удалить все журналы</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Конфигурация сервера</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">Нет серверов</string>
     <string name="views_tv_connection_profiles_header_share">Откройте %1$s на устройстве iOS или macOS и включите переключатель \"%2$s\" у профиля, чтобы он появился здесь.</string>
     <string name="views_tv_connection_profiles_header_import">Также вы найдете другие опции на вкладке «Профили».</string>
-    <string name="views_tv_profiles_import_local">Импорт локального профиля</string>
+    <string name="views_tv_profiles_import_local">Импортировать профиль</string>
+    <string name="views_tv_connection_profiles_web_import_description">Поделитесь профилем через iCloud или выберите «Импортировать профиль», чтобы отобразить QR-код. Отсканируйте его с помощью Passepartout на iPhone, iPad или Mac, чтобы отправить профиль на этот телевизор, или загрузите файл конфигурации через веб-браузер.</string>
     <string name="views_tv_profiles_detail_profiles">Удерживайте, чтобы увидеть доступные действия для профиля.</string>
     <string name="views_tv_web_receiver_toggle">Переключите, чтобы импортировать локальный профиль на телевизор через веб-браузер.</string>
     <string name="views_tv_web_receiver_qr">Отсканируйте QR-код камерой, чтобы открыть веб-страницу для загрузки вашего профиля. Убедитесь, что вы подключены к той же сети.</string>

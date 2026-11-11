@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Εκτενής καταγραφή</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Πολύ, πολύ αναλυτικό. Διατηρήστε το απενεργοποιημένο εκτός για αντιμετώπιση προβλημάτων.</string>
     <string name="views_diagnostics_rows_include_private_data">Συμπερίληψη ιδιωτικών δεδομένων</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Απενεργοποιήστε όλα τα προφίλ για να αλλάξετε αυτήν τη ρύθμιση.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Χρησιμοποιήστε το μόνο για τοπικό έλεγχο.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Διαγραφή όλων των ημερολογίων</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Διαμόρφωση διακομιστή</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">Δεν υπάρχουν διακομιστές</string>
     <string name="views_tv_connection_profiles_header_share">Άνοιξε το %1$s στη συσκευή σου iOS ή macOS και ενεργοποίησε την εναλλαγή \"%2$s\" σε ένα προφίλ για να εμφανιστεί εδώ.</string>
     <string name="views_tv_connection_profiles_header_import">Εναλλακτικά, θα βρεις άλλες επιλογές στην καρτέλα \"Προφίλ\".</string>
-    <string name="views_tv_profiles_import_local">Εισαγωγή τοπικού προφίλ</string>
+    <string name="views_tv_profiles_import_local">Εισαγωγή προφίλ</string>
+    <string name="views_tv_connection_profiles_web_import_description">Μοιραστείτε ένα προφίλ μέσω iCloud ή επιλέξτε «Εισαγωγή προφίλ» για να εμφανιστεί ένας κωδικός QR. Σαρώστε τον με το Passepartout στο iPhone, το iPad ή το Mac σας για να στείλετε ένα προφίλ σε αυτή την τηλεόραση ή χρησιμοποιήστε ένα πρόγραμμα περιήγησης για να ανεβάσετε ένα αρχείο διαμόρφωσης.</string>
     <string name="views_tv_profiles_detail_profiles">Πατήστε παρατεταμένα για να εμφανίσετε τις διαθέσιμες ενέργειες για ένα προφίλ.</string>
     <string name="views_tv_web_receiver_toggle">Εναλλαγή για εισαγωγή τοπικού προφίλ στην τηλεόρασή σου μέσω web browser.</string>
     <string name="views_tv_web_receiver_qr">Σαρώστε το QR με την κάμερά σας για να ανοίξετε μια ιστοσελίδα όπου μπορείτε να ανεβάσετε το προφίλ σας. Βεβαιωθείτε ότι είστε συνδεδεμένοι στο ίδιο δίκτυο.</string>

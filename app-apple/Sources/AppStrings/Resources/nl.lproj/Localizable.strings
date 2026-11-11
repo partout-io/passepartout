@@ -327,6 +327,7 @@
 "views.diagnostics.rows.app" = "App";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Zeer, zeer uitvoerig. Alleen inschakelen voor probleemoplossing.";
 "views.diagnostics.rows.extensive_logging" = "Uitgebreide logging";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Schakel alle profielen uit om deze instelling te wijzigen.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Alleen gebruiken voor lokale inspectie.";
 "views.diagnostics.rows.include_private_data" = "Privégegevens opnemen";
 "views.diagnostics.rows.remove_tunnel_logs" = "Alle logboeken verwijderen";
@@ -431,7 +432,6 @@
 "views.tv.connection_profiles.header.import" = "Alternatief vind je andere opties in het tabblad \"Profielen\".";
 "views.tv.connection_profiles.header.share" = "Open %@ op je iOS- of macOS-apparaat en schakel de \"%@\"-optie van een profiel in om het hier te laten verschijnen.";
 "views.tv.profiles.detail.profiles" = "Houd lang ingedrukt om de beschikbare acties voor een profiel weer te geven.";
-"views.tv.profiles.import_local" = "Lokaal profiel importeren";
 "views.tv.web_receiver.qr" = "Scan de QR-code met je camera om een webpagina te openen waar je je profiel kunt uploaden. Zorg dat je verbonden bent met hetzelfde netwerk.";
 "views.tv.web_receiver.toggle" = "Schakel om een lokaal profiel via een webbrowser op je TV te importeren.";
 "views.ui.connection_status.on_demand_suffix" = " (op aanvraag)";
@@ -452,3 +452,5 @@
 "web_uploader.submit" = "Uploaden";
 "web_uploader.success" = "Upload voltooid!";
 "web_uploader.title" = "Uploaden naar Apple TV";
+"views.tv.profiles.import_local" = "Profiel importeren";
+"views.tv.connection_profiles.web_import_description" = "Deel een profiel via iCloud of selecteer ‘Profiel importeren’ om een QR-code weer te geven. Scan deze met Passepartout op je iPhone, iPad of Mac om een profiel naar deze tv te sturen, of gebruik een webbrowser om een configuratiebestand te uploaden.";

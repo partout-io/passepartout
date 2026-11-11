@@ -327,6 +327,7 @@
 "views.diagnostics.rows.app" = "Приложение";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Очень, очень подробное. Включайте только для устранения неполадок.";
 "views.diagnostics.rows.extensive_logging" = "Расширенное журналирование";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Отключите все профили, чтобы изменить эту настройку.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Используйте только для локальной проверки.";
 "views.diagnostics.rows.include_private_data" = "Включить личные данные";
 "views.diagnostics.rows.remove_tunnel_logs" = "Удалить все журналы";
@@ -431,7 +432,6 @@
 "views.tv.connection_profiles.header.import" = "Также вы найдете другие опции на вкладке «Профили».";
 "views.tv.connection_profiles.header.share" = "Откройте %@ на устройстве iOS или macOS и включите переключатель \"%@\" у профиля, чтобы он появился здесь.";
 "views.tv.profiles.detail.profiles" = "Удерживайте, чтобы увидеть доступные действия для профиля.";
-"views.tv.profiles.import_local" = "Импорт локального профиля";
 "views.tv.web_receiver.qr" = "Отсканируйте QR-код камерой, чтобы открыть веб-страницу для загрузки вашего профиля. Убедитесь, что вы подключены к той же сети.";
 "views.tv.web_receiver.toggle" = "Переключите, чтобы импортировать локальный профиль на телевизор через веб-браузер.";
 "views.ui.connection_status.on_demand_suffix" = " (по требованию)";
@@ -452,3 +452,5 @@
 "web_uploader.submit" = "Загрузить";
 "web_uploader.success" = "Загрузка завершена!";
 "web_uploader.title" = "Загрузить на Apple TV";
+"views.tv.profiles.import_local" = "Импортировать профиль";
+"views.tv.connection_profiles.web_import_description" = "Поделитесь профилем через iCloud или выберите «Импортировать профиль», чтобы отобразить QR-код. Отсканируйте его с помощью Passepartout на iPhone, iPad или Mac, чтобы отправить профиль на этот телевизор, или загрузите файл конфигурации через веб-браузер.";

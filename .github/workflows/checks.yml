@@ -25,11 +25,11 @@ jobs:
         include:
           - name: Apple tests
             suite: apple
-            runner: macos-26
+            runner: xcode-27
             timeout_minutes: 10
           - name: Partout tests
             suite: partout
-            runner: macos-26
+            runner: xcode-27
             timeout_minutes: 10
           - name: Cross checks
             suite: cross
@@ -44,7 +44,7 @@ jobs:
           access-token: ${{ github.token }}
           submodules: true
 
-      - uses: partout-io/setup-zig@v3
+      - uses: partout-io/setup-zig@main
         if: matrix.suite == 'partout'
 
       - uses: actions/setup-node@v6
@@ -74,6 +74,12 @@ jobs:
       - name: Run Partout tests (Swift)
         if: matrix.suite == 'partout'
         run: ci/run-partout-swift-tests.sh
+
+      - name: Verify model generation in both repositories
+        if: matrix.suite == 'partout'
+        run: |
+          python3 partout/tests/codegen/test_codegen.py
+          python3 partout/tests/codegen/test_parent_codegen.py .
 
       - name: Run Partout tests
         if: matrix.suite == 'partout'

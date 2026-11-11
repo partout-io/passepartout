@@ -141,7 +141,7 @@ public final class TunnelContext: TunnelContextProtocol {
             case .environment:
                 break
             default:
-                let outputDescription = encodedOutput?.asSensitiveBytes(.init(originalProfile.id)) ?? "nil"
+                let outputDescription = encodedOutput.map { "\($0.count) bytes" } ?? "nil"
                 pspLog(.abi, .info, "Message handled and response encoded (\(outputDescription))")
             }
             return encodedOutput

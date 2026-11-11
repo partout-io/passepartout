@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Davide De Rosa
+#
+# SPDX-License-Identifier: GPL-3.0
+
+name: Cross application tests
+
+on:
+  pull_request:
+    paths:
+      - 'app-cross/**'
+      - 'partout'
+      - '.github/workflows/test_cross.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Configure portable tests and Windows adapter compile check
+        run: cmake -S app-cross/tests -B build/cross -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build/cross --config Debug --parallel 2
+      - name: Test
+        run: ctest --test-dir build/cross -C Debug --output-on-failure

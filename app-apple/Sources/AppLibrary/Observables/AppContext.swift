@@ -79,21 +79,22 @@ public final class AppContext {
         self.onEligibleFeaturesBlock = onEligibleFeaturesBlock
         subscriptions = []
 
-        let supportsIAP = appConfiguration.bundle.distributionTarget.supportsIAP
-        iapManager.isEnabled = supportsIAP && !preferences[\.skipsPurchases]
+        let usesInAppPurchases = appConfiguration.bundle.distributionTarget.usesInAppPurchases
+        iapManager.isEnabled = usesInAppPurchases && !preferences[\.skipsPurchases]
 
         // Manager-backed observables
         configObservable = ConfigObservable()
         iapObservable = IAPObservable(
             iapManager: iapManager,
-            supportsIAP: supportsIAP
+            usesInAppPurchases: usesInAppPurchases
         )
         profileObservable = ProfileObservable(profileManager: profileManager)
         registryObservable = RegistryObservable(
             wireGuardKeyGenerator: wireGuardKeyGenerator,
-            wireGuardValidateBlock: {
+            wireGuardValidateBlock: { module in
+                let text = try appImportExport.exportedModule(from: module)
                 _ = try appImportExport.importedModule(
-                    from: .contents(filename: "", data: $0),
+                    from: .contents(filename: "", data: text),
                     context: nil
                 )
             }
@@ -108,6 +109,9 @@ public final class AppContext {
         userPreferences = UserPreferencesObservable(preferences: preferences, ui: defaults)
         onboardingObservable = OnboardingObservable(userPreferences: userPreferences)
         self.wireGuardKeyGenerator = wireGuardKeyGenerator
+        userPreferences.onLogPrivacyChange = { [weak self] in
+            self?.onLogPrivacyChange()
+        }
 
         observeManagerEvents()
         tunnelObservable.observeObjects()
@@ -124,8 +128,12 @@ public final class AppContext {
 extension AppContext {
     public func onApplicationActive() {
         Task {
-            // XXX: Should handle ABI.AppError.couldNotLaunch (although extremely rare)
-            try await onForeground()
+            do {
+                try await onForeground()
+            } catch {
+                pspLog(.core, .fault, "Unable to activate application: \(error)")
+                return
+            }
 
             await configManager.refreshBundle()
             await versionChecker.checkLatestRelease()
@@ -133,6 +141,25 @@ extension AppContext {
             preferences.overwrite {
                 // Propagate active config flags to tunnel via preferences
                 $0.configFlags = Array(configManager.activeFlags)
+            }
+        }
+    }
+}
+
+private extension AppContext {
+    func onLogPrivacyChange() {
+        pspLogRegister(
+            for: .app,
+            with: appConfiguration,
+            preferences: preferences,
+            localURL: appConfiguration.urlForAppLog,
+            localMapper: appConfiguration.makeLogFormatter().localMapper
+        )
+        if !preferences[\.logsPrivateData] {
+            do {
+                try pspLogFileStrategy.reset(at: appConfiguration.urlForTunnelLog)
+            } catch {
+                pspLog(.core, .error, "Unable to reset tunnel log: \(error)")
             }
         }
     }

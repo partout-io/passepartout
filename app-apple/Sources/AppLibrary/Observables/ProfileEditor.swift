@@ -46,7 +46,7 @@ extension ProfileEditor {
 
     public func availableModuleTypes(forTarget target: ABI.DistributionTarget) -> [ModuleType] {
         let types: [ModuleType]
-        if target.supportsPaidFeatures {
+        if target.supportsAllFeatures {
             types = ModuleType.knownTypes
         } else {
             types = [.OnDemand, .OpenVPN, .WireGuard]

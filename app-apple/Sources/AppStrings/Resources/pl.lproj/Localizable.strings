@@ -327,6 +327,7 @@
 "views.diagnostics.rows.app" = "Aplikacja";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Bardzo, bardzo szczegółowe. Włączaj tylko do rozwiązywania problemów.";
 "views.diagnostics.rows.extensive_logging" = "Szczegółowe logowanie";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Wyłącz wszystkie profile, aby zmienić to ustawienie.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Używaj tylko do lokalnej inspekcji.";
 "views.diagnostics.rows.include_private_data" = "Uwzględnij dane prywatne";
 "views.diagnostics.rows.remove_tunnel_logs" = "Usuń wszystkie dzienniki";
@@ -431,7 +432,6 @@
 "views.tv.connection_profiles.header.import" = "Alternatywnie znajdziesz inne opcje na karcie „Profile”.";
 "views.tv.connection_profiles.header.share" = "Otwórz %@ na swoim urządzeniu z iOS lub macOS i włącz przełącznik \"%@\" w profilu, aby pojawił się tutaj.";
 "views.tv.profiles.detail.profiles" = "Przytrzymaj, aby wyświetlić dostępne akcje dla profilu.";
-"views.tv.profiles.import_local" = "Importuj lokalny profil";
 "views.tv.web_receiver.qr" = "Zeskanuj kod QR aparatem, aby otworzyć stronę internetową, na której możesz przesłać swój profil. Upewnij się, że jesteś połączony z tą samą siecią.";
 "views.tv.web_receiver.toggle" = "Przełącz, aby zaimportować lokalny profil na swój telewizor za pomocą przeglądarki internetowej.";
 "views.ui.connection_status.on_demand_suffix" = " (na żądanie)";
@@ -452,3 +452,5 @@
 "web_uploader.submit" = "Wyślij";
 "web_uploader.success" = "Przesyłanie zakończone!";
 "web_uploader.title" = "Wyślij do Apple TV";
+"views.tv.profiles.import_local" = "Importuj profil";
+"views.tv.connection_profiles.web_import_description" = "Udostępnij profil przez iCloud lub wybierz „Importuj profil”, aby wyświetlić kod QR. Zeskanuj go za pomocą Passepartout na iPhonie, iPadzie lub Macu, aby wysłać profil do tego telewizora, albo użyj przeglądarki internetowej, aby przesłać plik konfiguracji.";

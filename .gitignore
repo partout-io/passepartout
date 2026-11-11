@@ -3,6 +3,7 @@
 build/
 dist/
 tmp/
+agents
 /node_modules/
 **/*secret*
 *.a
@@ -10,3 +11,4 @@ tmp/
 *.lib
 *.dll
 *.dmg
+

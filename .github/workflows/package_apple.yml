@@ -29,14 +29,18 @@ defaults:
 jobs:
   build_partout_xcframework:
     name: Build Partout XCFramework
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - uses: partout-io/action-prepare-xcode-build@master
         with:
           access-token: ${{ github.token }}
           submodules: true
-      - uses: partout-io/setup-zig@v3
+      - uses: partout-io/setup-zig@main
+      - uses: actions/setup-go@v7
+        with:
+          go-version: 1.24
+          cache-dependency-path: partout/src/**/go.sum
       - name: Build Partout XCFramework
         run: |
           xcframework="$PWD/PartoutNative.xcframework"
@@ -61,7 +65,7 @@ jobs:
   build_upload_appstore:
     name: Build and upload ${{ matrix.name }}
     needs: build_partout_xcframework
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -107,7 +111,7 @@ jobs:
   build_upload_dmg:
     name: Build and upload DMG (${{ matrix.architecture }})
     needs: build_partout_xcframework
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 45
     strategy:
       fail-fast: false

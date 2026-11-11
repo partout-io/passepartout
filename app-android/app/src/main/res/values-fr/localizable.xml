@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Journalisation étendue</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Très, très verbeux. À activer uniquement pour le dépannage.</string>
     <string name="views_diagnostics_rows_include_private_data">Inclure les données privées</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Désactivez tous les profils pour modifier ce réglage.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">À utiliser uniquement pour une inspection locale.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Supprimer tous les journaux</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Configuration du serveur</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">Aucun serveur</string>
     <string name="views_tv_connection_profiles_header_share">Ouvre %1$s sur ton appareil iOS ou macOS et active l’option \"%2$s\" d’un profil pour qu’il apparaisse ici.</string>
     <string name="views_tv_connection_profiles_header_import">Sinon, tu trouveras d’autres options dans l’onglet « Profils ».</string>
-    <string name="views_tv_profiles_import_local">Importer un profil local</string>
+    <string name="views_tv_profiles_import_local">Importer un profil</string>
+    <string name="views_tv_connection_profiles_web_import_description">Partagez un profil via iCloud ou sélectionnez « Importer un profil » pour afficher un code QR. Scannez-le avec Passepartout sur votre iPhone, iPad ou Mac pour envoyer un profil à ce téléviseur, ou utilisez un navigateur web pour envoyer un fichier de configuration.</string>
     <string name="views_tv_profiles_detail_profiles">Appuyez longuement pour afficher les actions disponibles pour un profil.</string>
     <string name="views_tv_web_receiver_toggle">Basculez pour importer un profil local sur votre TV via un navigateur web.</string>
     <string name="views_tv_web_receiver_qr">Scannez le QR avec votre caméra pour ouvrir une page web où télécharger votre profil. Assurez-vous d\'être connecté au même réseau.</string>

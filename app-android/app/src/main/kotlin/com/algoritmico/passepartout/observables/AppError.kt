@@ -9,6 +9,7 @@ import com.algoritmico.passepartout.business.managers.ConfigManagerException
 import com.algoritmico.passepartout.business.managers.ProfileManagerException
 import com.algoritmico.passepartout.business.managers.VersionCheckerException
 import com.algoritmico.passepartout.models.AppErrorCode
+import com.algoritmico.passepartout.context.AppLog
 import io.partout.abi.PartoutException
 import io.partout.models.PartoutErrorCode
 import java.net.SocketTimeoutException
@@ -17,7 +18,11 @@ import java.util.concurrent.TimeoutException
 data class AppError(
     val code: AppErrorCode,
     val cause: Throwable? = null
-)
+) {
+    override fun toString(): String =
+        if (AppLog.logsPrivateData) "AppError(code=$code, cause=$cause)"
+        else "AppError(code=$code)"
+}
 
 val Throwable.asAppError: AppError
     get() = when (this) {

@@ -58,7 +58,7 @@ extension AppContext {
             profileRepository: mainProfileRepository,
             extensionInstaller: nil
         )
-        let tunnel = Tunnel(
+        let tunnel = PartoutTunnel(
             .global,
             strategy: FakeTunnelStrategy(),
             environmentFactory: { @Sendable _ in

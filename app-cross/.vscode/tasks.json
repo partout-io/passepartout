@@ -2,76 +2,124 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake: Configure macOS",
-            "type": "cmake",
-            "command": "configure",
-            "preset": "macos-clang"
+            "label": "Prepare Windows ARM64 Debug",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "arm64",
+                "-Configuration",
+                "Debug",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Install macOS Debug",
-            "type": "cmake",
-            "command": "install",
-            "preset": "macos-debug",
-            "dependsOn": "CMake: Configure macOS",
-            "dependsOrder": "sequence",
-            "group": "build"
+            "label": "Prepare Windows ARM64 Release",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "arm64",
+                "-Configuration",
+                "Release",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Install macOS Release",
-            "type": "cmake",
-            "command": "install",
-            "preset": "macos-release",
-            "dependsOn": "CMake: Configure macOS",
-            "dependsOrder": "sequence",
-            "group": "build"
+            "label": "Prepare Windows X64 Debug",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "x64",
+                "-Configuration",
+                "Debug",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Configure Windows ARM64",
-            "type": "cmake",
-            "command": "configure",
-            "preset": "windows-arm64"
+            "label": "Prepare Windows X64 Release",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${workspaceFolder}/scripts/run-app.ps1",
+                "-Architecture",
+                "x64",
+                "-Configuration",
+                "Release",
+                "-PrepareOnly"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Install Windows ARM64 Debug",
-            "type": "cmake",
-            "command": "install",
-            "preset": "windows-arm64-debug",
-            "dependsOn": "CMake: Configure Windows ARM64",
-            "dependsOrder": "sequence",
-            "group": "build"
+            "label": "Prepare macOS ARM64 Debug",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "arm64",
+                "Debug",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Install Windows ARM64 Release",
-            "type": "cmake",
-            "command": "install",
-            "preset": "windows-arm64-release",
-            "dependsOn": "CMake: Configure Windows ARM64",
-            "dependsOrder": "sequence",
-            "group": "build"
+            "label": "Prepare macOS ARM64 Release",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "arm64",
+                "Release",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Configure Windows x64",
-            "type": "cmake",
-            "command": "configure",
-            "preset": "windows-x64"
+            "label": "Prepare macOS X64 Debug",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "x64",
+                "Debug",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
         },
         {
-            "label": "CMake: Install Windows x64 Debug",
-            "type": "cmake",
-            "command": "install",
-            "preset": "windows-x64-debug",
-            "dependsOn": "CMake: Configure Windows x64",
-            "dependsOrder": "sequence",
-            "group": "build"
-        },
-        {
-            "label": "CMake: Install Windows x64 Release",
-            "type": "cmake",
-            "command": "install",
-            "preset": "windows-x64-release",
-            "dependsOn": "CMake: Configure Windows x64",
-            "dependsOrder": "sequence",
-            "group": "build"
+            "label": "Prepare macOS X64 Release",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/run-app.sh",
+                "x64",
+                "Release",
+                "--prepare-only"
+            ],
+            "problemMatcher": [],
+            "hide": true
         }
     ]
 }

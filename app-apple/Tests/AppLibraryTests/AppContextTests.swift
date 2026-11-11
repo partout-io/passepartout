@@ -10,6 +10,44 @@ import Testing
 
 @MainActor
 struct AppContextTests {
+    @Test(arguments: [
+        "2003:123:abc:4f00::1:52999",
+        "[2003:123:abc:4f00::1]:52999"
+    ])
+    func givenIPv6WireGuardModule_whenValidating_thenImportsPartoutExport(endpoint: String) throws {
+        let serializerOutput = "serialized-by-partout"
+        let harness = Harness(appImportExport: AppImportExport(
+            configBlock: { [] },
+            importModule: { text, context in
+                #expect(text == serializerOutput)
+                #expect(context == nil)
+                throw ValidationError.rejected
+            },
+            exportModule: { module in
+                let wireGuard = try #require(module as? WireGuardModule)
+                let endpoint = try #require(wireGuard.configuration?.peers.first?.endpoint)
+                #expect(endpoint.address.rawValue == "2003:123:abc:4f00::1")
+                #expect(endpoint.address.family == .v6)
+                #expect(endpoint.port == 52999)
+                return serializerOutput
+            }
+        ))
+        var configuration = WireGuard.Configuration.Builder(
+            privateKey: "4hBza7JtPKZFKwqtEmDR0iZyru1kqpQta/DRduMbHQw="
+        )
+        var peer = WireGuard.RemoteInterface.Builder(
+            publicKey: "muwialz9E36nXp9qgbGIxwMrH+5Ovr8d7cutH8JHdvE="
+        )
+        peer.endpoint = endpoint
+        configuration.peers = [peer]
+
+        #expect(throws: ValidationError.rejected) {
+            try harness.context.registryObservable.validate(
+                WireGuardModule.Builder(configurationBuilder: configuration)
+            )
+        }
+    }
+
     @Test
     func givenInitialManagerState_whenCreatingContext_thenUpdatesObservables() async {
         let harness = Harness(
@@ -110,6 +148,7 @@ private struct Harness {
 
     init(
         profiles: [Profile] = [],
+        appImportExport: AppImportExport? = nil,
         skipsPurchases: Bool = false,
         isRemoteImportingEnabled: Bool = false,
         webReceiver: any WebReceiver = DummyWebReceiver(url: URL(string: "http://127.0.0.1")!)
@@ -118,7 +157,7 @@ private struct Harness {
             bundle: ABI.AppBundle(distributionTarget: .appStore),
             constants: Resources.constants
         )
-        let appImportExport = AppImportExport(
+        let appImportExport = appImportExport ?? AppImportExport(
             configBlock: { [] },
             importModule: { _, _ in throw ABI.AppError.importError() },
             exportModule: { _ in throw ABI.AppError.encoding() }
@@ -131,7 +170,7 @@ private struct Harness {
         let profileManager = ProfileManager(profiles: profiles)
         profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
-        let tunnel = Tunnel(
+        let tunnel = PartoutTunnel(
             .global,
             strategy: FakeTunnelStrategy(),
             environmentFactory: { @Sendable _ in
@@ -214,4 +253,8 @@ private func eventually(
         try? await Task.sleep(for: .milliseconds(10))
     }
     return condition()
+}
+
+private enum ValidationError: Error {
+    case rejected
 }

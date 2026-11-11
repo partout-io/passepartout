@@ -45,6 +45,7 @@
 "views.diagnostics.rows.extensive_logging" = "Extensive logging";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Very, very verbose. Keep this off except for troubleshooting.";
 "views.diagnostics.rows.include_private_data" = "Include private data";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Disable all profiles to change this setting.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Only use for local inspection.";
 "views.diagnostics.rows.remove_tunnel_logs" = "Delete all logs";
 "views.diagnostics.openvpn.rows.server_configuration" = "Server configuration";
@@ -151,7 +152,8 @@
 
 "views.tv.connection_profiles.header.share" = "Open %@ on your iOS or macOS device and enable the \"%@\" toggle of a profile to make it appear here.";
 "views.tv.connection_profiles.header.import" = "Alternatively, you will find other options in the \"Profiles\" tab.";
-"views.tv.profiles.import_local" = "Import local profile";
+"views.tv.profiles.import_local" = "Import profile";
+"views.tv.connection_profiles.web_import_description" = "Share a profile via iCloud, or select “Import profile” to display a QR code. Scan it with Passepartout on your iPhone, iPad, or Mac to send a profile to this TV, or use a web browser to upload a configuration file.";
 "views.tv.profiles.detail.profiles" = "Use the long press to present the available actions for a profile.";
 "views.tv.web_receiver.toggle" = "Toggle to import a local profile into your TV with a web browser.";
 "views.tv.web_receiver.qr" = "Scan the QR with your camera to open a web page where to upload your profile. Make sure that you are connected to the same network.";

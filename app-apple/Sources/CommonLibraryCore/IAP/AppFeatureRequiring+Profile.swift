@@ -6,7 +6,8 @@ import Partout
 
 extension Profile: AppFeatureRequiring {
     public var features: Set<ABI.AppFeature> {
-        let builders = activeModules.compactMap { module in
+        let builders: [any ModuleBuilder] = activeModules.compactMap { module in
+            guard ![.Provider, .Custom].contains(module.moduleType) else { return nil }
             guard let builder = module.moduleBuilder() else {
                 fatalError("Cannot produce ModuleBuilder from Module: \(module)")
             }

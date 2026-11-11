@@ -119,15 +119,27 @@ private extension ModuleListView {
         )
     }
 
-    @ViewBuilder
-    func toolbarContent() -> some View {
-        HStack {
-            addModuleMenu
-                .themeTip(.Profile.buildYourProfile)
-            removeModuleButton
+    @ToolbarContentBuilder
+    func toolbarContent() -> some ToolbarContent {
+        ToolbarItem {
+            HStack {
+                if appConfiguration.bundle.distributionTarget.supportsAllFeatures {
+                    ProfileExportButton(editor: profileEditor)
+                    ProfileShareButton(editor: profileEditor)
+                    PurchaseRequiredView(
+                        requiring: [.sharing],
+                        reason: $paywallReason
+                    )
+                }
+                addModuleMenu
+                    .themeTip(.Profile.buildYourProfile)
+                removeModuleButton
+                EmptyView()
+                    .themeTip(Strings.Views.Profile.ModuleList.Section.footer, edge: .bottom)
+            }
+            .buttonStyle(.bordered)
+            .fixedSize()
         }
-        EmptyView()
-            .themeTip(Strings.Views.Profile.ModuleList.Section.footer, edge: .bottom)
     }
 
     var addModuleMenu: some View {
@@ -135,14 +147,15 @@ private extension ModuleListView {
             flow?.onNewModule($0)
         } label: {
             ThemeImage(.add)
-                .frame(maxHeight: .infinity)
+                .themeToolbarLabel()
         }
+        .menuStyle(.button)
     }
 
     var removeModuleButton: some View {
         Button(action: removeSelectedModule) {
             ThemeImage(.remove)
-                .frame(maxHeight: .infinity)
+                .themeToolbarLabel()
         }
         .disabled(!canRemoveSelectedModule)
     }

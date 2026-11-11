@@ -36,7 +36,7 @@ extension AppContext {
                 }
             return ProfileManager(profiles: profiles)
         }()
-        let tunnel = Tunnel(
+        let tunnel = PartoutTunnel(
             .global,
             strategy: FakeTunnelStrategy(),
             refreshInterval: 10000,
@@ -55,7 +55,11 @@ extension AppContext {
         let versionChecker = VersionChecker()
 
         Task {
-            try await profileManager.observeRemote(repository: InMemoryProfileRepository())
+            do {
+                try await profileManager.observeRemote(repository: InMemoryProfileRepository())
+            } catch {
+                assertionFailure("Unable to observe preview profiles: \(error)")
+            }
         }
 
         return AppContext(

@@ -1,0 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+#pragma once
+// Embedded from the same constants.json resource used by Apple and Android.
+namespace Passepartout {
+inline constexpr const char appConstantsResource[] = R"AppConstants(@APP_CONSTANTS_JSON@)AppConstants";
+}

@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,openVPNPassphraseRequired,openVPNUnsupportedCompression,other,partout,permissionDenied,providersRemoved,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader,wireGuardEmptyPeers
+ * Values: binaryFile,corruptProviderModule,couldNotLaunch,emptyProducts,emptyProfileName,encoding,importError,incompatibleModules,incompleteModule,ineligibleProfile,interactiveLogin,invalidField,malformedModule,moduleRequiresConnection,multipleTunnels,noActiveModules,notFound,other,partout,permissionDenied,providersRemoved,rateLimit,systemExtension,timeout,unexpectedResponse,urlRequestFailed,urlRequestUnavailable,verificationReceiptIsLoading,verificationRequiredFeatures,webReceiver,webUploader
  */
 @Serializable
 enum class AppErrorCode(val value: kotlin.String) {
@@ -87,12 +87,6 @@ enum class AppErrorCode(val value: kotlin.String) {
     @SerialName(value = "notFound")
     notFound("notFound"),
 
-    @SerialName(value = "openVPNPassphraseRequired")
-    openVPNPassphraseRequired("openVPNPassphraseRequired"),
-
-    @SerialName(value = "openVPNUnsupportedCompression")
-    openVPNUnsupportedCompression("openVPNUnsupportedCompression"),
-
     @SerialName(value = "other")
     other("other"),
 
@@ -133,10 +127,7 @@ enum class AppErrorCode(val value: kotlin.String) {
     webReceiver("webReceiver"),
 
     @SerialName(value = "webUploader")
-    webUploader("webUploader"),
-
-    @SerialName(value = "wireGuardEmptyPeers")
-    wireGuardEmptyPeers("wireGuardEmptyPeers");
+    webUploader("webUploader");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

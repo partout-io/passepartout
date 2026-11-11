@@ -25,6 +25,7 @@ public final class IAPManager {
     public var isEnabled = true {
         didSet {
             pendingReceiptTask?.cancel()
+            pendingReceiptTask = nil
             didChange.send(.status(.init(isEnabled: isEnabled)))
         }
     }
@@ -157,13 +158,17 @@ extension IAPManager {
         }
         if let pendingReceiptTask {
             await pendingReceiptTask.value
+            return
         }
-        pendingReceiptTask = Task {
+        let task = Task {
             await fetchLevelIfNeeded()
+            guard !Task.isCancelled else { return }
             await asyncReloadReceipt()
+            guard !Task.isCancelled else { return }
+            pendingReceiptTask = nil
         }
-        await pendingReceiptTask?.value
-        pendingReceiptTask = nil
+        pendingReceiptTask = task
+        await task.value
     }
 }
 
@@ -226,7 +231,9 @@ private extension IAPManager {
         var purchasedProducts: Set<ABI.AppProduct> = []
         var eligibleFeatures: Set<ABI.AppFeature> = []
 
-        if let receipt = await receiptReader.receipt(at: userLevel) {
+        let receipt = await receiptReader.receipt(at: userLevel)
+        guard !Task.isCancelled else { return }
+        if let receipt {
             originalPurchase = receipt.originalPurchase
 
             if let originalPurchase {
@@ -318,7 +325,7 @@ extension IAPManager {
         precondition(!isObserving)
         isObserving = true
         let inAppEvents = inAppHelper.didUpdate
-        Task {
+        Task { [self] in
             await inAppHelper.startObserving()
             await fetchLevelIfNeeded()
             do {
@@ -336,7 +343,7 @@ extension IAPManager {
                     pspLog(.iap, .info, "Available in-app products: \(products.map(\.key))")
                 }
             } catch is TaskTimeoutError {
-                throw ABI.AppError.timeout
+                pspLog(.iap, .error, "Unable to fetch in-app products: \(ABI.AppError.timeout)")
             } catch {
                 pspLog(.iap, .error, "Unable to fetch in-app products: \(error)")
             }

@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Розширене журналювання</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Дуже, дуже докладно. Увімкніть лише для усунення несправностей.</string>
     <string name="views_diagnostics_rows_include_private_data">Включити приватні дані</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Вимкніть усі профілі, щоб змінити це налаштування.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Використовуйте лише для локальної перевірки.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Видалити всі журнали</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Конфігурація сервера</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">Немає серверів</string>
     <string name="views_tv_connection_profiles_header_share">Відкрий %1$s на своєму пристрої iOS або macOS і увімкни перемикач \"%2$s\" у профілі, щоб він з’явився тут.</string>
     <string name="views_tv_connection_profiles_header_import">Або знайдеш інші опції на вкладці «Профілі».</string>
-    <string name="views_tv_profiles_import_local">Імпортувати локальний профіль</string>
+    <string name="views_tv_profiles_import_local">Імпортувати профіль</string>
+    <string name="views_tv_connection_profiles_web_import_description">Поділіться профілем через iCloud або виберіть «Імпортувати профіль», щоб відобразити QR-код. Відскануйте його за допомогою Passepartout на iPhone, iPad чи Mac, щоб надіслати профіль на цей телевізор, або завантажте файл конфігурації через веббраузер.</string>
     <string name="views_tv_profiles_detail_profiles">Утримуйте, щоб побачити доступні дії для профілю.</string>
     <string name="views_tv_web_receiver_toggle">Перемикач для імпорту локального профілю на телевізор через веб-браузер.</string>
     <string name="views_tv_web_receiver_qr">Скануйте QR-код камерою, щоб відкрити веб-сторінку для завантаження вашого профілю. Переконайтеся, що ви підключені до тієї ж мережі.</string>

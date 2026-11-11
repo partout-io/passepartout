@@ -11,7 +11,9 @@ extension AppCoordinator {
         case importProfileQR
         case importProfileText
         case interactiveLogin
+#if os(iOS)
         case settings
+#endif
         case systemExtension
 
         var id: Int {
@@ -20,7 +22,9 @@ extension AppCoordinator {
             case .importProfileQR: return 3
             case .importProfileText: return 4
             case .interactiveLogin: return 5
+#if os(iOS)
             case .settings: return 6
+#endif
             case .systemExtension: return 7
             }
         }

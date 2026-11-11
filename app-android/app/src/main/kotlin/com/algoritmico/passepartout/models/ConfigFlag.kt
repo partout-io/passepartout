@@ -29,18 +29,15 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * 
+ * New configuration keys use a fixed YYYYMM suffix for the month when the feature was introduced. Never reuse a key for an unrelated feature.
  *
- * Values: appNotWorking,daemonLooperV2,unknown
+ * Values: appNotWorking,unknown
  */
 @Serializable
 enum class ConfigFlag(val value: kotlin.String) {
 
     @SerialName(value = "appNotWorking")
     appNotWorking("appNotWorking"),
-
-    @SerialName(value = "daemonLooperV2")
-    daemonLooperV2("daemonLooperV2"),
 
     @SerialName(value = "unknown")
     unknown("unknown");

@@ -64,7 +64,7 @@ extension TunnelContext {
             betaChecker: appConfiguration.makeBetaChecker()
         )
         await iapManager.fetchLevelIfNeeded()
-        let skipsPurchases = !appConfiguration.bundle.distributionTarget.supportsIAP || preferences[\.skipsPurchases]
+        let skipsPurchases = !appConfiguration.bundle.distributionTarget.usesInAppPurchases || preferences[\.skipsPurchases]
         let verificationParameters = appConfiguration.constants.tunnel.verificationParameters(isBeta: iapManager.isBeta)
         let iap = TunnelContext.IAP(
             manager: iapManager,
@@ -177,7 +177,7 @@ private extension TunnelContext {
             provider: neProvider,
             profile: normalizedProfile,
             options: .init(
-                dnsFallbackServers: appConfiguration.constants.tunnel.dnsFallbackServers,
+                dnsFallbackServers: preferences[\.dnsFallsBack] ? appConfiguration.constants.tunnel.dnsFallbackServers : [],
                 logsSnapshots: false
             ),
             defaults: defaults,
@@ -185,7 +185,7 @@ private extension TunnelContext {
             cacheDir: cachesURL.path(),
             minDataCountDelta: appConfiguration.constants.tunnel.minDataCountDelta,
             cryptoBackend: CryptoBackend(rawValue: preferences[\.cryptoBackend]),
-            featureFlags: preferences.isFlagEnabled(.daemonLooperV2) ? [.experimentalDaemon] : [],
+            featureFlags: preferences.enabledFlags().daemonFeatureFlags,
             logger: logger
         )
 

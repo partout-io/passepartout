@@ -1024,6 +1024,8 @@ public enum Strings {
           public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.extensive_logging.subtitle", fallback: "Very, very verbose. Keep this off except for troubleshooting.")
         }
         public enum IncludePrivateData {
+          /// Disable all profiles to change this setting.
+          public static let disableProfiles = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data.disable_profiles", fallback: "Disable all profiles to change this setting.")
           /// Only use for local inspection.
           public static let subtitle = Strings.tr("Localizable", "views.diagnostics.rows.include_private_data.subtitle", fallback: "Only use for local inspection.")
         }
@@ -1387,6 +1389,8 @@ public enum Strings {
     }
     public enum Tv {
       public enum ConnectionProfiles {
+        /// Share a profile via iCloud, or select “Import profile” to display a QR code. Scan it with Passepartout on your iPhone, iPad, or Mac to send a profile to this TV, or use a web browser to upload a configuration file.
+        public static let webImportDescription = Strings.tr("Localizable", "views.tv.connection_profiles.web_import_description", fallback: "Share a profile via iCloud, or select “Import profile” to display a QR code. Scan it with Passepartout on your iPhone, iPad, or Mac to send a profile to this TV, or use a web browser to upload a configuration file.")
         public enum Header {
           /// Alternatively, you will find other options in the "Profiles" tab.
           public static let `import` = Strings.tr("Localizable", "views.tv.connection_profiles.header.import", fallback: "Alternatively, you will find other options in the \"Profiles\" tab.")
@@ -1397,8 +1401,8 @@ public enum Strings {
         }
       }
       public enum Profiles {
-        /// Import local profile
-        public static let importLocal = Strings.tr("Localizable", "views.tv.profiles.import_local", fallback: "Import local profile")
+        /// Import profile
+        public static let importLocal = Strings.tr("Localizable", "views.tv.profiles.import_local", fallback: "Import profile")
         public enum Detail {
           /// Use the long press to present the available actions for a profile.
           public static let profiles = Strings.tr("Localizable", "views.tv.profiles.detail.profiles", fallback: "Use the long press to present the available actions for a profile.")

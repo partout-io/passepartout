@@ -3,9 +3,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
+import Partout
 import Testing
 
 struct ConfigBundleTests {
+    @Test
+    func givenBundle_whenRemovedDaemonKeys_thenOnlyCurrentKeysAreActive() throws {
+        let json = #"{"daemonLooperV2":{"rate":100},"daemonLooperV2WireGuard":{"rate":100},"experimentalDaemon_202610":{"rate":100},"experimentalDaemonOpenVPN_202610":{"rate":100},"experimentalDaemonWireGuard_202610":{"rate":100},"appNotWorking":{"rate":100}}"#
+        let sut = try ABI.decodeJSON(ConfigBundle.self, from: json)
+        #expect(sut.activeFlags(withBuild: 1) == [.appNotWorking])
+    }
+
     @Test(arguments: [
         ([ABI.ConfigFlag.appNotWorking: ConfigBundle.Config(rate: 10, minBuild: nil, data: nil)], false),
         ([ABI.ConfigFlag.appNotWorking: ConfigBundle.Config(rate: 100, minBuild: nil, data: nil)], true),

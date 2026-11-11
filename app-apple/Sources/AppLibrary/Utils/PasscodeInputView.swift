@@ -105,7 +105,11 @@ extension PasscodeInputView {
                 } catch {
                     parent.passcode = ""
                     textFields.forEach { $0.text = nil }
-                    try await Task.sleep(for: .milliseconds(200))
+                    do {
+                        try await Task.sleep(for: .milliseconds(200))
+                    } catch {
+                        return
+                    }
                     textFields.first?.becomeFirstResponder()
                 }
             }

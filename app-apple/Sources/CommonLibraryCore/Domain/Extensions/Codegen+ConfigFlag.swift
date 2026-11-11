@@ -4,6 +4,12 @@
 
 import Partout
 
+extension Set where Element == ABI.ConfigFlag {
+    public var daemonFeatureFlags: Set<DaemonFeatureFlag> {
+        []
+    }
+}
+
 extension ABI.ConfigFlag: CustomStringConvertible {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

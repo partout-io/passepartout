@@ -26,11 +26,13 @@ public final class TunnelObservable {
 
     public typealias WillInstallBlock = @Sendable (Profile, Bool, Bool) async throws -> Profile?
 
-    private let tunnel: Tunnel
+    private let tunnel: PartoutTunnel
 
     private let preferences: AppPreferencesStore?
 
     private let logging: Logging?
+
+    private let logRequest = TunnelLogRequest()
 
     private let willInstall: WillInstallBlock?
 
@@ -42,7 +44,7 @@ public final class TunnelObservable {
 
     // TODO: #218, keep "last used profile" until .multiple
     public init(
-        tunnel: Tunnel,
+        tunnel: PartoutTunnel,
         preferences: AppPreferencesStore? = nil,
         logging: Logging? = nil,
         willInstall: WillInstallBlock? = nil
@@ -77,10 +79,10 @@ extension TunnelObservable {
 
     private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
         let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
-        var options: [String: NSObject] = [Options.isManualKey: true as NSNumber]
+        var options: [String: any Sendable] = [Options.isManualKey: true]
         if let preferences {
             let encodedPreferences = try ABI.encode(preferences.serialized())
-            options[Options.appPreferences] = encodedPreferences as NSData
+            options[Options.appPreferences] = encodedPreferences
         }
         try await tunnel.install(profile, connect: connect, options: options)
     }
@@ -92,8 +94,15 @@ extension TunnelObservable {
 
     public func currentLog() async -> [String] {
         guard let logging else { return [] }
-        return await currentLog(logging: logging).map {
-            logging.formatter?.formattedLog(timestamp: $0.timestamp, message: $0.message) ?? $0.message
+        return await logRequest.fetch { [self] in
+            let lines = await currentLog(logging: logging)
+            guard !Task.isCancelled else { return [] }
+            var formatted: [String] = []
+            for line in lines {
+                guard !Task.isCancelled else { return [] }
+                formatted.append(logging.formatter?.formattedLog(timestamp: line.timestamp, message: line.message) ?? line.message)
+            }
+            return formatted
         }
     }
 
@@ -110,6 +119,7 @@ extension TunnelObservable {
             sinceLast: logging.sinceLast,
             maxLevel: maxLevel
         ), to: firstProfileId)
+        guard !Task.isCancelled else { return [] }
         switch output {
         case .debugLog(let log):
             return log.lines.map {

@@ -31,7 +31,7 @@ extension ProfileManager {
                         }
 
                         if var wgBuilder = moduleBuilder as? WireGuardModule.Builder {
-                            let gen = FakeWireGuardKeyGenerator()
+                            let gen = DummyWireGuardKeyGenerator()
                             var cfgBuilder = WireGuard.Configuration.Builder(keyGenerator: gen)
                             cfgBuilder.peers = [.init(publicKey: gen.newPrivateKey())]
                             wgBuilder.configurationBuilder = cfgBuilder
@@ -68,8 +68,11 @@ extension ProfileManager {
                     let profile = try builder.build()
                     try await manager.save(profile, isLocal: true, remotelyShared: parameters.isShared)
                 }
+            } catch is CancellationError {
+                return
             } catch {
                 pspLog(.profiles, .error, "Unable to build ProfileManager for UI testing: \(error)")
+                assertionFailure("Unable to build ProfileManager for UI testing: \(error)")
             }
         }
 
@@ -102,4 +105,14 @@ private extension ProfileManager {
         Parameters("Office", true, true, [.OnDemand, .HTTPProxy]),
         Parameters("Personal DoH", false, false, [.DNS, .OnDemand])
     ]
+}
+
+private struct DummyWireGuardKeyGenerator: WireGuardKeyGenerator {
+    func newPrivateKey() -> String {
+        "KHT9iK7cRctrLImziy55aO5gLyIdh39O0TVF9R9yBkU="
+    }
+
+    func publicKey(for privateKey: String) throws -> String {
+        "rIv4xlohm7gBghGcXNTTLtsa5eM98rFjAkwJ8RqGuWE="
+    }
 }

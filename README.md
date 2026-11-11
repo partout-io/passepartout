@@ -39,7 +39,9 @@ Tailored for Apple platforms:
 - Xcode 26
 - Swift 6
 - Git (preinstalled with the Xcode Command Line Tools)
-- Java (optional, for the OpenAPI Generator)
+- [Partout build requirements](partout/README.md#requirements), including Zig, Go, and CMake
+
+The Xcode prebuild script builds Partout locally as `PartoutNative.xcframework`.
 
 It's highly recommended that you use the Git and Ruby packages provided by [Homebrew][dep-brew].
 
@@ -99,13 +101,13 @@ By contributing to this project, you are agreeing to the terms stated in the [Co
 - [fastlane][credits-fastlane]
 - [GenericJSON][credits-genericjson]
 - [MbedTLS][credits-mbedtls]
+- [nlohmann_json][credits-nljson]
 - [OpenSSL][credits-openssl]
 - [SwiftGen][credits-swiftgen]
 - [SwiftLint][credits-swiftlint]
 - [Tejas Mehta][credits-tmthecoder] for the implementation of the [OpenVPN XOR patch][credits-tmthecoder-xor]
 - [url.c][credits-url.c]
 - [vaygr][credits-vaygr] for adding Passepartout to [Homebrew Cask][credits-vaygr-cask]
-- [Wintun][credits-wintun]
 - [WireGuard (Go)][credits-wireguard-go]
 
 The logo is taken from the awesome Circle Icons set by Nick Roach.
@@ -176,6 +178,7 @@ Website: [partout.io/passepartout][web-home] ([FAQ][web-faq])
 [credits-fastlane]: https://github.com/fastlane/fastlane
 [credits-genericjson]: https://github.com/iwill/generic-json-swift
 [credits-mbedtls]: https://github.com/Mbed-TLS/mbedtls
+[credits-nljson]: https://github.com/nlohmann/json
 [credits-openssl]: https://github.com/openssl/openssl
 [credits-swiftgen]: https://github.com/SwiftGen/SwiftGen
 [credits-swiftlint]: https://github.com/realm/SwiftLint
@@ -184,7 +187,6 @@ Website: [partout.io/passepartout][web-home] ([FAQ][web-faq])
 [credits-url.c]: https://github.com/cozis/url.c
 [credits-vaygr]: https://github.com/vaygr
 [credits-vaygr-cask]: https://github.com/Homebrew/homebrew-cask/pull/214696
-[credits-wintun]: https://github.com/wireguard/wintun
 [credits-wireguard-go]: https://github.com/wireguard/wireguard-go
 
 [web-home]: https://partout.io/passepartout

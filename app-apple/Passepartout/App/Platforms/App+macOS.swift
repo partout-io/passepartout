@@ -42,17 +42,34 @@ extension PassepartoutApp {
         }
         .defaultSize(width: 600, height: 400)
         .commands {
-            CommandGroup(replacing: .appSettings) {
-                Button(Strings.Global.Nouns.settings) {
-                    Task {
-                        try await AppWindow.shared.show()
-                        AppPipe.settings.send()
-                    }
-                }
-                .keyboardShortcut(",", modifiers: .command)
-            }
+            SettingsWindowCommands()
         }
+        Window(Strings.Views.Settings.title, id: SettingsCoordinator.windowId) {
+            SettingsCoordinator(
+                profileObservable: context.profileObservable,
+                tunnel: context.tunnelObservable
+            )
+            .withEnvironment(from: context, theme: theme)
+            .environment(macSettings)
+            .frame(width: 800, height: 500)
+        }
+        .windowResizability(.contentSize)
+        .windowToolbarStyle(.unified)
         MenuBarExtra(content: menuBarView, label: menuBarImage)
+    }
+}
+
+private struct SettingsWindowCommands: Commands {
+    @Environment(\.openWindow)
+    private var openWindow
+
+    var body: some Commands {
+        CommandGroup(replacing: .appSettings) {
+            Button(Strings.Global.Nouns.settings.withTrailingDots) {
+                openWindow(id: SettingsCoordinator.windowId)
+            }
+            .keyboardShortcut(",", modifiers: .command)
+        }
     }
 }
 

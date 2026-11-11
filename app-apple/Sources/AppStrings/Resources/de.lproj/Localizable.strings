@@ -327,6 +327,7 @@
 "views.diagnostics.rows.app" = "App";
 "views.diagnostics.rows.extensive_logging.subtitle" = "Sehr, sehr ausführlich. Nur zur Fehlersuche aktivieren.";
 "views.diagnostics.rows.extensive_logging" = "Ausführliche Protokollierung";
+"views.diagnostics.rows.include_private_data.disable_profiles" = "Deaktiviere alle Profile, um diese Einstellung zu ändern.";
 "views.diagnostics.rows.include_private_data.subtitle" = "Nur für lokale Inspektion verwenden.";
 "views.diagnostics.rows.include_private_data" = "Private Daten einbeziehen";
 "views.diagnostics.rows.remove_tunnel_logs" = "Alle Protokolle löschen";
@@ -431,7 +432,6 @@
 "views.tv.connection_profiles.header.import" = "Alternativ findest du weitere Optionen im Tab „Profile“.";
 "views.tv.connection_profiles.header.share" = "Öffne %@ auf deinem iOS- oder macOS-Gerät und aktiviere den „%@“-Schalter eines Profils, damit es hier erscheint.";
 "views.tv.profiles.detail.profiles" = "Verwenden Sie den langen Druck, um die verfügbaren Aktionen für ein Profil anzuzeigen.";
-"views.tv.profiles.import_local" = "Lokales Profil importieren";
 "views.tv.web_receiver.qr" = "Scannen Sie den QR-Code mit Ihrer Kamera, um eine Webseite zu öffnen, auf der Sie Ihr Profil hochladen können. Stellen Sie sicher, dass Sie mit demselben Netzwerk verbunden sind.";
 "views.tv.web_receiver.toggle" = "Umschalten, um ein lokales Profil über einen Webbrowser auf deinen Fernseher zu importieren.";
 "views.ui.connection_status.on_demand_suffix" = " (auf Anfrage)";
@@ -452,3 +452,5 @@
 "web_uploader.submit" = "Hochladen";
 "web_uploader.success" = "Upload abgeschlossen!";
 "web_uploader.title" = "Auf Apple TV hochladen";
+"views.tv.profiles.import_local" = "Profil importieren";
+"views.tv.connection_profiles.web_import_description" = "Teile ein Profil über iCloud oder wähle „Profil importieren“, um einen QR-Code anzuzeigen. Scanne ihn mit Passepartout auf deinem iPhone, iPad oder Mac, um ein Profil an diesen Fernseher zu senden, oder lade eine Konfigurationsdatei über einen Webbrowser hoch.";

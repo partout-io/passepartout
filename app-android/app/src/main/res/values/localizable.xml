@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Extensive logging</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Very, very verbose. Keep this off except for troubleshooting.</string>
     <string name="views_diagnostics_rows_include_private_data">Include private data</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Disable all profiles to change this setting.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Only use for local inspection.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Delete all logs</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Server configuration</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">No servers</string>
     <string name="views_tv_connection_profiles_header_share">Open %1$s on your iOS or macOS device and enable the \"%2$s\" toggle of a profile to make it appear here.</string>
     <string name="views_tv_connection_profiles_header_import">Alternatively, you will find other options in the \"Profiles\" tab.</string>
-    <string name="views_tv_profiles_import_local">Import local profile</string>
+    <string name="views_tv_profiles_import_local">Import profile</string>
+    <string name="views_tv_connection_profiles_web_import_description">Share a profile via iCloud, or select “Import profile” to display a QR code. Scan it with Passepartout on your iPhone, iPad, or Mac to send a profile to this TV, or use a web browser to upload a configuration file.</string>
     <string name="views_tv_profiles_detail_profiles">Use the long press to present the available actions for a profile.</string>
     <string name="views_tv_web_receiver_toggle">Toggle to import a local profile into your TV with a web browser.</string>
     <string name="views_tv_web_receiver_qr">Scan the QR with your camera to open a web page where to upload your profile. Make sure that you are connected to the same network.</string>

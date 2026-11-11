@@ -12,29 +12,34 @@ struct ProfileShareButton: View {
     @Environment(IAPObservable.self)
     private var iapObservable
 
-    private let profile: Profile
+    private let profile: Profile?
 
-    init(profile: Profile) {
+    init(profile: Profile?) {
         self.profile = profile
     }
 
-    init?(editor: ProfileEditor) {
+    init(editor: ProfileEditor) {
         do {
             let profile = try editor.profile.builder().build()
             self.init(profile: profile)
         } catch {
             pspLog(.profiles, .debug, "Unable to build profile from editor: \(error)")
-            return nil
+            self.init(profile: nil)
         }
     }
 
     var body: some View {
-        ShareLink(
-            item: ProfileRepresentation(encoder: toURL),
-            preview: .init(profile.name),
+        let items = profile.map { profile in
+            [ProfileRepresentation(name: profile.name) { [appImportExport, profile] in
+                try Self.toURL(profile: profile, appImportExport: appImportExport)
+            }]
+        } ?? []
+        return ShareLink(
+            items: items,
+            preview: { .init($0.name) },
             label: shareLabel
         )
-        .disabled(!iapObservable.isEligible(for: .sharing))
+        .disabled(profile == nil || !iapObservable.isEligible(for: .sharing))
     }
 }
 
@@ -43,11 +48,13 @@ private extension ProfileShareButton {
 #if os(iOS)
         Text(Strings.Views.Profile.Buttons.share)
 #else
-        ThemeImage(.share)
+        ThemeImageLabel(Strings.Global.Actions.share, .share)
+            .labelStyle(.iconOnly)
+            .themeToolbarLabel()
 #endif
     }
 
-    nonisolated func toURL() throws -> URL {
+    nonisolated static func toURL(profile: Profile, appImportExport: AppImportExport) throws -> URL {
         do {
             pspLog(.profiles, .debug, "Writing profile \(profile.id) for sharing...")
             let url = try appImportExport.writeToURL(profile)
@@ -61,6 +68,8 @@ private extension ProfileShareButton {
 }
 
 private struct ProfileRepresentation: Transferable {
+    let name: String
+
     let encoder: @Sendable () throws -> URL
 
     static var transferRepresentation: some TransferRepresentation {

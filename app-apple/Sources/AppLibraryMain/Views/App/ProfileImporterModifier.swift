@@ -49,7 +49,15 @@ private extension ProfileImporterModifier {
         )
         Button(Strings.Alerts.Import.Passphrase.ok) {
             Task {
-                try await importer.reImport(url: url, block: doImport)
+                do {
+                    try await importer.reImport(url: url, block: doImport)
+                } catch {
+                    errorHandler.handle(
+                        error,
+                        title: Strings.Views.App.Toolbar.importFile,
+                        message: Strings.Errors.App.Import.generic
+                    )
+                }
             }
         }
         Button(Strings.Global.Actions.cancel, role: .cancel) {

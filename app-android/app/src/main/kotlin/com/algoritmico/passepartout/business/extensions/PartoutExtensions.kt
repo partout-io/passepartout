@@ -4,8 +4,16 @@
 
 package com.algoritmico.passepartout.business.extensions
 
+import io.partout.abi.PartoutException
+import io.partout.models.OpenVPNErrorCode
+import io.partout.models.ParseErrorInfo
+import io.partout.models.PartoutErrorCode
+import io.partout.models.PartoutErrorPair
 import io.partout.models.TaggedProfile
+import io.partout.models.WireGuardErrorCode
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
 val TaggedProfile.fingerprint: String?
@@ -13,3 +21,20 @@ val TaggedProfile.fingerprint: String?
         ?.get("fingerprint")
         ?.jsonPrimitive
         ?.content
+
+fun PartoutErrorPair.Companion.openVPN(code: OpenVPNErrorCode): PartoutErrorPair =
+    PartoutErrorPair(PartoutErrorCode.openVPN, code.value)
+
+fun PartoutErrorPair.Companion.wireGuard(code: WireGuardErrorCode): PartoutErrorPair =
+    PartoutErrorPair(PartoutErrorCode.wireGuard, code.value)
+
+val PartoutException.errorPair: PartoutErrorPair
+    get() {
+        val subCode = (payload as? JsonObject)?.get("subCode") as? JsonPrimitive
+        return PartoutErrorPair(code, subCode?.contentOrNull)
+    }
+
+val PartoutException.parseErrorInfo: ParseErrorInfo?
+    get() = if (code == PartoutErrorCode.parsing) {
+        payload?.let { runCatching { JSON.decodeElement<ParseErrorInfo>(it) }.getOrNull() }
+    } else null

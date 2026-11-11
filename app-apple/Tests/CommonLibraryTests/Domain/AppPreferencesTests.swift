@@ -7,6 +7,16 @@ import Partout
 import Testing
 
 struct AppPreferencesTests {
+    @Test(arguments: [
+        "daemonLooperV2", "daemonLooperV2WireGuard",
+        "experimentalDaemon_202610", "experimentalDaemonOpenVPN_202610", "experimentalDaemonWireGuard_202610"
+    ])
+    func givenRemovedDaemonKey_thenDecodesAsUnknown(key: String) throws {
+        let data = try JSONEncoder().encode(key)
+        let flag = try ABI.decode(ABI.ConfigFlag.self, from: data)
+        #expect(flag == .unknown)
+    }
+
     @Test
     func givenAppPreferencesProtocol_whenSerialized_thenPreservesValues() {
         let expected = Self.preferences()

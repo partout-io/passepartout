@@ -1,7 +1,4 @@
 {
-    "daemonLooperV2": {
-        "rate": 100
-    },
     "appNotWorking": {
         "rate": 0,
         "data": {

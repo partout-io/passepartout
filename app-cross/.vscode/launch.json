@@ -2,54 +2,176 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "CMake: Debug installed app (macOS)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
-            "cwd": "${workspaceFolder}/out/install/macos-clang",
-            "MIMode": "lldb",
-            "preLaunchTask": "CMake: Install macOS Debug"
-        },
-        {
-            "name": "CMake: Debug installed app (Windows ARM64)",
+            "name": "Run Windows ARM64 Debug",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
             "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "preLaunchTask": "CMake: Install Windows ARM64 Debug"
-        },
-        {
-            "name": "CMake: Debug installed app (Windows x64)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "preLaunchTask": "CMake: Install Windows x64 Debug"
-        },
-        {
-            "name": "CMake: Run installed app (macOS Release)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/install/macos-clang/passepartout",
-            "cwd": "${workspaceFolder}/out/install/macos-clang",
-            "MIMode": "lldb",
-            "preLaunchTask": "CMake: Install macOS Release"
-        },
-        {
-            "name": "CMake: Run installed app (Windows ARM64 Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
             "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
-            "cwd": "${workspaceFolder}/out/install/windows-arm64",
-            "preLaunchTask": "CMake: Install Windows ARM64 Release"
+            "args": [],
+            "preLaunchTask": "Prepare Windows ARM64 Debug"
         },
         {
-            "name": "CMake: Run installed app (Windows x64 Release)",
+            "name": "Run Windows ARM64 Release",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows ARM64 Release"
+        },
+        {
+            "name": "Run Windows X64 Debug",
+            "type": "cppvsdbg",
+            "request": "launch",
             "cwd": "${workspaceFolder}/out/install/windows-x64",
-            "preLaunchTask": "CMake: Install Windows x64 Release"
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows X64 Debug"
+        },
+        {
+            "name": "Run Windows X64 Release",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": [],
+            "preLaunchTask": "Prepare Windows X64 Release"
+        },
+        {
+            "name": "Run macOS ARM64 Debug",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-arm64",
+            "program": "${workspaceFolder}/out/install/macos-arm64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS ARM64 Debug"
+        },
+        {
+            "name": "Run macOS ARM64 Release",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-arm64",
+            "program": "${workspaceFolder}/out/install/macos-arm64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS ARM64 Release"
+        },
+        {
+            "name": "Run macOS X64 Debug",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-x64",
+            "program": "${workspaceFolder}/out/install/macos-x64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS X64 Debug"
+        },
+        {
+            "name": "Run macOS X64 Release",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-x64",
+            "program": "${workspaceFolder}/out/install/macos-x64/passepartout.app/Contents/MacOS/passepartout",
+            "args": [],
+            "preLaunchTask": "Prepare macOS X64 Release"
+        },
+        {
+            "name": "Demo Windows ARM64 Debug",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare Windows ARM64 Debug"
+        },
+        {
+            "name": "Demo Windows ARM64 Release",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/windows-arm64",
+            "program": "${workspaceFolder}/out/install/windows-arm64/passepartout.exe",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare Windows ARM64 Release"
+        },
+        {
+            "name": "Demo Windows X64 Debug",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare Windows X64 Debug"
+        },
+        {
+            "name": "Demo Windows X64 Release",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/windows-x64",
+            "program": "${workspaceFolder}/out/install/windows-x64/passepartout.exe",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare Windows X64 Release"
+        },
+        {
+            "name": "Demo macOS ARM64 Debug",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-arm64",
+            "program": "${workspaceFolder}/out/install/macos-arm64/passepartout.app/Contents/MacOS/passepartout",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare macOS ARM64 Debug"
+        },
+        {
+            "name": "Demo macOS ARM64 Release",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-arm64",
+            "program": "${workspaceFolder}/out/install/macos-arm64/passepartout.app/Contents/MacOS/passepartout",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare macOS ARM64 Release"
+        },
+        {
+            "name": "Demo macOS X64 Debug",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-x64",
+            "program": "${workspaceFolder}/out/install/macos-x64/passepartout.app/Contents/MacOS/passepartout",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare macOS X64 Debug"
+        },
+        {
+            "name": "Demo macOS X64 Release",
+            "type": "lldb-dap",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/out/install/macos-x64",
+            "program": "${workspaceFolder}/out/install/macos-x64/passepartout.app/Contents/MacOS/passepartout",
+            "args": ["--demo"],
+            "preLaunchTask": "Prepare macOS X64 Release"
+        },
+        {
+            "name": "Attach Windows ARM64",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Attach Windows X64",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Attach macOS ARM64",
+            "type": "lldb-dap",
+            "request": "attach",
+            "attachCommands": [
+                "process attach --pid ${command:pickProcess}"
+            ]
+        },
+        {
+            "name": "Attach macOS X64",
+            "type": "lldb-dap",
+            "request": "attach",
+            "attachCommands": [
+                "process attach --pid ${command:pickProcess}"
+            ]
         }
     ]
 }

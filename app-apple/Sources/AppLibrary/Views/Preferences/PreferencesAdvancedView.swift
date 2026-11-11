@@ -36,11 +36,11 @@ private enum ConfigFlagPreference: String, CaseIterable, Identifiable {
     }
 }
 
-private extension PreferencesAdvancedView {
-    static let flags: [ABI.ConfigFlag] = [
-        .daemonLooperV2
-    ]
+extension PreferencesAdvancedView {
+    static let flags: [ABI.ConfigFlag] = []
+}
 
+private extension PreferencesAdvancedView {
     var canOverride: Bool {
         iapObservable.isBeta || appConfiguration.bundle.distributionTarget == .developerID
     }

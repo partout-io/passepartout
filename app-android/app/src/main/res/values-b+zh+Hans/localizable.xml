@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">详细日志</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">非常非常详细。仅在故障排查时开启。</string>
     <string name="views_diagnostics_rows_include_private_data">包含私人数据</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">请停用所有配置文件以更改此设置。</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">仅用于本地检查。</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">删除所有日志</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">服务器配置</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">无服务器</string>
     <string name="views_tv_connection_profiles_header_share">在你的 iOS 或 macOS 设备上打开 %1$s 并启用某个配置文件的“%2$s”开关以在此处显示。</string>
     <string name="views_tv_connection_profiles_header_import">或者，你可以在“配置文件”标签页找到其他选项。</string>
-    <string name="views_tv_profiles_import_local">导入本地配置文件</string>
+    <string name="views_tv_profiles_import_local">导入配置</string>
+    <string name="views_tv_connection_profiles_web_import_description">通过 iCloud 共享配置，或选择“导入配置”以显示二维码。使用 iPhone、iPad 或 Mac 上的 Passepartout 扫描该二维码，将配置发送到此电视，也可以使用网页浏览器上传配置文件。</string>
     <string name="views_tv_profiles_detail_profiles">长按以显示配置文件的可用操作。</string>
     <string name="views_tv_web_receiver_toggle">切换以通过网页浏览器将本地配置文件导入电视。</string>
     <string name="views_tv_web_receiver_qr">使用相机扫描二维码以打开网页，上传您的配置文件。确保您连接到同一网络。</string>

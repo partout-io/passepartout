@@ -30,6 +30,12 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
     @State
     private var errorHandler: ErrorHandler = .default()
 
+    @State
+    private var showsImporter = false
+
+    @FocusState
+    private var isImportFocused: Bool
+
     public init(
         profileObservable: ProfileObservable,
         tunnel: TunnelObservable,
@@ -45,7 +51,13 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
         debugChanges()
         return NavigationStack {
             TabView {
-                connectionView.tabItem {
+                Group {
+                    if profileObservable.hasProfiles {
+                        connectionView
+                    } else {
+                        emptyProfilesView
+                    }
+                }.tabItem {
                     Text(Strings.Global.Nouns.connection)
                 }
                 profilesView.tabItem {
@@ -69,6 +81,51 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
 }
 
 private extension AppCoordinator {
+    var emptyProfilesView: some View {
+        HStack {
+            VStack {
+                Text(Strings.Views.App.Folders.noProfiles)
+                    .font(.title)
+                Text(Strings.Views.Tv.ConnectionProfiles.webImportDescription)
+                    .font(.body)
+                    .padding(.vertical)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button(showsImporter ? Strings.Global.Actions.cancel : Strings.Views.Tv.Profiles.importLocal) {
+                    if showsImporter {
+                        showsImporter = false
+                        return
+                    }
+                    do {
+                        try webReceiverObservable.start()
+                        showsImporter = true
+                    } catch {
+                        errorHandler.handle(error)
+                    }
+                }
+                .focused($isImportFocused)
+            }
+            .frame(maxWidth: .infinity)
+
+            VStack {
+                if showsImporter {
+                    WebReceiverView(
+                        webReceiverObservable: webReceiverObservable,
+                        profileObservable: profileObservable,
+                        errorHandler: errorHandler
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .themeGradient()
+        .defaultFocus($isImportFocused, true)
+        .onDisappear {
+            showsImporter = false
+        }
+    }
+
     var connectionView: some View {
         ConnectionView(
             profileObservable: profileObservable,

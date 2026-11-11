@@ -70,6 +70,11 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             return persistedPreferences
         }())
 
+        // A new redacted session must not inherit sensitive buffered or persisted lines.
+        if !preferences[\.logsPrivateData] {
+            try PartoutLogger.default.resetLog()
+        }
+
         // Create the tunnel context
         do {
             context = try await TunnelContext.forProduction(

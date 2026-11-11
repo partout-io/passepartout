@@ -42,6 +42,7 @@
     <string name="views_diagnostics_rows_extensive_logging">Registro detallado</string>
     <string name="views_diagnostics_rows_extensive_logging_subtitle">Muy, muy verboso. Mantén esto desactivado excepto para solucionar problemas.</string>
     <string name="views_diagnostics_rows_include_private_data">Incluir datos privados</string>
+    <string name="views_diagnostics_rows_include_private_data_disable_profiles">Desactiva todos los perfiles para cambiar este ajuste.</string>
     <string name="views_diagnostics_rows_include_private_data_subtitle">Úsalo solo para inspección local.</string>
     <string name="views_diagnostics_rows_remove_tunnel_logs">Eliminar todos los registros</string>
     <string name="views_diagnostics_openvpn_rows_server_configuration">Configuración del servidor</string>
@@ -133,7 +134,8 @@
     <string name="views_vpn_no_servers">No hay servidores</string>
     <string name="views_tv_connection_profiles_header_share">Abre %1$s en tu dispositivo iOS o macOS y activa el interruptor \"%2$s\" de un perfil para que aparezca aquí.</string>
     <string name="views_tv_connection_profiles_header_import">Alternativamente, encontrarás otras opciones en la pestaña \"Perfiles\".</string>
-    <string name="views_tv_profiles_import_local">Importar perfil local</string>
+    <string name="views_tv_profiles_import_local">Importar perfil</string>
+    <string name="views_tv_connection_profiles_web_import_description">Comparte un perfil mediante iCloud o selecciona «Importar perfil» para mostrar un código QR. Escanéalo con Passepartout en tu iPhone, iPad o Mac para enviar un perfil a este televisor, o utiliza un navegador web para subir un archivo de configuración.</string>
     <string name="views_tv_profiles_detail_profiles">Mantén pulsado para ver las acciones disponibles para un perfil.</string>
     <string name="views_tv_web_receiver_toggle">Activa para importar un perfil local a tu TV mediante un navegador web.</string>
     <string name="views_tv_web_receiver_qr">Escanea el código QR con tu cámara para abrir una página web donde subir tu perfil. Asegúrate de estar conectado a la misma red.</string>

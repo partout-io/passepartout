@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../partout"
+		}
+	],
+	"settings": {
+		"cmake.options.advanced": {
+			"debug": {
+				"statusBarVisibility": "hidden",
+				"projectStatusVisibility": "hidden"
+			},
+			"launch": {
+				"statusBarVisibility": "hidden",
+				"projectStatusVisibility": "hidden"
+			}
+		}
+	}
+}

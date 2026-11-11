@@ -4,7 +4,7 @@
 
 #if os(iOS)
 
-import AVFoundation
+@preconcurrency import AVFoundation
 import SwiftUI
 import UIKit
 import Vision
@@ -119,8 +119,9 @@ final class QRScanViewController: UIViewController {
             view.layer.addSublayer(previewLayer)
 
             session.commitConfiguration()
-            queue.async { [weak self] in
-                self?.session.startRunning()
+            // Configuration is complete before the session starts on its capture queue.
+            queue.async { [session] in
+                session.startRunning()
             }
             onLoad?(nil)
         } catch {

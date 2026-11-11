@@ -40,7 +40,7 @@ struct OnDemandView: View, ModuleDraftEditing {
 
 private extension OnDemandView {
     var allPolicies: [OnDemandModule.Policy] {
-        if appConfiguration.bundle.distributionTarget.supportsPaidFeatures {
+        if appConfiguration.bundle.distributionTarget.supportsAllFeatures {
             return [.any, .excluding, .including]
         } else {
             return [.any]
@@ -189,7 +189,7 @@ private extension OnDemandView {
 private extension OnDemandView {
     func requestSSID(_ text: Binding<String>) {
         Task { @MainActor in
-            let ssid = try await wifi.currentSSID()
+            guard let ssid = try? await wifi.currentSSID() else { return }
             if !draft.module.withSSIDs.keys.contains(ssid) {
                 text.wrappedValue = ssid
             }

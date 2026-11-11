@@ -7,6 +7,8 @@ package com.algoritmico.passepartout
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
+import com.algoritmico.passepartout.business.extensions.daemonFeatureFlags
+import com.algoritmico.passepartout.business.extensions.enabledFlags
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.appBundle
@@ -85,7 +87,6 @@ class PassepartoutVpnService: VpnService() {
             AppLog.i(logTag, "Preferences: $preferences")
 
             // Initialize the library with the intent preferences
-//            val openvpn_version = preferences?.configFlags ? 3 : 2
             val logsPrivateData = preferences?.logsPrivateData ?: false
 
             // XXX: Hardcode CloudFlare for now
@@ -99,13 +100,17 @@ class PassepartoutVpnService: VpnService() {
                 dnsFallbackServers,
                 logsSnapshots
             )
-            val cryptoBackend = CryptoBackend.decode(preferences?.cryptoBackend)
+            // Ignore legacy backend preferences: Android always uses mbedTLS.
+            val cryptoBackend = CryptoBackend.mbedtls
             AppLog.d(logTag, "Crypto backend: $cryptoBackend")
+            val featureFlags = preferences?.enabledFlags()?.daemonFeatureFlags ?: emptySet()
+            AppLog.d(logTag, "Daemon feature flags: $featureFlags")
             return PartoutVpnServiceRuntime.StartOptions(
                 logsPrivateData,
                 minDataCountDelta,
                 cryptoBackend,
-                controllerOptions
+                controllerOptions,
+                featureFlags = featureFlags
             )
         }
 

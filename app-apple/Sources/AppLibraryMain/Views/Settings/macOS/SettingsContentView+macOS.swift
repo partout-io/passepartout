@@ -11,9 +11,6 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
     @Environment(\.appConfiguration)
     private var appConfiguration
 
-    @Environment(\.dismiss)
-    private var dismiss
-
     let profileObservable: ProfileObservable
 
     let isBeta: Bool
@@ -38,13 +35,6 @@ struct SettingsContentView<LinkContent, SettingsDestination, DiagnosticsDestinat
                 .navigationDestination(for: SettingsCoordinatorRoute.self, destination: settingsDestination)
                 .navigationDestination(for: DiagnosticsRoute.self, destination: diagnosticsDestination)
                 .themeNavigationStack(closable: false, path: $path)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button(Strings.Global.Nouns.ok) {
-                            dismiss()
-                        }
-                    }
-                }
         }
         .onLoad {
             navigationRoute = .preferences
@@ -63,7 +53,7 @@ private extension SettingsContentView {
                 linkContent(.version)
                 linkContent(.links)
                 linkContent(.credits)
-                if !isBeta && appConfiguration.bundle.distributionTarget.supportsIAP {
+                if !isBeta && appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                     linkContent(.donate)
                 }
             }
@@ -75,7 +65,7 @@ private extension SettingsContentView {
                     linkContent(.systemExtension)
                 }
                 linkContent(.diagnostics)
-                if appConfiguration.bundle.distributionTarget.supportsIAP {
+                if appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                     linkContent(.purchased)
                 }
             }

@@ -52,6 +52,7 @@ class UserPreferencesObservable(
             AppLog.w(logTag, "Unable to load preferences", it)
             AppPreferences.default
         }
+        AppLog.logsPrivateData = snapshot.logsPrivateData
     }
 
     override fun close() {
@@ -109,6 +110,7 @@ class UserPreferencesObservable(
     }
 
     private fun savePreferences() {
+        AppLog.logsPrivateData = snapshot.logsPrivateData
         AppLog.d(logTag, "Preferences updated: $snapshot")
     }
     //endregion

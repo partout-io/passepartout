@@ -24,6 +24,9 @@ interface AppLogBackend {
 
 object AppLog {
     @Volatile
+    var logsPrivateData = false
+
+    @Volatile
     private var backend: AppLogBackend = AndroidAppLogBackend
 
     fun setBackend(backend: AppLogBackend): AppLogBackend {
@@ -37,19 +40,27 @@ object AppLog {
     }
 
     fun d(tag: String, message: String, error: Throwable? = null) {
-        backend.log(AppLogLevel.DEBUG, tag, message, error)
+        log(AppLogLevel.DEBUG, tag, message, error)
     }
 
     fun i(tag: String, message: String, error: Throwable? = null) {
-        backend.log(AppLogLevel.INFO, tag, message, error)
+        log(AppLogLevel.INFO, tag, message, error)
     }
 
     fun w(tag: String, message: String, error: Throwable? = null) {
-        backend.log(AppLogLevel.WARN, tag, message, error)
+        log(AppLogLevel.WARN, tag, message, error)
     }
 
     fun e(tag: String, message: String, error: Throwable? = null) {
-        backend.log(AppLogLevel.ERROR, tag, message, error)
+        log(AppLogLevel.ERROR, tag, message, error)
+    }
+
+    private fun log(level: AppLogLevel, tag: String, message: String, error: Throwable?) {
+        if (error != null && !logsPrivateData) {
+            backend.log(level, tag, "$message (${error.javaClass.name})")
+            return
+        }
+        backend.log(level, tag, message, error)
     }
 }
 

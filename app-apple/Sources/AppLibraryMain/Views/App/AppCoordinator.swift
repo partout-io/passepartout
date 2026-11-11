@@ -6,6 +6,11 @@ import CommonLibrary
 import SwiftUI
 
 public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding {
+#if os(macOS)
+    @Environment(\.openWindow)
+    private var openWindow
+#endif
+
     @Environment(UserPreferencesObservable.self)
     private var userPreferences
 
@@ -100,10 +105,6 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
         .onChange(of: interactiveObservable.isPresented) {
             modalRoute = $1 ? .interactiveLogin : nil
         }
-        .onReceive(AppPipe.settings) {
-            guard modalRoute != .settings else { return }
-            present(.settings)
-        }
     }
 }
 
@@ -149,7 +150,11 @@ extension AppCoordinator {
             layout: userPreferences.binding(\.profilesLayout),
             importAction: importActionBinding,
             onSettings: {
+#if os(macOS)
+                openWindow(id: SettingsCoordinator.windowId)
+#else
                 present(.settings)
+#endif
             },
             onNewProfile: onNewProfile
         )
@@ -158,11 +163,13 @@ extension AppCoordinator {
     @ViewBuilder
     func modalDestination(for item: ModalRoute?) -> some View {
         switch item {
+#if os(iOS)
         case .settings:
             SettingsCoordinator(
                 profileObservable: profileObservable,
                 tunnel: tunnel
             )
+#endif
         case .editProfile:
             ProfileCoordinator(
                 profileObservable: profileObservable,

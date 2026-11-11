@@ -85,6 +85,10 @@ extension View {
         formStyle(.grouped)
     }
 
+    public func themeGradient() -> some View {
+        modifier(ThemeGradientModifier())
+    }
+
     public func themeList() -> some View {
 #if os(tvOS)
         listStyle(.grouped)
@@ -204,6 +208,16 @@ extension View {
     public func themeSubtitle() -> some View {
         foregroundStyle(.secondary)
             .font(.subheadline)
+    }
+
+    public func themeToolbarLabel() -> some View {
+#if os(macOS)
+        // Match the native menu height while preserving the full label width.
+        fixedSize()
+            .frame(height: 16)
+#else
+        self
+#endif
     }
 
     public func themeTrailingValue(_ value: CustomStringConvertible?, truncationMode: Text.TruncationMode = .tail) -> some View {

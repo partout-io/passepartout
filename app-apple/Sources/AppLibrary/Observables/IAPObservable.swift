@@ -8,7 +8,7 @@ import Observation
 @MainActor @Observable
 public final class IAPObservable {
     private let iapManager: IAPManager
-    private let supportsIAP: Bool
+    private let usesInAppPurchases: Bool
 
     public private(set) var isEnabled: Bool
     public private(set) var isLoadingReceipt: Bool
@@ -20,11 +20,11 @@ public final class IAPObservable {
     public private(set) var isEligibleForFeedback: Bool
     private var subscription: Task<Void, Never>?
 
-    public init(iapManager: IAPManager, supportsIAP: Bool) {
+    public init(iapManager: IAPManager, usesInAppPurchases: Bool) {
         self.iapManager = iapManager
-        self.supportsIAP = supportsIAP
+        self.usesInAppPurchases = usesInAppPurchases
         isEnabled = true
-        isLoadingReceipt = true
+        isLoadingReceipt = usesInAppPurchases && iapManager.isEnabled
         isBeta = false
         purchasedProducts = []
         eligibleFeatures = []
@@ -37,7 +37,7 @@ public final class IAPObservable {
 
 extension IAPObservable {
     public func enable(_ isEnabled: Bool) {
-        iapManager.isEnabled = supportsIAP && isEnabled
+        iapManager.isEnabled = usesInAppPurchases && isEnabled
     }
 
     public func purchase(_ storeProduct: ABI.StoreProduct) async throws -> ABI.StoreResult {

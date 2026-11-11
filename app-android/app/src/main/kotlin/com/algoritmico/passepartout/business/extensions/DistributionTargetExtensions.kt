@@ -15,8 +15,8 @@ val DistributionTarget.supportsAppGroups: Boolean
 val DistributionTarget.supportsCloudKit: Boolean
     get() = this != DistributionTarget.developerID
 
-val DistributionTarget.supportsIAP: Boolean
+val DistributionTarget.usesInAppPurchases: Boolean
     get() = this == DistributionTarget.appStore
 
-val DistributionTarget.supportsPaidFeatures: Boolean
+val DistributionTarget.supportsAllFeatures: Boolean
     get() = this != DistributionTarget.developerID

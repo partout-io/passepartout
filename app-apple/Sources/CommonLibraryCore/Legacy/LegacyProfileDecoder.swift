@@ -28,7 +28,7 @@ public struct LegacyProfileDecoder: Sendable {
                 errors.append("V\(3 - index): \(error)")
             }
         }
-        throw PartoutError(.decoding, errors.joined(separator: ", "))
+        throw PartoutError(.decoding, payload: .string(errors.joined(separator: ", ")))
     }
 
     private func decodeV3(_ string: String) throws -> Profile {

@@ -35,5 +35,3 @@ public struct OpenAPIChangelogEntry: Sendable, Codable, Hashable {
     }
 }
 
-
-extension OpenAPIChangelogEntry: Identifiable {}

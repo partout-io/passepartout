@@ -81,7 +81,7 @@ private extension OpenVPNView.ImportModifier {
                 pspLog(.core, .error, "Unable to parse URL: \(error)")
                 let appError = ABI.AppError(error)
                 switch appError {
-                case .openVPNPassphraseRequired:
+                case .partout(let error) where error.isOpenVPNPassphraseRequired:
                     Task {
                         // XXX: re-present same alert after artificial delay
                         try? await Task.sleep(for: .milliseconds(500))

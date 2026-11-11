@@ -48,7 +48,7 @@ public struct PreferencesView: View {
 #endif
             pinActiveProfileSection
             dnsFallsBackSection
-            if appConfiguration.bundle.distributionTarget.supportsIAP {
+            if appConfiguration.bundle.distributionTarget.usesInAppPurchases {
                 enablesPurchasesSection
             }
             if iapObservable.isBeta {
@@ -57,7 +57,9 @@ public struct PreferencesView: View {
             if appConfiguration.bundle.distributionTarget.supportsCloudKit {
                 eraseCloudKitSection
             }
-            NavigationLink(advancedTitle, destination: advancedView)
+            if !PreferencesAdvancedView.flags.isEmpty {
+                NavigationLink(advancedTitle, destination: advancedView)
+            }
         }
         .themeForm()
     }
