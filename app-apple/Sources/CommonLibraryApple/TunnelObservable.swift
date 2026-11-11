@@ -97,7 +97,7 @@ extension TunnelObservable {
     }
 
     public func updateLoggingLevel(_ level: DebugLog.Level) {
-        logLevelRequest.submit(level) { [weak self] level in
+        logLevelRequest.submit { [weak self] in
             guard let self else { return }
             for (profileId, snapshot) in tunnel.snapshots where snapshot.status == .active {
                 guard !Task.isCancelled else { return }

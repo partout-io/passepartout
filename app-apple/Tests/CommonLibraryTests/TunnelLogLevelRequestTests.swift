@@ -13,13 +13,13 @@ struct TunnelLogLevelRequestTests {
         let sut = TunnelLogLevelRequest()
         var completion: CheckedContinuation<Void, Never>?
         var applied: [DebugLog.Level] = []
-        let first = sut.submit(.debug) { level in
+        let first = sut.submit {
             await withCheckedContinuation { completion = $0 }
-            applied.append(level)
+            applied.append(.debug)
         }
         while completion == nil { await Task.yield() }
-        sut.submit(.debug) { _ in Issue.record("Superseded change was sent") }
-        let last = sut.submit(.info) { applied.append($0) }
+        sut.submit { Issue.record("Superseded change was sent") }
+        let last = sut.submit { applied.append(.info) }
         #expect(applied.isEmpty)
         completion?.resume()
         await first.value
