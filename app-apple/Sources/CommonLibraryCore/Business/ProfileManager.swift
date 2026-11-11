@@ -397,7 +397,7 @@ private extension ProfileManager {
                 requiredFeatures: requiredFeatures(for: $1.value)
             )
         }
-        pspLog(.profiles, .info, "Updated headers: \(allHeaders)")
+        pspLog(.profiles, .debug, "Computed profile headers: \(allHeaders.count)")
         return allHeaders
     }
 }
