@@ -122,6 +122,14 @@ public func pspLogRegister(
     }
 }
 
+/// Zig records already carry immutable profile/module identity. Preserve it instead of
+/// labeling those records GLOBAL at the Swift callback boundary.
+func tunnelLogMessage(_ context: PartoutLoggerContext, _ message: String) -> String {
+    if message.hasPrefix("[profile=") { return message }
+    let prefix = "[\(context.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
+    return "\(prefix) \(message)"
+}
+
 // MARK: - Helpers
 
 private extension PartoutLogger {
@@ -154,10 +162,7 @@ private extension PartoutLogger {
             localURL: localURL,
             localMapper: localMapper
         )
-        builder.willPrint = {
-            let prefix = "[\($0.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
-            return "\(prefix) \($1)"
-        }
+        builder.willPrint = tunnelLogMessage
         return builder.build()
     }
 
