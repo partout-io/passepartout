@@ -76,8 +76,7 @@ extension TunnelContext {
             backend: runtime.backend,
             originalProfile: runtime.originalProfile,
             environment: runtime.environment,
-            iap: iap,
-            preferences: preferences
+            iap: iap
         )
     }
 }

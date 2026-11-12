@@ -3,28 +3,27 @@
 // SPDX-License-Identifier: GPL-3.0
 
 @testable import CommonLibraryCore
-import Partout
 import Testing
 
 @MainActor
 struct SingleAsyncRequestTests {
     @Test
-    func givenInFlightChange_whenToggledAgain_thenLatestLevelWins() async {
+    func givenInFlightRequest_whenReplaced_thenLatestRequestRuns() async {
         let sut = SingleAsyncRequest<Void>()
         var completion: CheckedContinuation<Void, Never>?
-        var applied: [DebugLog.Level] = []
+        var applied: [String] = []
         let first = sut.submit {
             await withCheckedContinuation { completion = $0 }
-            applied.append(.debug)
+            applied.append("first")
         }
         while completion == nil { await Task.yield() }
         sut.submit { Issue.record("Superseded change was sent") }
-        let last = sut.submit { applied.append(.info) }
+        let last = sut.submit { applied.append("latest") }
         #expect(applied.isEmpty)
         completion?.resume()
         _ = await first.value
         _ = await last.value
-        #expect(applied == [.debug, .info])
+        #expect(applied == ["first", "latest"])
     }
 
     @Test

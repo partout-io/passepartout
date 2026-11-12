@@ -120,7 +120,6 @@ public final class AppContext {
                 defaultLevel: appConfiguration.constants.log.options.maxDebugLogLevel
             )
             PartoutLogger.setMaxLevel(level)
-            tunnelObservable.updateLoggingLevel(level)
         }
 
         observeManagerEvents()
