@@ -192,14 +192,8 @@ extension PartoutLogger.Builder {
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
         assertsMissingLoggingCategory = true
-        var list: [LoggerCategory] = LoggerCategory.allCases + [
-            .App.abi,
-            .App.core,
-            .App.iap,
-            .App.profiles,
-            .App.web
-        ] + [.openvpn, .wireguard] // Legacy
-        list.append(.runtime)
+        let list = LoggerCategory.allCases
+            + ABI.AppLogCategory.allCases.map(\.partoutCategory)
         setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
@@ -256,13 +250,7 @@ extension ABI.AppLogLevel {
 
 private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {
-        switch self {
-        case .abi: .App.abi
-        case .core: .App.core
-        case .iap: .App.iap
-        case .profiles: .App.profiles
-        case .web: .App.web
-        }
+        LoggerCategory(rawValue: id)
     }
 }
 
@@ -275,23 +263,5 @@ private extension ABI.AppLogLevel {
         case .error: .error
         case .fault: .fault
         }
-    }
-}
-
-private extension LoggerCategory {
-    enum App {
-        static let abi = LoggerCategory(appCategory: .abi)
-
-        static let core = LoggerCategory(appCategory: .core)
-
-        static let iap = LoggerCategory(appCategory: .iap)
-
-        static let profiles = LoggerCategory(appCategory: .profiles)
-
-        static let web = LoggerCategory(appCategory: .web)
-    }
-
-    init(appCategory: ABI.AppLogCategory) {
-        self.init(rawValue: appCategory.id)
     }
 }

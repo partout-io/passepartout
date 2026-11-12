@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public enum AppLogCategory: String, Identifiable, Sendable {
+    public enum AppLogCategory: String, CaseIterable, Identifiable, Sendable {
         case abi
         case core
         case iap
