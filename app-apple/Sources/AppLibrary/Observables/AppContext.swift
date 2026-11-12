@@ -115,8 +115,10 @@ public final class AppContext {
 
         userPreferences.onLogLevelChange = { [weak self] in
             guard let self else { return }
-            let level: DebugLog.Level = preferences[\.extensiveLogging]
-                ? .debug : appConfiguration.constants.log.options.maxDebugLogLevel
+            let level = pspLogLevel(
+                extensiveLogging: preferences[\.extensiveLogging],
+                defaultLevel: appConfiguration.constants.log.options.maxDebugLogLevel
+            )
             PartoutLogger.setMaxLevel(level)
             tunnelObservable.updateLoggingLevel(level)
         }

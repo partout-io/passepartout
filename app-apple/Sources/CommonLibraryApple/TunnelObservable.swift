@@ -129,10 +129,10 @@ extension TunnelObservable {
     }
 
     private func currentLog(logging: Logging) async -> [ABI.LogLine] {
-        var maxLevel = logging.maxDebugLogLevel
-        if preferences?[\.extensiveLogging] == true {
-            maxLevel = .debug
-        }
+        let maxLevel = pspLogLevel(
+            extensiveLogging: preferences?[\.extensiveLogging] == true,
+            defaultLevel: logging.maxDebugLogLevel
+        )
         // TODO: #218, handle multiple profiles
         guard let firstProfileId = tunnel.snapshots.first?.key else {
             return []
@@ -208,7 +208,10 @@ extension TunnelObservable {
                 let newlyActive = activeIds.subtracting(loggingActiveProfiles)
                 loggingActiveProfiles = activeIds
                 if !newlyActive.isEmpty, let logging {
-                    updateLoggingLevel(preferences?[\.extensiveLogging] == true ? .debug : logging.maxDebugLogLevel)
+                    updateLoggingLevel(pspLogLevel(
+                        extensiveLogging: preferences?[\.extensiveLogging] == true,
+                        defaultLevel: logging.maxDebugLogLevel
+                    ))
                 }
                 // Copy locally for sync access
                 let newActiveProfiles = activeProfiles.with(
