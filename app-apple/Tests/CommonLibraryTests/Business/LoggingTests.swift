@@ -9,9 +9,13 @@ import Testing
 struct LoggingTests {
     @Test
     func givenNativeConnectionRecord_whenFormatting_thenPreservesItsIdentity() {
-        let message = "[profile=11111111-1111-1111-1111-111111111111 module=22222222-2222-2222-2222-222222222222] Connected"
+        let message = "[ABCDEF12] Connected"
         #expect(tunnelLogMessage(.global, message) == message)
         #expect(tunnelLogMessage(.global, "Initialized") == "[GLOBAL] Initialized")
+        #expect(tunnelLogMessage(.global, "[OpenVPN] Initialized") == "[GLOBAL] [OpenVPN] Initialized")
+        let context = PartoutLoggerContext(Profile.ID(uuidString: "12345678-1111-1111-1111-111111111111")!)
+        #expect(tunnelLogMessage(context, "Connected") == "[12345678] Connected")
+        #expect(tunnelLogMessage(context, message) == message)
     }
 
     @Test
