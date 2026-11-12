@@ -298,7 +298,7 @@ private extension ProfileManager {
     }
 
     func reloadRemoteProfiles(_ result: [Profile]) {
-        pspLog(.profiles, .debug, "Reloaded remote profiles: \(result.count)")
+        pspLog(.profiles, .debug, "Reloaded remote profiles: \(result.map(\.id))")
 
         remoteProfilesIds = Set(result.map(\.id))
         if waitingObservers.contains(.remote) {
