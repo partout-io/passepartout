@@ -7,7 +7,7 @@ import Partout
 extension ABI {
     public enum AppLogCategory: String, CaseIterable, Identifiable, Sendable {
         case app
-        case purchases
+        case iap
         case profiles
         case web
 

@@ -61,10 +61,10 @@ public struct PaywallModifier: ViewModifier {
                 guard let reason = $1 else { return }
                 Task {
                     if !iapObservable.isEnabled {
-                        pspLog(.purchases, .info, "In-app purchases are disabled, enabling...")
+                        pspLog(.iap, .info, "In-app purchases are disabled, enabling...")
                         iapObservable.enable(true)
                         guard !iapObservable.isEligible(for: reason.requiredFeatures) else {
-                            pspLog(.purchases, .info, "Skipping paywall because eligible for features: \(reason.requiredFeatures)")
+                            pspLog(.iap, .info, "Skipping paywall because eligible for features: \(reason.requiredFeatures)")
                             return
                         }
                     }

@@ -31,8 +31,8 @@ public final class SharedReceiptReader: UserInAppReceiptReader {
 
 private extension SharedReceiptReader {
     func asyncReceipt(at userLevel: ABI.AppUserLevel) async -> ABI.StoreReceipt? {
-        pspLog(.purchases, .info, "\tParse receipt for user level \(userLevel)")
-        pspLog(.purchases, .info, "\tRead receipt")
+        pspLog(.iap, .info, "\tParse receipt for user level \(userLevel)")
+        pspLog(.iap, .info, "\tRead receipt")
         return await reader.receipt()
     }
 }

@@ -81,7 +81,7 @@ public final class TunnelContext: TunnelContextProtocol {
 
             // Prepare for periodic receipt verification
             let params = iap.verificationParameters
-            pspLog(.purchases, .info, "Will start profile verification in \(params.delay) seconds")
+            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may
@@ -179,7 +179,7 @@ private extension TunnelContext {
 
             // Perform periodic verification
             do {
-                pspLog(.purchases, .debug, "Verify profile, requires: \(profile.features)")
+                pspLog(.iap, .debug, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {
@@ -189,14 +189,14 @@ private extension TunnelContext {
                 if attempts > 0 {
                     attempts -= 1
                     let products = iapManager.purchasedProducts
-                    pspLog(.purchases, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
+                    pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
                     try? await Task.sleep(interval: params.retryInterval)
                     continue
                 }
 
                 let errorCode: ABI.AppErrorCode = .ineligibleProfile
                 environment.setEnvironmentValue(errorCode.toLastErrorCode, forKey: TunnelEnvironmentKeys.lastErrorCode)
-                pspLog(.purchases, .error, "Verification failed for profile \(profile.id), shutting down: \(error)")
+                pspLog(.iap, .error, "Verification failed for profile \(profile.id), shutting down: \(error)")
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
@@ -205,7 +205,7 @@ private extension TunnelContext {
             }
 
             // Retry in a while
-            pspLog(.purchases, .debug, "Will verify profile again in \(params.interval) seconds...")
+            pspLog(.iap, .debug, "Will verify profile again in \(params.interval) seconds...")
             try? await Task.sleep(interval: params.interval)
 
             // On successful verification, reset attempts for the next verification

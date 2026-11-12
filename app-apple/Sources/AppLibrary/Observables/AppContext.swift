@@ -266,7 +266,7 @@ private extension AppContext {
         pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
 
-        pspLog(.purchases, .info, "\tObserve in-app events...")
+        pspLog(.iap, .info, "\tObserve in-app events...")
         iapManager.observeObjects(withProducts: true)
 
         // Defer loads to not block app launch.
@@ -278,7 +278,7 @@ private extension AppContext {
             await reloadExtensions()
         }
 
-        pspLog(.purchases, .info, "\tObserve changes in IAPManager...")
+        pspLog(.iap, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
             for await event in iapEvents {
@@ -286,16 +286,16 @@ private extension AppContext {
                 switch event {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates().
-                    pspLog(.purchases, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
+                    pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates().
                     do {
-                        pspLog(.purchases, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
+                        pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
                         try await onEligibleFeatures(Set(payload.features))
                     } catch {
-                        pspLog(.purchases, .error, "Unable to react to eligible features: \(error)")
+                        pspLog(.iap, .error, "Unable to react to eligible features: \(error)")
                     }
                 default:
                     break
@@ -358,7 +358,7 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.purchases, .notice, "Application did update eligible features")
+        pspLog(.iap, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
