@@ -26,7 +26,7 @@ public final class TunnelContext: TunnelContextProtocol {
     private let originalProfile: Profile
     private let environment: TunnelEnvironment
     private let iap: IAP?
-    private let persistedPreferences: AppPreferencesStore
+    private let preferences: AppPreferencesStore
 
     private var verifierSubscription: Task<Void, Error>?
 
@@ -35,13 +35,13 @@ public final class TunnelContext: TunnelContextProtocol {
         originalProfile: Profile,
         environment: TunnelEnvironment,
         iap: IAP?,
-        persistedPreferences: AppPreferencesStore
+        preferences: AppPreferencesStore
     ) {
         self.backend = backend
         self.originalProfile = originalProfile
         self.environment = environment
         self.iap = iap
-        self.persistedPreferences = persistedPreferences
+        self.preferences = preferences
 
         // Disable if skips purchases
         if let iap {
@@ -127,7 +127,7 @@ public final class TunnelContext: TunnelContextProtocol {
             }
             switch output {
             case .logLevel(let level):
-                persistedPreferences.overwrite {
+                preferences.overwrite {
                     $0.extensiveLogging = level == .debug
                 }
             default:

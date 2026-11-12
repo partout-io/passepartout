@@ -61,7 +61,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             if let startPreferences {
                 persistedPreferences.copy(startPreferences)
                 assert(persistedPreferences.serialized() == startPreferences)
-                return startPreferences
             }
             return persistedPreferences
         }())
