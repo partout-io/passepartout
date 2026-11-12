@@ -20,28 +20,4 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# JNI entry points are exported with static Java_* symbols, so their Kotlin
-# owner and method names must remain stable after R8.
--keep interface io.partout.PartoutWrapperProtocol {
-    native <methods>;
-}
-
-# The native core calls these handlers by method name through GetMethodID.
-# Keep both the fun-interface methods and their generated lambda/object
-# implementors so R8 cannot rename the callback entry points.
--keep interface io.partout.abi.PartoutCompletionCallback {
-    public void onComplete(io.partout.models.PartoutErrorCode, kotlinx.serialization.json.JsonElement);
-}
-# JNI entry points are exported with static Java_* symbols, and the native
-# tunnel backend also receives this controller object and calls into it by name
-# through GetMethodID. Keep the class and both sides of that method contract.
--keep interface io.partout.NativeTunnelControllerJNI {
-    native <methods>;
-    public long setDelegate(long);
-    public int setTunnel(java.lang.String);
-    public void configureSockets(int[]);
-    public void onSnapshot(java.lang.String);
-    public void setEnvironmentValue(java.lang.String, java.lang.String);
-    public void clearTunnel(boolean);
-    public void cancelTunnel(java.lang.String);
-}
+# Partout JNI rules are supplied by the local library module.
