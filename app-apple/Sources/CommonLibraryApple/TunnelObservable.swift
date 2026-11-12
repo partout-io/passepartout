@@ -32,9 +32,9 @@ public final class TunnelObservable {
 
     private let logging: Logging?
 
-    private let logRequest = TunnelLogRequest()
+    private let logRequest = SingleAsyncRequest<[String]>()
 
-    private let logLevelRequest = SingleAsyncRequest()
+    private let logLevelRequest = SingleAsyncRequest<Void>()
 
     private var loggingActiveProfiles: Set<Profile.ID> = []
 
@@ -125,7 +125,7 @@ extension TunnelObservable {
                 formatted.append(logging.formatter?.formattedLog(timestamp: line.timestamp, message: line.message) ?? line.message)
             }
             return formatted
-        }
+        } ?? []
     }
 
     private func currentLog(logging: Logging) async -> [ABI.LogLine] {
