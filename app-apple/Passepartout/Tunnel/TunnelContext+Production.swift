@@ -76,7 +76,8 @@ extension TunnelContext {
             backend: runtime.backend,
             originalProfile: runtime.originalProfile,
             environment: runtime.environment,
-            iap: iap
+            iap: iap,
+            persistedPreferences: AppPreferencesStore(UserDefaultsAppPreferences(defaults: .standard))
         )
     }
 }

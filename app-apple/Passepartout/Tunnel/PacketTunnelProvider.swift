@@ -103,13 +103,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func handleAppMessage(_ messageData: Data) async -> Data? {
         guard let context else { return nil }
-        let response = await context.sendMessage(messageData)
-        if let response,
-           let output = try? ABI.decode(Message.Output.self, from: response),
-           case .logLevel(let level) = output {
-            UserDefaultsAppPreferences(defaults: .standard).extensiveLogging = level == .debug
-        }
-        return response
+        return await context.sendMessage(messageData)
     }
 
 //    override func wake() {

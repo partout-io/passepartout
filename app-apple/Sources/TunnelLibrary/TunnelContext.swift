@@ -26,6 +26,7 @@ public final class TunnelContext: TunnelContextProtocol {
     private let originalProfile: Profile
     private let environment: TunnelEnvironment
     private let iap: IAP?
+    private let persistedPreferences: AppPreferencesStore
 
     private var verifierSubscription: Task<Void, Error>?
 
@@ -33,12 +34,14 @@ public final class TunnelContext: TunnelContextProtocol {
         backend: TunnelBackendProtocol,
         originalProfile: Profile,
         environment: TunnelEnvironment,
-        iap: IAP?
+        iap: IAP?,
+        persistedPreferences: AppPreferencesStore
     ) {
         self.backend = backend
         self.originalProfile = originalProfile
         self.environment = environment
         self.iap = iap
+        self.persistedPreferences = persistedPreferences
 
         // Disable if skips purchases
         if let iap {
@@ -117,7 +120,20 @@ public final class TunnelContext: TunnelContextProtocol {
     public func sendMessage(_ messageData: Data) async -> Data? {
         guard let backend else { return nil }
         do {
-            return try await backend.sendMessage(messageData)
+            let response = try await backend.sendMessage(messageData)
+            guard let response,
+                  let output = try? ABI.decode(Message.Output.self, from: response) else {
+                return response
+            }
+            switch output {
+            case .logLevel(let level):
+                persistedPreferences.overwrite {
+                    $0.extensiveLogging = level == .debug
+                }
+            default:
+                break
+            }
+            return response
         } catch {
             pspLog(.app, .error, "Unable to handle message: \(error)")
             return nil
