@@ -27,7 +27,7 @@ extension ABI {
 }
 
 extension ABI {
-    public enum ConfigEvent: Sendable {
+    public enum ConfigEvent: Encodable, Sendable {
         case refresh(Refresh)
     }
 
@@ -42,7 +42,7 @@ extension ABI {
         case shouldReconnect(ShouldReconnect)
     }
 
-    public enum ProfileEvent: Equatable, Sendable {
+    public enum ProfileEvent: Equatable, Encodable, Sendable {
         case ready(Ready = .init())
         case localProfiles(LocalProfiles = .init())
         case refresh(Refresh)

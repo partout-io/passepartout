@@ -5,7 +5,7 @@
 import Partout
 
 extension ABI {
-    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Sendable {
+    public struct AppProfileHeader: Identifiable, Hashable, Comparable, Encodable, Sendable {
         public private(set) var id: Profile.ID
         public let name: String
         public let moduleTypes: [ModuleType]
@@ -40,7 +40,7 @@ extension ABI {
         }
     }
 
-    public struct AppTunnelInfo: Identifiable, Hashable, Sendable {
+    public struct AppTunnelInfo: Identifiable, Hashable, Encodable, Sendable {
         public let id: Profile.ID
         public let isEnabled: Bool
         public let status: AppProfileStatus
