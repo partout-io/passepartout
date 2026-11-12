@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "logging.h"
+#include "partout.h"
 #include <chrono>
 #include <iostream>
 #include <sstream>
@@ -18,8 +19,10 @@ void AppLogger::PartoutMessage(void *, const char *profileId, int level, const c
     if (!message) return;
     try {
         const auto text = profileId ? "[" + std::string(profileId) + "] " + message : std::string(message);
-        logger.Write(level <= 1 ? LogLevel::error : level <= 3 ? LogLevel::info : LogLevel::debug,
-                     "partout", text);
+        const auto logLevel = level <= PartoutLogLevelError ? LogLevel::error
+            : level <= PartoutLogLevelInfo ? LogLevel::info
+            : LogLevel::debug;
+        logger.Write(logLevel, "partout", text);
     } catch (...) {
         // Never throw through the native logging callback.
     }
