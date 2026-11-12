@@ -174,9 +174,11 @@ std::string ReadProfile(VpnChannel const &channel) {
     }
 }
 
-void LogNative(void *, int, const char *message) noexcept {
+void LogNative(void *, const char *profileId, int, const char *message) noexcept {
     try {
-        if (message) Log(winrt::to_hstring(message));
+        if (!message) return;
+        const auto text = profileId ? "[" + std::string(profileId) + "] " + message : std::string(message);
+        Log(winrt::to_hstring(text));
     } catch (...) {
         // Never throw through the native logging callback.
     }

@@ -122,11 +122,8 @@ public func pspLogRegister(
     }
 }
 
-/// Preserve the short profile prefix already attached to native records.
+/// Format profile context consistently for Swift and native records.
 func tunnelLogMessage(_ context: PartoutLoggerContext, _ message: String) -> String {
-    if message.range(of: #"^\[[0-9A-F]{8}\] "#, options: .regularExpression) != nil {
-        return message
-    }
     let prefix = "[\(context.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
     return "\(prefix) \(message)"
 }

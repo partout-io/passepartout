@@ -12,11 +12,17 @@
 
 namespace Passepartout {
 AppLogger::AppLogger(LogSink sink) : sink_(std::move(sink)) {}
-void AppLogger::PartoutMessage(void *, int level, const char *message) noexcept {
+void AppLogger::PartoutMessage(void *, const char *profileId, int level, const char *message) noexcept {
     // Partout holds this process-wide callback; no application-owned context may dangle.
     static AppLogger logger;
-    if (message) logger.Write(level <= 1 ? LogLevel::error : level <= 3 ? LogLevel::info : LogLevel::debug,
-                              "partout", message);
+    if (!message) return;
+    try {
+        const auto text = profileId ? "[" + std::string(profileId) + "] " + message : std::string(message);
+        logger.Write(level <= 1 ? LogLevel::error : level <= 3 ? LogLevel::info : LogLevel::debug,
+                     "partout", text);
+    } catch (...) {
+        // Never throw through the native logging callback.
+    }
 }
 void AppLogger::Write(LogLevel level, const std::string &category, const std::string &message) noexcept {
     try {

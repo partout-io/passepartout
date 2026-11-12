@@ -9,9 +9,13 @@
 #include "partout.h"
 #include "partout_posix.h"
 
-static void stdio_logger(void *ctx, int level, const char *message) {
+static void stdio_logger(void *ctx, const char *profile_id, int level, const char *message) {
     (void)ctx;
-    printf("%s\n", message);
+    if (profile_id) {
+        printf("[%s] %s\n", profile_id, message);
+    } else {
+        printf("%s\n", message);
+    }
 }
 
 char *psp_readfile(const char *rel_path, const char *parent);

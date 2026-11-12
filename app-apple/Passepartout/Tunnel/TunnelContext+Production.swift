@@ -216,11 +216,13 @@ private struct TaggedProfileCoder: ProfileCoder {
 
 private nonisolated func logger(
     _ ctx: UnsafeMutableRawPointer?,
+    _ profileId: UnsafePointer<CChar>?,
     _ level: Int32,
     _ message: UnsafePointer<CChar>?
 ) {
     guard let level = ABI.AppLogLevel(partoutCLevel: level),
           let message else { return }
-    pspLog(.abi, level, String(cString: message))
+    let profileId = profileId.flatMap { Profile.ID(uuidString: String(cString: $0)) }
+    pspLog(profileId, .abi, level, String(cString: message))
 }
 #endif
