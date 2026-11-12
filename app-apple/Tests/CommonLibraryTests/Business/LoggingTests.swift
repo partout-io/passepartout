@@ -8,6 +8,15 @@ import Testing
 
 struct LoggingTests {
     @Test
+    func givenLogContext_whenFormatting_thenUsesOnlyItsProfileIdentity() {
+        #expect(tunnelLogMessage(.global, "Initialized") == "[GLOBAL] Initialized")
+        let context = PartoutLoggerContext(Profile.ID(uuidString: "abcdef12-1111-1111-1111-111111111111")!)
+        #expect(tunnelLogMessage(context, "Connected") == "[ABCDEF12] Connected")
+        // Message text cannot impersonate record context.
+        #expect(tunnelLogMessage(.global, "[ABCDEF12] Connected") == "[GLOBAL] [ABCDEF12] Connected")
+    }
+
+    @Test
     func givenPrivateDataPreference_whenConfigureLogging_thenEnablesSensitiveValues() {
         var preferences = ABI.AppPreferences.default()
         preferences.logsPrivateData = true

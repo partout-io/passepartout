@@ -53,7 +53,7 @@ private extension WireGuardView.ImportModifier {
                     context: .WireGuard
                 )
             } catch {
-                pspLog(.core, .error, "Unable to parse URL: \(error)")
+                pspLog(.profiles, .error, "Unable to parse URL: \(error)")
                 throw ABI.AppError(error)
             }
             guard let module = parsed as? WireGuardModule else {
@@ -62,7 +62,7 @@ private extension WireGuardView.ImportModifier {
             draft.module.configurationBuilder = module.configuration?.builder()
             onImport(draft.module.configurationBuilder)
         } catch {
-            pspLog(.core, .error, "Unable to import WireGuard configuration: \(error)")
+            pspLog(.profiles, .error, "Unable to import WireGuard configuration: \(error)")
             errorHandler.handle(error, title: draft.module.moduleType.localizedDescription)
         }
     }

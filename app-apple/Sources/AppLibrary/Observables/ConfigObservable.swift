@@ -25,7 +25,7 @@ public final class ConfigObservable {
     }
 
     func onUpdate(_ event: ABI.ConfigEvent) {
-        pspLog(.core, .debug, "ConfigObservable.onUpdate(): \(event)")
+        pspLog(.app, .debug, "ConfigObservable.onUpdate(): \(event)")
         switch event {
         case .refresh(let payload):
             activeFlags = payload.flags

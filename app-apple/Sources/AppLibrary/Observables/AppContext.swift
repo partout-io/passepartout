@@ -113,12 +113,21 @@ public final class AppContext {
             self?.onLogPrivacyChange()
         }
 
+        userPreferences.onLogLevelChange = { [weak self] in
+            guard let self else { return }
+            let level = pspLogLevel(
+                extensiveLogging: preferences[\.extensiveLogging],
+                defaultLevel: appConfiguration.constants.log.options.maxDebugLogLevel
+            )
+            PartoutLogger.setMaxLevel(level)
+        }
+
         observeManagerEvents()
         tunnelObservable.observeObjects()
     }
 
     deinit {
-        pspLog(.core, .debug, "Deinit AppContext")
+        pspLog(.app, .debug, "Deinit AppContext")
         subscriptions.forEach { $0.cancel() }
     }
 }
@@ -131,7 +140,7 @@ extension AppContext {
             do {
                 try await onForeground()
             } catch {
-                pspLog(.core, .fault, "Unable to activate application: \(error)")
+                pspLog(.app, .fault, "Unable to activate application: \(error)")
                 return
             }
 
@@ -159,7 +168,7 @@ private extension AppContext {
             do {
                 try pspLogFileStrategy.reset(at: appConfiguration.urlForTunnelLog)
             } catch {
-                pspLog(.core, .error, "Unable to reset tunnel log: \(error)")
+                pspLog(.app, .error, "Unable to reset tunnel log: \(error)")
             }
         }
     }
@@ -251,12 +260,12 @@ private extension AppContext {
 
 private extension AppContext {
     func onLaunch() async throws {
-        pspLog(.core, .notice, "Application did launch")
+        pspLog(.app, .notice, "Application did launch")
 
         pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
 
-        pspLog(.profiles, .info, "\tObserve in-app events...")
+        pspLog(.iap, .info, "\tObserve in-app events...")
         iapManager.observeObjects(withProducts: true)
 
         // Defer loads to not block app launch.
@@ -323,7 +332,7 @@ private extension AppContext {
         }
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did enter foreground")
+        pspLog(.app, .notice, "Application did enter foreground")
         pendingTask = Task {
             await reloadExtensions()
 
@@ -337,7 +346,7 @@ private extension AppContext {
             do {
                 try await profileManager.refreshLocalProfiles()
             } catch {
-                pspLog(.core, .error, "Unable to refresh local profiles: \(error)")
+                pspLog(.profiles, .error, "Unable to refresh local profiles: \(error)")
             }
         }
         await pendingTask?.value
@@ -348,7 +357,7 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did update eligible features")
+        pspLog(.iap, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -360,14 +369,14 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did save profile (\(profile.id))")
+        pspLog(.profiles, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            pspLog(.app, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            pspLog(.app, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
 
@@ -392,7 +401,7 @@ private extension AppContext {
             )
             webReceiverManager.renewPasscode()
         } catch {
-            pspLog(.web, .error, "Unable to import uploaded profile: \(error)")
+            pspLog(.profiles, .error, "Unable to import uploaded profile: \(error)")
             throw error
         }
     }
@@ -407,7 +416,7 @@ private extension AppContext {
                 do {
                     try await onLaunch()
                 } catch {
-                    pspLog(.core, .fault, "Unable to launch: \(error)")
+                    pspLog(.app, .fault, "Unable to launch: \(error)")
                     launchTask = nil // Redo the launch task.
                     throw ABI.AppError.couldNotLaunch(reason: error)
                 }
@@ -426,12 +435,12 @@ private extension AppContext {
 
     func reloadExtensions() async {
         guard let extensionInstaller else { return }
-        pspLog(.core, .info, "Extensions: load current status...")
+        pspLog(.app, .info, "Extensions: load current status...")
         do {
             let result = try await extensionInstaller.load()
-            pspLog(.core, .info, "Extensions: load result is \(result)")
+            pspLog(.app, .info, "Extensions: load result is \(result)")
         } catch {
-            pspLog(.core, .error, "Extensions: load error: \(error)")
+            pspLog(.app, .error, "Extensions: load error: \(error)")
         }
     }
 

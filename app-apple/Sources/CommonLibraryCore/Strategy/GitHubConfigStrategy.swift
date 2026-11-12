@@ -39,17 +39,17 @@ public final class GitHubConfigStrategy: ConfigManagerStrategy {
 
     public func bundle() async throws -> ConfigBundle {
         let isBeta = await isBeta()
-        pspLog(.core, .debug, "Config (GitHub): beta = \(isBeta)")
+        pspLog(.app, .debug, "Config (GitHub): beta = \(isBeta)")
         if lastUpdated > .distantPast {
             let elapsed = -lastUpdated.timeIntervalSinceNow
             let ttl = ttl * (isBeta ? betaTTLFactor : 1.0)
             guard elapsed >= ttl else {
-                pspLog(.core, .debug, "Config (GitHub): elapsed \(elapsed) < \(ttl)")
+                pspLog(.app, .debug, "Config (GitHub): elapsed \(elapsed) < \(ttl)")
                 throw ABI.AppError.rateLimit
             }
         }
         let targetURL = isBeta ? betaURL : url
-        pspLog(.core, .info, "Config (GitHub): fetching bundle from \(targetURL)")
+        pspLog(.app, .info, "Config (GitHub): fetching bundle from \(targetURL)")
         let data = try await fetcher(targetURL)
         let json = try ABI.decode(ConfigBundle.self, from: data)
         lastUpdated = Date()

@@ -41,7 +41,7 @@ extension AppContext {
             localURL: appConfiguration.urlForAppLog,
             localMapper: logFormatter.localMapper
         )
-        pspLog(.core, .notice, "Partout \(PartoutRuntime.version)")
+        pspLog(.app, .notice, "Partout \(PartoutRuntime.version)")
 
         // MARK: Config (GitHub)
 
@@ -271,7 +271,7 @@ extension AppContext {
                 profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
                 let isCloudKitEnabled = AppCommandLine.contains(.uiTesting) || appConfiguration.isCloudKitEnabled
-                pspLog(.core, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
+                pspLog(.profiles, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
                 let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
@@ -290,7 +290,7 @@ extension AppContext {
                 }
             }
 
-            pspLog(.core, .info, "\tRefresh modules preferences repository...")
+            pspLog(.profiles, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
                 do {
                     return try CommonData.cdModulePreferencesRepositoryV3(
@@ -298,7 +298,7 @@ extension AppContext {
                         moduleId: $0
                     )
                 } catch {
-                    pspLog(.core, .error, "Unable to load preferences for module \($0): \(error)")
+                    pspLog(.profiles, .error, "Unable to load preferences for module \($0): \(error)")
                     throw error
                 }
             }

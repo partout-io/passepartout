@@ -23,7 +23,9 @@ file(READ "${APP_CONSTANTS_PATH}" APP_CONSTANTS_JSON)
 configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/app_constants_resource.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/generated/app_constants_resource.h" @ONLY)
 add_library(passepartout-core STATIC ${CORE_SOURCES})
-target_link_libraries(passepartout-core PUBLIC passepartout-models Threads::Threads)
+target_link_libraries(passepartout-core
+    PUBLIC passepartout-models Threads::Threads
+    PRIVATE Partout::Headers)
 target_include_directories(passepartout-core PUBLIC "${CMAKE_CURRENT_LIST_DIR}/app"
     "${CMAKE_CURRENT_BINARY_DIR}/generated")
 

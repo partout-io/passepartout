@@ -95,7 +95,7 @@ private extension TunnelContext {
         preferences: AppPreferencesStore,
         cachesURL: URL
     ) throws -> ProductionRuntime {
-        pspLog(.core, .info, "Using Zig runtime")
+        pspLog(.app, .info, "Using Zig runtime")
 
         // This depends on distribution target
         let defaults = appConfiguration.makeTunnelDefaults()
@@ -148,7 +148,7 @@ private extension TunnelContext {
             let processor = appConfiguration.makeTunnelProcessor()
             profile = try processor.willProcess(resolvedProfile)
         } catch {
-            pspLog(.profiles, .fault, "Unable to decode profile: \(error)")
+            pspLog(.profiles, .error, "Unable to decode profile: \(error)")
             throw error
         }
 
@@ -216,11 +216,13 @@ private struct TaggedProfileCoder: ProfileCoder {
 
 private nonisolated func logger(
     _ ctx: UnsafeMutableRawPointer?,
+    _ profileId: UnsafePointer<CChar>?,
     _ level: Int32,
     _ message: UnsafePointer<CChar>?
 ) {
-    guard let level = ABI.AppLogLevel(partoutCLevel: level),
+    guard let level = DebugLog.Level(rawValue: Int(level)),
           let message else { return }
-    pspLog(.abi, level, String(cString: message))
+    let profileId = profileId.flatMap { Profile.ID(uuidString: String(cString: $0)) }
+    pp_log_id(profileId, .core, level, String(cString: message))
 }
 #endif

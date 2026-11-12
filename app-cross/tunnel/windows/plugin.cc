@@ -174,9 +174,11 @@ std::string ReadProfile(VpnChannel const &channel) {
     }
 }
 
-void LogNative(void *, int, const char *message) noexcept {
+void LogNative(void *, const char *profileId, int, const char *message) noexcept {
     try {
-        if (message) Log(winrt::to_hstring(message));
+        if (!message) return;
+        const auto text = profileId ? "[" + std::string(profileId) + "] " + message : std::string(message);
+        Log(winrt::to_hstring(text));
     } catch (...) {
         // Never throw through the native logging callback.
     }
@@ -194,6 +196,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
         // FIXME: ###, Apply user preferences here.
         partout_init_args init_args{};
         init_args.logger_fn = LogNative;
+        init_args.log_level = PartoutLogLevelDebug;
         init_args.logs_private_data = false;
         const auto temp_dir = winrt::to_string(ApplicationData::Current().TemporaryFolder().Path());
         partout_daemon_options options{};

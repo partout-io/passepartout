@@ -196,7 +196,7 @@ private extension UserDefaults {
         do {
             return try ABI.decode(type, from: data)
         } catch {
-            pspLog(.core, .error, "Unable to decode UserDefaults app preference '\(key)': \(error)")
+            pspLog(.app, .error, "Unable to decode UserDefaults app preference '\(key)': \(error)")
             return fallback
         }
     }
@@ -207,7 +207,7 @@ private extension UserDefaults {
             let data = try ABI.encode(value)
             set(data, forKey: key)
         } catch {
-            pspLog(.core, .error, "Unable to encode UserDefaults app preference '\(key)': \(error)")
+            pspLog(.app, .error, "Unable to encode UserDefaults app preference '\(key)': \(error)")
         }
     }
 }

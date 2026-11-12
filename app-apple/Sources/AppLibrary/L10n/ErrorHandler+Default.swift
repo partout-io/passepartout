@@ -15,7 +15,7 @@ extension ErrorHandler {
             },
             beforeAlert: {
                 let detail = $0.debugDescription(withSensitiveData: PartoutLogger.default.logsModules)
-                pspLog(.core, .error, "Error handler being presented: \(detail)")
+                pspLog(.app, .error, "Error handler being presented: \(detail)")
             }
         )
     }

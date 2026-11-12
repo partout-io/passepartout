@@ -138,7 +138,7 @@ extension ProfileObservable {
     }
 
     func onUpdate(_ event: ABI.ProfileEvent) {
-        pspLog(.core, .debug, "ProfileObservable.onUpdate(): \(event)")
+        pspLog(.profiles, .debug, "ProfileObservable.onUpdate(): \(event)")
         switch event {
         case .ready:
             isReady = true
@@ -176,7 +176,7 @@ private extension ProfileObservable {
 
         // Guard against duplicated updates
         guard Set(newFilteredHeaders) != Set(filteredHeaders) else {
-            pspLog(.profiles, .info, "No change in profiles, skip update from ProfileManager")
+            pspLog(.profiles, .debug, "No change in profiles, skip update from ProfileManager")
             return
         }
 
@@ -184,6 +184,6 @@ private extension ProfileObservable {
         filteredHeaders = newFilteredHeaders
             .sorted()
 
-        pspLog(.profiles, .notice, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
+        pspLog(.profiles, .debug, "Filter profiles with '\(search)' (\(filteredHeaders.count)): \(filteredHeaders.map(\.name))")
     }
 }

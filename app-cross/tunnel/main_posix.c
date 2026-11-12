@@ -9,9 +9,13 @@
 #include "partout.h"
 #include "partout_posix.h"
 
-static void stdio_logger(void *ctx, int level, const char *message) {
+static void stdio_logger(void *ctx, const char *profile_id, int level, const char *message) {
     (void)ctx;
-    printf("%s\n", message);
+    if (profile_id) {
+        printf("[%s] %s\n", profile_id, message);
+    } else {
+        printf("%s\n", message);
+    }
 }
 
 char *psp_readfile(const char *rel_path, const char *parent);
@@ -47,6 +51,7 @@ int main(int argc, char *argv[]) {
 
     /* Initialize library (for logging). */
     const partout_init_args init_args = {
+        .log_level = PartoutLogLevelDebug,
         .logs_private_data = false,
         .logger_fn = stdio_logger,
         .logger_ctx = NULL

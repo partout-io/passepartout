@@ -59,7 +59,7 @@ private extension ChangelogView {
         do {
             entries = try await versionObservable.fetchChangelog(of: buildNumber)
         } catch {
-            pspLog(.core, .error, "CHANGELOG: Unable to load: \(error)")
+            pspLog(.app, .error, "CHANGELOG: Unable to load: \(error)")
         }
         isLoading = false
     }

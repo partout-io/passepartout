@@ -64,9 +64,9 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
         // Install extension before proceeding
         if let extensionInstaller {
             if extensionInstaller.currentResult == .success {
-                pspLog(.core, .info, "Extensions: already installed")
+                pspLog(.app, .info, "Extensions: already installed")
             } else {
-                pspLog(.core, .info, "Extensions: install...")
+                pspLog(.app, .info, "Extensions: install...")
                 do {
                     let result = try await extensionInstaller.install()
                     switch result {
@@ -75,9 +75,9 @@ final class DefaultAppTunnelProcessor: AppTunnelProcessor, Sendable {
                     default:
                         throw ABI.AppError.systemExtension(result)
                     }
-                    pspLog(.core, .info, "Extensions: installation result is \(result)")
+                    pspLog(.app, .info, "Extensions: installation result is \(result)")
                 } catch {
-                    pspLog(.core, .error, "Extensions: installation error: \(error)")
+                    pspLog(.app, .error, "Extensions: installation error: \(error)")
                 }
             }
         }

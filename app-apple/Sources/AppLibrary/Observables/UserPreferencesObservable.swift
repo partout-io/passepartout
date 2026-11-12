@@ -12,6 +12,8 @@ public final class UserPreferencesObservable {
     private let ui: UserDefaults
     public var onLogPrivacyChange: (() -> Void)?
 
+    public var onLogLevelChange: (() -> Void)?
+
     public init(preferences: AppPreferencesStore, ui: UserDefaults) {
         self.preferences = preferences
         self.ui = ui
@@ -70,9 +72,11 @@ public final class UserPreferencesObservable {
 
     public var extensiveLogging: Bool {
         didSet {
+            guard extensiveLogging != oldValue else { return }
             preferences.overwrite {
                 $0.extensiveLogging = extensiveLogging
             }
+            onLogLevelChange?()
         }
     }
 
