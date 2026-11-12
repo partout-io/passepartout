@@ -93,6 +93,7 @@ bool PassepartoutApp::OnInit() {
         return false;
     }
     partout_init_args init{};
+    init.log_level = PartoutLogLevelDebug;
     init.logs_private_data = false;
     init.logger_fn = AppLogger::PartoutMessage;
     partout_init(&init);

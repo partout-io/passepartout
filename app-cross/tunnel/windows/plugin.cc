@@ -196,6 +196,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
         // FIXME: ###, Apply user preferences here.
         partout_init_args init_args{};
         init_args.logger_fn = LogNative;
+        init_args.log_level = PartoutLogLevelDebug;
         init_args.logs_private_data = false;
         const auto temp_dir = winrt::to_string(ApplicationData::Current().TemporaryFolder().Path());
         partout_daemon_options options{};

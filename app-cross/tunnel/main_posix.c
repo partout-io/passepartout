@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
 
     /* Initialize library (for logging). */
     const partout_init_args init_args = {
+        .log_level = PartoutLogLevelDebug,
         .logs_private_data = false,
         .logger_fn = stdio_logger,
         .logger_ctx = NULL
