@@ -27,14 +27,14 @@ public struct ModulePreferencesModifier: ViewModifier {
                     let repository = try preferencesManager.preferencesRepository(forModuleWithId: moduleId)
                     preferences.setRepository(repository)
                 } catch {
-                    pspLog(.core, .error, "Unable to load preferences for module \(moduleId): \(error)")
+                    pspLog(.app, .error, "Unable to load preferences for module \(moduleId): \(error)")
                 }
             }
             .onDisappear {
                 do {
                     try preferences.save()
                 } catch {
-                    pspLog(.core, .error, "Unable to save preferences for module \(moduleId): \(error)")
+                    pspLog(.app, .error, "Unable to save preferences for module \(moduleId): \(error)")
                 }
             }
     }

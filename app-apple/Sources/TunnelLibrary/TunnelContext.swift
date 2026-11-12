@@ -47,7 +47,7 @@ public final class TunnelContext: TunnelContextProtocol {
     }
 
     deinit {
-        pspLog(.abi, .debug, "Deinit TunnelContext")
+        pspLog(.app, .debug, "Deinit TunnelContext")
     }
 
     public func start(isInteractive: Bool) async throws {
@@ -57,13 +57,13 @@ public final class TunnelContext: TunnelContextProtocol {
         do {
             // Check hold flag and hang the tunnel if set
             if environment.environmentValue(forKey: TunnelEnvironmentKeys.holdFlag) == true {
-                pspLog(.abi, .info, "Tunnel is on hold")
+                pspLog(.app, .info, "Tunnel is on hold")
                 guard isInteractive else {
-                    pspLog(.abi, .error, "Tunnel was started non-interactively, hang here")
+                    pspLog(.app, .error, "Tunnel was started non-interactively, hang here")
                     await backend.hold()
                     return
                 }
-                pspLog(.abi, .info, "Tunnel was started interactively, clear hold flag")
+                pspLog(.app, .info, "Tunnel was started interactively, clear hold flag")
                 environment.removeEnvironmentValue(forKey: TunnelEnvironmentKeys.holdFlag)
             }
 
@@ -81,7 +81,7 @@ public final class TunnelContext: TunnelContextProtocol {
 
             // Prepare for periodic receipt verification
             let params = iap.verificationParameters
-            pspLog(.iap, .info, "Will start profile verification in \(params.delay) seconds")
+            pspLog(.purchases, .info, "Will start profile verification in \(params.delay) seconds")
 
             // Do not wait for this to start the tunnel. If on-demand is
             // enabled, networking will stall and StoreKit network calls may
@@ -98,7 +98,7 @@ public final class TunnelContext: TunnelContextProtocol {
                 )
             }
         } catch {
-            pspLog(.abi, .error, "Unable to start tunnel: \(error)")
+            pspLog(.app, .error, "Unable to start tunnel: \(error)")
             flushLogs()
             throw error
         }
@@ -119,7 +119,7 @@ public final class TunnelContext: TunnelContextProtocol {
         do {
             return try await backend.sendMessage(messageData)
         } catch {
-            pspLog(.abi, .error, "Unable to handle message: \(error)")
+            pspLog(.app, .error, "Unable to handle message: \(error)")
             return nil
         }
     }
@@ -142,7 +142,7 @@ public final class TunnelContext: TunnelContextProtocol {
 private extension TunnelContext {
     static var activeTunnels: Set<Profile.ID> = [] {
         didSet {
-            pspLog(.abi, .info, "Active tunnels: \(activeTunnels)")
+            pspLog(.app, .info, "Active tunnels: \(activeTunnels)")
         }
     }
 
@@ -152,13 +152,13 @@ private extension TunnelContext {
         guard Self.activeTunnels.isEmpty else {
             throw ABI.AppError.multipleTunnels
         }
-        pspLog(.abi, .info, "Track context: \(originalProfile.id)")
+        pspLog(.app, .info, "Track context: \(originalProfile.id)")
         Self.activeTunnels.insert(originalProfile.id)
     }
 
     func untrackContext() {
         guard backend != nil else { return }
-        pspLog(.abi, .info, "Untrack context: \(originalProfile.id)")
+        pspLog(.app, .info, "Untrack context: \(originalProfile.id)")
         Self.activeTunnels.remove(originalProfile.id)
     }
 }
@@ -179,7 +179,7 @@ private extension TunnelContext {
 
             // Perform periodic verification
             do {
-                pspLog(.iap, .debug, "Verify profile, requires: \(profile.features)")
+                pspLog(.purchases, .debug, "Verify profile, requires: \(profile.features)")
                 await iapManager.reloadReceipt()
                 try iapManager.verify(profile)
             } catch {
@@ -189,14 +189,14 @@ private extension TunnelContext {
                 if attempts > 0 {
                     attempts -= 1
                     let products = iapManager.purchasedProducts
-                    pspLog(.iap, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
+                    pspLog(.purchases, .error, "Verification failed for profile \(profile.id), next attempt in \(params.retryInterval) seconds... (remaining: \(attempts), products: \(products))")
                     try? await Task.sleep(interval: params.retryInterval)
                     continue
                 }
 
                 let errorCode: ABI.AppErrorCode = .ineligibleProfile
                 environment.setEnvironmentValue(errorCode.toLastErrorCode, forKey: TunnelEnvironmentKeys.lastErrorCode)
-                pspLog(.iap, .error, "Verification failed for profile \(profile.id), shutting down: \(error)")
+                pspLog(.purchases, .error, "Verification failed for profile \(profile.id), shutting down: \(error)")
 
                 // Hold on failure to prevent on-demand reconnection
                 environment.setEnvironmentValue(true, forKey: TunnelEnvironmentKeys.holdFlag)
@@ -205,7 +205,7 @@ private extension TunnelContext {
             }
 
             // Retry in a while
-            pspLog(.iap, .debug, "Will verify profile again in \(params.interval) seconds...")
+            pspLog(.purchases, .debug, "Will verify profile again in \(params.interval) seconds...")
             try? await Task.sleep(interval: params.interval)
 
             // On successful verification, reset attempts for the next verification

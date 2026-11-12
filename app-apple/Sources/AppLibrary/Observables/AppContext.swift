@@ -126,7 +126,7 @@ public final class AppContext {
     }
 
     deinit {
-        pspLog(.core, .debug, "Deinit AppContext")
+        pspLog(.app, .debug, "Deinit AppContext")
         subscriptions.forEach { $0.cancel() }
     }
 }
@@ -139,7 +139,7 @@ extension AppContext {
             do {
                 try await onForeground()
             } catch {
-                pspLog(.core, .fault, "Unable to activate application: \(error)")
+                pspLog(.app, .fault, "Unable to activate application: \(error)")
                 return
             }
 
@@ -167,7 +167,7 @@ private extension AppContext {
             do {
                 try pspLogFileStrategy.reset(at: appConfiguration.urlForTunnelLog)
             } catch {
-                pspLog(.core, .error, "Unable to reset tunnel log: \(error)")
+                pspLog(.app, .error, "Unable to reset tunnel log: \(error)")
             }
         }
     }
@@ -259,7 +259,7 @@ private extension AppContext {
 
 private extension AppContext {
     func onLaunch() async throws {
-        pspLog(.core, .notice, "Application did launch")
+        pspLog(.app, .notice, "Application did launch")
 
         pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
@@ -276,7 +276,7 @@ private extension AppContext {
             await reloadExtensions()
         }
 
-        pspLog(.iap, .info, "\tObserve changes in IAPManager...")
+        pspLog(.purchases, .info, "\tObserve changes in IAPManager...")
         let iapEvents = iapManager.didChange.subscribe()
         subscriptions.append(Task { [weak self] in
             for await event in iapEvents {
@@ -284,16 +284,16 @@ private extension AppContext {
                 switch event {
                 case .status(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates().
-                    pspLog(.iap, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
+                    pspLog(.purchases, .info, "IAPManager.isEnabled -> \(payload.isEnabled)")
                     await iapManager.reloadReceipt()
                     didLoadReceiptDate = Date()
                 case .eligibleFeatures(let payload):
                     // XXX: This was on .dropFirst() + .removeDuplicates().
                     do {
-                        pspLog(.iap, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
+                        pspLog(.purchases, .info, "IAPManager.eligibleFeatures -> \(payload.features)")
                         try await onEligibleFeatures(Set(payload.features))
                     } catch {
-                        pspLog(.iap, .error, "Unable to react to eligible features: \(error)")
+                        pspLog(.purchases, .error, "Unable to react to eligible features: \(error)")
                     }
                 default:
                     break
@@ -331,7 +331,7 @@ private extension AppContext {
         }
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did enter foreground")
+        pspLog(.app, .notice, "Application did enter foreground")
         pendingTask = Task {
             await reloadExtensions()
 
@@ -345,7 +345,7 @@ private extension AppContext {
             do {
                 try await profileManager.refreshLocalProfiles()
             } catch {
-                pspLog(.core, .error, "Unable to refresh local profiles: \(error)")
+                pspLog(.app, .error, "Unable to refresh local profiles: \(error)")
             }
         }
         await pendingTask?.value
@@ -356,7 +356,7 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did update eligible features")
+        pspLog(.app, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -368,14 +368,14 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.core, .notice, "Application did save profile (\(profile.id))")
+        pspLog(.app, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) is new, do nothing")
+            pspLog(.app, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
         }
         let diff = profile.differences(from: previous)
         guard diff.isRelevantForReconnecting(to: profile) else {
-            pspLog(.core, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
+            pspLog(.app, .debug, "\tProfile \(profile.id) changes are not relevant, do nothing")
             return
         }
 
@@ -415,7 +415,7 @@ private extension AppContext {
                 do {
                     try await onLaunch()
                 } catch {
-                    pspLog(.core, .fault, "Unable to launch: \(error)")
+                    pspLog(.app, .fault, "Unable to launch: \(error)")
                     launchTask = nil // Redo the launch task.
                     throw ABI.AppError.couldNotLaunch(reason: error)
                 }
@@ -434,12 +434,12 @@ private extension AppContext {
 
     func reloadExtensions() async {
         guard let extensionInstaller else { return }
-        pspLog(.core, .info, "Extensions: load current status...")
+        pspLog(.app, .info, "Extensions: load current status...")
         do {
             let result = try await extensionInstaller.load()
-            pspLog(.core, .info, "Extensions: load result is \(result)")
+            pspLog(.app, .info, "Extensions: load result is \(result)")
         } catch {
-            pspLog(.core, .error, "Extensions: load error: \(error)")
+            pspLog(.app, .error, "Extensions: load error: \(error)")
         }
     }
 

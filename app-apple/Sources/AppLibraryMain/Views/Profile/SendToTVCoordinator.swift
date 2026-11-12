@@ -44,7 +44,7 @@ private extension SendToTVCoordinator {
             )
             isPresented = false
         } catch {
-            pspLog(.core, .error, "Unable to upload profile: \(error)")
+            pspLog(.app, .error, "Unable to upload profile: \(error)")
             throw error
         }
     }

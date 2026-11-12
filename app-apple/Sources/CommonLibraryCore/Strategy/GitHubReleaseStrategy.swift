@@ -30,7 +30,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         if since > .distantPast {
             let elapsed = -since.timeIntervalSinceNow
             guard elapsed >= rateLimit else {
-                pspLog(.core, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
+                pspLog(.app, .debug, "Version (GitHub): elapsed \(elapsed) < \(rateLimit)")
                 throw ABI.AppError.rateLimit
             }
         }
@@ -38,22 +38,22 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
         let json = try ABI.decode(VersionJSON.self, from: data)
         let newVersion = json.name
         guard let semNew = ABI.SemanticVersion(newVersion) else {
-            pspLog(.core, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
+            pspLog(.app, .error, "Version (GitHub): unparsable release name '\(newVersion)'")
             throw ABI.AppError.unexpectedResponse
         }
         return semNew
     }
 
     public func fetchChangelog(of build: String) async throws -> [ABI.ChangelogEntry] {
-        pspLog(.core, .info, "CHANGELOG: Load for build \(build)")
+        pspLog(.app, .info, "CHANGELOG: Load for build \(build)")
         let url = changelogURL(build)
-        pspLog(.core, .info, "CHANGELOG: Fetching \(url)")
+        pspLog(.app, .info, "CHANGELOG: Fetching \(url)")
         do {
             let data = try await fetcher(url, false)
             guard let text = String(data: data, encoding: .utf8) else {
                 throw ABI.AppError.notFound
             }
-            pspLog(.core, .info, "CHANGELOG: Fetched \(data.count) bytes")
+            pspLog(.app, .info, "CHANGELOG: Fetched \(data.count) bytes")
             return text
                 .split(separator: "\n")
                 .enumerated()
@@ -61,7 +61,7 @@ public final class GitHubReleaseStrategy: VersionCheckerStrategy {
                     ABI.ChangelogEntry($0.offset, line: String($0.element))
                 }
         } catch {
-            pspLog(.core, .error, "CHANGELOG: Unable to fetch: \(error)")
+            pspLog(.app, .error, "CHANGELOG: Unable to fetch: \(error)")
             throw error
         }
     }

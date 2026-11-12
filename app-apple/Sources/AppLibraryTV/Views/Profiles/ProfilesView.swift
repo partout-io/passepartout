@@ -94,7 +94,7 @@ private extension ProfilesView {
                 do {
                     try webReceiverObservable.start()
                 } catch {
-                    pspLog(.core, .error, "Unable to start web receiver: \(error)")
+                    pspLog(.app, .error, "Unable to start web receiver: \(error)")
                     errorHandler.handle(error)
                 }
             } else {

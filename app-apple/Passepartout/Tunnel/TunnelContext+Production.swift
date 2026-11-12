@@ -95,7 +95,7 @@ private extension TunnelContext {
         preferences: AppPreferencesStore,
         cachesURL: URL
     ) throws -> ProductionRuntime {
-        pspLog(.core, .info, "Using Zig runtime")
+        pspLog(.app, .info, "Using Zig runtime")
 
         // This depends on distribution target
         let defaults = appConfiguration.makeTunnelDefaults()
@@ -220,9 +220,9 @@ private nonisolated func logger(
     _ level: Int32,
     _ message: UnsafePointer<CChar>?
 ) {
-    guard let level = ABI.AppLogLevel(partoutCLevel: level),
+    guard let level = DebugLog.Level(rawValue: Int(level)),
           let message else { return }
     let profileId = profileId.flatMap { Profile.ID(uuidString: String(cString: $0)) }
-    pspLog(profileId, .abi, level, String(cString: message))
+    pp_log_id(profileId, .core, level, String(cString: message))
 }
 #endif

@@ -68,7 +68,7 @@ public final class TunnelObservable {
 
 extension TunnelObservable {
     public func install(_ profile: Profile) async throws {
-        pspLog(.core, .notice, "Install profile \(profile.id)...")
+        pspLog(.app, .notice, "Install profile \(profile.id)...")
         try await installAndConnect(false, with: profile, force: false)
     }
 
@@ -77,7 +77,7 @@ extension TunnelObservable {
     }
 
     public func connect(to profile: Profile, force: Bool) async throws {
-        pspLog(.core, .notice, "Connect to profile \(profile.id)...")
+        pspLog(.app, .notice, "Connect to profile \(profile.id)...")
         try await installAndConnect(true, with: profile, force: force)
     }
 
@@ -92,7 +92,7 @@ extension TunnelObservable {
     }
 
     public func disconnect(from profileId: Profile.ID) async throws {
-        pspLog(.core, .notice, "Disconnect...")
+        pspLog(.app, .notice, "Disconnect...")
         try await tunnel.disconnect(from: profileId)
     }
 
@@ -108,7 +108,7 @@ extension TunnelObservable {
                     }
                 } catch {
                     guard !Task.isCancelled else { return }
-                    pspLog(profileId, .core, .error, "Unable to update tunnel logging level: \(error)")
+                    pspLog(profileId, .app, .error, "Unable to update tunnel logging level: \(error)")
                 }
             }
         }
@@ -199,7 +199,7 @@ extension TunnelObservable {
             do {
                 try await self?.tunnel.prepare(purge: false)
             } catch {
-                pspLog(.core, .fault, "Unable to prepare tunnel: \(error)")
+                pspLog(.app, .fault, "Unable to prepare tunnel: \(error)")
             }
             for await snapshots in tunnelEvents {
                 guard let self else { return }
@@ -226,7 +226,7 @@ extension TunnelObservable {
                     activeProfiles = newActiveProfiles
                 }
             }
-            pspLog(.core, .debug, "Tunnel snapshots subscription terminated")
+            pspLog(.app, .debug, "Tunnel snapshots subscription terminated")
         }
         subscriptions = [tunnelSubscription]
     }
@@ -238,7 +238,7 @@ extension TunnelObservable {
 
         let status = tunnelStatus(for: profile.id)
         guard [.active, .activating].contains(status) else {
-            pspLog(.core, .debug, "\tConnection is not active (\(status)), do nothing")
+            pspLog(.app, .debug, "\tConnection is not active (\(status)), do nothing")
             return
         }
 
@@ -253,22 +253,22 @@ extension TunnelObservable {
                 }
             }
             do {
-                pspLog(.core, .info, "\tReconnect profile \(profile.id)")
+                pspLog(.app, .info, "\tReconnect profile \(profile.id)")
                 try await disconnect(from: profile.id)
                 guard !Task.isCancelled else { return }
                 do {
                     try await connect(to: profile)
                 } catch ABI.AppError.interactiveLogin {
-                    pspLog(.core, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
+                    pspLog(.app, .info, "\tProfile \(profile.id) is interactive, do not reconnect")
                 } catch is CancellationError {
                     return
                 } catch {
-                    pspLog(.core, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
+                    pspLog(.app, .error, "\tUnable to reconnect profile \(profile.id): \(error)")
                 }
             } catch is CancellationError {
                 return
             } catch {
-                pspLog(.core, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
+                pspLog(.app, .error, "\tUnable to reinstate connection on save profile \(profile.id): \(error)")
             }
         }
     }

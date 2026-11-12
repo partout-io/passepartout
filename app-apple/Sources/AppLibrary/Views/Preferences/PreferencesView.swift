@@ -147,10 +147,10 @@ private extension PreferencesView {
             isErasingiCloud = true
             Task {
                 do {
-                    pspLog(.core, .info, "Erase CloudKit profiles...")
+                    pspLog(.app, .info, "Erase CloudKit profiles...")
                     try await profileObservable.removeRemotelyShared()
                 } catch {
-                    pspLog(.core, .error, "Unable to erase CloudKit store: \(error)")
+                    pspLog(.app, .error, "Unable to erase CloudKit store: \(error)")
                 }
                 isErasingiCloud = false
             }

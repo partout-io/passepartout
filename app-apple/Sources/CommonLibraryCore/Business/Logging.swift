@@ -85,7 +85,7 @@ public func pspLogRegister(
             do {
                 try logger.resetLog()
             } catch {
-                pspLog(.core, .error, "Unable to reset current log: \(error)")
+                pspLog(.app, .error, "Unable to reset current log: \(error)")
             }
         }
         logger.logPreamble(
@@ -179,7 +179,7 @@ private extension PartoutLogger {
         appendLog(level, message: "")
 
         if let localLoggerURL {
-            pspLog(.core, .debug, "Log to: \(localLoggerURL)")
+            pspLog(.app, .debug, "Log to: \(localLoggerURL)")
         }
     }
 }
@@ -227,26 +227,6 @@ extension PartoutLogger.Builder {
 }
 
 // MARK: - Mappers
-
-extension ABI.AppLogLevel {
-    // As seen in PPLogLevel
-    public init?(partoutCLevel: Int32) {
-        switch partoutCLevel {
-        case 0: // PPLogLevelFault,
-            self = .fault
-        case 1: // PPLogLevelError,
-            self = .error
-        case 2: // PPLogLevelNotice,
-            self = .notice
-        case 3: // PPLogLevelInfo,
-            self = .info
-        case 4: // PPLogLevelDebug
-            self = .debug
-        default:
-            return nil
-        }
-    }
-}
 
 private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {

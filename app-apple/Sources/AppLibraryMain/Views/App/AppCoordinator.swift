@@ -73,7 +73,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming, SizeClassProviding
         self.profileObservable = profileObservable
         self.tunnel = tunnel
         self.webReceiverObservable = webReceiverObservable
-        pspLog(.core, .info, "AppCordinator (Observables)")
+        pspLog(.app, .info, "AppCordinator (Observables)")
     }
 
     public var body: some View {
@@ -286,7 +286,7 @@ extension AppCoordinator {
 
 extension AppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
-        pspLog(.core, .info, "Present interactive login")
+        pspLog(.app, .info, "Present interactive login")
         interactiveObservable.present(with: profile, onComplete: onComplete)
     }
 
@@ -295,10 +295,10 @@ extension AppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pspLog(.core, .info, "Purchase required for features: \(features)")
+        pspLog(.app, .info, "Purchase required for features: \(features)")
         guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pspLog(.core, .info, "Present verification alert")
+            pspLog(.app, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -311,7 +311,7 @@ extension AppCoordinator {
             )
             return
         }
-        pspLog(.core, .info, "Present paywall")
+        pspLog(.app, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile, requiredFeatures: features, action: .connect)) {
@@ -342,7 +342,7 @@ private extension AppCoordinator {
         // XXX: select entity after dismissing
         try await Task.sleep(for: .milliseconds(500))
 
-        pspLog(.core, .info, "Select new provider entity: (profile=\(profile.id), module=\(newModule.id))")
+        pspLog(.app, .info, "Select new provider entity: (profile=\(profile.id), module=\(newModule.id))")
 
         do {
             var builder = profile.builder()
@@ -357,13 +357,13 @@ private extension AppCoordinator {
             }
 
             if !wasConnected {
-                pspLog(.core, .info, "Profile \(newProfile.id) was not connected, will connect to new provider entity")
+                pspLog(.app, .info, "Profile \(newProfile.id) was not connected, will connect to new provider entity")
                 await onConnect(newProfile, force: force)
             } else {
-                pspLog(.core, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
+                pspLog(.app, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
             }
         } catch {
-            pspLog(.core, .error, "Unable to save new provider entity: \(error)")
+            pspLog(.app, .error, "Unable to save new provider entity: \(error)")
             throw error
         }
     }

@@ -39,7 +39,7 @@ final class ProfileImporter {
                     withPassphrase.append(url)
                     continue
                 default:
-                    pspLog(.core, .fault, "Unable to import URL: \(error)")
+                    pspLog(.app, .fault, "Unable to import URL: \(error)")
                     throw appError
                 }
             }

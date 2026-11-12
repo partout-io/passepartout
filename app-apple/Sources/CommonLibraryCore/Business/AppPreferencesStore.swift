@@ -18,12 +18,12 @@ extension AppPreferencesStore {
     // Read or generate Device ID if needed
     public func configureDeviceId(length: Int) -> String {
         if let deviceId = self[\.deviceId] {
-            pspLog(.core, .info, "Device ID: \(deviceId)")
+            pspLog(.app, .info, "Device ID: \(deviceId)")
             return deviceId
         }
         let newId = String.random(count: length)
         backend.deviceId = newId
-        pspLog(.core, .info, "Device ID (new): \(newId)")
+        pspLog(.app, .info, "Device ID (new): \(newId)")
         return newId
     }
 

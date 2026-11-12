@@ -45,7 +45,7 @@ extension PaywallCoordinator.Model {
             let purchasable = try await iapObservable.purchasableProducts(for: rawSortedProducts)
             try setSuggestedProducts(rawProducts, purchasable: purchasable)
         } catch {
-            pspLog(.iap, .error, "Unable to load purchasable products: \(error)")
+            pspLog(.purchases, .error, "Unable to load purchasable products: \(error)")
             throw error
         }
     }
@@ -65,7 +65,7 @@ extension PaywallCoordinator.Model {
                 individualPurchasable.append($0)
             }
         }
-        pspLog(.iap, .info, "Individual products: \(individualPurchasable)")
+        pspLog(.purchases, .info, "Individual products: \(individualPurchasable)")
         guard !completePurchasable.isEmpty || !individualPurchasable.isEmpty else {
             throw ABI.AppError.emptyProducts
         }
