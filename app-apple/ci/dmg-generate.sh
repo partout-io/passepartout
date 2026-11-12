@@ -23,12 +23,11 @@ ln -sf /Applications "$srcfolder/Applications"
 
 if [[ -n "$is_template" ]]; then
     echo "Create template $volname..."
-    hdiutil create \
-        -volname "$volname" \
-        -srcfolder "$srcfolder" \
-        -format UDRW \
-        -ov \
-        "$dmg.template"
+    diskutil image create from \
+        --volumeName "$volname" \
+        --format RAW \
+        "$srcfolder" \
+        "$dmg.template.dmg"
 
     echo "Mount template $volname..."
     mnt="/Volumes/$volname"
@@ -45,9 +44,8 @@ if [[ -n "$is_template" ]]; then
 fi
 
 echo "Create $volname..."
-hdiutil create \
-    -volname "$volname" \
-    -srcfolder "$srcfolder" \
-    -format UDZO \
-    -ov \
-    "$dmg"
+diskutil image create from \
+    --volumeName "$volname" \
+    --format UDZO \
+    "$srcfolder" \
+    "$dmg.dmg"
