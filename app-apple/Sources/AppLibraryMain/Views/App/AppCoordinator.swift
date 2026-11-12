@@ -295,10 +295,10 @@ extension AppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pspLog(.app, .info, "Purchase required for features: \(features)")
+        pspLog(.purchases, .info, "Purchase required for features: \(features)")
         guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pspLog(.app, .info, "Present verification alert")
+            pspLog(.purchases, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -311,7 +311,7 @@ extension AppCoordinator {
             )
             return
         }
-        pspLog(.app, .info, "Present paywall")
+        pspLog(.purchases, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile, requiredFeatures: features, action: .connect)) {
@@ -342,7 +342,7 @@ private extension AppCoordinator {
         // XXX: select entity after dismissing
         try await Task.sleep(for: .milliseconds(500))
 
-        pspLog(.app, .info, "Select new provider entity: (profile=\(profile.id), module=\(newModule.id))")
+        pspLog(.profiles, .info, "Select new provider entity: (profile=\(profile.id), module=\(newModule.id))")
 
         do {
             var builder = profile.builder()
@@ -363,7 +363,7 @@ private extension AppCoordinator {
                 pspLog(.app, .info, "Profile \(newProfile.id) was connected, will reconnect to new provider entity via AppContext observation")
             }
         } catch {
-            pspLog(.app, .error, "Unable to save new provider entity: \(error)")
+            pspLog(.profiles, .error, "Unable to save new provider entity: \(error)")
             throw error
         }
     }

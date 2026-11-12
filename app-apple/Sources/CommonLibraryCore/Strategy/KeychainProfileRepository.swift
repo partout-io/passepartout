@@ -45,7 +45,7 @@ public final class KeychainProfileRepository: ProfileRepository {
                 do {
                     return try keychain.password(forReference: $0)
                 } catch {
-                    pspLog(.app, .error, "Unable to fetch keychain item from reference: \(error)")
+                    pspLog(.profiles, .error, "Unable to fetch keychain item from reference: \(error)")
                     return nil
                 }
             }
@@ -53,7 +53,7 @@ public final class KeychainProfileRepository: ProfileRepository {
                 do {
                     return try coder.profile(fromString: $0)
                 } catch {
-                    pspLog(.app, .error, "Unable to decode profile: \(error)")
+                    pspLog(.profiles, .error, "Unable to decode profile: \(error)")
                     return nil
                 }
             }

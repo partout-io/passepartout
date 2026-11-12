@@ -264,7 +264,7 @@ private extension AppContext {
         pspLog(.profiles, .info, "\tRead and observe local profiles...")
         try await profileManager.observeLocal()
 
-        pspLog(.profiles, .info, "\tObserve in-app events...")
+        pspLog(.purchases, .info, "\tObserve in-app events...")
         iapManager.observeObjects(withProducts: true)
 
         // Defer loads to not block app launch.
@@ -345,7 +345,7 @@ private extension AppContext {
             do {
                 try await profileManager.refreshLocalProfiles()
             } catch {
-                pspLog(.app, .error, "Unable to refresh local profiles: \(error)")
+                pspLog(.profiles, .error, "Unable to refresh local profiles: \(error)")
             }
         }
         await pendingTask?.value
@@ -356,7 +356,7 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.app, .notice, "Application did update eligible features")
+        pspLog(.purchases, .notice, "Application did update eligible features")
         pendingTask = Task {
             await onEligibleFeaturesBlock?(features)
         }
@@ -368,7 +368,7 @@ private extension AppContext {
         try await waitForTasks()
         assert(pendingTask == nil)
 
-        pspLog(.app, .notice, "Application did save profile (\(profile.id))")
+        pspLog(.profiles, .notice, "Application did save profile (\(profile.id))")
         guard let previous else {
             pspLog(.app, .debug, "\tProfile \(profile.id) is new, do nothing")
             return
@@ -400,7 +400,7 @@ private extension AppContext {
             )
             webReceiverManager.renewPasscode()
         } catch {
-            pspLog(.web, .error, "Unable to import uploaded profile: \(error)")
+            pspLog(.profiles, .error, "Unable to import uploaded profile: \(error)")
             throw error
         }
     }

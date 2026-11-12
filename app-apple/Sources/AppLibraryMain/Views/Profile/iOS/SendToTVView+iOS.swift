@@ -58,7 +58,7 @@ private extension SendToTVView {
 //                path.append(NavigationRoute.enterPasscode(URL(string: "http://10.42.0.132:10000")!))
                 path.append(NavigationRoute.enterPasscode(URL(string: "http://172.20.10.14:10000")!))
 #else
-                pspLog(.app, .error, "Unable to open QR scanner: \(error)")
+                pspLog(.web, .error, "Unable to open QR scanner: \(error)")
                 isPresented = false
 #endif
             }

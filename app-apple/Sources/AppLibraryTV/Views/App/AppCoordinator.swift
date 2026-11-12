@@ -200,10 +200,10 @@ extension AppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pspLog(.app, .info, "Purchase required for features: \(features)")
+        pspLog(.purchases, .info, "Purchase required for features: \(features)")
         guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pspLog(.app, .info, "Present verification alert")
+            pspLog(.purchases, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -216,7 +216,7 @@ extension AppCoordinator {
             )
             return
         }
-        pspLog(.app, .info, "Present paywall")
+        pspLog(.purchases, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile, requiredFeatures: features, action: .connect)) {

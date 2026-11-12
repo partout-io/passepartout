@@ -271,7 +271,7 @@ extension AppContext {
                 profileManager.enableRemoteImporting(isRemoteImportingEnabled)
 
                 let isCloudKitEnabled = AppCommandLine.contains(.uiTesting) || appConfiguration.isCloudKitEnabled
-                pspLog(.app, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
+                pspLog(.profiles, .info, "\tRefresh remote sync (eligible=\(isRemoteImportingEnabled), CloudKit=\(isCloudKitEnabled))...")
                 pspLog(.profiles, .info, "\tRefresh remote profiles repository (sync=\(isRemoteImportingEnabled))...")
 
                 let remoteProfileRepository = CommonData.cdProfileRepositoryV3(
@@ -290,7 +290,7 @@ extension AppContext {
                 }
             }
 
-            pspLog(.app, .info, "\tRefresh modules preferences repository...")
+            pspLog(.profiles, .info, "\tRefresh modules preferences repository...")
             preferencesManager.modulesRepositoryFactory = {
                 do {
                     return try CommonData.cdModulePreferencesRepositoryV3(
@@ -298,7 +298,7 @@ extension AppContext {
                         moduleId: $0
                     )
                 } catch {
-                    pspLog(.app, .error, "Unable to load preferences for module \($0): \(error)")
+                    pspLog(.profiles, .error, "Unable to load preferences for module \($0): \(error)")
                     throw error
                 }
             }
