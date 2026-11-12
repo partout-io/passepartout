@@ -59,12 +59,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let preferences = AppPreferencesStore({
             let persistedPreferences = UserDefaultsAppPreferences(defaults: .standard)
             if let startPreferences {
-                pspLog(.app, .debug, "PTP: Apply start preferences")
                 persistedPreferences.copy(startPreferences)
                 assert(persistedPreferences.serialized() == startPreferences)
                 return startPreferences
             }
-            pspLog(.app, .debug, "PTP: Use persisted preferences")
             return persistedPreferences
         }())
 
@@ -72,6 +70,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         if !preferences[\.logsPrivateData] {
             try PartoutLogger.default.resetLog()
         }
+
+        let preferenceSource = startPreferences == nil ? "persisted" : "app start"
+        pspLog(.app, .info, "PTP: Preferences (\(preferenceSource)): \(preferences.serialized())")
 
         // Create the tunnel context
         do {

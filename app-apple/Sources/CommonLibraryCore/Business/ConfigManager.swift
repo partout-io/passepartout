@@ -65,10 +65,11 @@ public final class ConfigManager {
         do {
             pspLog(.app, .debug, "Config: refreshing bundle...")
             let newBundle = try await strategy.bundle()
+            let isFirstBundle = bundle == nil
             let previousFlags = activeFlags
             bundle = newBundle
             let activeFlags = newBundle.activeFlags(withBuild: buildNumber)
-            if activeFlags != previousFlags {
+            if isFirstBundle || activeFlags != previousFlags {
                 pspLog(.app, .info, "Config: active flags = \(activeFlags)")
             }
             pspLog(.app, .debug, "Config: \(newBundle)")

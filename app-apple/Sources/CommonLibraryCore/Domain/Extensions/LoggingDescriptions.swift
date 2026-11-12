@@ -6,19 +6,19 @@ import Partout
 
 extension ABI.AppProfileHeader: CustomStringConvertible {
     public var description: String {
-        "ProfileHeader(id=\(id), modules=\(moduleTypes.map(\.rawValue)), features=\(requiredFeatures.count))"
+        "ProfileHeader(id=\(id), modules=\(moduleTypes.map(\.rawValue)), sharing=\(sharingFlags.map(\.rawValue).sorted()), features=\(requiredFeatures.map(\.rawValue).sorted()))"
     }
 }
 
 extension OpenAPIAppProfileHeader: CustomStringConvertible {
     public var description: String {
-        "ProfileHeader(id=\(id), modules=\(moduleTypes.map(\.rawValue)), features=\(requiredFeatures.count))"
+        "ProfileHeader(id=\(id), modules=\(moduleTypes.map(\.rawValue)), sharing=\(sharingFlags.map(\.rawValue).sorted()), features=\(requiredFeatures.map(\.rawValue).sorted()))"
     }
 }
 
 extension ABI.AppTunnelInfo: CustomStringConvertible {
     public var description: String {
-        "TunnelInfo(id=\(id), status=\(status.rawValue), onDemand=\(onDemand))"
+        "TunnelInfo(id=\(id), status=\(status.rawValue), onDemand=\(onDemand), lastError=\(lastErrorCode ?? "none"))"
     }
 }
 

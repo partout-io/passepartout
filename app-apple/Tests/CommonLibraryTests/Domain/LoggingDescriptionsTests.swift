@@ -12,11 +12,15 @@ struct LoggingDescriptionsTests {
         let header = ABI.AppProfileHeader(
             id: UUID(), name: "private-name", moduleTypes: [.OpenVPN],
             primaryModuleType: .OpenVPN, secondaryModuleTypes: [],
-            fingerprint: "private-fingerprint", sharingFlags: [], requiredFeatures: []
+            fingerprint: "private-fingerprint", sharingFlags: [.shared], requiredFeatures: [ABI.AppFeature.allCases[0]]
         )
         #expect(!header.description.contains("private"))
         #expect(header.description.contains(header.id.uuidString))
         #expect(!header.toProto.description.contains("private"))
+        for description in [header.description, header.toProto.description] {
+            #expect(description.contains("shared"))
+            #expect(description.contains(ABI.AppFeature.allCases[0].rawValue))
+        }
     }
 
     @Test

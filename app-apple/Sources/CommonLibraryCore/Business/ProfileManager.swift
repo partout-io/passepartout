@@ -262,7 +262,7 @@ extension ProfileManager {
 
 private extension ProfileManager {
     func reloadLocalProfiles(_ result: [Profile]) {
-        pspLog(.profiles, .debug, "Reloaded local profiles: \(result.count)")
+        pspLog(.profiles, .debug, "Reloaded local profiles: \(result.map(\.id))")
 
         let excludedIds = Set(result
             .filter {
@@ -278,7 +278,7 @@ private extension ProfileManager {
                 $0[$1.id] = $1
             }
 
-        pspLog(.profiles, .debug, "Local profiles after exclusions: \(allProfiles.count)")
+        pspLog(.profiles, .debug, "Local profiles after exclusions: \(allProfiles.keys)")
 
         if waitingObservers.contains(.local) {
             waitingObservers.remove(.local)
@@ -397,7 +397,7 @@ private extension ProfileManager {
                 requiredFeatures: requiredFeatures(for: $1.value)
             )
         }
-        pspLog(.profiles, .debug, "Computed profile headers: \(allHeaders.count)")
+        pspLog(.profiles, .debug, "Computed profile headers: \(allHeaders)")
         return allHeaders
     }
 }
