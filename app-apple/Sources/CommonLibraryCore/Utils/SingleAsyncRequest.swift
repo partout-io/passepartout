@@ -2,17 +2,19 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-/// Provider messages cannot be recalled. Drain an in-flight change before applying the latest one.
+/// Waits for the in-flight operation, skipping superseded pending requests.
 @MainActor
-final class TunnelLogLevelRequest {
+public final class SingleAsyncRequest {
     private var pending: Task<Void, Never>?
+
+    public init() {}
 
     deinit {
         pending?.cancel()
     }
 
     @discardableResult
-    func submit(
+    public func submit(
         operation: @escaping @MainActor () async -> Void
     ) -> Task<Void, Never> {
         let previous = pending

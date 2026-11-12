@@ -34,7 +34,7 @@ public final class TunnelObservable {
 
     private let logRequest = TunnelLogRequest()
 
-    private let logLevelRequest = TunnelLogLevelRequest()
+    private let logLevelRequest = SingleAsyncRequest()
 
     private var loggingActiveProfiles: Set<Profile.ID> = []
 

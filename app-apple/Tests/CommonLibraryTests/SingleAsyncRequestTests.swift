@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonLibraryApple
+@testable import CommonLibraryCore
 import Partout
 import Testing
 
 @MainActor
-struct TunnelLogLevelRequestTests {
+struct SingleAsyncRequestTests {
     @Test
     func givenInFlightChange_whenToggledAgain_thenLatestLevelWins() async {
-        let sut = TunnelLogLevelRequest()
+        let sut = SingleAsyncRequest()
         var completion: CheckedContinuation<Void, Never>?
         var applied: [DebugLog.Level] = []
         let first = sut.submit {
