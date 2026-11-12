@@ -120,11 +120,10 @@ public final class TunnelContext: TunnelContextProtocol {
     public func sendMessage(_ messageData: Data) async -> Data? {
         guard let backend else { return nil }
         do {
-            let response = try await backend.sendMessage(messageData)
-            guard let response,
-                  let output = try? ABI.decode(Message.Output.self, from: response) else {
-                return response
+            guard let response = try await backend.sendMessage(messageData) else {
+                return nil
             }
+            let output = try ABI.decode(Message.Output.self, from: response)
             switch output {
             case .logLevel(let level):
                 preferences.overwrite {
