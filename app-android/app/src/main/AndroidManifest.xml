@@ -18,6 +18,7 @@
         android:xlargeScreens="true" />
 
     <application
+        android:name=".PassepartoutApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

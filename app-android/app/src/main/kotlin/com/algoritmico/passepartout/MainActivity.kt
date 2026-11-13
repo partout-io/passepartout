@@ -14,30 +14,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.defaultAndroidConstants
-import com.algoritmico.passepartout.observables.AppContext
 import com.algoritmico.passepartout.ui.PassepartoutApp
 
 class MainActivity : ComponentActivity() {
     private val androidConstants = defaultAndroidConstants
     private val logTag = androidConstants.tags.app
-    private lateinit var appContext: AppContext
-    private var isProfileImporterOpen = false
+    private val app get() = application as PassepartoutApplication
+    private val appContext get() = app.appContext
+    private var isProfileImporterOpen: Boolean
+        get() = app.isProfileImporterOpen
+        set(value) { app.isProfileImporterOpen = value }
+    private val requestVpnPermission: (Intent) -> Unit = { vpnPermissionLauncher.launch(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        appContext = AppContext(
-            logTag,
-            this,
-            lifecycleScope,
-            androidConstants = androidConstants,
-            requestVpnPermission = { permissionIntent ->
-                vpnPermissionLauncher.launch(permissionIntent)
-            }
-        )
+        app.requestVpnPermission = requestVpnPermission
         setContent {
             PassepartoutApp(
                 logTag,
@@ -75,14 +69,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (::appContext.isInitialized && !isProfileImporterOpen) {
+        if (!isProfileImporterOpen) {
             appContext.onApplicationActive()
         }
     }
 
     override fun onDestroy() {
-        if (::appContext.isInitialized) {
-            appContext.close()
+        if (app.requestVpnPermission === requestVpnPermission) {
+            app.requestVpnPermission = null
         }
         super.onDestroy()
     }
@@ -103,9 +97,9 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
         isProfileImporterOpen = false
-        if (uris.isNotEmpty() && ::appContext.isInitialized) {
+        if (uris.isNotEmpty()) {
             appContext.profileImporter.importProfiles(uris)
-        } else if (::appContext.isInitialized) {
+        } else {
             appContext.onApplicationActive()
         }
     }
@@ -139,9 +133,7 @@ class MainActivity : ComponentActivity() {
     private val vpnPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (::appContext.isInitialized) {
-            appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
-        }
+        appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
     }
     //endregion
 }
