@@ -4,11 +4,15 @@
 
 package com.algoritmico.passepartout
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.defaultAndroidConstants
@@ -48,6 +52,9 @@ class MainActivity : ComponentActivity() {
                 onImportProfile = ::openProfileImporter
             )
         }
+        if (savedInstanceState == null) {
+            requestNotificationPermission()
+        }
     }
 
     override fun onStart() {
@@ -84,6 +91,30 @@ class MainActivity : ComponentActivity() {
             appContext.profileImporter.importProfile(uri)
         } else if (::appContext.isInitialized) {
             appContext.onApplicationActive()
+        }
+    }
+    //endregion
+
+    //region Allow notifications
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            AppLog.d(logTag, "Notification permission was not granted")
         }
     }
     //endregion
