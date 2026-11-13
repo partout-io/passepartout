@@ -85,11 +85,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private val profileImportLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
         isProfileImporterOpen = false
-        if (uri != null && ::appContext.isInitialized) {
-            appContext.profileImporter.importProfile(uri)
+        if (uris.isNotEmpty() && ::appContext.isInitialized) {
+            appContext.profileImporter.importProfiles(uris)
         } else if (::appContext.isInitialized) {
             appContext.onApplicationActive()
         }

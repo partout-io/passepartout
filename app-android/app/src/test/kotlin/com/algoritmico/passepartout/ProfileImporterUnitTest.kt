@@ -109,6 +109,34 @@ class ProfileImporterUnitTest {
         }
     }
 
+    @Test
+    fun batchContinuesAfterPassphraseCancellationAndFailure() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val imported = mutableListOf<String>()
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, name, phrase ->
+            when (name) {
+                "skip", "decrypt" -> if (phrase != "correct") throw parsingError("passphraseRequired")
+                "invalid" -> throw parsingError("unsupportedOption")
+            }
+            imported += name
+        }, failures::add)
+        try {
+            importer.importProfile(*listOf("first", "skip", "invalid", "decrypt", "last")
+                .map { ProfileImportInput("profile", it) }.toTypedArray())
+            assertEquals(listOf("first"), imported)
+            assertEquals("skip", importer.state.value.passphraseFilename)
+            importer.cancelImport()
+            assertEquals(1, failures.size)
+            assertEquals("decrypt", importer.state.value.passphraseFilename)
+            importer.submitPassphrase("correct")
+            assertEquals(listOf("first", "decrypt", "last"), imported)
+            assertEquals(ProfileImporter.State(), importer.state.value)
+        } finally {
+            scope.cancel()
+        }
+    }
+
     private fun parsingError(subCode: String) = PartoutException(
         code = PartoutErrorCode.parsing,
         payload = buildJsonObject {

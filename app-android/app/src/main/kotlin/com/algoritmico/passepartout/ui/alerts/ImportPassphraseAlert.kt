@@ -29,8 +29,12 @@ fun ImportPassphraseAlert(
     onDismiss: () -> Unit
 ) {
     var passphrase by remember(filename) { mutableStateOf("") }
+    val dismiss = {
+        passphrase = ""
+        onDismiss()
+    }
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = dismiss,
         title = { Text(stringResource(R.string.views_app_toolbar_import_file)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(LocalTheme.current.spacing.medium)) {
@@ -55,7 +59,7 @@ fun ImportPassphraseAlert(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = dismiss) {
                 Text(stringResource(R.string.global_actions_cancel))
             }
         }

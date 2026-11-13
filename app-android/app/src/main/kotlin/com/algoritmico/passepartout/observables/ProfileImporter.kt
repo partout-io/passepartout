@@ -9,6 +9,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -40,15 +41,27 @@ class ProfileImporter(
     val state = _state.asStateFlow()
     private var pendingInput: ProfileImportInput? = null
     private var job: Job? = null
+    private val queue = ArrayDeque<suspend () -> ProfileImportInput>()
 
-    fun importProfile(uri: Uri) {
-        cancelImport()
-        import { readProfile(uri) }
+    fun importProfiles(uris: List<Uri>) {
+        start(uris.map { uri -> { readProfile(uri) } })
     }
 
-    fun importProfile(input: ProfileImportInput) {
-        cancelImport()
-        import { input }
+    fun importProfile(vararg inputs: ProfileImportInput) {
+        start(inputs.map { input -> { input } })
+    }
+
+    private fun start(readers: List<suspend () -> ProfileImportInput>) {
+        close()
+        queue.addAll(readers)
+        importNext()
+    }
+
+    private fun importNext() {
+        pendingInput = null
+        _state.value = State()
+        val read = queue.removeFirstOrNull() ?: return
+        import(read = read)
     }
 
     fun submitPassphrase(passphrase: String) {
@@ -60,8 +73,7 @@ class ProfileImporter(
     fun cancelImport() {
         job?.cancel()
         job = null
-        pendingInput = null
-        _state.value = State()
+        importNext()
     }
 
     private fun import(
@@ -69,7 +81,7 @@ class ProfileImporter(
         read: suspend () -> ProfileImportInput
     ) {
         _state.value = State(isImporting = true)
-        job = coroutineScope.launch {
+        job = coroutineScope.launch(start = CoroutineStart.LAZY) {
             runCatchingNonFatal {
                 val input = read()
                 currentCoroutineContext().ensureActive()
@@ -80,17 +92,16 @@ class ProfileImporter(
                 if (error is PartoutException && error.isOpenVPNPassphraseRequired) {
                     _state.value = State(passphraseFilename = pendingInput?.name)
                 } else {
-                    pendingInput = null
-                    _state.value = State()
                     reportFailure(error)
+                    importNext()
                 }
                 return@launch
             }
             currentCoroutineContext().ensureActive()
-            pendingInput = null
-            _state.value = State()
             onImportSuccess()
+            importNext()
         }
+        job?.start()
     }
 
     private fun reportFailure(error: Throwable) {
@@ -101,6 +112,7 @@ class ProfileImporter(
     }
 
     override fun close() {
+        queue.clear()
         cancelImport()
     }
 
