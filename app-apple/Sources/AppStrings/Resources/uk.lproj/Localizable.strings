@@ -453,3 +453,6 @@
 "web_uploader.title" = "Завантажити на Apple TV";
 "views.tv.profiles.import_local" = "Імпортувати профіль";
 "views.tv.connection_profiles.web_import_description" = "Поділіться профілем через iCloud або виберіть «Імпортувати профіль», щоб відобразити QR-код. Відскануйте його за допомогою Passepartout на iPhone, iPad чи Mac, щоб надіслати профіль на цей телевізор, або завантажте файл конфігурації через веббраузер.";
+
+"android.search.title" = "Пошук";
+"android.search.clear" = "Очистити пошук";

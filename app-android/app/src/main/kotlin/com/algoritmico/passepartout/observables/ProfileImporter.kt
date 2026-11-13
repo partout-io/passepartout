@@ -4,17 +4,20 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.content.Context
-import android.net.Uri
-import android.provider.OpenableColumns
-import com.algoritmico.passepartout.business.extensions.decodeAsTextOrNull
+import com.algoritmico.passepartout.business.models.ProfileImporterInput
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.context.AppLog
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import io.partout.abi.PartoutException
+import com.algoritmico.passepartout.business.extensions.isOpenVPNPassphraseRequired
+import java.io.Closeable
 
 sealed class ProfileImporterException: Exception() {
     data object Binary: ProfileImporterException()
@@ -26,68 +29,96 @@ sealed class ProfileImporterException: Exception() {
 }
 
 class ProfileImporter(
-    private val logTag: String,
-    context: Context,
     private val coroutineScope: CoroutineScope,
-    private val profileManager: ProfileManager,
-    private val fallbackProfileName: String,
-    private val errorHandler: ErrorHandler,
+    private val readProfile: suspend (ProfileImporterInput) -> ProfileImporterInput.Contents,
+    private val importText: suspend (String, String, String?) -> Unit,
+    private val reportError: (Throwable) -> Unit,
     private val onImportSuccess: () -> Unit = {}
-) {
-    private val contentResolver = context.applicationContext.contentResolver
+) : Closeable {
+    private val _state = MutableStateFlow(State())
+    val state = _state.asStateFlow()
+    private var pendingInput: ProfileImporterInput.Contents? = null
+    private var job: Job? = null
+    private val queue = ArrayDeque<suspend () -> ProfileImporterInput.Contents>()
 
-    fun importProfile(uri: Uri) {
-        coroutineScope.launch {
-            val profileName = displayName(uri) ?: fallbackProfileName
+    fun importProfiles(inputs: List<ProfileImporterInput>) {
+        start(inputs.map { input -> { readProfile(input) } })
+    }
+
+    fun importProfile(vararg inputs: ProfileImporterInput.Contents) {
+        importProfiles(inputs.toList())
+    }
+
+    private fun start(readers: List<suspend () -> ProfileImporterInput.Contents>) {
+        close()
+        queue.addAll(readers)
+        importNext()
+    }
+
+    private fun importNext() {
+        pendingInput = null
+        _state.value = State()
+        val read = queue.removeFirstOrNull() ?: return
+        import(read = read)
+    }
+
+    fun submitPassphrase(passphrase: String) {
+        val input = pendingInput ?: return
+        if (_state.value.isImporting) return
+        import(passphrase) { input }
+    }
+
+    fun skipImport() {
+        job?.cancel()
+        job = null
+        importNext()
+    }
+
+    private fun import(
+        passphrase: String? = null,
+        read: suspend () -> ProfileImporterInput.Contents
+    ) {
+        _state.value = State(isImporting = true)
+        job = coroutineScope.launch(start = CoroutineStart.LAZY) {
             runCatchingNonFatal {
-                val profileText = readProfileText(uri)
-                profileManager.importText(profileText, profileName)
-            }.onSuccess {
-                AppLog.i(logTag, "Imported profile ($profileName)")
-                onImportSuccess()
-            }.onFailure {
-                AppLog.e(logTag, "Unable to import profile ($profileName)", it)
-                if (it is ProfileImporterException) {
-                    errorHandler.report(it)
+                val input = read()
+                currentCoroutineContext().ensureActive()
+                pendingInput = input
+                importText(input.data, input.filename, passphrase)
+            }.onFailure { error ->
+                currentCoroutineContext().ensureActive()
+                if (error is PartoutException && error.isOpenVPNPassphraseRequired) {
+                    _state.value = State(passphraseFilename = pendingInput?.filename)
                 } else {
-                    errorHandler.report(ProfileImporterException.Failure(it))
+                    reportFailure(error)
+                    importNext()
                 }
+                return@launch
             }
+            currentCoroutineContext().ensureActive()
+            onImportSuccess()
+            importNext()
         }
+        job?.start()
     }
 
-    private suspend fun readProfileText(uri: Uri): String = withContext(Dispatchers.IO) {
-        val bytes = runCatchingNonFatal {
-            contentResolver.openInputStream(uri)?.use { it.readBytes() }
-        }.getOrElse {
-            throw it
-        }
-        if (bytes == null) {
-            throw ProfileImporterException.Null
-        }
-        val text = bytes.decodeAsTextOrNull()
-        if (text == null) {
-            throw ProfileImporterException.Binary
-        }
-        return@withContext text
+    private fun reportFailure(error: Throwable) {
+        reportError(
+            if (error is ProfileImporterException) error
+            else ProfileImporterException.Failure(error)
+        )
     }
 
-    private suspend fun displayName(uri: Uri): String? = withContext(Dispatchers.IO) {
-        runCatchingNonFatal {
-            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-                ?.use { cursor ->
-                    if (!cursor.moveToFirst()) {
-                        return@use null
-                    }
-                    val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (displayNameIndex < 0) {
-                        return@use null
-                    }
-                    cursor.getString(displayNameIndex)
-                }
-        }.getOrElse {
-            AppLog.w(logTag, "Unable to resolve profile file name: $uri", it)
-            null
-        }
+    override fun close() {
+        job?.cancel()
+        job = null
+        queue.clear()
+        pendingInput = null
+        _state.value = State()
     }
+
+    data class State(
+        val isImporting: Boolean = false,
+        val passphraseFilename: String? = null
+    )
 }

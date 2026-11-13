@@ -24,6 +24,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ import com.algoritmico.passepartout.ui.LocalProfileObservable
 import com.algoritmico.passepartout.ui.settings.SettingsCoordinator
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeImage
+import com.algoritmico.passepartout.ui.theme.ThemeSearchField
 import com.algoritmico.passepartout.ui.theme.ThemeImageName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -63,6 +65,10 @@ fun AppCoordinator(
         state.profileContainerStyle
     } else {
         ProfileContainerStyle.list
+    }
+
+    BackHandler(enabled = state.isSearchOpen && !state.isContextualMode) {
+        state.closeSearch()
     }
 
     BackHandler(enabled = state.isContextualMode) {
@@ -105,9 +111,13 @@ private fun rememberAppCoordinatorState(
     val profileContainerStyleState = rememberSaveable(profileContainerStyle) {
         mutableStateOf(profileContainerStyle)
     }
+    val search = rememberSaveable { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val profileObservable = LocalProfileObservable.current
     val errorHandler = LocalErrorHandler.current
+    LaunchedEffect(profileObservable, search.value) {
+        profileObservable.search(search.value.orEmpty())
+    }
 
     return remember(
         logTag,
@@ -118,6 +128,7 @@ private fun rememberAppCoordinatorState(
     ) {
         AppCoordinatorState(
             logTag = logTag,
+            searchState = search,
             contextualProfileIdsState = contextualProfileIds,
             isSettingsPresentedState = isSettingsPresented,
             profileContainerStyleState = profileContainerStyleState,
@@ -130,6 +141,7 @@ private fun rememberAppCoordinatorState(
 
 private class AppCoordinatorState(
     private val logTag: String,
+    private val searchState: MutableState<String?>,
     private val contextualProfileIdsState: MutableState<List<String>>,
     private val isSettingsPresentedState: MutableState<Boolean>,
     private val profileContainerStyleState: MutableState<ProfileContainerStyle>,
@@ -137,6 +149,24 @@ private class AppCoordinatorState(
     private val profileObservable: ProfileObservable,
     private val errorHandler: ErrorHandler
 ) {
+    val search: String
+        get() = searchState.value.orEmpty()
+
+    val isSearchOpen: Boolean
+        get() = searchState.value != null
+
+    fun openSearch() {
+        searchState.value = ""
+    }
+
+    fun closeSearch() {
+        searchState.value = null
+    }
+
+    fun search(value: String) {
+        searchState.value = value
+    }
+
     val contextualProfileIds: List<String>
         get() = contextualProfileIdsState.value
 
@@ -216,6 +246,11 @@ private fun AppCoordinatorScaffold(
     AppCoordinatorScaffold(
         title = title,
         contextualProfileCount = state.contextualProfileCount,
+        search = state.search,
+        isSearchOpen = state.isSearchOpen,
+        onSearch = state::search,
+        onOpenSearch = state::openSearch,
+        onCloseSearch = state::closeSearch,
         profileContainerStyle = profileContainerStyle,
         isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
         onClearContextualMode = state::clearContextualMode,
@@ -231,6 +266,11 @@ private fun AppCoordinatorScaffold(
 private fun AppCoordinatorScaffold(
     title: String,
     contextualProfileCount: Int,
+    search: String = "",
+    isSearchOpen: Boolean = false,
+    onSearch: (String) -> Unit = {},
+    onOpenSearch: () -> Unit = {},
+    onCloseSearch: () -> Unit = {},
     profileContainerStyle: ProfileContainerStyle = ProfileContainerStyle.list,
     isProfileContainerStylePickerVisible: Boolean = false,
     onClearContextualMode: () -> Unit,
@@ -249,6 +289,11 @@ private fun AppCoordinatorScaffold(
         topBar = {
             AppCoordinatorTopBar(
                 title = title,
+                search = search,
+                isSearchOpen = isSearchOpen,
+                onSearch = onSearch,
+                onOpenSearch = onOpenSearch,
+                onCloseSearch = onCloseSearch,
                 contextualProfileCount = contextualProfileCount,
                 profileContainerStyle = profileContainerStyle,
                 isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
@@ -292,6 +337,11 @@ private fun AppCoordinatorScaffold(
 @Composable
 private fun AppCoordinatorTopBar(
     title: String,
+    search: String,
+    isSearchOpen: Boolean,
+    onSearch: (String) -> Unit,
+    onOpenSearch: () -> Unit,
+    onCloseSearch: () -> Unit,
     contextualProfileCount: Int,
     profileContainerStyle: ProfileContainerStyle,
     isProfileContainerStylePickerVisible: Boolean,
@@ -304,13 +354,28 @@ private fun AppCoordinatorTopBar(
 
     TopAppBar(
         title = {
-            AppCoordinatorTitle(
-                title = title,
-                contextualProfileCount = contextualProfileCount
-            )
+            if (isSearchOpen && !isContextualMode) {
+                ThemeSearchField(
+                    value = search,
+                    onValueChange = onSearch,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                AppCoordinatorTitle(
+                    title = title,
+                    contextualProfileCount = contextualProfileCount
+                )
+            }
         },
         navigationIcon = {
-            if (isContextualMode) {
+            if (isSearchOpen && !isContextualMode) {
+                IconButton(onClick = onCloseSearch) {
+                    ThemeImage(
+                        name = ThemeImageName.back,
+                        contentDescription = stringResource(R.string.global_actions_cancel)
+                    )
+                }
+            } else if (isContextualMode) {
                 IconButton(
                     onClick = onClearContextualMode
                 ) {
@@ -322,14 +387,24 @@ private fun AppCoordinatorTopBar(
             }
         },
         actions = {
-            AppCoordinatorActions(
-                isContextualMode = isContextualMode,
-                profileContainerStyle = profileContainerStyle,
-                isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
-                onDeleteProfiles = onDeleteProfiles,
-                onProfileContainerStyle = onProfileContainerStyle,
-                onSettings = onSettings
-            )
+            if (!isSearchOpen || isContextualMode) {
+                if (!isContextualMode) {
+                    IconButton(onClick = onOpenSearch) {
+                        ThemeImage(
+                            name = ThemeImageName.search,
+                            contentDescription = stringResource(R.string.android_search_title)
+                        )
+                    }
+                }
+                AppCoordinatorActions(
+                    isContextualMode = isContextualMode,
+                    profileContainerStyle = profileContainerStyle,
+                    isProfileContainerStylePickerVisible = isProfileContainerStylePickerVisible,
+                    onDeleteProfiles = onDeleteProfiles,
+                    onProfileContainerStyle = onProfileContainerStyle,
+                    onSettings = onSettings
+                )
+            }
         }
     )
 }

@@ -456,4 +456,6 @@
     <string name="android_profiles_layout_list_content_description">Visa profiler som lista</string>
     <string name="android_profiles_layout_grid_content_description">Visa profiler som rutnät</string>
     <string name="android_errors_profile_importer_empty">Det gick inte att läsa profilens innehåll.</string>
+    <string name="android_search_title">Sök</string>
+    <string name="android_search_clear">Rensa sökning</string>
 </resources>

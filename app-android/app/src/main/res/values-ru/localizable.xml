@@ -456,4 +456,6 @@
     <string name="android_profiles_layout_list_content_description">Показать профили списком</string>
     <string name="android_profiles_layout_grid_content_description">Показать профили сеткой</string>
     <string name="android_errors_profile_importer_empty">Не удалось прочитать содержимое профиля.</string>
+    <string name="android_search_title">Поиск</string>
+    <string name="android_search_clear">Очистить поиск</string>
 </resources>

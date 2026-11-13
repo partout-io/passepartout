@@ -1,13 +1,13 @@
 package com.algoritmico.passepartout.observables
 
 import android.content.Context
-import android.content.Intent
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
 import com.algoritmico.passepartout.context.AndroidConstants
+import com.algoritmico.passepartout.business.models.decodedPair
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
@@ -30,8 +30,7 @@ class AppContext(
     private val logTag: String,
     context: Context,
     private val coroutineScope: CoroutineScope,
-    val androidConstants: AndroidConstants = defaultAndroidConstants,
-    requestVpnPermission: (Intent) -> Unit
+    val androidConstants: AndroidConstants = defaultAndroidConstants
 ) : Closeable {
     private val applicationContext = context.applicationContext
     private val library = androidConstants.newWrapper()
@@ -47,6 +46,7 @@ class AppContext(
     val configObservable: ConfigObservable
     val diagnosticsObservable: DiagnosticsObservable
     val errorHandler: ErrorHandler
+    val vpnPermissionObservable = VpnPermissionObservable()
     val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
@@ -84,7 +84,7 @@ class AppContext(
             logTag,
             applicationContext,
             androidConstants.tunnel,
-            requestVpnPermission
+            vpnPermissionObservable::request
         )
         configManager = appConfiguration.newConfigManager(
             logTag,
@@ -119,12 +119,16 @@ class AppContext(
             errorHandler
         )
         profileImporter = ProfileImporter(
-            logTag,
-            applicationContext,
-            coroutineScope,
-            profileManager,
-            applicationContext.getString(R.string.placeholders_profile_imported_name),
-            errorHandler,
+            coroutineScope = coroutineScope,
+            readProfile = { input ->
+                input.decodedPair(
+                    applicationContext.contentResolver,
+                    applicationContext.getString(R.string.placeholders_profile_imported_name),
+                    logTag
+                )
+            },
+            importText = profileManager::importText,
+            reportError = errorHandler::report,
             onImportSuccess = ::onApplicationActive
         )
         tunnelObservable = TunnelObservable(
@@ -138,6 +142,12 @@ class AppContext(
             versionChecker,
             coroutineScope
         )
+    }
+
+    fun onVpnPermissionResult(isGranted: Boolean) {
+        if (vpnPermissionObservable.complete()) {
+            tunnelObservable.onVpnPermissionResult(isGranted)
+        }
     }
 
     fun onApplicationActive() {
@@ -171,6 +181,7 @@ class AppContext(
 //    }
 
     override fun close() {
+        profileImporter.close()
         configObservable.close()
         profileObservable.close()
         tunnelObservable.close()
