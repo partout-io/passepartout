@@ -13,6 +13,10 @@ import com.algoritmico.passepartout.context.AppLog
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import androidx.core.content.ContextCompat
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.defaultAndroidConstants
@@ -23,15 +27,26 @@ class MainActivity : ComponentActivity() {
     private val logTag = androidConstants.tags.app
     private val app get() = application as PassepartoutApplication
     private val appContext get() = app.appContext
-    private var isProfileImporterOpen: Boolean
-        get() = app.isProfileImporterOpen
-        set(value) { app.isProfileImporterOpen = value }
-    private val requestVpnPermission: (Intent) -> Unit = { vpnPermissionLauncher.launch(it) }
+    private var isProfileImporterOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        app.requestVpnPermission = requestVpnPermission
+        isProfileImporterOpen = savedInstanceState?.getBoolean("isProfileImporterOpen") ?: false
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                appContext.vpnPermissionObservable.state.collect {
+                    val request = appContext.vpnPermissionObservable.takePendingRequest()
+                        ?: return@collect
+                    runCatchingNonFatal {
+                        vpnPermissionLauncher.launch(request)
+                    }.onFailure {
+                        appContext.onVpnPermissionResult(false)
+                        appContext.errorHandler.report(it)
+                    }
+                }
+            }
+        }
         setContent {
             PassepartoutApp(
                 logTag,
@@ -74,11 +89,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onDestroy() {
-        if (app.requestVpnPermission === requestVpnPermission) {
-            app.requestVpnPermission = null
-        }
-        super.onDestroy()
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("isProfileImporterOpen", isProfileImporterOpen)
+        super.onSaveInstanceState(outState)
     }
 
     //region Import profile
@@ -133,7 +146,7 @@ class MainActivity : ComponentActivity() {
     private val vpnPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        appContext.tunnelObservable.onVpnPermissionResult(result.resultCode == RESULT_OK)
+        appContext.onVpnPermissionResult(result.resultCode == RESULT_OK)
     }
     //endregion
 }

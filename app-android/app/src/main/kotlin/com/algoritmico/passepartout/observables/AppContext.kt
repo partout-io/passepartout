@@ -1,7 +1,6 @@
 package com.algoritmico.passepartout.observables
 
 import android.content.Context
-import android.content.Intent
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
@@ -30,8 +29,7 @@ class AppContext(
     private val logTag: String,
     context: Context,
     private val coroutineScope: CoroutineScope,
-    val androidConstants: AndroidConstants = defaultAndroidConstants,
-    requestVpnPermission: (Intent) -> Unit
+    val androidConstants: AndroidConstants = defaultAndroidConstants
 ) : Closeable {
     private val applicationContext = context.applicationContext
     private val library = androidConstants.newWrapper()
@@ -47,6 +45,7 @@ class AppContext(
     val configObservable: ConfigObservable
     val diagnosticsObservable: DiagnosticsObservable
     val errorHandler: ErrorHandler
+    val vpnPermissionObservable = VpnPermissionObservable()
     val profileImporter: ProfileImporter
     val profileObservable: ProfileObservable
     val tunnelObservable: TunnelObservable
@@ -84,7 +83,7 @@ class AppContext(
             logTag,
             applicationContext,
             androidConstants.tunnel,
-            requestVpnPermission
+            vpnPermissionObservable::request
         )
         configManager = appConfiguration.newConfigManager(
             logTag,
@@ -141,6 +140,12 @@ class AppContext(
             versionChecker,
             coroutineScope
         )
+    }
+
+    fun onVpnPermissionResult(isGranted: Boolean) {
+        if (vpnPermissionObservable.complete()) {
+            tunnelObservable.onVpnPermissionResult(isGranted)
+        }
     }
 
     fun onApplicationActive() {
