@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout
 
 import com.algoritmico.passepartout.observables.ProfileImporter
-import com.algoritmico.passepartout.observables.ProfileImportInput
+import com.algoritmico.passepartout.business.models.ProfileImporterInput
 import io.partout.abi.PartoutException
 import io.partout.models.PartoutErrorCode
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +28,7 @@ class ProfileImporterUnitTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val phrases = mutableListOf<String?>()
         var successes = 0
-        val importer = ProfileImporter(scope, { error("Unexpected read") }, { text, name, phrase ->
+        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { text, name, phrase ->
             assertEquals("encrypted", text)
             assertEquals("Private.ovpn", name)
             phrases += phrase
@@ -37,7 +37,7 @@ class ProfileImporterUnitTest {
             )
         }, { throw AssertionError(it) }, { successes++ })
         try {
-            importer.importProfile(ProfileImportInput("encrypted", "Private.ovpn"))
+            importer.importProfile(ProfileImporterInput.Contents("encrypted", "Private.ovpn"))
             assertEquals("Private.ovpn", importer.state.value.passphraseFilename)
             importer.submitPassphrase("wrong")
             assertEquals("Private.ovpn", importer.state.value.passphraseFilename)
@@ -56,12 +56,12 @@ class ProfileImporterUnitTest {
     fun cancellationDiscardsPendingInput() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         var attempts = 0
-        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, _, _ ->
+        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, _, _ ->
             attempts++
             throw parsingError("passphraseRequired")
         }, { throw AssertionError(it) })
         try {
-            importer.importProfile(ProfileImportInput("encrypted", "Private.ovpn"))
+            importer.importProfile(ProfileImporterInput.Contents("encrypted", "Private.ovpn"))
             importer.skipImport()
             importer.submitPassphrase("ignored")
             assertEquals(1, attempts)
@@ -75,11 +75,11 @@ class ProfileImporterUnitTest {
     fun unrelatedParsingFailureIsReportedWithoutPrompt() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val failures = mutableListOf<Throwable>()
-        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, _, _ ->
+        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, _, _ ->
             throw parsingError("unsupportedOption")
         }, failures::add)
         try {
-            importer.importProfile(ProfileImportInput("invalid", "Invalid.ovpn"))
+            importer.importProfile(ProfileImporterInput.Contents("invalid", "Invalid.ovpn"))
             assertEquals(1, failures.size)
             assertEquals(ProfileImporter.State(), importer.state.value)
         } finally {
@@ -92,15 +92,15 @@ class ProfileImporterUnitTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val release = CompletableDeferred<Unit>()
         var successes = 0
-        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, name, _ ->
+        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, name, _ ->
             if (name == "Old.ovpn") {
                 withContext(NonCancellable) { release.await() }
                 throw parsingError("passphraseRequired")
             }
         }, { throw AssertionError(it) }, { successes++ })
         try {
-            importer.importProfile(ProfileImportInput("old", "Old.ovpn"))
-            importer.importProfile(ProfileImportInput("new", "New.ovpn"))
+            importer.importProfile(ProfileImporterInput.Contents("old", "Old.ovpn"))
+            importer.importProfile(ProfileImporterInput.Contents("new", "New.ovpn"))
             release.complete(Unit)
             assertEquals(ProfileImporter.State(), importer.state.value)
             assertEquals(1, successes)
@@ -114,7 +114,7 @@ class ProfileImporterUnitTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val imported = mutableListOf<String>()
         val failures = mutableListOf<Throwable>()
-        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, name, phrase ->
+        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, name, phrase ->
             when (name) {
                 "skip", "decrypt" -> if (phrase != "correct") throw parsingError("passphraseRequired")
                 "invalid" -> throw parsingError("unsupportedOption")
@@ -123,7 +123,7 @@ class ProfileImporterUnitTest {
         }, failures::add)
         try {
             importer.importProfile(*listOf("first", "skip", "invalid", "decrypt", "last")
-                .map { ProfileImportInput("profile", it) }.toTypedArray())
+                .map { ProfileImporterInput.Contents("profile", it) }.toTypedArray())
             assertEquals(listOf("first"), imported)
             assertEquals("skip", importer.state.value.passphraseFilename)
             importer.skipImport()
@@ -141,14 +141,14 @@ class ProfileImporterUnitTest {
     fun closeDiscardsBatchWithoutStartingNextImport() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val attempts = mutableListOf<String>()
-        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, name, _ ->
+        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, name, _ ->
             attempts += name
             throw parsingError("passphraseRequired")
         }, { throw AssertionError(it) })
         try {
             importer.importProfile(
-                ProfileImportInput("encrypted", "first"),
-                ProfileImportInput("encrypted", "second")
+                ProfileImporterInput.Contents("encrypted", "first"),
+                ProfileImporterInput.Contents("encrypted", "second")
             )
             importer.close()
             importer.submitPassphrase("ignored")

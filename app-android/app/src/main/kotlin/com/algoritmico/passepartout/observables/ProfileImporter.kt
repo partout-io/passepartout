@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
-import android.net.Uri
+import com.algoritmico.passepartout.business.models.ProfileImporterInput
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import kotlinx.coroutines.CoroutineScope
@@ -28,30 +28,28 @@ sealed class ProfileImporterException: Exception() {
     }
 }
 
-class ProfileImportInput(val text: String, val name: String)
-
 class ProfileImporter(
     private val coroutineScope: CoroutineScope,
-    private val readProfile: suspend (Uri) -> ProfileImportInput,
+    private val readProfile: suspend (ProfileImporterInput) -> ProfileImporterInput.Contents,
     private val importText: suspend (String, String, String?) -> Unit,
     private val reportError: (Throwable) -> Unit,
     private val onImportSuccess: () -> Unit = {}
 ) : Closeable {
     private val _state = MutableStateFlow(State())
     val state = _state.asStateFlow()
-    private var pendingInput: ProfileImportInput? = null
+    private var pendingInput: ProfileImporterInput.Contents? = null
     private var job: Job? = null
-    private val queue = ArrayDeque<suspend () -> ProfileImportInput>()
+    private val queue = ArrayDeque<suspend () -> ProfileImporterInput.Contents>()
 
-    fun importProfiles(uris: List<Uri>) {
-        start(uris.map { uri -> { readProfile(uri) } })
+    fun importProfiles(inputs: List<ProfileImporterInput>) {
+        start(inputs.map { input -> { readProfile(input) } })
     }
 
-    fun importProfile(vararg inputs: ProfileImportInput) {
-        start(inputs.map { input -> { input } })
+    fun importProfile(vararg inputs: ProfileImporterInput.Contents) {
+        importProfiles(inputs.toList())
     }
 
-    private fun start(readers: List<suspend () -> ProfileImportInput>) {
+    private fun start(readers: List<suspend () -> ProfileImporterInput.Contents>) {
         close()
         queue.addAll(readers)
         importNext()
@@ -78,7 +76,7 @@ class ProfileImporter(
 
     private fun import(
         passphrase: String? = null,
-        read: suspend () -> ProfileImportInput
+        read: suspend () -> ProfileImporterInput.Contents
     ) {
         _state.value = State(isImporting = true)
         job = coroutineScope.launch(start = CoroutineStart.LAZY) {
@@ -86,11 +84,11 @@ class ProfileImporter(
                 val input = read()
                 currentCoroutineContext().ensureActive()
                 pendingInput = input
-                importText(input.text, input.name, passphrase)
+                importText(input.data, input.filename, passphrase)
             }.onFailure { error ->
                 currentCoroutineContext().ensureActive()
                 if (error is PartoutException && error.isOpenVPNPassphraseRequired) {
-                    _state.value = State(passphraseFilename = pendingInput?.name)
+                    _state.value = State(passphraseFilename = pendingInput?.filename)
                 } else {
                     reportFailure(error)
                     importNext()

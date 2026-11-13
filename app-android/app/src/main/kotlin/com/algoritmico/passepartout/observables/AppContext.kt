@@ -7,6 +7,7 @@ import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
 import com.algoritmico.passepartout.context.AndroidConstants
+import com.algoritmico.passepartout.business.models.decodedPair
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.appBundle
 import com.algoritmico.passepartout.context.appConstants
@@ -117,14 +118,15 @@ class AppContext(
             coroutineScope,
             errorHandler
         )
-        val profileImportReader = AndroidProfileImportReader(
-            logTag,
-            applicationContext,
-            applicationContext.getString(R.string.placeholders_profile_imported_name)
-        )
         profileImporter = ProfileImporter(
             coroutineScope = coroutineScope,
-            readProfile = profileImportReader::read,
+            readProfile = { input ->
+                input.decodedPair(
+                    applicationContext.contentResolver,
+                    applicationContext.getString(R.string.placeholders_profile_imported_name),
+                    logTag
+                )
+            },
             importText = profileManager::importText,
             reportError = errorHandler::report,
             onImportSuccess = ::onApplicationActive

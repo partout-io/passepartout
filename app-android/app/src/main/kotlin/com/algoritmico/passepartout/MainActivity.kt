@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout
 
 import android.content.Intent
+import com.algoritmico.passepartout.business.models.ProfileImporterInput
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity() {
         if (intent.action != Intent.ACTION_VIEW) return
         val uri = intent.data ?: return
         if (uri.scheme != "content" && uri.scheme != "file") return
-        appContext.profileImporter.importProfiles(listOf(uri))
+        appContext.profileImporter.importProfiles(listOf(ProfileImporterInput.File(uri)))
     }
 
     override fun onStart() {
@@ -111,7 +112,7 @@ class MainActivity : ComponentActivity() {
     ) { uris ->
         isProfileImporterOpen = false
         if (uris.isNotEmpty()) {
-            appContext.profileImporter.importProfiles(uris)
+            appContext.profileImporter.importProfiles(uris.map { ProfileImporterInput.File(it) })
         } else {
             appContext.onApplicationActive()
         }

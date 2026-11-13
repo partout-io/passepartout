@@ -8,7 +8,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.algoritmico.passepartout.observables.AppContext
-import com.algoritmico.passepartout.observables.ProfileImportInput
+import com.algoritmico.passepartout.business.models.ProfileImporterInput
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -27,8 +27,8 @@ class ImportRecreationInstrumentedTest {
             scenario.onActivity {
                 context = (it.application as PassepartoutApplication).appContext
                 context.profileImporter.importProfile(
-                    ProfileImportInput(text, "first.ovpn"),
-                    ProfileImportInput(text, "second.ovpn")
+                    ProfileImporterInput.Contents(text, "first.ovpn"),
+                    ProfileImporterInput.Contents(text, "second.ovpn")
                 )
             }
             withTimeout(5000) {
