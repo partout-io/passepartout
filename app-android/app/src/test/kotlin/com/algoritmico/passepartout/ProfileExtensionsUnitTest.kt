@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout
 
+import io.partout.extensions.encodedPassword
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.isInteractive
 import io.partout.extensions.withInteractiveOpenVPNCredentials
@@ -109,6 +110,28 @@ class ProfileExtensionsUnitTest {
         assertEquals("SCRV1:c2F2ZWQtcGFzc3dvcmQ=:MTIzNDU2", credentials?.password)
         assertEquals(OpenVPNCredentialsOTPMethod.none, credentials?.otpMethod)
         assertEquals(null, credentials?.otp)
+    }
+
+    @Test
+    fun encodedPassword_preservesUTF8AndPadding() {
+        assertEquals(
+            "SCRV1:cMOkc3M=:4pyT",
+            OpenVPNCredentialsOTPMethod.encode.encodedPassword("päss", "✓")
+        )
+        assertEquals(
+            "SCRV1::",
+            OpenVPNCredentialsOTPMethod.encode.encodedPassword("", "")
+        )
+    }
+
+    @Test
+    fun encodedPassword_doesNotWrapLongCredentials() {
+        val encoded = OpenVPNCredentialsOTPMethod.encode.encodedPassword(
+            password = "abc".repeat(40),
+            otp = "123".repeat(40)
+        )
+
+        assertEquals("SCRV1:${"YWJj".repeat(40)}:${"MTIz".repeat(40)}", encoded)
     }
 
     @Test
