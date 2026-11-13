@@ -453,3 +453,6 @@
 "web_uploader.title" = "Enviar para Apple TV";
 "views.tv.profiles.import_local" = "Importar perfil";
 "views.tv.connection_profiles.web_import_description" = "Compartilhe um perfil pelo iCloud ou selecione “Importar perfil” para exibir um código QR. Escaneie-o com o Passepartout no iPhone, iPad ou Mac para enviar um perfil para esta TV, ou use um navegador web para carregar um arquivo de configuração.";
+
+"android.search.title" = "Pesquisar";
+"android.search.clear" = "Limpar pesquisa";

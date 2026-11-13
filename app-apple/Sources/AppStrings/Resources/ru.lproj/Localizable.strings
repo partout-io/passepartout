@@ -453,3 +453,6 @@
 "web_uploader.title" = "Загрузить на Apple TV";
 "views.tv.profiles.import_local" = "Импортировать профиль";
 "views.tv.connection_profiles.web_import_description" = "Поделитесь профилем через iCloud или выберите «Импортировать профиль», чтобы отобразить QR-код. Отсканируйте его с помощью Passepartout на iPhone, iPad или Mac, чтобы отправить профиль на этот телевизор, или загрузите файл конфигурации через веб-браузер.";
+
+"android.search.title" = "Поиск";
+"android.search.clear" = "Очистить поиск";

@@ -456,4 +456,6 @@
     <string name="android_profiles_layout_list_content_description">Προβολή προφίλ σε λίστα</string>
     <string name="android_profiles_layout_grid_content_description">Προβολή προφίλ σε πλέγμα</string>
     <string name="android_errors_profile_importer_empty">Δεν είναι δυνατή η ανάγνωση του περιεχομένου του προφίλ.</string>
+    <string name="android_search_title">Αναζήτηση</string>
+    <string name="android_search_clear">Εκκαθάριση αναζήτησης</string>
 </resources>

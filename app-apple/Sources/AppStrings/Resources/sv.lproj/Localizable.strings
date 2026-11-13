@@ -453,3 +453,6 @@
 "web_uploader.title" = "Ladda upp till Apple TV";
 "views.tv.profiles.import_local" = "Importera profil";
 "views.tv.connection_profiles.web_import_description" = "Dela en profil via iCloud eller välj ”Importera profil” för att visa en QR-kod. Skanna den med Passepartout på din iPhone, iPad eller Mac för att skicka en profil till denna TV, eller använd en webbläsare för att ladda upp en konfigurationsfil.";
+
+"android.search.title" = "Sök";
+"android.search.clear" = "Rensa sökning";

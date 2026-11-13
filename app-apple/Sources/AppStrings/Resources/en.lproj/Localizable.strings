@@ -546,3 +546,6 @@
 "android.profiles.layout.grid.content_description" = "Grid profiles";
 
 "android.errors.profile_importer.empty" = "Unable to read profile content.";
+
+"android.search.title" = "Search";
+"android.search.clear" = "Clear search";
