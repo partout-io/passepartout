@@ -82,7 +82,7 @@ fun PassepartoutApp(
                 ImportPassphraseAlert(
                     filename = filename,
                     onDecrypt = profileImporter::submitPassphrase,
-                    onDismiss = profileImporter::cancelImport
+                    onDismiss = profileImporter::skipImport
                 )
             }
             LaunchedEffect(errorHandler) {

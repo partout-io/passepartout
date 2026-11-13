@@ -111,13 +111,12 @@ private fun rememberAppCoordinatorState(
     val profileContainerStyleState = rememberSaveable(profileContainerStyle) {
         mutableStateOf(profileContainerStyle)
     }
-    val search = rememberSaveable { mutableStateOf("") }
-    val isSearchOpen = rememberSaveable { mutableStateOf(false) }
+    val search = rememberSaveable { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val profileObservable = LocalProfileObservable.current
     val errorHandler = LocalErrorHandler.current
     LaunchedEffect(profileObservable, search.value) {
-        profileObservable.search(search.value)
+        profileObservable.search(search.value.orEmpty())
     }
 
     return remember(
@@ -130,7 +129,6 @@ private fun rememberAppCoordinatorState(
         AppCoordinatorState(
             logTag = logTag,
             searchState = search,
-            isSearchOpenState = isSearchOpen,
             contextualProfileIdsState = contextualProfileIds,
             isSettingsPresentedState = isSettingsPresented,
             profileContainerStyleState = profileContainerStyleState,
@@ -143,8 +141,7 @@ private fun rememberAppCoordinatorState(
 
 private class AppCoordinatorState(
     private val logTag: String,
-    private val searchState: MutableState<String>,
-    private val isSearchOpenState: MutableState<Boolean>,
+    private val searchState: MutableState<String?>,
     private val contextualProfileIdsState: MutableState<List<String>>,
     private val isSettingsPresentedState: MutableState<Boolean>,
     private val profileContainerStyleState: MutableState<ProfileContainerStyle>,
@@ -153,18 +150,17 @@ private class AppCoordinatorState(
     private val errorHandler: ErrorHandler
 ) {
     val search: String
-        get() = searchState.value
+        get() = searchState.value.orEmpty()
 
     val isSearchOpen: Boolean
-        get() = isSearchOpenState.value
+        get() = searchState.value != null
 
     fun openSearch() {
-        isSearchOpenState.value = true
+        searchState.value = ""
     }
 
     fun closeSearch() {
-        searchState.value = ""
-        isSearchOpenState.value = false
+        searchState.value = null
     }
 
     fun search(value: String) {

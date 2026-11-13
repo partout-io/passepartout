@@ -62,7 +62,7 @@ class ProfileImporterUnitTest {
         }, { throw AssertionError(it) })
         try {
             importer.importProfile(ProfileImportInput("encrypted", "Private.ovpn"))
-            importer.cancelImport()
+            importer.skipImport()
             importer.submitPassphrase("ignored")
             assertEquals(1, attempts)
             assertEquals(ProfileImporter.State(), importer.state.value)
@@ -126,11 +126,34 @@ class ProfileImporterUnitTest {
                 .map { ProfileImportInput("profile", it) }.toTypedArray())
             assertEquals(listOf("first"), imported)
             assertEquals("skip", importer.state.value.passphraseFilename)
-            importer.cancelImport()
+            importer.skipImport()
             assertEquals(1, failures.size)
             assertEquals("decrypt", importer.state.value.passphraseFilename)
             importer.submitPassphrase("correct")
             assertEquals(listOf("first", "decrypt", "last"), imported)
+            assertEquals(ProfileImporter.State(), importer.state.value)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun closeDiscardsBatchWithoutStartingNextImport() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val attempts = mutableListOf<String>()
+        val importer = ProfileImporter(scope, { error("Unexpected read") }, { _, name, _ ->
+            attempts += name
+            throw parsingError("passphraseRequired")
+        }, { throw AssertionError(it) })
+        try {
+            importer.importProfile(
+                ProfileImportInput("encrypted", "first"),
+                ProfileImportInput("encrypted", "second")
+            )
+            importer.close()
+            importer.submitPassphrase("ignored")
+            importer.skipImport()
+            assertEquals(listOf("first"), attempts)
             assertEquals(ProfileImporter.State(), importer.state.value)
         } finally {
             scope.cancel()

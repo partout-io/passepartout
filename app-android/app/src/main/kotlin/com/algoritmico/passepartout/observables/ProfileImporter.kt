@@ -70,7 +70,7 @@ class ProfileImporter(
         import(passphrase) { input }
     }
 
-    fun cancelImport() {
+    fun skipImport() {
         job?.cancel()
         job = null
         importNext()
@@ -112,8 +112,11 @@ class ProfileImporter(
     }
 
     override fun close() {
+        job?.cancel()
+        job = null
         queue.clear()
-        cancelImport()
+        pendingInput = null
+        _state.value = State()
     }
 
     data class State(
