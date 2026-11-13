@@ -21,6 +21,7 @@ import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
 import io.partout.models.ModuleType
 import io.partout.models.TaggedProfile
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -41,6 +42,7 @@ class ProfileManager(
     eventConstants: AndroidConstants.Events
 ) {
     private var profiles: Map<String, TaggedProfile> = emptyMap()
+    private val initialProfilesLoaded = CompletableDeferred<Unit>()
 
     private val _events = newEventFlow(eventConstants)
     val events: SharedFlow<Event> = _events.asSharedFlow()
@@ -53,9 +55,11 @@ class ProfileManager(
             reportError(it)
         }
         _events.emit(ProfileEventReady())
+        initialProfilesLoaded.complete(Unit)
     }
 
     suspend fun importText(text: String, name: String?, passphrase: String? = null) {
+        initialProfilesLoaded.await()
         val profile = runCatchingNonFatal {
             library.importProfile(text, name, passphrase)
         }.getOrThrow()
