@@ -55,9 +55,9 @@ class ProfileManager(
         _events.emit(ProfileEventReady())
     }
 
-    suspend fun importText(text: String, name: String?) {
+    suspend fun importText(text: String, name: String?, passphrase: String? = null) {
         val profile = runCatchingNonFatal {
-            library.importProfile(text, name)
+            library.importProfile(text, name, passphrase)
         }.getOrThrow()
         val previous = profiles[profile.id]
         repository.saveProfile(profile)

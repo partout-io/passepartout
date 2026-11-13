@@ -118,13 +118,16 @@ class AppContext(
             coroutineScope,
             errorHandler
         )
-        profileImporter = ProfileImporter(
+        val profileImportReader = AndroidProfileImportReader(
             logTag,
             applicationContext,
-            coroutineScope,
-            profileManager,
-            applicationContext.getString(R.string.placeholders_profile_imported_name),
-            errorHandler,
+            applicationContext.getString(R.string.placeholders_profile_imported_name)
+        )
+        profileImporter = ProfileImporter(
+            coroutineScope = coroutineScope,
+            readProfile = profileImportReader::read,
+            importText = profileManager::importText,
+            reportError = errorHandler::report,
             onImportSuccess = ::onApplicationActive
         )
         tunnelObservable = TunnelObservable(
@@ -171,6 +174,7 @@ class AppContext(
 //    }
 
     override fun close() {
+        profileImporter.close()
         configObservable.close()
         profileObservable.close()
         tunnelObservable.close()

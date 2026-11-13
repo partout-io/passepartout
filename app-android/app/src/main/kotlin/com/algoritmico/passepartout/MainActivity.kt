@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                 appContext.appConfiguration,
                 appContext.androidConstants,
                 appContext.errorHandler,
+                profileImporter = appContext.profileImporter,
                 onImportProfile = ::openProfileImporter
             )
         }

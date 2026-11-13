@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout.business.extensions
 
 import io.partout.abi.PartoutException
+import io.partout.models.ModuleType
 import io.partout.models.OpenVPNErrorCode
 import io.partout.models.ParseErrorInfo
 import io.partout.models.PartoutErrorCode
@@ -38,3 +39,13 @@ val PartoutException.parseErrorInfo: ParseErrorInfo?
     get() = if (code == PartoutErrorCode.parsing) {
         payload?.let { runCatching { JSON.decodeElement<ParseErrorInfo>(it) }.getOrNull() }
     } else null
+
+val PartoutException.isOpenVPNPassphraseRequired: Boolean
+    get() {
+        val info = parseErrorInfo ?: return false
+        return info.recognizedType == ModuleType.OpenVPN &&
+            info.subCode in setOf(
+                OpenVPNErrorCode.passphraseRequired.value,
+                OpenVPNErrorCode.unableToDecrypt.value
+            )
+    }
