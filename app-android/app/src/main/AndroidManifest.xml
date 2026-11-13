@@ -46,7 +46,13 @@
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/octet-stream" />
             </intent-filter>
-            <!-- Also accept extension-based file links without a known MIME type. -->
+        </activity>
+        <!-- pathSuffix is only understood from API 31 onward. -->
+        <activity-alias
+            android:name=".ProfileFileActivity"
+            android:targetActivity=".MainActivity"
+            android:enabled="@bool/profile_file_suffix_enabled"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -57,7 +63,7 @@
                 <data android:pathSuffix=".conf" />
                 <data android:pathSuffix=".json" />
             </intent-filter>
-        </activity>
+        </activity-alias>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
