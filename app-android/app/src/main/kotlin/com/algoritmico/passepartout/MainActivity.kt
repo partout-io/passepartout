@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout
 
+import android.content.Intent
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -55,7 +56,21 @@ class MainActivity : ComponentActivity() {
         }
         if (savedInstanceState == null) {
             requestNotificationPermission()
+            importProfileFromIntent(intent)
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        importProfileFromIntent(intent)
+    }
+
+    private fun importProfileFromIntent(intent: Intent) {
+        if (intent.action != Intent.ACTION_VIEW) return
+        val uri = intent.data ?: return
+        if (uri.scheme != "content" && uri.scheme != "file") return
+        appContext.profileImporter.importProfiles(listOf(uri))
     }
 
     override fun onStart() {

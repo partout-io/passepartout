@@ -26,12 +26,36 @@
         android:theme="@style/Theme.Passepartout">
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:exported="true"
             android:screenOrientation="fullUser"
             android:theme="@style/Theme.Passepartout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Document providers often expose opaque URIs, so match their MIME types. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/x-openvpn-profile" />
+                <data android:mimeType="application/x-openvpn" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+            <!-- Also accept extension-based file links without a known MIME type. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathSuffix=".ovpn" />
+                <data android:pathSuffix=".conf" />
+                <data android:pathSuffix=".json" />
             </intent-filter>
         </activity>
         <provider
