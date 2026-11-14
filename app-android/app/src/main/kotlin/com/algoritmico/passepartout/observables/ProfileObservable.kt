@@ -39,8 +39,7 @@ class ProfileObservable(
     coroutineScope: CoroutineScope,
     errorHandler: ErrorHandler,
     searchDebounceMillis: Long = 200L,
-    private val canRemoveProfiles: (Collection<String>) -> Boolean = { true },
-    val wireGuardPublicKey: (String) -> String? = { null }
+    private val canRemoveProfiles: (Collection<String>) -> Boolean = { true }
 ) : Closeable {
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])

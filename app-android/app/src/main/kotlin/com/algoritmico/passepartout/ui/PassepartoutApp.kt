@@ -47,6 +47,7 @@ fun PassepartoutApp(
     androidConstants: AndroidConstants,
     errorHandler: ErrorHandler,
     profileImporter: ProfileImporter,
+    wireGuardPublicKey: (String) -> String?,
     theme: Theme = Theme(),
     onImportProfile: () -> Unit
 ) {
@@ -57,6 +58,7 @@ fun PassepartoutApp(
     }
     CompositionLocalProvider(
         LocalTheme provides theme,
+        LocalWireGuardPublicKey provides wireGuardPublicKey,
         LocalAppConfiguration provides appConfiguration,
         LocalAndroidConstants provides androidConstants,
         LocalConfigObservable provides configObservable,

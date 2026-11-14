@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 package com.algoritmico.passepartout
 
+import android.os.Bundle
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -22,6 +23,8 @@ import io.partout.models.ModuleType
 import io.partout.models.TaggedModuleCustom
 import kotlinx.serialization.json.JsonPrimitive
 import io.partout.models.OpenVPNConfiguration
+import io.partout.models.OpenVPNCredentials
+import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.OpenVPNModule
 import io.partout.models.TaggedModuleOpenVPN
 import io.partout.models.TaggedProfile
@@ -57,7 +60,9 @@ class ProfileEditorRecreationTest {
                     profiles.beginEditing(id)
                     val editor = requireNotNull(profiles.editor.value)
                     editor.rename("Unsaved recreation name")
-                    editor.credentials(moduleId, "unsaved-user", "unsaved-password")
+                    val module = editor.state.value.modules.filterIsInstance<TaggedModuleOpenVPN>().single()
+                    editor.updateModule(module.copy(value = module.value.copy(credentials =
+                        OpenVPNCredentials("unsaved-user", "unsaved-password", OpenVPNCredentialsOTPMethod.append, "123"))))
                 }
                 assertVisible("Unsaved recreation name")
                 val originalSession = profiles.editor.value
@@ -102,23 +107,34 @@ class ProfileEditorRecreationTest {
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))
                 clickText(app.getString(R.string.modules_openvpn_credentials))
                 assertVisible("unsaved-user")
+                val usernameField = requireNotNull(find(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))
+                assertTrue(usernameField.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, Bundle().apply {
+                    putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "edited-user")
+                }))
+                assertVisible("edited-user")
+                scenario.onActivity {
+                    val credentials = requireNotNull(profiles.editor.value).state.value.modules
+                        .filterIsInstance<TaggedModuleOpenVPN>().single().value.credentials
+                    assertEquals(OpenVPNCredentials("edited-user", "unsaved-password", OpenVPNCredentialsOTPMethod.append, "123"), credentials)
+                    assertEquals(profile, profiles.profile(id))
+                }
                 scenario.recreate()
-                assertVisible("unsaved-user")
+                assertVisible("edited-user")
                 pressBack()
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
-                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "edited-user"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "View content"))
                 scrollToText("CA")
                 clickText("CA")
                 assertVisible("Navigation test certificate")
-                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "edited-user"))
                 scenario.recreate()
                 assertVisible("Navigation test certificate")
                 pressBack()
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
                 clickText(app.getString(R.string.modules_openvpn_credentials))
-                assertVisible("unsaved-user")
+                assertVisible("edited-user")
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
                 scenario.onActivity { profiles.endEditing() }
                 scenario.recreate()

@@ -105,7 +105,9 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                         }
                     } else if (showsCredentials && module is TaggedModuleOpenVPN) {
                         item {
-                            OpenVPNCredentialsView(module = module.value, editor = editor)
+                            OpenVPNCredentialsView(module = module.value, onChange = {
+                                editor.updateModule(module.copy(value = it))
+                            })
                         }
                     } else if (module == null) {
                         item {
@@ -135,8 +137,7 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                     } else {
                         item {
                             ModuleDetailView(module, onOpenContent = editor::openContent,
-                                onCredentials = { showsCredentials = true },
-                                wireGuardPublicKey = profiles.wireGuardPublicKey)
+                                onCredentials = { showsCredentials = true })
                         }
                     }
                 }

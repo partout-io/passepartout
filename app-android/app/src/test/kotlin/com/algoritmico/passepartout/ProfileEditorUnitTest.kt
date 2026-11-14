@@ -29,9 +29,10 @@ class ProfileEditorUnitTest {
     }
 
     @Test
-    fun credentialsPreserveOtherAuthenticationSettings() {
+    fun moduleUpdatePreservesOtherProfileFields() {
         val editor = ProfileEditor(profile)
-        editor.credentials("module", "new", "password")
+        editor.updateModule(module.copy(value = module.value.copy(
+            credentials = credentials.copy(username = "new", password = "password"))))
         val updated = editor.state.value.modules.single() as TaggedModuleOpenVPN
         assertEquals(module.value.copy(credentials = credentials.copy(username = "new", password = "password")), updated.value)
         assertEquals(credentials, module.value.credentials)
@@ -41,7 +42,7 @@ class ProfileEditorUnitTest {
     @Test
     fun missingModuleDoesNotChangeDraft() {
         val editor = ProfileEditor(profile)
-        editor.credentials("missing", "new", "password")
+        editor.updateModule(module.copy(value = module.value.copy(id = "missing")))
         assertFalse(editor.isDirty)
     }
 }

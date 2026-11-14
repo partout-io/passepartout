@@ -15,29 +15,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.algoritmico.passepartout.R
-import com.algoritmico.passepartout.observables.ProfileEditor
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import io.partout.models.OpenVPNModule
+import io.partout.models.OpenVPNCredentials
+import io.partout.models.OpenVPNCredentialsOTPMethod
 
 @Composable
-fun OpenVPNCredentialsView(module: OpenVPNModule, editor: ProfileEditor) {
+fun OpenVPNCredentialsView(module: OpenVPNModule, onChange: (OpenVPNModule) -> Unit) {
     val theme = LocalTheme.current
     val credentials = module.credentials
+        ?: OpenVPNCredentials("", "", OpenVPNCredentialsOTPMethod.none)
     Column(
         modifier = Modifier.padding(theme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)
     ) {
         OutlinedTextField(
-            value = credentials?.username.orEmpty(),
-            onValueChange = { editor.credentials(module.id, it, credentials?.password.orEmpty()) },
+            value = credentials.username,
+            onValueChange = { onChange(module.copy(credentials = credentials.copy(username = it))) },
             label = { Text(stringResource(R.string.global_nouns_username)) },
             keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = credentials?.password.orEmpty(),
-            onValueChange = { editor.credentials(module.id, credentials?.username.orEmpty(), it) },
+            value = credentials.password,
+            onValueChange = { onChange(module.copy(credentials = credentials.copy(password = it))) },
             label = { Text(stringResource(R.string.global_nouns_password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

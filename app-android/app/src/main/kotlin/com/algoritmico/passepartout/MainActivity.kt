@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 appContext.androidConstants,
                 appContext.errorHandler,
                 profileImporter = appContext.profileImporter,
+                wireGuardPublicKey = appContext.wireGuardPublicKey,
                 onImportProfile = ::openProfileImporter
             )
         }

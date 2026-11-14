@@ -41,6 +41,8 @@ class AppContext(
     private val versionChecker: VersionChecker
     private var applicationActiveJob: Job? = null
 
+    val wireGuardPublicKey: (String) -> String? = library::partoutWireGuardPubKey
+
     // Expose to Compose
     val appConfiguration: AppConfiguration
     val configObservable: ConfigObservable
@@ -117,7 +119,6 @@ class AppContext(
             profileManager,
             coroutineScope,
             errorHandler,
-            wireGuardPublicKey = library::partoutWireGuardPubKey,
             canRemoveProfiles = { ids ->
                 val state = tunnel.state.value
                 state.policy.alwaysOn != true ||

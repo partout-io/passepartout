@@ -5,6 +5,7 @@ package com.algoritmico.passepartout.ui.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import com.algoritmico.passepartout.ui.LocalWireGuardPublicKey
 import com.algoritmico.passepartout.ui.profile.modules.*
 import io.partout.models.*
 
@@ -12,15 +13,14 @@ import io.partout.models.*
 fun ModuleDetailView(
     module: TaggedModule,
     onOpenContent: (String, String) -> Unit,
-    onCredentials: () -> Unit,
-    wireGuardPublicKey: (String) -> String?
+    onCredentials: () -> Unit
 ) {
     Column {
         when (module) {
             is TaggedModuleDNS -> DNSView(module.value)
             is TaggedModuleIP -> IPView(module.value)
             is TaggedModuleHTTPProxy -> HTTPProxyView(module.value)
-            is TaggedModuleWireGuard -> WireGuardView(module.value, onOpenContent, wireGuardPublicKey)
+            is TaggedModuleWireGuard -> WireGuardView(module.value, onOpenContent, LocalWireGuardPublicKey.current)
             is TaggedModuleOpenVPN -> OpenVPNView(module.value, onOpenContent, onCredentials)
             is TaggedModuleCustom -> CustomModuleView(module.value, onOpenContent)
             is TaggedModuleOnDemand -> Unit

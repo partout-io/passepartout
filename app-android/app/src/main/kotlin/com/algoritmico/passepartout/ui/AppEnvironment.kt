@@ -50,3 +50,7 @@ val LocalVersionObservable = staticCompositionLocalOf<VersionObservable> {
 val LocalErrorHandler = staticCompositionLocalOf<ErrorHandler> {
     error("No ErrorHandler provided")
 }
+
+val LocalWireGuardPublicKey = staticCompositionLocalOf<(String) -> String?> {
+    error("No WireGuard public-key derivation provided")
+}
