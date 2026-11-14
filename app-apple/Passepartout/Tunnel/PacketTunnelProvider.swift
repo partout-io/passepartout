@@ -40,8 +40,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             localURL: appConfiguration.urlForTunnelLog,
             localMapper: logFormatter.localMapper
         )
-        pspLog(.core, .notice, "Partout version: \(PartoutRuntime.version)")
-        pspLog(.core, .notice, "Partout version (Swift): \(PartoutCore.version)")
+        pspLog(.app, .notice, "Partout version: \(PartoutRuntime.version)")
+        pspLog(.app, .notice, "Partout version (Swift): \(PartoutCore.version)")
 
         // The app may propagate its local preferences on manual start
         let isInteractive = options?[TunnelObservable.Options.isManualKey] == true as NSNumber
@@ -52,7 +52,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
             do {
                 return try ABI.decode(ABI.AppPreferences.self, from: encodedPreferences)
             } catch {
-                pspLog(.core, .error, "Unable to decode startTunnel() preferences")
+                pspLog(.app, .error, "Unable to decode startTunnel() preferences")
                 return nil
             }
         }()
@@ -61,12 +61,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         let preferences = AppPreferencesStore({
             let persistedPreferences = UserDefaultsAppPreferences(defaults: .standard)
             if let startPreferences {
-                pspLog(.core, .info, "PTP: Decoded preferences: \(startPreferences)")
                 persistedPreferences.copy(startPreferences)
                 assert(persistedPreferences.serialized() == startPreferences)
-                return startPreferences
             }
-            pspLog(.core, .info, "PTP: Existing preferences: \(persistedPreferences)")
             return persistedPreferences
         }())
 
@@ -74,6 +71,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         if !preferences[\.logsPrivateData] {
             try PartoutLogger.default.resetLog()
         }
+
+        let preferenceSource = startPreferences == nil ? "persisted" : "app start"
+        pspLog(.app, .info, "PTP: Preferences (\(preferenceSource)): \(preferences.serialized())")
 
         // Create the tunnel context
         do {
@@ -85,7 +85,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
         } catch TunnelContext.RuntimeError.unsupportedProviders {
             //
         }
-        context?.log(.core, .notice, "Start PTP")
+        context?.log(.app, .notice, "Start PTP")
         do {
             try await context?.start(isInteractive: isInteractive)
         } catch ABI.AppError.interactiveLogin {
@@ -96,20 +96,19 @@ final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Sendable {
 
     override func stopTunnel(with reason: NEProviderStopReason) async {
         guard let context else { return }
-        pspLog(.core, .notice, "Stop PTP, reason: \(String(describing: reason))")
+        pspLog(.app, .notice, "Stop PTP, reason: \(String(describing: reason))")
         await context.stop()
     }
 
     override func cancelTunnelWithError(_ error: Error?) {
         guard let context else { return }
-        pspLog(.core, .info, "Cancel PTP, error: \(String(describing: error))")
+        pspLog(.app, .info, "Cancel PTP, error: \(String(describing: error))")
         context.cancel(error)
         super.cancelTunnelWithError(error)
     }
 
     override func handleAppMessage(_ messageData: Data) async -> Data? {
         guard let context else { return nil }
-        pspLog(.core, .debug, "Handle PTP message")
         return await context.sendMessage(messageData)
     }
 

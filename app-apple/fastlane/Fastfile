@@ -91,5 +91,5 @@ lane :asc_review do
         )
     end
     # Deliver selects the build using both app_version and build_number.
-    runner.run
+    Dir.chdir("..") { runner.run }
 end

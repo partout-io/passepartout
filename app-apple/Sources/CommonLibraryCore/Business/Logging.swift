@@ -9,24 +9,32 @@ public let pspLogFileStrategy = LocalLogger.FileStrategy()
 public func pspLog(
     _ category: ABI.AppLogCategory,
     _ level: ABI.AppLogLevel,
-    _ message: String
+    _ message: @autoclosure () -> String
 ) {
-    pp_log_g(category.partoutCategory, level.partoutLevel, message)
+    pspLog(nil, category, level, message())
 }
 
 public func pspLog(
-    _ profileId: Profile.ID? = nil,
+    _ profileId: Profile.ID?,
     _ category: ABI.AppLogCategory,
     _ level: ABI.AppLogLevel,
-    _ message: String
+    _ message: @autoclosure () -> String
 ) {
-    pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message)
+    pp_log_id(profileId, category.partoutCategory, level.partoutLevel, message())
+}
+
+public func pspLogLevel(
+    extensiveLogging: Bool,
+    defaultLevel: DebugLog.Level
+) -> DebugLog.Level {
+    extensiveLogging ? .debug : defaultLevel
 }
 
 public func pspLogCurrent(_ parameters: ABI.AppConstants.Log) -> [String] {
-    PartoutLogger.default.currentLog(
+    let logger = PartoutLogger.default
+    return logger.currentLog(
         sinceLast: parameters.sinceLast,
-        maxLevel: parameters.options.maxDebugLogLevel
+        maxLevel: logger.maxLevel
     )
 }
 
@@ -84,7 +92,7 @@ public func pspLogRegister(
             do {
                 try logger.resetLog()
             } catch {
-                pspLog(.core, .error, "Unable to reset current log: \(error)")
+                pspLog(.app, .error, "Unable to reset current log: \(error)")
             }
         }
         logger.logPreamble(
@@ -94,11 +102,12 @@ public func pspLogRegister(
         return .global
     case .tunnelGlobal:
         isDefaultLoggerRegistered = false
-        let logger = PartoutLogger.tunnelLogger(
+        let logger = PartoutLogger.logger(
             preferences: preferences,
             parameters: appConfiguration.constants.log,
             localURL: localURL,
-            localMapper: localMapper
+            localMapper: localMapper,
+            messageFormatter: tunnelLogMessage
         )
         PartoutLogger.register(logger)
         logger.logPreamble(
@@ -109,16 +118,23 @@ public func pspLogRegister(
     case .tunnelProfile(let profileId):
         if !isDefaultLoggerRegistered {
             isDefaultLoggerRegistered = true
-            let logger = PartoutLogger.tunnelLogger(
+            let logger = PartoutLogger.logger(
                 preferences: preferences,
                 parameters: appConfiguration.constants.log,
                 localURL: localURL,
-                localMapper: localMapper
+                localMapper: localMapper,
+                messageFormatter: tunnelLogMessage
             )
             PartoutLogger.register(logger)
         }
         return PartoutLoggerContext(profileId)
     }
+}
+
+/// Format profile context consistently for Swift and native records.
+func tunnelLogMessage(_ context: PartoutLoggerContext, _ message: String) -> String {
+    let prefix = "[\(context.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
+    return "\(prefix) \(message)"
 }
 
 // MARK: - Helpers
@@ -128,7 +144,8 @@ private extension PartoutLogger {
         preferences: AppPreferencesStore,
         parameters: ABI.AppConstants.Log,
         localURL: URL?,
-        localMapper: (@Sendable (DebugLog.Line) -> String)?
+        localMapper: (@Sendable (DebugLog.Line) -> String)?,
+        messageFormatter: PartoutLogger.PrintFunction? = nil
     ) -> PartoutLogger {
         var builder = PartoutLogger.Builder()
         builder.configureLogging(
@@ -137,26 +154,7 @@ private extension PartoutLogger {
             localURL: localURL,
             localMapper: localMapper
         )
-        return builder.build()
-    }
-
-    static func tunnelLogger(
-        preferences: AppPreferencesStore,
-        parameters: ABI.AppConstants.Log,
-        localURL: URL?,
-        localMapper: (@Sendable (DebugLog.Line) -> String)?
-    ) -> PartoutLogger {
-        var builder = PartoutLogger.Builder()
-        builder.configureLogging(
-            preferences: preferences,
-            parameters: parameters,
-            localURL: localURL,
-            localMapper: localMapper
-        )
-        builder.willPrint = {
-            let prefix = "[\($0.profileId?.uuidString.prefix(8) ?? "GLOBAL")]"
-            return "\(prefix) \($1)"
-        }
+        if let messageFormatter { builder.willPrint = messageFormatter }
         return builder.build()
     }
 
@@ -175,7 +173,7 @@ private extension PartoutLogger {
         appendLog(level, message: "")
 
         if let localLoggerURL {
-            pspLog(.core, .debug, "Log to: \(localLoggerURL)")
+            pspLog(.app, .debug, "Log to: \(localLoggerURL)")
         }
     }
 }
@@ -188,20 +186,16 @@ extension PartoutLogger.Builder {
         localMapper: (@Sendable (DebugLog.Line) -> String)?
     ) {
         assertsMissingLoggingCategory = true
-        var list: [LoggerCategory] = LoggerCategory.allCases + [
-            .App.abi,
-            .App.core,
-            .App.iap,
-            .App.profiles,
-            .App.web
-        ] + [.openvpn, .wireguard] // Legacy
-        list.append(.runtime)
+        let list = LoggerCategory.allCases
+            + ABI.AppLogCategory.allCases.map(\.partoutCategory)
         setDefaultDestination(for: list, tag: parameters.tag)
 
         var newOptions = parameters.options
-        if preferences[\.extensiveLogging] {
-            newOptions.maxLevel = .debug
-        }
+        maxLevel = pspLogLevel(
+            extensiveLogging: preferences[\.extensiveLogging],
+            defaultLevel: newOptions.maxDebugLogLevel
+        )
+        newOptions.maxLevel = .init(rawValue: maxLevel.rawValue) ?? newOptions.maxLevel
         if let localURL, let localMapper {
             setLocalLogger(
                 url: localURL,
@@ -229,35 +223,9 @@ extension PartoutLogger.Builder {
 
 // MARK: - Mappers
 
-extension ABI.AppLogLevel {
-    // As seen in PPLogLevel
-    public init?(partoutCLevel: Int32) {
-        switch partoutCLevel {
-        case 0: // PPLogLevelFault,
-            self = .fault
-        case 1: // PPLogLevelError,
-            self = .error
-        case 2: // PPLogLevelNotice,
-            self = .notice
-        case 3: // PPLogLevelInfo,
-            self = .info
-        case 4: // PPLogLevelDebug
-            self = .debug
-        default:
-            return nil
-        }
-    }
-}
-
 private extension ABI.AppLogCategory {
     var partoutCategory: LoggerCategory {
-        switch self {
-        case .abi: .App.abi
-        case .core: .App.core
-        case .iap: .App.iap
-        case .profiles: .App.profiles
-        case .web: .App.web
-        }
+        LoggerCategory(rawValue: id)
     }
 }
 
@@ -270,23 +238,5 @@ private extension ABI.AppLogLevel {
         case .error: .error
         case .fault: .fault
         }
-    }
-}
-
-private extension LoggerCategory {
-    enum App {
-        static let abi = LoggerCategory(appCategory: .abi)
-
-        static let core = LoggerCategory(appCategory: .core)
-
-        static let iap = LoggerCategory(appCategory: .iap)
-
-        static let profiles = LoggerCategory(appCategory: .profiles)
-
-        static let web = LoggerCategory(appCategory: .web)
-    }
-
-    init(appCategory: ABI.AppLogCategory) {
-        self.init(rawValue: appCategory.id)
     }
 }

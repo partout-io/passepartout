@@ -456,4 +456,6 @@
     <string name="android_profiles_layout_list_content_description">Profielen als lijst weergeven</string>
     <string name="android_profiles_layout_grid_content_description">Profielen als raster weergeven</string>
     <string name="android_errors_profile_importer_empty">Kan de inhoud van het profiel niet lezen.</string>
+    <string name="android_search_title">Zoeken</string>
+    <string name="android_search_clear">Zoekopdracht wissen</string>
 </resources>

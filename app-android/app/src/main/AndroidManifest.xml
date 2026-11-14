@@ -18,6 +18,7 @@
         android:xlargeScreens="true" />
 
     <application
+        android:name=".PassepartoutApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -26,6 +27,7 @@
         android:theme="@style/Theme.Passepartout">
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:exported="true"
             android:screenOrientation="fullUser"
             android:theme="@style/Theme.Passepartout">
@@ -33,7 +35,36 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Document providers often expose opaque URIs, so match their MIME types. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/x-openvpn-profile" />
+                <data android:mimeType="application/x-openvpn" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
         </activity>
+        <!-- pathSuffix is only understood from API 31 onward. -->
+        <activity-alias
+            android:name=".ProfileFileActivity"
+            android:targetActivity=".MainActivity"
+            android:enabled="@bool/profile_file_suffix_enabled"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathSuffix=".ovpn" />
+                <data android:pathSuffix=".conf" />
+                <data android:pathSuffix=".json" />
+            </intent-filter>
+        </activity-alias>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

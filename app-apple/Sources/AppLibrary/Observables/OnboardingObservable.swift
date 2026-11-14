@@ -13,11 +13,11 @@ public final class OnboardingObservable {
 
     public private(set) var step: OnboardingStep {
         willSet {
-            pspLog(.core, .info, "Current step: \(step)")
+            pspLog(.app, .info, "Current step: \(step)")
         }
         didSet {
             userPreferences?.onboardingStep = step
-            pspLog(.core, .info, "Next step: \(step)")
+            pspLog(.app, .info, "Next step: \(step)")
         }
     }
 

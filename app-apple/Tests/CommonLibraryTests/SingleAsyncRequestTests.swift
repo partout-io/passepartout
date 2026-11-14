@@ -2,14 +2,33 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-@testable import CommonLibraryApple
+@testable import CommonLibraryCore
 import Testing
 
 @MainActor
-struct TunnelLogRequestTests {
+struct SingleAsyncRequestTests {
+    @Test
+    func givenInFlightRequest_whenReplaced_thenLatestRequestRuns() async {
+        let sut = SingleAsyncRequest<Void>()
+        var completion: CheckedContinuation<Void, Never>?
+        var applied: [String] = []
+        let first = sut.submit {
+            await withCheckedContinuation { completion = $0 }
+            applied.append("first")
+        }
+        while completion == nil { await Task.yield() }
+        sut.submit { Issue.record("Superseded change was sent") }
+        let last = sut.submit { applied.append("latest") }
+        #expect(applied.isEmpty)
+        completion?.resume()
+        _ = await first.value
+        _ = await last.value
+        #expect(applied == ["first", "latest"])
+    }
+
     @Test
     func givenPendingRequest_whenReplaced_thenDrainsAndDiscardsPreviousResponse() async {
-        let sut = TunnelLogRequest()
+        let sut = SingleAsyncRequest<[String]>()
         var completion: CheckedContinuation<Void, Never>?
         var started = false
         var replacementSubmitted = false
@@ -37,15 +56,15 @@ struct TunnelLogRequestTests {
         }
         while !latestSubmitted { await Task.yield() }
         completion?.resume()
-        #expect(await first.value == [])
-        #expect(await second.value == [])
+        #expect(await first.value == nil)
+        #expect(await second.value == nil)
         #expect(await latest.value == ["latest"])
         #expect(!started)
     }
 
     @Test
     func givenActiveRequest_whenCallerCancels_thenDiscardsResponse() async {
-        let sut = TunnelLogRequest()
+        let sut = SingleAsyncRequest<[String]>()
         var completion: CheckedContinuation<Void, Never>?
         let caller = Task {
             await sut.fetch {
@@ -57,13 +76,13 @@ struct TunnelLogRequestTests {
         while completion == nil { await Task.yield() }
         caller.cancel()
         completion?.resume()
-        #expect(await caller.value == [])
+        #expect(await caller.value == nil)
         #expect(await sut.fetch { ["next"] } == ["next"])
     }
 
     @Test
     func givenCancelledCaller_whenFetching_thenDoesNotStartRequest() async {
-        let sut = TunnelLogRequest()
+        let sut = SingleAsyncRequest<[String]>()
         let task = Task {
             withUnsafeCurrentTask { $0?.cancel() }
             return await sut.fetch {
@@ -71,6 +90,6 @@ struct TunnelLogRequestTests {
                 return ["unexpected"]
             }
         }
-        #expect(await task.value == [])
+        #expect(await task.value == nil)
     }
 }

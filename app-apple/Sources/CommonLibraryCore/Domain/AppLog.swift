@@ -5,15 +5,14 @@
 import Partout
 
 extension ABI {
-    public enum AppLogCategory: String, Identifiable, Sendable {
-        case abi
-        case core
+    public enum AppLogCategory: String, CaseIterable, Identifiable, Sendable {
+        case app
         case iap
         case profiles
         case web
 
         public var id: String {
-            "app.\(rawValue)"
+            self == .app ? "app" : "app.\(rawValue)"
         }
     }
 

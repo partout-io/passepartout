@@ -456,4 +456,6 @@
     <string name="android_profiles_layout_list_content_description">Mostrar perfis em lista</string>
     <string name="android_profiles_layout_grid_content_description">Mostrar perfis em grelha</string>
     <string name="android_errors_profile_importer_empty">Não foi possível ler o conteúdo do perfil.</string>
+    <string name="android_search_title">Pesquisar</string>
+    <string name="android_search_clear">Limpar pesquisa</string>
 </resources>

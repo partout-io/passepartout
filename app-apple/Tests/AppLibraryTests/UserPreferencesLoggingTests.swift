@@ -10,6 +10,19 @@ import Testing
 @MainActor
 struct UserPreferencesLoggingTests {
     @Test
+    func givenVerbosityChange_whenSettingPreference_thenNotifiesAfterPersisting() throws {
+        let preferences = AppPreferencesStore()
+        let defaults = try #require(UserDefaults(suiteName: UUID().uuidString))
+        let sut = UserPreferencesObservable(preferences: preferences, ui: defaults)
+        var changes: [Bool] = []
+        sut.onLogLevelChange = { changes.append(preferences[\.extensiveLogging]) }
+        sut.extensiveLogging = true
+        sut.extensiveLogging = false
+        sut.extensiveLogging = false
+        #expect(changes == [true, false])
+    }
+
+    @Test
     func givenPrivacyChange_whenSettingPreference_thenNotifiesAfterPersisting() throws {
         let preferences = AppPreferencesStore()
         let defaults = try #require(UserDefaults(suiteName: UUID().uuidString))

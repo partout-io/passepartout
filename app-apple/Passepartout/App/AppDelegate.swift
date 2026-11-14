@@ -11,7 +11,7 @@ import SwiftUI
 final class AppDelegate: NSObject {
     let context: AppContextProtocol = {
         if AppCommandLine.contains(.uiTesting) {
-            pspLog(.core, .info, "UI tests: mock AppContext")
+            pspLog(.app, .info, "UI tests: mock AppContext")
             return AppContext.forUITesting()
         }
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
@@ -37,15 +37,15 @@ private extension AppDelegate {
     func debugLocalStoreStats() {
         let fm: FileManager = .default
         guard let libURL = fm.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            pspLog(.core, .error, "LocalStore: Unable to get library directory")
+            pspLog(.app, .error, "LocalStore: Unable to get library directory")
             return
         }
         let docsPath = "Application Support/Passepartout"
         guard let docsURL = URL(string: docsPath, relativeTo: libURL) else {
-            pspLog(.core, .error, "LocalStore: Unable to get library directory")
+            pspLog(.app, .error, "LocalStore: Unable to get library directory")
             return
         }
-        pspLog(.core, .info, "LocalStore: \(docsURL)")
+        pspLog(.app, .info, "LocalStore: \(docsURL)")
         do {
             let contents = try fm.contentsOfDirectory(at: docsURL, includingPropertiesForKeys: nil)
             for url in contents {
@@ -55,13 +55,13 @@ private extension AppDelegate {
                         .reduce(into: [:]) {
                             $0[$1.key.rawValue] = $1.value
                         }
-                    pspLog(.core, .info, "LocalStore: \(url.lastPathComponent) -> \(attrs)")
+                    pspLog(.app, .info, "LocalStore: \(url.lastPathComponent) -> \(attrs)")
                 } catch {
-                    pspLog(.core, .error, "LocalStore: \(url.lastPathComponent) -> \(error)")
+                    pspLog(.app, .error, "LocalStore: \(url.lastPathComponent) -> \(error)")
                 }
             }
         } catch {
-            pspLog(.core, .error, "LocalStore: Unable to list documents: \(error)")
+            pspLog(.app, .error, "LocalStore: Unable to list documents: \(error)")
         }
     }
 }

@@ -4,7 +4,7 @@
 
 import Partout
 
-public struct ConfigBundle: Decodable, Sendable {
+public struct ConfigBundle: Codable, Sendable {
     public typealias Config = OpenAPIConfigBundleConfig
 
     // flag -> deployment (0-100)

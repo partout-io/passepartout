@@ -37,7 +37,7 @@ android {
         applicationId = "com.algoritmico.passepartout"
         minSdk = 24
         targetSdk = 36
-        versionCode = 4190
+        versionCode = 4193
         versionName = "3.12.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -82,18 +82,7 @@ android {
     buildFeatures {
         compose = true
     }
-    ndkVersion = "29.0.14206865"
-    externalNativeBuild {
-        cmake {
-            version = "4.1.2"
-            path = file("src/main/cpp/CMakeLists.txt")
-        }
-    }
-    sourceSets {
-        getByName("main") {
-            kotlin.directories += "../../partout/cross/android/src"
-        }
-    }
+    ndkVersion = "30.0.16138531"
     buildToolsVersion = "36.0.0"
 }
 
@@ -109,6 +98,7 @@ play {
 }
 
 dependencies {
+    implementation(project(":partout"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.activity.ktx)

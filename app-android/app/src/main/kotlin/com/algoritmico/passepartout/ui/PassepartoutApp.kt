@@ -22,6 +22,9 @@ import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.observables.ConfigObservable
 import com.algoritmico.passepartout.observables.DiagnosticsObservable
 import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.observables.ProfileImporter
+import com.algoritmico.passepartout.ui.alerts.ImportPassphraseAlert
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.observables.ProfileObservable
 import com.algoritmico.passepartout.observables.TunnelObservable
 import com.algoritmico.passepartout.observables.UserPreferencesObservable
@@ -43,9 +46,11 @@ fun PassepartoutApp(
     appConfiguration: AppConfiguration,
     androidConstants: AndroidConstants,
     errorHandler: ErrorHandler,
+    profileImporter: ProfileImporter,
     theme: Theme = Theme(),
     onImportProfile: () -> Unit
 ) {
+    val importState by profileImporter.state.collectAsStateWithLifecycle()
     val colorScheme = theme.colorScheme(isDark = isSystemInDarkTheme())
     var lastError by remember {
         mutableStateOf<AppError?>(null)
@@ -71,6 +76,13 @@ fun PassepartoutApp(
                     logTag,
                     title = appConfiguration.bundle.displayName,
                     onImportProfile = onImportProfile
+                )
+            }
+            importState.passphraseFilename?.let { filename ->
+                ImportPassphraseAlert(
+                    filename = filename,
+                    onDecrypt = profileImporter::submitPassphrase,
+                    onDismiss = profileImporter::skipImport
                 )
             }
             LaunchedEffect(errorHandler) {

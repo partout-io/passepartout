@@ -54,29 +54,29 @@ public final class VersionChecker {
         do {
             let lastCheckedDate = preferences[\.lastCheckedVersionDate] ?? .distantPast
 
-            pspLog(.core, .debug, "Version: checking for updates...")
+            pspLog(.app, .debug, "Version: checking for updates...")
             let fetchedLatestVersion = try await strategy.latestVersion(since: lastCheckedDate)
             preferences.overwrite {
                 $0.lastCheckedVersionDate = now
                 $0.lastCheckedVersion = fetchedLatestVersion.description
             }
-            pspLog(.core, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
+            pspLog(.app, .info, "Version: \(fetchedLatestVersion) > \(currentVersion) = \(fetchedLatestVersion > currentVersion)")
         } catch ABI.AppError.rateLimit {
-            pspLog(.core, .debug, "Version: rate limit")
+            pspLog(.app, .debug, "Version: rate limit")
         } catch ABI.AppError.unexpectedResponse {
             // Save the check date regardless because the service call succeeded
             preferences.overwrite {
                 $0.lastCheckedVersionDate = now
             }
-            pspLog(.core, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
+            pspLog(.app, .error, "Unable to check version: \(ABI.AppError.unexpectedResponse)")
         } catch {
-            pspLog(.core, .error, "Unable to check version: \(error)")
+            pspLog(.app, .error, "Unable to check version: \(error)")
         }
         guard let latestRelease else {
-            pspLog(.core, .debug, "Version: current is latest version")
+            pspLog(.app, .debug, "Version: current is latest version")
             return
         }
-        pspLog(.core, .info, "Version: new version available at \(latestRelease.url)")
+        pspLog(.app, .info, "Version: new version available at \(latestRelease.url)")
         didChange.send(.new(.init(release: latestRelease)))
     }
 

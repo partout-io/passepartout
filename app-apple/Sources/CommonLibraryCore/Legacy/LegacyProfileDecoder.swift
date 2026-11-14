@@ -21,7 +21,7 @@ public struct LegacyProfileDecoder: Sendable {
                 do {
                     return try profile.builder(withNewId: false, forUpgrade: true).build()
                 } catch {
-                    pp_log_id(profile.id, .core, .error, "Unable to migrate profile \(profile.id): \(error)")
+                    pspLog(profile.id, .profiles, .error, "Unable to migrate profile \(profile.id): \(error)")
                     return profile
                 }
             } catch {
@@ -118,7 +118,7 @@ private struct LegacyDecoderV1 {
             do {
                 return try decodedModule(wrapper)
             } catch {
-                pp_log_id(encoded.id, .core, .error, "Unable to decode module: \(error)")
+                pspLog(encoded.id, .profiles, .error, "Unable to decode module: \(error)")
                 return nil
             }
         }

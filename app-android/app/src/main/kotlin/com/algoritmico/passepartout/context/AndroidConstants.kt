@@ -16,7 +16,7 @@ data class AndroidConstants(
     val tunnel: Tunnel = Tunnel()
 ) {
     fun newWrapper(): PartoutWrapper {
-        return PartoutWrapper("passepartout_wrapper")
+        return PartoutWrapper()
     }
 
     data class Assets(

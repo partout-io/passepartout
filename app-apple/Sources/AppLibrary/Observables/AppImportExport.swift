@@ -55,7 +55,7 @@ extension AppImportExport {
         do {
             return try profile(fromString: contents)
         } catch {
-            pspLog(.core, .debug, "Unable to decode profile for import: \(error)")
+            pspLog(.profiles, .debug, "Unable to decode profile for import: \(error)")
         }
 
         // Fall back to parsing a single module
@@ -69,7 +69,7 @@ extension AppImportExport {
             let importedModule = try importModule(contents, context)
             return try Profile(withName: name, singleModule: importedModule)
         } catch {
-            pspLog(.core, .error, "Unable to import profile module: \(error)")
+            pspLog(.profiles, .error, "Unable to import profile module: \(error)")
             throw error
         }
     }

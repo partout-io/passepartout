@@ -44,7 +44,7 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
         self.profileObservable = profileObservable
         self.tunnel = tunnel
         self.webReceiverObservable = webReceiverObservable
-        pspLog(.core, .info, "AppCordinator (Observables)")
+        pspLog(.app, .info, "AppCordinator (Observables)")
     }
 
     public var body: some View {
@@ -188,7 +188,7 @@ private extension AppCoordinator {
 
 extension AppCoordinator {
     public func onInteractiveLogin(_ profile: Profile, _ onComplete: @escaping InteractiveObservable.CompletionBlock) {
-        pspLog(.core, .info, "Present interactive login")
+        pspLog(.app, .info, "Present interactive login")
         interactiveObservable.present(
             with: profile,
             onComplete: onComplete
@@ -200,10 +200,10 @@ extension AppCoordinator {
         features: Set<ABI.AppFeature>,
         continuation: (() -> Void)?
     ) {
-        pspLog(.core, .info, "Purchase required for features: \(features)")
+        pspLog(.iap, .info, "Purchase required for features: \(features)")
         guard !iapObservable.isLoadingReceipt else {
             let V = Strings.Views.Paywall.Alerts.Verification.self
-            pspLog(.core, .info, "Present verification alert")
+            pspLog(.iap, .info, "Present verification alert")
             errorHandler.handle(
                 title: Strings.Views.Paywall.Alerts.Confirmation.title,
                 message: [
@@ -216,7 +216,7 @@ extension AppCoordinator {
             )
             return
         }
-        pspLog(.core, .info, "Present paywall")
+        pspLog(.iap, .info, "Present paywall")
         paywallContinuation = continuation
 
         setLater(.init(profile, requiredFeatures: features, action: .connect)) {

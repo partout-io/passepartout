@@ -456,4 +456,6 @@
     <string name="android_profiles_layout_list_content_description">以列表显示配置文件</string>
     <string name="android_profiles_layout_grid_content_description">以网格显示配置文件</string>
     <string name="android_errors_profile_importer_empty">无法读取配置文件内容。</string>
+    <string name="android_search_title">搜索</string>
+    <string name="android_search_clear">清除搜索</string>
 </resources>
