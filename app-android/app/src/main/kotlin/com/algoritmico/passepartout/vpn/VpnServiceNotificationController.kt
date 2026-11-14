@@ -150,6 +150,12 @@ class VpnServiceNotificationController(
             .from(service)
             .createNotificationChannel(channel)
 
+        val (actionTitle, actionIntent) = if (policy.alwaysOn == true) {
+            R.string.android_vpn_settings to settingsPendingIntent()
+        } else {
+            R.string.global_actions_disconnect to disconnectPendingIntent()
+        }
+
         val builder = NotificationCompat.Builder(service, VPN_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification_vpn)
             .setContentTitle(content.title)
@@ -161,9 +167,8 @@ class VpnServiceNotificationController(
             .setAutoCancel(false)
             .addAction(
                 R.drawable.ic_notification_vpn,
-                if (policy.alwaysOn == true) service.getString(R.string.android_vpn_settings)
-                else service.getString(R.string.global_actions_disconnect),
-                if (policy.alwaysOn == true) settingsPendingIntent() else disconnectPendingIntent()
+                service.getString(actionTitle),
+                actionIntent
             )
 
         val contentText = content.contentText
