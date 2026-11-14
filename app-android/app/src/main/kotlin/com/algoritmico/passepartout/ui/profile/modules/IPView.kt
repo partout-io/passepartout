@@ -19,7 +19,10 @@ import io.partout.models.Route
 internal fun IPView(module: IPModule) {
     IPDetail(Strings.Unlocalized.ipv4, module.ipv4)
     IPDetail(Strings.Unlocalized.ipv6, module.ipv6)
-    ThemeDetailRow(Strings.Unlocalized.mtu, module.mtu)
+    if (module.mtu != null) {
+        ThemeListSectionHeader(stringResource(R.string.global_nouns_interface))
+        ThemeDetailRow(Strings.Unlocalized.mtu, module.mtu)
+    }
 }
 
 @Composable

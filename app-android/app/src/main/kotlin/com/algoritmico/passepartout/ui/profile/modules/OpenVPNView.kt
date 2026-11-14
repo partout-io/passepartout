@@ -104,7 +104,18 @@ internal fun OpenVPNView(
         ThemeDetailRow(Strings.Unlocalized.ca, c.ca, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.global_nouns_certificate, c.clientCertificate, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.global_nouns_key, c.clientKey, onOpenContent = onOpenContent)
-        ThemeDetailRow(R.string.modules_openvpn_tls_wrap, c.tlsWrap?.key?.data?.base64ToHex(), onOpenContent = onOpenContent)
+        c.tlsWrap?.let { wrap ->
+            val title = stringResource(R.string.modules_openvpn_tls_wrap)
+            val strategy = when (wrap.strategy) {
+                OpenVPNTLSWrapStrategy.auth -> Strings.Unlocalized.OpenVPN.tlsAuth
+                OpenVPNTLSWrapStrategy.crypt -> Strings.Unlocalized.OpenVPN.tlsCrypt
+                OpenVPNTLSWrapStrategy.cryptV2 -> Strings.Unlocalized.OpenVPN.tlsCryptV2
+            }
+            wrap.key.data.base64ToHex()?.let { key ->
+                ThemeNavigatingButton(title = title, trailingText = strategy,
+                    onClick = { onOpenContent(title, key) })
+            }
+        }
         ThemeDetailRow(R.string.modules_openvpn_eku, stringResource(if (c.checksEKU == true)
             R.string.global_nouns_enabled else R.string.global_nouns_disabled))
     }
@@ -127,7 +138,7 @@ internal fun OpenVPNView(
 private fun OpenVPNIPDetail(title: String, ip: IPSettings?, routes: List<Route>?) {
     if (!hasContent(ip?.subnets, ip?.includedRoutes, ip?.excludedRoutes, routes)) return
     ThemeListSectionHeader(title)
-    ThemeDetailRow(R.string.global_nouns_address, ip?.subnets?.firstOrNull())
+    ThemeDetailRow(R.string.global_nouns_address, ip?.subnets?.firstOrNull()?.substringBefore('/'))
     ThemeDetailRow(R.string.global_nouns_gateway, ip?.includedRoutes?.firstOrNull { it.destination == null }?.gateway)
     ThemeDetailRow(R.string.modules_ip_routes_included, (ip?.includedRoutes.orEmpty() + routes.orEmpty()).map { it.routeText() })
     ThemeDetailRow(R.string.modules_ip_routes_excluded, ip?.excludedRoutes?.map { it.routeText() })

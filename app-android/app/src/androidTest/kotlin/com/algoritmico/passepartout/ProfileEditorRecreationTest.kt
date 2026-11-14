@@ -18,6 +18,9 @@ import io.partout.models.TaggedModuleWireGuard
 import io.partout.models.WireGuardModule
 import io.partout.models.WireGuardConfiguration
 import io.partout.models.WireGuardLocalInterface
+import io.partout.models.IPModule
+import io.partout.models.IPSettings
+import io.partout.models.TaggedModuleIP
 import io.partout.models.CustomModule
 import io.partout.models.ModuleType
 import io.partout.models.TaggedModuleCustom
@@ -49,6 +52,7 @@ class ProfileEditorRecreationTest {
         val moduleId = UUID.randomUUID().toString()
         val profile = TaggedProfile(id, "Recreation original", listOf(
             TaggedModuleCustom(CustomModule(ModuleType.Provider, JsonPrimitive("Custom configuration"))),
+            TaggedModuleIP(IPModule(UUID.randomUUID().toString(), mtu = 1400)),
             TaggedModuleWireGuard(WireGuardModule(UUID.randomUUID().toString(),
                 WireGuardConfiguration(WireGuardLocalInterface("dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=", emptyList(),
                     dns = DNSModule(UUID.randomUUID().toString(), DNSModuleProtocolTypecleartext(), emptyList())), emptyList()))),
@@ -56,6 +60,7 @@ class ProfileEditorRecreationTest {
                 DNSModuleProtocolTypehttps("https://example.com/dns-query"), emptyList(),
                 domainPolicy = DNSModuleDomainPolicy.matchAndSearch)),
             TaggedModuleOpenVPN(OpenVPNModule(moduleId, OpenVPNConfiguration(authUserPass = true,
+                ipv4 = IPSettings(listOf("10.8.0.2/24"), emptyList(), emptyList()),
                 xorMethod = OpenVPNObfuscationMethodxormask("dGVzdA=="),
                 tlsWrap = OpenVPNTLSWrap(OpenVPNTLSWrapStrategy.auth, OpenVPNStaticKey("AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==")),
                 ca = "-----BEGIN CERTIFICATE-----\nNavigation test certificate\n-----END CERTIFICATE-----")))
@@ -85,6 +90,14 @@ class ProfileEditorRecreationTest {
                     assertTrue(requireNotNull(profiles.editor.value).isDirty)
                     assertEquals(profile, profiles.profile(id))
                 }
+                assertVisible("Unsaved recreation name")
+                assertVisible(app.getString(R.string.global_nouns_enabled))
+                assertVisible(app.getString(R.string.global_nouns_disabled))
+                clickText(app.getString(R.string.global_nouns_routing))
+                assertVisible(app.getString(R.string.global_nouns_interface))
+                assertVisible("MTU")
+                assertVisible("1400")
+                pressBack()
                 assertVisible("Unsaved recreation name")
                 scrollToText("WireGuard")
                 clickText("WireGuard")
@@ -127,6 +140,8 @@ class ProfileEditorRecreationTest {
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "edited-user"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "View content"))
+                scrollToText("10.8.0.2")
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "10.8.0.2/24"))
                 scrollToText("XOR")
                 clickText("XOR")
                 assertVisible("xormask 74657374")
@@ -134,6 +149,7 @@ class ProfileEditorRecreationTest {
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
                 val wrappingTitle = app.getString(R.string.modules_openvpn_tls_wrap)
                 scrollToText(wrappingTitle)
+                assertVisible("--tls-auth")
                 clickText(wrappingTitle)
                 assertVisible("000102030405060708090a0b0c0d0e0f")
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "AAECAwQFBgcICQoLDA0ODw"))
