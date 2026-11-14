@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.Strings
+import com.algoritmico.passepartout.ui.extensions.base64ToHex
 import com.algoritmico.passepartout.ui.extensions.durationText
 import com.algoritmico.passepartout.ui.extensions.hasContent
 import com.algoritmico.passepartout.ui.extensions.routeText
@@ -75,8 +76,8 @@ internal fun OpenVPNView(
         ThemeDetailRow(R.string.modules_openvpn_cipher, c.cipher?.value)
         ThemeDetailRow(R.string.modules_openvpn_digest, c.digest?.value)
         val xor = when (val method = c.xorMethod) {
-            is OpenVPNObfuscationMethodobfuscate -> listOf(Strings.Unlocalized.OpenVPN.XOR.obfuscate.value, method.mask).joinToString(" ")
-            is OpenVPNObfuscationMethodxormask -> listOf(Strings.Unlocalized.OpenVPN.XOR.xormask.value, method.mask).joinToString(" ")
+            is OpenVPNObfuscationMethodobfuscate -> method.mask.base64ToHex()?.let { "${Strings.Unlocalized.OpenVPN.XOR.obfuscate.value} $it" }
+            is OpenVPNObfuscationMethodxormask -> method.mask.base64ToHex()?.let { "${Strings.Unlocalized.OpenVPN.XOR.xormask.value} $it" }
             is OpenVPNObfuscationMethodreverse -> Strings.Unlocalized.OpenVPN.XOR.reverse.value
             is OpenVPNObfuscationMethodxorptrpos -> Strings.Unlocalized.OpenVPN.XOR.xorptrpos.value
             null -> null
@@ -103,7 +104,7 @@ internal fun OpenVPNView(
         ThemeDetailRow(Strings.Unlocalized.ca, c.ca, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.global_nouns_certificate, c.clientCertificate, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.global_nouns_key, c.clientKey, onOpenContent = onOpenContent)
-        ThemeDetailRow(R.string.modules_openvpn_tls_wrap, c.tlsWrap?.key?.data, onOpenContent = onOpenContent)
+        ThemeDetailRow(R.string.modules_openvpn_tls_wrap, c.tlsWrap?.key?.data?.base64ToHex(), onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.modules_openvpn_eku, stringResource(if (c.checksEKU == true)
             R.string.global_nouns_enabled else R.string.global_nouns_disabled))
     }

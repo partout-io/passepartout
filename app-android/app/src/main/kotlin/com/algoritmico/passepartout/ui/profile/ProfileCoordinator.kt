@@ -23,6 +23,7 @@ import com.algoritmico.passepartout.ui.extensions.titleText
 import com.algoritmico.passepartout.ui.LocalProfileObservable
 import com.algoritmico.passepartout.ui.alerts.GenericErrorAlert
 import com.algoritmico.passepartout.ui.theme.LocalTheme
+import com.algoritmico.passepartout.ui.theme.ThemeTextField
 import com.algoritmico.passepartout.ui.theme.ThemeList
 import com.algoritmico.passepartout.ui.theme.ThemeLongContent
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
@@ -111,13 +112,12 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                         }
                     } else if (module == null) {
                         item {
-                            OutlinedTextField(
+                            ThemeTextField(
                                 value = draft.name,
                                 onValueChange = editor::rename,
                                 enabled = !saving,
-                                label = { Text(stringResource(R.string.global_nouns_name)) },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth().padding(theme.spacing.large)
+                                label = stringResource(R.string.global_nouns_name),
+                                modifier = Modifier.padding(theme.spacing.large)
                             )
                         }
                         themeListSection(header = modulesTitle) {

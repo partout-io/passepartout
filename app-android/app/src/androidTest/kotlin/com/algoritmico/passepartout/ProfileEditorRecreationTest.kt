@@ -22,6 +22,10 @@ import io.partout.models.CustomModule
 import io.partout.models.ModuleType
 import io.partout.models.TaggedModuleCustom
 import kotlinx.serialization.json.JsonPrimitive
+import io.partout.models.OpenVPNStaticKey
+import io.partout.models.OpenVPNTLSWrap
+import io.partout.models.OpenVPNTLSWrapStrategy
+import io.partout.models.OpenVPNObfuscationMethodxormask
 import io.partout.models.OpenVPNConfiguration
 import io.partout.models.OpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
@@ -51,7 +55,10 @@ class ProfileEditorRecreationTest {
             TaggedModuleDNS(DNSModule(UUID.randomUUID().toString(),
                 DNSModuleProtocolTypehttps("https://example.com/dns-query"), emptyList(),
                 domainPolicy = DNSModuleDomainPolicy.matchAndSearch)),
-            TaggedModuleOpenVPN(OpenVPNModule(moduleId, OpenVPNConfiguration(authUserPass = true, ca = "-----BEGIN CERTIFICATE-----\nNavigation test certificate\n-----END CERTIFICATE-----")))
+            TaggedModuleOpenVPN(OpenVPNModule(moduleId, OpenVPNConfiguration(authUserPass = true,
+                xorMethod = OpenVPNObfuscationMethodxormask("dGVzdA=="),
+                tlsWrap = OpenVPNTLSWrap(OpenVPNTLSWrapStrategy.auth, OpenVPNStaticKey("AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==")),
+                ca = "-----BEGIN CERTIFICATE-----\nNavigation test certificate\n-----END CERTIFICATE-----")))
         ), setOf(moduleId))
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             runBlocking { profiles.save(profile) }
@@ -125,6 +132,18 @@ class ProfileEditorRecreationTest {
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "edited-user"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "View content"))
+                scrollToText("XOR")
+                clickText("XOR")
+                assertVisible("xormask 74657374")
+                pressBack()
+                assertVisible(app.getString(R.string.modules_openvpn_credentials))
+                val wrappingTitle = app.getString(R.string.modules_openvpn_tls_wrap)
+                scrollToText(wrappingTitle)
+                clickText(wrappingTitle)
+                assertVisible("000102030405060708090a0b0c0d0e0f")
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "AAECAwQFBgcICQoLDA0ODw"))
+                pressBack()
+                assertVisible(app.getString(R.string.modules_openvpn_credentials))
                 scrollToText("CA")
                 clickText("CA")
                 assertVisible("Navigation test certificate")
