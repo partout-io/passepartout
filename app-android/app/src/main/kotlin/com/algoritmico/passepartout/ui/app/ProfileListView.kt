@@ -49,6 +49,7 @@ fun ProfileListView(
             key = { it.id }
         ) { header ->
             ProfileRow(
+                isAlwaysOn = state.isAlwaysOn,
                 header = header,
                 isEnabled = state.isProfileEnabled(header.id),
                 status = state.profileStatus(header.id),

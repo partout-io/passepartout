@@ -109,6 +109,10 @@ fun ProfileContainerView(
         profile: TaggedProfile? = null,
         force: Boolean = false
     ) {
+        if (tunnelState.policy.alwaysOn == true) {
+            openVpnSettings(context, errorHandler)
+            return
+        }
         val request = RequestedConnection(profileId, enabled)
         requestedConnection = request
         selectProfile(profileId)
@@ -172,6 +176,14 @@ fun ProfileContainerView(
         }
     }
 
+    LaunchedEffect(tunnelState.policy.alwaysOn) {
+        if (tunnelState.policy.alwaysOn == true) {
+            // A late policy update can reject a stop without a tunnel status change.
+            requestedConnection = null
+            interactiveProfile = null
+        }
+    }
+
     val onProfileSelected: (String) -> Unit = { profileId ->
         if (contextualSelection.isActive) {
             contextualSelection.selectProfile(profileId)
@@ -232,6 +244,7 @@ fun ProfileContainerView(
         modifier = modifier,
         style = style,
         state = ProfileContainerState(
+            isAlwaysOn = tunnelState.policy.alwaysOn == true,
             headers = headers,
             contextualSelection = contextualSelection,
             enabledProfileIds = headers

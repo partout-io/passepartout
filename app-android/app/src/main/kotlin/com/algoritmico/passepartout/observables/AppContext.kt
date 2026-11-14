@@ -116,7 +116,12 @@ class AppContext(
         profileObservable = ProfileObservable(
             profileManager,
             coroutineScope,
-            errorHandler
+            errorHandler,
+            canRemoveProfiles = { ids ->
+                val state = tunnel.state.value
+                state.policy.alwaysOn != true ||
+                    (state.snapshots.isNotEmpty() && ids.none { it in state.snapshots })
+            }
         )
         profileImporter = ProfileImporter(
             coroutineScope = coroutineScope,
@@ -151,6 +156,7 @@ class AppContext(
     }
 
     fun onApplicationActive() {
+        tunnelObservable.refresh()
         if (applicationActiveJob?.isActive == true) {
             return
         }

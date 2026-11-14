@@ -28,12 +28,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.Closeable
 
+sealed class ProfileObservableException: Exception() {
+    data object AlwaysOnDeletion: ProfileObservableException()
+}
+
 @OptIn(FlowPreview::class)
 class ProfileObservable(
     private val manager: ProfileManager,
     coroutineScope: CoroutineScope,
     errorHandler: ErrorHandler,
-    searchDebounceMillis: Long = 200L
+    searchDebounceMillis: Long = 200L,
+    private val canRemoveProfiles: (Collection<String>) -> Boolean = { true }
 ) : Closeable {
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
@@ -101,10 +106,11 @@ class ProfileObservable(
     }
 
     suspend fun remove(profileId: String) {
-        manager.remove(profileId)
+        remove(listOf(profileId))
     }
 
     suspend fun remove(profileIds: Collection<String>) {
+        if (!canRemoveProfiles(profileIds)) throw ProfileObservableException.AlwaysOnDeletion
         manager.remove(profileIds)
     }
 

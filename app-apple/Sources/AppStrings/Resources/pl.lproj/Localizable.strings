@@ -456,3 +456,9 @@
 
 "android.search.title" = "Szukaj";
 "android.search.clear" = "Wyczyść wyszukiwanie";
+"android.vpn.settings" = "Ustawienia VPN";
+"android.vpn.restore_failed" = "Nie można przywrócić połączenia VPN";
+"android.vpn.restore_help" = "Otwórz Passepartout, aby skonfigurować prawidłowy profil. Jeśli połączenia bez VPN są blokowane, użyj ustawień VPN systemu Android, aby zarządzać zawsze aktywną siecią VPN.";
+
+"android.vpn.delete_blocked" = "Przed usunięciem profili zarządzaj zawsze aktywną siecią VPN w ustawieniach VPN systemu Android.";
+

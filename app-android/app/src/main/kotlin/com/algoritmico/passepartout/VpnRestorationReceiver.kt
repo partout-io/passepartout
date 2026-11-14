@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.vpn.VpnServiceStore
+import io.partout.vpn.VpnPolicy
 
 class VpnRestorationReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -33,7 +34,9 @@ class VpnRestorationReceiver: BroadcastReceiver() {
         runCatchingNonFatal {
             ContextCompat.startForegroundService(
                 context,
-                Intent(context, PassepartoutVpnService::class.java)
+                Intent(context, PassepartoutVpnService::class.java).apply {
+                    putExtra(VpnPolicy.EXTRA_APP_START, true)
+                }
             )
         }.onFailure {
             AppLog.e(constants.tags.service, "Unable to restart VPN after $restartReason", it)

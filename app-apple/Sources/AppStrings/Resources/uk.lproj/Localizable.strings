@@ -456,3 +456,9 @@
 
 "android.search.title" = "Пошук";
 "android.search.clear" = "Очистити пошук";
+"android.vpn.settings" = "Налаштування VPN";
+"android.vpn.restore_failed" = "Не вдалося відновити VPN";
+"android.vpn.restore_help" = "Відкрийте Passepartout, щоб налаштувати коректний профіль. Якщо з’єднання без VPN заблоковано, скористайтеся налаштуваннями VPN в Android для керування постійним з’єднанням VPN.";
+
+"android.vpn.delete_blocked" = "Перш ніж видаляти профілі, змініть параметри постійного з’єднання VPN у налаштуваннях VPN в Android.";
+

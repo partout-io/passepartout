@@ -456,3 +456,9 @@
 
 "android.search.title" = "Αναζήτηση";
 "android.search.clear" = "Εκκαθάριση αναζήτησης";
+"android.vpn.settings" = "Ρυθμίσεις VPN";
+"android.vpn.restore_failed" = "Αδυναμία επαναφοράς του VPN";
+"android.vpn.restore_help" = "Ανοίξτε το Passepartout για να διαμορφώσετε ένα έγκυρο προφίλ. Αν οι συνδέσεις χωρίς VPN είναι αποκλεισμένες, χρησιμοποιήστε τις ρυθμίσεις VPN του Android για να διαχειριστείτε το VPN πάντα ενεργό.";
+
+"android.vpn.delete_blocked" = "Διαχειριστείτε το VPN πάντα ενεργό στις ρυθμίσεις VPN του Android πριν διαγράψετε προφίλ.";
+

@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.business.extensions.errorPair
 import com.algoritmico.passepartout.business.extensions.parseErrorInfo
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
+import com.algoritmico.passepartout.observables.ProfileObservableException
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
 import io.partout.models.OpenVPNErrorCode
@@ -24,6 +25,9 @@ import io.partout.models.WireGuardErrorCode
 // Map AppError.Code for ErrorHandler
 @Composable
 fun AppError.localizedMessage(): String {
+    if (cause is ProfileObservableException.AlwaysOnDeletion) {
+        return stringResource(R.string.android_vpn_delete_blocked)
+    }
     val detail = cause?.localizedMessage
     return when (code) {
         AppErrorCode.binaryFile -> stringResource(R.string.errors_app_import_binary)

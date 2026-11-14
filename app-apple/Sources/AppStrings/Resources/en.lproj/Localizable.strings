@@ -549,3 +549,9 @@
 
 "android.search.title" = "Search";
 "android.search.clear" = "Clear search";
+"android.vpn.settings" = "VPN Settings";
+"android.vpn.restore_failed" = "Unable to restore VPN";
+"android.vpn.restore_help" = "Open Passepartout to configure a valid profile. If connections without VPN are blocked, use Android VPN Settings to manage Always-on VPN.";
+
+"android.vpn.delete_blocked" = "Manage Always-on VPN in Android VPN Settings before deleting profiles.";
+
