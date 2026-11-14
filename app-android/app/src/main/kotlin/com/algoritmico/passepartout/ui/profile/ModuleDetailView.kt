@@ -13,7 +13,7 @@ import io.partout.models.*
 fun ModuleDetailView(
     module: TaggedModule,
     onOpenContent: (String, String) -> Unit,
-    onCredentials: () -> Unit
+    onOpenVPNCredentials: () -> Unit
 ) {
     Column {
         when (module) {
@@ -21,7 +21,7 @@ fun ModuleDetailView(
             is TaggedModuleIP -> IPView(module.value)
             is TaggedModuleHTTPProxy -> HTTPProxyView(module.value)
             is TaggedModuleWireGuard -> WireGuardView(module.value, onOpenContent, LocalWireGuardKeyGenerator.current)
-            is TaggedModuleOpenVPN -> OpenVPNView(module.value, onOpenContent, onCredentials)
+            is TaggedModuleOpenVPN -> OpenVPNView(module.value, onOpenContent, onOpenVPNCredentials)
             is TaggedModuleCustom, is TaggedModuleOnDemand -> Unit
         }
     }
