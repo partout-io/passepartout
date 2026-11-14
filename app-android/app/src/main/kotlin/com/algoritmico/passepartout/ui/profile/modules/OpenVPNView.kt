@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.Strings
+import com.algoritmico.passepartout.ui.extensions.durationText
+import com.algoritmico.passepartout.ui.extensions.routeText
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
