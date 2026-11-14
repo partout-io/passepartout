@@ -180,7 +180,7 @@ private fun ProfileOverview(
             itemsIndexed(modules) { index, module ->
                 ProfileModuleRow(
                     module = module,
-                    isActive = module.moduleId in draft.activeModulesIds,
+                    isEnabled = module.moduleId in draft.activeModulesIds,
                     isSaving = isSaving,
                     onClick = { onSelectModule(index) }
                 )
@@ -190,15 +190,15 @@ private fun ProfileOverview(
 }
 
 @Composable
-private fun ProfileModuleRow(module: TaggedModule, isActive: Boolean, isSaving: Boolean, onClick: () -> Unit) {
+private fun ProfileModuleRow(module: TaggedModule, isEnabled: Boolean, isSaving: Boolean, onClick: () -> Unit) {
     val title = module.moduleType.titleText()
-    val status = stringResource(
-        if (isActive) R.string.entities_tunnel_status_active else R.string.entities_tunnel_status_inactive
+    val enabledText = stringResource(
+        if (isEnabled) R.string.global_nouns_enabled else R.string.global_nouns_disabled
     )
     val canOpenModule = module !is TaggedModuleOnDemand && !isSaving
     if (canOpenModule) {
-        ThemeNavigatingButton(title = title, trailingText = status, onClick = onClick)
+        ThemeNavigatingButton(title = title, trailingText = enabledText, onClick = onClick)
     } else {
-        ListItem(headlineContent = { Text(title) }, trailingContent = { ThemeTrailingValue(status) })
+        ListItem(headlineContent = { Text(title) }, trailingContent = { ThemeTrailingValue(enabledText) })
     }
 }
