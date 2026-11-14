@@ -14,14 +14,17 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.observables.ProfileEditor
 import com.algoritmico.passepartout.ui.LocalProfileObservable
+import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.alerts.GenericErrorAlert
 import com.algoritmico.passepartout.ui.extensions.titleText
+import com.algoritmico.passepartout.ui.extensions.uuidText
 import com.algoritmico.passepartout.ui.profile.modules.OpenVPNCredentialsView
 import com.algoritmico.passepartout.ui.theme.*
 import io.partout.extensions.moduleId
@@ -185,6 +188,9 @@ private fun ProfileOverview(
                     onClick = { onSelectModule(index) }
                 )
             }
+        }
+        item {
+            ThemeDetailRow(Strings.Unlocalized.uuid, draft.id.uuidText(), valueFontFamily = FontFamily.Monospace)
         }
     }
 }

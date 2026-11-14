@@ -9,15 +9,16 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import com.algoritmico.passepartout.R
 
 @Composable
-fun ThemeDetailRow(@StringRes title: Int, value: Any?, onOpenContent: ((String, String) -> Unit)? = null) {
-    ThemeDetailRow(stringResource(title), value, onOpenContent)
+fun ThemeDetailRow(@StringRes title: Int, value: Any?, onOpenContent: ((String, String) -> Unit)? = null, valueFontFamily: FontFamily? = null) {
+    ThemeDetailRow(stringResource(title), value, onOpenContent, valueFontFamily)
 }
 
 @Composable
-fun ThemeDetailRow(label: String, value: Any?, onOpenContent: ((String, String) -> Unit)? = null) {
+fun ThemeDetailRow(label: String, value: Any?, onOpenContent: ((String, String) -> Unit)? = null, valueFontFamily: FontFamily? = null) {
     if (value == null) return
     val text = when (value) {
         is Boolean -> stringResource(if (value) R.string.global_nouns_yes else R.string.global_nouns_no)
@@ -31,6 +32,6 @@ fun ThemeDetailRow(label: String, value: Any?, onOpenContent: ((String, String) 
     }
     ListItem(
         headlineContent = { Text(label) },
-        supportingContent = { SelectionContainer { Text(text) } }
+        supportingContent = { SelectionContainer { Text(text, fontFamily = valueFontFamily) } }
     )
 }

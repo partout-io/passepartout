@@ -136,7 +136,7 @@ class ProfileEditorRecreationTest {
                 scenario.recreate()
                 assertVisible("edited-user")
                 pressBack()
-                assertVisible(app.getString(R.string.modules_openvpn_credentials))
+                assertVisible("OpenVPN")
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "edited-user"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "View content"))
@@ -166,6 +166,15 @@ class ProfileEditorRecreationTest {
                 clickText(app.getString(R.string.modules_openvpn_credentials))
                 assertVisible("edited-user")
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
+                pressBack()
+                assertVisible("OpenVPN")
+                pressBack()
+                assertVisible("Unsaved recreation name")
+                val displayedUUID = id.replace("-", "").uppercase().chunked(4)
+                    .chunked(4).joinToString("\n") { it.joinToString(" ") }
+                scrollToText(displayedUUID)
+                assertVisible("UUID")
+                assertVisible(displayedUUID)
                 scenario.onActivity { profiles.endEditing() }
                 scenario.recreate()
                 scenario.onActivity { assertNull(profiles.editor.value) }
