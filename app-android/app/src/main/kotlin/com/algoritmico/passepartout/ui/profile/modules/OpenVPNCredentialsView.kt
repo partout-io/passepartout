@@ -17,19 +17,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.observables.ProfileEditor
 import com.algoritmico.passepartout.ui.theme.LocalTheme
-import io.partout.models.TaggedModuleOpenVPN
+import io.partout.models.OpenVPNModule
 
 @Composable
-fun OpenVPNCredentialsView(module: TaggedModuleOpenVPN, editor: ProfileEditor) {
+fun OpenVPNCredentialsView(module: OpenVPNModule, editor: ProfileEditor) {
     val theme = LocalTheme.current
-    val credentials = module.value.credentials
+    val credentials = module.credentials
     Column(
         modifier = Modifier.padding(theme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(theme.spacing.medium)
     ) {
         OutlinedTextField(
             value = credentials?.username.orEmpty(),
-            onValueChange = { editor.credentials(module.value.id, it, credentials?.password.orEmpty()) },
+            onValueChange = { editor.credentials(module.id, it, credentials?.password.orEmpty()) },
             label = { Text(stringResource(R.string.global_nouns_username)) },
             keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
             singleLine = true,
@@ -37,7 +37,7 @@ fun OpenVPNCredentialsView(module: TaggedModuleOpenVPN, editor: ProfileEditor) {
         )
         OutlinedTextField(
             value = credentials?.password.orEmpty(),
-            onValueChange = { editor.credentials(module.value.id, credentials?.username.orEmpty(), it) },
+            onValueChange = { editor.credentials(module.id, credentials?.username.orEmpty(), it) },
             label = { Text(stringResource(R.string.global_nouns_password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

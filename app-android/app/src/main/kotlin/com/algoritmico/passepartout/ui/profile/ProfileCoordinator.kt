@@ -41,8 +41,7 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
     val modulesTitle = stringResource(R.string.global_nouns_modules)
     val draft by editor.state.collectAsStateWithLifecycle()
     val profiles = LocalProfileObservable.current
-    val contentState by editor.content.collectAsStateWithLifecycle()
-    val content = contentState
+    val content = editor.content.collectAsStateWithLifecycle().value
     var moduleIndex by rememberSaveable { mutableStateOf<Int?>(null) }
     var showsCredentials by rememberSaveable(moduleIndex) { mutableStateOf(false) }
     val saving by profiles.editorSaving.collectAsStateWithLifecycle()
@@ -106,7 +105,7 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                         }
                     } else if (showsCredentials && module is TaggedModuleOpenVPN) {
                         item {
-                            OpenVPNCredentialsView(module = module, editor = editor)
+                            OpenVPNCredentialsView(module = module.value, editor = editor)
                         }
                     } else if (module == null) {
                         item {

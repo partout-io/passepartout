@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0
 package com.algoritmico.passepartout.observables
 
-import io.partout.extensions.moduleId
 import io.partout.models.OpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.TaggedModuleOpenVPN
@@ -37,7 +36,7 @@ class ProfileEditor(profile: TaggedProfile) {
     fun credentials(moduleId: String, username: String, password: String) {
         mutableState.update { profile ->
             profile.copy(modules = profile.modules.map { module ->
-                if (module !is TaggedModuleOpenVPN || module.moduleId != moduleId) return@map module
+                if (module !is TaggedModuleOpenVPN || module.value.id != moduleId) return@map module
                 val credentials = module.value.credentials
                     ?: OpenVPNCredentials("", "", OpenVPNCredentialsOTPMethod.none)
                 module.copy(value = module.value.copy(credentials = credentials.copy(

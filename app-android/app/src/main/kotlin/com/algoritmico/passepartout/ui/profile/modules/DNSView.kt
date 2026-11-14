@@ -19,8 +19,7 @@ import io.partout.models.DNSModuleProtocolTypetls
 internal fun DNSView(module: DNSModule) {
     ThemeDetailRow(R.string.modules_dns_policy_inherits_vpn, module.inheritsVPN ?: false)
     ThemeDetailRow(R.string.modules_dns_policy_route_through_vpn,
-        module.routesThroughVPN?.let { stringResource(if (it) R.string.global_nouns_yes else R.string.global_nouns_no) }
-            ?: stringResource(R.string.global_nouns_default))
+        module.routesThroughVPN ?: stringResource(R.string.global_nouns_default))
     val canApplyDomainPolicy = module.inheritsVPN == true || module.protocolType is DNSModuleProtocolTypecleartext
     ThemeDetailRow(R.string.modules_dns_policy_use_only, canApplyDomainPolicy && module.domainPolicy == DNSModuleDomainPolicy.matchAndSearch)
     if (module.inheritsVPN == true) return
