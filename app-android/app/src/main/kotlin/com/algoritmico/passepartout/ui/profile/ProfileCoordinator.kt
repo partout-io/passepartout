@@ -47,8 +47,8 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
     var showsCredentials by rememberSaveable(moduleIndex) { mutableStateOf(false) }
     val saving by profiles.editorSaving.collectAsStateWithLifecycle()
     val saveError by profiles.editorError.collectAsStateWithLifecycle()
-    val module = moduleIndex?.let(draft.modules::getOrNull)
-    val moduleType = module?.moduleType ?: (module as? TaggedModuleCustom)?.value?.innerType
+    val modules = draft.modules.filterNot { it is TaggedModuleCustom }
+    val module = moduleIndex?.let(modules::getOrNull)
     fun back() {
         if (saving) return
         when {
@@ -68,7 +68,7 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                 TopAppBar(
                     title = {
                         Text(if (showsCredentials) stringResource(R.string.modules_openvpn_credentials)
-                            else content?.title ?: moduleType?.titleText() ?: stringResource(R.string.global_nouns_profile))
+                            else content?.title ?: module?.moduleType?.titleText() ?: stringResource(R.string.global_nouns_profile))
                     },
                     navigationIcon = {
                         if (module != null) {
@@ -121,8 +121,8 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                             )
                         }
                         themeListSection(header = modulesTitle) {
-                            itemsIndexed(draft.modules) { index, item ->
-                                val title = (item.moduleType ?: (item as? TaggedModuleCustom)?.value?.innerType).titleText()
+                            itemsIndexed(modules) { index, item ->
+                                val title = item.moduleType.titleText()
                                 val status = stringResource(if (item.moduleId in draft.activeModulesIds)
                                     R.string.entities_tunnel_status_active else R.string.entities_tunnel_status_inactive)
                                 if (item !is TaggedModuleOnDemand && !saving) {

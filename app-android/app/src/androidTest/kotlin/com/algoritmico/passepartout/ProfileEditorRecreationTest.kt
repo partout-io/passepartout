@@ -78,6 +78,7 @@ class ProfileEditorRecreationTest {
                     assertSame(originalSession, profiles.editor.value)
                     val draft = requireNotNull(profiles.editor.value).state.value
                     assertEquals("Unsaved recreation name", draft.name)
+                    assertEquals(profile.modules.first(), draft.modules.first())
                     val credentials = draft.modules.filterIsInstance<TaggedModuleOpenVPN>().single().value.credentials
                     assertEquals("unsaved-user", credentials?.username)
                     assertEquals("unsaved-password", credentials?.password)
@@ -100,15 +101,9 @@ class ProfileEditorRecreationTest {
                     app.getString(R.string.global_nouns_yes)))
                 pressBack()
                 assertVisible("Unsaved recreation name")
-                clickText(app.getString(R.string.global_nouns_provider))
-                assertVisible(app.getString(R.string.global_nouns_configuration))
-                clickText(app.getString(R.string.global_nouns_configuration))
-                assertVisible("Custom configuration")
-                pressBack()
-                assertVisible(app.getString(R.string.global_nouns_provider))
-                assertVisible(app.getString(R.string.global_nouns_configuration))
-                pressBack()
-                assertVisible("Unsaved recreation name")
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow,
+                    app.getString(R.string.global_nouns_provider)))
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Custom configuration"))
                 clickText("OpenVPN")
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))

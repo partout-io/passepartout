@@ -22,8 +22,7 @@ fun ModuleDetailView(
             is TaggedModuleHTTPProxy -> HTTPProxyView(module.value)
             is TaggedModuleWireGuard -> WireGuardView(module.value, onOpenContent, LocalWireGuardKeyGenerator.current)
             is TaggedModuleOpenVPN -> OpenVPNView(module.value, onOpenContent, onCredentials)
-            is TaggedModuleCustom -> CustomModuleView(module.value, onOpenContent)
-            is TaggedModuleOnDemand -> Unit
+            is TaggedModuleCustom, is TaggedModuleOnDemand -> Unit
         }
     }
 }
