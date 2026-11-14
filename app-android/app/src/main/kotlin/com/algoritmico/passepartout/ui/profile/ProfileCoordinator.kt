@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
+
 package com.algoritmico.passepartout.ui.profile
 
 import androidx.activity.compose.BackHandler
@@ -17,131 +18,187 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
-import com.algoritmico.passepartout.ui.profile.modules.OpenVPNCredentialsView
 import com.algoritmico.passepartout.observables.ProfileEditor
-import com.algoritmico.passepartout.ui.extensions.titleText
 import com.algoritmico.passepartout.ui.LocalProfileObservable
 import com.algoritmico.passepartout.ui.alerts.GenericErrorAlert
-import com.algoritmico.passepartout.ui.theme.LocalTheme
-import com.algoritmico.passepartout.ui.theme.ThemeTextField
-import com.algoritmico.passepartout.ui.theme.ThemeList
-import com.algoritmico.passepartout.ui.theme.ThemeLongContent
-import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
-import com.algoritmico.passepartout.ui.theme.ThemeTrailingValue
-import com.algoritmico.passepartout.ui.theme.themeListSection
+import com.algoritmico.passepartout.ui.extensions.titleText
+import com.algoritmico.passepartout.ui.profile.modules.OpenVPNCredentialsView
+import com.algoritmico.passepartout.ui.theme.*
 import io.partout.extensions.moduleId
 import io.partout.extensions.moduleType
-import io.partout.models.TaggedModuleCustom
-import io.partout.models.TaggedModuleOnDemand
-import io.partout.models.TaggedModuleOpenVPN
+import io.partout.models.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+private sealed interface ProfileDestination {
+    data object Overview : ProfileDestination
+    data class Module(val module: TaggedModule) : ProfileDestination
+    data class Credentials(val module: TaggedModuleOpenVPN) : ProfileDestination
+    data class Content(val content: ProfileEditor.Content) : ProfileDestination
+}
+
 @Composable
 fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
-    val theme = LocalTheme.current
-    val modulesTitle = stringResource(R.string.global_nouns_modules)
-    val draft by editor.state.collectAsStateWithLifecycle()
     val profiles = LocalProfileObservable.current
+    val draft by editor.state.collectAsStateWithLifecycle()
     val content = editor.content.collectAsStateWithLifecycle().value
-    var moduleIndex by rememberSaveable { mutableStateOf<Int?>(null) }
-    var showsCredentials by rememberSaveable(moduleIndex) { mutableStateOf(false) }
-    val saving by profiles.editorSaving.collectAsStateWithLifecycle()
+    val isSaving by profiles.editorSaving.collectAsStateWithLifecycle()
     val saveError by profiles.editorError.collectAsStateWithLifecycle()
-    val modules = draft.modules.filterNot { it is TaggedModuleCustom }
-    val module = moduleIndex?.let(modules::getOrNull)
+    val visibleModules = draft.modules.filterNot { it is TaggedModuleCustom }
+
+    var selectedModuleIndex by rememberSaveable { mutableStateOf<Int?>(null) }
+    var showsCredentials by rememberSaveable(selectedModuleIndex) { mutableStateOf(false) }
+    val selectedModule = selectedModuleIndex?.let(visibleModules::getOrNull)
+    val destination = when {
+        content != null -> ProfileDestination.Content(content)
+        showsCredentials && selectedModule is TaggedModuleOpenVPN -> ProfileDestination.Credentials(selectedModule)
+        selectedModule != null -> ProfileDestination.Module(selectedModule)
+        else -> ProfileDestination.Overview
+    }
+    val isOverview = destination == ProfileDestination.Overview
+    val canSave = !isSaving && draft.name.isNotBlank() && editor.isDirty
+    val title = when (destination) {
+        ProfileDestination.Overview -> stringResource(R.string.global_nouns_profile)
+        is ProfileDestination.Module -> destination.module.moduleType.titleText()
+        is ProfileDestination.Credentials -> stringResource(R.string.modules_openvpn_credentials)
+        is ProfileDestination.Content -> destination.content.title
+    }
+
     fun back() {
-        if (saving) return
-        when {
-            content != null -> editor.closeContent()
-            showsCredentials -> showsCredentials = false
-            moduleIndex != null -> moduleIndex = null
-            else -> onDismiss()
+        if (isSaving) return
+        when (destination) {
+            ProfileDestination.Overview -> onDismiss()
+            is ProfileDestination.Module -> selectedModuleIndex = null
+            is ProfileDestination.Credentials -> showsCredentials = false
+            is ProfileDestination.Content -> editor.closeContent()
         }
     }
-    Dialog(onDismissRequest = ::back, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+
+    Dialog(onDismissRequest = { back() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         BackHandler { back() }
-        saveError?.let { error ->
-            GenericErrorAlert(error = error, onDismiss = profiles::clearEditorError)
-        }
+        saveError?.let { GenericErrorAlert(error = it, onDismiss = profiles::clearEditorError) }
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text(if (showsCredentials) stringResource(R.string.modules_openvpn_credentials)
-                            else content?.title ?: module?.moduleType?.titleText() ?: stringResource(R.string.global_nouns_profile))
-                    },
-                    navigationIcon = {
-                        if (module != null) {
-                            IconButton(onClick = ::back, enabled = !saving) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.global_actions_back)
-                                )
-                            }
-                        }
-                    },
-                    actions = {
-                        if (module == null) {
-                            TextButton(
-                                enabled = !saving && draft.name.isNotBlank() && editor.isDirty,
-                                onClick = profiles::saveEditor
-                            ) { Text(stringResource(R.string.global_actions_save)) }
-                            IconButton(onClick = ::back, enabled = !saving) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.global_actions_cancel)
-                                )
-                            }
-                        }
-                    }
+                ProfileToolbar(
+                    title = title,
+                    isOverview = isOverview,
+                    isSaving = isSaving,
+                    canSave = canSave,
+                    onBack = { back() },
+                    onSave = profiles::saveEditor
                 )
             }
         ) { padding ->
-            key(moduleIndex, showsCredentials, content?.title) {
-                ThemeList(modifier = Modifier.padding(padding).imePadding()) {
-                    if (saving) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
-                    if (content != null) {
+            // Reset list position between destinations, but not when draft fields change.
+            key(selectedModuleIndex, showsCredentials, content?.title) {
+                val modifier = Modifier.padding(padding).imePadding()
+                when (destination) {
+                    ProfileDestination.Overview -> ProfileOverview(
+                        draft = draft,
+                        modules = visibleModules,
+                        isSaving = isSaving,
+                        onRename = editor::rename,
+                        onSelectModule = { selectedModuleIndex = it },
+                        modifier = modifier
+                    )
+                    else -> ThemeList(modifier = modifier) {
                         item {
-                            ThemeLongContent(content.text)
-                        }
-                    } else if (showsCredentials && module is TaggedModuleOpenVPN) {
-                        item {
-                            OpenVPNCredentialsView(module = module.value, onChange = {
-                                editor.updateModule(module.copy(value = it))
-                            })
-                        }
-                    } else if (module == null) {
-                        item {
-                            ThemeTextField(
-                                value = draft.name,
-                                onValueChange = editor::rename,
-                                enabled = !saving,
-                                label = stringResource(R.string.global_nouns_name),
-                                modifier = Modifier.padding(theme.spacing.large)
-                            )
-                        }
-                        themeListSection(header = modulesTitle) {
-                            itemsIndexed(modules) { index, item ->
-                                val title = item.moduleType.titleText()
-                                val status = stringResource(if (item.moduleId in draft.activeModulesIds)
-                                    R.string.entities_tunnel_status_active else R.string.entities_tunnel_status_inactive)
-                                if (item !is TaggedModuleOnDemand && !saving) {
-                                    ThemeNavigatingButton(title = title, trailingText = status,
-                                        onClick = { moduleIndex = index })
-                                } else {
-                                    ListItem(headlineContent = { Text(title) },
-                                        trailingContent = { ThemeTrailingValue(status) })
-                                }
+                            when (destination) {
+                                is ProfileDestination.Module -> ModuleDetailView(
+                                    module = destination.module,
+                                    onOpenContent = editor::openContent,
+                                    onCredentials = { showsCredentials = true }
+                                )
+                                is ProfileDestination.Credentials -> OpenVPNCredentialsView(
+                                    module = destination.module.value,
+                                    onChange = { editor.updateModule(destination.module.copy(value = it)) }
+                                )
+                                is ProfileDestination.Content -> ThemeLongContent(destination.content.text)
+                                ProfileDestination.Overview -> Unit
                             }
-                        }
-                    } else {
-                        item {
-                            ModuleDetailView(module, onOpenContent = editor::openContent,
-                                onCredentials = { showsCredentials = true })
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileToolbar(
+    title: String,
+    isOverview: Boolean,
+    isSaving: Boolean,
+    canSave: Boolean,
+    onBack: () -> Unit,
+    onSave: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            if (!isOverview) {
+                IconButton(onClick = onBack, enabled = !isSaving) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.global_actions_back))
+                }
+            }
+        },
+        actions = {
+            if (isOverview) {
+                TextButton(enabled = canSave, onClick = onSave) {
+                    Text(stringResource(R.string.global_actions_save))
+                }
+                IconButton(onClick = onBack, enabled = !isSaving) {
+                    Icon(Icons.Default.Close, stringResource(R.string.global_actions_cancel))
+                }
+            }
+        }
+    )
+}
+
+@Composable
+private fun ProfileOverview(
+    draft: TaggedProfile,
+    modules: List<TaggedModule>,
+    isSaving: Boolean,
+    onRename: (String) -> Unit,
+    onSelectModule: (Int) -> Unit,
+    modifier: Modifier
+) {
+    val theme = LocalTheme.current
+    val modulesTitle = stringResource(R.string.global_nouns_modules)
+    ThemeList(modifier = modifier) {
+        if (isSaving) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+        item {
+            ThemeTextField(
+                value = draft.name,
+                onValueChange = onRename,
+                enabled = !isSaving,
+                label = stringResource(R.string.global_nouns_name),
+                modifier = Modifier.padding(theme.spacing.large)
+            )
+        }
+        themeListSection(header = modulesTitle) {
+            itemsIndexed(modules) { index, module ->
+                ProfileModuleRow(
+                    module = module,
+                    isActive = module.moduleId in draft.activeModulesIds,
+                    isSaving = isSaving,
+                    onClick = { onSelectModule(index) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileModuleRow(module: TaggedModule, isActive: Boolean, isSaving: Boolean, onClick: () -> Unit) {
+    val title = module.moduleType.titleText()
+    val status = stringResource(
+        if (isActive) R.string.entities_tunnel_status_active else R.string.entities_tunnel_status_inactive
+    )
+    val canOpenModule = module !is TaggedModuleOnDemand && !isSaving
+    if (canOpenModule) {
+        ThemeNavigatingButton(title = title, trailingText = status, onClick = onClick)
+    } else {
+        ListItem(headlineContent = { Text(title) }, trailingContent = { ThemeTrailingValue(status) })
     }
 }
