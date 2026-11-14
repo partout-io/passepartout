@@ -35,7 +35,12 @@ void Theme::Apply(wxWindow *window) {
     window->Refresh();
 }
 wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
-    return new wxActivityIndicator(parent, wxID_ANY);
+    auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
+#ifdef __WXMSW__
+    // Buffer background erasure and dot painting together on Windows.
+    indicator->SetDoubleBuffered(true);
+#endif
+    return indicator;
 }
 namespace {
 class ProfileListStore final : public wxDataViewListStore {
