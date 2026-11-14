@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.profile.modules.OpenVPNCredentialsView
 import com.algoritmico.passepartout.observables.ProfileEditor
+import com.algoritmico.passepartout.ui.extensions.titleText
 import com.algoritmico.passepartout.ui.LocalProfileObservable
 import com.algoritmico.passepartout.ui.alerts.GenericErrorAlert
 import com.algoritmico.passepartout.ui.theme.LocalTheme
@@ -67,7 +68,7 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                 TopAppBar(
                     title = {
                         Text(if (showsCredentials) stringResource(R.string.modules_openvpn_credentials)
-                            else content?.title ?: moduleType?.profileTitle() ?: stringResource(R.string.global_nouns_profile))
+                            else content?.title ?: moduleType?.titleText() ?: stringResource(R.string.global_nouns_profile))
                     },
                     navigationIcon = {
                         if (module != null) {
@@ -120,7 +121,7 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                         }
                         themeListSection(header = modulesTitle) {
                             itemsIndexed(draft.modules) { index, item ->
-                                val title = (item.moduleType ?: (item as? TaggedModuleCustom)?.value?.innerType).profileTitle()
+                                val title = (item.moduleType ?: (item as? TaggedModuleCustom)?.value?.innerType).titleText()
                                 val status = stringResource(if (item.moduleId in draft.activeModulesIds)
                                     R.string.entities_tunnel_status_active else R.string.entities_tunnel_status_inactive)
                                 if (item !is TaggedModuleOnDemand && !saving) {

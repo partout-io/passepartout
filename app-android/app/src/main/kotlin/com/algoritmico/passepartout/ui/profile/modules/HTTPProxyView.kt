@@ -6,6 +6,7 @@ package com.algoritmico.passepartout.ui.profile.modules
 import androidx.compose.runtime.Composable
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.Strings
+import com.algoritmico.passepartout.ui.theme.ThemeDetailRow
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import io.partout.models.HTTPProxyModule
 
@@ -15,9 +16,9 @@ internal fun HTTPProxyView(module: HTTPProxyModule) {
     ProxyEndpoint(Strings.Unlocalized.https, module.secureProxy)
     if (module.pacURL != null) {
         ThemeListSectionHeader(Strings.Unlocalized.pac)
-        DetailRow(Strings.Unlocalized.url, module.pacURL)
+        ThemeDetailRow(Strings.Unlocalized.url, module.pacURL)
     }
-    DetailRow(R.string.entities_http_proxy_bypass_domains, module.bypassDomains)
+    ThemeDetailRow(R.string.entities_http_proxy_bypass_domains, module.bypassDomains)
 }
 
 @Composable
@@ -26,6 +27,6 @@ private fun ProxyEndpoint(title: String, endpoint: String?) {
     ThemeListSectionHeader(title)
     val separator = endpoint.lastIndexOf(':')
     val port = endpoint.substringAfterLast(':').toIntOrNull()
-    DetailRow(R.string.global_nouns_address, if (port != null && separator > 0) endpoint.substring(0, separator) else endpoint)
-    DetailRow(R.string.global_nouns_port, port)
+    ThemeDetailRow(R.string.global_nouns_address, if (port != null && separator > 0) endpoint.substring(0, separator) else endpoint)
+    ThemeDetailRow(R.string.global_nouns_port, port)
 }
