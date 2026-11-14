@@ -176,6 +176,14 @@ fun ProfileContainerView(
         }
     }
 
+    LaunchedEffect(tunnelState.policy.alwaysOn) {
+        if (tunnelState.policy.alwaysOn == true) {
+            // A late policy update can reject a stop without a tunnel status change.
+            requestedConnection = null
+            interactiveProfile = null
+        }
+    }
+
     val onProfileSelected: (String) -> Unit = { profileId ->
         if (contextualSelection.isActive) {
             contextualSelection.selectProfile(profileId)
