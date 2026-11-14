@@ -458,4 +458,7 @@
     <string name="android_errors_profile_importer_empty">Δεν είναι δυνατή η ανάγνωση του περιεχομένου του προφίλ.</string>
     <string name="android_search_title">Αναζήτηση</string>
     <string name="android_search_clear">Εκκαθάριση αναζήτησης</string>
+    <string name="android_vpn_settings">Ρυθμίσεις VPN</string>
+    <string name="android_vpn_restore_failed">Αδυναμία επαναφοράς του VPN</string>
+    <string name="android_vpn_restore_help">Ανοίξτε το Passepartout για να διαμορφώσετε ένα έγκυρο προφίλ. Αν οι συνδέσεις χωρίς VPN είναι αποκλεισμένες, χρησιμοποιήστε τις ρυθμίσεις VPN του Android για να διαχειριστείτε το VPN πάντα ενεργό.</string>
 </resources>

@@ -458,4 +458,7 @@
     <string name="android_errors_profile_importer_empty">Не удалось прочитать содержимое профиля.</string>
     <string name="android_search_title">Поиск</string>
     <string name="android_search_clear">Очистить поиск</string>
+    <string name="android_vpn_settings">Настройки VPN</string>
+    <string name="android_vpn_restore_failed">Не удалось восстановить VPN</string>
+    <string name="android_vpn_restore_help">Откройте Passepartout, чтобы настроить корректный профиль. Если подключения без VPN заблокированы, используйте настройки VPN в Android для управления постоянным подключением VPN.</string>
 </resources>

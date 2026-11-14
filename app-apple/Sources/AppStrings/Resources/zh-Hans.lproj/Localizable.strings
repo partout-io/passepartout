@@ -456,3 +456,7 @@
 
 "android.search.title" = "搜索";
 "android.search.clear" = "清除搜索";
+"android.vpn.settings" = "VPN 设置";
+"android.vpn.restore_failed" = "无法恢复 VPN";
+"android.vpn.restore_help" = "打开 Passepartout 以配置有效的配置文件。如果不使用 VPN 的连接被阻止，请使用 Android 的 VPN 设置管理始终开启的 VPN。";
+

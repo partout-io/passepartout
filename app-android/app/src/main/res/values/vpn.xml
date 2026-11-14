@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="android_vpn_settings">VPN Settings</string>
-    <string name="android_vpn_restore_failed">Unable to restore VPN</string>
-    <string name="android_vpn_restore_help">Open Passepartout to configure a valid profile. If connections without VPN are blocked, use Android VPN Settings to manage Always-on VPN.</string>
-</resources>
