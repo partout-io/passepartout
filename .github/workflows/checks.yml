@@ -9,32 +9,26 @@ on:
         default: true
         type: boolean
 
+      suite:
+        description: Test suite (empty runs all suites)
+        required: false
+        default: ""
+        type: string
+
 concurrency:
   group: checks-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   run_tests:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.suite }} tests
     if: inputs.run_checks
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: ${{ matrix.timeout_minutes }}
+    runs-on: ${{ matrix.suite == 'cross' && 'ubuntu-latest' || 'xcode-27' }}
+    timeout-minutes: ${{ matrix.suite == 'cross' && 2 || 10 }}
     strategy:
       fail-fast: true
       matrix:
-        include:
-          - name: Apple tests
-            suite: apple
-            runner: xcode-27
-            timeout_minutes: 10
-          - name: Partout tests
-            suite: partout
-            runner: xcode-27
-            timeout_minutes: 10
-          - name: Cross checks
-            suite: cross
-            runner: ubuntu-latest
-            timeout_minutes: 2
+        suite: ${{ fromJSON(inputs.suite == '' && '["apple", "partout", "cross"]' || format('["{0}"]', inputs.suite)) }}
     steps:
       - uses: actions/checkout@v6
 
