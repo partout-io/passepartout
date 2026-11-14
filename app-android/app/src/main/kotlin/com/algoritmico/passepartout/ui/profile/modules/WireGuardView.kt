@@ -25,7 +25,7 @@ internal fun WireGuardView(
     val publicKey = remember(local.privateKey, keyGenerator) { keyGenerator.publicKey(local.privateKey) }
     ThemeListSectionHeader(stringResource(R.string.modules_wireguard_interface))
     ThemeDetailRow(R.string.global_nouns_private_key, local.privateKey, onOpenContent = onOpenContent)
-    ThemeDetailRow(R.string.global_nouns_public_key, publicKey)
+    ThemeDetailRow(R.string.global_nouns_public_key, publicKey, onOpenContent = onOpenContent)
     ThemeDetailRow(R.string.global_nouns_addresses, local.addresses, onOpenContent = onOpenContent)
     ThemeDetailRow(Strings.Unlocalized.mtu, local.mtu)
     local.dns?.takeIf { hasContent(it.servers, it.domainName, it.searchDomains) }?.let {
