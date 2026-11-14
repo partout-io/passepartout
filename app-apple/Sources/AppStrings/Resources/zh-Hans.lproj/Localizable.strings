@@ -44,6 +44,7 @@
 "errors.app.incompatible_modules" = "某些激活的模块不兼容，请尝试仅激活一个模块。";
 "errors.app.incomplete_module" = "请完成 %@ 模块的配置。";
 "errors.app.ineligible" = "需要购买";
+"errors.app.interactive_login" = "Open Passepartout to enter the credentials required for this VPN.";
 "errors.app.invalid_fields" = "字段无效。";
 "errors.app.malformed_module" = "模块 %@ 格式错误。%@";
 "errors.app.missing_provider_entity" = "未在提供商中选择服务器。";

@@ -90,6 +90,15 @@ let package = Package(
             name: "TunnelLibrary",
             dependencies: [
                 "AppResources",
+                "AppStrings",
+                "partout"
+            ]
+        ),
+        .testTarget(
+            name: "TunnelLibraryTests",
+            dependencies: [
+                "CommonLibrary",
+                "TunnelLibrary",
                 "partout"
             ]
         ),
