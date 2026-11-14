@@ -44,6 +44,7 @@ import com.algoritmico.passepartout.ui.alerts.InteractiveView
 import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
+import com.algoritmico.passepartout.ui.profile.ProfileCoordinator
 import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
@@ -66,6 +67,7 @@ fun ProfileContainerView(
     var selectedProfileId by rememberSaveable {
         mutableStateOf<String?>(null)
     }
+    val editor by profileObservable.editor.collectAsStateWithLifecycle()
     var requestedConnection by remember {
         mutableStateOf<RequestedConnection?>(null)
     }
@@ -189,6 +191,7 @@ fun ProfileContainerView(
             contextualSelection.selectProfile(profileId)
         } else {
             selectProfile(profileId)
+            profileObservable.beginEditing(profileId)
         }
     }
     val onProfileContextualAction: (String) -> Unit = { profileId ->
@@ -226,6 +229,10 @@ fun ProfileContainerView(
                 )
             }
         )
+    }
+
+    editor?.let { session ->
+        ProfileCoordinator(session, onDismiss = profileObservable::endEditing)
     }
 
     if (headers.isEmpty()) {

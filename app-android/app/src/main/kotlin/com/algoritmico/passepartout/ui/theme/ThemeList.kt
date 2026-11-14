@@ -60,7 +60,7 @@ private fun ThemeListDivider() {
 }
 
 @Composable
-private fun ThemeListSectionHeader(
+fun ThemeListSectionHeader(
     title: String
 ) {
     val theme = LocalTheme.current
