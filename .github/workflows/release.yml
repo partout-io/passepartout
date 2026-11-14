@@ -6,33 +6,45 @@ on:
       - "builds/*"
   workflow_dispatch:
     inputs:
-      platform:
-        description: Platform to package
+      build:
+        description: "The number in the builds/* tag to rerun"
         required: true
-        type: choice
-        options:
-          - apple
-          - android
-      run_checks:
-        description: Run the initial checks
-        required: true
-        default: false
-        type: boolean
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  rerun_release:
+    name: Rerun tagged release
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      BUILD: ${{ inputs.build }}
+    steps:
+      - name: Rerun release workflow
+        run: |
+          run_id=$(gh run list --workflow release.yml --event push \
+            --branch "builds/$BUILD" --limit 1 \
+            --json databaseId --jq '.[0].databaseId // empty')
+          if [ -z "$run_id" ]; then
+            echo "No release run found for builds/$BUILD" >&2
+            exit 1
+          fi
+          gh run rerun "$run_id"
+
   checks:
     name: Run checks
+    if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/checks.yml
-    with:
-      run_checks: ${{ github.event_name == 'push' || inputs.run_checks }}
 
   release_info:
     name: Resolve release information
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     needs: checks
     timeout-minutes: 2
     outputs:
@@ -63,14 +75,12 @@ jobs:
   package_apple:
     name: Package Apple apps
     needs: release_info
-    if: ${{ github.event_name == 'push' || inputs.platform == 'apple' }}
     uses: ./.github/workflows/package_apple.yml
     secrets: inherit
 
   package_android:
     name: Package Android app
     needs: release_info
-    if: ${{ github.event_name == 'push' || inputs.platform == 'android' }}
     uses: ./.github/workflows/package_android.yml
     secrets: inherit
 
@@ -86,7 +96,7 @@ jobs:
 
   publish_release:
     name: Publish Release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     needs:
       - release_info
       - distribute_apple
