@@ -1,4 +1,4 @@
-name: Tests
+name: Apple tests
 
 on:
   pull_request:
@@ -11,6 +11,8 @@ on:
       - ".env.*"
       - "**/*.md"
       - "app-apple/fastlane/**"
+      - "app-android/**"
+      - "app-cross/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,3 +22,5 @@ jobs:
   checks:
     name: Run checks
     uses: ./.github/workflows/checks.yml
+    with:
+      suite: apple

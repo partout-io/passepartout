@@ -1,0 +1,26 @@
+name: Partout tests
+
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+    branches:
+      - "master"
+      - "hotfix/*"
+    paths-ignore:
+      - "README.md"
+      - ".env.*"
+      - "**/*.md"
+      - "app-apple/**"
+      - "app-android/**"
+      - "app-cross/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Run checks
+    uses: ./.github/workflows/checks.yml
+    with:
+      suite: partout

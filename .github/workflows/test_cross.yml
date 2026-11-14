@@ -2,20 +2,26 @@
 #
 # SPDX-License-Identifier: GPL-3.0
 
-name: Cross application tests
+name: Cross tests
 
 on:
   pull_request:
     paths:
-      - 'app-cross/**'
-      - 'partout'
-      - '.github/workflows/test_cross.yml'
+      - '**'
+      - '!app-apple/**'
+      - '!app-android/**'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  checks:
+    name: Run checks
+    uses: ./.github/workflows/checks.yml
+    with:
+      suite: cross
+
   application:
     strategy:
       fail-fast: false
