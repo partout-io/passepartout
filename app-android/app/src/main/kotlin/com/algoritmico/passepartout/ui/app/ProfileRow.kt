@@ -133,7 +133,6 @@ fun ProfileRow(
                 checked = isEnabled,
                 enabled = status.canToggle(),
                 onCheckedChange = { isEnabled ->
-                    onProfileSelected(header.id)
                     onProfileToggle(header.id, isEnabled)
                 }
             )

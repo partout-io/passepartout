@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.models.AppConfiguration
@@ -49,4 +50,8 @@ val LocalVersionObservable = staticCompositionLocalOf<VersionObservable> {
 
 val LocalErrorHandler = staticCompositionLocalOf<ErrorHandler> {
     error("No ErrorHandler provided")
+}
+
+val LocalWireGuardKeyGenerator = staticCompositionLocalOf<WireGuardKeyGenerator> {
+    error("No WireGuardKeyGenerator provided")
 }

@@ -63,6 +63,11 @@ class ProfileManager(
         val profile = runCatchingNonFatal {
             library.importProfile(text, name, passphrase)
         }.getOrThrow()
+        save(profile)
+    }
+
+    suspend fun save(profile: TaggedProfile) {
+        initialProfilesLoaded.await()
         val previous = profiles[profile.id]
         repository.saveProfile(profile)
         profiles = profiles + (profile.id to profile)

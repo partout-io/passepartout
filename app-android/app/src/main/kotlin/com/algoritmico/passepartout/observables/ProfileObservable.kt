@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.observables
 
+import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.models.AppFeature
 import com.algoritmico.passepartout.models.AppProfileHeader
@@ -64,6 +65,48 @@ class ProfileObservable(
         }
     }
 
+    private val mutableEditor = MutableStateFlow<ProfileEditor?>(null)
+    val editor: StateFlow<ProfileEditor?> = mutableEditor.asStateFlow()
+
+    private val mutableEditorSaving = MutableStateFlow(false)
+    val editorSaving = mutableEditorSaving.asStateFlow()
+    private val mutableEditorError = MutableStateFlow<AppError?>(null)
+    val editorError = mutableEditorError.asStateFlow()
+
+    fun clearEditorError() {
+        mutableEditorError.value = null
+    }
+
+    fun saveEditor() {
+        val session = mutableEditor.value ?: return
+        if (mutableEditorSaving.value || !session.isDirty || session.state.value.name.isBlank()) return
+        mutableEditorSaving.value = true
+        mutableEditorError.value = null
+        val draft = session.state.value
+        scope.launch {
+            try {
+                runCatchingNonFatal { manager.save(draft) }
+                    .onSuccess { if (mutableEditor.value === session) mutableEditor.value = null }
+                    .onFailure { mutableEditorError.value = it.asAppError }
+            } finally {
+                mutableEditorSaving.value = false
+            }
+        }
+    }
+
+    fun beginEditing(profileId: String) {
+        if (mutableEditor.value != null) return
+        val profile = profile(profileId) ?: return
+        mutableEditorError.value = null
+        mutableEditor.value = ProfileEditor(profile)
+    }
+
+    fun endEditing() {
+        if (mutableEditorSaving.value) return
+        mutableEditorError.value = null
+        mutableEditor.value = null
+    }
+
     fun search(name: String) {
         _state.update {
             it.copy(search = name)
@@ -99,6 +142,10 @@ class ProfileObservable(
 
     fun profile(profileId: String): TaggedProfile? {
         return manager.profile(profileId)
+    }
+
+    suspend fun save(profile: TaggedProfile) {
+        manager.save(profile)
     }
 
     suspend fun importText(text: String, filename: String) {
@@ -143,6 +190,9 @@ class ProfileObservable(
 
     override fun close() {
         scope.cancel()
+        mutableEditor.value = null
+        mutableEditorError.value = null
+        mutableEditorSaving.value = false
     }
 
     private fun reloadHeaders(search: String) {

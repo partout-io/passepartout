@@ -27,6 +27,9 @@ object Strings {
             const val compLZO = "--comp-lzo"
             const val compress = "--compress"
             const val lzo = "LZO"
+            const val tlsAuth = "--tls-auth"
+            const val tlsCrypt = "--tls-crypt"
+            const val tlsCryptV2 = "--tls-crypt-v2"
         }
 
         object Placeholders {
