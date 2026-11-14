@@ -460,3 +460,5 @@
 "android.vpn.restore_failed" = "Det gick inte att återställa VPN";
 "android.vpn.restore_help" = "Öppna Passepartout för att konfigurera en giltig profil. Om anslutningar utan VPN blockeras använder du Androids VPN-inställningar för att hantera ständigt aktivt VPN.";
 
+"android.vpn.delete_blocked" = "Hantera ständigt aktivt VPN i Androids VPN-inställningar innan du tar bort profiler.";
+

@@ -28,6 +28,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.Closeable
 
+sealed class ProfileObservableException: Exception() {
+    data object AlwaysOnDeletion: ProfileObservableException()
+}
+
 @OptIn(FlowPreview::class)
 class ProfileObservable(
     private val manager: ProfileManager,
@@ -106,7 +110,7 @@ class ProfileObservable(
     }
 
     suspend fun remove(profileIds: Collection<String>) {
-        check(canRemoveProfiles(profileIds)) { "Manage Always-on VPN in Android VPN Settings before deleting profiles." }
+        if (!canRemoveProfiles(profileIds)) throw ProfileObservableException.AlwaysOnDeletion
         manager.remove(profileIds)
     }
 

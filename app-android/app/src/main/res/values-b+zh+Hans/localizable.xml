@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">VPN 设置</string>
     <string name="android_vpn_restore_failed">无法恢复 VPN</string>
     <string name="android_vpn_restore_help">打开 Passepartout 以配置有效的配置文件。如果不使用 VPN 的连接被阻止，请使用 Android 的 VPN 设置管理始终开启的 VPN。</string>
+    <string name="android_vpn_delete_blocked">删除配置文件前，请先在 Android 的 VPN 设置中管理始终开启的 VPN。</string>
 </resources>

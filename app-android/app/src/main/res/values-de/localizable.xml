@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">VPN-Einstellungen</string>
     <string name="android_vpn_restore_failed">VPN konnte nicht wiederhergestellt werden</string>
     <string name="android_vpn_restore_help">Öffne Passepartout, um ein gültiges Profil zu konfigurieren. Wenn Verbindungen ohne VPN blockiert sind, verwalte das durchgehend aktive VPN in den VPN-Einstellungen von Android.</string>
+    <string name="android_vpn_delete_blocked">Verwalte das durchgehend aktive VPN in den VPN-Einstellungen von Android, bevor du Profile löschst.</string>
 </resources>

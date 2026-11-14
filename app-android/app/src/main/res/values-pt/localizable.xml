@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">Definições de VPN</string>
     <string name="android_vpn_restore_failed">Não foi possível restabelecer a VPN</string>
     <string name="android_vpn_restore_help">Abra o Passepartout para configurar um perfil válido. Se as ligações sem VPN estiverem bloqueadas, utilize as definições de VPN do Android para gerir a VPN sempre ativa.</string>
+    <string name="android_vpn_delete_blocked">Faça a gestão da VPN sempre ativa nas definições de VPN do Android antes de apagar perfis.</string>
 </resources>

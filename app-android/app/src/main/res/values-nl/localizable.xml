@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">VPN-instellingen</string>
     <string name="android_vpn_restore_failed">Kan VPN niet herstellen</string>
     <string name="android_vpn_restore_help">Open Passepartout om een geldig profiel te configureren. Als verbindingen zonder VPN worden geblokkeerd, gebruik dan de VPN-instellingen van Android om de altijd actieve VPN te beheren.</string>
+    <string name="android_vpn_delete_blocked">Beheer de altijd actieve VPN in de VPN-instellingen van Android voordat je profielen verwijdert.</string>
 </resources>

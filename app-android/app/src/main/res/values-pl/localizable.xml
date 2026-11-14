@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">Ustawienia VPN</string>
     <string name="android_vpn_restore_failed">Nie można przywrócić połączenia VPN</string>
     <string name="android_vpn_restore_help">Otwórz Passepartout, aby skonfigurować prawidłowy profil. Jeśli połączenia bez VPN są blokowane, użyj ustawień VPN systemu Android, aby zarządzać zawsze aktywną siecią VPN.</string>
+    <string name="android_vpn_delete_blocked">Przed usunięciem profili zarządzaj zawsze aktywną siecią VPN w ustawieniach VPN systemu Android.</string>
 </resources>

@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">Ρυθμίσεις VPN</string>
     <string name="android_vpn_restore_failed">Αδυναμία επαναφοράς του VPN</string>
     <string name="android_vpn_restore_help">Ανοίξτε το Passepartout για να διαμορφώσετε ένα έγκυρο προφίλ. Αν οι συνδέσεις χωρίς VPN είναι αποκλεισμένες, χρησιμοποιήστε τις ρυθμίσεις VPN του Android για να διαχειριστείτε το VPN πάντα ενεργό.</string>
+    <string name="android_vpn_delete_blocked">Διαχειριστείτε το VPN πάντα ενεργό στις ρυθμίσεις VPN του Android πριν διαγράψετε προφίλ.</string>
 </resources>

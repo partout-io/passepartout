@@ -461,4 +461,5 @@
     <string name="android_vpn_settings">VPN Settings</string>
     <string name="android_vpn_restore_failed">Unable to restore VPN</string>
     <string name="android_vpn_restore_help">Open Passepartout to configure a valid profile. If connections without VPN are blocked, use Android VPN Settings to manage Always-on VPN.</string>
+    <string name="android_vpn_delete_blocked">Manage Always-on VPN in Android VPN Settings before deleting profiles.</string>
 </resources>
