@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout.ui
 
+import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +48,7 @@ fun PassepartoutApp(
     androidConstants: AndroidConstants,
     errorHandler: ErrorHandler,
     profileImporter: ProfileImporter,
-    wireGuardPublicKey: (String) -> String?,
+    wireGuardKeyGenerator: WireGuardKeyGenerator,
     theme: Theme = Theme(),
     onImportProfile: () -> Unit
 ) {
@@ -58,7 +59,7 @@ fun PassepartoutApp(
     }
     CompositionLocalProvider(
         LocalTheme provides theme,
-        LocalWireGuardPublicKey provides wireGuardPublicKey,
+        LocalWireGuardKeyGenerator provides wireGuardKeyGenerator,
         LocalAppConfiguration provides appConfiguration,
         LocalAndroidConstants provides androidConstants,
         LocalConfigObservable provides configObservable,

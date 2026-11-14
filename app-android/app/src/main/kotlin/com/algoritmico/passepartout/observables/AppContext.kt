@@ -1,5 +1,7 @@
 package com.algoritmico.passepartout.observables
 
+import com.algoritmico.passepartout.business.strategy.PartoutWireGuardKeyGenerator
+import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import android.content.Context
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
@@ -41,7 +43,7 @@ class AppContext(
     private val versionChecker: VersionChecker
     private var applicationActiveJob: Job? = null
 
-    val wireGuardPublicKey: (String) -> String? = library::partoutWireGuardPubKey
+    val wireGuardKeyGenerator: WireGuardKeyGenerator = PartoutWireGuardKeyGenerator(library)
 
     // Expose to Compose
     val appConfiguration: AppConfiguration

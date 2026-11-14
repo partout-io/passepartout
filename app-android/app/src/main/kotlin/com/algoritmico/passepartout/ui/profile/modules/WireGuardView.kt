@@ -3,6 +3,7 @@
 
 package com.algoritmico.passepartout.ui.profile.modules
 
+import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
@@ -17,11 +18,11 @@ import io.partout.models.WireGuardModule
 internal fun WireGuardView(
     module: WireGuardModule,
     onOpenContent: (String, String) -> Unit,
-    derivePublicKey: (String) -> String?
+    keyGenerator: WireGuardKeyGenerator
 ) {
     val configuration = module.configuration ?: return
     val local = configuration.`interface`
-    val publicKey = remember(local.privateKey, derivePublicKey) { derivePublicKey(local.privateKey) }
+    val publicKey = remember(local.privateKey, keyGenerator) { keyGenerator.publicKey(local.privateKey) }
     ThemeListSectionHeader(stringResource(R.string.modules_wireguard_interface))
     ThemeDetailRow(R.string.global_nouns_private_key, local.privateKey, onOpenContent = onOpenContent)
     ThemeDetailRow(R.string.global_nouns_public_key, publicKey)
