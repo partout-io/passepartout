@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.Strings
+import com.algoritmico.passepartout.ui.extensions.hasContent
 import com.algoritmico.passepartout.ui.theme.ThemeDetailRow
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import io.partout.models.WireGuardModule
@@ -26,7 +27,7 @@ internal fun WireGuardView(
     ThemeDetailRow(R.string.global_nouns_public_key, publicKey)
     ThemeDetailRow(R.string.global_nouns_addresses, local.addresses, onOpenContent = onOpenContent)
     ThemeDetailRow(Strings.Unlocalized.mtu, local.mtu)
-    local.dns?.let {
+    local.dns?.takeIf { hasContent(it.servers, it.domainName, it.searchDomains) }?.let {
         ThemeListSectionHeader(Strings.Unlocalized.dns)
         ThemeDetailRow(R.string.global_nouns_servers, it.servers, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.entities_dns_search_domains, listOfNotNull(it.domainName) + it.searchDomains.orEmpty(), onOpenContent = onOpenContent)

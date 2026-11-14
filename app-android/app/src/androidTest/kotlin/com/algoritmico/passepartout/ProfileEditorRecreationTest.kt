@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.partout.models.DNSModule
 import io.partout.models.DNSModuleDomainPolicy
+import io.partout.models.DNSModuleProtocolTypecleartext
 import io.partout.models.DNSModuleProtocolTypehttps
 import io.partout.models.TaggedModuleDNS
 import io.partout.models.TaggedModuleWireGuard
@@ -42,7 +43,8 @@ class ProfileEditorRecreationTest {
         val profile = TaggedProfile(id, "Recreation original", listOf(
             TaggedModuleCustom(CustomModule(ModuleType.Provider, JsonPrimitive("Custom configuration"))),
             TaggedModuleWireGuard(WireGuardModule(UUID.randomUUID().toString(),
-                WireGuardConfiguration(WireGuardLocalInterface("dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=", emptyList()), emptyList()))),
+                WireGuardConfiguration(WireGuardLocalInterface("dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=", emptyList(),
+                    dns = DNSModule(UUID.randomUUID().toString(), DNSModuleProtocolTypecleartext(), emptyList())), emptyList()))),
             TaggedModuleDNS(DNSModule(UUID.randomUUID().toString(),
                 DNSModuleProtocolTypehttps("https://example.com/dns-query"), emptyList(),
                 domainPolicy = DNSModuleDomainPolicy.matchAndSearch)),
@@ -74,8 +76,10 @@ class ProfileEditorRecreationTest {
                 scrollToText("WireGuard")
                 clickText("WireGuard")
                 assertVisible("hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=")
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "DNS"))
                 scenario.recreate()
                 assertVisible("hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=")
+                assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "DNS"))
                 pressBack()
                 assertVisible("Unsaved recreation name")
                 clickText("DNS")

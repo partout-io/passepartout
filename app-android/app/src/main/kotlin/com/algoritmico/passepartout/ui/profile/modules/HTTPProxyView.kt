@@ -14,7 +14,7 @@ import io.partout.models.HTTPProxyModule
 internal fun HTTPProxyView(module: HTTPProxyModule) {
     ProxyEndpoint(Strings.Unlocalized.http, module.proxy)
     ProxyEndpoint(Strings.Unlocalized.https, module.secureProxy)
-    if (module.pacURL != null) {
+    if (!module.pacURL.isNullOrEmpty()) {
         ThemeListSectionHeader(Strings.Unlocalized.pac)
         ThemeDetailRow(Strings.Unlocalized.url, module.pacURL)
     }
@@ -23,7 +23,7 @@ internal fun HTTPProxyView(module: HTTPProxyModule) {
 
 @Composable
 private fun ProxyEndpoint(title: String, endpoint: String?) {
-    if (endpoint == null) return
+    if (endpoint.isNullOrEmpty()) return
     ThemeListSectionHeader(title)
     val separator = endpoint.lastIndexOf(':')
     val port = endpoint.substringAfterLast(':').toIntOrNull()
