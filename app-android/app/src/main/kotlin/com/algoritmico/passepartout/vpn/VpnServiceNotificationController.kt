@@ -28,7 +28,7 @@ import com.algoritmico.passepartout.business.extensions.speedSince
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.ui.extensions.formatDataUnit
 import io.partout.PartoutVpnServiceRuntime
-import io.partout.VpnPolicy
+import io.partout.vpn.VpnPolicy
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
@@ -232,11 +232,10 @@ class VpnServiceNotificationController(
 
     private val vpnForegroundServiceType: Int
         get() {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
-            } else {
-                0
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                return 0
             }
+            return ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
         }
 
     private fun canPostNotifications(
@@ -245,11 +244,13 @@ class VpnServiceNotificationController(
         if (!notificationManager.areNotificationsEnabled()) {
             return false
         }
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                ContextCompat.checkSelfPermission(
-                    service,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return true
+        }
+        return ContextCompat.checkSelfPermission(
+            service,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun reset() {

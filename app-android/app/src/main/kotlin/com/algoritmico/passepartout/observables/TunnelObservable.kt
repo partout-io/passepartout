@@ -18,7 +18,7 @@ import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.ProfileEventDelete
 import com.algoritmico.passepartout.models.ProfileTransfer
 import io.partout.PartoutTunnel
-import io.partout.VpnPolicy
+import io.partout.vpn.VpnPolicy
 import io.partout.extensions.isInteractive
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot

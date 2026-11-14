@@ -4,7 +4,7 @@
 
 package com.algoritmico.passepartout
 
-import io.partout.VpnPolicy
+import io.partout.vpn.VpnPolicy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

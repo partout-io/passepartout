@@ -12,7 +12,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.defaultAndroidConstants
 import com.algoritmico.passepartout.vpn.VpnServiceStore
-import io.partout.VpnPolicy
+import io.partout.vpn.VpnPolicy
 
 class VpnRestorationReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

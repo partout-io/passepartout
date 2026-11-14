@@ -98,15 +98,14 @@ private val Context.androidDeviceString: String?
     }
 
 private fun Context.packageInfo(): PackageInfo {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        packageManager.getPackageInfo(
-            packageName,
-            PackageManager.PackageInfoFlags.of(0)
-        )
-    } else {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
         @Suppress("DEPRECATION")
-        packageManager.getPackageInfo(packageName, 0)
+        return packageManager.getPackageInfo(packageName, 0)
     }
+    return packageManager.getPackageInfo(
+        packageName,
+        PackageManager.PackageInfoFlags.of(0)
+    )
 }
 
 fun Context.lastTunnelProfile(storage: AndroidConstants.Storage): File {

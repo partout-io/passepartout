@@ -19,7 +19,7 @@ import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
 import io.partout.PartoutVpnServiceRuntime
-import io.partout.VpnPolicy
+import io.partout.vpn.VpnPolicy
 import io.partout.models.TaggedProfile
 import io.partout.models.CryptoBackend
 import io.partout.models.TunnelControllerOptions
