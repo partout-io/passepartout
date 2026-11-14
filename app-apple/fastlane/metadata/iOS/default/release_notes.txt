@@ -1,4 +1,1 @@
-* Fix minor UI glitches (#1979)
-* Strip tunnel from dup NIO dependency (-2MB) (#1981)
-* Fix inability to save profile due to receipt stuck loading (#1982)
-* Share debug log as file
+* Bump Partout
