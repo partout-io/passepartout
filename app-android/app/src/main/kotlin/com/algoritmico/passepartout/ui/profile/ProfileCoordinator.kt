@@ -34,8 +34,8 @@ import io.partout.models.*
 private sealed interface ProfileDestination {
     data object Overview : ProfileDestination
     data class Module(val module: TaggedModule) : ProfileDestination
-    data class OpenVPNCredentials(val module: TaggedModuleOpenVPN) : ProfileDestination
     data class ModuleContent(val content: ProfileEditor.Content) : ProfileDestination
+    data class OpenVPNCredentials(val module: TaggedModuleOpenVPN) : ProfileDestination
 }
 
 @Composable
@@ -52,17 +52,17 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
     val selectedModule = selectedModuleIndex?.let(visibleModules::getOrNull)
     val destination = when {
         content != null -> ProfileDestination.ModuleContent(content)
-        showsOpenVPNCredentials && selectedModule is TaggedModuleOpenVPN -> ProfileDestination.OpenVPNCredentials(selectedModule)
-        selectedModule != null -> ProfileDestination.Module(selectedModule)
-        else -> ProfileDestination.Overview
+        selectedModule == null -> ProfileDestination.Overview
+        selectedModule !is TaggedModuleOpenVPN || !showsOpenVPNCredentials -> ProfileDestination.Module(selectedModule)
+        else -> ProfileDestination.OpenVPNCredentials(selectedModule)
     }
     val isOverview = destination == ProfileDestination.Overview
     val canSave = !isSaving && draft.name.isNotBlank() && editor.isDirty
     val title = when (destination) {
         ProfileDestination.Overview -> stringResource(R.string.global_nouns_profile)
         is ProfileDestination.Module -> destination.module.moduleType.titleText()
-        is ProfileDestination.OpenVPNCredentials -> stringResource(R.string.modules_openvpn_credentials)
         is ProfileDestination.ModuleContent -> destination.content.title
+        is ProfileDestination.OpenVPNCredentials -> stringResource(R.string.modules_openvpn_credentials)
     }
 
     fun back() {
@@ -70,8 +70,8 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
         when (destination) {
             ProfileDestination.Overview -> onDismiss()
             is ProfileDestination.Module -> selectedModuleIndex = null
-            is ProfileDestination.OpenVPNCredentials -> showsOpenVPNCredentials = false
             is ProfileDestination.ModuleContent -> editor.closeContent()
+            is ProfileDestination.OpenVPNCredentials -> showsOpenVPNCredentials = false
         }
     }
 
@@ -105,17 +105,17 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                     else -> ThemeList(modifier = modifier) {
                         item {
                             when (destination) {
+                                ProfileDestination.Overview -> Unit
                                 is ProfileDestination.Module -> ModuleDetailView(
                                     module = destination.module,
                                     onOpenContent = editor::openContent,
                                     onOpenVPNCredentials = { showsOpenVPNCredentials = true }
                                 )
+                                is ProfileDestination.ModuleContent -> ThemeLongContent(destination.content.text)
                                 is ProfileDestination.OpenVPNCredentials -> OpenVPNCredentialsView(
                                     module = destination.module.value,
                                     onChange = { editor.updateModule(destination.module.copy(value = it)) }
                                 )
-                                is ProfileDestination.ModuleContent -> ThemeLongContent(destination.content.text)
-                                ProfileDestination.Overview -> Unit
                             }
                         }
                     }
