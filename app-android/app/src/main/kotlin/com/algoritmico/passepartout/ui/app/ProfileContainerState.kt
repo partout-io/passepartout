@@ -33,6 +33,7 @@ class ProfileContextualSelection(
 
 @Stable
 class ProfileContainerState(
+    val isAlwaysOn: Boolean = false,
     val headers: List<AppProfileHeader> = emptyList(),
     val contextualSelection: ProfileContextualSelection = ProfileContextualSelection(),
     private val enabledProfileIds: Set<String> = emptySet(),

@@ -17,6 +17,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Switch
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.algoritmico.passepartout.R
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +39,7 @@ import com.algoritmico.passepartout.ui.theme.animateThemeColorAsState
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileRow(
+    isAlwaysOn: Boolean = false,
     header: AppProfileHeader,
     isEnabled: Boolean,
     status: AppProfileStatus,
@@ -116,7 +120,11 @@ fun ProfileRow(
 
             Spacer(modifier = Modifier.width(theme.spacing.large))
 
-            Switch(
+            if (isAlwaysOn) {
+                TextButton(onClick = { onProfileToggle(header.id, isEnabled) }) {
+                    Text(stringResource(R.string.android_vpn_settings))
+                }
+            } else Switch(
                 checked = isEnabled,
                 enabled = status.canToggle(),
                 onCheckedChange = { isEnabled ->

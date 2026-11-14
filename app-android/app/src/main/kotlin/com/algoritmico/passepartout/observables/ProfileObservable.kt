@@ -33,7 +33,8 @@ class ProfileObservable(
     private val manager: ProfileManager,
     coroutineScope: CoroutineScope,
     errorHandler: ErrorHandler,
-    searchDebounceMillis: Long = 200L
+    searchDebounceMillis: Long = 200L,
+    private val canRemoveProfiles: (Collection<String>) -> Boolean = { true }
 ) : Closeable {
     private val scope = CoroutineScope(
         coroutineScope.coroutineContext + SupervisorJob(coroutineScope.coroutineContext[Job])
@@ -101,10 +102,11 @@ class ProfileObservable(
     }
 
     suspend fun remove(profileId: String) {
-        manager.remove(profileId)
+        remove(listOf(profileId))
     }
 
     suspend fun remove(profileIds: Collection<String>) {
+        check(canRemoveProfiles(profileIds)) { "Manage Always-on VPN in Android VPN Settings before deleting profiles." }
         manager.remove(profileIds)
     }
 

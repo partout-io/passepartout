@@ -7,6 +7,7 @@ package com.algoritmico.passepartout
 import android.content.Intent
 import android.net.VpnService
 import android.os.IBinder
+import com.algoritmico.passepartout.business.extensions.JSON
 import com.algoritmico.passepartout.business.extensions.daemonFeatureFlags
 import com.algoritmico.passepartout.business.extensions.enabledFlags
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
@@ -18,6 +19,8 @@ import com.algoritmico.passepartout.context.logPreamble
 import com.algoritmico.passepartout.vpn.VpnServiceNotificationController
 import com.algoritmico.passepartout.vpn.VpnServiceStore
 import io.partout.PartoutVpnServiceRuntime
+import io.partout.VpnPolicy
+import io.partout.models.TaggedProfile
 import io.partout.models.CryptoBackend
 import io.partout.models.TunnelControllerOptions
 import io.partout.models.TunnelSnapshot
@@ -115,7 +118,13 @@ class PassepartoutVpnService: VpnService() {
         }
 
         override suspend fun readLastProfile(): String {
-            return store.readLastProfile()
+            return runCatchingNonFatal {
+                store.readLastProfile().also {
+                    JSON.decode<TaggedProfile>(it)
+                }
+            }.onFailure {
+                notifications.restorationFailed()
+            }.getOrThrow()
         }
 
         override suspend fun writeLastProfile(json: String) {
@@ -130,6 +139,10 @@ class PassepartoutVpnService: VpnService() {
             notifications.update(snapshot)
         }
 
+        override fun onPolicy(policy: VpnPolicy) {
+            notifications.updatePolicy(policy)
+        }
+
         override fun onServiceStopped(wasRevoked: Boolean) {
             store.clearTunnelRunning()
             notifications.onServiceStopped(wasRevoked)
@@ -137,6 +150,7 @@ class PassepartoutVpnService: VpnService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        runtime.refreshPolicy(intent)
         if (intent?.action == PartoutVpnServiceRuntime.ACTION_STOP_VPN) {
             return runtime.onStartCommand(intent, flags, startId)
         }

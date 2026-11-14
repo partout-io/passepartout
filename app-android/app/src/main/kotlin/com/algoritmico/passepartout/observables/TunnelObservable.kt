@@ -18,6 +18,7 @@ import com.algoritmico.passepartout.models.Event
 import com.algoritmico.passepartout.models.ProfileEventDelete
 import com.algoritmico.passepartout.models.ProfileTransfer
 import io.partout.PartoutTunnel
+import io.partout.VpnPolicy
 import io.partout.extensions.isInteractive
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
@@ -134,6 +135,10 @@ class TunnelObservable(
         return json
     }
 
+    fun refresh() {
+        tunnel.requestSnapshot()
+    }
+
     fun onVpnPermissionResult(isGranted: Boolean) {
         if (isGranted) {
             tunnel.onVpnPermissionResult(true)
@@ -161,6 +166,7 @@ class TunnelObservable(
         _state.update {
             it.copy(
                 activeProfiles = tunnelState.toState().activeProfiles,
+                policy = tunnelState.policy,
                 revision = tunnelState.revision
             )
         }
@@ -180,6 +186,7 @@ class TunnelObservable(
     }
 
     data class State(
+        val policy: VpnPolicy = VpnPolicy(),
         val activeProfiles: Map<String, AppTunnelInfo> = emptyMap(),
         val isVpnPermissionDenied: Boolean = false,
         val revision: Long = 0L
@@ -206,6 +213,7 @@ class TunnelObservable(
 
     private fun PartoutTunnel.State.toState(): State {
         return State(
+            policy = policy,
             activeProfiles = snapshots.mapValues {
                 it.value.toAppTunnelInfo()
             },

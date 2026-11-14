@@ -13,6 +13,7 @@ import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
 import android.os.SystemClock
+import android.provider.Settings
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -27,6 +28,7 @@ import com.algoritmico.passepartout.business.extensions.speedSince
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.ui.extensions.formatDataUnit
 import io.partout.PartoutVpnServiceRuntime
+import io.partout.VpnPolicy
 import io.partout.models.TaggedProfile
 import io.partout.models.TunnelSnapshot
 import io.partout.models.TunnelStatus
@@ -37,6 +39,18 @@ class VpnServiceNotificationController(
     private val serviceClass: Class<out VpnService>,
     private val logsSnapshots: Boolean
 ) {
+    @Volatile private var policy = VpnPolicy()
+
+    fun updatePolicy(value: VpnPolicy) {
+        if (policy == value) return
+        policy = value
+        val content = lastNotificationContent
+        lastNotificationContent = null
+        if (content != null && canPostNotifications()) {
+            NotificationManagerCompat.from(service).notify(VPN_NOTIFICATION_ID, createNotification(content))
+            lastNotificationContent = content
+        }
+    }
     @Volatile
     private var currentProfileName: String? = null
 
@@ -57,6 +71,7 @@ class VpnServiceNotificationController(
             JSON.decode<TaggedProfile>(profileJSON).name
         }.onSuccess {
             currentProfileName = it
+            NotificationManagerCompat.from(service).cancel(VPN_FAILURE_NOTIFICATION_ID)
         }.onFailure {
             AppLog.w(logTag, "Unable to decode VPN profile name", it)
         }
@@ -146,8 +161,9 @@ class VpnServiceNotificationController(
             .setAutoCancel(false)
             .addAction(
                 R.drawable.ic_notification_vpn,
-                service.getString(R.string.global_actions_disconnect),
-                disconnectPendingIntent()
+                if (policy.alwaysOn == true) service.getString(R.string.android_vpn_settings)
+                else service.getString(R.string.global_actions_disconnect),
+                if (policy.alwaysOn == true) settingsPendingIntent() else disconnectPendingIntent()
             )
 
         val contentText = content.contentText
@@ -184,6 +200,7 @@ class VpnServiceNotificationController(
 
     private fun disconnectPendingIntent(): PendingIntent {
         val intent = Intent(service, serviceClass).apply {
+            putExtra(VpnPolicy.EXTRA_APP_START, true)
             action = PartoutVpnServiceRuntime.ACTION_STOP_VPN
         }
         return PendingIntent.getService(
@@ -192,6 +209,25 @@ class VpnServiceNotificationController(
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    private fun settingsPendingIntent(): PendingIntent = PendingIntent.getActivity(
+        service, VPN_SETTINGS_REQUEST_CODE, Intent(Settings.ACTION_VPN_SETTINGS),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    fun restorationFailed() {
+        if (!canPostNotifications()) return
+        val help = service.getString(R.string.android_vpn_restore_help)
+        val notification = NotificationCompat.Builder(service, VPN_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification_vpn)
+            .setContentTitle(service.getString(R.string.android_vpn_restore_failed))
+            .setContentText(help)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(help))
+            .setContentIntent(settingsPendingIntent())
+            .setAutoCancel(true)
+            .build()
+        NotificationManagerCompat.from(service).notify(VPN_FAILURE_NOTIFICATION_ID, notification)
     }
 
     private val vpnForegroundServiceType: Int
@@ -229,7 +265,9 @@ class VpnServiceNotificationController(
     companion object {
         private const val VPN_CHANNEL_ID = "vpn_service_channel_1"
         private const val VPN_NOTIFICATION_ID = 1
+        private const val VPN_FAILURE_NOTIFICATION_ID = 2
         private const val VPN_DISCONNECT_REQUEST_CODE = 1001
+        private const val VPN_SETTINGS_REQUEST_CODE = 1002
     }
 }
 
