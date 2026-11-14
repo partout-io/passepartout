@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 package com.algoritmico.passepartout
 
+import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.core.app.ActivityScenario
@@ -11,6 +12,10 @@ import io.partout.models.DNSModule
 import io.partout.models.DNSModuleDomainPolicy
 import io.partout.models.DNSModuleProtocolTypehttps
 import io.partout.models.TaggedModuleDNS
+import io.partout.models.TaggedModuleWireGuard
+import io.partout.models.WireGuardModule
+import io.partout.models.WireGuardConfiguration
+import io.partout.models.WireGuardLocalInterface
 import io.partout.models.CustomModule
 import io.partout.models.ModuleType
 import io.partout.models.TaggedModuleCustom
@@ -36,6 +41,8 @@ class ProfileEditorRecreationTest {
         val moduleId = UUID.randomUUID().toString()
         val profile = TaggedProfile(id, "Recreation original", listOf(
             TaggedModuleCustom(CustomModule(ModuleType.Provider, JsonPrimitive("Custom configuration"))),
+            TaggedModuleWireGuard(WireGuardModule(UUID.randomUUID().toString(),
+                WireGuardConfiguration(WireGuardLocalInterface("dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=", emptyList()), emptyList()))),
             TaggedModuleDNS(DNSModule(UUID.randomUUID().toString(),
                 DNSModuleProtocolTypehttps("https://example.com/dns-query"), emptyList(),
                 domainPolicy = DNSModuleDomainPolicy.matchAndSearch)),
@@ -64,19 +71,27 @@ class ProfileEditorRecreationTest {
                     assertEquals(profile, profiles.profile(id))
                 }
                 assertVisible("Unsaved recreation name")
+                scrollToText("WireGuard")
+                clickText("WireGuard")
+                assertVisible("hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=")
+                scenario.recreate()
+                assertVisible("hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=")
+                pressBack()
+                assertVisible("Unsaved recreation name")
                 clickText("DNS")
                 assertVisible(app.getString(R.string.modules_dns_policy_use_only))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow,
                     app.getString(R.string.global_nouns_yes)))
-                instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                pressBack()
                 assertVisible("Unsaved recreation name")
                 clickText(app.getString(R.string.global_nouns_provider))
                 assertVisible(app.getString(R.string.global_nouns_configuration))
                 clickText(app.getString(R.string.global_nouns_configuration))
                 assertVisible("Custom configuration")
-                instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                pressBack()
+                assertVisible(app.getString(R.string.global_nouns_provider))
                 assertVisible(app.getString(R.string.global_nouns_configuration))
-                instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                pressBack()
                 assertVisible("Unsaved recreation name")
                 clickText("OpenVPN")
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
@@ -85,7 +100,7 @@ class ProfileEditorRecreationTest {
                 assertVisible("unsaved-user")
                 scenario.recreate()
                 assertVisible("unsaved-user")
-                instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                pressBack()
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "Navigation test certificate"))
@@ -96,7 +111,7 @@ class ProfileEditorRecreationTest {
                 assertFalse(contains(instrumentation.uiAutomation.rootInActiveWindow, "unsaved-user"))
                 scenario.recreate()
                 assertVisible("Navigation test certificate")
-                instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                pressBack()
                 assertVisible(app.getString(R.string.modules_openvpn_credentials))
                 clickText(app.getString(R.string.modules_openvpn_credentials))
                 assertVisible("unsaved-user")
@@ -109,6 +124,13 @@ class ProfileEditorRecreationTest {
                 runBlocking { profiles.remove(id) }
             }
         }
+    }
+
+    private fun pressBack() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.uiAutomation.waitForIdle(500, 5000)
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        instrumentation.uiAutomation.waitForIdle(500, 5000)
     }
 
     private fun scrollToText(text: String) {
@@ -132,6 +154,7 @@ class ProfileEditorRecreationTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         automation.waitForIdle(500, 5000)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) automation.clearCache()
         var node = find(automation.rootInActiveWindow, text)
         while (node != null && !node.isClickable) node = node.parent
         assertTrue(requireNotNull(node).performAction(AccessibilityNodeInfo.ACTION_CLICK))
@@ -141,10 +164,17 @@ class ProfileEditorRecreationTest {
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         val deadline = System.currentTimeMillis() + 5000
         while (System.currentTimeMillis() < deadline) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) automation.clearCache()
             if (contains(automation.rootInActiveWindow, text)) return
             Thread.sleep(100)
         }
-        fail("Editor text not visible after recreation: $text")
+        fail("Editor text not visible after recreation: $text; visible: ${visibleText(automation.rootInActiveWindow)}")
+    }
+
+    private fun visibleText(node: AccessibilityNodeInfo?): String {
+        if (node == null) return ""
+        return listOfNotNull(node.text?.toString(), node.contentDescription?.toString()).joinToString(" | ") +
+            (0 until node.childCount).joinToString(" | ") { visibleText(node.getChild(it)) }
     }
 
     private fun find(node: AccessibilityNodeInfo?, text: String): AccessibilityNodeInfo? {

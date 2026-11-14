@@ -117,6 +117,7 @@ class AppContext(
             profileManager,
             coroutineScope,
             errorHandler,
+            wireGuardPublicKey = library::partoutWireGuardPubKey,
             canRemoveProfiles = { ids ->
                 val state = tunnel.state.value
                 state.policy.alwaysOn != true ||

@@ -17,6 +17,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
+import com.algoritmico.passepartout.ui.profile.modules.OpenVPNCredentialsView
 import com.algoritmico.passepartout.observables.ProfileEditor
 import com.algoritmico.passepartout.ui.LocalProfileObservable
 import com.algoritmico.passepartout.ui.alerts.GenericErrorAlert
@@ -134,7 +135,8 @@ fun ProfileCoordinator(editor: ProfileEditor, onDismiss: () -> Unit) {
                     } else {
                         item {
                             ModuleDetailView(module, onOpenContent = editor::openContent,
-                                onCredentials = { showsCredentials = true })
+                                onCredentials = { showsCredentials = true },
+                                wireGuardPublicKey = profiles.wireGuardPublicKey)
                         }
                     }
                 }
