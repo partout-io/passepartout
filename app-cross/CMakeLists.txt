@@ -13,18 +13,6 @@ project(Passepartout LANGUAGES C CXX)
 # unnecessary dyndep scanning, which can assert in Ninja on rebuilds.
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
-if(WIN32)
-    if(NOT MSVC OR CMAKE_VERSION VERSION_LESS 4.0)
-        message(FATAL_ERROR "Windows requires MSVC, the Windows SDK, and CMake 4.0 or newer")
-    endif()
-    string(TOLOWER "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" PASSEPARTOUT_WINDOWS_ARCH)
-    if(PASSEPARTOUT_WINDOWS_ARCH MATCHES "^(x64|amd64)$")
-        set(PASSEPARTOUT_WINDOWS_ARCH x64)
-    elseif(NOT PASSEPARTOUT_WINDOWS_ARCH STREQUAL "arm64")
-        message(FATAL_ERROR "Unsupported Windows architecture: ${PASSEPARTOUT_WINDOWS_ARCH}")
-    endif()
-endif()
-
 option(BUILD_APP "Build app executable" OFF)
 set(PASSEPARTOUT_APP_ICON "${CMAKE_CURRENT_SOURCE_DIR}/logo.png")
 
@@ -34,10 +22,6 @@ if(NOT PP_BUILD_VENDOR_PREBUILT_URL)
 endif()
 if(NOT PASSEPARTOUT_WX_PREBUILT_BASE_URL)
     set(PASSEPARTOUT_WX_PREBUILT_BASE_URL "${PASSEPARTOUT_PREBUILTS_URL}")
-endif()
-
-if(MSVC AND NOT CMAKE_MSVC_RUNTIME_LIBRARY)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 endif()
 
 if(NOT OUTPUT_DIR)
@@ -53,19 +37,8 @@ set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS ON)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
-if(WIN32)
-    if(NOT BUILD_APP)
-        install(CODE [[
-            message(FATAL_ERROR "Windows installations require app and plugin. Configure with BUILD_APP=ON.")
-        ]])
-    endif()
-    # Stop the packaged host before replacing its shared dependencies.
-    find_program(PLUGIN_POWERSHELL NAMES powershell.exe REQUIRED)
-    set(PLUGIN_STOP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tunnel/windows/stop-plugin.ps1")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/tunnel/windows/stop-plugin.cmake.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake" @ONLY)
-    install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake")
-endif()
+include("windows.cmake")
+configure_windows_platform()
 
 add_subdirectory(../partout partout)
 
@@ -94,11 +67,6 @@ if(BUILD_APP)
     )
     target_link_partout_runtime(passepartout)
     target_link_libraries(passepartout PRIVATE passepartout-core)
-    if(WIN32)
-        target_link_libraries(passepartout PRIVATE windowsapp runtimeobject)
-        target_compile_definitions(passepartout PRIVATE NOMINMAX)
-        target_compile_options(passepartout PRIVATE /EHsc /permissive- /utf-8)
-    endif()
 
     # Embed the package logo so desktop icons do not depend on runtime file paths.
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
@@ -131,11 +99,6 @@ if(BUILD_APP)
                 "${CMAKE_INSTALL_PREFIX};$<TARGET_PROPERTY:wxWidgets::wxWidgets,INTERFACE_LINK_DIRECTORIES>")
         ]])
     endif()
-    if(MSVC)
-        install(FILES "$<TARGET_PDB_FILE:passepartout>"
-            DESTINATION . CONFIGURATIONS Debug RelWithDebInfo OPTIONAL
-        )
-    endif()
 endif()
 
 # Define tunnel target
@@ -144,8 +107,6 @@ if(WIN32)
     target_sources(passepartout-tunnel PRIVATE tunnel/windows/main.cc)
 else()
     target_sources(passepartout-tunnel PRIVATE tunnel/main_posix.c tunnel/common.c)
-endif()
-if(NOT WIN32)
     target_link_partout_runtime(passepartout-tunnel)
 endif()
 # Apply native executable settings once to both entry points.
@@ -154,9 +115,7 @@ if(BUILD_APP)
     list(APPEND APP_TARGETS passepartout)
 endif()
 foreach(APP_TARGET IN LISTS APP_TARGETS)
-    if(WIN32)
-        set_target_properties(${APP_TARGET} PROPERTIES WIN32_EXECUTABLE ON)
-    elseif(APPLE)
+    if(APPLE)
         set_target_properties(${APP_TARGET} PROPERTIES
             MACOSX_RPATH ON
             BUILD_WITH_INSTALL_RPATH TRUE
@@ -175,6 +134,4 @@ install(TARGETS passepartout-tunnel
     RUNTIME DESTINATION .
 )
 
-if(WIN32)
-    include("windows.cmake")
-endif()
+configure_windows_targets()
