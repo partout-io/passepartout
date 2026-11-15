@@ -1,14 +1,11 @@
+# wxWidgets dependency configuration for the desktop application.
+# Windows uses vendor archives; macOS and Linux use system packages.
+
 set(PASSEPARTOUT_WX_PREBUILT_DIR "" CACHE PATH "Path to an extracted wxWidgets Windows prebuilt.")
 set(PASSEPARTOUT_WX_PREBUILT_BASE_URL "" CACHE STRING
     "Base URL for wxWidgets Windows prebuilts.")
 
-# Embed the package logo so desktop icons do not depend on runtime file paths.
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
-file(READ "${PASSEPARTOUT_APP_ICON}" APP_ICON_HEX HEX)
-string(REGEX REPLACE "(..)" "0x\\1," APP_ICON_BYTES "${APP_ICON_HEX}")
-configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/app_icon_resource.h.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon_resource.h" @ONLY)
-
+# System package discovery and platform dependencies
 function(target_link_system_wxwidgets TARGET_NAME)
     if(APPLE AND NOT wxWidgets_CONFIG_EXECUTABLE)
         find_program(wxWidgets_CONFIG_EXECUTABLE
@@ -39,6 +36,7 @@ function(target_link_system_wxwidgets TARGET_NAME)
     endif()
 endfunction()
 
+# Windows archive selection, validation, and static linkage
 function(target_link_windows_wxwidgets TARGET_NAME)
     set(WX_PREBUILT_ARCH "${PASSEPARTOUT_WINDOWS_ARCH}")
     set(WX_PREBUILT_URL "${PASSEPARTOUT_WX_PREBUILT_BASE_URL}/wxwidgets-windows-${WX_PREBUILT_ARCH}.zip")
@@ -103,6 +101,7 @@ function(target_link_windows_wxwidgets TARGET_NAME)
         _UNICODE
     )
     target_link_directories(${TARGET_NAME} PRIVATE "${WX_LIB_DIR}")
+    # Preserve dependency order when linking the static libraries.
     target_link_libraries(${TARGET_NAME} PRIVATE
         wxmsw33u_core
         wxbase33u_net
@@ -137,6 +136,7 @@ function(target_link_windows_wxwidgets TARGET_NAME)
     )
 endfunction()
 
+# Apply the selected dependency to the already-declared app target.
 if(WIN32)
     target_link_windows_wxwidgets(passepartout)
 else()
