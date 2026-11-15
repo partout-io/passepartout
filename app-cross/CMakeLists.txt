@@ -46,13 +46,14 @@ endif()
 
 # Depend on Partout
 set(PP_BUILD_OUTPUT "${OUTPUT_DIR}")
-# Use native cryptography backed by mbedTLS; do not build OpenSSL.
+# Install shared runtimes beside the app and tunnel executables.
+set(CMAKE_INSTALL_BINDIR ".")
+set(CMAKE_INSTALL_LIBDIR ".")
 set(PP_BUILD_USE_OPENSSL OFF)
 set(PP_BUILD_USE_MBEDTLS ON)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 if(WIN32)
-    set(PP_BUILD_WINDOWS ON)
     if(NOT BUILD_APP)
         install(CODE [[
             message(FATAL_ERROR "Windows installations require app and plugin. Configure with BUILD_APP=ON.")

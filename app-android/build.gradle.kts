@@ -13,7 +13,7 @@ project(":partout") {
             ndkVersion = "30.0.16138531"
             externalNativeBuild.cmake.version = "4.1.2"
             defaultConfig.externalNativeBuild.cmake.arguments +=
-                "-DCMAKE_PROJECT_PartoutAndroid_INCLUDE_BEFORE=${rootProject.file("cmake/partout-options.cmake").absolutePath}"
+                "-DCMAKE_PROJECT_PartoutAndroid_INCLUDE_BEFORE=${rootProject.file("cmake/partout.cmake").absolutePath}"
         }
     }
 }

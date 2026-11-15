@@ -1,6 +1,5 @@
 # Shared domain, persistence, and state handling; no wxWidgets or WinRT dependency.
 include_guard(GLOBAL)
-include("${CMAKE_CURRENT_LIST_DIR}/../partout/cmake/models.cmake")
 add_library(passepartout-models STATIC ${MODEL_SOURCES})
 target_compile_features(passepartout-models PUBLIC cxx_std_17)
 target_include_directories(passepartout-models PUBLIC "${CMAKE_CURRENT_LIST_DIR}/models")
