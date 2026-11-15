@@ -1,7 +1,12 @@
 # Shared domain, persistence, and state handling; no wxWidgets or WinRT dependency.
+# Included by both the application and the standalone test project.
 include_guard(GLOBAL)
 include("${CMAKE_CURRENT_LIST_DIR}/files.cmake")
 
+# Configuration
+option(PASSEPARTOUT_MODEL_UNITY_BUILD "Batch generated model compilation" ON)
+
+# Generated application models
 add_library(passepartout-models STATIC ${MODEL_SOURCES})
 target_compile_features(passepartout-models PUBLIC cxx_std_17)
 target_include_directories(passepartout-models PUBLIC "${CMAKE_CURRENT_LIST_DIR}/models")
@@ -9,7 +14,6 @@ target_link_libraries(passepartout-models PUBLIC Partout::Models)
 
 # Generated models repeatedly parse the same JSON and model headers. Compile
 # the application models as one unit, keeping handwritten sources independent.
-option(PASSEPARTOUT_MODEL_UNITY_BUILD "Batch generated model compilation" ON)
 set_target_properties(passepartout-models PROPERTIES
     UNITY_BUILD ${PASSEPARTOUT_MODEL_UNITY_BUILD}
     UNITY_BUILD_BATCH_SIZE 0
@@ -17,12 +21,16 @@ set_target_properties(passepartout-models PROPERTIES
     CXX_SCAN_FOR_MODULES OFF
 )
 
+# Shared application state and persistence
 find_package(Threads REQUIRED)
+
+# Embed the shared constants and reconfigure when their source changes.
 set(APP_CONSTANTS_PATH "${CMAKE_CURRENT_LIST_DIR}/../app-apple/Sources/AppResources/Resources/constants.json")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CONSTANTS_PATH}")
 file(READ "${APP_CONSTANTS_PATH}" APP_CONSTANTS_JSON)
 configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/app_constants_resource.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/generated/app_constants_resource.h" @ONLY)
+
 add_library(passepartout-core STATIC ${CORE_SOURCES})
 target_link_libraries(passepartout-core
     PUBLIC passepartout-models Threads::Threads

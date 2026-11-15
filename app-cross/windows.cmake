@@ -1,9 +1,13 @@
+# Windows platform, executable, and package configuration.
+# Both entry points are safe to call on other platforms.
+
 # Configure the platform before Partout registers its install rules.
 function(configure_windows_platform)
     if(NOT WIN32)
         return()
     endif()
 
+    # Toolchain requirements and architecture used by the vendor libraries.
     if(NOT MSVC OR CMAKE_VERSION VERSION_LESS 4.0)
         message(FATAL_ERROR "Windows requires MSVC, the Windows SDK, and CMake 4.0 or newer")
     endif()
@@ -15,10 +19,12 @@ function(configure_windows_platform)
     endif()
     set(PASSEPARTOUT_WINDOWS_ARCH "${PASSEPARTOUT_WINDOWS_ARCH}" PARENT_SCOPE)
 
+    # Export defaults to the caller before it declares any native targets.
     if(NOT CMAKE_MSVC_RUNTIME_LIBRARY)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL" PARENT_SCOPE)
     endif()
 
+    # Installation prerequisites must run before Partout installs its DLLs.
     if(NOT BUILD_APP)
         install(CODE [[
             message(FATAL_ERROR "Windows installations require app and plugin. Configure with BUILD_APP=ON.")
@@ -38,6 +44,7 @@ function(configure_windows_targets)
         return()
     endif()
 
+    # Desktop executable properties and optional debug symbols.
     foreach(target IN LISTS APP_TARGETS)
         set_target_properties(${target} PROPERTIES WIN32_EXECUTABLE ON)
     endforeach()
@@ -90,7 +97,7 @@ function(configure_windows_targets)
         RUNTIME DESTINATION .
     )
 
-    # Product and Windows package identity shared by generated artifacts.
+    # Package configuration and identity shared by generated artifacts.
     set(PASSEPARTOUT_DISPLAY_NAME "Passepartout")
     set(PASSEPARTOUT_PACKAGE_DESCRIPTION "Passepartout VPN")
     set(PASSEPARTOUT_PACKAGE_NAME "Passepartout.VpnChannel")
@@ -117,6 +124,8 @@ function(configure_windows_targets)
         string(REPLACE "\"" "\\\"" value "${value}")
         set(PASSEPARTOUT_${name}_CPP "${value}")
     endforeach()
+
+    # Generate identity headers for the host and plugin, including host-only builds.
     set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
     set(PASSEPARTOUT_TUNNEL_FILE "$<TARGET_FILE_NAME:passepartout-tunnel>")
     configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/package_constants.h.in"
@@ -129,6 +138,8 @@ function(configure_windows_targets)
     if(NOT BUILD_APP)
         return()
     endif()
+
+    # Full application package: desktop activation, MSIX manifest, and assets.
     set(PASSEPARTOUT_FRONTEND_FILE "$<TARGET_FILE_NAME:passepartout>")
     configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/frontend.manifest.in"
         "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest" @ONLY)

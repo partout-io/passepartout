@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 3.28)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 project(PassepartoutTests LANGUAGES CXX)
 
+# Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
+# Portable test executables
 add_executable(passepartout-models-test models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
 add_executable(passepartout-application-test application.cc)
@@ -15,6 +17,7 @@ add_executable(passepartout-presentation-test presentation.cc
     ../app/ui/extensions/app_profile.cc ../app/ui/extensions/data_helpers.cc)
 target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
+# Keep assertions enabled in every build configuration.
 enable_testing()
 foreach(TEST_NAME IN ITEMS models application presentation)
     set(TEST_TARGET passepartout-${TEST_NAME}-test)
@@ -36,6 +39,8 @@ if(WIN32)
     # PowerShell construct its own paths instead of loading incompatible modules.
     set_tests_properties(passepartout-development-registration PROPERTIES
         ENVIRONMENT_MODIFICATION "PSModulePath=unset:")
+
+    # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT ../app/platform/windows_tunnel.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
