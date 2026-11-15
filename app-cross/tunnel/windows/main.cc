@@ -4,11 +4,9 @@
 
 #include "package_constants.h"
 
-#include <filesystem>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 #include <windows.h>
 #include <appmodel.h>
@@ -16,108 +14,27 @@
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Management.Deployment.h>
-#include <winrt/Windows.Storage.h>
-
-// FIXME: ###, Replace development registration with signed production packaging and updates.
-static int RegisterPackage() {
-    try {
-        winrt::init_apartment();
-
-        std::wstring executable(32768, L'\0');
-        const auto length =
-            GetModuleFileNameW(nullptr, executable.data(), static_cast<DWORD>(executable.size()));
-        if (!length) {
-            winrt::throw_last_error();
-        }
-        if (length == executable.size()) {
-            throw std::runtime_error("Executable path is too long");
-        }
-        executable.resize(length);
-        const auto manifest = std::filesystem::path{executable}.parent_path() / L"AppxManifest.xml";
-        if (!std::filesystem::is_regular_file(manifest)) {
-            throw std::runtime_error(
-                "Plugin manifest is missing; install passepartout-tunnel first");
-        }
-
-        using namespace winrt::Windows::Management::Deployment;
-        const PackageManager manager;
-        auto refresh_registration = [&](bool changed_manifest) {
-            std::vector<winrt::hstring> packages;
-            for (const auto &package : manager.FindPackagesForUser(
-                     L"", Passepartout::PackageConstants::Name,
-                     Passepartout::PackageConstants::Publisher)) {
-                const auto installed =
-                    std::filesystem::path{package.InstalledLocation().Path().c_str()};
-                std::error_code error;
-                if (!package.IsDevelopmentMode()) {
-                    throw std::runtime_error("A non-development VPN package is already installed");
-                }
-                if (!changed_manifest &&
-                    std::filesystem::equivalent(installed, manifest.parent_path(), error)) {
-                    continue;
-                }
-                packages.push_back(package.Id().FullName());
-            }
-            for (const auto &package : packages) {
-                OutputDebugStringW((std::wstring{L"Refreshing development registration for "} +
-                                    package.c_str() + L"\n")
-                                       .c_str());
-                const auto removal =
-                    manager.RemovePackageAsync(package, RemovalOptions::PreserveApplicationData)
-                        .get();
-                if (removal.ExtendedErrorCode().value < 0) {
-                    throw winrt::hresult_error{removal.ExtendedErrorCode(), removal.ErrorText()};
-                }
-            }
-        };
-        auto register_package = [&] {
-            const auto operation =
-                manager.RegisterPackageAsync(winrt::Windows::Foundation::Uri{manifest.wstring()},
-                                             nullptr, DeploymentOptions::DevelopmentMode);
-            // Deployment can complete normally while reporting a failed result.
-            const auto result = operation.get();
-            if (result.ExtendedErrorCode().value < 0) {
-                throw winrt::hresult_error{result.ExtendedErrorCode(), result.ErrorText()};
-            }
-        };
-        // A new path can silently retain the old installation; a changed manifest
-        // at the same version instead returns ERROR_PACKAGE_ALREADY_EXISTS.
-        refresh_registration(false);
-        try {
-            register_package();
-        } catch (winrt::hresult_error const &error) {
-            if (error.code() != HRESULT_FROM_WIN32(ERROR_PACKAGE_ALREADY_EXISTS)) {
-                throw;
-            }
-            refresh_registration(true);
-            register_package();
-        }
-        OutputDebugStringW((std::wstring{L"VPN plugin registered from "} + manifest.wstring() +
-                            L"\nWindows can now activate " +
-                            Passepartout::PackageConstants::BackgroundTask + L".\n")
-                               .c_str());
-        return 0;
-    } catch (winrt::hresult_error const &error) {
-        // FIXME: ###, Surface registration failures to users when no debugger is attached.
-        std::wostringstream message;
-        message
-            << L"Plugin registration failed (0x" << std::hex
-            << static_cast<unsigned long>(error.code().value) << L"): " << error.message().c_str()
-            << L"\nLoose packages require Windows Developer Mode and Microsoft.VCLibs.140.00.\n";
-        OutputDebugStringW(message.str().c_str());
-    } catch (std::exception const &error) {
-        OutputDebugStringA(error.what());
-        OutputDebugStringA("\n");
-    } catch (...) {
-        OutputDebugStringW(L"Plugin registration failed with an unknown exception.\n");
-    }
-    return 1;
-}
 
 using namespace winrt::Windows::Foundation;
 
 namespace {
+
+#if defined(_DEBUG) && defined(PASSEPARTOUT_WAIT_FOR_DEBUGGER)
+void WaitForDebugger() {
+    constexpr ULONGLONG timeoutMilliseconds = 30000;
+    const auto started = GetTickCount64();
+    OutputDebugStringW(L"VPN host waiting up to 30 seconds for a debugger.\n");
+    while (!IsDebuggerPresent()) {
+        if (GetTickCount64() - started >= timeoutMilliseconds) {
+            OutputDebugStringW(L"VPN host debugger wait timed out; continuing startup.\n");
+            return;
+        }
+        Sleep(100);
+    }
+    // Stop before loading the plugin so pending breakpoints can be configured.
+    DebugBreak();
+}
+#endif
 
 struct PluginFactories : winrt::implements<PluginFactories, IGetActivationFactory> {
     PluginFactories() {
@@ -170,12 +87,13 @@ static int RunHost() {
     return 1;
 }
 
-// Direct launches register the package; packaged activation hosts the VPN plugin.
+// Package registration belongs to developer tooling; this executable only hosts the plugin.
 int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     UINT32 length = 0;
     const auto result = GetCurrentPackageFullName(&length, nullptr);
     if (result == APPMODEL_ERROR_NO_PACKAGE) {
-        return RegisterPackage();
+        OutputDebugStringW(L"Activate the VPN host through its registered package.\n");
+        return 1;
     }
     if (result != ERROR_INSUFFICIENT_BUFFER) {
         OutputDebugStringW((std::wstring{L"Unable to determine package identity: "} +
@@ -183,5 +101,8 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
                                .c_str());
         return 1;
     }
+#if defined(_DEBUG) && defined(PASSEPARTOUT_WAIT_FOR_DEBUGGER)
+    WaitForDebugger();
+#endif
     return RunHost();
 }

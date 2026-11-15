@@ -3,7 +3,8 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
+  IgnorableNamespaces="uap rescap uap10">
   <Identity
     Name="@PASSEPARTOUT_PACKAGE_NAME_XML@"
     Publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
@@ -28,7 +29,7 @@
     <Resource Language="en-us" />
   </Resources>
   <Applications>
-    <Application Id="@PASSEPARTOUT_APPLICATION_ID_XML@" Executable="@PASSEPARTOUT_FRONTEND_FILE@" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="@PASSEPARTOUT_APPLICATION_ID_XML@" Executable="@PASSEPARTOUT_FRONTEND_FILE@" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="appContainer">
       <uap:VisualElements DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@" Description="@PASSEPARTOUT_PACKAGE_DESCRIPTION_XML@"
         BackgroundColor="transparent" Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
     </Application>
@@ -53,7 +54,6 @@
     </Application>
   </Applications>
   <Capabilities>
-    <rescap:Capability Name="runFullTrust" />
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
     <rescap:Capability Name="networkingVpnProvider" />

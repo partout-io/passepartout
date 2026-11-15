@@ -9,7 +9,7 @@ $parseErrors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$null, [ref]$parseErrors)
 if ($parseErrors.Count) { throw $parseErrors[0] }
 # Load only pure registration helpers, never the build/install/launch entry point.
-foreach ($name in @('TestRegistrationReceipt', 'GetNextDevelopmentVersion')) {
+foreach ($name in @('TestRegistrationReceipt', 'GetNextDevelopmentVersion', 'TestAppContainerManifest')) {
     $definition = $ast.Find({
         param($node)
         $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name
@@ -29,6 +29,22 @@ $temporary = Join-Path ([IO.Path]::GetTempPath()) ('passepartout-registration-' 
 $receiptPath = Join-Path $temporary 'receipt.json'
 $manifestPath = Join-Path $temporary 'manifest.xml'
 try {
+    $template = Get-Content -LiteralPath (Join-Path $PSScriptRoot '../windows/AppxManifest.xml.in') -Raw
+    $applicationId = '@PASSEPARTOUT_APPLICATION_ID_XML@'
+    AssertEqual (TestAppContainerManifest ([xml]$template) $applicationId) $true
+    AssertEqual (TestAppContainerManifest ([xml]$template.Replace('appContainer', 'mediumIL')) $applicationId) $false
+    AssertEqual (TestAppContainerManifest ([xml]$template.Replace('packagedClassicApp', 'win32App')) $applicationId) $false
+    AssertEqual (TestAppContainerManifest ([xml]$template.Replace('<Capabilities>',
+        '<Capabilities><rescap:Capability Name="runFullTrust" />')) $applicationId) $false
+    AssertEqual (TestAppContainerManifest ([xml]$template.Replace('<Properties>',
+        '<Properties><uap10:AllowExternalContent>true</uap10:AllowExternalContent>')) $applicationId) $false
+    AssertEqual (TestAppContainerManifest ([xml]$template) 'Missing') $false
+    [xml]$package = $template
+    foreach ($capability in @('internetClientServer', 'privateNetworkClientServer', 'networkingVpnProvider')) {
+        AssertEqual ([bool]$package.SelectSingleNode("//*[local-name()='Capability' and @Name='$capability']")) $true
+    }
+    AssertEqual ([bool]$package.SelectSingleNode("//*[local-name()='Task' and @Type='vpnClient']")) $true
+
     AssertEqual (GetNextDevelopmentVersion '0.1.0.0' @('0.1.0.0')) '0.1.0.1'
     AssertEqual (GetNextDevelopmentVersion '0.1.0.0' @('0.1.0.8', '0.2.0.0')) '0.2.0.1'
     AssertRejected { GetNextDevelopmentVersion '0.1.0.0' @('1.0.0.0') }

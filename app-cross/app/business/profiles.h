@@ -12,6 +12,16 @@
 namespace Passepartout {
 using Profile = Partout::Models::TaggedProfile;
 
+// A selected batch can own temporary files. Its lifetime extends through the
+// queued import, including failures; ordinary command-line files need no cleanup.
+struct ConfigurationFiles {
+    explicit ConfigurationFiles(std::vector<std::filesystem::path> values, std::size_t failures = 0)
+        : paths(std::move(values)), selectionFailures(failures) {}
+    virtual ~ConfigurationFiles() = default;
+    const std::vector<std::filesystem::path> paths;
+    const std::size_t selectionFailures;
+};
+
 class ProfileRepository {
 public:
     virtual ~ProfileRepository() = default;

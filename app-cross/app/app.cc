@@ -46,29 +46,6 @@ wxString TransferText(const AppSnapshot &state, const std::string &id) {
 wxString QuitTitle() {
     return wxGetStockLabel(wxID_EXIT) + "\tCtrl+Q";
 }
-class Tray final : public wxTaskBarIcon {
-public:
-    explicit Tray(MainView &view) : view_(view) {
-        Bind(wxEVT_TASKBAR_LEFT_UP, [this](wxTaskBarIconEvent &) {
-            view_.ShowWindow();
-        });
-    }
-private:
-    wxMenu *CreatePopupMenu() override {
-        auto *menu = new wxMenu;
-        menu->Append(wxID_STOP, Localized(StringKey::GlobalActionsDisconnect));
-        menu->AppendSeparator();
-        menu->Append(wxID_EXIT, QuitTitle());
-        menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-            view_.DisconnectActive();
-        }, wxID_STOP);
-        menu->Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-            view_.Quit();
-        }, wxID_EXIT);
-        return menu;
-    }
-    MainView &view_;
-};
 }
 
 bool PassepartoutApp::OnInit() {
@@ -102,7 +79,7 @@ bool PassepartoutApp::OnInit() {
         context_ = std::make_unique<AppContext>(dataRoot, demo);
         stage = "creating main window";
         startupLogger.Write(LogLevel::debug, "core", "Create main window");
-        auto *view = new MainView(*context_, demo, std::move(files));
+        auto *view = new MainView(*context_, demo, std::move(files), MakeConfigurationPicker);
         SetTopWindow(view);
         Bind(wxEVT_ACTIVATE_APP, [this](wxActivateEvent &event) {
             if (event.GetActive()) context_->tunnel.Refresh();
@@ -125,10 +102,11 @@ int PassepartoutApp::OnExit() {
     instance_.reset();
     return wxApp::OnExit();
 }
-MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::path> files)
+MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::path> files,
+                   ConfigurationPickerFactory pickerFactory)
     : wxFrame(nullptr, wxID_ANY, Text(context.crossConstants.tags.app) +
           (demo ? " (" + Text(context.crossConstants.commandLine.demoArgument) + ")" : wxString())),
-      context_(context), timer_(this), pendingFiles_(std::move(files)) {
+      context_(context), timer_(this), pendingFiles_(std::move(files)), picker_(pickerFactory(*this)) {
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
     const auto gap = Theme::Spacing(panel);
@@ -187,17 +165,12 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     });
     list_->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &MainView::ToggleProfile, this);
     Bind(wxEVT_TIMER, &MainView::Tick, this);
-    Bind(wxEVT_CLOSE_WINDOW, &MainView::CloseWindow, this);
     Bind(wxEVT_SYS_COLOUR_CHANGED, [panel](wxSysColourChangedEvent &event) {
         Theme::Apply(panel);
         event.Skip();
     });
     const auto icon = Theme::AppIcon(this);
     if (icon.IsOk()) SetIcon(icon);
-    if (icon.IsOk() && wxTaskBarIcon::IsAvailable()) {
-        tray_ = std::make_unique<Tray>(*this);
-        if (!tray_->SetIcon(icon, wxTheApp->GetAppName())) tray_.reset();
-    }
     SetMinSize(FromDIP(wxSize(640, 360)));
     SetSize(FromDIP(wxSize(720, 480)));
     Centre();
@@ -206,8 +179,8 @@ MainView::MainView(AppContext &context, bool demo, std::vector<std::filesystem::
     timer_.Start(200);
 }
 MainView::~MainView() {
+    picker_->Cancel();
     timer_.Stop();
-    tray_.reset();
 }
 std::vector<std::string> MainView::SelectedIds() const {
     std::vector<std::string> ids;
@@ -258,13 +231,21 @@ void MainView::Render() {
     GetChildren().GetFirst()->GetData()->Layout();
 }
 void MainView::UpdateActions() {
-    const bool idle = !snapshot_.foregroundBusy && !snapshot_.pendingProfile && snapshot_.loaded;
+    const bool idle = !picking_ && !snapshot_.foregroundBusy && !snapshot_.pendingProfile && snapshot_.loaded;
     const auto selected = SelectedIds();
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
     remove_->Enable(idle && !selected.empty());
 }
 void MainView::Tick(wxTimerEvent &) {
+    if (picking_) {
+        if (auto result = picker_->Poll()) {
+            picking_ = false;
+            if (result->failed) context_.profiles.ImportFailed();
+            else if (result->files) context_.profiles.ImportFiles(std::move(result->files));
+            UpdateActions();
+        }
+    }
     const auto next = context_.profiles.Snapshot();
     if (next.revision != snapshot_.revision) {
         snapshot_ = next;
@@ -286,7 +267,7 @@ void MainView::Tick(wxTimerEvent &) {
             timer_.Start(200);
         }
     }
-    if (!snapshot_.busy && snapshot_.loaded && !pendingFiles_.empty()) {
+    if (!picking_ && !snapshot_.busy && snapshot_.loaded && !pendingFiles_.empty()) {
         auto files = std::move(pendingFiles_);
         pendingFiles_.clear();
         context_.profiles.Import(std::move(files));
@@ -295,14 +276,17 @@ void MainView::Tick(wxTimerEvent &) {
     }
 }
 void MainView::Import() {
-    if (context_.profiles.Snapshot().busy) return;
-    wxFileDialog dialog(this, Localized(StringKey::ViewsAppToolbarImportFile), "", "",
-        wxFileSelectorDefaultWildcardStr,
-        wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
-    if (dialog.ShowModal() != wxID_OK) return;
-    wxArrayString paths;
-    dialog.GetPaths(paths);
-    for (const auto &path : paths) pendingFiles_.push_back(FilePath(path));
+    if (picking_ || context_.profiles.Snapshot().busy) return;
+    picking_ = true;
+    UpdateActions();
+    try {
+        picker_->Start();
+    } catch (...) {
+        picking_ = false;
+        picker_->Cancel();
+        context_.profiles.ImportFailed();
+        UpdateActions();
+    }
 }
 void MainView::Remove() {
     const auto ids = SelectedIds();
@@ -314,7 +298,7 @@ void MainView::Remove() {
     context_.profiles.Remove(ids);
 }
 void MainView::ToggleProfile(wxDataViewEvent &event) {
-    if (rendering_ || event.GetColumn() != ThemeProfileList::ToggleColumn) return;
+    if (picking_ || rendering_ || event.GetColumn() != ThemeProfileList::ToggleColumn) return;
     const auto row = list_->ItemToRow(event.GetItem());
     if (row < 0 || static_cast<std::size_t>(row) >= visibleIds_.size()) return;
     context_.tunnel.SetEnabled(visibleIds_[row], list_->GetToggleValue(row, ThemeProfileList::ToggleColumn));
@@ -323,30 +307,6 @@ void MainView::ToggleProfile(wxDataViewEvent &event) {
     snapshot_.busy = context_.profiles.Snapshot().busy;
     Render();
 }
-void MainView::DisconnectActive() {
-    const auto state = context_.tunnel.Snapshot();
-    if (state.busy || !state.tunnelAvailable) return;
-    for (const auto &tunnel : state.tunnels) {
-        if (tunnel.status.value != Status::disconnected) {
-            context_.tunnel.Disconnect(tunnel.id);
-            return;
-        }
-    }
-}
-void MainView::ShowWindow() {
-    Show();
-    Iconize(false);
-    Raise();
-}
 void MainView::Quit() {
-    quitting_ = true;
     Close();
-}
-void MainView::CloseWindow(wxCloseEvent &event) {
-    if (tray_ && !quitting_ && event.CanVeto()) {
-        Hide();
-        event.Veto();
-        return;
-    }
-    event.Skip();
 }
