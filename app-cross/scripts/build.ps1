@@ -82,8 +82,6 @@ try {
     $cmake_opts = @(
         "-G", $generator,
         "-DOUTPUT_DIR=$output_dir",
-        "-DCMAKE_INSTALL_LIBDIR=.",
-        "-DCMAKE_INSTALL_BINDIR=.",
         "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL",
         "-DPASSEPARTOUT_PREBUILTS_VERSION=$prebuiltsVersion"
     )

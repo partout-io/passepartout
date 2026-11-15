@@ -66,8 +66,6 @@ dist_dir="$app_cross_dir/dist"
 
 cmake_opts+=("-DCMAKE_BUILD_TYPE=$build_type")
 cmake_opts+=("-DOUTPUT_DIR=$output_dir")
-cmake_opts+=("-DCMAKE_INSTALL_LIBDIR=.")
-cmake_opts+=("-DCMAKE_INSTALL_BINDIR=.")
 
 if [[ $build_app == 1 ]]; then
     cmake_opts+=("-DBUILD_APP=ON")

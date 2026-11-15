@@ -5,7 +5,6 @@ project(PassepartoutTests LANGUAGES CXX)
 set(PP_BUILD_LIBRARY OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../files.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
 add_executable(passepartout-models-test models.cc)

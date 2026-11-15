@@ -85,9 +85,6 @@ function(target_link_partout_runtime target)
     endif()
 endfunction()
 
-# Include file lists
-include("files.cmake")
-
 # Define app target
 if(BUILD_APP)
     include("core.cmake")
@@ -102,6 +99,13 @@ if(BUILD_APP)
         target_compile_definitions(passepartout PRIVATE NOMINMAX)
         target_compile_options(passepartout PRIVATE /EHsc /permissive- /utf-8)
     endif()
+
+    # Embed the package logo so desktop icons do not depend on runtime file paths.
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
+    file(READ "${PASSEPARTOUT_APP_ICON}" APP_ICON_HEX HEX)
+    string(REGEX REPLACE "(..)" "0x\\1," APP_ICON_BYTES "${APP_ICON_HEX}")
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/app_icon_resource.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon_resource.h" @ONLY)
 
     # wxWidgets only required to build app executable
     include("wx.cmake")
@@ -172,6 +176,5 @@ install(TARGETS passepartout-tunnel
 )
 
 if(WIN32)
-    include("tunnel/windows/plugin.cmake")
-    include("windows/package.cmake")
+    include("windows.cmake")
 endif()
