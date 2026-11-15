@@ -2,11 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 project(PassepartoutTests LANGUAGES CXX)
 
-# Dependencies: build models and application state without native VPN libraries.
+# Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
-# The unused Windows backend forces its AppContainer CRT onto the models,
-# which must instead match the test executables' runtime in each configuration.
-set(PP_BUILD_WINDOWS OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
