@@ -7,7 +7,7 @@ Java, npm, OpenAPI Generator, Perl, and Ruby are not required for generation.
 
 The shared application schema is `scripts/openapi.yaml`. The wrapper passes
 `ConnectionStatus,ModuleType,TaggedProfile` as external Partout types and uses
-`OpenAPI` as the Swift prefix. Models retain their existing filenames, public
+`OpenAPI` as the Swift prefix. C++ models use `.h` headers and `.cc` sources. Models retain their public
 APIs, serialization, and formatting. Staged generation preserves the last good
 output if parsing or rendering fails.
 
