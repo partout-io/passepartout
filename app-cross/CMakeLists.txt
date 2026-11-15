@@ -49,7 +49,7 @@ set(PP_BUILD_OUTPUT "${OUTPUT_DIR}")
 # Install shared runtimes beside the app and tunnel executables.
 set(CMAKE_INSTALL_BINDIR ".")
 set(CMAKE_INSTALL_LIBDIR ".")
-set(PP_BUILD_USE_OPENSSL OFF)
+set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS ON)
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
