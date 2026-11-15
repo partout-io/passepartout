@@ -2,9 +2,7 @@
 
 # [Passepartout][web-home]
 
-[![Unit Tests](https://github.com/partout-io/passepartout/actions/workflows/test.yml/badge.svg)](https://github.com/partout-io/passepartout/actions/workflows/test.yml)
 [![Release](https://github.com/partout-io/passepartout/actions/workflows/release.yml/badge.svg)](https://github.com/partout-io/passepartout/actions/workflows/release.yml)
-
 [![Discuss on GitHub](https://img.shields.io/badge/discuss-GitHub-lightgray.svg)][about-github-discussions]
 [![Join TestFlight](https://img.shields.io/badge/beta-TestFlight-blue.svg)][about-testflight]
 
