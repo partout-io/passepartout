@@ -92,21 +92,23 @@ function(configure_windows_targets)
     )
 
     # Package configuration and identity shared by generated artifacts.
-    set(PASSEPARTOUT_DISPLAY_NAME "Passepartout")
-    set(PASSEPARTOUT_PACKAGE_DESCRIPTION "Passepartout VPN")
-    set(PASSEPARTOUT_PACKAGE_NAME "Passepartout.VpnChannel")
-    set(PASSEPARTOUT_APPLICATION_ID "Passepartout")
-    set(PASSEPARTOUT_PUBLISHER_DISPLAY_NAME "Passepartout VpnChannel")
-    set(PASSEPARTOUT_BACKGROUND_TASK "${PASSEPARTOUT_PACKAGE_NAME}.BackgroundTask")
+    set(PASSEPARTOUT_NAME "Passepartout")
+    set(PASSEPARTOUT_TUNNEL_NAME "${PASSEPARTOUT_NAME}Tunnel")
+    set(PASSEPARTOUT_DISPLAY_NAME "${PASSEPARTOUT_NAME}")
+    set(PASSEPARTOUT_PACKAGE_DESCRIPTION "${PASSEPARTOUT_NAME}")
+    set(PASSEPARTOUT_PACKAGE_NAME "${PASSEPARTOUT_NAME}")
+    set(PASSEPARTOUT_APPLICATION_ID "${PASSEPARTOUT_NAME}")
+    set(PASSEPARTOUT_PUBLISHER_DISPLAY_NAME "${PASSEPARTOUT_NAME}")
+    set(PASSEPARTOUT_BACKGROUND_TASK "${PASSEPARTOUT_TUNNEL_NAME}.BackgroundTask")
     get_filename_component(PASSEPARTOUT_PACKAGE_LOGO "${PASSEPARTOUT_APP_ICON}" NAME)
     set(PASSEPARTOUT_PACKAGE_VERSION "0.1.0.0" CACHE STRING "Four-part MSIX version (0.x for development; 1.0.0.0 reserved for production)")
-    set(PASSEPARTOUT_PACKAGE_PUBLISHER "CN=Passepartout VpnChannel" CACHE STRING "MSIX publisher matching the signing certificate")
+    set(PASSEPARTOUT_PACKAGE_PUBLISHER "CN=${PASSEPARTOUT_PUBLISHER_DISPLAY_NAME}" CACHE STRING "MSIX publisher matching the signing certificate")
 
     if(NOT PASSEPARTOUT_PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$")
         message(FATAL_ERROR "PASSEPARTOUT_PACKAGE_VERSION must be a four-part numeric version")
     endif()
     # Escape presentation/identity strings for XML and the generated C++ header.
-    foreach(name IN ITEMS DISPLAY_NAME PACKAGE_DESCRIPTION PACKAGE_NAME APPLICATION_ID
+    foreach(name IN ITEMS DISPLAY_NAME TUNNEL_NAME PACKAGE_DESCRIPTION PACKAGE_NAME APPLICATION_ID
             PUBLISHER_DISPLAY_NAME BACKGROUND_TASK PACKAGE_LOGO PACKAGE_PUBLISHER)
         set(value "${PASSEPARTOUT_${name}}")
         string(REPLACE "&" "&amp;" value "${value}")
