@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Verbinden mit</string>
     <string name="views_app_menu_items_quit">Beende %1$s</string>
     <string name="views_diagnostics_title">Diagnose</string>
+    <string name="views_diagnostics_runtime_unavailable">Laufzeitprotokolle sind nicht verfügbar.</string>
     <string name="views_diagnostics_sections_live">Live-Protokoll</string>
     <string name="views_diagnostics_sections_active_profiles">Aktive Profile</string>
     <string name="views_diagnostics_sections_tunnel">Tunnel-Protokolle</string>
@@ -87,6 +88,7 @@
     <string name="views_preferences_locks_in_background">Im Hintergrund sperren</string>
     <string name="views_preferences_locks_in_background_footer">Sperre die App mit FaceID, wenn sie in den Hintergrund geschickt wird.</string>
     <string name="views_preferences_dns_falls_back">DNS-Fallback</string>
+    <string name="views_preferences_next_connection">Änderungen werden bei der nächsten Verbindung eines Profils angewendet.</string>
     <string name="views_preferences_dns_falls_back_footer">Fällt auf CloudFlare-Server zurück, wenn das VPN keine DNS-Einstellungen bereitstellt.</string>
     <string name="views_preferences_enables_iap">In-App-Käufe</string>
     <string name="views_preferences_enables_iap_footer">Aktivieren Sie die Unterstützung für kostenpflichtige Funktionen. Deaktivieren Sie dies, wenn Sie kein Apple ID haben.</string>

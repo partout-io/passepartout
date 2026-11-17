@@ -1,0 +1,64 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+#include "file_profile_journal.h"
+#include "atomic_file.h"
+#include <stdexcept>
+
+namespace Passepartout {
+FileProfileJournal::FileProfileJournal(std::filesystem::path directory)
+    : directory_(std::move(directory)) {
+    std::filesystem::create_directories(directory_);
+#ifndef _WIN32
+    std::filesystem::permissions(directory_, std::filesystem::perms::owner_all);
+#endif
+}
+std::filesystem::path FileProfileJournal::Path(const std::string &id) const {
+    if (!IsSafeProfileId(id)) throw std::runtime_error("Invalid transaction identity.");
+    return directory_ / (id + ".json");
+}
+std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
+    std::vector<ProfileTransaction> result;
+    for (const auto &entry : std::filesystem::directory_iterator(directory_)) {
+        if (entry.path().extension() != ".json") continue;
+        if (!entry.is_regular_file() || entry.is_symlink())
+            throw std::runtime_error("Invalid transaction file.");
+        try {
+            const auto json = nlohmann::json::parse(ReadConfiguration(entry.path()));
+            if (json.at("version") != 1) throw std::runtime_error("Invalid transaction version.");
+            if (json.value("committed", false)) continue;
+            ProfileTransaction transaction;
+            transaction.id = json.at("id").get<std::string>();
+            transaction.removal = json.at("removal").get<bool>();
+            if (!json.at("previous").is_null()) {
+                transaction.previous = Profile::FromJson(json.at("previous"));
+                ValidateProfileIdentity(*transaction.previous);
+                if (transaction.previous->id != transaction.id)
+                    throw std::runtime_error("Conflicting transaction identity.");
+            }
+            if (Path(transaction.id).filename() != entry.path().filename())
+                throw std::runtime_error("Conflicting transaction path.");
+            result.push_back(std::move(transaction));
+        } catch (...) {
+            throw std::runtime_error("Unable to read profile recovery data. Original files were preserved.");
+        }
+    }
+    return result;
+}
+void FileProfileJournal::Save(const ProfileTransaction &transaction) {
+    nlohmann::json json = {{"version", 1}, {"id", transaction.id},
+        {"removal", transaction.removal}, {"previous", nullptr}};
+    if (transaction.previous) json["previous"] = transaction.previous->ToJson();
+    const auto text = json.dump();
+    if (text.size() > MaxConfigurationBytes) throw std::runtime_error("Profile recovery data exceeds 1 MiB.");
+    WriteAtomicFile(Path(transaction.id), text);
+}
+void FileProfileJournal::Remove(const std::string &id) {
+    // Persist completion before deleting the record. If deletion is interrupted,
+    // a completed update must never be mistaken for work requiring rollback.
+    WriteAtomicFile(Path(id), nlohmann::json{{"version", 1}, {"committed", true}}.dump());
+    std::error_code ignored;
+    std::filesystem::remove(Path(id), ignored);
+}
+}

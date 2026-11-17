@@ -4,8 +4,9 @@
 
 #pragma once
 #include "ProfileTransfer.h"
+#include "data_helpers.h"
 #include <string>
 
 namespace Passepartout {
-std::string TransferText(const Models::ProfileTransfer &transfer);
+std::string TransferText(const Models::ProfileTransfer &transfer, NumberFormatter formatter = {});
 }

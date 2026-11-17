@@ -5,7 +5,9 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <functional>
 
 namespace Passepartout {
-std::string FormatDataUnit(int64_t bytes);
+using NumberFormatter = std::function<std::string(double, int)>;
+std::string FormatDataUnit(int64_t bytes, NumberFormatter formatter = {});
 }

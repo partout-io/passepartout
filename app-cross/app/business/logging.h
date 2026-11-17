@@ -16,6 +16,8 @@ public:
     explicit AppLogger(LogSink sink = {});
     static void PartoutMessage(void *context, const char *profileId, int level, const char *message) noexcept;
     void Write(LogLevel level, const std::string &category, const std::string &message) noexcept;
+    static std::string RuntimeLog(bool includePrivateData = true);
+    static void SetPrivateData(bool enabled) noexcept;
 private:
     LogSink sink_;
     std::mutex mutex_;

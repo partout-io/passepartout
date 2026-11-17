@@ -3,44 +3,32 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/tunnel.h"
-#include "AppProfileHeader.h"
+#include "app_snapshot.h"
+#include "profile_editor.h"
+#include "../business/profile_manager.h"
+#include "../business/tunnel_manager.h"
+#include "../business/configuration_files.h"
 #include <condition_variable>
 #include <deque>
 #include <mutex>
 #include <thread>
 
 namespace Passepartout {
-enum class AppErrorContext { general, import, tunnel };
-
-struct AppSnapshot {
-    std::vector<Models::AppProfileHeader> profiles;
-    std::vector<Models::AppTunnelInfo> tunnels;
-    std::map<std::string, std::string> tunnelObservationErrors;
-    bool loaded = false;
-    bool busy = true;
-    bool tunnelAvailable = false;
-    bool foregroundBusy = false;
-    std::optional<std::string> pendingProfile;
-    bool HasActivity() const;
-    std::string error;
-    std::string tunnelError;
-    std::string reconciliationError;
-    AppErrorContext errorContext = AppErrorContext::general;
-    std::uint64_t revision = 0;
-};
-
 // Shared serial executor for profile/tunnel transactions. Snapshots are copied
 // under a lock; UI consumers never retain references into worker-owned models.
 class AppSession {
 public:
     AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
                std::unique_ptr<TunnelStrategy> tunnel,
-               std::shared_ptr<AppLogger> logger = std::make_shared<AppLogger>());
+               std::shared_ptr<AppLogger> logger = std::make_shared<AppLogger>(),
+               std::unique_ptr<ProfileJournal> journal = std::make_unique<MemoryProfileJournal>(),
+               std::chrono::milliseconds recoveryDelay = std::chrono::seconds(1));
     ~AppSession();
     AppSession(const AppSession &) = delete;
     AppSession &operator=(const AppSession &) = delete;
     AppSnapshot Snapshot() const;
+    std::shared_ptr<ProfileEditor> CreateEditor(const std::string &id) const;
+    void SaveEditor(std::shared_ptr<ProfileEditor> editor);
     void Load();
     void Import(std::vector<std::filesystem::path> paths);
     void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
@@ -50,16 +38,26 @@ public:
     void Disconnect(std::string id);
     void Refresh();
     void ClearError();
+    void ApplyPreferences(Models::AppPreferences preferences);
     bool WaitIdle(std::chrono::milliseconds timeout);
 private:
     bool Post(std::function<void()> operation, AppErrorContext context = AppErrorContext::general,
               bool foreground = true);
     void Run();
     void Publish();
+    std::string RecoverProfiles();
+    struct RecoveryRetry {
+        unsigned attempts = 0;
+        std::chrono::steady_clock::time_point next;
+        std::string error;
+    };
+    std::map<std::string, RecoveryRetry> recoveryRetries_;
+    std::chrono::milliseconds recoveryDelay_;
     std::shared_ptr<AppLogger> logger_;
     std::string lastObservationError_;
     std::string lastReconciliationError_;
     bool registerMissingProfiles_ = false;
+    std::optional<Models::AppPreferences> pendingPreferences_;
     ProfileManager profiles_;
     TunnelManager tunnel_;
     mutable std::mutex mutex_;
@@ -71,38 +69,9 @@ private:
     };
     std::deque<Operation> operations_;
     AppSnapshot snapshot_;
+    std::vector<Profile> editableProfiles_;
+    std::shared_ptr<const ConfigurationFiles> importingFiles_;
     bool stopping_ = false;
     std::thread worker_;
-};
-
-class ProfileObservable {
-public:
-    explicit ProfileObservable(AppSession &session) : session_(session) {}
-    void Load();
-    void Import(std::vector<std::filesystem::path> paths);
-    void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
-    void ImportFailed();
-    void Remove(std::vector<std::string> ids);
-    AppSnapshot Snapshot() const;
-    void ClearError();
-private:
-    AppSession &session_;
-};
-class TunnelObservable {
-public:
-    struct ToggleState {
-        bool isOn = false;
-        bool canInteract = false;
-        Status status = Status::disconnected;
-    };
-    explicit TunnelObservable(AppSession &session) : session_(session) {}
-    static ToggleState StateForProfile(const AppSnapshot &state, const std::string &id);
-    void SetEnabled(const std::string &id, bool enabled);
-    void Connect(std::string id);
-    void Disconnect(std::string id);
-    void Refresh();
-    AppSnapshot Snapshot() const;
-private:
-    AppSession &session_;
 };
 }

@@ -6,8 +6,8 @@
 #include "data_helpers.h"
 
 namespace Passepartout {
-std::string TransferText(const Models::ProfileTransfer &transfer) {
-    return "\xe2\x86\x93" + FormatDataUnit(transfer.received) +
-           " \xe2\x86\x91" + FormatDataUnit(transfer.sent);
+std::string TransferText(const Models::ProfileTransfer &transfer, NumberFormatter formatter) {
+    return "\xe2\x86\x93" + FormatDataUnit(transfer.received, formatter) +
+           " \xe2\x86\x91" + FormatDataUnit(transfer.sent, formatter);
 }
 }

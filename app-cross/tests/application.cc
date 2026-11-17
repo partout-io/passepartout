@@ -2,11 +2,15 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/profiles.h"
+#include "business/profile_manager.h"
+#include "business/file_profile_repository.h"
 #include "context/import_result.h"
 #include "context/dependencies.h"
-#include "business/tunnel.h"
+#include "business/tunnel_manager.h"
+#include "business/fake_tunnel_strategy.h"
 #include "observables/session.h"
+#include "observables/profile_observable.h"
+#include "observables/tunnel_observable.h"
 #include "ui/modal_configuration_picker.h"
 #include "ui/configuration_selection.h"
 #include <algorithm>
@@ -15,6 +19,9 @@
 #include <chrono>
 #include <iostream>
 #include <future>
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#endif
 
 using namespace Passepartout;
 namespace {
@@ -49,8 +56,15 @@ public:
     bool failDisconnect = false;
     bool failRemove = false;
     bool failSave = false;
+    bool failPreferences = false;
+    bool loseObservationOnDisconnect = false;
+    unsigned removalAttempts = 0;
     std::map<std::string, std::string> observationErrors;
     std::vector<std::string> events;
+    void ApplyPreferences(const Models::AppPreferences &) override {
+        events.push_back("preferences");
+        if (failPreferences) throw std::runtime_error("Preferences rejected");
+    }
     std::vector<Models::AppTunnelInfo> Fetch() override {
         if (failFetch) throw std::runtime_error("VPN state unavailable");
         auto result = fake.Fetch();
@@ -80,8 +94,10 @@ public:
         const bool exists = std::any_of(states.begin(), states.end(), [&](const auto &state) { return state.id == id; });
         if (delayedDisconnect && exists) fake.SetStatus(id, Status::disconnecting);
         else fake.Disconnect(id);
+        if (loseObservationOnDisconnect) observationErrors[id] = "Invalid handle after disconnect";
     }
     void Remove(const std::string &id) override {
+        ++removalAttempts;
         if (failRemove) throw std::runtime_error("Removal rejected");
         fake.Remove(id);
     }
@@ -132,6 +148,160 @@ private:
 };
 void Wait(AppSession &session) {
     assert(session.WaitIdle(std::chrono::seconds(5)));
+}
+struct Cancellation {
+    std::mutex mutex;
+    std::condition_variable changed;
+    bool entered = false;
+    bool canceled = false;
+    void Block() {
+        std::unique_lock lock(mutex);
+        entered = true;
+        changed.notify_all();
+        changed.wait(lock, [&] { return canceled; });
+        throw std::runtime_error("Canceled");
+    }
+    void WaitForEntry() {
+        std::unique_lock lock(mutex);
+        assert(changed.wait_for(lock, std::chrono::seconds(2), [&] { return entered; }));
+    }
+    void Cancel() noexcept {
+        std::lock_guard lock(mutex);
+        canceled = true;
+        changed.notify_all();
+    }
+};
+class CancelableTunnel final : public TunnelStrategy {
+public:
+    explicit CancelableTunnel(std::shared_ptr<Cancellation> cancellation) : cancellation_(std::move(cancellation)) {}
+    std::vector<Models::AppTunnelInfo> Fetch() override {
+        cancellation_->Block();
+        return {};
+    }
+    void Save(const Profile &) override {}
+    void Connect(const std::string &) override {}
+    void Disconnect(const std::string &) override {}
+    void Remove(const std::string &) override {}
+    void Cancel() noexcept override {
+        cancellation_->Cancel();
+    }
+private:
+    std::shared_ptr<Cancellation> cancellation_;
+};
+class CancelableFiles final : public ConfigurationFiles {
+public:
+    explicit CancelableFiles(std::shared_ptr<Cancellation> cancellation)
+        : ConfigurationFiles({"unused"}), cancellation_(std::move(cancellation)) {}
+    ConfigurationSource Read(std::size_t) const override {
+        cancellation_->Block();
+        return {};
+    }
+    void Cancel() const noexcept override {
+        cancellation_->Cancel();
+    }
+private:
+    std::shared_ptr<Cancellation> cancellation_;
+};
+void TestShutdown(const std::filesystem::path &root) {
+    const auto tunnel = std::make_shared<Cancellation>();
+    {
+        AppSession session(std::make_unique<FileProfileRepository>(root / "cancel-tunnel"), {},
+            std::make_unique<CancelableTunnel>(tunnel));
+        tunnel->WaitForEntry();
+    }
+    assert(tunnel->canceled);
+    const auto files = std::make_shared<Cancellation>();
+    {
+        AppSession session(std::make_unique<FileProfileRepository>(root / "cancel-files"), {},
+            std::make_unique<FakeTunnelStrategy>());
+        Wait(session);
+        session.ImportFiles(std::make_shared<CancelableFiles>(files));
+        files->WaitForEntry();
+    }
+    assert(files->canceled);
+}
+void TestPreferencesRetry(const std::filesystem::path &root) {
+    auto repository = std::make_unique<FileProfileRepository>(root / "preferences-retry");
+    repository->Save(Example());
+    auto strategy = std::make_unique<ControlledTunnel>();
+    auto *backend = strategy.get();
+    AppSession session(std::move(repository), {}, std::move(strategy));
+    Wait(session);
+    backend->events.clear();
+    backend->failPreferences = true;
+    session.ApplyPreferences({});
+    Wait(session);
+    assert(!session.Snapshot().error.empty());
+    session.Connect("test-id");
+    Wait(session);
+    assert(!session.Snapshot().error.empty());
+    assert((backend->events == std::vector<std::string>{"preferences", "preferences"}));
+    backend->failPreferences = false;
+    session.Connect("test-id");
+    Wait(session);
+    assert(session.Snapshot().error.empty());
+    assert((backend->events == std::vector<std::string>{"preferences", "preferences", "preferences", "connect:test-id"}));
+}
+void TestRemovalObservation() {
+    auto strategy = std::make_unique<ControlledTunnel>();
+    auto *backend = strategy.get();
+    backend->fake.Save(Example());
+    backend->fake.Connect("test-id");
+    backend->observationErrors["test-id"] = "Unavailable";
+    TunnelManager tunnel(std::move(strategy));
+    Rejects([&] {
+        tunnel.Remove("test-id");
+    });
+    assert(backend->removalAttempts == 0 && backend->events.empty());
+    backend->observationErrors.clear();
+    backend->loseObservationOnDisconnect = true;
+    Rejects([&] {
+        tunnel.Remove("test-id");
+    });
+    assert(backend->removalAttempts == 0);
+    assert(backend->fake.Fetch().size() == 1);
+    backend->observationErrors.clear();
+    tunnel.Remove("test-id");
+    assert(backend->removalAttempts == 1 && backend->fake.Fetch().empty());
+}
+void TestRemovalTargets(const std::filesystem::path &root) {
+    const auto directory = root / "removal-targets";
+    auto repository = std::make_unique<FileProfileRepository>(directory);
+    repository->Save(Example("first"));
+    repository->Save(Example("second"));
+    AppSession session(std::move(repository), {}, std::make_unique<FakeTunnelStrategy>());
+    ProfileObservable profiles(session);
+    Wait(session);
+    const std::vector<std::string> targets{"first", "second"};
+    auto state = profiles.Snapshot();
+    assert(ProfileObservable::CanRemove(state, targets));
+    assert(!ProfileObservable::CanRemove(state, {}));
+    assert(!ProfileObservable::CanRemove(state, {"missing"}));
+    state.busy = true;
+    assert(ProfileObservable::CanRemove(state, targets)); // Background polling is not a conflicting action.
+    state.foregroundBusy = true;
+    assert(!ProfileObservable::CanRemove(state, targets));
+    state.foregroundBusy = false;
+    state.pendingProfile = "first";
+    assert(!ProfileObservable::CanRemove(state, targets));
+    state.pendingProfile.reset();
+    state.loaded = false;
+    assert(!ProfileObservable::CanRemove(state, targets));
+
+    // A stale target invalidates the whole batch before any local mutation.
+    session.Remove({"first", "missing"});
+    Wait(session);
+    assert(!profiles.Snapshot().error.empty());
+    assert(FileProfileRepository(directory).Fetch().size() == 2);
+    profiles.ClearError();
+    profiles.Remove({"first", "first"});
+    Wait(session);
+    assert(profiles.Snapshot().error.empty());
+    assert(FileProfileRepository(directory).Fetch().size() == 1);
+    // Confirmation/menu targets are revalidated without deleting a new selection.
+    profiles.Remove(targets);
+    Wait(session);
+    assert(profiles.Snapshot().profiles.front().id == "second");
 }
 void TestModalPicker() {
     ModalConfigurationPicker *active = nullptr;
@@ -292,7 +462,14 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
 }
 }
 int main() {
+#ifdef _MSC_VER
+    _set_error_mode(_OUT_TO_STDERR);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
     TestModalPicker();
+    TestRemovalObservation();
     {
         auto strategy = std::make_unique<ControlledTunnel>();
         auto *control = strategy.get();
@@ -335,6 +512,9 @@ int main() {
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
     try {
+        TestRemovalTargets(root);
+        TestShutdown(root);
+        TestPreferencesRetry(root);
         const auto selectionRoot = root / "selection";
         std::filesystem::create_directories(selectionRoot);
         TestSelectionFailures(selectionRoot);
@@ -346,7 +526,7 @@ int main() {
         }
         const auto storageRoot = root / "layout";
         FileProfileRepository storage(storageRoot);
-        assert(std::filesystem::is_directory(storageRoot / "tmp"));
+        assert(storage.Fetch().empty());
         assert(nlohmann::json::parse(ReadConfiguration(storageRoot / "index.json")).at("version") == 1);
         auto earlier = Example("earlier", "ALPHA");
         earlier.userInfo = {{"lastUpdate", 1}, {"fingerprint", "first"}};
@@ -356,7 +536,6 @@ int main() {
         storage.Save(earlier);
         storage.Save(later);
         assert(std::filesystem::exists(storageRoot / "objects" / "later.json"));
-        assert(std::filesystem::is_empty(storageRoot / "tmp"));
         assert(storage.Fetch().at(0).id == "later");
         auto index = nlohmann::json::parse(ReadConfiguration(storageRoot / "index.json"));
         assert(index.at("profiles").at(0).at("fingerprint") == "second");
@@ -440,7 +619,8 @@ int main() {
                 transaction.Import(config, [](const Profile &) { throw std::runtime_error("Rejected"); },
                     [&](const std::string &) { rollbackAttempted = true; });
             });
-            assert(!rollbackAttempted && storage->stored.empty());
+            // A rejected registration may have partially written native state.
+            assert(rollbackAttempted && storage->stored.empty());
             storage->failRemove = true;
             std::string error;
             try {
@@ -570,7 +750,10 @@ int main() {
             auto loggingBackend = std::make_unique<ControlledTunnel>();
             auto *backend = loggingBackend.get();
             backend->failFetch = true;
-            AppSession logged(std::make_unique<FileProfileRepository>(root / "logging"), importer, std::move(loggingBackend), logger);
+            auto journal = std::make_unique<MemoryProfileJournal>();
+            auto *pending = journal.get();
+            AppSession logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
+                std::move(loggingBackend), logger, std::move(journal), std::chrono::milliseconds(0));
             Wait(logged);
             const auto count = messages.size();
             logged.Refresh();
@@ -578,6 +761,7 @@ int main() {
             assert(messages.size() == count);
             backend->failFetch = false;
             backend->fake.Save(Example("orphan"));
+            pending->Save({"orphan", std::nullopt, true});
             backend->failRemove = true;
             logged.Refresh();
             Wait(logged);
@@ -595,7 +779,7 @@ int main() {
         assert(containsLog("Reload local profiles"));
         assert(containsLog("Unable to fetch tunnel state"));
         assert(containsLog("Tunnel observation recovered"));
-        assert(containsLog("Unable to remove orphaned profile orphan"));
+        assert(containsLog("Unable to recover profile orphan"));
         assert(containsLog("Profile reconciliation recovered"));
         assert(containsLog("Finished application session"));
 
@@ -648,7 +832,8 @@ int main() {
         auto unavailable = std::make_unique<ControlledTunnel>();
         auto *unavailableStrategy = unavailable.get();
         unavailable->failFetch = true;
-        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(unavailable));
+        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(unavailable),
+            std::make_shared<AppLogger>(), std::make_unique<MemoryProfileJournal>(), std::chrono::milliseconds(0));
         Wait(offline);
         // A transient startup observation failure is not a failed user action.
         assert(offline.Snapshot().loaded);
@@ -698,7 +883,8 @@ int main() {
         orphaned->fake.Save(Example("orphaned"));
         AppSession restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(orphaned));
         Wait(restarted);
-        assert(restarted.Snapshot().tunnels.empty());
+        // An untracked registration is not proof of an interrupted deletion.
+        assert(restarted.Snapshot().tunnels.size() == 1);
         // Failed local loading is not evidence that all profiles were deleted.
         auto corruptRepository = std::make_unique<FileProfileRepository>(root / "corrupt");
         std::ofstream(root / "corrupt" / "objects" / "broken.json") << "invalid";
@@ -801,7 +987,8 @@ int main() {
         delayed->delayedDisconnect = true;
         auto *delayedStrategy = delayed.get();
         AppSession removal(std::make_unique<FileProfileRepository>(root / "profiles"),
-                           importer, std::move(delayed));
+            importer, std::move(delayed), std::make_shared<AppLogger>(),
+            std::make_unique<MemoryProfileJournal>(), std::chrono::milliseconds(0));
         Wait(removal);
         removal.Remove({p.id});
         Wait(removal);
@@ -821,7 +1008,14 @@ int main() {
         assert(removal.Snapshot().reconciliationError.empty());
     } catch (...) {
         std::filesystem::remove_all(root);
-        throw;
+        try {
+            throw;
+        } catch (const std::exception &error) {
+            std::cerr << "Application test failed: " << error.what() << std::endl;
+        } catch (...) {
+            std::cerr << "Application test failed with an unknown exception." << std::endl;
+        }
+        return 1;
     }
     std::filesystem::remove_all(root);
     std::cout << "Persistence, import, reconciliation and failure-state checks passed.\n";

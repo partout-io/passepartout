@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Log in tempo reale";
 "views.diagnostics.sections.tunnel" = "Log tunnel";
 "views.diagnostics.title" = "Diagnostica";
+"views.diagnostics.runtime_unavailable" = "I log di esecuzione non sono disponibili.";
 "views.donate.alerts.thank_you.message" = "Questo significa molto per me e spero davvero che tu continui a usare e promuovere questa app.";
 "views.donate.sections.main.footer" = "Se vuoi esprimere gratitudine per il mio lavoro, qui ci sono alcuni importi che puoi donare istantaneamente. Sarai addebitato una sola volta per ogni donazione e puoi donare più volte.";
 "views.donate.title" = "Fai una donazione";
@@ -370,6 +371,7 @@
 "views.preferences.crypto_backend" = "Crittografia";
 "views.preferences.dns_falls_back.footer" = "Ripiega sui server CloudFlare quando il VPN non fornisce impostazioni DNS.";
 "views.preferences.dns_falls_back" = "DNS di fallback";
+"views.preferences.next_connection" = "Le modifiche verranno applicate alla prossima connessione di un profilo.";
 "views.preferences.enables_iap.footer" = "Abilita il supporto per le funzionalità a pagamento. Disabilitalo se non hai Apple ID.";
 "views.preferences.enables_iap" = "Acquisti in-app";
 "views.preferences.erase_icloud.footer" = "Per eliminare in modo sicuro tutti i profili dall'archivio iCloud, fallo su tutti i tuoi dispositivi sincronizzati. Questo non influirà sui profili locali.";

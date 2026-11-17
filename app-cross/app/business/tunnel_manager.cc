@@ -2,11 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "tunnel.h"
+#include "tunnel_manager.h"
 #include <algorithm>
 #include <stdexcept>
 
 namespace Passepartout {
+void TunnelManager::ApplyPreferences(const Models::AppPreferences &preferences) {
+    strategy_->ApplyPreferences(preferences);
+}
+void TunnelManager::Cancel() noexcept {
+    strategy_->Cancel();
+}
 TunnelManager::TunnelManager(std::unique_ptr<TunnelStrategy> strategy, std::shared_ptr<AppLogger> logger,
                              std::chrono::milliseconds handoverTimeout)
     : strategy_(std::move(strategy)), logger_(std::move(logger)), handoverTimeout_(handoverTimeout) {}
@@ -17,23 +23,36 @@ std::map<std::string, std::string> TunnelManager::ObservationErrors() const {
     return strategy_->ObservationErrors();
 }
 void TunnelManager::Save(const Profile &profile) {
-    logger_->Write(LogLevel::info, "tunnel", "Install profile " + profile.id + "...");
+    logger_->Write(LogLevel::info, "tunnel", "Install profile");
     strategy_->Save(profile);
 }
 void TunnelManager::Register(const Profile &profile) {
+    ValidateNew(profile);
+    Save(profile);
+}
+void TunnelManager::ValidateNew(const Profile &profile) {
     const auto existing = Fetch();
     if (ObservationErrors().count(profile.id) || std::any_of(existing.begin(), existing.end(), [&](const auto &info) {
         return info.id == profile.id;
     })) throw std::runtime_error("The VPN profile is already registered.");
-    Save(profile);
+}
+void TunnelManager::ValidateUpdate(const Profile &profile) {
+    if (pending_) throw std::runtime_error("Wait for the pending VPN action before saving.");
+    const auto tunnels = Fetch();
+    if (ObservationErrors().count(profile.id))
+        throw std::runtime_error("Unable to observe the VPN profile before updating.");
+    for (const auto &tunnel : tunnels) {
+        if (tunnel.id == profile.id && (tunnel.isEnabled || tunnel.status.value != Status::disconnected))
+            throw std::runtime_error("Disconnect the VPN before saving this profile.");
+    }
 }
 void TunnelManager::RollbackRegistration(const std::string &id) {
-    logger_->Write(LogLevel::info, "tunnel", "Roll back imported VPN registration " + id);
+    logger_->Write(LogLevel::info, "tunnel", "Roll back imported VPN registration");
     // Never disconnect a connection as a side effect of import rollback.
     strategy_->Remove(id);
 }
 void TunnelManager::Connect(const Profile &profile) {
-    logger_->Write(LogLevel::info, "tunnel", "Connect to profile " + profile.id + "...");
+    logger_->Write(LogLevel::info, "tunnel", "Connect to profile");
     pending_.reset();
     connectionRequested_ = false;
     sawConnecting_ = false;
@@ -48,7 +67,7 @@ void TunnelManager::Connect(const Profile &profile) {
     }
     for (const auto &tunnel : tunnels) {
         if (tunnel.status.value == Status::disconnected || tunnel.status.value == Status::disconnecting) continue;
-        logger_->Write(LogLevel::info, "tunnel", "Disconnect profile " + tunnel.id + " before handover");
+        logger_->Write(LogLevel::info, "tunnel", "Disconnect profile before handover");
         strategy_->Disconnect(tunnel.id);
     }
     pending_ = profile;
@@ -67,7 +86,7 @@ void TunnelManager::Advance() {
                 return tunnel.id == pending_->id;
             });
             if (target != tunnels.end() && target->status.value == Status::connected) {
-                logger_->Write(LogLevel::info, "tunnel", "Connected to profile " + pending_->id);
+                logger_->Write(LogLevel::info, "tunnel", "Connected to profile");
                 pending_.reset();
                 return;
             }
@@ -89,7 +108,7 @@ void TunnelManager::Advance() {
         // Wait for observed connections; unavailable registrations are neither
         // treated as disconnected nor selected for automatic disconnection.
         strategy_->Connect(pending_->id);
-        logger_->Write(LogLevel::info, "tunnel", "Connect request accepted for profile " + pending_->id);
+        logger_->Write(LogLevel::info, "tunnel", "Connect request accepted for profile");
         connectionRequested_ = true;
         handoverStarted_ = std::chrono::steady_clock::now();
         Advance();
@@ -107,58 +126,26 @@ void TunnelManager::CancelPending(const std::string &id) {
 }
 void TunnelManager::Disconnect(const std::string &id) {
     pending_.reset();
-    logger_->Write(LogLevel::info, "tunnel", "Disconnect profile " + id);
+    logger_->Write(LogLevel::info, "tunnel", "Disconnect profile");
     strategy_->Disconnect(id);
 }
 void TunnelManager::Remove(const std::string &id) {
     if (pending_ && pending_->id == id) pending_.reset();
-    for (const auto &tunnel : Fetch()) {
+    const auto tunnels = Fetch();
+    if (ObservationErrors().count(id))
+        throw std::runtime_error("Unable to observe the VPN profile before removal.");
+    for (const auto &tunnel : tunnels) {
         if (tunnel.id != id || tunnel.status.value == Status::disconnected) continue;
         strategy_->Disconnect(id);
         // An accepted disconnect is not necessarily a completed disconnect.
-        for (const auto &current : Fetch()) {
+        const auto currentTunnels = Fetch();
+        if (ObservationErrors().count(id))
+            throw std::runtime_error("Unable to observe the VPN profile after disconnection.");
+        for (const auto &current : currentTunnels) {
             if (current.id == id && current.status.value != Status::disconnected)
                 throw std::runtime_error("The VPN is still disconnecting. Retry removal when disconnected.");
         }
     }
     strategy_->Remove(id);
-}
-
-std::vector<Models::AppTunnelInfo> FakeTunnelStrategy::Fetch() {
-    return tunnels_;
-}
-void FakeTunnelStrategy::Save(const Profile &profile) {
-    for (const auto &tunnel : tunnels_) {
-        if (tunnel.id == profile.id) return;
-    }
-    Models::AppTunnelInfo info{};
-    info.id = profile.id;
-    info.status.value = Status::disconnected;
-    tunnels_.push_back(info);
-}
-void FakeTunnelStrategy::SetStatus(const std::string &id, Status status) {
-    for (auto &tunnel : tunnels_) {
-        if (tunnel.id != id) continue;
-        tunnel.status.value = status;
-        tunnel.isEnabled = status != Status::disconnected;
-        return;
-    }
-    throw std::runtime_error("The VPN profile no longer exists.");
-}
-void FakeTunnelStrategy::Connect(const std::string &id) {
-    SetStatus(id, Status::connected);
-}
-void FakeTunnelStrategy::Disconnect(const std::string &id) {
-    for (const auto &tunnel : tunnels_) {
-        if (tunnel.id == id) {
-            SetStatus(id, Status::disconnected);
-            return;
-        }
-    }
-}
-void FakeTunnelStrategy::Remove(const std::string &id) {
-    tunnels_.erase(std::remove_if(tunnels_.begin(), tunnels_.end(), [&](const auto &t) {
-        return t.id == id;
-    }), tunnels_.end());
 }
 }

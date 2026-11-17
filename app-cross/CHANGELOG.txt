@@ -1,0 +1,7 @@
+0.1.0 (development)
+
+- Import OpenVPN, WireGuard, and Passepartout configurations.
+- Search and select profiles in native list and grid layouts.
+- Rename profiles, inspect modules, and edit OpenVPN account credentials.
+- Persist preferences and recover interrupted profile changes.
+- Inspect application information and runtime diagnostics in Settings.

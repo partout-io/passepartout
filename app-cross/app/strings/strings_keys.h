@@ -38,6 +38,7 @@ enum class StringKey {
     ViewsAppProfileContextConnectTo,
     ViewsAppMenuItemsQuit,
     ViewsDiagnosticsTitle,
+    ViewsDiagnosticsRuntimeUnavailable,
     ViewsDiagnosticsSectionsLive,
     ViewsDiagnosticsSectionsActiveProfiles,
     ViewsDiagnosticsSectionsTunnel,
@@ -91,6 +92,7 @@ enum class StringKey {
     ViewsPreferencesLocksInBackground,
     ViewsPreferencesLocksInBackgroundFooter,
     ViewsPreferencesDnsFallsBack,
+    ViewsPreferencesNextConnection,
     ViewsPreferencesDnsFallsBackFooter,
     ViewsPreferencesEnablesIap,
     ViewsPreferencesEnablesIapFooter,
@@ -502,6 +504,7 @@ constexpr const char *StringKeyName(StringKey key) {
         case StringKey::ViewsAppProfileContextConnectTo: return "views.app.profile_context.connect_to";
         case StringKey::ViewsAppMenuItemsQuit: return "views.app_menu.items.quit";
         case StringKey::ViewsDiagnosticsTitle: return "views.diagnostics.title";
+        case StringKey::ViewsDiagnosticsRuntimeUnavailable: return "views.diagnostics.runtime_unavailable";
         case StringKey::ViewsDiagnosticsSectionsLive: return "views.diagnostics.sections.live";
         case StringKey::ViewsDiagnosticsSectionsActiveProfiles: return "views.diagnostics.sections.active_profiles";
         case StringKey::ViewsDiagnosticsSectionsTunnel: return "views.diagnostics.sections.tunnel";
@@ -555,6 +558,7 @@ constexpr const char *StringKeyName(StringKey key) {
         case StringKey::ViewsPreferencesLocksInBackground: return "views.preferences.locks_in_background";
         case StringKey::ViewsPreferencesLocksInBackgroundFooter: return "views.preferences.locks_in_background.footer";
         case StringKey::ViewsPreferencesDnsFallsBack: return "views.preferences.dns_falls_back";
+        case StringKey::ViewsPreferencesNextConnection: return "views.preferences.next_connection";
         case StringKey::ViewsPreferencesDnsFallsBackFooter: return "views.preferences.dns_falls_back.footer";
         case StringKey::ViewsPreferencesEnablesIap: return "views.preferences.enables_iap";
         case StringKey::ViewsPreferencesEnablesIapFooter: return "views.preferences.enables_iap.footer";

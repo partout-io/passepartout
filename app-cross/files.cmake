@@ -4,22 +4,73 @@ set(APP_SOURCES
     app/context/app_context.cc
     app/main.cc
     app/strings/strings.cc
+    app/theme/detail_view.cc
+    app/theme/profile_grid.cc
+    app/theme/profile_list.cc
     app/theme/theme.cc
     app/ui/configuration_picker.cc
     app/ui/extensions/app_profile.cc
     app/ui/extensions/data_helpers.cc
+    app/ui/extensions/module.cc
+    app/ui/long_content_view.cc
+    app/ui/main_view.cc
+    app/ui/presentation.cc
+    app/ui/profile/dns_view.cc
+    app/ui/profile/http_proxy_view.cc
+    app/ui/profile/ip_view.cc
+    app/ui/profile/module_detail_view.cc
+    app/ui/profile/openvpn_credentials_view.cc
+    app/ui/profile/openvpn_view.cc
+    app/ui/profile/profile_editor_view.cc
+    app/ui/profile/wireguard_view.cc
+    app/ui/profile_collection_view.cc
+    app/ui/settings/credits_view.cc
+    app/ui/settings/diagnostics_view.cc
+    app/ui/settings/issue_report_view.cc
+    app/ui/settings/license_view.cc
+    app/ui/settings/links_view.cc
+    app/ui/settings/preferences_view.cc
+    app/ui/settings/runtime_log_view.cc
+    app/ui/settings/settings_view.cc
+    app/ui/settings/version_view.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES
         app/platform/windows_configuration_picker.cc
+        app/platform/windows_file_activation.cc
+        app/platform/windows_http_client.cc
+        app/platform/windows_issue_handoff.cc
         app/platform/windows_tunnel.cc
     )
 endif()
 set(CORE_SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/atomic_file.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/background_worker.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/config_manager.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/configuration_files.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/fake_tunnel_strategy.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/file_activation.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/file_preferences_repository.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/file_profile_journal.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/file_profile_repository.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/issue_reporter.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/logging.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/profiles.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/tunnel.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/preferences_repository.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/profile.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/profile_journal.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/profile_manager.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/tunnel_manager.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/version_checker.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/app_snapshot.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/config_observable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/credits_observable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/diagnostics_observable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/profile_editor.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/profile_observable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/session.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/tunnel_observable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/user_preferences_observable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/version_observable.cc"
 )
 set(MODEL_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/models/AppBundle.cc"

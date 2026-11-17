@@ -122,6 +122,15 @@ function(configure_windows_targets)
     endforeach()
 
     # Generate identity headers for the host and plugin, including host-only builds.
+    set(TUNNEL_CONSTANTS_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../app-apple/Sources/AppResources/Resources/constants.json")
+    if(NOT BUILD_APP)
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${TUNNEL_CONSTANTS_PATH}")
+    endif()
+    file(READ "${TUNNEL_CONSTANTS_PATH}" TUNNEL_CONSTANTS_JSON)
+    string(JSON PASSEPARTOUT_DNS_FALLBACK_JSON GET "${TUNNEL_CONSTANTS_JSON}" tunnel dnsFallbackServers)
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel_defaults.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/tunnel_defaults.h" @ONLY)
+    target_include_directories(passepartout-vpnplugin PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
     set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
     set(PASSEPARTOUT_TUNNEL_FILE "$<TARGET_FILE_NAME:passepartout-tunnel>")
     configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/package_constants.h.in"
@@ -134,6 +143,9 @@ function(configure_windows_targets)
     if(NOT BUILD_APP)
         return()
     endif()
+
+    target_compile_definitions(passepartout PRIVATE
+        PASSEPARTOUT_APP_VERSION="${PASSEPARTOUT_PACKAGE_VERSION}")
 
     # Full application package: desktop activation, MSIX manifest, and assets.
     set(PASSEPARTOUT_FRONTEND_FILE "$<TARGET_FILE_NAME:passepartout>")

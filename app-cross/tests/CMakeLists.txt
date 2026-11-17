@@ -13,13 +13,19 @@ add_executable(passepartout-models-test models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
 add_executable(passepartout-application-test application.cc)
 target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
+add_executable(passepartout-editor-test editor.cc)
+target_link_libraries(passepartout-editor-test PRIVATE passepartout-core)
+add_executable(passepartout-settings-test settings.cc)
+target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
+add_executable(passepartout-activation-test activation.cc)
+target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
 add_executable(passepartout-presentation-test presentation.cc
     ../app/ui/extensions/app_profile.cc ../app/ui/extensions/data_helpers.cc)
 target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
 # Keep assertions enabled in every build configuration.
 enable_testing()
-foreach(TEST_NAME IN ITEMS models application presentation)
+foreach(TEST_NAME IN ITEMS models application presentation editor settings activation)
     set(TEST_TARGET passepartout-${TEST_NAME}-test)
     if(MSVC)
         target_compile_options(${TEST_TARGET} PRIVATE /UNDEBUG /utf-8)
@@ -43,11 +49,29 @@ if(WIN32)
     # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT
         ../app/platform/windows_tunnel.cc
-        ../app/platform/windows_configuration_picker.cc)
+        ../app/platform/windows_configuration_picker.cc
+        ../app/platform/windows_file_activation.cc
+        ../app/platform/windows_http_client.cc
+        ../app/platform/windows_issue_handoff.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_include_directories(passepartout-windows-integration-check PRIVATE
         ../../partout/cross/windows/include ../../partout/src)
     target_link_libraries(passepartout-windows-integration-check PRIVATE passepartout-core windowsapp)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
+
+    # Native settings translation constructs WinRT values without starting a VPN.
+    add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/tun_settings.cc)
+    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-windows-backend nlohmann_json::nlohmann_json)
+    target_compile_features(passepartout-windows-settings-test PRIVATE cxx_std_20)
+    target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
+    add_test(NAME passepartout-windows-settings COMMAND passepartout-windows-settings-test)
+
+    add_executable(passepartout-windows-credentials-test
+        ../../partout/tests/c/windows/interactive_credentials.cc
+        ../../partout/cross/windows/src/interactive_credentials.cc)
+    target_link_libraries(passepartout-windows-credentials-test PRIVATE Partout::Models windowsapp)
+    target_compile_features(passepartout-windows-credentials-test PRIVATE cxx_std_20)
+    target_compile_options(passepartout-windows-credentials-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
+    add_test(NAME passepartout-windows-credentials COMMAND passepartout-windows-credentials-test)
 endif()

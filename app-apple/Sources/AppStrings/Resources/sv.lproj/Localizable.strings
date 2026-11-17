@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Live-logg";
 "views.diagnostics.sections.tunnel" = "Tunnel-loggar";
 "views.diagnostics.title" = "Diagnostik";
+"views.diagnostics.runtime_unavailable" = "Körningsloggar är inte tillgängliga.";
 "views.donate.alerts.thank_you.message" = "Det här betyder mycket för mig, och jag hoppas verkligen att du fortsätter att använda och marknadsföra denna app.";
 "views.donate.sections.main.footer" = "Om du vill visa uppskattning för mitt arbete, här är några belopp du kan donera omedelbart. Du debiteras endast en gång per donation, och du kan donera flera gånger.";
 "views.donate.title" = "Ge en donation";
@@ -370,6 +371,7 @@
 "views.preferences.crypto_backend" = "Kryptografi";
 "views.preferences.dns_falls_back.footer" = "Återgår till CloudFlare-servrar när VPN inte tillhandahåller DNS-inställningar.";
 "views.preferences.dns_falls_back" = "DNS-backup";
+"views.preferences.next_connection" = "Ändringarna tillämpas nästa gång en profil ansluter.";
 "views.preferences.enables_iap.footer" = "Aktivera stöd för betalda funktioner. Avaktivera detta om du inte har Apple ID.";
 "views.preferences.enables_iap" = "Köp i appen";
 "views.preferences.erase_icloud.footer" = "För att säkert radera alla profiler från iCloud-lagringen, gör det på alla dina synkroniserade enheter. Detta påverkar inte lokala profiler.";

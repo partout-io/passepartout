@@ -24,12 +24,12 @@ int main() {
     assert(FormatDataUnit(104857) == "0.10MB");
     assert(FormatDataUnit(548575) == "0.52MB");
     assert(FormatDataUnit(1048575) == "1.00MB");
-    // Match Android's fixed decimal locale even on comma-decimal systems.
+    // Respect the supplied locale instead of forcing a decimal dot.
     const auto previous = std::locale();
     std::locale::global(std::locale(previous, new CommaDecimal));
     Models::ProfileTransfer transfer{};
     transfer.received = 5LL * 1024 * 1024 * 1024;
     transfer.sent = 548575;
-    assert(TransferText(transfer) == "\xe2\x86\x93" "5.00GB \xe2\x86\x91" "0.52MB");
+    assert(TransferText(transfer) == "\xe2\x86\x93" "5,00GB \xe2\x86\x91" "0,52MB");
     std::locale::global(previous);
 }

@@ -31,6 +31,14 @@ file(READ "${APP_CONSTANTS_PATH}" APP_CONSTANTS_JSON)
 configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/app_constants_resource.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/generated/app_constants_resource.h" @ONLY)
 
+set(APP_CREDITS_PATH "${CMAKE_CURRENT_LIST_DIR}/../app-apple/Sources/AppResources/Resources/credits.json")
+set(APP_CHANGELOG_PATH "${CMAKE_CURRENT_LIST_DIR}/CHANGELOG.txt")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CREDITS_PATH}" "${APP_CHANGELOG_PATH}")
+file(READ "${APP_CREDITS_PATH}" APP_CREDITS_JSON)
+file(READ "${APP_CHANGELOG_PATH}" APP_CHANGELOG)
+configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/settings_resources.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/settings_resources.h" @ONLY)
+
 add_library(passepartout-core STATIC ${CORE_SOURCES})
 target_link_libraries(passepartout-core
     PUBLIC passepartout-models Threads::Threads

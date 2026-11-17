@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "package_constants.h"
+#include "tunnel_defaults.h"
+#include "../preferences.h"
 
 #include <atomic>
 #include <memory>
@@ -34,29 +36,8 @@ using namespace winrt::Windows::Storage;
 namespace {
 
 constexpr std::wstring_view kBackgroundTaskClass = Passepartout::PackageConstants::BackgroundTask;
-constexpr std::wstring_view kLogName = L"vpnchannel.log";
-
-std::mutex g_log_mutex;
 std::atomic_uint64_t g_log_sequence = 0;
-// FIXME: ###, Bound log size and retention, and filter verbose native logs for production.
-winrt::handle g_log_file;
-
-// Resolve package storage on the background-task thread, before native workers
-// start logging. Worker callbacks must not activate WinRT storage or await I/O.
-void InitializeLog() noexcept {
-    try {
-        std::scoped_lock lock(g_log_mutex);
-        if (g_log_file) return;
-        const auto folder = ApplicationData::Current().LocalFolder();
-        const auto path = std::wstring{folder.Path()} + L"\\" + std::wstring{kLogName};
-        const auto file = CreateFile2(path.c_str(), FILE_APPEND_DATA,
-                                     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                                     OPEN_ALWAYS, nullptr);
-        if (file != INVALID_HANDLE_VALUE) g_log_file.attach(file);
-    } catch (...) {
-        OutputDebugStringW(L"Unable to open VPN log; debugger logging remains available.\n");
-    }
-}
+std::atomic_bool logsPrivateData{false};
 
 void Log(std::wstring_view message, VpnChannel const &channel = nullptr) noexcept {
     std::wstring line;
@@ -66,7 +47,7 @@ void Log(std::wstring_view message, VpnChannel const &channel = nullptr) noexcep
         line += L" [PID " + std::to_wstring(GetCurrentProcessId());
         line += L" TID " + std::to_wstring(GetCurrentThreadId()) + L"] ";
         line += message;
-        line += L"\r\n";
+        line += L"\n";
     } catch (...) {
         return;
     }
@@ -76,19 +57,11 @@ void Log(std::wstring_view message, VpnChannel const &channel = nullptr) noexcep
             channel.LogDiagnosticMessage(winrt::hstring{line});
         }
     } catch (...) {
-        // The LocalState log below remains useful if system diagnostics are unavailable.
+        // Debugger logging remains available if system diagnostics are unavailable.
     }
 
     try {
         OutputDebugStringW(line.c_str());
-
-        std::scoped_lock lock(g_log_mutex);
-        if (!g_log_file) return;
-        const auto utf8 = winrt::to_string(line);
-        if (utf8.size() > MAXDWORD) return;
-        DWORD written = 0;
-        WriteFile(g_log_file.get(), utf8.data(), static_cast<DWORD>(utf8.size()), &written,
-                  nullptr);
     } catch (...) {
         // Diagnostics must never make a VPN lifecycle callback fail.
     }
@@ -177,92 +150,166 @@ std::string ReadProfile(VpnChannel const &channel) {
 void LogNative(void *, const char *profileId, int, const char *message) noexcept {
     try {
         if (!message) return;
-        const auto text = profileId ? "[" + std::string(profileId) + "] " + message : std::string(message);
+        const auto text = profileId && logsPrivateData.load() ?
+            "[" + std::string(profileId) + "] " + message : std::string(message);
         Log(winrt::to_hstring(text));
     } catch (...) {
         // Never throw through the native logging callback.
     }
 }
 
+// The native daemon is process-wide. The lease survives every borrowed callback
+// and is released only after runtime teardown, including failed/canceled startup.
+std::atomic_bool channelOwned{false};
+struct ChannelLease {
+    ChannelLease() {
+        if (channelOwned.exchange(true)) throw hresult_illegal_method_call(L"A VPN channel is already active.");
+    }
+    ~ChannelLease() {
+        channelOwned.store(false);
+    }
+};
+struct ChannelSession {
+    ChannelLease lease;
+    VpnChannel channel;
+    // Guarded by VpnPlugin's ownership mutex. Startup owns teardown until it
+    // explicitly hands the session over to Disconnect.
+    bool starting = true;
+    std::atomic_bool canceled{false};
+    std::unique_ptr<Partout::VpnChannelRuntime> runtime;
+
+    explicit ChannelSession(VpnChannel const &value) : channel(value) {
+        const auto profile = ReadProfile(channel);
+        using namespace winrt::Windows::Data::Json;
+        auto preferences = JsonObject::Parse(Passepartout::defaultTunnelPreferences);
+        const auto values = ApplicationData::Current().LocalSettings().Values();
+        if (values.HasKey(Passepartout::tunnelPreferencesKey)) {
+            preferences = JsonObject::Parse(unbox_value<hstring>(values.Lookup(Passepartout::tunnelPreferencesKey)));
+        }
+        std::vector<std::string> fallback;
+        for (const auto &server : preferences.GetNamedArray(L"dnsFallbackServers")) {
+            fallback.push_back(to_string(server.GetString()));
+        }
+        partout_init_args init{};
+        init.logger_fn = LogNative;
+        init.log_level = PartoutLogLevelDebug;
+        init.logs_private_data = preferences.GetNamedBoolean(L"logsPrivateData", false);
+        logsPrivateData.store(init.logs_private_data);
+        const auto temporary = to_string(ApplicationData::Current().TemporaryFolder().Path());
+        partout_daemon_options options{};
+        options.cache_dir = temporary.c_str();
+        options.starts_immediately = true;
+        options.crypto = PartoutCryptoMbedTLS;
+        runtime = std::make_unique<Partout::VpnChannelRuntime>(channel, profile.c_str(), init, options, std::move(fallback));
+    }
+    void Cancel() noexcept {
+        canceled.store(true);
+        runtime->Cancel();
+    }
+};
+
+struct PluginState {
+    std::mutex mutex;
+    std::shared_ptr<ChannelSession> session;
+};
+
 struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
+    explicit VpnPlugin(std::shared_ptr<PluginState> state) : state_(std::move(state)) {}
     void Connect(VpnChannel const &channel) {
         Log(L"VPN connect requested", channel);
-        // FIXME: ###, Scope runtimes by channel or reject a second channel before resetting
-        // the active connection; the native daemon is currently process-wide.
-        std::scoped_lock lock(runtime_mutex_);
-        runtime_.reset();
-        const auto profile = ReadProfile(channel);
-
-        // FIXME: ###, Apply user preferences here.
-        partout_init_args init_args{};
-        init_args.logger_fn = LogNative;
-        init_args.log_level = PartoutLogLevelDebug;
-        init_args.logs_private_data = false;
-        const auto temp_dir = winrt::to_string(ApplicationData::Current().TemporaryFolder().Path());
-        partout_daemon_options options{};
-        options.cache_dir = temp_dir.c_str();
-        options.starts_immediately = true;
-        options.crypto = PartoutCryptoNative;
-
-        auto runtime = std::make_unique<Partout::VpnChannelRuntime>(
-            channel, profile.c_str(), init_args, options);
-        // FIXME: ###, Allow cancellation during startup and verify callback reentrancy:
-        // this mutex stays locked throughout the native connection wait and teardown.
-        // FIXME: ###, Complete native kill-switch and cancellation support before release
-        // (partout/cross/windows/src/platform.cc).
-        runtime->Connect(channel);
-        runtime_ = std::move(runtime);
+        std::shared_ptr<ChannelSession> session;
+        {
+            std::scoped_lock lock(state_->mutex);
+            if (canceled_) throw hresult_canceled();
+            if (state_->session) throw hresult_illegal_method_call(L"A VPN channel is already active.");
+            session = std::make_shared<ChannelSession>(channel);
+            state_->session = session;
+            startup_ = session;
+        }
+        // No ownership mutex is held through startup or native callbacks.
+        try {
+            session->runtime->Connect(channel);
+            bool stop = false;
+            {
+                std::scoped_lock lock(state_->mutex);
+                session->starting = false;
+                stop = session->canceled.load();
+                if (stop && state_->session == session) state_->session.reset();
+            }
+            if (stop) session->runtime->Disconnect(channel);
+        } catch (...) {
+            std::scoped_lock lock(state_->mutex);
+            if (state_->session == session) state_->session.reset();
+            throw;
+        }
     }
-
     void Disconnect(VpnChannel const &channel) {
-        std::scoped_lock lock(runtime_mutex_);
-        if (!runtime_) return;
-        runtime_->Disconnect(channel);
-        runtime_.reset();
+        std::shared_ptr<ChannelSession> session;
+        bool stop = false;
+        {
+            std::scoped_lock lock(state_->mutex);
+            if (!state_->session || state_->session->channel != channel) return;
+            session = std::move(state_->session);
+            session->Cancel();
+            stop = !session->starting;
+        }
+        // Startup owns teardown while connecting. Never wait on a reentrant
+        // callback from Connect/Stop; the last borrowed session releases it.
+        if (stop) session->runtime->Disconnect(channel);
     }
-
+    void CancelStartup() noexcept {
+        try {
+            std::scoped_lock lock(state_->mutex);
+            canceled_ = true;
+            const auto session = startup_.lock();
+            if (session && session->starting) session->Cancel();
+        } catch (...) {}
+    }
     void GetKeepAlivePayload(VpnChannel const &channel, VpnPacketBuffer &packet) {
-        std::scoped_lock lock(runtime_mutex_);
-        if (!runtime_) {
+        const auto session = Borrow(channel);
+        if (!session) {
             packet = nullptr;
             return;
         }
-        runtime_->GetKeepAlivePayload(channel, packet);
+        session->runtime->GetKeepAlivePayload(channel, packet);
     }
-
     void Encapsulate(VpnChannel const &channel, VpnPacketBufferList const &packets,
-                     VpnPacketBufferList const &encapsulated_packets) {
-        std::scoped_lock lock(runtime_mutex_);
-        if (!runtime_) return;
-        runtime_->Encapsulate(channel, packets, encapsulated_packets);
+                     VpnPacketBufferList const &encapsulated) {
+        const auto session = Borrow(channel);
+        if (session) session->runtime->Encapsulate(channel, packets, encapsulated);
     }
-
     void Decapsulate(VpnChannel const &channel, VpnPacketBuffer const &packet,
-                     VpnPacketBufferList const &decapsulated_packets,
-                     VpnPacketBufferList const &control_packets) {
-        std::scoped_lock lock(runtime_mutex_);
-        if (!runtime_) return;
-        runtime_->Decapsulate(channel, packet, decapsulated_packets, control_packets);
+                     VpnPacketBufferList const &decapsulated, VpnPacketBufferList const &control) {
+        const auto session = Borrow(channel);
+        if (session) session->runtime->Decapsulate(channel, packet, decapsulated, control);
     }
-
 private:
-    std::mutex runtime_mutex_;
-    std::unique_ptr<Partout::VpnChannelRuntime> runtime_;
+    std::shared_ptr<ChannelSession> Borrow(VpnChannel const &channel) {
+        std::scoped_lock lock(state_->mutex);
+        const auto &session = state_->session;
+        return session && session->channel == channel && !session->canceled.load() ? session : nullptr;
+    }
+    std::shared_ptr<PluginState> state_;
+    // One plugin adapter per background event. Cancellation can only affect
+    // startup initiated by that event, never a later connection.
+    std::weak_ptr<ChannelSession> startup_;
+    bool canceled_ = false;
 };
 
 struct VpnBackgroundTask : winrt::implements<VpnBackgroundTask, IBackgroundTask> {
     void Run(IBackgroundTaskInstance const &task) {
-        // FIXME: ###, Handle background-task cancellation and verify reconnect after
-        // suspension, host termination, and network changes on x64 and ARM64.
         const auto deferral = task.GetDeferral();
         try {
-            InitializeLog();
             static std::once_flag module_path_logged;
             std::call_once(module_path_logged, LogPartoutModulePath);
-            static const IVpnPlugIn plugin = winrt::make<VpnPlugin>();
-            VpnChannel::ProcessEventAsync(plugin, task.TriggerDetails());
+            static const auto state = std::make_shared<PluginState>();
+            const auto plugin = winrt::make_self<VpnPlugin>(state);
+            const auto cancellation = task.Canceled(winrt::auto_revoke, [plugin](auto const &, auto) {
+                plugin->CancelStartup();
+            });
+            VpnChannel::ProcessEventAsync(plugin.as<IVpnPlugIn>(), task.TriggerDetails());
         } catch (winrt::hresult_error const &error) {
-            Log(L"Background task failed: " + std::wstring{error.message().c_str()});
+            Log(L"Background task failed: HRESULT=" + std::to_wstring(error.code().value));
             deferral.Complete();
             throw;
         } catch (...) {

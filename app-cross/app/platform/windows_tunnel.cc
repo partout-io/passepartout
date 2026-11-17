@@ -2,16 +2,21 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../business/tunnel.h"
+#include "windows_tunnel.h"
 #include "partout_windows.h"
+#include "../business/logging.h"
+#include "../../tunnel/preferences.h"
 #include <partout/models/TunnelSnapshot.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Storage.h>
 #include <stdexcept>
 
 namespace Passepartout {
 namespace {
 class WindowsTunnelStrategy final : public TunnelStrategy {
 public:
-    explicit WindowsTunnelStrategy(const std::string &serverUri) : tunnel_(serverUri) {}
+    WindowsTunnelStrategy(const std::string &serverUri, std::vector<std::string> dnsFallbackServers)
+        : tunnel_(serverUri), dnsFallbackServers_(std::move(dnsFallbackServers)) {}
     std::vector<Models::AppTunnelInfo> Fetch() override {
         std::vector<Models::AppTunnelInfo> result;
         for (const auto &snapshot : tunnel_.Fetch(&observationErrors_)) {
@@ -53,12 +58,39 @@ public:
     void Remove(const std::string &id) override {
         tunnel_.Remove(id);
     }
+    void Cancel() noexcept override {
+        tunnel_.Cancel();
+    }
+    void ApplyPreferences(const Models::AppPreferences &preferences) override {
+        winrt::init_apartment(winrt::apartment_type::multi_threaded);
+        struct Apartment {
+            ~Apartment() {
+                winrt::uninit_apartment();
+            }
+        } apartment;
+        const nlohmann::json value = {
+            {"dnsFallbackServers", preferences.dnsFallsBack ? dnsFallbackServers_ : std::vector<std::string>{}},
+            {"logsPrivateData", preferences.logsPrivateData}
+        };
+        // One atomic package setting is read by the host at the next activation.
+        winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values().Insert(
+            tunnelPreferencesKey, winrt::box_value(winrt::to_hstring(value.dump())));
+        partout_init_args init{};
+        init.log_level = PartoutLogLevelDebug;
+        init.logs_private_data = preferences.logsPrivateData;
+        init.logger_fn = AppLogger::PartoutMessage;
+        if (preferences.logsPrivateData) AppLogger::SetPrivateData(true);
+        partout_init(&init);
+        if (!preferences.logsPrivateData) AppLogger::SetPrivateData(false);
+    }
 private:
     Partout::Tunnel tunnel_;
+    std::vector<std::string> dnsFallbackServers_;
     std::map<std::string, std::string> observationErrors_;
 };
 }
-std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri) {
-    return std::make_unique<WindowsTunnelStrategy>(serverUri);
+std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri,
+                                                        std::vector<std::string> dnsFallbackServers) {
+    return std::make_unique<WindowsTunnelStrategy>(serverUri, std::move(dnsFallbackServers));
 }
 }

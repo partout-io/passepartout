@@ -2,10 +2,12 @@
     "licenses": [
         {
             "name": "fastlane",
+            "windows": false,
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/fastlane/fastlane/master/LICENSE"
         }, {
             "name": "GenericJSON",
+            "windows": false,
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE"
         }, {
@@ -14,22 +16,27 @@
             "licenseURL": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls/refs/heads/master/LICENSE"
         }, {
             "name": "OpenSSL",
+            "windows": false,
             "licenseName": "OpenSSL",
             "licenseURL": "https://raw.githubusercontent.com/openssl/openssl/master/LICENSE.txt"
         }, {
             "name": "SwiftGen",
+            "windows": false,
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/SwiftGen/SwiftGen/master/LICENCE"
         }, {
             "name": "SwiftLint",
+            "windows": false,
             "licenseName": "MIT",
             "licenseURL": "https://raw.githubusercontent.com/realm/SwiftLint/master/LICENSE"
         }, {
             "name": "url.c",
+            "windows": false,
             "licenseName": "Unlicense",
             "licenseURL": "https://raw.githubusercontent.com/cozis/url.c/refs/heads/main/UNLICENSE"
         }, {
             "name": "Wintun",
+            "windows": false,
             "licenseName": "Wintun",
             "licenseURL": "https://raw.githubusercontent.com/WireGuard/wintun/refs/heads/master/prebuilt-binaries-license.txt"
         }, {
@@ -53,9 +60,55 @@
             "message": "For the implementation of the OpenVPN XOR patch."
         }, {
             "name": "vaygr",
+            "windows": false,
             "message": "For adding Passepartout to Homebrew Cask."
         }
     ],
+    "windows": {
+        "licenses": [
+            {
+                "name": "wxWidgets",
+                "licenseName": "wxWindows",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.3.2/docs/licence.txt"
+            },
+            {
+                "name": "nlohmann/json",
+                "licenseName": "MIT",
+                "licenseURL": "https://raw.githubusercontent.com/nlohmann/json/v3.11.3/LICENSE.MIT"
+            },
+            {
+                "name": "libjpeg-turbo",
+                "licenseName": "IJG / BSD",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libjpeg-turbo/wx/README"
+            },
+            {
+                "name": "libpng",
+                "licenseName": "libpng",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libpng/wx/LICENSE"
+            },
+            {
+                "name": "LibTIFF",
+                "licenseName": "LibTIFF",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libtiff/wx/LICENSE.md"
+            },
+            {
+                "name": "zlib",
+                "licenseName": "zlib",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/zlib/wx/README"
+            },
+            {
+                "name": "PCRE2",
+                "licenseName": "BSD",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/pcre/wx/LICENCE.md"
+            },
+            {
+                "name": "NanoSVG",
+                "licenseName": "zlib",
+                "licenseURL": "https://raw.githubusercontent.com/wxWidgets/nanosvg/wx/LICENSE.txt"
+            }
+        ],
+        "notices": []
+    },
     "translations": {
         "de": ["Christian Lederer", "Philipp Reynders", "Theodor Tietze"],
         "el": ["Konstantinos Koukoulakis"],

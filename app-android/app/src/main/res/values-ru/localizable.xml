@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Подключиться к</string>
     <string name="views_app_menu_items_quit">Выйти из %1$s</string>
     <string name="views_diagnostics_title">Диагностика</string>
+    <string name="views_diagnostics_runtime_unavailable">Журналы работы недоступны.</string>
     <string name="views_diagnostics_sections_live">Журнал в реальном времени</string>
     <string name="views_diagnostics_sections_active_profiles">Активные профили</string>
     <string name="views_diagnostics_sections_tunnel">Журналы туннеля</string>
@@ -87,6 +88,7 @@
     <string name="views_preferences_locks_in_background">Блокировка в фоновом режиме</string>
     <string name="views_preferences_locks_in_background_footer">Блокируйте приложение с помощью FaceID, когда оно переводится в фоновый режим.</string>
     <string name="views_preferences_dns_falls_back">Резервный DNS</string>
+    <string name="views_preferences_next_connection">Изменения вступят в силу при следующем подключении профиля.</string>
     <string name="views_preferences_dns_falls_back_footer">Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.</string>
     <string name="views_preferences_enables_iap">Покупки в приложении</string>
     <string name="views_preferences_enables_iap_footer">Включите поддержку платных функций. Отключите, если у вас нет Apple ID.</string>

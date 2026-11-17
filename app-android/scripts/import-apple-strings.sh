@@ -337,7 +337,7 @@ lproj_dirs.each do |dirname|
   xml << "</resources>\n"
 
   FileUtils.mkdir_p(output_dir)
-  File.write(output_path, xml, encoding: "UTF-8")
+  File.write(output_path, xml, encoding: "UTF-8", mode: "wb")
 end
 
 puts "Imported Apple translations into Android string resources."

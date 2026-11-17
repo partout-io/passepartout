@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">连接到</string>
     <string name="views_app_menu_items_quit">退出 %1$s</string>
     <string name="views_diagnostics_title">诊断</string>
+    <string name="views_diagnostics_runtime_unavailable">运行日志不可用。</string>
     <string name="views_diagnostics_sections_live">实时日志</string>
     <string name="views_diagnostics_sections_active_profiles">活动配置文件</string>
     <string name="views_diagnostics_sections_tunnel">隧道日志</string>
@@ -87,6 +88,7 @@
     <string name="views_preferences_locks_in_background">后台锁定</string>
     <string name="views_preferences_locks_in_background_footer">当应用切换到后台时，使用 FaceID 锁定它。</string>
     <string name="views_preferences_dns_falls_back">DNS 备用</string>
+    <string name="views_preferences_next_connection">更改将在配置文件下次连接时生效。</string>
     <string name="views_preferences_dns_falls_back_footer">当 VPN 不提供 DNS 设置时，回退到 CloudFlare 服务器。</string>
     <string name="views_preferences_enables_iap">应用内购买</string>
     <string name="views_preferences_enables_iap_footer">启用对付费功能的支持。如果您没有 Apple ID，请禁用此功能。</string>

@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Журнал в реальном времени";
 "views.diagnostics.sections.tunnel" = "Журналы туннеля";
 "views.diagnostics.title" = "Диагностика";
+"views.diagnostics.runtime_unavailable" = "Журналы работы недоступны.";
 "views.donate.alerts.thank_you.message" = "Это очень важно для меня, и я искренне надеюсь, что вы продолжите использовать и продвигать это приложение.";
 "views.donate.sections.main.footer" = "Если вы хотите выразить благодарность за мою работу, вот несколько сумм, которые вы можете пожертвовать мгновенно. С вас будет снята плата только один раз за пожертвование, и вы можете пожертвовать несколько раз.";
 "views.donate.title" = "Сделать пожертвование";
@@ -370,6 +371,7 @@
 "views.preferences.crypto_backend" = "Криптография";
 "views.preferences.dns_falls_back.footer" = "Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.";
 "views.preferences.dns_falls_back" = "Резервный DNS";
+"views.preferences.next_connection" = "Изменения вступят в силу при следующем подключении профиля.";
 "views.preferences.enables_iap.footer" = "Включите поддержку платных функций. Отключите, если у вас нет Apple ID.";
 "views.preferences.enables_iap" = "Покупки в приложении";
 "views.preferences.erase_icloud.footer" = "Чтобы безопасно удалить все профили из iCloud, выполните это действие на всех ваших синхронизированных устройствах. Это не затронет локальные профили.";

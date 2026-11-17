@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Live log";
 "views.diagnostics.sections.tunnel" = "Tunnel logboeken";
 "views.diagnostics.title" = "Diagnostiek";
+"views.diagnostics.runtime_unavailable" = "Uitvoeringslogboeken zijn niet beschikbaar.";
 "views.donate.alerts.thank_you.message" = "Dit betekent veel voor mij en ik hoop echt dat je deze app blijft gebruiken en promoten.";
 "views.donate.sections.main.footer" = "Als je mijn werk wilt waarderen, zijn hier een paar bedragen die je direct kunt doneren. Je wordt slechts één keer per donatie in rekening gebracht en je kunt meerdere keren doneren.";
 "views.donate.title" = "Doe een donatie";
@@ -370,6 +371,7 @@
 "views.preferences.crypto_backend" = "Cryptografie";
 "views.preferences.dns_falls_back.footer" = "Valt terug op CloudFlare-servers wanneer het VPN geen DNS-instellingen biedt.";
 "views.preferences.dns_falls_back" = "DNS-terugval";
+"views.preferences.next_connection" = "Wijzigingen worden toegepast wanneer een profiel opnieuw verbinding maakt.";
 "views.preferences.enables_iap.footer" = "Schakel ondersteuning voor betaalde functies in. Schakel dit uit als u geen Apple ID heeft.";
 "views.preferences.enables_iap" = "In-app aankopen";
 "views.preferences.erase_icloud.footer" = "Om alle profielen veilig van de iCloud-opslag te verwijderen, doe dit op al uw gesynchroniseerde apparaten. Dit heeft geen invloed op lokale profielen.";

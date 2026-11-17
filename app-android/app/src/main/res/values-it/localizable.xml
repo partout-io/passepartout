@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Connetti a</string>
     <string name="views_app_menu_items_quit">Esci da %1$s</string>
     <string name="views_diagnostics_title">Diagnostica</string>
+    <string name="views_diagnostics_runtime_unavailable">I log di esecuzione non sono disponibili.</string>
     <string name="views_diagnostics_sections_live">Log in tempo reale</string>
     <string name="views_diagnostics_sections_active_profiles">Profili attivi</string>
     <string name="views_diagnostics_sections_tunnel">Log tunnel</string>
@@ -87,6 +88,7 @@
     <string name="views_preferences_locks_in_background">Blocca in background</string>
     <string name="views_preferences_locks_in_background_footer">Blocca l\'app con FaceID quando viene inviata in background.</string>
     <string name="views_preferences_dns_falls_back">DNS di fallback</string>
+    <string name="views_preferences_next_connection">Le modifiche verranno applicate alla prossima connessione di un profilo.</string>
     <string name="views_preferences_dns_falls_back_footer">Ripiega sui server CloudFlare quando il VPN non fornisce impostazioni DNS.</string>
     <string name="views_preferences_enables_iap">Acquisti in-app</string>
     <string name="views_preferences_enables_iap_footer">Abilita il supporto per le funzionalità a pagamento. Disabilitalo se non hai Apple ID.</string>
