@@ -30,12 +30,6 @@ function(configure_windows_platform)
             message(FATAL_ERROR "Windows installations require app and plugin. Configure with BUILD_APP=ON.")
         ]])
     endif()
-    # Stop the packaged host before replacing its shared dependencies.
-    find_program(PLUGIN_POWERSHELL NAMES powershell.exe REQUIRED)
-    set(PLUGIN_STOP_SCRIPT "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/windows/stop-plugin.ps1")
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/windows/stop-plugin.cmake.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake" @ONLY)
-    install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/tunnel/stop-plugin.cmake")
 endfunction()
 
 # Configure Windows targets after the app and tunnel have been declared.

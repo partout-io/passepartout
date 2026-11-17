@@ -44,6 +44,35 @@ function AssertFrontendClosed {
         throw 'Quit the frontend before installing.'
     }
 }
+function StopPlugin {
+    param([string]$InstallDirectory)
+    $hostPath = [System.IO.Path]::GetFullPath(
+        (Join-Path $InstallDirectory "passepartout-tunnel.exe"))
+
+    foreach ($hostProcess in @(Get-Process -Name "passepartout-tunnel" -ErrorAction SilentlyContinue)) {
+        try {
+            if ($hostProcess.HasExited) { continue }
+            $processPath = $hostProcess.Path
+            if (-not $processPath) {
+                throw "Cannot inspect VPN host $($hostProcess.Id). Run installation with permission to inspect and stop it."
+            }
+            if (-not [string]::Equals($processPath, $hostPath, [StringComparison]::OrdinalIgnoreCase)) {
+                continue
+            }
+            Write-Host "Stopping VPN host $($hostProcess.Id) before installing $InstallDirectory"
+            Stop-Process -InputObject $hostProcess -Force
+            if (-not $hostProcess.WaitForExit(10000)) {
+                throw "VPN host $($hostProcess.Id) did not exit within 10 seconds."
+            }
+        } catch {
+            # It may have exited between enumeration and termination.
+            if (-not $hostProcess.HasExited) { throw }
+        } finally {
+            $hostProcess.Dispose()
+        }
+    }
+}
+
 function InvokeCMake {
     param([string[]]$Arguments)
     & cmake @Arguments
@@ -113,13 +142,10 @@ try {
     }
     # Release loaded DLLs before rebuilding, not only before installation.
     # Include a host launched directly from this configuration's build output.
-    $stopPlugin = Join-Path $source 'tunnel/windows/stop-plugin.ps1'
-    & $stopPlugin -InstallDirectory $install
-    & $stopPlugin -InstallDirectory (Join-Path $build $Configuration)
+    StopPlugin $install
+    StopPlugin (Join-Path $build $Configuration)
     InvokeCMake -Arguments @('--build', '--preset', "windows-$Architecture-$($Configuration.ToLowerInvariant())")
     AssertFrontendClosed
-    # The shared install hook stops only the host in this install directory
-    # before replacing its dependencies, including for F5 preparation.
     InvokeCMake -Arguments @('--install', $build, '--config', $Configuration, '--prefix', $install)
     if (-not $reuse) {
         AssertFrontendClosed
