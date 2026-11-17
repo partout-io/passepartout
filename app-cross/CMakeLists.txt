@@ -122,7 +122,7 @@ if(WIN32)
         target_compile_definitions(passepartout-tunnel PRIVATE $<$<CONFIG:Debug>:PASSEPARTOUT_WAIT_FOR_DEBUGGER>)
     endif()
 else()
-    target_sources(passepartout-tunnel PRIVATE tunnel/main_posix.c tunnel/common.c)
+    target_sources(passepartout-tunnel PRIVATE tunnel/posix/main.c tunnel/posix/common.c)
     target_link_partout_runtime(passepartout-tunnel)
 endif()
 
