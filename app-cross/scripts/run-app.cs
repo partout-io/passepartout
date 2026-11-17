@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
 namespace Passepartout.Development {
+    // Windows implements this COM interface for activating registered packaged apps.
+    // This GUID is its fixed interface ID (IID), independent of our package identity.
     [ComImport, Guid("2e941141-7f97-4756-ba1d-9decde894a3d"),
      InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     interface IApplicationActivationManager {
@@ -26,6 +28,7 @@ namespace Passepartout.Development {
             out uint information, uint length, out uint returnedLength);
 
         public static uint Launch(string appId, string arguments) {
+            // Windows' fixed ApplicationActivationManager class ID (CLSID).
             var manager = (IApplicationActivationManager)Activator.CreateInstance(
                 Type.GetTypeFromCLSID(new Guid("45ba127d-10a8-46ea-8ab7-56ea9078943c")));
             try {
