@@ -43,6 +43,8 @@ public:
     AppSnapshot Snapshot() const;
     void Load();
     void Import(std::vector<std::filesystem::path> paths);
+    void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
+    void ImportFailed();
     void Remove(std::vector<std::string> ids);
     void Connect(std::string id);
     void Disconnect(std::string id);
@@ -78,6 +80,8 @@ public:
     explicit ProfileObservable(AppSession &session) : session_(session) {}
     void Load();
     void Import(std::vector<std::filesystem::path> paths);
+    void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
+    void ImportFailed();
     void Remove(std::vector<std::string> ids);
     AppSnapshot Snapshot() const;
     void ClearError();

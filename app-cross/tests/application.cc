@@ -7,6 +7,9 @@
 #include "context/dependencies.h"
 #include "business/tunnel.h"
 #include "observables/session.h"
+#include "ui/modal_configuration_picker.h"
+#include "ui/configuration_selection.h"
+#include <algorithm>
 #include <cassert>
 #include <fstream>
 #include <chrono>
@@ -130,8 +133,166 @@ private:
 void Wait(AppSession &session) {
     assert(session.WaitIdle(std::chrono::seconds(5)));
 }
+void TestModalPicker() {
+    ModalConfigurationPicker *active = nullptr;
+    bool cancel = false;
+    bool dismiss = false;
+    ModalConfigurationPicker picker([&]() -> ConfigurationPickerResult {
+        // Simulate timer events dispatched by ShowModal's nested event loop.
+        assert(!active->Poll());
+        assert(!active->Poll());
+        if (cancel) active->Cancel();
+        if (dismiss) return {};
+        return {std::make_shared<ConfigurationFiles>(
+            std::vector<std::filesystem::path>{"selected.conf"}), false};
+    });
+    active = &picker;
+    picker.Start();
+    auto result = picker.Poll();
+    assert(result && result->files && result->files->paths.front() == "selected.conf");
+    assert(!picker.Poll());
+    dismiss = true;
+    picker.Start();
+    result = picker.Poll();
+    assert(result && !result->files && !result->failed);
+    assert(!picker.Poll());
+    dismiss = false;
+    cancel = true;
+    picker.Start();
+    assert(!picker.Poll());
+    cancel = false;
+    picker.Start();
+    // A new modal selection must discard an unconsumed previous result.
+    picker.Start();
+    assert(picker.Poll()->files);
+}
+void TestSelectionFailures(const std::filesystem::path &root) {
+    const auto valid = root / "valid.conf";
+    const auto invalid = root / "invalid.conf";
+    std::ofstream(valid) << "valid";
+    std::ofstream(invalid) << "invalid syntax";
+    std::vector<std::size_t> visited;
+    auto selected = CollectConfigurationFiles(5, [&](std::size_t index) {
+        visited.push_back(index);
+        if (index == 1) return valid;
+        if (index == 3) return invalid;
+        throw std::runtime_error("Native staging failed");
+    });
+    assert(visited.size() == 5);
+    assert(selected.paths.size() == 2 && selected.selectionFailures == 3);
+    AppSession session(std::make_unique<FileProfileRepository>(root / "selection-store"),
+        [](const std::string &text, const std::string &) {
+            if (text != "valid") throw std::runtime_error("Invalid configuration");
+            return Example("selected-valid");
+        }, std::make_unique<FakeTunnelStrategy>());
+    Wait(session);
+    session.ImportFiles(std::make_shared<ConfigurationFiles>(std::move(selected)));
+    Wait(session);
+    auto snapshot = session.Snapshot();
+    assert(snapshot.profiles.size() == 1 && snapshot.profiles.front().id == "selected-valid");
+    assert(snapshot.errorContext == AppErrorContext::import);
+    assert(snapshot.error.find("4 configuration(s)") != std::string::npos);
+    assert(FileProfileRepository(root / "selection-store").Fetch().size() == 1);
+
+    auto failed = CollectConfigurationFiles(2, [](std::size_t) -> std::filesystem::path {
+        throw std::runtime_error("Unreadable file");
+    });
+    session.ImportFiles(std::make_shared<ConfigurationFiles>(std::move(failed)));
+    Wait(session);
+    assert(session.Snapshot().error.find("2 configuration(s)") != std::string::npos);
+    assert(session.Snapshot().profiles.size() == 1);
+    auto empty = CollectConfigurationFiles(0, [](std::size_t) -> std::filesystem::path {
+        assert(false);
+        return {};
+    });
+    const auto revision = session.Snapshot().revision;
+    session.ImportFiles(std::make_shared<ConfigurationFiles>(std::move(empty)));
+    assert(session.Snapshot().revision == revision);
+}
+void TestLargeSelection(const std::filesystem::path &root) {
+    constexpr std::size_t count = 40;
+    auto selected = CollectConfigurationFiles(count, [&](std::size_t index) {
+        const auto path = root / ("batch-" + std::to_string(index) + ".conf");
+        std::ofstream(path) << "batch-" << index;
+        return path;
+    });
+    assert(selected.paths.size() == count && selected.selectionFailures == 0);
+    AppSession session(std::make_unique<FileProfileRepository>(root / "large-selection-store"),
+        [](const std::string &text, const std::string &) {
+            return Example(text);
+        }, std::make_unique<FakeTunnelStrategy>());
+    Wait(session);
+    session.ImportFiles(std::make_shared<ConfigurationFiles>(std::move(selected)));
+    Wait(session);
+    const auto snapshot = session.Snapshot();
+    assert(snapshot.error.empty());
+    assert(snapshot.profiles.size() == count);
+    const auto saved = FileProfileRepository(root / "large-selection-store").Fetch();
+    assert(saved.size() == count);
+    for (std::size_t index = 0; index < count; ++index) {
+        const auto id = "batch-" + std::to_string(index);
+        assert(std::any_of(saved.begin(), saved.end(), [&](const auto &profile) {
+            return profile.id == id;
+        }));
+    }
+}
+class TemporaryConfigurationFiles final : public ConfigurationFiles {
+public:
+    TemporaryConfigurationFiles(const std::filesystem::path &path, std::shared_ptr<std::promise<void>> destroyed)
+        : ConfigurationFiles({path}), destroyed_(std::move(destroyed)) {}
+    ~TemporaryConfigurationFiles() override {
+        std::error_code error;
+        std::filesystem::remove(paths.front(), error);
+        destroyed_->set_value();
+    }
+private:
+    std::shared_ptr<std::promise<void>> destroyed_;
+};
+void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
+    const auto input = root / "selected.conf";
+    std::ofstream(input) << "selected configuration";
+    auto gate = std::make_shared<Gate>();
+    auto entered = gate->entered.get_future();
+    auto destroyed = std::make_shared<std::promise<void>>();
+    auto cleanup = destroyed->get_future();
+    AppSession session(std::make_unique<FileProfileRepository>(root / "store"),
+        [gate, fail](const std::string &text, const std::string &name) {
+            assert(text == "selected configuration");
+            assert(name == "selected");
+            gate->entered.set_value();
+            gate->release.get_future().wait();
+            if (fail) throw std::runtime_error("Invalid configuration");
+            return Example();
+        }, std::make_unique<FakeTunnelStrategy>());
+    Wait(session);
+    ProfileObservable observable(session);
+    auto files = std::make_shared<TemporaryConfigurationFiles>(input, destroyed);
+    std::weak_ptr<const ConfigurationFiles> lifetime = files;
+    observable.ImportFiles(files);
+    files.reset();
+    assert(entered.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
+    assert(!lifetime.expired());
+    assert(std::filesystem::exists(input));
+    gate->release.set_value();
+    Wait(session);
+    assert(cleanup.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
+    assert(lifetime.expired());
+    assert(!std::filesystem::exists(input));
+    assert(session.Snapshot().error.empty() != fail);
+    assert(session.Snapshot().profiles.size() == (fail ? 0 : 1));
+    observable.ClearError();
+    const auto revision = observable.Snapshot().revision;
+    observable.ImportFiles(nullptr);
+    observable.ImportFiles(std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}));
+    assert(observable.Snapshot().revision == revision);
+    observable.ImportFailed();
+    Wait(session);
+    assert(!observable.Snapshot().error.empty());
+    assert(observable.Snapshot().errorContext == AppErrorContext::import);
+}
 }
 int main() {
+    TestModalPicker();
     {
         auto strategy = std::make_unique<ControlledTunnel>();
         auto *control = strategy.get();
@@ -174,6 +335,15 @@ int main() {
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
     try {
+        const auto selectionRoot = root / "selection";
+        std::filesystem::create_directories(selectionRoot);
+        TestSelectionFailures(selectionRoot);
+        TestLargeSelection(selectionRoot);
+        for (const auto fail : {false, true}) {
+            const auto selected = root / (fail ? "selected-failure" : "selected-success");
+            std::filesystem::create_directories(selected);
+            TestSelectedFiles(selected, fail);
+        }
         const auto storageRoot = root / "layout";
         FileProfileRepository storage(storageRoot);
         assert(std::filesystem::is_directory(storageRoot / "tmp"));

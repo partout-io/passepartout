@@ -41,7 +41,9 @@ if(WIN32)
         ENVIRONMENT_MODIFICATION "PSModulePath=unset:")
 
     # Compile the adapter independently of the desktop application.
-    add_library(passepartout-windows-integration-check OBJECT ../app/platform/windows_tunnel.cc)
+    add_library(passepartout-windows-integration-check OBJECT
+        ../app/platform/windows_tunnel.cc
+        ../app/platform/windows_configuration_picker.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_include_directories(passepartout-windows-integration-check PRIVATE

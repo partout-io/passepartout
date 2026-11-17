@@ -236,10 +236,14 @@ void AppSession::Load() {
     });
 }
 void AppSession::Import(std::vector<std::filesystem::path> paths) {
-    Post([this, paths = std::move(paths)] {
+    ImportFiles(std::make_shared<ConfigurationFiles>(std::move(paths)));
+}
+void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
+    if (!files || (files->paths.empty() && !files->selectionFailures)) return;
+    Post([this, files = std::move(files)] {
         // Process every supplied activation, even if one configuration fails.
-        std::size_t failures = 0;
-        for (const auto &path : paths) {
+        std::size_t failures = files->selectionFailures;
+        for (const auto &path : files->paths) {
             try {
                 logger_->Write(LogLevel::info, "profiles", "Import profile...");
                 const auto profile = profiles_.Import(path, [this](const Profile &value) {
@@ -257,6 +261,11 @@ void AppSession::Import(std::vector<std::filesystem::path> paths) {
         }
         if (failures) throw std::runtime_error(std::to_string(failures) +
             " configuration(s) could not be imported. Valid imports were saved; existing profiles were preserved.");
+    }, AppErrorContext::import);
+}
+void AppSession::ImportFailed() {
+    Post([] {
+        throw std::runtime_error("Configuration selection failed.");
     }, AppErrorContext::import);
 }
 void AppSession::Remove(std::vector<std::string> ids) {
@@ -301,6 +310,12 @@ void ProfileObservable::Load() {
 }
 void ProfileObservable::Import(std::vector<std::filesystem::path> paths) {
     session_.Import(std::move(paths));
+}
+void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
+    session_.ImportFiles(std::move(files));
+}
+void ProfileObservable::ImportFailed() {
+    session_.ImportFailed();
 }
 void ProfileObservable::Remove(std::vector<std::string> ids) {
     session_.Remove(std::move(ids));

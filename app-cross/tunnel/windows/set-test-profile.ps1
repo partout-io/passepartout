@@ -47,7 +47,7 @@ if ($configuration.OuterXml.Length -gt 1MB) {
 
 $packages = @(Get-AppxPackage -Name "Passepartout.VpnChannel")
 if ($packages.Count -ne 1) {
-    throw "Register the VPN plugin by launching the installed passepartout-tunnel.exe first."
+    throw "Register the VPN package with scripts/run-app.ps1 first."
 }
 $applicationId = $packages[0].PackageFamilyName
 $existing = @(Get-VpnConnection | Where-Object { $_.Name -eq $Name })

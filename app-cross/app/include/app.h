@@ -5,9 +5,9 @@
 #pragma once
 #include <wx/wx.h>
 #include <wx/srchctrl.h>
-#include <wx/taskbar.h>
 #include <wx/snglinst.h>
 #include "../context/app_context.h"
+#include "../ui/configuration_picker_factory.h"
 #include "../theme/theme.h"
 #include <deque>
 
@@ -23,10 +23,9 @@ private:
 class MainView : public wxFrame {
 public:
     MainView(Passepartout::AppContext &context, bool demo,
-             std::vector<std::filesystem::path> files);
+             std::vector<std::filesystem::path> files,
+             Passepartout::ConfigurationPickerFactory pickerFactory);
     ~MainView() override;
-    void ShowWindow();
-    void DisconnectActive();
     void Quit();
 private:
     void Render();
@@ -35,7 +34,6 @@ private:
     void Remove();
     void ToggleProfile(wxDataViewEvent &event);
     void Tick(wxTimerEvent &);
-    void CloseWindow(wxCloseEvent &event);
     std::vector<std::string> SelectedIds() const;
     Passepartout::AppContext &context_;
     Passepartout::AppSnapshot snapshot_;
@@ -45,11 +43,11 @@ private:
     wxActivityIndicator *progress_;
     wxButton *import_;
     wxButton *remove_;
-    std::unique_ptr<wxTaskBarIcon> tray_;
     wxTimer timer_;
     std::vector<std::string> visibleIds_;
     std::vector<std::filesystem::path> pendingFiles_;
+    std::unique_ptr<Passepartout::ConfigurationPicker> picker_;
+    bool picking_ = false;
     unsigned ticks_ = 0;
-    bool quitting_ = false;
     bool rendering_ = false;
 };

@@ -5,11 +5,13 @@ set(APP_SOURCES
     app/main.cc
     app/strings/strings.cc
     app/theme/theme.cc
+    app/ui/configuration_picker.cc
     app/ui/extensions/app_profile.cc
     app/ui/extensions/data_helpers.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES
+        app/platform/windows_configuration_picker.cc
         app/platform/windows_tunnel.cc
     )
 endif()
