@@ -53,8 +53,8 @@ function(configure_windows_targets)
 
     # The host loads the plugin dynamically; only the plugin links to Partout.
     add_library(passepartout-vpnplugin SHARED
-        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/windows/plugin.cc"
-        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/windows/plugin.def"
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/plugin.cc"
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/plugin.def"
     )
     foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
         set_target_properties(${PLUGIN_TARGET} PROPERTIES
@@ -122,7 +122,7 @@ function(configure_windows_targets)
     # Generate identity headers for the host and plugin, including host-only builds.
     set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
     set(PASSEPARTOUT_TUNNEL_FILE "$<TARGET_FILE_NAME:passepartout-tunnel>")
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/package_constants.h.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/package_constants.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/package_constants.h.in" @ONLY)
     file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/package_constants.h"
         INPUT "${CMAKE_CURRENT_BINARY_DIR}/package_constants.h.in")
@@ -135,11 +135,11 @@ function(configure_windows_targets)
 
     # Full application package: desktop activation, MSIX manifest, and assets.
     set(PASSEPARTOUT_FRONTEND_FILE "$<TARGET_FILE_NAME:passepartout>")
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/frontend.manifest.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/frontend.manifest.in"
         "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest" @ONLY)
     target_sources(passepartout PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest")
 
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/AppxManifest.xml.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/AppxManifest.xml.in"
         "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml.in" @ONLY)
     file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml"
         INPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml.in")

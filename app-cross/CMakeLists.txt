@@ -47,7 +47,7 @@ set(PP_BUILD_USE_WIREGUARD ON)
 
 # Set the Windows toolchain defaults and register the stop-host install hook
 # before Partout registers installation of its shared libraries.
-include("windows.cmake")
+include("windows/configure.cmake")
 configure_windows_platform()
 
 add_subdirectory(../partout partout)
