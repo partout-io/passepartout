@@ -154,7 +154,4 @@ function(configure_windows_targets)
     )
     install(FILES "${PASSEPARTOUT_APP_ICON}" DESTINATION .)
 
-    # The packaging script validates the actual target filenames for its configuration.
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/package-files.txt"
-        CONTENT "${PASSEPARTOUT_FRONTEND_FILE}\n${PASSEPARTOUT_TUNNEL_FILE}\n${PASSEPARTOUT_PLUGIN_FILE}\n$<JOIN:$<PATH:GET_FILENAME,$<TARGET_RUNTIME_DLLS:passepartout-vpnplugin>>,\n>\nAppxManifest.xml\n${PASSEPARTOUT_PACKAGE_LOGO}\n")
 endfunction()
