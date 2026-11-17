@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>
-#include <wx/dcclient.h>
 #include <wx/menu.h>
 #include <wx/settings.h>
 #include <wx/stockitem.h>
@@ -27,51 +26,17 @@ public:
         return true;
     }
 };
-class MonospaceRenderer final : public wxDataViewCustomRenderer {
-public:
-    MonospaceRenderer() : wxDataViewCustomRenderer("string", wxDATAVIEW_CELL_INERT, wxALIGN_RIGHT) {}
-    bool SetValue(const wxVariant &value) override {
-        text_ = value.GetString();
-        return true;
-    }
-    bool GetValue(wxVariant &value) const override {
-        value = text_;
-        return true;
-    }
-    wxSize GetSize() const override {
-        wxClientDC dc(GetView());
-        dc.SetFont(Font());
-        return dc.GetTextExtent(text_);
-    }
-    bool Render(wxRect cell, wxDC *dc, int state) override {
-        const wxDCFontChanger font(*dc, Font());
-        RenderText(text_, 0, cell, dc, state);
-        return true;
-    }
-#if wxUSE_ACCESSIBILITY
-    wxString GetAccessibleDescription() const override {
-        return text_;
-    }
-#endif
-private:
-    wxFont Font() const {
-        return wxFontInfo(GetView()->GetFont().GetPointSize()).Family(wxFONTFAMILY_TELETYPE);
-    }
-    wxString text_;
-};
 }
-ThemeDetailList::ThemeDetailList(wxWindow *parent, bool monospace) : ThemeList(parent, wxDV_NO_HEADER) {
+ThemeDetailList::ThemeDetailList(wxWindow *parent) : ThemeList(parent, wxDV_NO_HEADER) {
     auto *store = new DetailStore;
     AssociateModel(store);
     store->DecRef();
     auto *caption = new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT, wxALIGN_LEFT);
     caption->EnableMarkup();
     AppendColumn(new wxDataViewColumn(wxString(), caption, 0, FromDIP(200), wxALIGN_LEFT, 0), "string");
-    if (monospace) {
-        AppendColumn(new wxDataViewColumn(wxString(), new MonospaceRenderer, 1, FromDIP(320), wxALIGN_RIGHT, 0), "string");
-    } else {
-        AppendTextColumn({}, wxDATAVIEW_CELL_INERT, FromDIP(320), wxALIGN_RIGHT, 0);
-    }
+    auto *value = new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT, wxALIGN_RIGHT);
+    value->EnableMarkup();
+    AppendColumn(new wxDataViewColumn(wxString(), value, 1, FromDIP(320), wxALIGN_RIGHT, 0), "string");
     Bind(wxEVT_SIZE, [this](wxSizeEvent &event) {
         ResizeColumns();
         event.Skip();
@@ -116,7 +81,7 @@ ThemeDetailList::ThemeDetailList(wxWindow *parent, bool monospace) : ThemeList(p
     });
 }
 void ThemeDetailList::Append(const wxString &title, const wxString &value,
-    std::function<void()> action, bool enabled) {
+    std::function<void()> action, bool enabled, bool monospace) {
     auto preview = value;
     preview.Replace("\r", "");
     preview.Replace("\n", ", ");
@@ -126,6 +91,10 @@ void ThemeDetailList::Append(const wxString &title, const wxString &value,
     caption.Replace(">", "&gt;");
     const bool link = action && enabled;
     if (link) caption = "<u>" + caption + "</u>";
+    preview.Replace("&", "&amp;");
+    preview.Replace("<", "&lt;");
+    preview.Replace(">", "&gt;");
+    if (monospace) preview = "<tt>" + preview + "</tt>";
     wxVector<wxVariant> cells;
     cells.push_back(wxVariant(caption));
     cells.push_back(wxVariant(preview));

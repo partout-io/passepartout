@@ -9,9 +9,9 @@
 namespace Passepartout {
 class ThemeDetailList final : public ThemeList {
 public:
-    explicit ThemeDetailList(wxWindow *parent, bool monospace = false);
+    explicit ThemeDetailList(wxWindow *parent);
     void Append(const wxString &title, const wxString &value,
-                std::function<void()> action = {}, bool enabled = true);
+                std::function<void()> action = {}, bool enabled = true, bool monospace = false);
 private:
     struct Row {
         wxString value;

@@ -24,9 +24,8 @@ public:
     void Finish();
 private:
     wxBoxSizer *Row(const wxString &title);
-    ThemeDetailList *List(bool monospace = false);
+    ThemeDetailList *List();
     wxBoxSizer *layout_;
     ThemeDetailList *list_ = nullptr;
-    bool monospace_ = false;
 };
 }

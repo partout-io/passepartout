@@ -28,16 +28,15 @@ wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
     layout_->Add(new wxStaticLine(this), 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
     return row;
 }
-ThemeDetailList *ThemeDetailView::List(bool monospace) {
-    if (!list_ || monospace != monospace_) {
-        list_ = new ThemeDetailList(this, monospace);
-        monospace_ = monospace;
+ThemeDetailList *ThemeDetailView::List() {
+    if (!list_) {
+        list_ = new ThemeDetailList(this);
         layout_->Add(list_, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
     }
     return list_;
 }
 void ThemeDetailView::Field(const wxString &title, const wxString &value, bool monospace) {
-    if (!value.empty()) List(monospace)->Append(title, value);
+    if (!value.empty()) List()->Append(title, value, {}, true, monospace);
 }
 void ThemeDetailView::Navigate(const wxString &title, std::function<void()> action,
     const wxString &value, bool enabled) {
