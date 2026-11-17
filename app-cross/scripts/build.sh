@@ -81,7 +81,7 @@ if [[ ! -d "$bin_dir" ]]; then
     mkdir "$bin_dir"
 fi
 if [[ $gen_build == 1 ]]; then
-    "$script_dir/gen-cmake-files.sh"
+    python3 "$script_dir/gen-cmake-files.py"
     pushd "$build_dir"
     cmake --fresh -G Ninja "${cmake_opts[@]}" "$app_cross_dir"
 else

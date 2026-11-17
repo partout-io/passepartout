@@ -51,7 +51,7 @@ jobs:
       - name: Verify CMake file lists
         if: matrix.suite == 'cross'
         run: |
-          app-cross/scripts/gen-cmake-files.sh
+          python3 app-cross/scripts/gen-cmake-files.py
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
             exit 1
