@@ -101,7 +101,8 @@ void ThemeDetailList::Append(const wxString &title, const wxString &value,
     rows_.push_back({value.empty() ? title : value, std::move(action), enabled});
     hasValues_ = hasValues_ || !value.empty();
     AppendItem(cells, (enabled ? Enabled : 0) | (link ? Link : 0));
-    SetMinSize(wxSize(-1, static_cast<int>(rows_.size()) * RowHeight() + FromDIP(2)));
+    const auto rowHeight = GetItemRect(RowToItem(0)).height;
+    SetMinSize(wxSize(-1, static_cast<int>(rows_.size()) * rowHeight + 2 * GetWindowBorderSize().y));
     ResizeColumns();
 }
 void ThemeDetailList::ResizeColumns() {
