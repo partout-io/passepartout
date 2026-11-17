@@ -48,10 +48,12 @@ jobs:
           cache: npm
           cache-dependency-path: api/package-lock.json
 
-      - name: Verify CMake file lists
+      - name: Verify cross-platform generators
         if: matrix.suite == 'cross'
         run: |
-          app-cross/scripts/gen-cmake-files.sh
+          python3 app-cross/scripts/gen-cmake-files.py
+          python3 -B app-cross/tests/string_generation.py
+          python3 app-cross/scripts/import-apple-strings.py
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
             exit 1

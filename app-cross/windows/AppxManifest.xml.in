@@ -33,11 +33,11 @@
       <uap:VisualElements DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@" Description="@PASSEPARTOUT_PACKAGE_DESCRIPTION_XML@"
         BackgroundColor="transparent" Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
     </Application>
-    <Application Id="VpnPlugin">
+    <Application Id="@PASSEPARTOUT_TUNNEL_NAME_XML@">
       <uap:VisualElements
         AppListEntry="none"
-        DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@"
-        Description="@PASSEPARTOUT_DISPLAY_NAME_XML@"
+        DisplayName="@PASSEPARTOUT_TUNNEL_NAME_XML@"
+        Description="@PASSEPARTOUT_TUNNEL_NAME_XML@"
         BackgroundColor="transparent"
         Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@"
         Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />

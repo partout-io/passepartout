@@ -47,7 +47,7 @@ set(PP_BUILD_USE_WIREGUARD ON)
 
 # Set the Windows toolchain defaults and register the stop-host install hook
 # before Partout registers installation of its shared libraries.
-include("windows.cmake")
+include("windows/configure.cmake")
 configure_windows_platform()
 
 add_subdirectory(../partout partout)
@@ -122,7 +122,7 @@ if(WIN32)
         target_compile_definitions(passepartout-tunnel PRIVATE $<$<CONFIG:Debug>:PASSEPARTOUT_WAIT_FOR_DEBUGGER>)
     endif()
 else()
-    target_sources(passepartout-tunnel PRIVATE tunnel/main_posix.c tunnel/common.c)
+    target_sources(passepartout-tunnel PRIVATE tunnel/posix/main.c tunnel/posix/common.c)
     target_link_partout_runtime(passepartout-tunnel)
 endif()
 
