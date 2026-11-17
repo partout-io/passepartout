@@ -36,38 +36,38 @@ SettingsView::SettingsView(wxWindow *parent, AppContext &context, bool showVersi
     };
     Push(Localized(StringKey::ViewsSettingsTitle), [&](wxWindow *parent) {
         auto *main = new ThemeDetailView(parent);
-        main->Action(Localized(StringKey::GlobalNounsPreferences), [navigate, &context] {
+        main->Navigate(Localized(StringKey::GlobalNounsPreferences), [navigate, &context] {
             navigate(Localized(StringKey::GlobalNounsPreferences), [&context](wxWindow *parent) {
                 return new PreferencesView(parent, context.preferences);
             });
         });
-        main->Action(Localized(StringKey::GlobalNounsVersion), [navigate, versionPage] {
+        main->Navigate(Localized(StringKey::GlobalNounsVersion), [navigate, versionPage] {
             navigate(Localized(StringKey::GlobalNounsVersion), versionPage);
         });
         const auto release = context.version.Snapshot().release;
         if (release.latest) {
             auto title = Localized(StringKey::ViewsSettingsLinksUpdate);
             title.Replace("%@", wxString::FromUTF8(*release.latest));
-            main->Action(title, [main, url = release.downloadURL] {
+            main->Navigate(title, [main, url = release.downloadURL] {
                 OpenURL(main, url);
             });
         }
         main->Section(Localized(StringKey::GlobalNounsAbout));
-        main->Action(Localized(StringKey::ViewsSettingsLinksTitle), [navigate, &context] {
+        main->Navigate(Localized(StringKey::ViewsSettingsLinksTitle), [navigate, &context] {
             navigate(Localized(StringKey::ViewsSettingsLinksTitle), [&context](wxWindow *parent) {
                 return new LinksView(parent, context.constants);
             });
         });
-        main->Action(Localized(StringKey::ViewsSettingsCreditsTitle), [navigate, &context] {
+        main->Navigate(Localized(StringKey::ViewsSettingsCreditsTitle), [navigate, &context] {
             navigate(Localized(StringKey::ViewsSettingsCreditsTitle), [&context, navigate](wxWindow *parent) {
                 return new CreditsView(parent, context.credits, navigate);
             });
         });
         main->Section(Localized(StringKey::GlobalNounsTroubleshooting));
-        main->Action(Strings::Unlocalized::FAQ, [main, url = context.constants.websites.homeURL + "/faq"] {
+        main->Navigate(Strings::Unlocalized::FAQ, [main, url = context.constants.websites.homeURL + "/faq"] {
             OpenURL(main, url);
         });
-        main->Action(Localized(StringKey::ViewsDiagnosticsTitle), [navigate, &context] {
+        main->Navigate(Localized(StringKey::ViewsDiagnosticsTitle), [navigate, &context] {
             navigate(Localized(StringKey::ViewsDiagnosticsTitle), [&context, navigate](wxWindow *parent) {
                 return new DiagnosticsView(parent, context.diagnostics, context.preferences, navigate);
             });

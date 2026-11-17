@@ -18,7 +18,7 @@ public:
 };
 }
 ThemeProfileList::ThemeProfileList(wxWindow *parent)
-    : wxDataViewListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_MULTIPLE | wxDV_ROW_LINES) {
+    : ThemeList(parent, wxDV_MULTIPLE) {
     auto *store = new ProfileListStore;
     AssociateModel(store);
     store->DecRef();

@@ -45,64 +45,9 @@ ProfileCollectionView::ProfileCollectionView(wxWindow *parent, TunnelObservable 
     search_ = new wxSearchCtrl(this, wxID_ANY);
     search_->ShowCancelButton(true);
     layout->Add(search_, 0, wxEXPAND | wxBOTTOM, Theme::Spacing(this));
-    auto *choice = new wxChoice(this, wxID_ANY);
-    choice->Append(Localized(StringKey::AndroidProfilesLayoutListContentDescription));
-    choice->Append(Localized(StringKey::AndroidProfilesLayoutGridContentDescription));
-    choice->SetSelection(0);
-    layout->Add(choice, 0, wxBOTTOM, Theme::Spacing(this));
-    layouts_ = new wxSimplebook(this);
-    list_ = new ThemeProfileList(layouts_);
-    grid_ = new ThemeProfileGrid(layouts_);
-    layouts_->AddPage(list_, wxString(), true);
-    layouts_->AddPage(grid_, wxString());
-    layout->Add(layouts_, 1, wxEXPAND);
-    gridToggle_ = new wxCheckBox(this, wxID_ANY, Localized(StringKey::GlobalNounsEnabled));
-    gridToggle_->Hide();
-    layout->Add(gridToggle_, 0, wxTOP, Theme::Spacing(this));
+    list_ = new ThemeProfileList(this);
+    layout->Add(list_, 1, wxEXPAND);
     SetSizer(layout);
-    choice->Bind(wxEVT_CHOICE, [this, choice](wxCommandEvent &) {
-        const auto selected = SelectedIds();
-        gridLayout_ = choice->GetSelection() == 1;
-        layouts_->SetSelection(gridLayout_ ? 1 : 0);
-        gridToggle_->Show(gridLayout_);
-        RestoreSelection(selected);
-        UpdateGridToggle();
-        Layout();
-    });
-    grid_->Bind(wxEVT_LIST_ITEM_SELECTED, [this](wxListEvent &) {
-        if (rendering_) return;
-        UpdateGridToggle();
-        selectionChanged_();
-    });
-    grid_->Bind(wxEVT_LIST_ITEM_DESELECTED, [this](wxListEvent &) {
-        if (rendering_) return;
-        UpdateGridToggle();
-        selectionChanged_();
-    });
-    grid_->Bind(wxEVT_LIST_ITEM_ACTIVATED, [this](wxListEvent &event) {
-        const auto row = event.GetIndex();
-        if (!picking_ && row >= 0 && static_cast<std::size_t>(row) < visibleIds_.size()) edit_(visibleIds_[row]);
-    });
-    grid_->Bind(wxEVT_CONTEXT_MENU, [this](wxContextMenuEvent &event) {
-        if (event.GetPosition() != wxDefaultPosition) {
-            int flags = 0;
-            const auto row = grid_->HitTest(grid_->ScreenToClient(event.GetPosition()), flags);
-            if (row < 0 || !(flags & wxLIST_HITTEST_ONITEM)) return;
-            if (!(grid_->GetItemState(row, wxLIST_STATE_SELECTED) & wxLIST_STATE_SELECTED)) {
-                grid_->SetItemState(-1, 0, wxLIST_STATE_SELECTED);
-                grid_->SetItemState(row, wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
-                    wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
-            }
-            grid_->SetFocus();
-        }
-        ShowContextMenu(event.GetPosition());
-    });
-    gridToggle_->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent &) {
-        const auto selected = SelectedIds();
-        if (!picking_ && selected.size() == 1) tunnel_.SetEnabled(selected.front(), gridToggle_->GetValue());
-        snapshot_ = tunnel_.Snapshot();
-        RenderRows();
-    });
     search_->Bind(wxEVT_TEXT, [this](wxCommandEvent &) {
         RenderRows();
         selectionChanged_();
@@ -134,13 +79,6 @@ void ProfileCollectionView::Render(const AppSnapshot &state, bool picking) {
 }
 std::vector<std::string> ProfileCollectionView::SelectedIds() const {
     std::vector<std::string> ids;
-    if (gridLayout_) {
-        for (long row = grid_->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED); row >= 0;
-             row = grid_->GetNextItem(row, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) {
-            if (static_cast<std::size_t>(row) < visibleIds_.size()) ids.push_back(visibleIds_[row]);
-        }
-        return ids;
-    }
     wxDataViewItemArray selected;
     list_->GetSelections(selected);
     for (const auto &item : selected) {
@@ -153,7 +91,6 @@ void ProfileCollectionView::RenderRows() {
     rendering_ = true;
     const auto selected = SelectedIds();
     list_->Freeze();
-    grid_->Freeze();
     const auto query = search_->GetValue().Lower();
     std::vector<std::string> ids;
     for (const auto &profile : snapshot_.profiles) {
@@ -162,7 +99,6 @@ void ProfileCollectionView::RenderRows() {
     const bool rebuild = ids != visibleIds_;
     if (rebuild) {
         list_->DeleteAllItems();
-        grid_->DeleteAllItems();
     }
     visibleIds_ = std::move(ids);
     unsigned row = 0;
@@ -175,33 +111,21 @@ void ProfileCollectionView::RenderRows() {
         const auto transfer = TransferText(snapshot_, profile.id);
         if (rebuild) list_->AppendProfile(Text(profile.name), status, toggle.isOn, toggle.canInteract && !picking_, transfer);
         else list_->UpdateProfile(row, Text(profile.name), status, toggle.isOn, toggle.canInteract && !picking_, transfer);
-        if (rebuild) grid_->AppendProfile(Text(profile.name), status, transfer);
-        else grid_->UpdateProfile(row, Text(profile.name), status, transfer);
         ++row;
     }
     if (rebuild) RestoreSelection(selected);
     list_->Thaw();
-    grid_->Thaw();
     rendering_ = false;
-    UpdateGridToggle();
 }
 void ProfileCollectionView::RestoreSelection(const std::vector<std::string> &ids) {
     const bool wasRendering = rendering_;
     rendering_ = true;
     list_->UnselectAll();
-    grid_->SetItemState(-1, 0, wxLIST_STATE_SELECTED);
     for (std::size_t row = 0; row < visibleIds_.size(); ++row) {
         if (std::find(ids.begin(), ids.end(), visibleIds_[row]) == ids.end()) continue;
         list_->SelectRow(static_cast<unsigned>(row));
-        grid_->SetItemState(static_cast<long>(row), wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
     }
     rendering_ = wasRendering;
-}
-void ProfileCollectionView::UpdateGridToggle() {
-    const auto ids = SelectedIds();
-    const auto state = ids.size() == 1 ? TunnelObservable::StateForProfile(snapshot_, ids.front()) : TunnelObservable::ToggleState{};
-    gridToggle_->Enable(!picking_ && state.canInteract);
-    gridToggle_->SetValue(state.isOn);
 }
 void ProfileCollectionView::ToggleProfile(wxDataViewEvent &event) {
     if (picking_ || rendering_ || event.GetColumn() != ThemeProfileList::ToggleColumn) return;
@@ -215,20 +139,15 @@ void ProfileCollectionView::ToggleProfile(wxDataViewEvent &event) {
 }
 bool ProfileCollectionView::HasCollectionFocus() const {
     auto *focus = wxWindow::FindFocus();
-    return focus && (focus == list_ || list_->IsDescendant(focus) || focus == grid_ || grid_->IsDescendant(focus));
+    return focus && (focus == list_ || list_->IsDescendant(focus));
 }
 void ProfileCollectionView::ShowContextMenu(const wxPoint &screenPosition) {
     const auto ids = SelectedIds();
     if (ids.empty()) return;
-    wxWindow *collection = gridLayout_ ? static_cast<wxWindow *>(grid_) : list_;
+    wxWindow *collection = list_;
     wxPoint position;
     if (screenPosition != wxDefaultPosition) position = collection->ScreenToClient(screenPosition);
-    else if (gridLayout_) {
-        wxRect rect;
-        const auto selected = grid_->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-        if (selected >= 0) grid_->GetItemRect(selected, rect);
-        position = rect.GetBottomLeft();
-    } else position = list_->GetItemRect(list_->GetCurrentItem()).GetBottomLeft();
+    else position = list_->GetItemRect(list_->GetCurrentItem()).GetBottomLeft();
     wxMenu menu;
     if (ids.size() == 1) {
         menu.Append(wxID_EDIT, Localized(StringKey::GlobalActionsEdit));

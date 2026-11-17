@@ -4,8 +4,9 @@ set(APP_SOURCES
     app/context/app_context.cc
     app/main.cc
     app/strings/strings.cc
+    app/theme/detail_list.cc
     app/theme/detail_view.cc
-    app/theme/profile_grid.cc
+    app/theme/list.cc
     app/theme/profile_list.cc
     app/theme/theme.cc
     app/ui/configuration_picker.cc
@@ -41,6 +42,7 @@ if(WIN32)
         app/platform/windows_http_client.cc
         app/platform/windows_issue_handoff.cc
         app/platform/windows_tunnel.cc
+        app/platform/windows_url_launcher.cc
     )
 endif()
 set(CORE_SOURCES

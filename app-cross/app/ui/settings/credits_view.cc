@@ -18,16 +18,16 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsN
     Section(Localized(StringKey::ViewsSettingsCreditsLicenses));
     for (const auto &license : state.licenses) {
         const auto title = wxString::FromUTF8(license.name);
-        Action(title + " — " + wxString::FromUTF8(license.licenseName), [navigate, title, &credits, url = license.licenseURL] {
+        Navigate(title, [navigate, title, &credits, url = license.licenseURL] {
             navigate(title, [&credits, url, title](wxWindow *parent) {
                 return new LicenseView(parent, credits, url, title);
             });
-        });
+        }, wxString::FromUTF8(license.licenseName));
     }
     Section(Localized(StringKey::ViewsSettingsCreditsNotices));
     for (const auto &notice : state.notices) {
         const auto title = wxString::FromUTF8(notice.name);
-        Action(title, [navigate, title, content = notice.message] {
+        Navigate(title, [navigate, title, content = notice.message] {
             navigate(title, [title, content](wxWindow *parent) {
                 return new LongContentView(parent, title, wxString::FromUTF8(content));
             });

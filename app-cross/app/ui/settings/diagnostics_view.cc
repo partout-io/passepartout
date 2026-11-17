@@ -13,7 +13,7 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
     Section(Localized(StringKey::ViewsDiagnosticsSectionsLive));
     for (const bool tunnel : {false, true}) {
         const auto title = Localized(tunnel ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp);
-        Action(title, [title, tunnel, &diagnostics, navigate] {
+        Navigate(title, [title, tunnel, &diagnostics, navigate] {
             navigate(title, [&diagnostics, tunnel](wxWindow *parent) {
                 return new RuntimeLogView(parent, diagnostics, tunnel);
             });
@@ -35,7 +35,7 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
         privacy->Enable(preferences.CanChangePrivateData());
     });
     timer_.Start(200);
-    Action(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), [&diagnostics, navigate] {
+    Navigate(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), [&diagnostics, navigate] {
         navigate(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), [&diagnostics](wxWindow *parent) {
             return new IssueReportView(parent, diagnostics);
         });

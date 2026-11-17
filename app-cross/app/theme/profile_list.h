@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include <wx/dataview.h>
+#include "list.h"
 
 namespace Passepartout {
-class ThemeProfileList final : public wxDataViewListCtrl {
+class ThemeProfileList final : public ThemeList {
 public:
     explicit ThemeProfileList(wxWindow *parent);
     void AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer);

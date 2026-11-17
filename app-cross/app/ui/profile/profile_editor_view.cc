@@ -108,22 +108,15 @@ void ProfileEditorView::Overview() {
             if constexpr (std::is_same_v<std::decay_t<decltype(tagged)>, Partout::Models::TaggedModuleCustom>) return false;
             else return std::find(draft.activeModulesIds.begin(), draft.activeModulesIds.end(), tagged.value.id) != draft.activeModulesIds.end();
         }, module);
-        const auto title = ModuleTitle(module) + " (" + Localized(enabled ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled) + ")";
-        auto *action = view->Action(title, [this, index] {
+        view->Navigate(ModuleTitle(module), [this, index] {
             OpenModule(index);
-        });
-        action->Enable(!std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module));
+        }, Localized(enabled ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled),
+            !std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module));
     }
     // Profile identifiers are raw configuration vocabulary, never translated.
-    auto id = wxString::FromUTF8(draft.id).Upper();
+    auto id = wxString::FromUTF8(draft.id);
     id.Replace("-", "");
-    wxString grouped;
-    for (std::size_t i = 0; i < id.size(); ++i) {
-        if (i && i % 4 == 0) grouped += i % 16 == 0 ? '\n' : ' ';
-        grouped += id[i];
-    }
-    if (auto *identifier = view->Field(Strings::Unlocalized::UUID, grouped))
-        identifier->SetFont(wxFontInfo(identifier->GetFont().GetPointSize()).Family(wxFONTFAMILY_TELETYPE));
+    view->Field(Strings::Unlocalized::UUID, id, true);
     view->Finish();
     Push(view, Localized(StringKey::GlobalNounsProfile));
 }

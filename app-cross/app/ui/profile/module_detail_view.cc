@@ -35,9 +35,9 @@ void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, b
     const auto text = ValueText(value);
     if (text.empty()) return;
     if (longContent) {
-        Action(title, [this, title, text] {
+        Navigate(title, [this, title, text] {
             openContent_(title, text);
-        });
+        }, text.BeforeFirst('\n'));
     } else Field(title, text);
 }
 void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent) {

@@ -52,6 +52,7 @@ if(WIN32)
         ../app/platform/windows_configuration_picker.cc
         ../app/platform/windows_file_activation.cc
         ../app/platform/windows_http_client.cc
+        ../app/platform/windows_url_launcher.cc
         ../app/platform/windows_issue_handoff.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)

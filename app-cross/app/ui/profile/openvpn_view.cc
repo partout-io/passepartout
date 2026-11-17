@@ -35,7 +35,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     }
     if (module.configuration->authUserPass.value_or(false)) {
         Section(Localized(StringKey::GlobalNounsAccount));
-        Action(Localized(StringKey::ModulesOpenvpnCredentials), std::move(openCredentials));
+        Navigate(Localized(StringKey::ModulesOpenvpnCredentials), std::move(openCredentials));
     }
     const auto noPull = value("noPullMask");
     std::vector<wxString> pulled;
@@ -124,7 +124,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
             const auto key = HexKey(wrap.at("key").at("data"));
             if (!key.empty()) {
                 const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap) + " (" + name + ")";
-                Action(title, [this, title, key] {
+                Navigate(title, [this, title, key] {
                     openContent_(title, key);
                 });
             }

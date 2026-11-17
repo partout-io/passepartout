@@ -8,7 +8,7 @@
 namespace Passepartout {
 LinksView::LinksView(wxWindow *parent, const Models::AppConstants &constants) : ThemeDetailView(parent) {
     const auto link = [this](StringKey key, std::string url) {
-        Action(Localized(key), [this, url = std::move(url)] {
+        Navigate(Localized(key), [this, url = std::move(url)] {
             OpenURL(this, url);
         });
     };
