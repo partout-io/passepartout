@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <wx/simplebook.h>
+#include <wx/uilocale.h>
 
 class ThemeDetails final : public wxApp {
 public:
@@ -24,6 +25,10 @@ int main(int argc, char **argv) {
         std::exit(2);
     });
     if (!wxTheApp->CallOnInit()) return 1;
+    for (const auto *tag : {"fr-FR", "pt-BR", "en-US", "zh-Hans"}) {
+        const auto *info = wxUILocale::FindLanguageInfo(wxLocaleIdent::FromTag(tag));
+        if (!info || info->Description.empty() || info->Description == tag) return 6;
+    }
     {
         wxFrame frame(nullptr, wxID_ANY, "Presentation regression");
         auto *book = new wxSimplebook(&frame);

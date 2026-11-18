@@ -6,6 +6,7 @@
 #include "LicenseView.h"
 #include "../LongContentView.h"
 #include "../../strings/Strings.h"
+#include <wx/uilocale.h>
 
 namespace Passepartout {
 CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsPresentation present) : ThemeDetailView(parent) {
@@ -40,7 +41,7 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsP
             if (!text.empty()) text += '\n';
             text += wxString::FromUTF8(author);
         }
-        const auto *info = wxLocale::FindLanguageInfo(wxString::FromUTF8(language));
+        const auto *info = wxUILocale::FindLanguageInfo(wxLocaleIdent::FromTag(wxString::FromUTF8(language)));
         Field(info ? wxGetTranslation(info->Description) : wxString::FromUTF8(language), text);
     }
     Finish();
