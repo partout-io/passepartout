@@ -26,8 +26,11 @@ void ThemeDetailView::Section(const wxString &title) {
     }
     list_ = nullptr;
     auto *label = new wxStaticText(this, wxID_ANY, title);
-    label->SetFont(label->GetFont().Bold());
-    layout_->Add(label, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL, Theme::Spacing(this));
+    auto font = label->GetFont().Bold();
+    if (presentation_ == Presentation::Centered) font = font.Scaled(1.3f);
+    label->SetFont(font);
+    layout_->Add(label, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL,
+        presentation_ == Presentation::Centered ? Theme::Spacing(this) / 2 : Theme::Spacing(this));
 }
 wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
     list_ = nullptr;
@@ -90,7 +93,8 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
             row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), 1,
                 wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
         }
-        layout_->Add(row, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL, Theme::Spacing(this));
+        layout_->Add(row, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL,
+        presentation_ == Presentation::Centered ? Theme::Spacing(this) / 2 : Theme::Spacing(this));
         return;
     }
     List()->Append(title, value, std::move(action), enabled);
@@ -181,8 +185,13 @@ void ThemeDetailView::Message(const wxString &text) {
     list_ = nullptr;
     auto *label = new wxStaticText(this, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
         presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxALIGN_LEFT);
-    label->Wrap(FromDIP(480));
-    layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, Theme::Spacing(this));
+    label->Wrap(presentation_ == Presentation::Centered ? GetCharWidth() * 36 : FromDIP(480));
+    if (presentation_ == Presentation::Centered) {
+        layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, 2 * Theme::Spacing(this));
+        layout_->AddSpacer(Theme::Spacing(this) / 2);
+    } else {
+        layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, Theme::Spacing(this));
+    }
 }
 void ThemeDetailView::Logo() {
     list_ = nullptr;

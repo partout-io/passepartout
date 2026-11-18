@@ -18,7 +18,7 @@ VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxS
     author.Replace("%@", name, false);
     author.Replace("%@", wxString::FromUTF8(Strings::Unlocalized::AuthorName), false);
     Message(author);
-    ContentLink(Strings::Unlocalized::Changelog, [present, content = state.changelog] {
+    ContentLink(wxString(Strings::Unlocalized::Changelog).Upper(), [present, content = state.changelog] {
         present(Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
             return new ThemeLongContent(parent, Strings::Unlocalized::Changelog, wxString::FromUTF8(content));
         });
