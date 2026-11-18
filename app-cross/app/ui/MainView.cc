@@ -7,9 +7,15 @@
 #include "profile/ProfileCoordinator.h"
 #include "settings/SettingsCoordinator.h"
 #include <wx/stockitem.h>
+#ifdef __WXMSW__
+#include <windows.h>
+#endif
 
 using namespace Passepartout;
 namespace {
+#ifdef __WXMSW__
+constexpr unsigned SystemAbout = 0x100;
+#endif
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
@@ -62,6 +68,14 @@ MainView::MainView(AppContext &context, bool demo,
     help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
     menus->Append(help, wxGetStockLabel(wxID_HELP));
     SetMenuBar(menus);
+#ifdef __WXMSW__
+    if (auto menu = GetSystemMenu(static_cast<HWND>(GetHandle()), FALSE)) {
+        const auto title = Localized(StringKey::GlobalNounsAbout) + " " +
+            Text(context.crossConstants.tags.app) + "...";
+        AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+        AppendMenuW(menu, MF_STRING, SystemAbout, title.wc_str());
+    }
+#endif
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         Import();
     }, wxID_ADD);
@@ -207,3 +221,15 @@ void MainView::Edit(const std::string &id) {
     ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wireGuardKeys);
     dialog.ShowModal();
 }
+
+#ifdef __WXMSW__
+WXLRESULT MainView::MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam) {
+    if (message == WM_SYSCOMMAND && (wParam & 0xfff0) == SystemAbout) {
+        // Dispatch through the existing About action after native menu handling.
+        auto *event = new wxCommandEvent(wxEVT_MENU, wxID_ABOUT);
+        wxQueueEvent(this, event);
+        return 0;
+    }
+    return wxFrame::MSWWindowProc(message, wParam, lParam);
+}
+#endif

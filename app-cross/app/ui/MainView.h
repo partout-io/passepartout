@@ -17,6 +17,9 @@ public:
     void Quit();
     void Activate(std::shared_ptr<const Passepartout::ConfigurationFiles> files);
 private:
+#ifdef __WXMSW__
+    WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam) override;
+#endif
     void Render();
     void UpdateActions();
     void Import();
