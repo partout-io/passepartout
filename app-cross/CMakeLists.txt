@@ -94,6 +94,28 @@ if(BUILD_APP)
     include("wx.cmake")
     target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
 
+    option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
+    if(BUILD_UI_TESTS)
+        add_executable(passepartout-ui-test
+            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc
+            app/theme/Theme.cc app/theme/ThemeList.cc
+            app/theme/ThemeDetailList.cc app/theme/ThemeDetailView.cc
+            app/theme/ThemeContentLink.cc app/strings/Strings.cc)
+        target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
+        if(MSVC)
+            target_compile_options(passepartout-ui-test PRIVATE /utf-8)
+        endif()
+        target_include_directories(passepartout-ui-test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+        if(WIN32)
+            target_link_windows_wxwidgets(passepartout-ui-test)
+        else()
+            target_link_system_wxwidgets(passepartout-ui-test)
+        endif()
+        enable_testing()
+        add_test(NAME passepartout-ui COMMAND passepartout-ui-test)
+    endif()
+
+
     if(APPLE)
         set_target_properties(passepartout PROPERTIES
             MACOSX_BUNDLE TRUE

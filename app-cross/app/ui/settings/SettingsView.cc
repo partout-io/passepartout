@@ -3,6 +3,7 @@
 
 #include "SettingsView.h"
 #include "../../theme/ThemeList.h"
+#include "../../theme/ThemeContentLink.h"
 #include "../../theme/Theme.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
@@ -17,11 +18,6 @@ public:
         return GetItemData(GetItem(row)) != 0;
     }
     bool GetAttrByRow(unsigned row, unsigned, wxDataViewItemAttr &attribute) const override {
-        const auto section = static_cast<SettingsSection>(GetItemData(GetItem(row)));
-        if (section == SettingsSection::FAQ || section == SettingsSection::Update) {
-            attribute.SetColour(wxSystemSettings::GetColour(wxSYS_COLOUR_HOTLIGHT));
-            return true;
-        }
         if (GetItemData(GetItem(row)) != 0) return false;
         attribute.SetBold(true);
         return true;
@@ -45,8 +41,6 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         caption.Replace("&", "&amp;");
         caption.Replace("<", "&lt;");
         caption.Replace(">", "&gt;");
-        if (section == static_cast<wxUIntPtr>(SettingsSection::FAQ) ||
-            section == static_cast<wxUIntPtr>(SettingsSection::Update)) caption = "<u>" + caption + "</u>";
         wxVector<wxVariant> values;
         values.push_back(wxVariant(caption));
         list->AppendItem(values, section);
@@ -55,13 +49,11 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         append(Localized(title), static_cast<wxUIntPtr>(section));
     };
     page(StringKey::GlobalNounsPreferences, SettingsSection::Preferences);
-    if (!updateTitle.empty()) append(updateTitle, static_cast<wxUIntPtr>(SettingsSection::Update));
     append(Localized(StringKey::GlobalNounsAbout), 0);
     page(StringKey::GlobalNounsVersion, SettingsSection::Version);
     page(StringKey::ViewsSettingsLinksTitle, SettingsSection::Links);
     page(StringKey::ViewsSettingsCreditsTitle, SettingsSection::Credits);
     append(Localized(StringKey::GlobalNounsTroubleshooting), 0);
-    append(Strings::Unlocalized::FAQ, static_cast<wxUIntPtr>(SettingsSection::FAQ));
     page(StringKey::ViewsDiagnosticsTitle, SettingsSection::Diagnostics);
     unsigned initialRow = 0;
     for (unsigned row = 0; row < list->GetItemCount(); ++row) {
@@ -80,15 +72,10 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         if (row == selectedRow_) return;
         selectedRow_ = row;
         const auto section = static_cast<SettingsSection>(target);
-        if (section != SettingsSection::FAQ && section != SettingsSection::Update) selected(section);
+        selected(section);
     };
     list->Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [select](wxDataViewEvent &event) {
         select(event.GetItem());
-    });
-    list->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, [list, selected](wxDataViewEvent &event) {
-        if (!event.GetItem().IsOk()) return;
-        const auto section = static_cast<SettingsSection>(list->GetItemData(event.GetItem()));
-        if (section == SettingsSection::FAQ || section == SettingsSection::Update) selected(section);
     });
     list->Bind(wxEVT_CHAR_HOOK, [list, select](wxKeyEvent &event) {
         const auto key = event.GetKeyCode();
@@ -128,7 +115,15 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         });
         event.Skip();
     });
+    if (!updateTitle.empty()) {
+        layout->Add(new ThemeContentLink(this, updateTitle, [selected] {
+            selected(SettingsSection::Update);
+        }), 0, wxBOTTOM, Theme::Spacing(this));
+    }
     layout->Add(list, 1, wxEXPAND);
+    layout->Add(new ThemeContentLink(this, Strings::Unlocalized::FAQ, [selected] {
+        selected(SettingsSection::FAQ);
+    }), 0, wxTOP, Theme::Spacing(this));
     layout->Add(new wxStaticText(this, wxID_ANY, version), 0,
         wxALIGN_CENTER_HORIZONTAL | wxTOP, Theme::Spacing(this));
     SetSizer(layout);

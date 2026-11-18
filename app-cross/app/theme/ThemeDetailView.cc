@@ -53,7 +53,7 @@ void ThemeDetailView::Field(const wxString &title, const wxString &value, bool m
         rows->Add(Value(value, monospace), 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
         return;
     }
-    if (!value.empty()) Row(title)->Add(Value(value, monospace), 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+    if (!value.empty()) Row(title)->Add(Value(value, monospace), 1, wxALIGN_CENTER_VERTICAL);
 }
 void ThemeDetailView::CopiableField(const wxString &title, const wxString &value, bool monospace) {
     auto *text = TextField(title, value, wxTE_READONLY);
@@ -70,6 +70,11 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
         return;
     }
     List()->Append(title, value, std::move(action), enabled);
+}
+void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> action) {
+    list_ = nullptr;
+    auto *link = new ThemeContentLink(this, title, std::move(action));
+    layout_->Add(link, 0, wxALL, Theme::Spacing(this));
 }
 void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
     std::function<void()> action) {
