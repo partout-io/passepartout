@@ -80,14 +80,12 @@ ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor
     });
     layout->Add(modules, 1, wxEXPAND | wxLEFT | wxRIGHT, spacing);
 
-    auto id = wxString::FromUTF8(draft.id);
-    id.Replace("-", "");
+    const auto id = wxString::FromUTF8(draft.id);
     auto *footer = new wxBoxSizer(wxHORIZONTAL);
     footer->Add(new wxStaticText(this, wxID_ANY, Strings::Unlocalized::UUID),
         0, wxALIGN_CENTER_VERTICAL | wxRIGHT, spacing);
     footer->AddStretchSpacer();
     auto *value = new wxStaticText(this, wxID_ANY, id);
-    value->SetFont(wxFontInfo(value->GetFont().GetPointSize()).Family(wxFONTFAMILY_TELETYPE));
     footer->Add(value, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, spacing);
     auto *copy = new wxButton(this, wxID_COPY);
     copy->Bind(wxEVT_BUTTON, [this, id](wxCommandEvent &) {
