@@ -121,9 +121,6 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         }), 0, wxBOTTOM, Theme::Spacing(this));
     }
     layout->Add(list, 1, wxEXPAND);
-    layout->Add(new ThemeContentLink(this, Strings::Unlocalized::FAQ, [selected] {
-        selected(SettingsSection::FAQ);
-    }), 0, wxTOP, Theme::Spacing(this));
     layout->Add(new wxStaticText(this, wxID_ANY, version), 0,
         wxALIGN_CENTER_HORIZONTAL | wxTOP, Theme::Spacing(this));
     SetSizer(layout);

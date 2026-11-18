@@ -12,7 +12,7 @@
 namespace Passepartout {
 class ThemeDetailView : public wxScrolledWindow {
 public:
-    enum class Presentation { List, Form };
+    enum class Presentation { List, Form, Plain };
     explicit ThemeDetailView(wxWindow *parent, Presentation presentation = Presentation::List);
     void Section(const wxString &title);
     void Field(const wxString &title, const wxString &value, bool monospace = false);

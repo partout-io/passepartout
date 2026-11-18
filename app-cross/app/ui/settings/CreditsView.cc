@@ -9,7 +9,7 @@
 #include <wx/uilocale.h>
 
 namespace Passepartout {
-CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsPresentation present) : ThemeDetailView(parent) {
+CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsPresentation present) : ThemeDetailView(parent, Presentation::Plain) {
     if (credits.HasLoadError()) {
         Message(Localized(StringKey::ErrorsAppOther));
         Finish();

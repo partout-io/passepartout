@@ -46,6 +46,13 @@ ThemeDetailList *ThemeDetailView::List() {
     return list_;
 }
 void ThemeDetailView::Field(const wxString &title, const wxString &value, bool monospace) {
+    if (presentation_ == Presentation::Plain) {
+        auto *row = new wxBoxSizer(wxVERTICAL);
+        row->Add(new wxStaticText(this, wxID_ANY, title), 0, wxBOTTOM, Theme::Spacing(this) / 2);
+        row->Add(new wxStaticText(this, wxID_ANY, value), 0, wxEXPAND);
+        layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        return;
+    }
     if (IsForm()) {
         if (value.empty()) return;
         auto *rows = FormRows();
@@ -67,6 +74,18 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
         link->Enable(enabled);
         rows->Add(link, 0, wxALIGN_CENTER_VERTICAL);
         rows->Add(Value(value), 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+        return;
+    }
+    if (presentation_ == Presentation::Plain) {
+        auto *row = new wxBoxSizer(wxHORIZONTAL);
+        auto *link = new ThemeContentLink(this, title, std::move(action));
+        link->Enable(enabled);
+        row->Add(link, 0, wxALIGN_CENTER_VERTICAL);
+        if (!value.empty()) {
+            row->Add(new wxStaticText(this, wxID_ANY, value), 1,
+                wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
+        }
+        layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
         return;
     }
     List()->Append(title, value, std::move(action), enabled);
