@@ -46,7 +46,9 @@ void ThemeDetailView::Section(const wxString &title) {
         layout_->AddSpacer(Theme::Spacing(this, Theme::Space::SectionContent));
         return;
     }
-    layout_->Add(label, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL,
+    const int alignment = presentation_ == Presentation::Centered
+        ? static_cast<int>(wxALIGN_CENTER_HORIZONTAL) : static_cast<int>(wxEXPAND);
+    layout_->Add(label, 0, alignment | wxALL,
         presentation_ == Presentation::Centered ? Theme::Spacing(this, Theme::Space::SectionContent) : Theme::Spacing(this));
 }
 wxBoxSizer *ThemeDetailView::Row(const wxString &title) {

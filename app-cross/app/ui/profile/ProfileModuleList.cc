@@ -7,6 +7,7 @@
 #include "../../theme/Theme.h"
 #include <algorithm>
 #include <type_traits>
+#include <wx/renderer.h>
 #include <wx/settings.h>
 
 namespace Passepartout {
@@ -90,7 +91,7 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
 }
 void ProfileModuleList::UpdateMetrics() {
     const int padding = 2 * Theme::Spacing(this);
-    const int checkboxWidth = std::max(GetCharHeight(), GetColumn(0)->GetRenderer()->GetSize().x) + padding;
+    const int checkboxWidth = std::max(GetCharHeight(), wxRendererNative::Get().GetCheckBoxSize(this).x) + padding;
     GetColumn(0)->SetWidth(checkboxWidth);
     int titleWidth = 0;
     for (unsigned row = 0; row < GetItemCount(); ++row) {
