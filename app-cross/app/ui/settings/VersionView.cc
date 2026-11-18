@@ -9,7 +9,7 @@
 
 namespace Passepartout {
 VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxString &name, SettingsPresentation present)
-    : ThemeDetailView(parent, Presentation::Plain) {
+    : ThemeDetailView(parent, Presentation::Centered) {
     const auto state = version.Snapshot();
     Logo();
     Section(name);

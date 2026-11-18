@@ -103,7 +103,7 @@ MainView::MainView(AppContext &context, bool demo,
                     modal.ShowModal();
                 };
                 return new VersionView(parent, context_.version, Text(context_.crossConstants.tags.app), present);
-            }, ThemeModal::Mode::ReadOnly, ThemeModal::Sizing::Content);
+            }, ThemeModal::Mode::ReadOnly, ThemeModal::Sizing::FixedContent);
         dialog.ShowModal();
     }, wxID_ABOUT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {

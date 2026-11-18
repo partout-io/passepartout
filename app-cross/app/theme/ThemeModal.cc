@@ -9,7 +9,7 @@ namespace Passepartout {
 ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
     const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode, Sizing sizing)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
-        wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
+        wxDEFAULT_DIALOG_STYLE | (sizing == Sizing::FixedContent ? 0 : wxRESIZE_BORDER)) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     layout->Add(makeContent(this), 1, wxEXPAND);
     auto *buttons = new wxStdDialogButtonSizer;
@@ -25,7 +25,7 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
         });
     }
     buttons->Realize();
-    layout->Add(buttons, 0, wxALIGN_RIGHT | wxALL, Theme::Spacing(this));
+    layout->Add(buttons, 0, (sizing == Sizing::FixedContent ? wxALIGN_CENTER_HORIZONTAL : wxALIGN_RIGHT) | wxALL, Theme::Spacing(this));
     SetSizer(layout);
     SetEscapeId(wxID_CANCEL);
     close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {

@@ -27,7 +27,7 @@ void ThemeDetailView::Section(const wxString &title) {
     list_ = nullptr;
     auto *label = new wxStaticText(this, wxID_ANY, title);
     label->SetFont(label->GetFont().Bold());
-    layout_->Add(label, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    layout_->Add(label, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL, Theme::Spacing(this));
 }
 wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
     list_ = nullptr;
@@ -81,7 +81,7 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
         rows->Add(link, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
         return;
     }
-    if (presentation_ == Presentation::Plain) {
+    if (presentation_ == Presentation::Plain || presentation_ == Presentation::Centered) {
         auto *row = new wxBoxSizer(wxHORIZONTAL);
         auto *link = new ThemeContentLink(this, title, std::move(action));
         link->Enable(enabled);
@@ -90,7 +90,7 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
             row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), 1,
                 wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
         }
-        layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        layout_->Add(row, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL, Theme::Spacing(this));
         return;
     }
     List()->Append(title, value, std::move(action), enabled);
@@ -179,7 +179,8 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
 }
 void ThemeDetailView::Message(const wxString &text) {
     list_ = nullptr;
-    auto *label = new wxStaticText(this, wxID_ANY, text);
+    auto *label = new wxStaticText(this, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
+        presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxALIGN_LEFT);
     label->Wrap(FromDIP(480));
     layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, Theme::Spacing(this));
 }
