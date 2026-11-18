@@ -19,6 +19,7 @@ inline constexpr auto MTU = "MTU";
 inline constexpr auto PAC = "PAC";
 inline constexpr auto Proxy = "Proxy";
 inline constexpr auto URL = "URL";
+inline constexpr auto OTP = "OTP";
 inline constexpr auto OpenVPN = "OpenVPN";
 inline constexpr auto WiFi = "Wi-Fi";
 inline constexpr auto WireGuard = "WireGuard";

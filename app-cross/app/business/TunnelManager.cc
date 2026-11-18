@@ -51,9 +51,10 @@ void TunnelManager::RollbackRegistration(const std::string &id) {
     // Never disconnect a connection as a side effect of import rollback.
     strategy_->Remove(id);
 }
-void TunnelManager::Connect(const Profile &profile) {
+void TunnelManager::Connect(const Profile &profile, std::optional<Partout::Models::OpenVpnCredentials> credentials) {
     logger_->Write(LogLevel::info, "tunnel", "Connect to profile");
     pending_.reset();
+    pendingCredentials_.reset();
     connectionRequested_ = false;
     sawConnecting_ = false;
     const auto tunnels = Fetch();
@@ -71,6 +72,7 @@ void TunnelManager::Connect(const Profile &profile) {
         strategy_->Disconnect(tunnel.id);
     }
     pending_ = profile;
+    pendingCredentials_ = std::move(credentials);
     handoverStarted_ = std::chrono::steady_clock::now();
     Advance();
 }
@@ -88,6 +90,7 @@ void TunnelManager::Advance() {
             if (target != tunnels.end() && target->status.value == Status::connected) {
                 logger_->Write(LogLevel::info, "tunnel", "Connected to profile");
                 pending_.reset();
+                pendingCredentials_.reset();
                 return;
             }
             if (target != tunnels.end() && target->status.value == Status::connecting) sawConnecting_ = true;
@@ -107,13 +110,16 @@ void TunnelManager::Advance() {
         }
         // Wait for observed connections; unavailable registrations are neither
         // treated as disconnected nor selected for automatic disconnection.
-        strategy_->Connect(pending_->id);
+        if (pendingCredentials_) strategy_->ConnectWithCredentials(pending_->id, *pendingCredentials_);
+        else strategy_->Connect(pending_->id);
+        pendingCredentials_.reset();
         logger_->Write(LogLevel::info, "tunnel", "Connect request accepted for profile");
         connectionRequested_ = true;
         handoverStarted_ = std::chrono::steady_clock::now();
         Advance();
     } catch (...) {
         pending_.reset();
+        pendingCredentials_.reset();
         throw;
     }
 }
@@ -122,15 +128,22 @@ std::optional<std::string> TunnelManager::PendingProfile() const {
     return pending_->id;
 }
 void TunnelManager::CancelPending(const std::string &id) {
-    if (pending_ && pending_->id == id) pending_.reset();
+    if (pending_ && pending_->id == id) {
+        pending_.reset();
+        pendingCredentials_.reset();
+    }
 }
 void TunnelManager::Disconnect(const std::string &id) {
     pending_.reset();
+    pendingCredentials_.reset();
     logger_->Write(LogLevel::info, "tunnel", "Disconnect profile");
     strategy_->Disconnect(id);
 }
 void TunnelManager::Remove(const std::string &id) {
-    if (pending_ && pending_->id == id) pending_.reset();
+    if (pending_ && pending_->id == id) {
+        pending_.reset();
+        pendingCredentials_.reset();
+    }
     const auto tunnels = Fetch();
     if (ObservationErrors().count(id))
         throw std::runtime_error("Unable to observe the VPN profile before removal.");

@@ -24,7 +24,7 @@ public:
     void ValidateNew(const Profile &profile);
     void ValidateUpdate(const Profile &profile);
     void RollbackRegistration(const std::string &id);
-    void Connect(const Profile &profile);
+    void Connect(const Profile &profile, std::optional<Partout::Models::OpenVpnCredentials> credentials = {});
     void Disconnect(const std::string &id);
     void Remove(const std::string &id);
     void ApplyPreferences(const Models::AppPreferences &preferences);
@@ -33,6 +33,7 @@ private:
     std::unique_ptr<TunnelStrategy> strategy_;
     std::shared_ptr<AppLogger> logger_;
     std::optional<Profile> pending_;
+    std::optional<Partout::Models::OpenVpnCredentials> pendingCredentials_;
     bool connectionRequested_ = false;
     bool sawConnecting_ = false;
     std::chrono::steady_clock::time_point handoverStarted_;

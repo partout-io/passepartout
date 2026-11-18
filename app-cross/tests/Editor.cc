@@ -6,6 +6,8 @@
 #include "business/FileProfileJournal.h"
 #include "business/FakeTunnelStrategy.h"
 #include "observables/ProfileEditor.h"
+#include "observables/InteractiveLogin.h"
+#include "observables/TunnelObservable.h"
 #include "observables/ProfileObservable.h"
 #include "observables/AppSession.h"
 #include <cassert>
@@ -47,6 +49,7 @@ public:
     bool rejects = false;
     Profile saved;
     unsigned saves = 0;
+    std::optional<Partout::Models::OpenVpnCredentials> connectionCredentials;
     std::vector<Models::AppTunnelInfo> Fetch() override {
         return fake.Fetch();
     }
@@ -57,6 +60,10 @@ public:
         fake.Save(profile);
     }
     void Connect(const std::string &id) override {
+        fake.Connect(id);
+    }
+    void ConnectWithCredentials(const std::string &id, const Partout::Models::OpenVpnCredentials &credentials) override {
+        connectionCredentials = credentials;
         fake.Connect(id);
     }
     void Disconnect(const std::string &id) override {
@@ -70,6 +77,26 @@ public:
 int main() {
     InitializeTests();
     const auto original = Example();
+    auto login = InteractiveLogin::FromProfile(original);
+    assert(login && !login->needsOTP && login->CanSubmit());
+    assert(login->credentials.username == "before");
+    login->credentials.username = "  ";
+    assert(!login->CanSubmit());
+    auto inactive = original;
+    inactive.activeModulesIds.clear();
+    assert(!InteractiveLogin::FromProfile(inactive));
+    auto otpProfile = original;
+    auto &otpModule = std::get<Partout::Models::TaggedModuleOpenVpn>(otpProfile.modules.front()).value;
+    otpModule.credentials->otpMethod.value = Partout::Models::OpenVpnCredentialsOTPMethod::append;
+    auto otpLogin = InteractiveLogin::FromProfile(otpProfile);
+    assert(otpLogin && otpLogin->needsOTP && !otpLogin->CanSubmit());
+    assert(otpLogin->credentials.password.empty());
+    assert(otpLogin->credentials.username == "before");
+    otpLogin->credentials.password = "123456";
+    assert(otpLogin->CanSubmit());
+    assert(otpModule.credentials->password == "old-secret");
+    otpModule.requiresInteractiveCredentials = false;
+    assert(!InteractiveLogin::FromProfile(otpProfile));
     ProfileEditor editor(original);
     assert(!editor.CanSave());
     editor.Rename(" \t\n");
@@ -115,6 +142,23 @@ int main() {
         assert(repository.Fetch().front() == original && backend->saved == original);
         assert(journal.Fetch().empty());
         ProfileObservable profiles(session);
+        TunnelObservable tunnel(session);
+        tunnel.Connect(original.id);
+        auto canceledLogin = tunnel.TakeInteractiveLogin();
+        assert(canceledLogin && !tunnel.TakeInteractiveLogin());
+        assert(!backend->connectionCredentials);
+        assert(backend->fake.Fetch().front().status.value == Status::disconnected);
+        canceledLogin.reset();
+        tunnel.Connect(original.id);
+        auto submittedLogin = tunnel.TakeInteractiveLogin();
+        assert(submittedLogin);
+        submittedLogin->credentials.password = "connection-only-secret";
+        tunnel.CompleteInteractiveLogin(std::move(*submittedLogin));
+        Wait(session);
+        assert(backend->connectionCredentials->password == "connection-only-secret");
+        assert(repository.Fetch().front() == original && backend->saved == original);
+        tunnel.Disconnect(original.id);
+        Wait(session);
         auto pending = profiles.CreateEditor(original.id);
         assert(pending);
         pending->Rename("Retry name");

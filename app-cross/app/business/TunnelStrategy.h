@@ -8,6 +8,7 @@
 #include "AppPreferences.h"
 #include <map>
 #include <memory>
+#include <stdexcept>
 
 namespace Passepartout {
 using Status = Models::AppProfileStatus::eAppProfileStatus;
@@ -21,6 +22,9 @@ public:
     }
     virtual void Save(const Profile &profile) = 0;
     virtual void Connect(const std::string &id) = 0;
+    virtual void ConnectWithCredentials(const std::string &, const Partout::Models::OpenVpnCredentials &) {
+        throw std::runtime_error("Interactive login is unavailable for this tunnel strategy.");
+    }
     virtual void Disconnect(const std::string &id) = 0;
     virtual void Remove(const std::string &id) = 0;
     virtual void ApplyPreferences(const Models::AppPreferences &) {}

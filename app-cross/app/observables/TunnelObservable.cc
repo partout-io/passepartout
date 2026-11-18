@@ -8,7 +8,11 @@
 
 namespace Passepartout {
 void TunnelObservable::Connect(std::string id) {
-    session_.Connect(std::move(id));
+    if (interactiveLogin_) return;
+    const auto editor = session_.CreateEditor(id);
+    if (!editor) return;
+    interactiveLogin_ = InteractiveLogin::FromProfile(editor->Original());
+    if (!interactiveLogin_) session_.Connect(std::move(id));
 }
 TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapshot &state, const std::string &id) {
     ToggleState result;
@@ -32,6 +36,16 @@ void TunnelObservable::SetEnabled(const std::string &id, bool enabled) {
     if (!state.canInteract || state.isOn == enabled) return;
     if (enabled) Connect(id);
     else Disconnect(id);
+}
+std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
+    auto login = std::move(interactiveLogin_);
+    interactiveLogin_.reset();
+    return login;
+}
+void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
+    if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).canInteract) return;
+    const auto id = login.original.id;
+    session_.Connect(id, std::move(login.credentials), std::move(login.original));
 }
 void TunnelObservable::Disconnect(std::string id) {
     session_.Disconnect(std::move(id));

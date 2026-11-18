@@ -350,8 +350,9 @@ void AppSession::Remove(std::vector<std::string> ids) {
         }
     });
 }
-void AppSession::Connect(std::string id) {
-    Post([this, id = std::move(id)] {
+void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnCredentials> credentials,
+    std::optional<Profile> original) {
+    Post([this, id = std::move(id), credentials = std::move(credentials), original = std::move(original)] {
         if (pendingPreferences_) {
             tunnel_.ApplyPreferences(*pendingPreferences_);
             pendingPreferences_.reset();
@@ -359,7 +360,9 @@ void AppSession::Connect(std::string id) {
         for (const auto &transaction : profiles_.PendingTransactions()) {
             if (transaction.id == id) throw std::runtime_error("Profile recovery is still pending.");
         }
-        tunnel_.Connect(profiles_.Find(id));
+        const auto profile = profiles_.Find(id);
+        if (original && profile != *original) throw std::runtime_error("Profile changed during interactive login.");
+        tunnel_.Connect(profile, credentials);
     }, AppErrorContext::tunnel);
 }
 void AppSession::Disconnect(std::string id) {

@@ -52,6 +52,9 @@ public:
     void Connect(const std::string &id) override {
         tunnel_.Connect(id);
     }
+    void ConnectWithCredentials(const std::string &id, const Partout::Models::OpenVpnCredentials &credentials) override {
+        tunnel_.Connect(id, credentials.username, credentials.password);
+    }
     void Disconnect(const std::string &id) override {
         tunnel_.Disconnect(id);
     }
