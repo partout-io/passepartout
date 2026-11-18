@@ -46,9 +46,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     sidebar->Add(modules_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     sidebarPanel->SetSizer(sidebar);
     auto *detail = new wxBoxSizer(wxVERTICAL);
-    heading_ = new wxStaticText(detailPanel, wxID_ANY, {});
-    heading_->SetFont(heading_->GetFont().Bold());
-    detail->Add(heading_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
     const int sidebarWidth = splitter->InitializePanes();
@@ -107,7 +104,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
 void ProfileCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     wxWindowUpdateLocker update(this);
     pages_->AddPage(page, title, true);
-    heading_->SetLabel(title);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     Layout();

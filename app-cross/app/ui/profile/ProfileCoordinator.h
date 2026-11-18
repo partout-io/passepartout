@@ -26,7 +26,6 @@ private:
     const WireGuardKeyGenerator &keys_;
     wxSimplebook *pages_;
     ProfileModuleList *modules_;
-    wxStaticText *heading_;
     std::size_t selection_ = 0;
     wxButton *save_;
     wxButton *cancel_;
