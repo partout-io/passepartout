@@ -5,11 +5,11 @@
 #pragma once
 #include "../../theme/ThemeDetailView.h"
 #include "../../observables/VersionObservable.h"
-#include "SettingsNavigation.h"
+#include "SettingsPresentation.h"
 
 namespace Passepartout {
 class VersionView final : public ThemeDetailView {
 public:
-    VersionView(wxWindow *parent, VersionObservable &version, const wxString &name, SettingsNavigation navigate);
+    VersionView(wxWindow *parent, VersionObservable &version, const wxString &name, SettingsPresentation present);
 };
 }

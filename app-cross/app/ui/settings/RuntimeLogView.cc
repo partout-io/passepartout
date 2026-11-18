@@ -11,9 +11,7 @@ RuntimeLogView::RuntimeLogView(wxWindow *parent, DiagnosticsObservable &diagnost
     : wxPanel(parent), diagnostics_(diagnostics), tunnel_(tunnel), timer_(this) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     content_ = new wxTextCtrl(this, wxID_ANY, {}, wxDefaultPosition, wxDefaultSize,
-        wxTE_READONLY | wxTE_MULTILINE | wxTE_BESTWRAP | wxBORDER_NONE);
-    Theme::Apply(this);
-    content_->SetBackgroundColour(GetBackgroundColour());
+        wxTE_READONLY | wxTE_MULTILINE | wxTE_BESTWRAP);
     content_->SetName(Localized(tunnel ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp));
     Theme::Monospace(content_);
     layout->Add(content_, 1, wxEXPAND | wxALL, Theme::Spacing(this));

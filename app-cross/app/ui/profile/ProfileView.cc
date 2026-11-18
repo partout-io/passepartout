@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ProfileView.h"
-#include "../Presentation.h"
 #include "../../theme/Theme.h"
+#include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
-#include <wx/clipbrd.h>
-#include <wx/dataobj.h>
 
 namespace Passepartout {
 ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor,
@@ -34,20 +32,9 @@ ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor
     auto *footer = new wxBoxSizer(wxHORIZONTAL);
     footer->Add(new wxStaticText(this, wxID_ANY, Strings::Unlocalized::UUID),
         0, wxALIGN_CENTER_VERTICAL | wxRIGHT, spacing);
-    footer->AddStretchSpacer();
-    auto *value = new wxStaticText(this, wxID_ANY, id);
-    footer->Add(value, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, spacing);
-    auto *copy = new wxButton(this, wxID_COPY);
-    copy->Bind(wxEVT_BUTTON, [this, id](wxCommandEvent &) {
-        if (!wxTheClipboard->Open()) {
-            PresentError(this);
-            return;
-        }
-        const bool copied = wxTheClipboard->SetData(new wxTextDataObject(id));
-        wxTheClipboard->Close();
-        if (!copied) PresentError(this);
-    });
-    footer->Add(copy, 0, wxALIGN_CENTER_VERTICAL);
+    auto *value = new wxTextCtrl(this, wxID_ANY, id, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    value->SetName(Strings::Unlocalized::UUID);
+    footer->Add(value, 1, wxALIGN_CENTER_VERTICAL);
     layout->Add(footer, 0, wxEXPAND | wxALL, spacing);
     SetSizer(layout);
 }

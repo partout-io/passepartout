@@ -16,11 +16,11 @@ public:
     explicit ThemeDetailView(wxWindow *parent, Presentation presentation = Presentation::List);
     void Section(const wxString &title);
     void Field(const wxString &title, const wxString &value, bool monospace = false);
-    void Navigate(const wxString &title, std::function<void()> action,
+    void CopiableField(const wxString &title, const wxString &value, bool monospace = false);
+    void ContentLink(const wxString &title, std::function<void()> action,
                   const wxString &value = {}, bool enabled = true);
     void LongContent(const wxString &title, const wxString &content, std::function<void()> action);
     void Items(const wxString &title, const std::vector<wxString> &values);
-    void Table(const std::vector<wxString> &columns, const std::vector<std::vector<wxString>> &rows);
     wxButton *Action(const wxString &title, std::function<void()> action);
     wxTextCtrl *TextField(const wxString &title, const wxString &value, long style = 0);
     wxCheckBox *Toggle(const wxString &title, const wxString &support, bool checked);

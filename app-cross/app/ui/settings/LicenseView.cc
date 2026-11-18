@@ -11,9 +11,7 @@ LicenseView::LicenseView(wxWindow *parent, CreditsObservable &credits, std::stri
     : wxPanel(parent), credits_(credits), url_(std::move(url)), timer_(this) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     content_ = new wxTextCtrl(this, wxID_ANY, {}, wxDefaultPosition, wxDefaultSize,
-        wxTE_READONLY | wxTE_MULTILINE | wxTE_BESTWRAP | wxBORDER_NONE);
-    Theme::Apply(this);
-    content_->SetBackgroundColour(GetBackgroundColour());
+        wxTE_READONLY | wxTE_MULTILINE | wxTE_BESTWRAP);
     content_->SetName(title);
     Theme::Monospace(content_);
     layout->Add(content_, 1, wxEXPAND | wxALL, Theme::Spacing(this));

@@ -7,5 +7,5 @@
 #include <functional>
 
 namespace Passepartout {
-using SettingsNavigation = std::function<void(wxString, std::function<wxWindow *(wxWindow *)>)>;
+using SettingsPresentation = std::function<void(wxString, std::function<wxWindow *(wxWindow *)>)>;
 }

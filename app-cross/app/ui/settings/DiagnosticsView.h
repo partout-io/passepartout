@@ -6,13 +6,13 @@
 #include "../../theme/ThemeDetailView.h"
 #include "../../observables/DiagnosticsObservable.h"
 #include "../../observables/UserPreferencesObservable.h"
-#include "SettingsNavigation.h"
+#include "SettingsPresentation.h"
 
 namespace Passepartout {
 class DiagnosticsView final : public ThemeDetailView {
 public:
     DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagnostics,
-                    UserPreferencesObservable &preferences, SettingsNavigation navigate);
+                    UserPreferencesObservable &preferences, SettingsPresentation present);
 private:
     wxTimer timer_;
 };

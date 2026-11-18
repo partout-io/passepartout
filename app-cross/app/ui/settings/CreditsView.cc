@@ -8,7 +8,7 @@
 #include "../../strings/Strings.h"
 
 namespace Passepartout {
-CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsNavigation navigate) : ThemeDetailView(parent) {
+CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsPresentation present) : ThemeDetailView(parent) {
     if (credits.HasLoadError()) {
         Message(Localized(StringKey::ErrorsAppOther));
         Finish();
@@ -18,8 +18,8 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsN
     Section(Localized(StringKey::ViewsSettingsCreditsLicenses));
     for (const auto &license : state.licenses) {
         const auto title = wxString::FromUTF8(license.name);
-        Navigate(title, [navigate, title, &credits, url = license.licenseURL] {
-            navigate(title, [&credits, url, title](wxWindow *parent) {
+        ContentLink(title, [present, title, &credits, url = license.licenseURL] {
+            present(title, [&credits, url, title](wxWindow *parent) {
                 return new LicenseView(parent, credits, url, title);
             });
         }, wxString::FromUTF8(license.licenseName));
@@ -27,8 +27,8 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsN
     Section(Localized(StringKey::ViewsSettingsCreditsNotices));
     for (const auto &notice : state.notices) {
         const auto title = wxString::FromUTF8(notice.name);
-        Navigate(title, [navigate, title, content = notice.message] {
-            navigate(title, [title, content](wxWindow *parent) {
+        ContentLink(title, [present, title, content = notice.message] {
+            present(title, [title, content](wxWindow *parent) {
                 return new LongContentView(parent, title, wxString::FromUTF8(content));
             });
         });

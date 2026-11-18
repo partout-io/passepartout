@@ -47,7 +47,8 @@ void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, b
         LongContent(title, text, [this, title, text] {
             openContent_(title, text);
         });
-    } else Field(title, text);
+    } else if (value.is_boolean()) Field(title, text);
+    else CopiableField(title, text);
 }
 void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent) {
     Row(Localized(title), value, longContent);
@@ -89,16 +90,6 @@ void ModuleDetailView::IP(const wxString &title, const nlohmann::json &settings,
     auto routes = [this](StringKey label, const nlohmann::json &values) {
         if (!values.is_array() || values.empty()) return;
         Section(Localized(label));
-        if (IsForm()) {
-            std::vector<std::vector<wxString>> rows;
-            for (const auto &route : values) {
-                const auto destination = route.value("destination", nlohmann::json());
-                rows.push_back({destination.is_null() ? Localized(StringKey::GlobalNounsDefault) : ValueText(destination),
-                    ValueText(route.value("gateway", nlohmann::json()))});
-            }
-            Table({Localized(StringKey::GlobalNounsDestination), Localized(StringKey::GlobalNounsGateway)}, rows);
-            return;
-        }
         for (const auto &route : values) {
             const auto destination = route.value("destination", nlohmann::json());
             if (destination.is_null()) Field(Localized(StringKey::GlobalNounsDestination), Localized(StringKey::GlobalNounsDefault));

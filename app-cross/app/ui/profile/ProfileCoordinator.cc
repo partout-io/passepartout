@@ -6,7 +6,6 @@
 #include "ProfileView.h"
 #include "ProfileModuleList.h"
 #include "OpenVPNView.h"
-#include "OpenVPNCredentialsView.h"
 #include "OpenVPNRemotesView.h"
 #include "DNSView.h"
 #include "HTTPProxyView.h"
@@ -20,7 +19,7 @@
 #include <wx/display.h>
 #include <wx/wupdlock.h>
 #include "../../theme/ThemeSplitView.h"
-#include "../../theme/ThemeNavigationHeader.h"
+#include "../../theme/ThemeModal.h"
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
@@ -46,10 +45,9 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     sidebar->Add(modules_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     sidebarPanel->SetSizer(sidebar);
     auto *detail = new wxBoxSizer(wxVERTICAL);
-    navigation_ = new ThemeNavigationHeader(detailPanel, [this] {
-        Back();
-    });
-    detail->Add(navigation_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    heading_ = new wxStaticText(detailPanel, wxID_ANY, {});
+    heading_->SetFont(heading_->GetFont().Bold());
+    detail->Add(heading_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
     const int sidebarWidth = splitter->InitializePanes();
@@ -79,14 +77,13 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
         EndModal(wxID_CANCEL);
     });
     Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        navigation_->HandleKey(event, [this] {
-            Dismiss();
-        });
+        if (event.GetKeyCode() == WXK_ESCAPE) Dismiss();
+        else event.Skip();
     });
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
         RefreshState();
     });
-    Push(new ProfileView(pages_, editor_, [this] {
+    ShowSection(new ProfileView(pages_, editor_, [this] {
         RefreshState();
     }), Localized(StringKey::GlobalNounsGeneral));
     RefreshState();
@@ -106,11 +103,10 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     position.y = std::max(workArea.y, std::min(position.y, workArea.GetBottom() - GetSize().y + 1));
     Move(position);
 }
-void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
+void ProfileCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     wxWindowUpdateLocker update(this);
     pages_->AddPage(page, title, true);
-    titles_.push_back(title);
-    navigation_->Update(title, titles_.size() > 1 && !editor_->Snapshot().saving);
+    heading_->SetLabel(title);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     Layout();
@@ -118,27 +114,13 @@ void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
 void ProfileCoordinator::Dismiss() {
     if (!editor_->Snapshot().saving) EndModal(wxID_CANCEL);
 }
-void ProfileCoordinator::Back() {
-    if (editor_->Snapshot().saving) return;
-    if (titles_.size() <= 1) return;
-    wxWindowUpdateLocker update(this);
-    pages_->DeletePage(pages_->GetPageCount() - 1);
-    titles_.pop_back();
-    pages_->SetSelection(pages_->GetPageCount() - 1);
-    navigation_->Update(titles_.back(), titles_.size() > 1);
-    pages_->InvalidateBestSize();
-    InvalidateBestSize();
-    Layout();
-    pages_->GetCurrentPage()->SetFocus();
-}
 void ProfileCoordinator::SelectSection(std::size_t selection) {
     if (editor_->Snapshot().saving || selection == selection_) return;
     wxWindowUpdateLocker update(this);
     selection_ = selection;
     pages_->DeleteAllPages();
-    titles_.clear();
     if (selection == 0) {
-        Push(new ProfileView(pages_, editor_, [this] {
+        ShowSection(new ProfileView(pages_, editor_, [this] {
             RefreshState();
         }), Localized(StringKey::GlobalNounsGeneral));
     } else {
@@ -148,7 +130,10 @@ void ProfileCoordinator::SelectSection(std::size_t selection) {
 void ProfileCoordinator::OpenModule(std::size_t index) {
     const auto module = editor_->Snapshot().draft.modules.at(index);
     const auto openContent = [this](wxString title, wxString content) {
-        Push(new LongContentView(pages_, title, content), title);
+        ThemeModal modal(this, title, [title, content](wxWindow *parent) {
+            return new LongContentView(parent, title, content);
+        });
+        modal.ShowModal();
     };
     wxWindow *page = std::visit([&](const auto &tagged) -> wxWindow * {
         using namespace Partout::Models;
@@ -158,20 +143,31 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, openContent);
         else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, openContent, keys_);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
-            return new OpenVPNView(pages_, tagged.value, openContent, [this, index] {
-                Push(new OpenVPNCredentialsView(pages_, editor_, index), Localized(StringKey::ModulesOpenvpnCredentials));
+            return new OpenVPNView(pages_, tagged.value, openContent, [this, index](std::string username, std::string password) {
+                auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
+                OpenVpnCredentials credentials{};
+                credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
+                if (module.value.credentials) credentials = *module.value.credentials;
+                credentials.username = std::move(username);
+                credentials.password = std::move(password);
+                module.value.credentials = std::move(credentials);
+                editor_->UpdateModule(module);
+                RefreshState();
             }, [this, index] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;
                 if (!module.configuration || !module.configuration->remotes) return;
-                Push(new OpenVPNRemotesView(pages_, *module.configuration->remotes),
-                    Localized(StringKey::ModulesOpenvpnRemotes));
+                ThemeModal modal(this, Localized(StringKey::ModulesOpenvpnRemotes),
+                    [&module](wxWindow *parent) {
+                        return new OpenVPNRemotesView(parent, *module.configuration->remotes);
+                    });
+                modal.ShowModal();
             });
         } else {
             return new ThemeDetailView(pages_);
         }
     }, module);
-    Push(page, ModuleTitle(module));
+    ShowSection(page, ModuleTitle(module));
 }
 void ProfileCoordinator::RefreshState() {
     const auto state = editor_->Snapshot();
@@ -185,7 +181,6 @@ void ProfileCoordinator::RefreshState() {
     if (state.saving) progress_->Start();
     else progress_->Stop();
     if (progress_->Show(state.saving)) Layout();
-    navigation_->Update(titles_.back(), titles_.size() > 1 && !state.saving);
     cancel_->Enable(!state.saving);
     save_->Enable(editor_->CanSave() && ProfileObservable::CanSave(profiles_.Snapshot(), state.draft.id));
     if (state.failed) {

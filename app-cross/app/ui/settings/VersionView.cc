@@ -8,7 +8,7 @@
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
-VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxString &name, SettingsNavigation navigate)
+VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxString &name, SettingsPresentation present)
     : ThemeDetailView(parent) {
     const auto state = version.Snapshot();
     Logo();
@@ -18,8 +18,8 @@ VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxS
     author.Replace("%@", name, false);
     author.Replace("%@", wxString::FromUTF8(Strings::Unlocalized::AuthorName), false);
     Message(author);
-    Navigate(Strings::Unlocalized::Changelog, [navigate, content = state.changelog] {
-        navigate(Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
+    ContentLink(Strings::Unlocalized::Changelog, [present, content = state.changelog] {
+        present(Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
             return new LongContentView(parent, Strings::Unlocalized::Changelog, wxString::FromUTF8(content));
         });
     });

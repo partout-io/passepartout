@@ -5,11 +5,11 @@
 #pragma once
 #include "../../theme/ThemeDetailView.h"
 #include "../../observables/CreditsObservable.h"
-#include "SettingsNavigation.h"
+#include "SettingsPresentation.h"
 
 namespace Passepartout {
 class CreditsView final : public ThemeDetailView {
 public:
-    CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsNavigation navigate);
+    CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsPresentation present);
 };
 }

@@ -9,7 +9,7 @@
 #include "DiagnosticsView.h"
 #include "../Presentation.h"
 #include "../../theme/ThemeSplitView.h"
-#include "../../theme/ThemeNavigationHeader.h"
+#include "../../theme/ThemeModal.h"
 #include <wx/display.h>
 #include <wx/wupdlock.h>
 #include <algorithm>
@@ -24,10 +24,9 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, 
     pages_ = new wxSimplebook(detailPanel);
     pages_->SetFitToCurrentPage(true);
     auto *detail = new wxBoxSizer(wxVERTICAL);
-    navigation_ = new ThemeNavigationHeader(detailPanel, [this] {
-        Back();
-    });
-    detail->Add(navigation_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    heading_ = new wxStaticText(detailPanel, wxID_ANY, {});
+    heading_->SetFont(heading_->GetFont().Bold());
+    detail->Add(heading_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
     const auto version = context.version.Snapshot();
@@ -55,9 +54,8 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, 
         EndModal(wxID_CANCEL);
     });
     Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        navigation_->HandleKey(event, [this] {
-            EndModal(wxID_CANCEL);
-        });
+        if (event.GetKeyCode() == WXK_ESCAPE) EndModal(wxID_CANCEL);
+        else event.Skip();
     });
     SelectSection(initial);
     GetSizer()->SetSizeHints(this);
@@ -83,63 +81,50 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
         OpenURL(this, context_.version.Snapshot().release.downloadURL);
         return;
     }
-    if (section == section_ && !titles_.empty()) return;
+    if (section == section_ && pages_->GetPageCount() != 0) return;
     wxWindowUpdateLocker update(this);
     section_ = section;
     pages_->DeleteAllPages();
-    titles_.clear();
-    const SettingsNavigation navigate = [this](auto title, auto makePage) {
-        Push(std::move(title), std::move(makePage));
+    const SettingsPresentation present = [this](auto title, auto makePage) {
+        ThemeModal modal(this, title, makePage);
+        modal.ShowModal();
     };
     switch (section) {
         case SettingsSection::Preferences:
-            Push(Localized(StringKey::GlobalNounsPreferences), [this](wxWindow *parent) {
+            ShowSection(Localized(StringKey::GlobalNounsPreferences), [this](wxWindow *parent) {
                 return new PreferencesView(parent, context_.preferences);
             });
             break;
         case SettingsSection::Version:
-            Push(Localized(StringKey::GlobalNounsVersion), [this, navigate](wxWindow *parent) {
+            ShowSection(Localized(StringKey::GlobalNounsVersion), [this, present](wxWindow *parent) {
                 return new VersionView(parent, context_.version,
-                    wxString::FromUTF8(context_.crossConstants.tags.app), navigate);
+                    wxString::FromUTF8(context_.crossConstants.tags.app), present);
             });
             break;
         case SettingsSection::Links:
-            Push(Localized(StringKey::ViewsSettingsLinksTitle), [this](wxWindow *parent) {
+            ShowSection(Localized(StringKey::ViewsSettingsLinksTitle), [this](wxWindow *parent) {
                 return new LinksView(parent, context_.constants);
             });
             break;
         case SettingsSection::Credits:
-            Push(Localized(StringKey::ViewsSettingsCreditsTitle), [this, navigate](wxWindow *parent) {
-                return new CreditsView(parent, context_.credits, navigate);
+            ShowSection(Localized(StringKey::ViewsSettingsCreditsTitle), [this, present](wxWindow *parent) {
+                return new CreditsView(parent, context_.credits, present);
             });
             break;
         case SettingsSection::Diagnostics:
-            Push(Localized(StringKey::ViewsDiagnosticsTitle), [this, navigate](wxWindow *parent) {
-                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, navigate);
+            ShowSection(Localized(StringKey::ViewsDiagnosticsTitle), [this, present](wxWindow *parent) {
+                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, present);
             });
             break;
         default:
             break;
     }
 }
-void SettingsCoordinator::Push(wxString title, std::function<wxWindow *(wxWindow *)> makePage) {
+void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage) {
     wxWindowUpdateLocker update(this);
     auto *page = makePage(pages_);
     pages_->AddPage(page, title, true);
-    titles_.push_back(std::move(title));
-    RefreshNavigation();
-}
-void SettingsCoordinator::Back() {
-    if (titles_.size() <= 1) return;
-    wxWindowUpdateLocker update(this);
-    pages_->DeletePage(pages_->GetPageCount() - 1);
-    titles_.pop_back();
-    pages_->SetSelection(pages_->GetPageCount() - 1);
-    RefreshNavigation();
-    pages_->GetCurrentPage()->SetFocus();
-}
-void SettingsCoordinator::RefreshNavigation() {
-    navigation_->Update(titles_.back(), titles_.size() > 1);
+    heading_->SetLabel(title);
     pages_->InvalidateBestSize();
     pages_->GetParent()->Layout();
     InvalidateBestSize();

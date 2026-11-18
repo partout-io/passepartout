@@ -3,24 +3,20 @@
 
 #pragma once
 #include "../../context/AppContext.h"
-#include "SettingsNavigation.h"
+#include "SettingsPresentation.h"
 #include "SettingsView.h"
 #include <wx/simplebook.h>
 
 namespace Passepartout {
-class ThemeNavigationHeader;
 class SettingsCoordinator final : public wxDialog {
 public:
     SettingsCoordinator(wxWindow *parent, AppContext &context, bool showVersion = false);
 private:
     void SelectSection(SettingsSection section);
-    void Push(wxString title, std::function<wxWindow *(wxWindow *)> makePage);
-    void Back();
-    void RefreshNavigation();
+    void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage);
     AppContext &context_;
     SettingsSection section_ = SettingsSection::Preferences;
     wxSimplebook *pages_;
-    ThemeNavigationHeader *navigation_;
-    std::vector<wxString> titles_;
+    wxStaticText *heading_;
 };
 }

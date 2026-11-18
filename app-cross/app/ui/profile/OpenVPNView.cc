@@ -23,7 +23,7 @@ wxString HexKey(const nlohmann::json &value) {
 }
 }
 OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module,
-    OpenModuleContent openContent, std::function<void()> openCredentials, std::function<void()> openRemotes)
+    OpenModuleContent openContent, std::function<void(std::string, std::string)> updateCredentials, std::function<void()> openRemotes)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
@@ -36,11 +36,20 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         const auto count = module.configuration->remotes->size();
         auto summary = Localized(count == 1 ? StringKey::GlobalNounsEntriesOne : StringKey::GlobalNounsEntriesN);
         summary.Replace("%d", wxNumberFormatter::ToString(static_cast<long>(count)));
-        Navigate(Localized(StringKey::ModulesOpenvpnRemotes), std::move(openRemotes), summary);
+        ContentLink(Localized(StringKey::ModulesOpenvpnRemotes), std::move(openRemotes), summary);
     }
     if (module.configuration->authUserPass.value_or(false)) {
         Section(Localized(StringKey::GlobalNounsAccount));
-        Navigate(Localized(StringKey::ModulesOpenvpnCredentials), std::move(openCredentials));
+        auto *username = TextField(Localized(StringKey::GlobalNounsUsername),
+            module.credentials ? wxString::FromUTF8(module.credentials->username) : wxString{});
+        auto *password = TextField(Localized(StringKey::GlobalNounsPassword),
+            module.credentials ? wxString::FromUTF8(module.credentials->password) : wxString{}, wxTE_PASSWORD);
+        const auto update = [username, password, updateCredentials](wxCommandEvent &) {
+            updateCredentials(username->GetValue().ToStdString(wxConvUTF8),
+                password->GetValue().ToStdString(wxConvUTF8));
+        };
+        username->Bind(wxEVT_TEXT, update);
+        password->Bind(wxEVT_TEXT, update);
     }
     const auto noPull = value("noPullMask");
     std::vector<wxString> pulled;
@@ -90,8 +99,8 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
             }
             Row(StringKey::ModulesOpenvpnDataCiphers, ciphers, true);
         }
-        Row(StringKey::ModulesOpenvpnCipher, value("cipher"));
-        Row(StringKey::ModulesOpenvpnDigest, value("digest"));
+        Field(Localized(StringKey::ModulesOpenvpnCipher), ValueText(value("cipher")));
+        Field(Localized(StringKey::ModulesOpenvpnDigest), ValueText(value("digest")));
         const auto xorMethod = value("xorMethod");
         if (xorMethod.is_object()) {
             auto text = ValueText(xorMethod.at("type"));

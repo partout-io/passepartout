@@ -36,7 +36,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         Row(StringKey::ModulesWireguardPresharedKey, peer.value("preSharedKey", nlohmann::json()), true);
         Row(StringKey::GlobalNounsEndpoint, peer.value("endpoint", nlohmann::json()), true);
         Row(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()), true);
-        Duration(StringKey::GlobalNounsKeepAlive, peer.value("keepAlive", nlohmann::json()));
+        Row(StringKey::GlobalNounsKeepAlive, peer.value("keepAlive", nlohmann::json()));
     }
     Finish();
 }
