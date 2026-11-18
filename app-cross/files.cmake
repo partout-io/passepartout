@@ -5,7 +5,6 @@ set(APP_SOURCES
     app/context/AppContext.cc
     app/strings/Strings.cc
     app/theme/Theme.cc
-    app/theme/ThemeAbout.cc
     app/theme/ThemeContentLink.cc
     app/theme/ThemeDetailList.cc
     app/theme/ThemeDetailView.cc
@@ -41,6 +40,7 @@ set(APP_SOURCES
     app/ui/settings/RuntimeLogView.cc
     app/ui/settings/SettingsCoordinator.cc
     app/ui/settings/SettingsView.cc
+    app/ui/settings/VersionView.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES

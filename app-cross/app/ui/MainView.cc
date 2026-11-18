@@ -7,7 +7,7 @@
 #include "profile/ProfileCoordinator.h"
 #include "settings/SettingsCoordinator.h"
 #include <wx/stockitem.h>
-#include "../theme/ThemeAbout.h"
+#include "settings/VersionView.h"
 #include "../strings/Unlocalized.h"
 #include "../theme/ThemeModal.h"
 #include "../theme/ThemeLongContent.h"
@@ -96,8 +96,15 @@ MainView::MainView(AppContext &context, bool demo,
         Quit();
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        ThemeAbout::Show(this, Text(context_.crossConstants.tags.app),
-            Text(context_.version.Snapshot().current), Strings::Unlocalized::AuthorName);
+        ThemeModal dialog(this, Localized(StringKey::GlobalNounsAbout) + " " + Text(context_.crossConstants.tags.app),
+            [this](wxWindow *parent) {
+                const SettingsPresentation present = [parent](auto title, auto makeContent) {
+                    ThemeModal modal(parent, title, makeContent);
+                    modal.ShowModal();
+                };
+                return new VersionView(parent, context_.version, Text(context_.crossConstants.tags.app), present);
+            }, ThemeModal::Mode::ReadOnly, ThemeModal::Sizing::Content);
+        dialog.ShowModal();
     }, wxID_ABOUT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         SettingsCoordinator dialog(this, context_);
