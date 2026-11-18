@@ -313,6 +313,10 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
             try {
                 logger_->Write(LogLevel::info, "profiles", "Import profile...");
                 const auto source = files->Read(index);
+#ifdef __linux__
+                // FIXME: Register imported profiles once Linux tunnel management is implemented.
+                profiles_.ImportText(source.text, source.name);
+#else
                 profiles_.ImportText(source.text, source.name, [this](const Profile &value) {
                     tunnel_.Register(value);
                 }, [this](const std::string &id) {
@@ -320,6 +324,7 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
                 }, [this](const Profile &value) {
                     tunnel_.ValidateNew(value);
                 });
+#endif
                 logger_->Write(LogLevel::info, "profiles", "Finished saving profile");
             } catch (const std::exception &) {
                 logger_->Write(LogLevel::error, "profiles", "Unable to import profile");
