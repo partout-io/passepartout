@@ -13,8 +13,11 @@ namespace Passepartout {
 namespace {
 class ModuleListStore final : public wxDataViewListStore {
 public:
-    bool IsEnabledByRow(unsigned row, unsigned) const override {
-        return GetItemData(GetItem(row)) != 0;
+    bool HasValue(const wxDataViewItem &item, unsigned column) const override {
+        return column != 0 || GetRow(item) != 0;
+    }
+    bool IsEnabledByRow(unsigned row, unsigned column) const override {
+        return column != 0 && GetItemData(GetItem(row)) != 0;
     }
 
 };
@@ -26,13 +29,11 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
     auto *store = new ModuleListStore;
     AssociateModel(store);
     store->DecRef();
+    AppendToggleColumn(wxString(), wxDATAVIEW_CELL_INERT, wxCOL_WIDTH_AUTOSIZE, wxALIGN_CENTER, 0);
     AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, 0);
-    auto *enabledColumn = AppendToggleColumn(wxString(), wxDATAVIEW_CELL_INERT);
-    // Activation editing is not implemented; keep its stock checkbox column hidden.
-    enabledColumn->SetHidden(true);
     wxVector<wxVariant> general;
-    general.push_back(wxVariant(Localized(StringKey::GlobalNounsGeneral)));
     general.push_back(wxVariant(false));
+    general.push_back(wxVariant(Localized(StringKey::GlobalNounsGeneral)));
     AppendItem(general, 1);
     const auto draft = editor.Snapshot().draft;
     for (std::size_t index = 0; index < draft.modules.size(); ++index) {
@@ -47,8 +48,8 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
             }
         }, module);
         wxVector<wxVariant> cells;
-        cells.push_back(wxVariant(ModuleTitle(module)));
         cells.push_back(wxVariant(enabled));
+        cells.push_back(wxVariant(ModuleTitle(module)));
         const bool navigable = !std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module);
         AppendItem(cells, navigable ? index + 2 : 0);
     }
@@ -99,17 +100,15 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
 }
 void ProfileModuleList::UpdateMetrics() {
     const int padding = 2 * Theme::Spacing(this);
-    int width = 0;
-    for (unsigned column = 0; column < 2; ++column) {
-        if (GetColumn(column)->IsHidden()) continue;
-        int columnWidth = 0;
-        for (unsigned row = 0; row < GetItemCount(); ++row) {
-            columnWidth = std::max(columnWidth, GetTextExtent(GetTextValue(row, column)).x);
-        }
-        columnWidth += padding;
-        GetColumn(column)->SetWidth(columnWidth);
-        width += columnWidth;
+    const int checkboxWidth = std::max(GetCharHeight(), GetColumn(0)->GetRenderer()->GetSize().x) + padding;
+    GetColumn(0)->SetWidth(checkboxWidth);
+    int titleWidth = 0;
+    for (unsigned row = 0; row < GetItemCount(); ++row) {
+        titleWidth = std::max(titleWidth, GetTextExtent(GetTextValue(row, 1)).x);
     }
+    titleWidth += padding;
+    GetColumn(1)->SetWidth(titleWidth);
+    int width = checkboxWidth + titleWidth;
     width += std::max(0, wxSystemSettings::GetMetric(wxSYS_VSCROLL_X, this));
     SetMinSize(ClientToWindowSize(wxSize(width, GetCharHeight() * 6)));
 }
