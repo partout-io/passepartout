@@ -17,6 +17,15 @@ namespace Passepartout {
 SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::ViewsSettingsTitle), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context) {
+    SetIcon(Theme::SettingsIcon(this));
+    Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
+        SetIcon(Theme::SettingsIcon(this));
+        event.Skip();
+    });
+    Bind(wxEVT_DPI_CHANGED, [this](wxDPIChangedEvent &event) {
+        SetIcon(Theme::SettingsIcon(this));
+        event.Skip();
+    });
     auto *layout = new wxBoxSizer(wxVERTICAL);
     auto *splitter = new ThemeSplitView(this);
     auto *detailPanel = splitter->Detail();

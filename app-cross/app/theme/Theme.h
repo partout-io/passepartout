@@ -9,6 +9,7 @@
 namespace Passepartout {
 struct Theme {
     static wxIcon AppIcon(wxWindow *window, int sizeDIP = 0);
+    static wxIcon SettingsIcon(wxWindow *window);
     static int Spacing(wxWindow *window);
     static void Apply(wxWindow *window);
     static void Monospace(wxWindow *window);
