@@ -32,7 +32,8 @@ ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor
     auto *footer = new wxBoxSizer(wxHORIZONTAL);
     footer->Add(new wxStaticText(this, wxID_ANY, Strings::Unlocalized::UUID),
         0, wxALIGN_CENTER_VERTICAL | wxRIGHT, spacing);
-    auto *value = new wxTextCtrl(this, wxID_ANY, id, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    auto *value = new wxTextCtrl(this, wxID_ANY, id, wxDefaultPosition, wxDefaultSize, wxTE_READONLY | wxBORDER_NONE | wxTE_RIGHT);
+    value->SetBackgroundColour(GetBackgroundColour());
     value->SetName(Strings::Unlocalized::UUID);
     footer->Add(value, 1, wxALIGN_CENTER_VERTICAL);
     layout->Add(footer, 0, wxEXPAND | wxALL, spacing);

@@ -65,7 +65,8 @@ void ThemeDetailView::Field(const wxString &title, const wxString &value, bool m
     if (!value.empty()) Row(title)->Add(Value(value, monospace), 1, wxALIGN_CENTER_VERTICAL);
 }
 void ThemeDetailView::CopiableField(const wxString &title, const wxString &value, bool monospace) {
-    auto *text = TextField(title, value, wxTE_READONLY);
+    auto *text = TextField(title, value, wxTE_READONLY | wxBORDER_NONE | wxTE_RIGHT);
+    text->SetBackgroundColour(text->GetParent()->GetBackgroundColour());
     if (monospace) Theme::Monospace(text);
 }
 void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> action,
