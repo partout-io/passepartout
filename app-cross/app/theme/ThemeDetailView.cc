@@ -29,6 +29,12 @@ void ThemeDetailView::Section(const wxString &title) {
     auto font = label->GetFont().Bold();
     if (presentation_ == Presentation::Centered) font = font.Scaled(1.3f);
     label->SetFont(font);
+    if (presentation_ == Presentation::Plain) {
+        layout_->AddSpacer(Theme::Spacing(this));
+        layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
+        layout_->AddSpacer(Theme::Spacing(this) / 2);
+        return;
+    }
     layout_->Add(label, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL,
         presentation_ == Presentation::Centered ? Theme::Spacing(this) / 2 : Theme::Spacing(this));
 }
@@ -55,7 +61,8 @@ void ThemeDetailView::Field(const wxString &title, const wxString &value, bool m
         row->Add(new wxStaticText(this, wxID_ANY, title), 0, wxRIGHT, Theme::Spacing(this));
         row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT),
             1, wxEXPAND);
-        layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        layout_->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
+        layout_->AddSpacer(Theme::Spacing(this) / 3);
         return;
     }
     if (IsForm()) {
@@ -93,8 +100,12 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
             row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), 1,
                 wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
         }
-        layout_->Add(row, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL,
-        presentation_ == Presentation::Centered ? Theme::Spacing(this) / 2 : Theme::Spacing(this));
+        if (presentation_ == Presentation::Plain) {
+            layout_->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
+            layout_->AddSpacer(Theme::Spacing(this) / 3);
+        } else {
+            layout_->Add(row, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, Theme::Spacing(this) / 2);
+        }
         return;
     }
     List()->Append(title, value, std::move(action), enabled);
@@ -102,7 +113,8 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
 void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> action) {
     list_ = nullptr;
     auto *link = new ThemeContentLink(this, title, std::move(action));
-    layout_->Add(link, 0, wxALL, Theme::Spacing(this));
+    layout_->Add(link, 0, wxLEFT | wxRIGHT, Theme::Spacing(this));
+    layout_->AddSpacer(Theme::Spacing(this) / 3);
 }
 void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
     std::function<void()> action) {
