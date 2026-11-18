@@ -1,21 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
-//
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../context/AppContext.h"
-#include "SettingsNavigation.h"
-#include <wx/simplebook.h>
+#include <wx/panel.h>
+#include <functional>
 
 namespace Passepartout {
-class SettingsView final : public wxDialog {
+enum class SettingsSection { Preferences = 1, Version, Links, Credits, FAQ, Diagnostics, Update };
+class SettingsView final : public wxPanel {
 public:
-    SettingsView(wxWindow *parent, AppContext &context, bool showVersion = false);
-private:
-    void Push(wxString title, std::function<wxWindow *(wxWindow *)> makePage);
-    void Back();
-    wxSimplebook *pages_;
-    wxButton *back_;
-    std::vector<wxString> titles_;
+    SettingsView(wxWindow *parent, const wxString &version, const wxString &updateTitle,
+        SettingsSection initial, std::function<void(SettingsSection)> selected);
 };
 }

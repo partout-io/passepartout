@@ -5,7 +5,7 @@
 #include "MainView.h"
 #include "../strings/Strings.h"
 #include "profile/ProfileCoordinator.h"
-#include "settings/SettingsView.h"
+#include "settings/SettingsCoordinator.h"
 #include <wx/stockitem.h>
 
 using namespace Passepartout;
@@ -69,11 +69,11 @@ MainView::MainView(AppContext &context, bool demo,
         Quit();
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        SettingsView dialog(this, context_, true);
+        SettingsCoordinator dialog(this, context_, true);
         dialog.ShowModal();
     }, wxID_ABOUT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        SettingsView dialog(this, context_);
+        SettingsCoordinator dialog(this, context_);
         dialog.ShowModal();
     }, wxID_PREFERENCES);
     import_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {

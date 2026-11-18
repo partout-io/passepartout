@@ -1,113 +1,131 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
-//
 // SPDX-License-Identifier: GPL-3.0
 
 #include "SettingsView.h"
-#include "PreferencesView.h"
-#include "VersionView.h"
-#include "CreditsView.h"
-#include "LinksView.h"
-#include "DiagnosticsView.h"
-#include "../Presentation.h"
+#include "../../theme/ThemeList.h"
+#include "../../theme/Theme.h"
+#include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
+#include <algorithm>
+#include <wx/settings.h>
 
 namespace Passepartout {
-SettingsView::SettingsView(wxWindow *parent, AppContext &context, bool showVersion)
-    : wxDialog(parent, wxID_ANY, Localized(StringKey::ViewsSettingsTitle), wxDefaultPosition,
-        wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
-    auto *layout = new wxBoxSizer(wxVERTICAL);
-    pages_ = new wxSimplebook(this);
-    layout->Add(pages_, 1, wxEXPAND);
-    auto *buttons = new wxBoxSizer(wxHORIZONTAL);
-    back_ = new wxButton(this, wxID_BACKWARD, Localized(StringKey::GlobalActionsBack));
-    auto *close = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsClose));
-    buttons->Add(back_);
-    buttons->AddStretchSpacer();
-    buttons->Add(close);
-    layout->Add(buttons, 0, wxEXPAND | wxALL, Theme::Spacing(this));
-    SetSizer(layout);
-    SetMinSize(FromDIP(wxSize(540, 420)));
-    SetSize(FromDIP(wxSize(680, 600)));
-    const SettingsNavigation navigate = [this](auto title, auto makePage) {
-        Push(std::move(title), std::move(makePage));
-    };
-    const auto versionPage = [&context, navigate](wxWindow *parent) {
-        return new VersionView(parent, context.version, wxString::FromUTF8(context.crossConstants.tags.app), navigate);
-    };
-    Push(Localized(StringKey::ViewsSettingsTitle), [&](wxWindow *parent) {
-        auto *main = new ThemeDetailView(parent);
-        main->Navigate(Localized(StringKey::GlobalNounsPreferences), [navigate, &context] {
-            navigate(Localized(StringKey::GlobalNounsPreferences), [&context](wxWindow *parent) {
-                return new PreferencesView(parent, context.preferences);
-            });
-        });
-        main->Navigate(Localized(StringKey::GlobalNounsVersion), [navigate, versionPage] {
-            navigate(Localized(StringKey::GlobalNounsVersion), versionPage);
-        });
-        const auto release = context.version.Snapshot().release;
-        if (release.latest) {
-            auto title = Localized(StringKey::ViewsSettingsLinksUpdate);
-            title.Replace("%@", wxString::FromUTF8(*release.latest));
-            main->Navigate(title, [main, url = release.downloadURL] {
-                OpenURL(main, url);
-            });
-        }
-        main->Section(Localized(StringKey::GlobalNounsAbout));
-        main->Navigate(Localized(StringKey::ViewsSettingsLinksTitle), [navigate, &context] {
-            navigate(Localized(StringKey::ViewsSettingsLinksTitle), [&context](wxWindow *parent) {
-                return new LinksView(parent, context.constants);
-            });
-        });
-        main->Navigate(Localized(StringKey::ViewsSettingsCreditsTitle), [navigate, &context] {
-            navigate(Localized(StringKey::ViewsSettingsCreditsTitle), [&context, navigate](wxWindow *parent) {
-                return new CreditsView(parent, context.credits, navigate);
-            });
-        });
-        main->Section(Localized(StringKey::GlobalNounsTroubleshooting));
-        main->Navigate(Strings::Unlocalized::FAQ, [main, url = context.constants.websites.homeURL + "/faq"] {
-            OpenURL(main, url);
-        });
-        main->Navigate(Localized(StringKey::ViewsDiagnosticsTitle), [navigate, &context] {
-            navigate(Localized(StringKey::ViewsDiagnosticsTitle), [&context, navigate](wxWindow *parent) {
-                return new DiagnosticsView(parent, context.diagnostics, context.preferences, navigate);
-            });
-        });
-        main->Finish();
-        return main;
-    });
-    if (showVersion) Push(Localized(StringKey::GlobalNounsVersion), versionPage);
-    back_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        Back();
-    });
-    close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        EndModal(wxID_CANCEL);
-    });
-    Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        if (event.GetKeyCode() == WXK_ESCAPE) Back();
-        else event.Skip();
-    });
-    CentreOnParent();
-}
-void SettingsView::Push(wxString title, std::function<wxWindow *(wxWindow *)> makePage) {
-    auto *page = makePage(pages_);
-    pages_->AddPage(page, title, true);
-    titles_.push_back(std::move(title));
-    SetTitle(titles_.back());
-    back_->Show(titles_.size() > 1);
-    Layout();
-    page->SetFocus();
-}
-void SettingsView::Back() {
-    if (titles_.size() == 1) {
-        EndModal(wxID_CANCEL);
-        return;
+namespace {
+class SettingsListStore final : public wxDataViewListStore {
+public:
+    bool IsEnabledByRow(unsigned row, unsigned) const override {
+        return GetItemData(GetItem(row)) != 0;
     }
-    pages_->DeletePage(pages_->GetPageCount() - 1);
-    titles_.pop_back();
-    pages_->SetSelection(pages_->GetPageCount() - 1);
-    SetTitle(titles_.back());
-    back_->Show(titles_.size() > 1);
-    Layout();
-    pages_->GetCurrentPage()->SetFocus();
+    bool GetAttrByRow(unsigned row, unsigned, wxDataViewItemAttr &attribute) const override {
+        const auto section = static_cast<SettingsSection>(GetItemData(GetItem(row)));
+        if (section == SettingsSection::FAQ || section == SettingsSection::Update) {
+            attribute.SetColour(wxSystemSettings::GetColour(wxSYS_COLOUR_HOTLIGHT));
+            return true;
+        }
+        if (GetItemData(GetItem(row)) != 0) return false;
+        attribute.SetBold(true);
+        return true;
+    }
+};
+}
+SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxString &updateTitle,
+    SettingsSection initial, std::function<void(SettingsSection)> selected)
+    : wxPanel(parent) {
+    auto *layout = new wxBoxSizer(wxVERTICAL);
+    auto *list = new ThemeList(this, wxDV_NO_HEADER);
+    list->SetName(Localized(StringKey::ViewsSettingsTitle));
+    auto *store = new SettingsListStore;
+    list->AssociateModel(store);
+    store->DecRef();
+    auto *caption = new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT, wxALIGN_LEFT);
+    caption->EnableMarkup();
+    list->AppendColumn(new wxDataViewColumn(wxString(), caption, 0, wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, 0), "string");
+    auto append = [list](const wxString &title, wxUIntPtr section) {
+        auto caption = title;
+        caption.Replace("&", "&amp;");
+        caption.Replace("<", "&lt;");
+        caption.Replace(">", "&gt;");
+        if (section == static_cast<wxUIntPtr>(SettingsSection::FAQ) ||
+            section == static_cast<wxUIntPtr>(SettingsSection::Update)) caption = "<u>" + caption + "</u>";
+        wxVector<wxVariant> values;
+        values.push_back(wxVariant(caption));
+        list->AppendItem(values, section);
+    };
+    auto page = [append](StringKey title, SettingsSection section) {
+        append(Localized(title), static_cast<wxUIntPtr>(section));
+    };
+    page(StringKey::GlobalNounsPreferences, SettingsSection::Preferences);
+    if (!updateTitle.empty()) append(updateTitle, static_cast<wxUIntPtr>(SettingsSection::Update));
+    append(Localized(StringKey::GlobalNounsAbout), 0);
+    page(StringKey::GlobalNounsVersion, SettingsSection::Version);
+    page(StringKey::ViewsSettingsLinksTitle, SettingsSection::Links);
+    page(StringKey::ViewsSettingsCreditsTitle, SettingsSection::Credits);
+    append(Localized(StringKey::GlobalNounsTroubleshooting), 0);
+    append(Strings::Unlocalized::FAQ, static_cast<wxUIntPtr>(SettingsSection::FAQ));
+    page(StringKey::ViewsDiagnosticsTitle, SettingsSection::Diagnostics);
+    unsigned initialRow = 0;
+    for (unsigned row = 0; row < list->GetItemCount(); ++row) {
+        if (list->GetItemData(list->RowToItem(row)) == static_cast<wxUIntPtr>(initial)) initialRow = row;
+    }
+    list->SelectRow(initialRow);
+    list->Bind(wxEVT_DATAVIEW_SELECTION_CHANGED,
+        [list, selected, previous = initialRow](wxDataViewEvent &event) mutable {
+            if (!event.GetItem().IsOk()) return;
+            const auto item = list->GetItemData(event.GetItem());
+            const auto section = static_cast<SettingsSection>(item);
+            const bool external = section == SettingsSection::FAQ || section == SettingsSection::Update;
+            if (!item) {
+                list->SelectRow(previous);
+                return;
+            }
+            previous = list->ItemToRow(event.GetItem());
+            if (!external) selected(section);
+        });
+    list->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, [list, selected](wxDataViewEvent &event) {
+        if (!event.GetItem().IsOk()) return;
+        const auto section = static_cast<SettingsSection>(list->GetItemData(event.GetItem()));
+        if (section == SettingsSection::FAQ || section == SettingsSection::Update) selected(section);
+    });
+    list->Bind(wxEVT_CHAR_HOOK, [list](wxKeyEvent &event) {
+        const auto key = event.GetKeyCode();
+        if (key != WXK_UP && key != WXK_DOWN) {
+            event.Skip();
+            return;
+        }
+        const int step = key == WXK_DOWN ? 1 : -1;
+        int row = list->GetSelectedRow() + step;
+        while (row >= 0 && row < static_cast<int>(list->GetItemCount())) {
+            if (list->GetItemData(list->RowToItem(row)) != 0) {
+                list->SelectRow(row);
+                list->SetCurrentItem(list->RowToItem(row));
+                list->EnsureVisible(list->RowToItem(row));
+                return;
+            }
+            row += step;
+        }
+    });
+    auto metrics = [list] {
+        int width = list->GetCharWidth() * 16;
+        for (unsigned row = 0; row < list->GetItemCount(); ++row) {
+            width = std::max(width, list->GetTextExtent(list->GetTextValue(row, 0)).x + 2 * Theme::Spacing(list));
+        }
+        list->SetMinSize(wxSize(width, list->GetCharHeight() * 8));
+    };
+    metrics();
+    list->Bind(wxEVT_SIZE, [list](wxSizeEvent &event) {
+        list->GetColumn(0)->SetWidth(std::max(1, list->GetClientSize().x - list->FromDIP(4)));
+        event.Skip();
+    });
+    Bind(wxEVT_DPI_CHANGED, [this, metrics](wxDPIChangedEvent &event) {
+        CallAfter([this, metrics] {
+            metrics();
+            Layout();
+        });
+        event.Skip();
+    });
+    layout->Add(list, 1, wxEXPAND);
+    layout->Add(new wxStaticText(this, wxID_ANY, version), 0,
+        wxALIGN_CENTER_HORIZONTAL | wxTOP, Theme::Spacing(this));
+    SetSizer(layout);
 }
 }

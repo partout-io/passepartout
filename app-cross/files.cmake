@@ -9,6 +9,7 @@ set(APP_SOURCES
     app/theme/ThemeDetailView.cc
     app/theme/ThemeList.cc
     app/theme/ThemeProfileList.cc
+    app/theme/ThemeSplitView.cc
     app/ui/ConfigurationPicker.cc
     app/ui/LongContentView.cc
     app/ui/MainView.cc
@@ -34,6 +35,7 @@ set(APP_SOURCES
     app/ui/settings/LinksView.cc
     app/ui/settings/PreferencesView.cc
     app/ui/settings/RuntimeLogView.cc
+    app/ui/settings/SettingsCoordinator.cc
     app/ui/settings/SettingsView.cc
     app/ui/settings/VersionView.cc
 )

@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <wx/display.h>
 #include <wx/wupdlock.h>
-#include <wx/splitter.h>
+#include "../../theme/ThemeSplitView.h"
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
@@ -27,9 +27,9 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
       profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
-    auto *splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE);
-    auto *sidebarPanel = new wxPanel(splitter);
-    auto *detailPanel = new wxPanel(splitter);
+    auto *splitter = new ThemeSplitView(this);
+    auto *sidebarPanel = splitter->Sidebar();
+    auto *detailPanel = splitter->Detail();
     pages_ = new wxSimplebook(detailPanel);
     pages_->SetFitToCurrentPage(true);
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
@@ -54,13 +54,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     detail->Add(navigation, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
-    const int sidebarWidth = std::max(GetCharWidth() * 28, sidebarPanel->GetBestSize().x);
-    splitter->SetMinimumPaneSize(GetCharWidth() * 16);
-    splitter->SetSashGravity(0.0);
-    splitter->SplitVertically(sidebarPanel, detailPanel, sidebarWidth);
-    splitter->Bind(wxEVT_SPLITTER_DOUBLECLICKED, [](wxSplitterEvent &) {
-        // Keep both navigation and content visible.
-    });
+    const int sidebarWidth = splitter->InitializePanes();
     layout->Add(splitter, 1, wxEXPAND);
     buttons->Add(progress_, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, Theme::Spacing(this));
     buttons->AddStretchSpacer();
