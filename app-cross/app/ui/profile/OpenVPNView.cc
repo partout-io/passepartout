@@ -23,7 +23,7 @@ wxString HexKey(const nlohmann::json &value) {
 }
 }
 OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module,
-    OpenModuleContent openContent, std::function<void(std::string, std::string)> updateCredentials, std::function<void()> openRemotes)
+    OpenModuleContent openContent, std::function<void()> openCredentials, std::function<void()> openRemotes)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
@@ -40,16 +40,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     }
     if (module.configuration->authUserPass.value_or(false)) {
         Section(Localized(StringKey::GlobalNounsAccount));
-        auto *username = TextField(Localized(StringKey::GlobalNounsUsername),
-            module.credentials ? wxString::FromUTF8(module.credentials->username) : wxString{});
-        auto *password = TextField(Localized(StringKey::GlobalNounsPassword),
-            module.credentials ? wxString::FromUTF8(module.credentials->password) : wxString{}, wxTE_PASSWORD);
-        const auto update = [username, password, updateCredentials](wxCommandEvent &) {
-            updateCredentials(username->GetValue().ToStdString(wxConvUTF8),
-                password->GetValue().ToStdString(wxConvUTF8));
-        };
-        username->Bind(wxEVT_TEXT, update);
-        password->Bind(wxEVT_TEXT, update);
+        ContentLink(Localized(StringKey::ModulesOpenvpnCredentials), std::move(openCredentials));
     }
     const auto noPull = value("noPullMask");
     std::vector<wxString> pulled;
@@ -106,7 +97,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
             auto text = ValueText(xorMethod.at("type"));
             const auto mask = HexKey(xorMethod.value("mask", nlohmann::json()));
             if (!mask.empty()) text += " " + mask;
-            Row(XOR, text.ToStdString(wxConvUTF8), true);
+            Row(XOR, text.ToStdString(wxConvUTF8), true, ValueText(xorMethod.at("type")));
         }
     }
     if (HasContent(value("compressionFraming")) || HasContent(value("compressionAlgorithm"))) {
@@ -128,17 +119,17 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     }
     if (HasContent(value("ca")) || HasContent(value("clientCertificate")) || HasContent(value("clientKey")) || HasContent(value("tlsWrap"))) {
         Section(TLS);
-        Row(CA, value("ca"), true);
-        Row(StringKey::GlobalNounsCertificate, value("clientCertificate"), true);
-        Row(StringKey::GlobalNounsKey, value("clientKey"), true);
+        Row(CA, value("ca"), true, wxString{});
+        Row(StringKey::GlobalNounsCertificate, value("clientCertificate"), true, wxString{});
+        Row(StringKey::GlobalNounsKey, value("clientKey"), true, wxString{});
         const auto wrap = value("tlsWrap");
         if (wrap.is_object()) {
             const auto strategy = wrap.at("strategy");
             const auto name = strategy == "auth" ? TLSAuth : strategy == "crypt" ? TLSCrypt : TLSCryptV2;
             const auto key = HexKey(wrap.at("key").at("data"));
             if (!key.empty()) {
-                const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap) + " (" + name + ")";
-                LongContent(title, key, [this, title, key] {
+                const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap);
+                LongContent(title, "--" + wxString(name), [this, title, key] {
                     openContent_(title, key);
                 });
             }

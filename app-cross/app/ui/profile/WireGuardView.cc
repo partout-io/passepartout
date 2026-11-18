@@ -4,6 +4,7 @@
 
 #include "WireGuardView.h"
 #include "../../strings/Unlocalized.h"
+#include <wx/numformatter.h>
 
 namespace Passepartout {
 WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent openContent, const WireGuardKeyGenerator &keys)
@@ -12,20 +13,26 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
     if (!module.configuration) return;
     const auto c = module.configuration->ToJson();
     const auto local = c.at("interface");
+    const auto entries = [](const nlohmann::json &values) {
+        const auto count = values.is_array() ? values.size() : 0;
+        auto text = Localized(count == 1 ? StringKey::GlobalNounsEntriesOne : StringKey::GlobalNounsEntriesN);
+        text.Replace("%d", wxNumberFormatter::ToString(static_cast<long>(count)));
+        return text;
+    };
     Section(Localized(StringKey::ModulesWireguardInterface));
     Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true);
     Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()));
-    Row(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()), true);
+    Row(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()), true, entries(local.value("addresses", nlohmann::json())));
     Row(MTU, local.value("mtu", nlohmann::json()));
     if (local.contains("dns") && local["dns"].is_object()) {
         const auto dns = local["dns"];
         Section(DNS);
-        Row(StringKey::GlobalNounsServers, dns.value("servers", nlohmann::json()), true);
+        Row(StringKey::GlobalNounsServers, dns.value("servers", nlohmann::json()), true, entries(dns.value("servers", nlohmann::json())));
         nlohmann::json domains = nlohmann::json::array();
         if (dns.contains("domainName") && !dns["domainName"].is_null()) domains.push_back(dns["domainName"]);
         if (dns.contains("searchDomains") && dns["searchDomains"].is_array())
             for (const auto &domain : dns["searchDomains"]) domains.push_back(domain);
-        Row(StringKey::EntitiesDnsSearchDomains, domains, true);
+        Row(StringKey::EntitiesDnsSearchDomains, domains, true, entries(domains));
     }
     unsigned index = 0;
     for (const auto &peer : c.at("peers")) {
@@ -35,7 +42,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         Row(StringKey::GlobalNounsPublicKey, peer.at("publicKey"), true);
         Row(StringKey::ModulesWireguardPresharedKey, peer.value("preSharedKey", nlohmann::json()), true);
         Row(StringKey::GlobalNounsEndpoint, peer.value("endpoint", nlohmann::json()), true);
-        Row(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()), true);
+        Row(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()), true, entries(peer.value("allowedIPs", nlohmann::json())));
         Row(StringKey::GlobalNounsKeepAlive, peer.value("keepAlive", nlohmann::json()));
     }
     Finish();

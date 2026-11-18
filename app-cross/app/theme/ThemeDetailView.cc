@@ -71,9 +71,9 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
     }
     List()->Append(title, value, std::move(action), enabled);
 }
-void ThemeDetailView::LongContent(const wxString &title, const wxString &content,
+void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
     std::function<void()> action) {
-    ContentLink(title, std::move(action), IsForm() ? content : content.BeforeFirst('\n'));
+    ContentLink(title, std::move(action), preview.BeforeFirst('\n'));
 }
 wxFlexGridSizer *ThemeDetailView::FormRows() {
     if (!formRows_) {

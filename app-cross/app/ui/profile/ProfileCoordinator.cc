@@ -6,6 +6,7 @@
 #include "ProfileView.h"
 #include "ProfileModuleList.h"
 #include "OpenVPNView.h"
+#include "OpenVPNCredentialsView.h"
 #include "OpenVPNRemotesView.h"
 #include "DNSView.h"
 #include "HTTPProxyView.h"
@@ -143,16 +144,27 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, openContent);
         else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, openContent, keys_);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
-            return new OpenVPNView(pages_, tagged.value, openContent, [this, index](std::string username, std::string password) {
-                auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
+            return new OpenVPNView(pages_, tagged.value, openContent, [this, index] {
+                const auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
                 OpenVpnCredentials credentials{};
                 credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
                 if (module.value.credentials) credentials = *module.value.credentials;
-                credentials.username = std::move(username);
-                credentials.password = std::move(password);
-                module.value.credentials = std::move(credentials);
-                editor_->UpdateModule(module);
-                RefreshState();
+                const auto update = [this, index](std::string username, std::string password) {
+                    auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
+                    OpenVpnCredentials credentials{};
+                    credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
+                    if (module.value.credentials) credentials = *module.value.credentials;
+                    credentials.username = std::move(username);
+                    credentials.password = std::move(password);
+                    module.value.credentials = std::move(credentials);
+                    editor_->UpdateModule(module);
+                    RefreshState();
+                };
+                ThemeModal modal(this, Localized(StringKey::GlobalNounsAccount),
+                    [credentials, update](wxWindow *parent) {
+                        return new OpenVPNCredentialsView(parent, credentials, update);
+                    });
+                modal.ShowModal();
             }, [this, index] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;

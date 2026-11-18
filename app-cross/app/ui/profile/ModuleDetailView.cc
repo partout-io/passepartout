@@ -31,7 +31,8 @@ wxString ModuleDetailView::ValueText(const nlohmann::json &value) {
     }
     return wxString::FromUTF8(value.dump(2));
 }
-void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, bool longContent) {
+void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, bool longContent,
+    const std::optional<wxString> &preview) {
     const auto text = ValueText(value);
     if (text.empty()) return;
     if (IsForm() && value.is_array() && !longContent) {
@@ -44,14 +45,15 @@ void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, b
         return;
     }
     if (longContent) {
-        LongContent(title, text, [this, title, text] {
+        LongContent(title, preview.value_or(text), [this, title, text] {
             openContent_(title, text);
         });
     } else if (value.is_boolean()) Field(title, text);
     else CopiableField(title, text);
 }
-void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent) {
-    Row(Localized(title), value, longContent);
+void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent,
+    const std::optional<wxString> &preview) {
+    Row(Localized(title), value, longContent, preview);
 }
 void ModuleDetailView::Duration(StringKey title, const nlohmann::json &value) {
     if (!value.is_number()) return;
