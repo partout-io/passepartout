@@ -90,7 +90,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     RefreshState();
     GetSizer()->SetSizeHints(this);
     // Choose one reading area at creation; navigation preserves manual resizing.
-    const wxSize viewport(GetCharWidth() * 90, GetCharHeight() * 28);
+    const wxSize viewport(GetCharWidth() * 70, GetCharHeight() * 20);
     auto size = GetSize() - pages_->GetClientSize() + viewport;
     size.IncTo(GetBestSize());
     const auto workArea = wxDisplay(this).GetClientArea();

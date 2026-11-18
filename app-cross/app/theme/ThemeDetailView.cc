@@ -48,9 +48,10 @@ ThemeDetailList *ThemeDetailView::List() {
 }
 void ThemeDetailView::Field(const wxString &title, const wxString &value, bool monospace) {
     if (presentation_ == Presentation::Plain) {
-        auto *row = new wxBoxSizer(wxVERTICAL);
-        row->Add(new wxStaticText(this, wxID_ANY, title), 0, wxBOTTOM, Theme::Spacing(this) / 2);
-        row->Add(new wxStaticText(this, wxID_ANY, value), 0, wxEXPAND);
+        auto *row = new wxBoxSizer(wxHORIZONTAL);
+        row->Add(new wxStaticText(this, wxID_ANY, title), 0, wxRIGHT, Theme::Spacing(this));
+        row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT),
+            1, wxEXPAND);
         layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
         return;
     }
@@ -85,7 +86,7 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
         link->Enable(enabled);
         row->Add(link, 0, wxALIGN_CENTER_VERTICAL);
         if (!value.empty()) {
-            row->Add(new wxStaticText(this, wxID_ANY, value), 1,
+            row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), 1,
                 wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
         }
         layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
@@ -112,7 +113,7 @@ wxFlexGridSizer *ThemeDetailView::FormRows() {
 }
 wxStaticText *ThemeDetailView::Value(const wxString &value, bool monospace) {
     auto *text = new wxStaticText(contentParent_, wxID_ANY, value.BeforeFirst('\n'),
-        wxDefaultPosition, wxDefaultSize, wxST_ELLIPSIZE_END);
+        wxDefaultPosition, wxDefaultSize, wxST_ELLIPSIZE_END | wxALIGN_RIGHT);
     if (monospace) Theme::Monospace(text);
     text->SetMinSize(wxSize(GetCharWidth() * 12, text->GetBestSize().y));
     text->SetName(value);
