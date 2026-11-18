@@ -72,33 +72,28 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     Push(overview, Localized(StringKey::GlobalNounsProfile));
     RefreshState();
     GetSizer()->SetSizeHints(this);
+    // Choose one reading area at creation; navigation preserves manual resizing.
+    const wxSize viewport(GetCharWidth() * 90, GetCharHeight() * 28);
+    auto size = GetSize() - pages_->GetClientSize() + viewport;
+    size.IncTo(GetBestSize());
+    const auto workArea = wxDisplay(this).GetClientArea();
+    size.DecTo(workArea.GetSize());
+    SetSize(size);
     timer_.Start(100);
     CentreOnParent();
+    auto position = GetPosition();
+    position.x = std::max(workArea.x, std::min(position.x, workArea.GetRight() - GetSize().x + 1));
+    position.y = std::max(workArea.y, std::min(position.y, workArea.GetBottom() - GetSize().y + 1));
+    Move(position);
 }
 void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
-    if (!pageSizes_.empty()) pageSizes_.back() = GetSize();
     pages_->AddPage(page, title, true);
     titles_.push_back(title);
-    pageSizes_.push_back(wxDefaultSize);
     SetTitle(title);
     back_->Show(titles_.size() > 1);
     save_->Show(titles_.size() == 1);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
-    if (titles_.size() > 1) {
-        // Scrolled pages report small best sizes, not a useful reading viewport.
-        const wxSize viewport(page->GetCharWidth() * 90, page->GetCharHeight() * 28);
-        auto size = GetSize() - pages_->GetClientSize() + viewport;
-        size.IncTo(GetSize());
-        size.IncTo(GetBestSize());
-        const auto workArea = wxDisplay(this).GetClientArea();
-        size.DecTo(workArea.GetSize());
-        SetSize(size);
-        auto position = GetPosition();
-        position.x = std::max(workArea.x, std::min(position.x, workArea.GetRight() - GetSize().x + 1));
-        position.y = std::max(workArea.y, std::min(position.y, workArea.GetBottom() - GetSize().y + 1));
-        Move(position);
-    }
     Layout();
     page->SetFocus();
 }
@@ -110,14 +105,12 @@ void ProfileCoordinator::Back() {
     }
     pages_->DeletePage(pages_->GetPageCount() - 1);
     titles_.pop_back();
-    pageSizes_.pop_back();
     pages_->SetSelection(pages_->GetPageCount() - 1);
     SetTitle(titles_.back());
     back_->Show(titles_.size() > 1);
     save_->Show(titles_.size() == 1);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
-    SetSize(pageSizes_.back());
     Layout();
     pages_->GetCurrentPage()->SetFocus();
 }
