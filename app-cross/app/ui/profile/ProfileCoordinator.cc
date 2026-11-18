@@ -18,6 +18,7 @@
 #include <type_traits>
 #include <wx/display.h>
 #include <wx/wupdlock.h>
+#include <wx/splitter.h>
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
@@ -26,32 +27,41 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
       profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
-    pages_ = new wxSimplebook(this);
+    auto *splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE);
+    auto *sidebarPanel = new wxPanel(splitter);
+    auto *detailPanel = new wxPanel(splitter);
+    pages_ = new wxSimplebook(detailPanel);
     pages_->SetFitToCurrentPage(true);
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
     progress_ = ThemeProgressView(this);
     progress_->Hide();
-    back_ = new wxButton(this, wxID_BACKWARD, Localized(StringKey::GlobalActionsBack));
+    back_ = new wxButton(detailPanel, wxID_BACKWARD, Localized(StringKey::GlobalActionsBack));
     save_ = new wxButton(this, wxID_SAVE, Localized(StringKey::GlobalActionsSave));
     cancel_ = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsCancel));
-    auto *content = new wxBoxSizer(wxHORIZONTAL);
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
-    modules_ = new ProfileModuleList(this, *editor_, [this](std::size_t selection) {
+    modules_ = new ProfileModuleList(sidebarPanel, *editor_, [this](std::size_t selection) {
         SelectSection(selection);
     });
-    sidebar->Add(modules_, 1, wxEXPAND);
-    content->Add(sidebar, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    sidebar->Add(modules_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
+    sidebarPanel->SetSizer(sidebar);
     auto *detail = new wxBoxSizer(wxVERTICAL);
     auto *navigation = new wxBoxSizer(wxHORIZONTAL);
-    heading_ = new wxStaticText(this, wxID_ANY, wxString());
+    heading_ = new wxStaticText(detailPanel, wxID_ANY, wxString());
     heading_->SetFont(heading_->GetFont().Bold());
     navigation->Add(heading_, 1, wxALIGN_CENTER_VERTICAL);
     navigation->Add(back_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRESERVE_SPACE_EVEN_IF_HIDDEN,
         Theme::Spacing(this));
     detail->Add(navigation, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
-    content->Add(detail, 1, wxEXPAND);
-    layout->Add(content, 1, wxEXPAND);
+    detailPanel->SetSizer(detail);
+    const int sidebarWidth = std::max(GetCharWidth() * 28, sidebarPanel->GetBestSize().x);
+    splitter->SetMinimumPaneSize(GetCharWidth() * 16);
+    splitter->SetSashGravity(0.0);
+    splitter->SplitVertically(sidebarPanel, detailPanel, sidebarWidth);
+    splitter->Bind(wxEVT_SPLITTER_DOUBLECLICKED, [](wxSplitterEvent &) {
+        // Keep both navigation and content visible.
+    });
+    layout->Add(splitter, 1, wxEXPAND);
     buttons->Add(progress_, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, Theme::Spacing(this));
     buttons->AddStretchSpacer();
     auto *actions = new wxStdDialogButtonSizer;
@@ -98,6 +108,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     const auto workArea = wxDisplay(this).GetClientArea();
     size.DecTo(workArea.GetSize());
     SetSize(size);
+    splitter->SetSashPosition(sidebarWidth);
     timer_.Start(100);
     CentreOnParent();
     auto position = GetPosition();
