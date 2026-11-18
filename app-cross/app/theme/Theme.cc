@@ -40,13 +40,14 @@ wxIcon Theme::SettingsIcon(wxWindow *window) {
     return icon;
 }
 int Theme::Spacing(wxWindow *window, Space space) {
+    constexpr int unit = 6;
     switch (space) {
-        case Space::Row: return window->FromDIP(4);
-        case Space::SectionContent: return window->FromDIP(6);
-        case Space::Columns: return window->FromDIP(24);
-        case Space::Section: return window->FromDIP(12);
+        case Space::SectionContent: return window->FromDIP(unit);
+        case Space::Columns: return window->FromDIP(4 * unit);
+        case Space::Row:
+        case Space::Section: return window->FromDIP(2 * unit);
     }
-    return window->FromDIP(12);
+    return window->FromDIP(2 * unit);
 }
 void Theme::Apply(wxWindow *window) {
     window->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));

@@ -53,7 +53,7 @@ wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
     auto *row = new wxBoxSizer(wxHORIZONTAL);
     auto *caption = new wxStaticText(this, wxID_ANY, title);
     caption->SetMinSize(FromDIP(wxSize(150, -1)));
-    row->Add(caption, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, FromDIP(20));
+    row->Add(caption, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
     layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     layout_->Add(new wxStaticLine(this), 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
     return row;
@@ -133,7 +133,7 @@ wxFlexGridSizer *ThemeDetailView::FormRows() {
     if (!formRows_) {
         formRows_ = new wxFlexGridSizer(2, Theme::Spacing(this, Theme::Space::Row), Theme::Spacing(this, Theme::Space::Columns));
         formRows_->AddGrowableCol(1);
-        section_->Add(formRows_, 0, wxEXPAND | wxALL, Theme::Spacing(this, Theme::Space::SectionContent));
+        section_->Add(formRows_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     }
     return formRows_;
 }
@@ -218,7 +218,7 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
         auto *subtitle = WrappingText(support);
         Theme::SecondaryText(subtitle);
         captions->Add(subtitle, 0, wxEXPAND | wxTOP,
-            Theme::Spacing(this, Theme::Space::Row));
+            Theme::Spacing(this, Theme::Space::SectionContent));
     }
     row->Add(captions, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
     auto *control = new wxCheckBox(contentParent_, wxID_ANY, {});
