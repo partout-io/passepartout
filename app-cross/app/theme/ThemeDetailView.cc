@@ -87,7 +87,7 @@ void ThemeDetailView::Field(const wxString &title, const wxString &value, bool m
     if (!value.empty()) Row(title)->Add(Value(value, monospace), 1, wxALIGN_CENTER_VERTICAL);
 }
 void ThemeDetailView::CopiableField(const wxString &title, const wxString &value, bool monospace) {
-    auto *text = TextField(title, value, wxTE_READONLY | wxBORDER_NONE | wxTE_RIGHT);
+    auto *text = TextField(title, value, wxTE_READONLY | wxTE_RIGHT);
     if (monospace) Theme::Monospace(text);
 }
 void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> action,
@@ -237,7 +237,7 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
 wxCheckBox *ThemeDetailView::CopiableToggle(const wxString &value, bool checked) {
     auto *row = new wxBoxSizer(wxHORIZONTAL);
     auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize,
-        wxTE_READONLY | wxBORDER_NONE);
+        wxTE_READONLY);
     text->SetName(value);
     row->Add(text, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
     auto *control = new wxCheckBox(contentParent_, wxID_ANY, {});
