@@ -16,7 +16,6 @@ ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
       presentation_(presentation), contentParent_(this), section_(layout_) {
     SetScrollRate(0, FromDIP(12));
     SetSizer(layout_);
-    Theme::Apply(this);
 }
 void ThemeDetailView::Section(const wxString &title) {
     if (IsForm()) {

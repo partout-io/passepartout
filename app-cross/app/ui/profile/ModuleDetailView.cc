@@ -34,7 +34,7 @@ wxString ModuleDetailView::ValueText(const nlohmann::json &value) {
 void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, bool longContent) {
     const auto text = ValueText(value);
     if (text.empty()) return;
-    if (IsForm() && value.is_array()) {
+    if (IsForm() && value.is_array() && !longContent) {
         std::vector<wxString> items;
         for (const auto &item : value) {
             const auto content = ValueText(item);
