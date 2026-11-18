@@ -24,9 +24,6 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, 
     pages_ = new wxSimplebook(detailPanel);
     pages_->SetFitToCurrentPage(true);
     auto *detail = new wxBoxSizer(wxVERTICAL);
-    heading_ = new wxStaticText(detailPanel, wxID_ANY, {});
-    heading_->SetFont(heading_->GetFont().Bold());
-    detail->Add(heading_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
     const auto version = context.version.Snapshot();
@@ -124,7 +121,6 @@ void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(w
     wxWindowUpdateLocker update(this);
     auto *page = makePage(pages_);
     pages_->AddPage(page, title, true);
-    heading_->SetLabel(title);
     pages_->InvalidateBestSize();
     pages_->GetParent()->Layout();
     InvalidateBestSize();

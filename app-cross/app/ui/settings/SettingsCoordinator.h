@@ -17,6 +17,5 @@ private:
     AppContext &context_;
     SettingsSection section_ = SettingsSection::Preferences;
     wxSimplebook *pages_;
-    wxStaticText *heading_;
 };
 }
