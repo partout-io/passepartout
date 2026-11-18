@@ -40,7 +40,6 @@ set(APP_SOURCES
     app/ui/settings/RuntimeLogView.cc
     app/ui/settings/SettingsCoordinator.cc
     app/ui/settings/SettingsView.cc
-    app/ui/settings/VersionView.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES

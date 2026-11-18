@@ -7,6 +7,10 @@
 #include "profile/ProfileCoordinator.h"
 #include "settings/SettingsCoordinator.h"
 #include <wx/stockitem.h>
+#include <wx/aboutdlg.h>
+#include "../strings/Unlocalized.h"
+#include "../theme/ThemeModal.h"
+#include "../theme/ThemeLongContent.h"
 #ifdef __WXMSW__
 #include <windows.h>
 #endif
@@ -67,13 +71,22 @@ MainView::MainView(AppContext &context, bool demo,
     auto *help = new wxMenu;
     help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
     menus->Append(help, wxGetStockLabel(wxID_HELP));
+    const auto changelogId = wxWindow::NewControlId();
+    help->Append(changelogId, Strings::Unlocalized::Changelog);
+    Bind(wxEVT_MENU, [this](wxCommandEvent &) {
+        const auto content = Text(context_.version.Snapshot().changelog);
+        ThemeModal modal(this, Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
+            return new ThemeLongContent(parent, Strings::Unlocalized::Changelog, content);
+        });
+        modal.ShowModal();
+    }, changelogId);
     SetMenuBar(menus);
 #ifdef __WXMSW__
     if (auto menu = GetSystemMenu(static_cast<HWND>(GetHandle()), FALSE)) {
         const auto title = Localized(StringKey::GlobalNounsAbout) + " " +
             Text(context.crossConstants.tags.app) + "...";
-        AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-        AppendMenuW(menu, MF_STRING, SystemAbout, title.wc_str());
+        InsertMenuW(menu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, nullptr);
+        InsertMenuW(menu, 0, MF_BYPOSITION | MF_STRING, SystemAbout, title.wc_str());
     }
 #endif
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
@@ -83,8 +96,12 @@ MainView::MainView(AppContext &context, bool demo,
         Quit();
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        SettingsCoordinator dialog(this, context_, true);
-        dialog.ShowModal();
+        wxAboutDialogInfo info;
+        info.SetName(Text(context_.crossConstants.tags.app));
+        info.SetVersion(Text(context_.version.Snapshot().current));
+        info.SetIcon(Theme::AppIcon(this, 64));
+        info.AddDeveloper(Strings::Unlocalized::AuthorName);
+        wxAboutBox(info, this);
     }, wxID_ABOUT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         SettingsCoordinator dialog(this, context_);

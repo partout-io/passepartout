@@ -10,7 +10,7 @@
 namespace Passepartout {
 class SettingsCoordinator final : public wxDialog {
 public:
-    SettingsCoordinator(wxWindow *parent, AppContext &context, bool showVersion = false);
+    SettingsCoordinator(wxWindow *parent, AppContext &context);
 private:
     void SelectSection(SettingsSection section);
     void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage);

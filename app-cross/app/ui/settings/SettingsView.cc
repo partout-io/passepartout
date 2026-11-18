@@ -50,7 +50,6 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
     };
     page(StringKey::GlobalNounsPreferences, SettingsSection::Preferences);
     append(Localized(StringKey::GlobalNounsAbout), 0);
-    page(StringKey::GlobalNounsVersion, SettingsSection::Version);
     page(StringKey::ViewsSettingsLinksTitle, SettingsSection::Links);
     page(StringKey::ViewsSettingsCreditsTitle, SettingsSection::Credits);
     append(Localized(StringKey::GlobalNounsTroubleshooting), 0);

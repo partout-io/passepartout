@@ -6,7 +6,7 @@
 #include <functional>
 
 namespace Passepartout {
-enum class SettingsSection { Preferences = 1, Version, Links, Credits, FAQ, Diagnostics, Update };
+enum class SettingsSection { Preferences = 1, Links, Credits, FAQ, Diagnostics, Update };
 class SettingsView final : public wxPanel {
 public:
     SettingsView(wxWindow *parent, const wxString &version, const wxString &updateTitle,

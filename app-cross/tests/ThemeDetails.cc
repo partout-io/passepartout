@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         if (!list) return 4;
         for (int cycle = 0; cycle < 3; ++cycle) {
             for (const int direction : {WXK_DOWN, WXK_UP}) {
-                for (int row = 0; row < 4; ++row) {
+                for (int row = 0; row < 3; ++row) {
                     wxKeyEvent event(wxEVT_CHAR_HOOK);
                     event.m_keyCode = direction;
                     event.SetEventObject(list);
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        if (changes != 24 || book->GetPageCount() != 1) return 5;
+        if (changes != 18 || book->GetPageCount() != 1) return 5;
     }
     wxTheApp->OnExit();
     wxEntryCleanup();

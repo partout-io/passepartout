@@ -3,7 +3,6 @@
 
 #include "SettingsCoordinator.h"
 #include "PreferencesView.h"
-#include "VersionView.h"
 #include "CreditsView.h"
 #include "LinksView.h"
 #include "DiagnosticsView.h"
@@ -15,7 +14,7 @@
 #include <algorithm>
 
 namespace Passepartout {
-SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, bool showVersion)
+SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::ViewsSettingsTitle), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
@@ -32,7 +31,7 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, 
         updateTitle = Localized(StringKey::ViewsSettingsLinksUpdate);
         updateTitle.Replace("%@", wxString::FromUTF8(*version.release.latest));
     }
-    const auto initial = showVersion ? SettingsSection::Version : SettingsSection::Preferences;
+    const auto initial = SettingsSection::Preferences;
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
     sidebar->Add(new SettingsView(splitter->Sidebar(), wxString::FromUTF8(version.current),
         updateTitle, initial, [this](SettingsSection section) {
@@ -90,12 +89,6 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
         case SettingsSection::Preferences:
             ShowSection(Localized(StringKey::GlobalNounsPreferences), [this](wxWindow *parent) {
                 return new PreferencesView(parent, context_.preferences);
-            });
-            break;
-        case SettingsSection::Version:
-            ShowSection(Localized(StringKey::GlobalNounsVersion), [this, present](wxWindow *parent) {
-                return new VersionView(parent, context_.version,
-                    wxString::FromUTF8(context_.crossConstants.tags.app), present);
             });
             break;
         case SettingsSection::Links:
