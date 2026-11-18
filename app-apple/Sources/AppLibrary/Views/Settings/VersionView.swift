@@ -33,6 +33,7 @@ public struct VersionView<R, Icon>: View where R: Hashable, Icon: View {
         .background(theme.backgroundColor(colorScheme))
         .foregroundStyle(.white)
 #endif
+        .navigationTitle(Strings.Global.Nouns.version)
     }
 }
 
