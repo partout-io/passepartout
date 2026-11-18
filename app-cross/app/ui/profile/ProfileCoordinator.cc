@@ -4,6 +4,7 @@
 
 #include "ProfileCoordinator.h"
 #include "ProfileView.h"
+#include "ProfileModuleList.h"
 #include "OpenVPNView.h"
 #include "OpenVPNCredentialsView.h"
 #include "DNSView.h"
@@ -26,18 +27,40 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     auto *layout = new wxBoxSizer(wxVERTICAL);
     pages_ = new wxSimplebook(this);
     pages_->SetFitToCurrentPage(true);
-    layout->Add(pages_, 1, wxEXPAND);
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
     progress_ = ThemeProgressView(this);
     progress_->Hide();
     back_ = new wxButton(this, wxID_BACKWARD, Localized(StringKey::GlobalActionsBack));
     save_ = new wxButton(this, wxID_SAVE, Localized(StringKey::GlobalActionsSave));
     cancel_ = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsCancel));
-    buttons->Add(back_);
+    auto *content = new wxBoxSizer(wxHORIZONTAL);
+    auto *sidebar = new wxBoxSizer(wxVERTICAL);
+    sidebar->Add(new wxStaticText(this, wxID_ANY, Localized(StringKey::GlobalNounsModules)),
+        0, wxBOTTOM, Theme::Spacing(this));
+    modules_ = new ProfileModuleList(this, *editor_, [this](std::size_t selection) {
+        SelectSection(selection);
+    });
+    sidebar->Add(modules_, 1, wxEXPAND);
+    content->Add(sidebar, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    auto *detail = new wxBoxSizer(wxVERTICAL);
+    auto *navigation = new wxBoxSizer(wxHORIZONTAL);
+    heading_ = new wxStaticText(this, wxID_ANY, wxString());
+    heading_->SetFont(heading_->GetFont().Bold());
+    navigation->Add(heading_, 1, wxALIGN_CENTER_VERTICAL);
+    navigation->Add(back_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRESERVE_SPACE_EVEN_IF_HIDDEN,
+        Theme::Spacing(this));
+    detail->Add(navigation, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    detail->Add(pages_, 1, wxEXPAND);
+    content->Add(detail, 1, wxEXPAND);
+    layout->Add(content, 1, wxEXPAND);
     buttons->Add(progress_, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, Theme::Spacing(this));
     buttons->AddStretchSpacer();
-    buttons->Add(save_, 0, wxRIGHT, Theme::Spacing(this));
-    buttons->Add(cancel_);
+    auto *actions = new wxStdDialogButtonSizer;
+    actions->SetAffirmativeButton(save_);
+    actions->SetCancelButton(cancel_);
+    actions->Realize();
+    buttons->Add(actions);
+    SetAffirmativeId(wxID_SAVE);
     layout->Add(buttons, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
     back_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
@@ -64,12 +87,9 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
         RefreshState();
     });
-    auto *overview = new ProfileView(pages_, editor_, [this](std::size_t index) {
-        OpenModule(index);
-    }, [this] {
+    Push(new ProfileView(pages_, editor_, [this] {
         RefreshState();
-    });
-    Push(overview, Localized(StringKey::GlobalNounsProfile));
+    }), Localized(StringKey::GlobalNounsGeneral));
     RefreshState();
     GetSizer()->SetSizeHints(this);
     // Choose one reading area at creation; navigation preserves manual resizing.
@@ -89,13 +109,11 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
 void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
     pages_->AddPage(page, title, true);
     titles_.push_back(title);
-    SetTitle(title);
+    heading_->SetLabel(title);
     back_->Show(titles_.size() > 1);
-    save_->Show(titles_.size() == 1);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     Layout();
-    page->SetFocus();
 }
 void ProfileCoordinator::Back() {
     if (editor_->Snapshot().saving) return;
@@ -106,13 +124,25 @@ void ProfileCoordinator::Back() {
     pages_->DeletePage(pages_->GetPageCount() - 1);
     titles_.pop_back();
     pages_->SetSelection(pages_->GetPageCount() - 1);
-    SetTitle(titles_.back());
+    heading_->SetLabel(titles_.back());
     back_->Show(titles_.size() > 1);
-    save_->Show(titles_.size() == 1);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     Layout();
     pages_->GetCurrentPage()->SetFocus();
+}
+void ProfileCoordinator::SelectSection(std::size_t selection) {
+    if (editor_->Snapshot().saving || selection == selection_) return;
+    selection_ = selection;
+    pages_->DeleteAllPages();
+    titles_.clear();
+    if (selection == 0) {
+        Push(new ProfileView(pages_, editor_, [this] {
+            RefreshState();
+        }), Localized(StringKey::GlobalNounsGeneral));
+    } else {
+        OpenModule(selection - 1);
+    }
 }
 void ProfileCoordinator::OpenModule(std::size_t index) {
     const auto module = editor_->Snapshot().draft.modules.at(index);
@@ -130,7 +160,9 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
             return new OpenVPNView(pages_, tagged.value, openContent, [this, index] {
                 Push(new OpenVPNCredentialsView(pages_, editor_, index), Localized(StringKey::ModulesOpenvpnCredentials));
             });
-        } else return new ThemeDetailView(pages_);
+        } else {
+            return new ThemeDetailView(pages_);
+        }
     }, module);
     Push(page, ModuleTitle(module));
 }
@@ -142,6 +174,7 @@ void ProfileCoordinator::RefreshState() {
         return;
     }
     pages_->Enable(!state.saving);
+    modules_->Enable(!state.saving);
     if (state.saving) progress_->Start();
     else progress_->Stop();
     if (progress_->Show(state.saving)) Layout();
