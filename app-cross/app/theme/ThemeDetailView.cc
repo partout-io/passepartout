@@ -215,7 +215,9 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     auto *captions = new wxBoxSizer(wxVERTICAL);
     captions->Add(WrappingText(title), 0, wxEXPAND);
     if (!support.empty()) {
-        captions->Add(WrappingText(support), 0, wxEXPAND | wxTOP,
+        auto *subtitle = WrappingText(support);
+        Theme::SecondaryText(subtitle);
+        captions->Add(subtitle, 0, wxEXPAND | wxTOP,
             Theme::Spacing(this, Theme::Space::Row));
     }
     row->Add(captions, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));

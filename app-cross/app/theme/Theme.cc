@@ -53,6 +53,14 @@ void Theme::Apply(wxWindow *window) {
     window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
     window->Refresh();
 }
+void Theme::SecondaryText(wxWindow *window) {
+    window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+    window->Bind(wxEVT_SYS_COLOUR_CHANGED, [window](wxSysColourChangedEvent &event) {
+        window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+        window->Refresh();
+        event.Skip();
+    });
+}
 void Theme::Monospace(wxWindow *window) {
     const auto inherited = window->GetFont();
     // Request a scalable monospace family at the inherited UI text size.
