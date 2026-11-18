@@ -4,7 +4,7 @@
 
 #include "MainView.h"
 #include "../strings/Strings.h"
-#include "profile/ProfileEditorView.h"
+#include "profile/ProfileCoordinator.h"
 #include "settings/SettingsView.h"
 #include <wx/stockitem.h>
 
@@ -204,6 +204,6 @@ void MainView::Edit(const std::string &id) {
     if (picking_ || context_.profiles.Snapshot().foregroundBusy) return;
     const auto editor = context_.profiles.CreateEditor(id);
     if (!editor) return;
-    ProfileEditorView dialog(this, context_.profiles, editor, *context_.wireGuardKeys);
+    ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wireGuardKeys);
     dialog.ShowModal();
 }

@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "ProfileEditorView.h"
+#include "ProfileCoordinator.h"
+#include "ProfileView.h"
 #include "OpenVPNView.h"
 #include "OpenVPNCredentialsView.h"
 #include "DNSView.h"
@@ -12,11 +13,10 @@
 #include "../LongContentView.h"
 #include "../Presentation.h"
 #include "../extensions/Module.h"
-#include "../../strings/Unlocalized.h"
 #include <type_traits>
 
 namespace Passepartout {
-ProfileEditorView::ProfileEditorView(wxWindow *parent, ProfileObservable &profiles,
+ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
     std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &keys)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::GlobalNounsProfile), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
@@ -47,7 +47,7 @@ ProfileEditorView::ProfileEditorView(wxWindow *parent, ProfileObservable &profil
     });
     save_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         profiles_.SaveEditor(editor_);
-        Refresh();
+        RefreshState();
     });
     Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent &event) {
         if (editor_->Snapshot().saving) {
@@ -61,14 +61,19 @@ ProfileEditorView::ProfileEditorView(wxWindow *parent, ProfileObservable &profil
         else event.Skip();
     });
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
-        Refresh();
+        RefreshState();
     });
-    Overview();
-    Refresh();
+    auto *overview = new ProfileView(pages_, editor_, [this](std::size_t index) {
+        OpenModule(index);
+    }, [this] {
+        RefreshState();
+    });
+    Push(overview, Localized(StringKey::GlobalNounsProfile));
+    RefreshState();
     timer_.Start(100);
     CentreOnParent();
 }
-void ProfileEditorView::Push(wxWindow *page, const wxString &title) {
+void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
     pages_->AddPage(page, title, true);
     titles_.push_back(title);
     SetTitle(title);
@@ -77,7 +82,7 @@ void ProfileEditorView::Push(wxWindow *page, const wxString &title) {
     Layout();
     page->SetFocus();
 }
-void ProfileEditorView::Back() {
+void ProfileCoordinator::Back() {
     if (editor_->Snapshot().saving) return;
     if (titles_.size() == 1) {
         EndModal(wxID_CANCEL);
@@ -92,35 +97,7 @@ void ProfileEditorView::Back() {
     Layout();
     pages_->GetCurrentPage()->SetFocus();
 }
-void ProfileEditorView::Overview() {
-    const auto draft = editor_->Snapshot().draft;
-    auto *view = new ThemeDetailView(pages_);
-    auto *name = view->TextField(Localized(StringKey::GlobalNounsName), wxString::FromUTF8(draft.name));
-    name->Bind(wxEVT_TEXT, [this, name](wxCommandEvent &) {
-        editor_->Rename(name->GetValue().ToStdString(wxConvUTF8));
-        Refresh();
-    });
-    view->Section(Localized(StringKey::GlobalNounsModules));
-    for (std::size_t index = 0; index < draft.modules.size(); ++index) {
-        const auto &module = draft.modules[index];
-        if (std::holds_alternative<Partout::Models::TaggedModuleCustom>(module)) continue;
-        const bool enabled = std::visit([&](const auto &tagged) {
-            if constexpr (std::is_same_v<std::decay_t<decltype(tagged)>, Partout::Models::TaggedModuleCustom>) return false;
-            else return std::find(draft.activeModulesIds.begin(), draft.activeModulesIds.end(), tagged.value.id) != draft.activeModulesIds.end();
-        }, module);
-        view->Navigate(ModuleTitle(module), [this, index] {
-            OpenModule(index);
-        }, Localized(enabled ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled),
-            !std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module));
-    }
-    // Profile identifiers are raw configuration vocabulary, never translated.
-    auto id = wxString::FromUTF8(draft.id);
-    id.Replace("-", "");
-    view->Field(Strings::Unlocalized::UUID, id, true);
-    view->Finish();
-    Push(view, Localized(StringKey::GlobalNounsProfile));
-}
-void ProfileEditorView::OpenModule(std::size_t index) {
+void ProfileCoordinator::OpenModule(std::size_t index) {
     const auto module = editor_->Snapshot().draft.modules.at(index);
     const auto openContent = [this](wxString title, wxString content) {
         Push(new LongContentView(pages_, title, content), title);
@@ -140,7 +117,7 @@ void ProfileEditorView::OpenModule(std::size_t index) {
     }, module);
     Push(page, ModuleTitle(module));
 }
-void ProfileEditorView::Refresh() {
+void ProfileCoordinator::RefreshState() {
     const auto state = editor_->Snapshot();
     if (state.saved) {
         timer_.Stop();

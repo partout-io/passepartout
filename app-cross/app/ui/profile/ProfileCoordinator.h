@@ -10,16 +10,15 @@
 #include <wx/activityindicator.h>
 
 namespace Passepartout {
-class ProfileEditorView final : public wxDialog {
+class ProfileCoordinator final : public wxDialog {
 public:
-    ProfileEditorView(wxWindow *parent, ProfileObservable &profiles,
+    ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
         std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &keys);
 private:
-    void Overview();
     void OpenModule(std::size_t index);
     void Push(wxWindow *page, const wxString &title);
     void Back();
-    void Refresh();
+    void RefreshState();
     ProfileObservable &profiles_;
     std::shared_ptr<ProfileEditor> editor_;
     const WireGuardKeyGenerator &keys_;
