@@ -11,6 +11,8 @@ OpenVPNCredentialsView::OpenVPNCredentialsView(wxWindow *parent,
     : ThemeDetailView(parent, Presentation::Form) {
     auto *username = TextField(Localized(StringKey::GlobalNounsUsername), wxString::FromUTF8(credentials.username));
     auto *password = TextField(Localized(StringKey::GlobalNounsPassword), wxString::FromUTF8(credentials.password), wxTE_PASSWORD);
+    username->SetMinSize(wxSize(GetCharWidth() * 32, -1));
+    password->SetMinSize(wxSize(GetCharWidth() * 32, -1));
     const auto update = [username, password, updateCredentials](wxCommandEvent &) {
         updateCredentials(username->GetValue().ToStdString(wxConvUTF8),
             password->GetValue().ToStdString(wxConvUTF8));
@@ -18,5 +20,6 @@ OpenVPNCredentialsView::OpenVPNCredentialsView(wxWindow *parent,
     username->Bind(wxEVT_TEXT, update);
     password->Bind(wxEVT_TEXT, update);
     Finish();
+    SetMinSize(GetSizer()->GetMinSize());
 }
 }

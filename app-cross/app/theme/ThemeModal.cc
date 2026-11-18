@@ -7,7 +7,7 @@
 
 namespace Passepartout {
 ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
-    const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode)
+    const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode, Sizing sizing)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
@@ -31,8 +31,8 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
     close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         EndModal(wxID_CANCEL);
     });
-    auto size = wxSize(GetCharWidth() * 80, GetCharHeight() * 24);
-    size.IncTo(GetBestSize());
+    auto size = GetBestSize();
+    if (sizing == Sizing::Reading) size.IncTo(wxSize(GetCharWidth() * 80, GetCharHeight() * 24));
     size.DecTo(wxDisplay(this).GetClientArea().GetSize());
     SetSize(size);
     CentreOnParent();

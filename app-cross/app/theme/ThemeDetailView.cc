@@ -4,6 +4,7 @@
 
 #include "ThemeDetailView.h"
 #include "ThemeContentLink.h"
+#include "../strings/Strings.h"
 #include <wx/statline.h>
 #include <wx/statbox.h>
 
@@ -70,10 +71,12 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
     const wxString &value, bool enabled) {
     if (IsForm()) {
         auto *rows = FormRows();
-        auto *link = new ThemeContentLink(contentParent_, title, std::move(action));
+        rows->Add(new wxStaticText(contentParent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
+        const auto label = value.empty() ? Localized(StringKey::GlobalActionsEdit) : value;
+        auto *link = new ThemeContentLink(contentParent_, label, std::move(action));
+        link->SetName(title);
         link->Enable(enabled);
-        rows->Add(link, 0, wxALIGN_CENTER_VERTICAL);
-        rows->Add(Value(value), 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+        rows->Add(link, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
         return;
     }
     if (presentation_ == Presentation::Plain) {

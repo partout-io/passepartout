@@ -156,7 +156,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
                 ThemeModal modal(this, Localized(StringKey::GlobalNounsAccount),
                     [&credentials, update](wxWindow *parent) {
                         return new OpenVPNCredentialsView(parent, credentials, update);
-                    }, ThemeModal::Mode::Editable);
+                    }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content);
                 if (modal.ShowModal() != wxID_OK) return;
                 auto updated = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
                 // Preserve properties outside this editor from the latest profile draft.
