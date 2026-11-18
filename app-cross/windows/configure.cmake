@@ -53,7 +53,7 @@ function(configure_windows_targets)
 
     # The host loads the plugin dynamically; only the plugin links to Partout.
     add_library(passepartout-vpnplugin SHARED
-        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/plugin.cc"
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/Plugin.cc"
         "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/plugin.def"
     )
     foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
@@ -128,15 +128,15 @@ function(configure_windows_targets)
     endif()
     file(READ "${TUNNEL_CONSTANTS_PATH}" TUNNEL_CONSTANTS_JSON)
     string(JSON PASSEPARTOUT_DNS_FALLBACK_JSON GET "${TUNNEL_CONSTANTS_JSON}" tunnel dnsFallbackServers)
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel_defaults.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/generated/tunnel_defaults.h" @ONLY)
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/TunnelDefaults.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/TunnelDefaults.h" @ONLY)
     target_include_directories(passepartout-vpnplugin PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
     set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
     set(PASSEPARTOUT_TUNNEL_FILE "$<TARGET_FILE_NAME:passepartout-tunnel>")
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/package_constants.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/package_constants.h.in" @ONLY)
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/package_constants.h"
-        INPUT "${CMAKE_CURRENT_BINARY_DIR}/package_constants.h.in")
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/PackageConstants.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/PackageConstants.h.in" @ONLY)
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/PackageConstants.h"
+        INPUT "${CMAKE_CURRENT_BINARY_DIR}/PackageConstants.h.in")
     foreach(target IN ITEMS passepartout-tunnel passepartout-vpnplugin)
         target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>")
     endforeach()

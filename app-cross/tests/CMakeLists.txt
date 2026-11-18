@@ -9,18 +9,18 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
 # Portable test executables
-add_executable(passepartout-models-test models.cc)
+add_executable(passepartout-models-test Models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
-add_executable(passepartout-application-test application.cc)
+add_executable(passepartout-application-test Application.cc)
 target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
-add_executable(passepartout-editor-test editor.cc)
+add_executable(passepartout-editor-test Editor.cc)
 target_link_libraries(passepartout-editor-test PRIVATE passepartout-core)
-add_executable(passepartout-settings-test settings.cc)
+add_executable(passepartout-settings-test Settings.cc)
 target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
-add_executable(passepartout-activation-test activation.cc)
+add_executable(passepartout-activation-test Activation.cc)
 target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
-add_executable(passepartout-presentation-test presentation.cc
-    ../app/ui/extensions/app_profile.cc ../app/ui/extensions/data_helpers.cc)
+add_executable(passepartout-presentation-test Presentation.cc
+    ../app/ui/extensions/AppProfile.cc ../app/ui/extensions/DataHelpers.cc)
 target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
 # Keep assertions enabled in every build configuration.
@@ -48,12 +48,12 @@ if(WIN32)
 
     # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../app/platform/windows_tunnel.cc
-        ../app/platform/windows_configuration_picker.cc
-        ../app/platform/windows_file_activation.cc
-        ../app/platform/windows_http_client.cc
-        ../app/platform/windows_url_launcher.cc
-        ../app/platform/windows_issue_handoff.cc)
+        ../app/platform/WindowsTunnel.cc
+        ../app/platform/WindowsConfigurationPicker.cc
+        ../app/platform/WindowsFileActivation.cc
+        ../app/platform/WindowsHttpClient.cc
+        ../app/platform/WindowsURLLauncher.cc
+        ../app/platform/WindowsIssueHandoff.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_include_directories(passepartout-windows-integration-check PRIVATE

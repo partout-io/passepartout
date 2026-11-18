@@ -87,8 +87,8 @@ if(BUILD_APP)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
     file(READ "${PASSEPARTOUT_APP_ICON}" APP_ICON_HEX HEX)
     string(REGEX REPLACE "(..)" "0x\\1," APP_ICON_BYTES "${APP_ICON_HEX}")
-    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/app_icon_resource.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon_resource.h" @ONLY)
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/AppIconResource.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/AppIconResource.h" @ONLY)
 
     # Load wxWidgets only for the desktop application.
     include("wx.cmake")
@@ -119,7 +119,7 @@ endif()
 # Tunnel executable (always built)
 add_executable(passepartout-tunnel "")
 if(WIN32)
-    target_sources(passepartout-tunnel PRIVATE tunnel/windows/main.cc)
+    target_sources(passepartout-tunnel PRIVATE tunnel/windows/Main.cc)
     option(PASSEPARTOUT_WAIT_FOR_DEBUGGER "Wait up to 30 seconds for a debugger before VPN plugin initialization (Debug only)" OFF)
     if(PASSEPARTOUT_WAIT_FOR_DEBUGGER)
         target_compile_definitions(passepartout-tunnel PRIVATE $<$<CONFIG:Debug>:PASSEPARTOUT_WAIT_FOR_DEBUGGER>)

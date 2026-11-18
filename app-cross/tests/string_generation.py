@@ -37,7 +37,7 @@ class StringGenerationTests(unittest.TestCase):
                 path.parent.mkdir()
             english.write_text('"hello.world" = "Hello"; "android.optional" = "Optional";', encoding='utf-8')
             french.write_text('"hello.world" = "Bonjour";', encoding='utf-8')
-            output, keys = root / 'output/strings.inc', root / 'output/strings_keys.h'
+            output, keys = root / 'output/strings.inc', root / 'output/StringKey.h'
             generator.generate(root, output, keys)
             self.assertIn('HelloWorld,', keys.read_text(encoding='utf-8'))
             self.assertIn('{"fr", "hello.world", "Bonjour"}', output.read_text(encoding='utf-8'))

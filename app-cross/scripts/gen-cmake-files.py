@@ -7,7 +7,7 @@ os.chdir(Path(__file__).resolve().parent.parent)
 
 sources = sorted(p.as_posix() for p in Path("app").rglob("*.cc")
                  if not any(part in ("business", "observables", "platform") for part in p.parts))
-windows = sorted(p.as_posix() for p in Path("app/platform").glob("windows_*.cc"))
+windows = sorted(p.as_posix() for p in Path("app/platform").glob("Windows*.cc"))
 core = sorted(p.as_posix() for directory in ("app/business", "app/observables")
               for p in Path(directory).rglob("*.cc"))
 models = sorted(p.as_posix() for p in Path("models").glob("*.cc"))
