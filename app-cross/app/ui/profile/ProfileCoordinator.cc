@@ -153,7 +153,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
                     credentials.username = std::move(username);
                     credentials.password = std::move(password);
                 };
-                ThemeModal modal(this, Localized(StringKey::GlobalNounsAccount),
+                ThemeModal modal(this, Localized(StringKey::ModulesOpenvpnCredentials),
                     [&credentials, update](wxWindow *parent) {
                         return new OpenVPNCredentialsView(parent, credentials, update);
                     }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content);
