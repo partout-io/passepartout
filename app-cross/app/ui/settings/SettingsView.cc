@@ -17,11 +17,7 @@ public:
     bool IsEnabledByRow(unsigned row, unsigned) const override {
         return GetItemData(GetItem(row)) != 0;
     }
-    bool GetAttrByRow(unsigned row, unsigned, wxDataViewItemAttr &attribute) const override {
-        if (GetItemData(GetItem(row)) != 0) return false;
-        attribute.SetBold(true);
-        return true;
-    }
+
 };
 }
 SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxString &updateTitle,
@@ -49,10 +45,8 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         append(Localized(title), static_cast<wxUIntPtr>(section));
     };
     page(StringKey::GlobalNounsPreferences, SettingsSection::Preferences);
-    append(Localized(StringKey::GlobalNounsAbout), 0);
     page(StringKey::ViewsSettingsLinksTitle, SettingsSection::Links);
     page(StringKey::ViewsSettingsCreditsTitle, SettingsSection::Credits);
-    append(Localized(StringKey::GlobalNounsTroubleshooting), 0);
     page(StringKey::ViewsDiagnosticsTitle, SettingsSection::Diagnostics);
     unsigned initialRow = 0;
     for (unsigned row = 0; row < list->GetItemCount(); ++row) {

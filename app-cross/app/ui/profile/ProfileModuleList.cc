@@ -16,11 +16,7 @@ public:
     bool IsEnabledByRow(unsigned row, unsigned) const override {
         return GetItemData(GetItem(row)) != 0;
     }
-    bool GetAttrByRow(unsigned row, unsigned, wxDataViewItemAttr &attribute) const override {
-        if (row != 1 || GetItemData(GetItem(row)) != 0) return false;
-        attribute.SetBold(true);
-        return true;
-    }
+
 };
 }
 ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &editor,
@@ -42,12 +38,6 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
     for (std::size_t index = 0; index < draft.modules.size(); ++index) {
         const auto &module = draft.modules[index];
         if (std::holds_alternative<Partout::Models::TaggedModuleCustom>(module)) continue;
-        if (GetItemCount() == 1) {
-            wxVector<wxVariant> heading;
-            heading.push_back(wxVariant(Localized(StringKey::GlobalNounsModules)));
-            heading.push_back(wxVariant(false));
-            AppendItem(heading, 0);
-        }
         const bool enabled = std::visit([&](const auto &tagged) {
             if constexpr (std::is_same_v<std::decay_t<decltype(tagged)>, Partout::Models::TaggedModuleCustom>) {
                 return false;
