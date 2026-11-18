@@ -5,6 +5,7 @@ set(APP_SOURCES
     app/context/AppContext.cc
     app/strings/Strings.cc
     app/theme/Theme.cc
+    app/theme/ThemeAbout.cc
     app/theme/ThemeContentLink.cc
     app/theme/ThemeDetailList.cc
     app/theme/ThemeDetailView.cc
