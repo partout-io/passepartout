@@ -28,7 +28,7 @@ ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
 void ThemeDetailView::Section(const wxString &title) {
     if (IsForm() || presentation_ == Presentation::Plain) {
         auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
-        layout_->Add(box, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        layout_->Add(box, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, Theme::Spacing(this));
         contentParent_ = box->GetStaticBox();
         section_ = box;
         formRows_ = nullptr;
