@@ -20,7 +20,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         return text;
     };
     Section(Localized(StringKey::ModulesWireguardInterface));
-    Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true);
+    Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true, wxString());
     Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()));
     Row(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()), true, entries(local.value("addresses", nlohmann::json())));
     Row(MTU, local.value("mtu", nlohmann::json()));
