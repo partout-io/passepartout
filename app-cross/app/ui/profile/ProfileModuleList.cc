@@ -26,10 +26,12 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
     AssociateModel(store);
     store->DecRef();
     AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, 0);
-    AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, wxCOL_WIDTH_AUTOSIZE, wxALIGN_RIGHT, 0);
+    auto *enabledColumn = AppendToggleColumn(wxString(), wxDATAVIEW_CELL_INERT);
+    // Activation editing is not implemented; keep its stock checkbox column hidden.
+    enabledColumn->SetHidden(true);
     wxVector<wxVariant> general;
     general.push_back(wxVariant(Localized(StringKey::GlobalNounsGeneral)));
-    general.push_back(wxVariant(wxString()));
+    general.push_back(wxVariant(false));
     AppendItem(general, 1);
     const auto draft = editor.Snapshot().draft;
     for (std::size_t index = 0; index < draft.modules.size(); ++index) {
@@ -45,7 +47,7 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         }, module);
         wxVector<wxVariant> cells;
         cells.push_back(wxVariant(ModuleTitle(module)));
-        cells.push_back(wxVariant(Localized(enabled ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled)));
+        cells.push_back(wxVariant(enabled));
         const bool navigable = !std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module);
         AppendItem(cells, navigable ? index + 2 : 0);
     }
@@ -73,6 +75,7 @@ void ProfileModuleList::UpdateMetrics() {
     const int padding = 2 * Theme::Spacing(this);
     int width = 0;
     for (unsigned column = 0; column < 2; ++column) {
+        if (GetColumn(column)->IsHidden()) continue;
         int columnWidth = 0;
         for (unsigned row = 0; row < GetItemCount(); ++row) {
             columnWidth = std::max(columnWidth, GetTextExtent(GetTextValue(row, column)).x);

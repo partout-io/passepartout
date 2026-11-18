@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <wx/display.h>
+#include <wx/wupdlock.h>
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
@@ -35,8 +36,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     cancel_ = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsCancel));
     auto *content = new wxBoxSizer(wxHORIZONTAL);
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
-    sidebar->Add(new wxStaticText(this, wxID_ANY, Localized(StringKey::GlobalNounsModules)),
-        0, wxBOTTOM, Theme::Spacing(this));
     modules_ = new ProfileModuleList(this, *editor_, [this](std::size_t selection) {
         SelectSection(selection);
     });
@@ -107,6 +106,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     Move(position);
 }
 void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
+    wxWindowUpdateLocker update(this);
     pages_->AddPage(page, title, true);
     titles_.push_back(title);
     heading_->SetLabel(title);
@@ -121,6 +121,7 @@ void ProfileCoordinator::Back() {
         EndModal(wxID_CANCEL);
         return;
     }
+    wxWindowUpdateLocker update(this);
     pages_->DeletePage(pages_->GetPageCount() - 1);
     titles_.pop_back();
     pages_->SetSelection(pages_->GetPageCount() - 1);
@@ -133,6 +134,7 @@ void ProfileCoordinator::Back() {
 }
 void ProfileCoordinator::SelectSection(std::size_t selection) {
     if (editor_->Snapshot().saving || selection == selection_) return;
+    wxWindowUpdateLocker update(this);
     selection_ = selection;
     pages_->DeleteAllPages();
     titles_.clear();
