@@ -6,7 +6,8 @@
 #include "../Presentation.h"
 
 namespace Passepartout {
-PreferencesView::PreferencesView(wxWindow *parent, UserPreferencesObservable &preferences) : ThemeDetailView(parent) {
+PreferencesView::PreferencesView(wxWindow *parent, UserPreferencesObservable &preferences) : ThemeDetailView(parent, Presentation::Plain) {
+    Section(Localized(StringKey::GlobalNounsGeneral));
     if (preferences.HasLoadError()) Message(Localized(StringKey::ErrorsAppOther));
     auto *dns = Toggle(Localized(StringKey::ViewsPreferencesDnsFallsBack),
         Localized(StringKey::ViewsPreferencesDnsFallsBackFooter), preferences.Snapshot().dnsFallsBack);

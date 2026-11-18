@@ -31,6 +31,15 @@ public:
 protected:
     bool IsForm() const { return presentation_ == Presentation::Form; }
 private:
+    wxStaticText *WrappingText(const wxString &text);
+    void Rewrap();
+    struct WrappedLabel {
+        wxStaticText *label;
+        wxString text;
+        int width = -1;
+    };
+    std::vector<WrappedLabel> wrapped_;
+    bool wrapPending_ = false;
     wxFlexGridSizer *FormRows();
     wxStaticText *Value(const wxString &value, bool monospace = false);
     wxBoxSizer *Row(const wxString &title);

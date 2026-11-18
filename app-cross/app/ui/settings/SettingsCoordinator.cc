@@ -42,7 +42,7 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     }
     const auto initial = SettingsSection::Preferences;
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
-    sidebar->Add(new SettingsView(splitter->Sidebar(), wxString::FromUTF8(version.current),
+    sidebar->Add(new SettingsView(splitter->Sidebar(),
         updateTitle, initial, [this](SettingsSection section) {
             SelectSection(section);
         }), 1, wxEXPAND | wxALL, Theme::Spacing(this));

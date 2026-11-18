@@ -33,13 +33,13 @@ int main(int argc, char **argv) {
         wxFrame frame(nullptr, wxID_ANY, "Presentation regression");
         auto *book = new wxSimplebook(&frame);
         int changes = 0;
-        auto *sidebar = new Passepartout::SettingsView(&frame, "Test", "Update",
+        auto *sidebar = new Passepartout::SettingsView(&frame, "Update",
             Passepartout::SettingsSection::Preferences, [&](Passepartout::SettingsSection section) {
                 if (section == Passepartout::SettingsSection::FAQ ||
                     section == Passepartout::SettingsSection::Update) std::exit(3);
                 ++changes;
                 book->DeleteAllPages();
-                auto *page = new Passepartout::ThemeDetailView(book);
+                auto *page = new Passepartout::ThemeDetailView(book, Passepartout::ThemeDetailView::Presentation::Plain);
                 page->Section("Support");
                 page->ExternalLink("Discussion", [] {});
                 page->Section("Web");
