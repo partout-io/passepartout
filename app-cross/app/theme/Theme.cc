@@ -31,10 +31,13 @@ void Theme::Apply(wxWindow *window) {
     window->Refresh();
 }
 void Theme::Monospace(wxWindow *window) {
-    auto font = window->GetFont();
-    const auto fixedFont = wxSystemSettings::GetFont(wxSYS_ANSI_FIXED_FONT);
-    font.SetFamily(wxFONTFAMILY_TELETYPE);
-    font.SetFaceName(fixedFont.GetFaceName());
+    const auto inherited = window->GetFont();
+    // Request a scalable monospace family at the inherited UI text size.
+    // The legacy ANSI fixed stock font may select a small bitmap face.
+    auto font = wxFont(wxFontInfo(inherited.GetFractionalPointSize())
+        .Family(wxFONTFAMILY_TELETYPE)
+        .Weight(inherited.GetWeight())
+        .Style(inherited.GetStyle()));
     window->SetFont(font);
 }
 wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
