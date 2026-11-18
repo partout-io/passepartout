@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "VersionView.h"
-#include "../LongContentView.h"
+#include "../../theme/ThemeLongContent.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
 
@@ -20,7 +20,7 @@ VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxS
     Message(author);
     ContentLink(Strings::Unlocalized::Changelog, [present, content = state.changelog] {
         present(Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
-            return new LongContentView(parent, Strings::Unlocalized::Changelog, wxString::FromUTF8(content));
+            return new ThemeLongContent(parent, Strings::Unlocalized::Changelog, wxString::FromUTF8(content));
         });
     });
     Finish();

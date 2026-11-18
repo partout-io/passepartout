@@ -12,7 +12,7 @@
 #include "HTTPProxyView.h"
 #include "IPView.h"
 #include "WireGuardView.h"
-#include "../LongContentView.h"
+#include "../../theme/ThemeLongContent.h"
 #include "../Presentation.h"
 #include "../extensions/Module.h"
 #include <algorithm>
@@ -132,7 +132,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
     const auto module = editor_->Snapshot().draft.modules.at(index);
     const auto openContent = [this](wxString title, wxString content) {
         ThemeModal modal(this, title, [title, content](wxWindow *parent) {
-            return new LongContentView(parent, title, content);
+            return new ThemeLongContent(parent, title, content);
         });
         modal.ShowModal();
     };

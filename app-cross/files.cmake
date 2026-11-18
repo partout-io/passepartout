@@ -9,11 +9,11 @@ set(APP_SOURCES
     app/theme/ThemeDetailList.cc
     app/theme/ThemeDetailView.cc
     app/theme/ThemeList.cc
+    app/theme/ThemeLongContent.cc
     app/theme/ThemeModal.cc
     app/theme/ThemeProfileList.cc
     app/theme/ThemeSplitView.cc
     app/ui/ConfigurationPicker.cc
-    app/ui/LongContentView.cc
     app/ui/MainView.cc
     app/ui/Presentation.cc
     app/ui/ProfileCollectionView.cc

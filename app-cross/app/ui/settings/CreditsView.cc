@@ -4,7 +4,7 @@
 
 #include "CreditsView.h"
 #include "LicenseView.h"
-#include "../LongContentView.h"
+#include "../../theme/ThemeLongContent.h"
 #include "../../strings/Strings.h"
 #include <wx/uilocale.h>
 
@@ -30,7 +30,7 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsP
         const auto title = wxString::FromUTF8(notice.name);
         ContentLink(title, [present, title, content = notice.message] {
             present(title, [title, content](wxWindow *parent) {
-                return new LongContentView(parent, title, wxString::FromUTF8(content));
+                return new ThemeLongContent(parent, title, wxString::FromUTF8(content));
             });
         });
     }

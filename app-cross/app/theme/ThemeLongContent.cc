@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "LongContentView.h"
-#include "../theme/Theme.h"
+#include "ThemeLongContent.h"
+#include "Theme.h"
 
 namespace Passepartout {
-LongContentView::LongContentView(wxWindow *parent, const wxString &title, const wxString &content)
+ThemeLongContent::ThemeLongContent(wxWindow *parent, const wxString &title, const wxString &content)
     : wxPanel(parent) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     auto *text = new wxTextCtrl(this, wxID_ANY, content, wxDefaultPosition, wxDefaultSize,

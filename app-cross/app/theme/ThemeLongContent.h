@@ -6,8 +6,8 @@
 #include <wx/wx.h>
 
 namespace Passepartout {
-class LongContentView final : public wxPanel {
+class ThemeLongContent final : public wxPanel {
 public:
-    LongContentView(wxWindow *parent, const wxString &title, const wxString &content);
+    ThemeLongContent(wxWindow *parent, const wxString &title, const wxString &content);
 };
 }
