@@ -8,6 +8,7 @@
 #include <wx/simplebook.h>
 
 namespace Passepartout {
+class ThemeNavigationHeader;
 class SettingsCoordinator final : public wxDialog {
 public:
     SettingsCoordinator(wxWindow *parent, AppContext &context, bool showVersion = false);
@@ -19,8 +20,7 @@ private:
     AppContext &context_;
     SettingsSection section_ = SettingsSection::Preferences;
     wxSimplebook *pages_;
-    wxStaticText *heading_;
-    wxButton *back_;
+    ThemeNavigationHeader *navigation_;
     std::vector<wxString> titles_;
 };
 }

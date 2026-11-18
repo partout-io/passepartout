@@ -9,6 +9,7 @@
 #include "DiagnosticsView.h"
 #include "../Presentation.h"
 #include "../../theme/ThemeSplitView.h"
+#include "../../theme/ThemeNavigationHeader.h"
 #include <wx/display.h>
 #include <wx/wupdlock.h>
 #include <algorithm>
@@ -23,14 +24,10 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, 
     pages_ = new wxSimplebook(detailPanel);
     pages_->SetFitToCurrentPage(true);
     auto *detail = new wxBoxSizer(wxVERTICAL);
-    auto *navigation = new wxBoxSizer(wxHORIZONTAL);
-    heading_ = new wxStaticText(detailPanel, wxID_ANY, wxString());
-    heading_->SetFont(heading_->GetFont().Bold());
-    navigation->Add(heading_, 1, wxALIGN_CENTER_VERTICAL);
-    back_ = new wxButton(detailPanel, wxID_BACKWARD, Localized(StringKey::GlobalActionsBack));
-    navigation->Add(back_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRESERVE_SPACE_EVEN_IF_HIDDEN,
-        Theme::Spacing(this));
-    detail->Add(navigation, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    navigation_ = new ThemeNavigationHeader(detailPanel, [this] {
+        Back();
+    });
+    detail->Add(navigation_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
     const auto version = context.version.Snapshot();
@@ -54,15 +51,13 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context, 
     buttons->Realize();
     layout->Add(buttons, 0, wxALIGN_RIGHT | wxALL, Theme::Spacing(this));
     SetSizer(layout);
-    back_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        Back();
-    });
     close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         EndModal(wxID_CANCEL);
     });
     Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        if (event.GetKeyCode() == WXK_ESCAPE) Back();
-        else event.Skip();
+        navigation_->HandleKey(event, [this] {
+            EndModal(wxID_CANCEL);
+        });
     });
     SelectSection(initial);
     GetSizer()->SetSizeHints(this);
@@ -135,10 +130,7 @@ void SettingsCoordinator::Push(wxString title, std::function<wxWindow *(wxWindow
     RefreshNavigation();
 }
 void SettingsCoordinator::Back() {
-    if (titles_.size() == 1) {
-        EndModal(wxID_CANCEL);
-        return;
-    }
+    if (titles_.size() <= 1) return;
     wxWindowUpdateLocker update(this);
     pages_->DeletePage(pages_->GetPageCount() - 1);
     titles_.pop_back();
@@ -147,8 +139,7 @@ void SettingsCoordinator::Back() {
     pages_->GetCurrentPage()->SetFocus();
 }
 void SettingsCoordinator::RefreshNavigation() {
-    heading_->SetLabel(titles_.back());
-    back_->Show(titles_.size() > 1);
+    navigation_->Update(titles_.back(), titles_.size() > 1);
     pages_->InvalidateBestSize();
     pages_->GetParent()->Layout();
     InvalidateBestSize();

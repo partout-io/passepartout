@@ -20,6 +20,7 @@
 #include <wx/display.h>
 #include <wx/wupdlock.h>
 #include "../../theme/ThemeSplitView.h"
+#include "../../theme/ThemeNavigationHeader.h"
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
@@ -36,7 +37,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
     progress_ = ThemeProgressView(this);
     progress_->Hide();
-    back_ = new wxButton(detailPanel, wxID_BACKWARD, Localized(StringKey::GlobalActionsBack));
     save_ = new wxButton(this, wxID_SAVE, Localized(StringKey::GlobalActionsSave));
     cancel_ = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsCancel));
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
@@ -46,13 +46,10 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     sidebar->Add(modules_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     sidebarPanel->SetSizer(sidebar);
     auto *detail = new wxBoxSizer(wxVERTICAL);
-    auto *navigation = new wxBoxSizer(wxHORIZONTAL);
-    heading_ = new wxStaticText(detailPanel, wxID_ANY, wxString());
-    heading_->SetFont(heading_->GetFont().Bold());
-    navigation->Add(heading_, 1, wxALIGN_CENTER_VERTICAL);
-    navigation->Add(back_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRESERVE_SPACE_EVEN_IF_HIDDEN,
-        Theme::Spacing(this));
-    detail->Add(navigation, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+    navigation_ = new ThemeNavigationHeader(detailPanel, [this] {
+        Back();
+    });
+    detail->Add(navigation_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     detail->Add(pages_, 1, wxEXPAND);
     detailPanel->SetSizer(detail);
     const int sidebarWidth = splitter->InitializePanes();
@@ -67,11 +64,8 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     SetAffirmativeId(wxID_SAVE);
     layout->Add(buttons, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
-    back_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        Back();
-    });
     cancel_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        if (!editor_->Snapshot().saving) EndModal(wxID_CANCEL);
+        Dismiss();
     });
     save_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         profiles_.SaveEditor(editor_);
@@ -85,8 +79,9 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
         EndModal(wxID_CANCEL);
     });
     Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        if (event.GetKeyCode() == WXK_ESCAPE) Back();
-        else event.Skip();
+        navigation_->HandleKey(event, [this] {
+            Dismiss();
+        });
     });
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
         RefreshState();
@@ -115,24 +110,22 @@ void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
     wxWindowUpdateLocker update(this);
     pages_->AddPage(page, title, true);
     titles_.push_back(title);
-    heading_->SetLabel(title);
-    back_->Show(titles_.size() > 1);
+    navigation_->Update(title, titles_.size() > 1 && !editor_->Snapshot().saving);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     Layout();
 }
+void ProfileCoordinator::Dismiss() {
+    if (!editor_->Snapshot().saving) EndModal(wxID_CANCEL);
+}
 void ProfileCoordinator::Back() {
     if (editor_->Snapshot().saving) return;
-    if (titles_.size() == 1) {
-        EndModal(wxID_CANCEL);
-        return;
-    }
+    if (titles_.size() <= 1) return;
     wxWindowUpdateLocker update(this);
     pages_->DeletePage(pages_->GetPageCount() - 1);
     titles_.pop_back();
     pages_->SetSelection(pages_->GetPageCount() - 1);
-    heading_->SetLabel(titles_.back());
-    back_->Show(titles_.size() > 1);
+    navigation_->Update(titles_.back(), titles_.size() > 1);
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     Layout();
@@ -192,7 +185,7 @@ void ProfileCoordinator::RefreshState() {
     if (state.saving) progress_->Start();
     else progress_->Stop();
     if (progress_->Show(state.saving)) Layout();
-    back_->Enable(!state.saving);
+    navigation_->Update(titles_.back(), titles_.size() > 1 && !state.saving);
     cancel_->Enable(!state.saving);
     save_->Enable(editor_->CanSave() && ProfileObservable::CanSave(profiles_.Snapshot(), state.draft.id));
     if (state.failed) {

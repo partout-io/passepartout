@@ -10,6 +10,7 @@
 #include <wx/activityindicator.h>
 
 namespace Passepartout {
+class ThemeNavigationHeader;
 class ProfileModuleList;
 class ProfileCoordinator final : public wxDialog {
 public:
@@ -20,16 +21,16 @@ private:
     void OpenModule(std::size_t index);
     void Push(wxWindow *page, const wxString &title);
     void Back();
+    void Dismiss();
     void RefreshState();
     ProfileObservable &profiles_;
     std::shared_ptr<ProfileEditor> editor_;
     const WireGuardKeyGenerator &keys_;
     wxSimplebook *pages_;
     ProfileModuleList *modules_;
-    wxStaticText *heading_;
+    ThemeNavigationHeader *navigation_;
     std::size_t selection_ = 0;
     wxButton *save_;
-    wxButton *back_;
     wxButton *cancel_;
     wxActivityIndicator *progress_;
     wxTimer timer_;
