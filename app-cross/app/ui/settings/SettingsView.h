@@ -11,5 +11,7 @@ class SettingsView final : public wxPanel {
 public:
     SettingsView(wxWindow *parent, const wxString &version, const wxString &updateTitle,
         SettingsSection initial, std::function<void(SettingsSection)> selected);
+private:
+    unsigned selectedRow_ = 0;
 };
 }

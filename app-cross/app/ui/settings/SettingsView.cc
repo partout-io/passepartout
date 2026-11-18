@@ -68,25 +68,29 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
         if (list->GetItemData(list->RowToItem(row)) == static_cast<wxUIntPtr>(initial)) initialRow = row;
     }
     list->SelectRow(initialRow);
-    list->Bind(wxEVT_DATAVIEW_SELECTION_CHANGED,
-        [list, selected, previous = initialRow](wxDataViewEvent &event) mutable {
-            if (!event.GetItem().IsOk()) return;
-            const auto item = list->GetItemData(event.GetItem());
-            const auto section = static_cast<SettingsSection>(item);
-            const bool external = section == SettingsSection::FAQ || section == SettingsSection::Update;
-            if (!item) {
-                list->SelectRow(previous);
-                return;
-            }
-            previous = list->ItemToRow(event.GetItem());
-            if (!external) selected(section);
-        });
+    selectedRow_ = initialRow;
+    const auto select = [this, list, selected](const wxDataViewItem &item) {
+        if (!item.IsOk()) return;
+        const auto target = list->GetItemData(item);
+        if (!target) {
+            list->SelectRow(selectedRow_);
+            return;
+        }
+        const auto row = static_cast<unsigned>(list->ItemToRow(item));
+        if (row == selectedRow_) return;
+        selectedRow_ = row;
+        const auto section = static_cast<SettingsSection>(target);
+        if (section != SettingsSection::FAQ && section != SettingsSection::Update) selected(section);
+    };
+    list->Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [select](wxDataViewEvent &event) {
+        select(event.GetItem());
+    });
     list->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, [list, selected](wxDataViewEvent &event) {
         if (!event.GetItem().IsOk()) return;
         const auto section = static_cast<SettingsSection>(list->GetItemData(event.GetItem()));
         if (section == SettingsSection::FAQ || section == SettingsSection::Update) selected(section);
     });
-    list->Bind(wxEVT_CHAR_HOOK, [list](wxKeyEvent &event) {
+    list->Bind(wxEVT_CHAR_HOOK, [list, select](wxKeyEvent &event) {
         const auto key = event.GetKeyCode();
         if (key != WXK_UP && key != WXK_DOWN) {
             event.Skip();
@@ -99,6 +103,7 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &version, const wxSt
                 list->SelectRow(row);
                 list->SetCurrentItem(list->RowToItem(row));
                 list->EnsureVisible(list->RowToItem(row));
+                select(list->RowToItem(row));
                 return;
             }
             row += step;

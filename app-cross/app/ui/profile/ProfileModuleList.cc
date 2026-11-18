@@ -63,17 +63,22 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         AppendItem(cells, navigable ? index + 2 : 0);
     }
     SelectRow(0);
-    Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [this, selected](wxDataViewEvent &event) {
-        if (!event.GetItem().IsOk()) return;
-        const auto target = GetItemData(event.GetItem());
+    const auto select = [this, selected](const wxDataViewItem &item) {
+        if (!item.IsOk()) return;
+        const auto target = GetItemData(item);
         if (!target) {
             SelectRow(selectedRow_);
             return;
         }
-        selectedRow_ = ItemToRow(event.GetItem());
+        const auto row = static_cast<unsigned>(ItemToRow(item));
+        if (row == selectedRow_) return;
+        selectedRow_ = row;
         selected(target - 1);
+    };
+    Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [select](wxDataViewEvent &event) {
+        select(event.GetItem());
     });
-    Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
+    Bind(wxEVT_CHAR_HOOK, [this, select](wxKeyEvent &event) {
         const auto key = event.GetKeyCode();
         if (key != WXK_UP && key != WXK_DOWN) {
             event.Skip();
@@ -87,6 +92,7 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
                 SelectRow(row);
                 SetCurrentItem(item);
                 EnsureVisible(item);
+                select(item);
                 return;
             }
             row += step;
