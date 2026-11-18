@@ -7,6 +7,7 @@
 #include "ProfileModuleList.h"
 #include "OpenVPNView.h"
 #include "OpenVPNCredentialsView.h"
+#include "OpenVPNRemotesView.h"
 #include "DNSView.h"
 #include "HTTPProxyView.h"
 #include "IPView.h"
@@ -166,6 +167,12 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
             return new OpenVPNView(pages_, tagged.value, openContent, [this, index] {
                 Push(new OpenVPNCredentialsView(pages_, editor_, index), Localized(StringKey::ModulesOpenvpnCredentials));
+            }, [this, index] {
+                const auto draft = editor_->Snapshot().draft;
+                const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;
+                if (!module.configuration || !module.configuration->remotes) return;
+                Push(new OpenVPNRemotesView(pages_, *module.configuration->remotes),
+                    Localized(StringKey::ModulesOpenvpnRemotes));
             });
         } else {
             return new ThemeDetailView(pages_);

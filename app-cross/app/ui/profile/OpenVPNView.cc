@@ -5,6 +5,7 @@
 #include "OpenVPNView.h"
 #include "../../strings/Unlocalized.h"
 #include <wx/base64.h>
+#include <wx/numformatter.h>
 
 namespace Passepartout {
 namespace {
@@ -21,7 +22,8 @@ wxString HexKey(const nlohmann::json &value) {
     return text;
 }
 }
-OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module, OpenModuleContent openContent, std::function<void()> openCredentials)
+OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module,
+    OpenModuleContent openContent, std::function<void()> openCredentials, std::function<void()> openRemotes)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
@@ -31,7 +33,10 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     };
     if (HasContent(value("remotes"))) {
         Section(Localized(StringKey::GlobalNounsConnection));
-        Row(StringKey::ModulesOpenvpnRemotes, value("remotes"), true);
+        const auto count = module.configuration->remotes->size();
+        auto summary = Localized(count == 1 ? StringKey::GlobalNounsEntriesOne : StringKey::GlobalNounsEntriesN);
+        summary.Replace("%d", wxNumberFormatter::ToString(static_cast<long>(count)));
+        Navigate(Localized(StringKey::ModulesOpenvpnRemotes), std::move(openRemotes), summary);
     }
     if (module.configuration->authUserPass.value_or(false)) {
         Section(Localized(StringKey::GlobalNounsAccount));

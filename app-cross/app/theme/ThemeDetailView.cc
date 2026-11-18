@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ThemeDetailView.h"
+#include "ThemeNavigationLink.h"
 #include <wx/statline.h>
 #include <wx/statbox.h>
-#include <wx/hyperlink.h>
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>
 #include <algorithm>
@@ -62,11 +62,8 @@ void ThemeDetailView::Navigate(const wxString &title, std::function<void()> acti
     const wxString &value, bool enabled) {
     if (IsForm()) {
         auto *rows = FormRows();
-        auto *link = new wxHyperlinkCtrl(contentParent_, wxID_ANY, title, wxString());
+        auto *link = new ThemeNavigationLink(contentParent_, title, std::move(action));
         link->Enable(enabled);
-        link->Bind(wxEVT_HYPERLINK, [this, action](wxHyperlinkEvent &) {
-            CallAfter(action);
-        });
         rows->Add(link, 0, wxALIGN_CENTER_VERTICAL);
         rows->Add(Value(value), 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
         return;

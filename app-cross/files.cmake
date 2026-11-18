@@ -8,6 +8,7 @@ set(APP_SOURCES
     app/theme/ThemeDetailList.cc
     app/theme/ThemeDetailView.cc
     app/theme/ThemeList.cc
+    app/theme/ThemeNavigationLink.cc
     app/theme/ThemeProfileList.cc
     app/theme/ThemeSplitView.cc
     app/ui/ConfigurationPicker.cc
@@ -23,6 +24,7 @@ set(APP_SOURCES
     app/ui/profile/IPView.cc
     app/ui/profile/ModuleDetailView.cc
     app/ui/profile/OpenVPNCredentialsView.cc
+    app/ui/profile/OpenVPNRemotesView.cc
     app/ui/profile/OpenVPNView.cc
     app/ui/profile/ProfileCoordinator.cc
     app/ui/profile/ProfileModuleList.cc
