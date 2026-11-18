@@ -29,5 +29,6 @@ private:
     wxActivityIndicator *progress_;
     wxTimer timer_;
     std::vector<wxString> titles_;
+    std::vector<wxSize> pageSizes_;
 };
 }

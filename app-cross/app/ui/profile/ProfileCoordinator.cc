@@ -23,6 +23,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
       profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     pages_ = new wxSimplebook(this);
+    pages_->SetFitToCurrentPage(true);
     layout->Add(pages_, 1, wxEXPAND);
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
     progress_ = ThemeProgressView(this);
@@ -37,8 +38,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     buttons->Add(cancel_);
     layout->Add(buttons, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
-    SetMinSize(FromDIP(wxSize(540, 420)));
-    SetSize(FromDIP(wxSize(680, 600)));
     back_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         Back();
     });
@@ -70,15 +69,25 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     });
     Push(overview, Localized(StringKey::GlobalNounsProfile));
     RefreshState();
+    GetSizer()->SetSizeHints(this);
     timer_.Start(100);
     CentreOnParent();
 }
 void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
+    if (!pageSizes_.empty()) pageSizes_.back() = GetSize();
     pages_->AddPage(page, title, true);
     titles_.push_back(title);
+    pageSizes_.push_back(wxDefaultSize);
     SetTitle(title);
     back_->Show(titles_.size() > 1);
     save_->Show(titles_.size() == 1);
+    pages_->InvalidateBestSize();
+    InvalidateBestSize();
+    if (titles_.size() > 1) {
+        auto size = GetSize();
+        size.IncTo(GetBestSize());
+        SetSize(size);
+    }
     Layout();
     page->SetFocus();
 }
@@ -90,10 +99,14 @@ void ProfileCoordinator::Back() {
     }
     pages_->DeletePage(pages_->GetPageCount() - 1);
     titles_.pop_back();
+    pageSizes_.pop_back();
     pages_->SetSelection(pages_->GetPageCount() - 1);
     SetTitle(titles_.back());
     back_->Show(titles_.size() > 1);
     save_->Show(titles_.size() == 1);
+    pages_->InvalidateBestSize();
+    InvalidateBestSize();
+    SetSize(pageSizes_.back());
     Layout();
     pages_->GetCurrentPage()->SetFocus();
 }

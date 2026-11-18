@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>
+#include <wx/settings.h>
 
 namespace Passepartout {
 namespace {
@@ -44,13 +45,13 @@ ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor
     auto *heading = new wxStaticText(this, wxID_ANY, Localized(StringKey::GlobalNounsModules));
     heading->SetFont(heading->GetFont().Bold());
     layout->Add(heading, 0, wxLEFT | wxRIGHT | wxBOTTOM, spacing);
-    auto *modules = new ThemeList(this, wxDV_NO_HEADER);
+    auto *modules = modules_ = new ThemeList(this, wxDV_NO_HEADER);
     modules->SetName(Localized(StringKey::GlobalNounsModules));
     auto *store = new ModuleListStore;
     modules->AssociateModel(store);
     store->DecRef();
-    modules->AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, FromDIP(300), wxALIGN_LEFT, 0);
-    modules->AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, FromDIP(120), wxALIGN_RIGHT, 0);
+    modules->AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, 0);
+    modules->AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, wxCOL_WIDTH_AUTOSIZE, wxALIGN_RIGHT, 0);
     for (std::size_t index = 0; index < draft.modules.size(); ++index) {
         const auto &module = draft.modules[index];
         if (std::holds_alternative<Partout::Models::TaggedModuleCustom>(module)) continue;
@@ -64,10 +65,8 @@ ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor
         const bool navigable = !std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module);
         modules->AppendItem(cells, navigable ? index + 1 : 0);
     }
-    modules->Bind(wxEVT_SIZE, [modules](wxSizeEvent &event) {
-        const auto statusWidth = modules->FromDIP(120);
-        modules->GetColumn(0)->SetWidth(std::max(1, modules->GetClientSize().x - statusWidth - modules->FromDIP(4)));
-        modules->GetColumn(1)->SetWidth(statusWidth);
+    modules->Bind(wxEVT_SIZE, [this](wxSizeEvent &event) {
+        ResizeColumns();
         event.Skip();
     });
     modules->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, [this, modules, openModule](wxDataViewEvent &event) {
@@ -100,5 +99,39 @@ ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor
     footer->Add(copy, 0, wxALIGN_CENTER_VERTICAL);
     layout->Add(footer, 0, wxEXPAND | wxALL, spacing);
     SetSizer(layout);
+    UpdateMetrics();
+    Bind(wxEVT_DPI_CHANGED, [this](wxDPIChangedEvent &event) {
+        CallAfter([this] {
+            UpdateMetrics();
+            GetParent()->InvalidateBestSize();
+            GetParent()->Layout();
+        });
+        event.Skip();
+    });
+}
+void ProfileView::UpdateMetrics() {
+    const int padding = 2 * Theme::Spacing(this);
+    int titleWidth = modules_->GetTextExtent(Localized(StringKey::GlobalNounsModules)).x;
+    statusWidth_ = 0;
+    const auto count = modules_->GetItemCount();
+    for (unsigned row = 0; row < count; ++row) {
+        titleWidth = std::max(titleWidth, modules_->GetTextExtent(modules_->GetTextValue(row, 0)).x);
+        statusWidth_ = std::max(statusWidth_, modules_->GetTextExtent(modules_->GetTextValue(row, 1)).x);
+    }
+    statusWidth_ += padding;
+    int rowHeight = modules_->GetCharHeight() + FromDIP(6);
+    if (count) rowHeight = std::max(rowHeight, modules_->GetItemRect(modules_->RowToItem(0)).height);
+    const int visibleRows = std::max(1, std::min(6, static_cast<int>(count)));
+    const int scrollbar = std::max(0, wxSystemSettings::GetMetric(wxSYS_VSCROLL_X, modules_));
+    modules_->SetMinSize(modules_->ClientToWindowSize(wxSize(
+        titleWidth + padding + statusWidth_ + scrollbar, visibleRows * rowHeight)));
+    InvalidateBestSize();
+    ResizeColumns();
+    Layout();
+}
+void ProfileView::ResizeColumns() {
+    modules_->GetColumn(0)->SetWidth(std::max(1,
+        modules_->GetClientSize().x - statusWidth_ - FromDIP(4)));
+    modules_->GetColumn(1)->SetWidth(statusWidth_);
 }
 }
