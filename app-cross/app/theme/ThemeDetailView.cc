@@ -129,6 +129,13 @@ wxButton *ThemeDetailView::Action(const wxString &title, std::function<void()> a
     return button;
 }
 wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &value, long style) {
+    if (title.empty()) {
+        auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
+        text->SetName(value);
+        section_->Add(text, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        formRows_ = nullptr;
+        return text;
+    }
     if (IsForm()) {
         auto *rows = FormRows();
         rows->Add(new wxStaticText(contentParent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);

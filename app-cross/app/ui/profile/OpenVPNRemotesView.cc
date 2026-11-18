@@ -9,7 +9,7 @@ OpenVPNRemotesView::OpenVPNRemotesView(wxWindow *parent, const std::vector<std::
     : ThemeDetailView(parent, Presentation::Form) {
     std::vector<wxString> values;
     for (const auto &endpoint : endpoints) values.push_back(wxString::FromUTF8(endpoint));
-    Items(Localized(StringKey::ModulesOpenvpnRemotes), values);
+    Items({}, values);
     Finish();
 }
 }
