@@ -40,7 +40,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         title.Replace("%d", ValueText(++index));
         Section(title);
         Row(StringKey::GlobalNounsPublicKey, peer.at("publicKey"), true);
-        Row(StringKey::ModulesWireguardPresharedKey, peer.value("preSharedKey", nlohmann::json()), true);
+        Row(StringKey::ModulesWireguardPresharedKey, peer.value("preSharedKey", nlohmann::json()), true, wxString());
         Row(StringKey::GlobalNounsEndpoint, peer.value("endpoint", nlohmann::json()), true);
         Row(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()), true, entries(peer.value("allowedIPs", nlohmann::json())));
         Row(StringKey::GlobalNounsKeepAlive, peer.value("keepAlive", nlohmann::json()));

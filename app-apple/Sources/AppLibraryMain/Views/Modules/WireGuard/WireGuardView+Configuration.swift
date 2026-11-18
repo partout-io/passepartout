@@ -122,7 +122,8 @@ private extension WireGuardView.ConfigurationView {
             )
             ThemeLongContentLink(
                 Strings.Modules.Wireguard.presharedKey,
-                text: peerBinding.preSharedKey
+                text: peerBinding.preSharedKey,
+                preview: ""
             )
             ThemeLongContentLink(
                 Strings.Global.Nouns.endpoint,
