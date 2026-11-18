@@ -12,7 +12,6 @@ namespace Passepartout {
 ProfileView::ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor,
     std::function<void()> changed)
     : wxPanel(parent) {
-    Theme::Apply(this);
     const auto draft = editor->Snapshot().draft;
     const auto spacing = Theme::Spacing(this);
     auto *layout = new wxBoxSizer(wxVERTICAL);
