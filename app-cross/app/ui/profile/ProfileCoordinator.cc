@@ -13,7 +13,9 @@
 #include "../LongContentView.h"
 #include "../Presentation.h"
 #include "../extensions/Module.h"
+#include <algorithm>
 #include <type_traits>
+#include <wx/display.h>
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
@@ -84,9 +86,18 @@ void ProfileCoordinator::Push(wxWindow *page, const wxString &title) {
     pages_->InvalidateBestSize();
     InvalidateBestSize();
     if (titles_.size() > 1) {
-        auto size = GetSize();
+        // Scrolled pages report small best sizes, not a useful reading viewport.
+        const wxSize viewport(page->GetCharWidth() * 90, page->GetCharHeight() * 28);
+        auto size = GetSize() - pages_->GetClientSize() + viewport;
+        size.IncTo(GetSize());
         size.IncTo(GetBestSize());
+        const auto workArea = wxDisplay(this).GetClientArea();
+        size.DecTo(workArea.GetSize());
         SetSize(size);
+        auto position = GetPosition();
+        position.x = std::max(workArea.x, std::min(position.x, workArea.GetRight() - GetSize().x + 1));
+        position.y = std::max(workArea.y, std::min(position.y, workArea.GetBottom() - GetSize().y + 1));
+        Move(position);
     }
     Layout();
     page->SetFocus();
