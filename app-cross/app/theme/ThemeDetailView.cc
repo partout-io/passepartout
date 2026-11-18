@@ -228,15 +228,18 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     section_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this, Theme::Space::SectionContent));
     return control;
 }
-void ThemeDetailView::Message(const wxString &text) {
+void ThemeDetailView::Message(const wxString &text, TextStyle style) {
     list_ = nullptr;
     if (presentation_ != Presentation::Centered) {
-        section_->Add(WrappingText(text), 0, wxEXPAND | wxALL,
+        auto *label = WrappingText(text);
+        if (style == TextStyle::Secondary) Theme::SecondaryText(label);
+        section_->Add(label, 0, wxEXPAND | wxALL,
             Theme::Spacing(this, Theme::Space::SectionContent));
         return;
     }
     auto *label = new wxStaticText(this, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
         presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxALIGN_LEFT);
+    if (style == TextStyle::Secondary) Theme::SecondaryText(label);
     label->Wrap(presentation_ == Presentation::Centered ? GetCharWidth() * 36 : FromDIP(480));
     if (presentation_ == Presentation::Centered) {
         layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));

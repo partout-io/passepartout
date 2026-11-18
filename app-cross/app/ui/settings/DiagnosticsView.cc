@@ -21,7 +21,7 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
     }
     auto *privacy = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
         Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData);
-    Message(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
+    Message(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles), TextStyle::Secondary);
     privacy->Enable(preferences.CanChangePrivateData());
     privacy->Bind(wxEVT_CHECKBOX, [this, privacy, &preferences](wxCommandEvent &) {
         try {
