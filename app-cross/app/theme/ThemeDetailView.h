@@ -41,6 +41,7 @@ private:
     };
     std::vector<WrappedLabel> wrapped_;
     bool wrapPending_ = false;
+    wxSizerFlags SectionRowFlags(bool expand = true);
     wxFlexGridSizer *FormRows();
     wxStaticText *Value(const wxString &value, bool monospace = false);
     wxBoxSizer *Row(const wxString &title);

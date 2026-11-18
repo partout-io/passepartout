@@ -30,7 +30,8 @@ void ThemeDetailView::Section(const wxString &title) {
         auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
         layout_->Add(box, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, Theme::Spacing(this));
         contentParent_ = box->GetStaticBox();
-        section_ = box;
+        section_ = new wxBoxSizer(wxVERTICAL);
+        box->Add(section_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
         formRows_ = nullptr;
         return;
     }
@@ -110,8 +111,7 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
                 wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
         }
         if (presentation_ == Presentation::Plain) {
-            section_->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-            section_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
+            section_->Add(row, SectionRowFlags());
         } else {
             layout_->Add(row, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, Theme::Spacing(this, Theme::Space::SectionContent));
         }
@@ -122,18 +122,24 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
 void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> action) {
     list_ = nullptr;
     auto *link = new ThemeContentLink(contentParent_, title, std::move(action));
-    section_->Add(link, 0, wxLEFT | wxRIGHT, Theme::Spacing(this));
-    section_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
+    section_->Add(link, SectionRowFlags(false));
 }
 void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
     std::function<void()> action) {
     ContentLink(title, std::move(action), preview.BeforeFirst('\n'));
 }
+wxSizerFlags ThemeDetailView::SectionRowFlags(bool expand) {
+    auto result = wxSizerFlags();
+    if (expand) result.Expand();
+    if (section_ == layout_) return result.Border(wxALL, Theme::Spacing(this));
+    if (!section_->GetChildren().empty()) section_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
+    return result;
+}
 wxFlexGridSizer *ThemeDetailView::FormRows() {
     if (!formRows_) {
         formRows_ = new wxFlexGridSizer(2, Theme::Spacing(this, Theme::Space::Row), Theme::Spacing(this, Theme::Space::Columns));
         formRows_->AddGrowableCol(1);
-        section_->Add(formRows_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        section_->Add(formRows_, SectionRowFlags());
     }
     return formRows_;
 }
@@ -162,8 +168,7 @@ wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &va
     if (title.empty()) {
         auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
         text->SetName(value);
-        section_->Add(text, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-        section_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
+        section_->Add(text, SectionRowFlags());
         formRows_ = nullptr;
         return text;
     }
@@ -225,7 +230,7 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     control->SetName(title);
     control->SetValue(checked);
     row->Add(control, 0, wxALIGN_CENTER_VERTICAL);
-    section_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this, Theme::Space::SectionContent));
+    section_->Add(row, SectionRowFlags());
     return control;
 }
 void ThemeDetailView::Message(const wxString &text, TextStyle style) {
@@ -233,8 +238,7 @@ void ThemeDetailView::Message(const wxString &text, TextStyle style) {
     if (presentation_ != Presentation::Centered) {
         auto *label = WrappingText(text);
         if (style == TextStyle::Secondary) Theme::SecondaryText(label);
-        section_->Add(label, 0, wxEXPAND | wxALL,
-            Theme::Spacing(this, Theme::Space::SectionContent));
+        section_->Add(label, SectionRowFlags());
         return;
     }
     auto *label = new wxStaticText(this, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
