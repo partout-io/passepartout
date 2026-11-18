@@ -7,6 +7,7 @@
 #include "../../theme/ThemeLongContent.h"
 #include "../../strings/Strings.h"
 #include <wx/uilocale.h>
+#include <algorithm>
 
 namespace Passepartout {
 CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsPresentation present) : ThemeDetailView(parent, Presentation::Plain) {
@@ -35,6 +36,7 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsP
         });
     }
     Section(Localized(StringKey::ViewsSettingsCreditsTranslations));
+    std::vector<std::pair<wxString, wxString>> translations;
     for (const auto &[language, authors] : state.translations) {
         wxString text;
         for (const auto &author : authors) {
@@ -42,8 +44,12 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsP
             text += wxString::FromUTF8(author);
         }
         const auto *info = wxUILocale::FindLanguageInfo(wxLocaleIdent::FromTag(wxString::FromUTF8(language)));
-        Field(info ? wxGetTranslation(info->Description) : wxString::FromUTF8(language), text);
+        translations.emplace_back(info ? wxGetTranslation(info->Description) : wxString::FromUTF8(language), text);
     }
+    std::stable_sort(translations.begin(), translations.end(), [](const auto &lhs, const auto &rhs) {
+        return wxUILocale::GetCurrent().CompareStrings(lhs.first, rhs.first) < 0;
+    });
+    for (const auto &[language, authors] : translations) Field(language, authors);
     Finish();
 }
 }
