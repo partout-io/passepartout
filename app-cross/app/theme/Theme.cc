@@ -39,7 +39,13 @@ wxIcon Theme::SettingsIcon(wxWindow *window) {
     if (bundle.IsOk()) icon.CopyFromBitmap(bundle.GetBitmap(wxSize(size, size)));
     return icon;
 }
-int Theme::Spacing(wxWindow *window) {
+int Theme::Spacing(wxWindow *window, Space space) {
+    switch (space) {
+        case Space::Row: return window->FromDIP(4);
+        case Space::SectionContent: return window->FromDIP(6);
+        case Space::Columns: return window->FromDIP(24);
+        case Space::Section: return window->FromDIP(12);
+    }
     return window->FromDIP(12);
 }
 void Theme::Apply(wxWindow *window) {

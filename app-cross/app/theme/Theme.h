@@ -10,7 +10,8 @@ namespace Passepartout {
 struct Theme {
     static wxIcon AppIcon(wxWindow *window, int sizeDIP = 0);
     static wxIcon SettingsIcon(wxWindow *window);
-    static int Spacing(wxWindow *window);
+    enum class Space { Row, SectionContent, Section, Columns };
+    static int Spacing(wxWindow *window, Space space = Space::Section);
     static void Apply(wxWindow *window);
     static void Monospace(wxWindow *window);
 };

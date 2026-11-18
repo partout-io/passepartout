@@ -12,7 +12,7 @@ namespace Passepartout {
 ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
     : wxScrolledWindow(parent, wxID_ANY), layout_(new wxBoxSizer(wxVERTICAL)),
       presentation_(presentation), contentParent_(this), section_(layout_) {
-    SetScrollRate(0, FromDIP(12));
+    SetScrollRate(0, Theme::Spacing(this));
     SetSizer(layout_);
 }
 void ThemeDetailView::Section(const wxString &title) {
@@ -32,11 +32,11 @@ void ThemeDetailView::Section(const wxString &title) {
     if (presentation_ == Presentation::Plain) {
         layout_->AddSpacer(Theme::Spacing(this));
         layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-        layout_->AddSpacer(Theme::Spacing(this) / 2);
+        layout_->AddSpacer(Theme::Spacing(this, Theme::Space::SectionContent));
         return;
     }
     layout_->Add(label, 0, (presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxEXPAND) | wxALL,
-        presentation_ == Presentation::Centered ? Theme::Spacing(this) / 2 : Theme::Spacing(this));
+        presentation_ == Presentation::Centered ? Theme::Spacing(this, Theme::Space::SectionContent) : Theme::Spacing(this));
 }
 wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
     list_ = nullptr;
@@ -62,7 +62,7 @@ void ThemeDetailView::Field(const wxString &title, const wxString &value, bool m
         row->Add(new wxStaticText(this, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT),
             1, wxEXPAND);
         layout_->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-        layout_->AddSpacer(Theme::Spacing(this) / 3);
+        layout_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
         return;
     }
     if (IsForm()) {
@@ -102,9 +102,9 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
         }
         if (presentation_ == Presentation::Plain) {
             layout_->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-            layout_->AddSpacer(Theme::Spacing(this) / 3);
+            layout_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
         } else {
-            layout_->Add(row, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, Theme::Spacing(this) / 2);
+            layout_->Add(row, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, Theme::Spacing(this, Theme::Space::SectionContent));
         }
         return;
     }
@@ -114,7 +114,7 @@ void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> 
     list_ = nullptr;
     auto *link = new ThemeContentLink(this, title, std::move(action));
     layout_->Add(link, 0, wxLEFT | wxRIGHT, Theme::Spacing(this));
-    layout_->AddSpacer(Theme::Spacing(this) / 3);
+    layout_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
 }
 void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
     std::function<void()> action) {
@@ -122,9 +122,9 @@ void ThemeDetailView::LongContent(const wxString &title, const wxString &preview
 }
 wxFlexGridSizer *ThemeDetailView::FormRows() {
     if (!formRows_) {
-        formRows_ = new wxFlexGridSizer(2, Theme::Spacing(this), 2 * Theme::Spacing(this));
+        formRows_ = new wxFlexGridSizer(2, Theme::Spacing(this, Theme::Space::Row), Theme::Spacing(this, Theme::Space::Columns));
         formRows_->AddGrowableCol(1);
-        section_->Add(formRows_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        section_->Add(formRows_, 0, wxEXPAND | wxALL, Theme::Spacing(this, Theme::Space::SectionContent));
     }
     return formRows_;
 }
@@ -153,7 +153,8 @@ wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &va
     if (title.empty()) {
         auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
         text->SetName(value);
-        section_->Add(text, 0, wxEXPAND | wxALL, Theme::Spacing(this));
+        section_->Add(text, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
+        section_->AddSpacer(Theme::Spacing(this, Theme::Space::Row));
         formRows_ = nullptr;
         return text;
     }
@@ -183,7 +184,7 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     if (!support.empty()) {
         auto *description = new wxStaticText(this, wxID_ANY, support);
         description->Wrap(FromDIP(440));
-        captions->Add(description, 0, wxEXPAND | wxTOP, FromDIP(4));
+        captions->Add(description, 0, wxEXPAND | wxTOP, Theme::Spacing(this, Theme::Space::Row));
     }
     row->Add(captions, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, FromDIP(20));
     auto *control = new wxCheckBox(this, wxID_ANY, {});
@@ -199,8 +200,8 @@ void ThemeDetailView::Message(const wxString &text) {
         presentation_ == Presentation::Centered ? wxALIGN_CENTER_HORIZONTAL : wxALIGN_LEFT);
     label->Wrap(presentation_ == Presentation::Centered ? GetCharWidth() * 36 : FromDIP(480));
     if (presentation_ == Presentation::Centered) {
-        layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, 2 * Theme::Spacing(this));
-        layout_->AddSpacer(Theme::Spacing(this) / 2);
+        layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
+        layout_->AddSpacer(Theme::Spacing(this, Theme::Space::SectionContent));
     } else {
         layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, Theme::Spacing(this));
     }
