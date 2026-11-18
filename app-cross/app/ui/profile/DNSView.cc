@@ -7,7 +7,7 @@
 
 namespace Passepartout {
 DNSView::DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent openContent)
-    : ModuleDetailView(parent, std::move(openContent)) {
+    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     const auto c = module.ToJson();
     const auto protocol = c.at("protocolType");

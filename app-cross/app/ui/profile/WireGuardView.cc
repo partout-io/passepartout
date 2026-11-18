@@ -7,14 +7,14 @@
 
 namespace Passepartout {
 WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent openContent, const WireGuardKeyGenerator &keys)
-    : ModuleDetailView(parent, std::move(openContent)) {
+    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
     const auto c = module.configuration->ToJson();
     const auto local = c.at("interface");
     Section(Localized(StringKey::ModulesWireguardInterface));
     Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true);
-    Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()), true);
+    Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()));
     Row(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()), true);
     Row(MTU, local.value("mtu", nlohmann::json()));
     if (local.contains("dns") && local["dns"].is_object()) {

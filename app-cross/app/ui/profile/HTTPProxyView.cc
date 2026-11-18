@@ -7,7 +7,7 @@
 
 namespace Passepartout {
 HTTPProxyView::HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyModule &module, OpenModuleContent openContent)
-    : ModuleDetailView(parent, std::move(openContent)) {
+    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     const auto c = module.ToJson();
     auto endpoint = [this](const wxString &title, const nlohmann::json &value) {
