@@ -15,7 +15,7 @@ LicenseView::LicenseView(wxWindow *parent, CreditsObservable &credits, std::stri
     Theme::Apply(this);
     content_->SetBackgroundColour(GetBackgroundColour());
     content_->SetName(title);
-    content_->SetFont(wxFontInfo(content_->GetFont().GetPointSize()).Family(wxFONTFAMILY_TELETYPE));
+    Theme::Monospace(content_);
     layout->Add(content_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
     credits_.LoadLicense(url_);

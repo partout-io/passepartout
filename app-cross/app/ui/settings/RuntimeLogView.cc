@@ -15,7 +15,7 @@ RuntimeLogView::RuntimeLogView(wxWindow *parent, DiagnosticsObservable &diagnost
     Theme::Apply(this);
     content_->SetBackgroundColour(GetBackgroundColour());
     content_->SetName(Localized(tunnel ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp));
-    content_->SetFont(wxFontInfo(content_->GetFont().GetPointSize()).Family(wxFONTFAMILY_TELETYPE));
+    Theme::Monospace(content_);
     layout->Add(content_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {

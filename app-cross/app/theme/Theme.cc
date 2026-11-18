@@ -30,6 +30,13 @@ void Theme::Apply(wxWindow *window) {
     window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
     window->Refresh();
 }
+void Theme::Monospace(wxWindow *window) {
+    auto font = window->GetFont();
+    const auto fixedFont = wxSystemSettings::GetFont(wxSYS_ANSI_FIXED_FONT);
+    font.SetFamily(wxFONTFAMILY_TELETYPE);
+    font.SetFaceName(fixedFont.GetFaceName());
+    window->SetFont(font);
+}
 wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
     auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
 #ifdef __WXMSW__

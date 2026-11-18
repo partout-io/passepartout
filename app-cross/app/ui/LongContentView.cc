@@ -13,7 +13,7 @@ LongContentView::LongContentView(wxWindow *parent, const wxString &title, const 
         wxTE_READONLY | wxTE_MULTILINE | wxTE_BESTWRAP | wxBORDER_NONE);
     Theme::Apply(this);
     text->SetBackgroundColour(GetBackgroundColour());
-    text->SetFont(wxFontInfo(text->GetFont().GetPointSize()).Family(wxFONTFAMILY_TELETYPE));
+    Theme::Monospace(text);
     text->SetName(title);
     layout->Add(text, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);

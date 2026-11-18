@@ -11,6 +11,7 @@ struct Theme {
     static wxIcon AppIcon(wxWindow *window, int sizeDIP = 0);
     static int Spacing(wxWindow *window);
     static void Apply(wxWindow *window);
+    static void Monospace(wxWindow *window);
 };
 wxActivityIndicator *ThemeProgressView(wxWindow *parent);
 wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message);
