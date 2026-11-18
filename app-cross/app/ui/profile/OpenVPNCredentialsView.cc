@@ -7,7 +7,7 @@
 
 namespace Passepartout {
 OpenVPNCredentialsView::OpenVPNCredentialsView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor, std::size_t moduleIndex)
-    : ThemeDetailView(parent) {
+    : ThemeDetailView(parent, Presentation::Form) {
     const auto draft = editor->Snapshot().draft;
     const auto &module = std::get<Partout::Models::TaggedModuleOpenVpn>(draft.modules.at(moduleIndex));
     Partout::Models::OpenVpnCredentials credentials{};

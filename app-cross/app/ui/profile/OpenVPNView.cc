@@ -22,7 +22,7 @@ wxString HexKey(const nlohmann::json &value) {
 }
 }
 OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module, OpenModuleContent openContent, std::function<void()> openCredentials)
-    : ModuleDetailView(parent, std::move(openContent)) {
+    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
     const auto c = module.configuration->ToJson();
@@ -124,7 +124,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
             const auto key = HexKey(wrap.at("key").at("data"));
             if (!key.empty()) {
                 const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap) + " (" + name + ")";
-                Navigate(title, [this, title, key] {
+                LongContent(title, key, [this, title, key] {
                     openContent_(title, key);
                 });
             }

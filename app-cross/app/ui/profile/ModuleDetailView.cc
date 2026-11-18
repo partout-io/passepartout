@@ -6,8 +6,8 @@
 #include <wx/numformatter.h>
 
 namespace Passepartout {
-ModuleDetailView::ModuleDetailView(wxWindow *parent, OpenModuleContent openContent)
-    : ThemeDetailView(parent), openContent_(std::move(openContent)) {}
+ModuleDetailView::ModuleDetailView(wxWindow *parent, OpenModuleContent openContent, Presentation presentation)
+    : ThemeDetailView(parent, presentation), openContent_(std::move(openContent)) {}
 bool ModuleDetailView::HasContent(const nlohmann::json &value) {
     return !value.is_null() && (!value.is_structured() || !value.empty()) &&
         (!value.is_string() || !value.get<std::string>().empty());
@@ -34,10 +34,19 @@ wxString ModuleDetailView::ValueText(const nlohmann::json &value) {
 void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, bool longContent) {
     const auto text = ValueText(value);
     if (text.empty()) return;
+    if (IsForm() && value.is_array()) {
+        std::vector<wxString> items;
+        for (const auto &item : value) {
+            const auto content = ValueText(item);
+            if (!content.empty()) items.push_back(content);
+        }
+        Items(title, items);
+        return;
+    }
     if (longContent) {
-        Navigate(title, [this, title, text] {
+        LongContent(title, text, [this, title, text] {
             openContent_(title, text);
-        }, text.BeforeFirst('\n'));
+        });
     } else Field(title, text);
 }
 void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent) {
@@ -80,6 +89,16 @@ void ModuleDetailView::IP(const wxString &title, const nlohmann::json &settings,
     auto routes = [this](StringKey label, const nlohmann::json &values) {
         if (!values.is_array() || values.empty()) return;
         Section(Localized(label));
+        if (IsForm()) {
+            std::vector<std::vector<wxString>> rows;
+            for (const auto &route : values) {
+                const auto destination = route.value("destination", nlohmann::json());
+                rows.push_back({destination.is_null() ? Localized(StringKey::GlobalNounsDefault) : ValueText(destination),
+                    ValueText(route.value("gateway", nlohmann::json()))});
+            }
+            Table({Localized(StringKey::GlobalNounsDestination), Localized(StringKey::GlobalNounsGateway)}, rows);
+            return;
+        }
         for (const auto &route : values) {
             const auto destination = route.value("destination", nlohmann::json());
             if (destination.is_null()) Field(Localized(StringKey::GlobalNounsDestination), Localized(StringKey::GlobalNounsDefault));
