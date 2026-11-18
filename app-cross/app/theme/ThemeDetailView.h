@@ -25,6 +25,7 @@ public:
     wxButton *Action(const wxString &title, std::function<void()> action);
     wxTextCtrl *TextField(const wxString &title, const wxString &value, long style = 0);
     wxCheckBox *Toggle(const wxString &title, const wxString &support, bool checked);
+    wxCheckBox *CopiableToggle(const wxString &value, bool checked);
     enum class TextStyle { Primary, Secondary };
     void Message(const wxString &text, TextStyle style = TextStyle::Primary);
     void Logo();

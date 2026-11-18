@@ -9,6 +9,7 @@
 #include "OpenVPNCredentialsView.h"
 #include "OpenVPNRemotesView.h"
 #include "DNSView.h"
+#include "OnDemandView.h"
 #include "HTTPProxyView.h"
 #include "IPView.h"
 #include "WireGuardView.h"
@@ -136,6 +137,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         using namespace Partout::Models;
         using Tag = std::decay_t<decltype(tagged)>;
         if constexpr (std::is_same_v<Tag, TaggedModuleDns>) return new DNSView(pages_, tagged.value, openContent);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleOnDemand>) return new OnDemandView(pages_, tagged.value);
         else if constexpr (std::is_same_v<Tag, TaggedModuleHTTPProxy>) return new HTTPProxyView(pages_, tagged.value, openContent);
         else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, openContent);
         else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, openContent, keys_);

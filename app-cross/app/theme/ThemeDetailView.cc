@@ -233,6 +233,20 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     section_->Add(row, SectionRowFlags());
     return control;
 }
+wxCheckBox *ThemeDetailView::CopiableToggle(const wxString &value, bool checked) {
+    auto *row = new wxBoxSizer(wxHORIZONTAL);
+    auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize,
+        wxTE_READONLY | wxBORDER_NONE);
+    text->SetName(value);
+    text->SetBackgroundColour(contentParent_->GetBackgroundColour());
+    row->Add(text, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
+    auto *control = new wxCheckBox(contentParent_, wxID_ANY, {});
+    control->SetName(value);
+    control->SetValue(checked);
+    row->Add(control, 0, wxALIGN_CENTER_VERTICAL);
+    section_->Add(row, SectionRowFlags());
+    return control;
+}
 void ThemeDetailView::Message(const wxString &text, TextStyle style) {
     list_ = nullptr;
     if (presentation_ != Presentation::Centered) {

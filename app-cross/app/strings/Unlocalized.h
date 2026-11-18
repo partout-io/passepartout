@@ -20,6 +20,7 @@ inline constexpr auto PAC = "PAC";
 inline constexpr auto Proxy = "Proxy";
 inline constexpr auto URL = "URL";
 inline constexpr auto OpenVPN = "OpenVPN";
+inline constexpr auto WiFi = "Wi-Fi";
 inline constexpr auto WireGuard = "WireGuard";
 inline constexpr auto TLS = "TLS";
 inline constexpr auto CA = "CA";

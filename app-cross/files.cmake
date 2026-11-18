@@ -24,6 +24,7 @@ set(APP_SOURCES
     app/ui/profile/HTTPProxyView.cc
     app/ui/profile/IPView.cc
     app/ui/profile/ModuleDetailView.cc
+    app/ui/profile/OnDemandView.cc
     app/ui/profile/OpenVPNCredentialsView.cc
     app/ui/profile/OpenVPNRemotesView.cc
     app/ui/profile/OpenVPNView.cc
