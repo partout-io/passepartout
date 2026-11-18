@@ -16,8 +16,8 @@ public:
     bool HasValue(const wxDataViewItem &item, unsigned column) const override {
         return column != 0 || GetRow(item) != 0;
     }
-    bool IsEnabledByRow(unsigned row, unsigned column) const override {
-        return column != 0 && GetItemData(GetItem(row)) != 0;
+    bool IsEnabledByRow(unsigned, unsigned column) const override {
+        return column != 0;
     }
 
 };
@@ -50,17 +50,12 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         wxVector<wxVariant> cells;
         cells.push_back(wxVariant(enabled));
         cells.push_back(wxVariant(ModuleTitle(module)));
-        const bool navigable = !std::holds_alternative<Partout::Models::TaggedModuleOnDemand>(module);
-        AppendItem(cells, navigable ? index + 2 : 0);
+        AppendItem(cells, index + 2);
     }
     SelectRow(0);
     const auto select = [this, selected](const wxDataViewItem &item) {
         if (!item.IsOk()) return;
         const auto target = GetItemData(item);
-        if (!target) {
-            SelectRow(selectedRow_);
-            return;
-        }
         const auto row = static_cast<unsigned>(ItemToRow(item));
         if (row == selectedRow_) return;
         selectedRow_ = row;
@@ -76,18 +71,13 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
             return;
         }
         const int step = key == WXK_DOWN ? 1 : -1;
-        int row = GetSelectedRow() + step;
-        while (row >= 0 && row < static_cast<int>(GetItemCount())) {
-            const auto item = RowToItem(row);
-            if (GetItemData(item) != 0) {
-                SelectRow(row);
-                SetCurrentItem(item);
-                EnsureVisible(item);
-                select(item);
-                return;
-            }
-            row += step;
-        }
+        const int row = GetSelectedRow() + step;
+        if (row < 0 || row >= static_cast<int>(GetItemCount())) return;
+        const auto item = RowToItem(row);
+        SelectRow(row);
+        SetCurrentItem(item);
+        EnsureVisible(item);
+        select(item);
     });
     UpdateMetrics();
     Bind(wxEVT_DPI_CHANGED, [this](wxDPIChangedEvent &event) {
